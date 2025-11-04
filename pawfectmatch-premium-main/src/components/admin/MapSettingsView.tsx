@@ -90,7 +90,7 @@ export default function MapSettingsView() {
 
   const handleSettingChange = (key: keyof MapSettings, value: any) => {
     setMapSettings((current) => ({
-      ...current!,
+      ...current,
       [key]: value,
     }))
     toast.success('Map setting updated')
@@ -103,8 +103,8 @@ export default function MapSettingsView() {
     }
 
     setCategorySettings((current) => ({
-      ...current!,
-      categories: [...current!.categories, newCategory as PlaceCategory],
+      ...current,
+      categories: [...current.categories, newCategory as PlaceCategory],
     }))
 
     setNewCategory({ id: '', name: '', icon: '', color: '#000000' })
@@ -114,16 +114,16 @@ export default function MapSettingsView() {
 
   const handleDeleteCategory = (categoryId: string) => {
     setCategorySettings((current) => ({
-      ...current!,
-      categories: current!.categories.filter((cat) => cat.id !== categoryId),
+      ...current,
+      categories: current.categories.filter((cat) => cat.id !== categoryId),
     }))
     toast.success('Category deleted')
   }
 
   const handleUpdateCategory = (updatedCategory: PlaceCategory) => {
     setCategorySettings((current) => ({
-      ...current!,
-      categories: current!.categories.map((cat) =>
+      ...current,
+      categories: current.categories.map((cat) =>
         cat.id === updatedCategory.id ? updatedCategory : cat
       ),
     }))
@@ -132,7 +132,7 @@ export default function MapSettingsView() {
   }
 
   // Category visibility toggle handler - reserved for future use
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const _handleToggleCategoryVisibility = (_categoryId: string): void => {
     void _categoryId
     toast.info('Category visibility toggled')
@@ -429,7 +429,7 @@ export default function MapSettingsView() {
                   checked={categorySettings?.enableUserSubmittedPlaces ?? true}
                   onCheckedChange={(checked: boolean) =>
                     setCategorySettings((current) => ({
-                      ...current!,
+                      ...current,
                       enableUserSubmittedPlaces: checked,
                     }))
                   }
@@ -443,7 +443,7 @@ export default function MapSettingsView() {
                   checked={categorySettings?.requireModeration ?? true}
                   onCheckedChange={(checked: boolean) =>
                     setCategorySettings((current) => ({
-                      ...current!,
+                      ...current,
                       requireModeration: checked,
                     }))
                   }

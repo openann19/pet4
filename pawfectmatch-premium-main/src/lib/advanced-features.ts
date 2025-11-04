@@ -84,13 +84,13 @@ export function useLongPress(
   options: { delay?: number; onStart?: () => void; onCancel?: () => void } = {}
 ) {
   const { delay = 500, onStart, onCancel } = options
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const timeoutRef = useRef<number | undefined>(undefined)
   const [isPressed, setIsPressed] = useState(false)
 
   const start = useCallback(() => {
     setIsPressed(true)
     onStart?.()
-    timeoutRef.current = setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       callback()
       setIsPressed(false)
     }, delay)
@@ -119,13 +119,13 @@ export function useIdleDetection(
   callback: () => void,
   timeout: number = 60000
 ) {
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const timeoutRef = useRef<number | undefined>(undefined)
 
   const resetTimer = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
-    timeoutRef.current = setTimeout(callback, timeout)
+    timeoutRef.current = window.setTimeout(callback, timeout)
   }, [callback, timeout])
 
   useEffect(() => {

@@ -20,7 +20,7 @@ for (const f of files) {
 }
 
 if (bad.length > 0) {
-  // eslint-disable-next-line no-console
+   
   console.error('Forbidden markers found in:\n' + bad.map(x => ' - ' + x).join('\n'));
   process.exit(1);
 }

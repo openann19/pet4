@@ -1,4 +1,4 @@
-import { Location } from './types';
+import type { Location } from './types';
 
 export const calculateDistance = (loc1: Location, loc2: Location): number => {
   const R = 6371;
@@ -79,7 +79,7 @@ export const getCurrentLocation = (): Promise<Location> => {
         });
       },
       (error) => {
-        reject(error);
+        reject(new Error(error.message));
       },
       {
         enableHighAccuracy: false,

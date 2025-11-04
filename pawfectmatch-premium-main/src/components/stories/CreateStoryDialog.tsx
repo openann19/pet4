@@ -158,7 +158,7 @@ export default function CreateStoryDialog({
       })
 
       handleClose()
-    } catch (error) {
+    } catch {
       toast.error('Failed to create story')
     } finally {
       setIsProcessing(false)

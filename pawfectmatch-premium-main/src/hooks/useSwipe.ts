@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
-import { useMotionValue, useTransform, PanInfo } from 'framer-motion'
+import type { PanInfo } from 'framer-motion';
+import { useMotionValue, useTransform } from 'framer-motion'
 import { haptics } from '@/lib/haptics'
 
 interface UseSwipeOptions {

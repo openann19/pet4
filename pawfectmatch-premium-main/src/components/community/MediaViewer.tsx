@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, PanInfo, useMotionValue, useTransform } from 'framer-motion'
+import type { PanInfo} from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion'
 import { X, CaretLeft, CaretRight, DownloadSimple, Share, DotsThree, Play, Pause, SpeakerHigh, SpeakerSlash } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
@@ -42,7 +43,7 @@ export function MediaViewer({
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [showVideoControls, setShowVideoControls] = useState(true)
-  const controlsTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const controlsTimeoutRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     setCurrentIndex(initialIndex)
@@ -93,7 +94,7 @@ export function MediaViewer({
       clearTimeout(controlsTimeoutRef.current)
     }
     setShowVideoControls(true)
-    controlsTimeoutRef.current = setTimeout(() => {
+    controlsTimeoutRef.current = window.setTimeout(() => {
       if (isPlaying) {
         setShowVideoControls(false)
       }
@@ -230,7 +231,7 @@ export function MediaViewer({
           title: `${isVideo ? 'Video' : 'Photo'} by ${authorName}`,
           url
         })
-      } catch (err) {
+      } catch {
         // Share was cancelled by user - no need to log
       }
     } else {

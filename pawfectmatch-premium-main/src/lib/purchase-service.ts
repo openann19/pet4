@@ -4,7 +4,7 @@
  * Handles in-app purchases, receipt validation, and entitlement grants.
  */
 
-import { Purchase, BusinessConfig } from './business-types'
+import type { Purchase, BusinessConfig } from './business-types'
 import { generateULID } from './utils'
 import { getUserEntitlements } from './entitlements-engine'
 import { createLogger } from './logger'
@@ -15,6 +15,26 @@ const KV_PREFIX = {
   PURCHASE: 'purchase:',
   CONFIG: 'business-config:',
   AUDIT: 'audit-log:',
+}
+
+const ERROR_VERIFICATION_FAILED = 'Verification failed'
+const ERROR_INVALID_RECEIPT = 'Invalid receipt'
+const ERROR_INVALID_RESPONSE_FORMAT = 'Invalid response format'
+
+interface VerificationResponse {
+  valid: boolean
+  sku?: string
+  type?: string
+  receipt?: string
+  expiresAt?: string
+  amount?: number
+  currency?: string
+  transactionId?: string
+  error?: string
+}
+
+function isValidVerificationResponse(data: unknown): data is VerificationResponse {
+  return typeof data === 'object' && data !== null && 'valid' in data && typeof (data as VerificationResponse).valid === 'boolean'
 }
 
 /**
@@ -45,7 +65,7 @@ export async function verifyReceipt(
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined
     logger.error('Receipt verification failed', error instanceof Error ? error : new Error(String(error)))
-    return { valid: false, error: errorMessage || 'Verification failed' }
+    return { valid: false, error: errorMessage || ERROR_VERIFICATION_FAILED }
   }
 }
 
@@ -65,10 +85,14 @@ async function verifyStripeReceipt(
     })
 
     if (!response.ok) {
-      return { valid: false, error: 'Verification failed' }
+      return { valid: false, error: ERROR_VERIFICATION_FAILED }
     }
 
-    const data = await response.json()
+    const data: unknown = await response.json()
+    
+    if (!isValidVerificationResponse(data)) {
+      return { valid: false, error: ERROR_INVALID_RESPONSE_FORMAT }
+    }
     
     if (data.valid) {
       const purchase: Purchase = {
@@ -77,13 +101,13 @@ async function verifyStripeReceipt(
         sku: data.sku || 'premium_monthly',
         type: 'subscription',
         platform: 'web',
-        receipt: data.receipt,
+        receipt: data.receipt || receipt,
         status: 'active',
         startedAt: new Date().toISOString(),
-        expiresAt: data.expiresAt,
-        amount: data.amount,
+        ...(data.expiresAt && { expiresAt: data.expiresAt }),
+        ...(data.amount !== undefined && { amount: data.amount }),
         currency: data.currency || 'USD',
-        transactionId: data.transactionId,
+        ...(data.transactionId && { transactionId: data.transactionId }),
         verifiedAt: new Date().toISOString(),
       }
 
@@ -93,11 +117,11 @@ async function verifyStripeReceipt(
       return { valid: true, purchase }
     }
 
-    return { valid: false, error: data.error || 'Invalid receipt' }
+    return { valid: false, error: data.error || ERROR_INVALID_RECEIPT }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined
-    logger.error('Apple receipt verification failed', error instanceof Error ? error : new Error(String(error)))
-    return { valid: false, error: errorMessage || 'Verification failed' }
+    logger.error('Stripe receipt verification failed', error instanceof Error ? error : new Error(String(error)))
+    return { valid: false, error: errorMessage || ERROR_VERIFICATION_FAILED }
   }
 }
 
@@ -116,25 +140,29 @@ async function verifyAppleReceipt(
     })
 
     if (!response.ok) {
-      return { valid: false, error: 'Verification failed' }
+      return { valid: false, error: ERROR_VERIFICATION_FAILED }
     }
 
-    const data = await response.json()
+    const data: unknown = await response.json()
+    
+    if (!isValidVerificationResponse(data)) {
+      return { valid: false, error: ERROR_INVALID_RESPONSE_FORMAT }
+    }
     
     if (data.valid) {
       const purchase: Purchase = {
         id: generateULID(),
         userId,
-        sku: data.sku,
-        type: data.type || 'subscription',
+        sku: data.sku || 'premium_monthly',
+        type: (data.type || 'subscription') as Purchase['type'],
         platform: 'ios',
-        receipt: data.receipt,
+        receipt: data.receipt || receipt,
         status: 'active',
         startedAt: new Date().toISOString(),
-        expiresAt: data.expiresAt,
-        amount: data.amount,
+        ...(data.expiresAt && { expiresAt: data.expiresAt }),
+        ...(data.amount !== undefined && { amount: data.amount }),
         currency: data.currency || 'USD',
-        transactionId: data.transactionId,
+        ...(data.transactionId && { transactionId: data.transactionId }),
         verifiedAt: new Date().toISOString(),
       }
 
@@ -144,11 +172,11 @@ async function verifyAppleReceipt(
       return { valid: true, purchase }
     }
 
-    return { valid: false, error: data.error || 'Invalid receipt' }
+    return { valid: false, error: data.error || ERROR_INVALID_RECEIPT }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined
     logger.error('Apple receipt verification failed', error instanceof Error ? error : new Error(String(error)))
-    return { valid: false, error: errorMessage || 'Verification failed' }
+    return { valid: false, error: errorMessage || ERROR_VERIFICATION_FAILED }
   }
 }
 
@@ -167,25 +195,29 @@ async function verifyGoogleReceipt(
     })
 
     if (!response.ok) {
-      return { valid: false, error: 'Verification failed' }
+      return { valid: false, error: ERROR_VERIFICATION_FAILED }
     }
 
-    const data = await response.json()
+    const data: unknown = await response.json()
+    
+    if (!isValidVerificationResponse(data)) {
+      return { valid: false, error: ERROR_INVALID_RESPONSE_FORMAT }
+    }
     
     if (data.valid) {
       const purchase: Purchase = {
         id: generateULID(),
         userId,
-        sku: data.sku,
-        type: data.type || 'subscription',
+        sku: data.sku || 'premium_monthly',
+        type: (data.type || 'subscription') as Purchase['type'],
         platform: 'android',
-        receipt: data.receipt,
+        receipt: data.receipt || receipt,
         status: 'active',
         startedAt: new Date().toISOString(),
-        expiresAt: data.expiresAt,
-        amount: data.amount,
+        ...(data.expiresAt && { expiresAt: data.expiresAt }),
+        ...(data.amount !== undefined && { amount: data.amount }),
         currency: data.currency || 'USD',
-        transactionId: data.transactionId,
+        ...(data.transactionId && { transactionId: data.transactionId }),
         verifiedAt: new Date().toISOString(),
       }
 
@@ -195,11 +227,11 @@ async function verifyGoogleReceipt(
       return { valid: true, purchase }
     }
 
-    return { valid: false, error: data.error || 'Invalid receipt' }
+    return { valid: false, error: data.error || ERROR_INVALID_RECEIPT }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined
     logger.error('Google Play receipt verification failed', error instanceof Error ? error : new Error(String(error)))
-    return { valid: false, error: errorMessage || 'Verification failed' }
+    return { valid: false, error: errorMessage || ERROR_VERIFICATION_FAILED }
   }
 }
 
@@ -212,8 +244,8 @@ async function savePurchase(purchase: Purchase): Promise<void> {
 
   // Also index by user
   const userPurchases = await window.spark.kv.get<Purchase[]>(`${KV_PREFIX.PURCHASE}user:${purchase.userId}`) || []
-  userPurchases.push(purchase)
-  await window.spark.kv.set(`${KV_PREFIX.PURCHASE}user:${purchase.userId}`, userPurchases)
+  const updatedPurchases: Purchase[] = [...userPurchases, purchase]
+  await window.spark.kv.set(`${KV_PREFIX.PURCHASE}user:${purchase.userId}`, updatedPurchases)
 }
 
 /**

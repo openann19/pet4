@@ -30,14 +30,6 @@ export class SmartRecommendationEngine {
       return
     }
 
-    const _likedPets = this.swipeHistory
-      .filter(action => action.action === 'like')
-      .map(action => action.petId)
-
-    const _breeds: Record<string, number> = {}
-    const _personalities: Record<string, number> = {}
-    const _sizes: Record<string, number> = {}
-
     this.userPreferences = {
       favoriteBreeds: [],
       favoritePersonalities: [],

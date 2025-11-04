@@ -1,5 +1,6 @@
 import { useStorage } from '@/hooks/useStorage'
-import { Language, useTranslation } from '@/lib/i18n'
+import type { Language} from '@/lib/i18n';
+import { useTranslation } from '@/lib/i18n'
 
 export function useLanguage() {
   const [language, setLanguage] = useStorage<Language>('app-language', 'en')

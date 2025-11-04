@@ -1,5 +1,5 @@
 import { generateULID } from './utils'
-import type { VerificationRequest, VerificationDocument, VerificationStatus, DocumentType, VerificationLevel } from './verification-types'
+import type { VerificationRequest, VerificationDocument, DocumentType, VerificationLevel } from './verification-types'
 
 export class VerificationService {
   static async createVerificationRequest(
@@ -23,7 +23,7 @@ export class VerificationService {
   static async uploadDocument(
     file: File,
     documentType: DocumentType,
-    requestId: string
+    _requestId: string
   ): Promise<VerificationDocument> {
     const fileData = await this.fileToBase64(file)
     
@@ -88,7 +88,7 @@ export class VerificationService {
     return request.documents.find(doc => doc.type === type)
   }
 
-  static async deleteDocument(document: VerificationDocument): Promise<void> {
+  static async deleteDocument(_document: VerificationDocument): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 300))
   }
 

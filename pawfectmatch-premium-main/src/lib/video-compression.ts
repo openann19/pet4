@@ -236,7 +236,7 @@ export class VideoCompressor {
             resolve(blob)
           }
 
-          mediaRecorder.onerror = (e) => {
+          mediaRecorder.onerror = () => {
             URL.revokeObjectURL(video.src)
             reject(new Error('MediaRecorder error'))
           }

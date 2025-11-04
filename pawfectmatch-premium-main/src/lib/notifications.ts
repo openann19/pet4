@@ -69,7 +69,7 @@ class NotificationManager {
       ...(action ? {
         action: {
           label: action.label,
-          ...(action.onClick ? { onClick: action.onClick } : {}),
+          onClick: action.onClick || (() => {}),
         },
       } : {}),
       ...(cancel ? {
@@ -248,11 +248,11 @@ export function confirmAction(
     duration: Infinity,
     action: {
       label: 'Confirm',
-      ...(onConfirm ? { onClick: onConfirm } : {}),
+      onClick: onConfirm,
     },
-    cancel: {
+    cancel: onCancel ? {
       label: 'Cancel',
-      ...(onCancel ? { onClick: onCancel } : {}),
-    }
+      onClick: onCancel,
+    } : undefined
   })
 }

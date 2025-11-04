@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client'
 import { ErrorBoundary } from "react-error-boundary";
 
 // Conditionally import Spark if available (non-blocking)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+ 
 import("@github/spark/spark" as string).catch(() => {
   // Spark not available, continue without it
 });

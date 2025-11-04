@@ -68,7 +68,20 @@ export class LostFoundAPI {
     alerts.push(alert)
     await this.setAlerts(alerts)
 
-    // TODO: Trigger geofenced push notifications to nearby users
+    // Trigger geofenced push notifications to nearby users
+    try {
+      const radiusKm = alert.lastSeen.radiusM / 1000 || 10 // Convert meters to km, default 10km
+      await notificationsService.triggerGeofencedNotifications(alert, radiusKm)
+      logger.info('Geofenced notifications triggered', {
+        alertId: alert.id,
+        radiusKm
+      })
+    } catch (error) {
+      logger.error('Failed to trigger geofenced notifications', error instanceof Error ? error : new Error(String(error)), {
+        alertId: alert.id
+      })
+      // Don't fail alert creation if notification fails
+    }
 
     return alert
   }

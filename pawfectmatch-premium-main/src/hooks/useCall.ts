@@ -9,6 +9,7 @@ import {
   closePeerConnection,
   getActualResolution
 } from '@/lib/call-utils'
+import type { WebRTCPeer } from '@/lib/webrtc-peer'
 import { toast } from 'sonner'
 import { createLogger } from '@/lib/logger'
 
@@ -21,7 +22,7 @@ export function useCall(roomId: string, currentUserId: string, currentUserName: 
   const [preferredQuality = '4k', setPreferredQuality] = useStorage<VideoQuality>('video-quality-preference', '4k')
   const localStreamRef = useRef<MediaStream | null>(null)
   const remoteStreamRef = useRef<MediaStream | null>(null)
-  const peerConnectionRef = useRef<RTCPeerConnection | null>(null)
+  const peerConnectionRef = useRef<WebRTCPeer | null>(null)
 
   useEffect(() => {
     return () => {
@@ -78,29 +79,35 @@ export function useCall(roomId: string, currentUserId: string, currentUserName: 
         toast.success(`Call starting with ${actualResolution}`)
       }
 
-      const peerConnection = await establishCallConnection((status) => {
-        setActiveCall(prev => {
-          if (!prev) return null
-          return {
-            ...prev,
-            call: { ...prev.call, status }
-          }
-        })
-      }, stream, recipientId)
-      
-      peerConnectionRef.current = peerConnection
-
-      const fakeRemoteStream = createFakeRemoteStream()
-      remoteStreamRef.current = fakeRemoteStream
-      setActiveCall(prev => {
-        if (!prev) return null
-        return {
-          ...prev,
-          remoteStream: fakeRemoteStream
+      const peer = await establishCallConnection({
+        callId: call.id,
+        localUserId: currentUserId,
+        remoteUserId: recipientId,
+        isInitiator: true,
+        localStream: stream,
+        onRemoteStream: (remoteStream: MediaStream) => {
+          remoteStreamRef.current = remoteStream
+          setActiveCall(prev => {
+            if (!prev) return null
+            return {
+              ...prev,
+              remoteStream
+            }
+          })
+          toast.success('Call connected!')
+        },
+        onStatusChange: (status) => {
+          setActiveCall(prev => {
+            if (!prev) return null
+            return {
+              ...prev,
+              call: { ...prev.call, status }
+            }
+          })
         }
       })
-
-      toast.success('Call connected!')
+      
+      peerConnectionRef.current = peer
     } catch (error) {
       toast.error('Failed to start call')
       logger.error('Failed to start call', error instanceof Error ? error : new Error(String(error)))
@@ -150,27 +157,35 @@ export function useCall(roomId: string, currentUserId: string, currentUserName: 
       setActiveCall(session)
       setIncomingCall(null)
 
-      setTimeout(() => {
-        setActiveCall(prev => {
-          if (!prev) return null
-          return {
-            ...prev,
-            call: { ...prev.call, status: 'active' }
-          }
-        })
+      const peer = await establishCallConnection({
+        callId: incomingCall.id,
+        localUserId: currentUserId,
+        remoteUserId: incomingCall.initiatorId,
+        isInitiator: false,
+        localStream: stream,
+        onRemoteStream: (remoteStream: MediaStream) => {
+          remoteStreamRef.current = remoteStream
+          setActiveCall(prev => {
+            if (!prev) return null
+            return {
+              ...prev,
+              remoteStream
+            }
+          })
+          toast.success('Call connected!')
+        },
+        onStatusChange: (status) => {
+          setActiveCall(prev => {
+            if (!prev) return null
+            return {
+              ...prev,
+              call: { ...prev.call, status }
+            }
+          })
+        }
+      })
 
-        const fakeRemoteStream = createFakeRemoteStream()
-        remoteStreamRef.current = fakeRemoteStream
-        setActiveCall(prev => {
-          if (!prev) return null
-          return {
-            ...prev,
-            remoteStream: fakeRemoteStream
-          }
-        })
-      }, 2000)
-
-      toast.success('Call connected!')
+      peerConnectionRef.current = peer
     } catch (error) {
       toast.error('Failed to answer call')
       logger.error('Failed to answer call', error instanceof Error ? error : new Error(String(error)))
@@ -263,48 +278,7 @@ export function useCall(roomId: string, currentUserId: string, currentUserName: 
     setCallHistory(prev => [item, ...(prev || [])].slice(0, 50))
   }
 
-  const createFakeRemoteStream = (): MediaStream => {
-    const canvas = document.createElement('canvas')
-    canvas.width = 640
-    canvas.height = 480
-    const ctx = canvas.getContext('2d')
-    
-    const drawFrame = () => {
-      if (ctx) {
-        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
-        gradient.addColorStop(0, '#4F46E5')
-        gradient.addColorStop(0.5, '#7C3AED')
-        gradient.addColorStop(1, '#EC4899')
-        ctx.fillStyle = gradient
-        ctx.fillRect(0, 0, canvas.width, canvas.height)
-        
-        ctx.fillStyle = 'white'
-        ctx.font = 'bold 48px Inter'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillText('📞 Connected', canvas.width / 2, canvas.height / 2)
-      }
-    }
 
-    drawFrame()
-    const stream = canvas.captureStream(30)
-
-    const audioContext = new AudioContext()
-    const oscillator = audioContext.createOscillator()
-    const gainNode = audioContext.createGain()
-    gainNode.gain.value = 0.01
-    oscillator.connect(gainNode)
-    const destination = audioContext.createMediaStreamDestination()
-    gainNode.connect(destination)
-    oscillator.start()
-
-    const audioTrack = destination.stream.getAudioTracks()[0]
-    if (audioTrack) {
-      stream.addTrack(audioTrack)
-    }
-
-    return stream
-  }
 
   return {
     activeCall,

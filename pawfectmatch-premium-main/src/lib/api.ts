@@ -28,7 +28,7 @@ export class APIClient {
     }
 
     if (this.accessToken) {
-      (headers as Record<string, string>)['Authorization'] = `Bearer ${this.accessToken}`
+      (headers)['Authorization'] = `Bearer ${this.accessToken}`
     }
 
     try {

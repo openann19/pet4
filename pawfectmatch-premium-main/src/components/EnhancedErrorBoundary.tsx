@@ -1,4 +1,5 @@
-import { Component, ReactNode } from 'react'
+import type { ReactNode } from 'react';
+import { Component } from 'react'
 import { Warning, ArrowClockwise } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'

@@ -406,8 +406,8 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
                       checked={preferences?.quietHours.enabled || false}
                       onCheckedChange={(enabled) => {
                         setPreferences(current => ({
-                          ...current!,
-                          quietHours: { ...current!.quietHours, enabled }
+                          ...current,
+                          quietHours: { ...current.quietHours, enabled }
                         }))
                       }}
                     />
@@ -423,7 +423,7 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
                       checked={preferences?.groupSimilar || false}
                       onCheckedChange={(groupSimilar) => {
                         setPreferences(current => ({
-                          ...current!,
+                          ...current,
                           groupSimilar
                         }))
                       }}
@@ -440,7 +440,7 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
                       checked={preferences?.soundEnabled || false}
                       onCheckedChange={(soundEnabled) => {
                         setPreferences(current => ({
-                          ...current!,
+                          ...current,
                           soundEnabled
                         }))
                       }}

@@ -123,7 +123,7 @@ export function VerificationReviewDashboard() {
       setSelectedRequest(null)
       setReviewNotes('')
       window.location.reload()
-    } catch (error) {
+    } catch {
       haptics.error()
       toast.error('Failed to approve verification')
     } finally {
@@ -171,7 +171,7 @@ export function VerificationReviewDashboard() {
       setReviewNotes('')
       setRejectionReason('')
       window.location.reload()
-    } catch (error) {
+    } catch {
       haptics.error()
       toast.error('Failed to reject verification')
     } finally {

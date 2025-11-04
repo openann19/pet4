@@ -43,7 +43,7 @@ export class PerformanceMonitor {
           const entries = list.getEntries()
           const lastEntry = entries[entries.length - 1]
           if (lastEntry && 'startTime' in lastEntry) {
-            this.metrics.largestContentfulPaint = lastEntry.startTime as number
+            this.metrics.largestContentfulPaint = lastEntry.startTime
           }
         })
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })

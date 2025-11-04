@@ -3,7 +3,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Warning, CreditCard, X } from '@phosphor-icons/react'
 import { PaymentsService } from '@/lib/payments-service'
-import { BillingIssue } from '@/lib/payments-types'
+import type { BillingIssue } from '@/lib/payments-types'
 import { toast } from 'sonner'
 import { logger } from '@/lib/logger'
 
@@ -37,7 +37,7 @@ export function BillingIssueBanner() {
       await PaymentsService.resolveBillingIssue(issue.id)
       toast.success('Payment updated successfully')
       setIssue(null)
-    } catch (error) {
+    } catch {
       toast.error('Failed to update payment method')
     } finally {
       setRetrying(false)

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion'
 import { 
   X, 
   Heart, 
@@ -9,7 +9,9 @@ import {
   SpeakerHigh,
   SpeakerSlash,
   DotsThree,
-  BookmarkSimple
+  BookmarkSimple,
+  ArrowsOut,
+  ArrowsIn
 } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -26,6 +28,10 @@ import { STORY_REACTION_EMOJIS } from '@/lib/stories-types'
 import { haptics } from '@/lib/haptics'
 import { toast } from 'sonner'
 import SaveToHighlightDialog from './SaveToHighlightDialog'
+import { useStoryGestures } from '@/hooks/use-story-gestures'
+import { useStoryAnalytics } from '@/hooks/use-story-analytics'
+import { useFullscreen } from '@/hooks/use-fullscreen'
+import { usePrefersReducedMotion } from '@/utils/reduced-motion'
 
 interface StoryViewerProps {
   stories: Story[]
@@ -57,60 +63,23 @@ export default function StoryViewer({
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   
   const startTimeRef = useRef<number>(Date.now())
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const progressIntervalRef = useRef<number | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const mediaContainerRef = useRef<HTMLDivElement>(null)
+  const swipeProgress = useMotionValue(0)
 
   const currentStory = stories[currentIndex]
   const isOwn = currentStory?.userId === currentUserId
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const { isFullscreen, toggleFullscreen } = useFullscreen()
 
-  useEffect(() => {
-    startTimeRef.current = Date.now()
-    setProgress(0)
-    
-    if (!isPaused) {
-      startProgress()
-    }
+  const { trackReaction, trackInteraction } = useStoryAnalytics({
+    story: currentStory || null,
+    currentUserId,
+    isActive: !isPaused
+  })
 
-    return () => {
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current)
-      }
-    }
-  }, [currentIndex, isPaused])
-
-  useEffect(() => {
-    if (currentStory && currentStory.type === 'video' && videoRef.current) {
-      if (isPaused) {
-        videoRef.current.pause()
-      } else {
-        videoRef.current.play()
-      }
-    }
-  }, [isPaused, currentStory])
-
-  const startProgress = () => {
-    if (progressIntervalRef.current) {
-      clearInterval(progressIntervalRef.current)
-    }
-
-    const duration = currentStory?.duration || 5
-    const interval = 50
-    
-    progressIntervalRef.current = setInterval(() => {
-      setProgress(prev => {
-        const newProgress = prev + (interval / (duration * 1000)) * 100
-        
-        if (newProgress >= 100) {
-          handleNext()
-          return 0
-        }
-        
-        return newProgress
-      })
-    }, interval)
-  }
-
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     const viewDuration = (Date.now() - startTimeRef.current) / 1000
     const completedView = viewDuration >= (currentStory?.duration || 5) * 0.8
 
@@ -126,6 +95,8 @@ export default function StoryViewer({
       onStoryUpdate?.(updatedStory)
     }
 
+    trackInteraction('skip')
+
     if (currentIndex < stories.length - 1) {
       setCurrentIndex(prev => prev + 1)
       setProgress(0)
@@ -133,32 +104,141 @@ export default function StoryViewer({
       onComplete?.()
       onClose()
     }
-  }
+  }, [currentStory, currentUserId, currentUserName, currentUserAvatar, isOwn, currentIndex, stories.length, onStoryUpdate, onComplete, onClose, trackInteraction])
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex(prev => prev - 1)
       setProgress(0)
     }
-  }
+  }, [currentIndex])
 
-  const handlePauseToggle = () => {
+  const handlePauseToggle = useCallback(() => {
     haptics.trigger('selection')
     setIsPaused(prev => !prev)
-  }
+  }, [])
 
-  const handleMuteToggle = () => {
+  const handleMuteToggle = useCallback(() => {
     haptics.trigger('selection')
     setIsMuted(prev => !prev)
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted
-    }
-  }
+  }, [])
 
-  const handleReaction = (emoji: string) => {
+  const { gestureState, handlers: gestureHandlers, reset: resetGestures } = useStoryGestures({
+    onSwipeLeft: handleNext,
+    onSwipeRight: handlePrevious,
+    onTap: handlePauseToggle,
+    onLongPress: () => {
+      if (!isOwn) {
+        setShowReactions(true)
+      }
+    },
+    onPinchZoom: (scale: number) => {
+      if (mediaContainerRef.current) {
+        mediaContainerRef.current.style.transform = `scale(${scale})`
+      }
+    },
+    enablePinchZoom: currentStory?.type === 'photo',
+    swipeThreshold: 50
+  })
+
+  const swipeOpacity = useTransform(swipeProgress, [-1, 0, 1], [0.5, 1, 0.5])
+  const swipeScale = useTransform(swipeProgress, [-1, 0, 1], [0.95, 1, 0.95])
+
+  const startProgress = useCallback(() => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current)
+    }
+
+    const duration = currentStory?.duration || 5
+    const interval = 50
+    
+    progressIntervalRef.current = window.setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev + (interval / (duration * 1000)) * 100
+        
+        if (newProgress >= 100) {
+          handleNext()
+          return 0
+        }
+        
+        return newProgress
+      })
+    }, interval)
+  }, [currentStory, handleNext])
+
+  useEffect(() => {
+    startTimeRef.current = Date.now()
+    setProgress(0)
+    resetGestures()
+    
+    if (mediaContainerRef.current) {
+      mediaContainerRef.current.style.transform = 'scale(1)'
+    }
+    
+    if (!isPaused) {
+      startProgress()
+    }
+
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current)
+      }
+    }
+  }, [currentIndex, isPaused, resetGestures, startProgress])
+
+  useEffect(() => {
+    if (currentStory && currentStory.type === 'video' && videoRef.current) {
+      if (isPaused) {
+        videoRef.current.pause()
+        trackInteraction('pause')
+      } else {
+        videoRef.current.play().catch(() => {
+          // Video play failed
+        })
+      }
+      videoRef.current.muted = isMuted
+    }
+  }, [isPaused, isMuted, currentStory, trackInteraction])
+
+  useEffect(() => {
+    startTimeRef.current = Date.now()
+    setProgress(0)
+    resetGestures()
+    
+    if (mediaContainerRef.current) {
+      mediaContainerRef.current.style.transform = 'scale(1)'
+    }
+    
+    if (!isPaused) {
+      startProgress()
+    }
+
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current)
+      }
+    }
+  }, [currentIndex, isPaused, resetGestures, startProgress])
+
+  useEffect(() => {
+    if (currentStory && currentStory.type === 'video' && videoRef.current) {
+      if (isPaused) {
+        videoRef.current.pause()
+        trackInteraction('pause')
+      } else {
+        videoRef.current.play().catch(() => {
+          // Video play failed
+        })
+      }
+      videoRef.current.muted = isMuted
+    }
+  }, [isPaused, isMuted, currentStory, trackInteraction])
+
+  const handleReaction = useCallback((emoji: string) => {
     haptics.trigger('success')
     
     if (currentStory && !isOwn) {
+      trackReaction(emoji)
       const updatedStory = {
         ...currentStory,
         reactions: [
@@ -181,12 +261,13 @@ export default function StoryViewer({
     })
 
     setShowReactions(false)
-  }
+  }, [currentStory, isOwn, currentUserId, currentUserName, currentUserAvatar, trackReaction, onStoryUpdate])
 
-  const handleReply = () => {
+  const handleReply = useCallback(() => {
     if (!replyText.trim()) return
 
     haptics.trigger('light')
+    trackInteraction('reply')
     
     toast.success('Reply sent!', {
       duration: 2000,
@@ -194,22 +275,36 @@ export default function StoryViewer({
     })
 
     setReplyText('')
-  }
+  }, [replyText, trackInteraction])
 
-  const handleSaveStory = () => {
+  const handleSaveStory = useCallback(() => {
     if (currentStory) {
       haptics.trigger('selection')
       setShowSaveDialog(true)
     }
-  }
+  }, [currentStory])
 
-  const handleTouchArea = (side: 'left' | 'right') => {
-    if (side === 'left') {
-      handlePrevious()
-    } else {
-      handleNext()
+  const handleShare = useCallback(() => {
+    if (currentStory) {
+      trackInteraction('share')
+      if (navigator.share) {
+        navigator.share({
+          title: `Story by ${currentStory.userName}`,
+          text: currentStory.caption || '',
+          url: `${window.location.origin}/stories/${currentStory.id}`
+        }).catch(() => {
+          // Share cancelled
+        })
+      } else {
+        navigator.clipboard.writeText(`${window.location.origin}/stories/${currentStory.id}`)
+        toast.success('Link copied to clipboard')
+      }
     }
-  }
+  }, [currentStory, trackInteraction])
+
+  const transitionConfig = prefersReducedMotion 
+    ? { duration: 0 } 
+    : { duration: 0.3, ease: [0.4, 0, 0.2, 1] as const }
 
   if (!currentStory) return null
 
@@ -218,39 +313,51 @@ export default function StoryViewer({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={transitionConfig}
       className="fixed inset-0 z-[100] bg-black"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Story viewer"
+      {...gestureHandlers}
     >
       <div className="relative w-full h-full flex items-center justify-center">
-        <div className="absolute top-0 left-0 right-0 z-20 p-4 space-y-3">
+        {/* Progress bars */}
+        <div className="absolute top-0 left-0 right-0 z-20 p-4 space-y-3" aria-label="Story progress">
           <div className="flex gap-1">
             {stories.map((_, idx) => (
               <div
                 key={idx}
                 className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden"
+                role="progressbar"
+                aria-valuenow={idx === currentIndex ? progress : idx < currentIndex ? 100 : 0}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`Story ${idx + 1} of ${stories.length}`}
               >
                 <motion.div
                   className="h-full bg-white"
                   initial={{ width: '0%' }}
                   animate={{
-                    width: idx < currentIndex ? '100%' : idx === currentIndex ? `${progress}%` : '0%'
+                    width: idx < currentIndex ? '100%' : idx === currentIndex ? `${progress}%` : '0%'                                                           
                   }}
-                  transition={{ duration: 0.1, ease: 'linear' }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.1, ease: 'linear' }}
                 />
               </div>
             ))}
           </div>
 
+          {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="w-10 h-10 ring-2 ring-white">
-                <AvatarImage src={currentStory.userAvatar} alt={currentStory.userName} />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-bold">
+                <AvatarImage src={currentStory.userAvatar} alt={currentStory.userName} />                                                                       
+                <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-bold">                                                      
                   {currentStory.userName[0]}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-white font-semibold text-sm">{currentStory.petName}</p>
-                <p className="text-white/80 text-xs">{formatStoryTime(currentStory.createdAt)}</p>
+                <p className="text-white font-semibold text-sm">{currentStory.petName}</p>                                                                      
+                <p className="text-white/80 text-xs">{formatStoryTime(currentStory.createdAt)}</p>                                                              
               </div>
             </div>
 
@@ -260,8 +367,9 @@ export default function StoryViewer({
                 size="icon"
                 onClick={handlePauseToggle}
                 className="text-white hover:bg-white/20"
+                aria-label={isPaused ? 'Play story' : 'Pause story'}
               >
-                {isPaused ? <Play size={20} weight="fill" /> : <Pause size={20} weight="fill" />}
+                {isPaused ? <Play size={20} weight="fill" /> : <Pause size={20} weight="fill" />}                                                               
               </Button>
 
               {currentStory.type === 'video' && (
@@ -270,10 +378,21 @@ export default function StoryViewer({
                   size="icon"
                   onClick={handleMuteToggle}
                   className="text-white hover:bg-white/20"
+                  aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                 >
-                  {isMuted ? <SpeakerSlash size={20} weight="fill" /> : <SpeakerHigh size={20} weight="fill" />}
+                  {isMuted ? <SpeakerSlash size={20} weight="fill" /> : <SpeakerHigh size={20} weight="fill" />}                                                
                 </Button>
               )}
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleFullscreen}
+                className="text-white hover:bg-white/20"
+                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              >
+                {isFullscreen ? <ArrowsIn size={20} weight="fill" /> : <ArrowsOut size={20} weight="fill" />}
+              </Button>
 
               {isOwn && (
                 <DropdownMenu>
@@ -282,14 +401,19 @@ export default function StoryViewer({
                       variant="ghost"
                       size="icon"
                       className="text-white hover:bg-white/20"
+                      aria-label="Story options"
                     >
                       <DotsThree size={24} weight="bold" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-lg">
+                  <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-lg">                                                               
                     <DropdownMenuItem onClick={handleSaveStory}>
                       <BookmarkSimple size={18} className="mr-2" />
                       Save to Highlight
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleShare}>
+                      <PaperPlaneRight size={18} className="mr-2" />
+                      Share Story
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -300,6 +424,7 @@ export default function StoryViewer({
                 size="icon"
                 onClick={onClose}
                 className="text-white hover:bg-white/20"
+                aria-label="Close story viewer"
               >
                 <X size={24} weight="bold" />
               </Button>
@@ -307,29 +432,33 @@ export default function StoryViewer({
           </div>
         </div>
 
-        <div className="absolute inset-0 flex">
-          <button
-            onClick={() => handleTouchArea('left')}
-            className="flex-1 cursor-w-resize"
-            aria-label="Previous story"
-          />
-          <button
-            onClick={() => handleTouchArea('right')}
-            className="flex-1 cursor-e-resize"
-            aria-label="Next story"
-          />
+        {/* Swipe areas */}
+        <div className="absolute inset-0 flex pointer-events-none">
+          <div className="flex-1 cursor-w-resize" aria-label="Previous story" />
+          <div className="flex-1 cursor-e-resize" aria-label="Next story" />
         </div>
 
-        <div className="relative w-full h-full max-w-2xl mx-auto">
+        {/* Media container with pinch-zoom support */}
+        <motion.div
+          ref={mediaContainerRef}
+          className="relative w-full h-full max-w-2xl mx-auto touch-none"
+          style={{
+            opacity: swipeOpacity,
+            scale: gestureState.isSwiping ? swipeScale : 1,
+            transformOrigin: 'center center'
+          }}
+          transition={transitionConfig}
+        >
           {currentStory.type === 'photo' && (
             <motion.img
               key={currentStory.id}
               src={currentStory.mediaUrl}
               alt={currentStory.caption || 'Story'}
-              className="w-full h-full object-contain"
-              initial={{ scale: 1.1, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3 }}
+              className="w-full h-full object-contain select-none"
+              initial={{ scale: prefersReducedMotion ? 1 : 1.1, opacity: 0 }}
+              animate={{ scale: gestureState.pinchScale, opacity: 1 }}
+              transition={transitionConfig}
+              draggable={false}
             />
           )}
 
@@ -342,18 +471,25 @@ export default function StoryViewer({
               loop
               muted={isMuted}
               playsInline
+              aria-label={`Video story by ${currentStory.userName}`}
             />
           )}
 
           {currentStory.caption && (
             <div className="absolute bottom-24 left-0 right-0 px-4">
-              <div className="glass-strong p-4 rounded-2xl backdrop-blur-xl">
+              <motion.div
+                className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={transitionConfig}
+              >
                 <p className="text-white text-center">{currentStory.caption}</p>
-              </div>
+              </motion.div>
             </div>
           )}
-        </div>
+        </motion.div>
 
+        {/* Interaction area */}
         {!isOwn && (
           <div className="absolute bottom-0 left-0 right-0 z-20 p-4 space-y-3">
             <AnimatePresence>
@@ -362,16 +498,20 @@ export default function StoryViewer({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
+                  transition={transitionConfig}
                   className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
+                  role="dialog"
+                  aria-label="React to story"
                 >
                   <div className="flex justify-center gap-4">
                     {STORY_REACTION_EMOJIS.map((emoji) => (
                       <motion.button
                         key={emoji}
                         onClick={() => handleReaction(emoji)}
-                        className="text-4xl"
-                        whileHover={{ scale: 1.3 }}
-                        whileTap={{ scale: 0.9 }}
+                        className="text-4xl focus:outline-none focus:ring-2 focus:ring-white rounded-lg p-2"
+                        whileHover={prefersReducedMotion ? {} : { scale: 1.3 }}
+                        whileTap={prefersReducedMotion ? {} : { scale: 0.9 }}
+                        aria-label={`React with ${emoji}`}
                       >
                         {emoji}
                       </motion.button>
@@ -393,14 +533,17 @@ export default function StoryViewer({
                   }}
                   placeholder="Send a reply..."
                   className="glass-strong border-white/30 text-white placeholder:text-white/60 pr-12 backdrop-blur-xl"
+                  aria-label="Reply to story"
                 />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowReactions(!showReactions)}
                   className="absolute right-1 top-1/2 -translate-y-1/2 text-white hover:bg-white/20"
+                  aria-label={showReactions ? 'Hide reactions' : 'Show reactions'}
+                  aria-pressed={showReactions}
                 >
-                  <Heart size={20} weight={showReactions ? 'fill' : 'regular'} />
+                  <Heart size={20} weight={showReactions ? 'fill' : 'regular'} />                                                                               
                 </Button>
               </div>
 
@@ -409,6 +552,7 @@ export default function StoryViewer({
                 disabled={!replyText.trim()}
                 size="icon"
                 className="shrink-0 bg-white text-black hover:bg-white/90"
+                aria-label="Send reply"
               >
                 <PaperPlaneRight size={20} weight="fill" />
               </Button>
@@ -416,17 +560,25 @@ export default function StoryViewer({
           </div>
         )}
 
+        {/* Analytics for story owner */}
         {isOwn && (
           <div className="absolute bottom-4 left-4 right-4 z-20">
-            <div className="glass-strong p-4 rounded-2xl backdrop-blur-xl">
+            <motion.div
+              className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={transitionConfig}
+              role="region"
+              aria-label="Story analytics"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="text-center">
-                    <p className="text-white text-2xl font-bold">{currentStory.viewCount}</p>
+                    <p className="text-white text-2xl font-bold">{currentStory.viewCount}</p>                                                                   
                     <p className="text-white/60 text-xs">Views</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-white text-2xl font-bold">{currentStory.reactions.length}</p>
+                    <p className="text-white text-2xl font-bold">{currentStory.reactions.length}</p>                                                            
                     <p className="text-white/60 text-xs">Reactions</p>
                   </div>
                 </div>
@@ -434,11 +586,12 @@ export default function StoryViewer({
                   variant="ghost"
                   size="sm"
                   className="text-white"
+                  aria-label="View detailed insights"
                 >
                   View Insights
                 </Button>
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
       </div>

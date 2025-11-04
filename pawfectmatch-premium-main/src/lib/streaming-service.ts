@@ -180,7 +180,7 @@ class StreamingService {
       if (viewer) {
         viewer.leftAt = new Date().toISOString()
         const joinedTime = new Date(viewer.joinedAt).getTime()
-        const leftTime = new Date(viewer.leftAt!).getTime()
+        const leftTime = new Date(viewer.leftAt).getTime()
         viewer.duration = Math.floor((leftTime - joinedTime) / 1000)
         await this.setViewers(streamId, viewers)
       }

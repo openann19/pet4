@@ -45,8 +45,11 @@ import { toast } from 'sonner'
 import { haptics } from '@/lib/haptics'
 import VoiceRecorder from '@/components/chat/VoiceRecorder'
 import CallInterface from '@/components/call/CallInterface'
-import IncomingCallNotification from '@/components/call/IncomingCallNotification'
+import IncomingCallNotification from '@/components/call/IncomingCallNotification'                                                                               
 import { useCall } from '@/hooks/useCall'
+import { useTypingManager } from '@/hooks/use-typing-manager'
+import { realtime } from '@/lib/realtime'
+import { BubbleWrapper } from '@/components/chat/BubbleWrapper'
 
 interface ChatWindowProps {
   room: ChatRoom
@@ -66,7 +69,6 @@ export default function ChatWindow({
   const [messages, setMessages] = useStorage<ChatMessage[]>(`chat-messages-${room.id}`, [])
   const [voiceMessages, setVoiceMessages] = useStorage<Record<string, { blob: string, duration: number, waveform: number[] }>>(`voice-messages-${room.id}`, {})
   const [inputValue, setInputValue] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
   const [showStickers, setShowStickers] = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
   const [showReactions, setShowReactions] = useState<string | null>(null)
@@ -74,8 +76,18 @@ export default function ChatWindow({
   const [playingVoice, setPlayingVoice] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  const {
+    typingUsers,
+    handleInputChange: handleTypingInputChange,
+    handleMessageSend: handleTypingMessageSend
+  } = useTypingManager({
+    roomId: room.id,
+    currentUserId,
+    currentUserName,
+    realtimeClient: realtime
+  })
 
   const {
     activeCall,
@@ -97,12 +109,10 @@ export default function ChatWindow({
   }, [room.id])
 
   useEffect(() => {
-    return () => {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current)
-      }
+    if (typingUsers.length > 0) {
+      scrollToBottom()
     }
-  }, [])
+  }, [typingUsers])
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -110,7 +120,7 @@ export default function ChatWindow({
     }
   }
 
-  const handleSendMessage = (content: string, type: 'text' | 'sticker' | 'voice' = 'text') => {
+  const handleSendMessage = (content: string, type: 'text' | 'sticker' | 'voice' = 'text') => {                                                                 
     if (!content.trim() && type === 'text') return
 
     haptics.trigger('light')
@@ -132,6 +142,7 @@ export default function ChatWindow({
     setMessages((current) => [...(current || []), newMessage])
     setInputValue('')
     setShowStickers(false)
+    handleTypingMessageSend()
     
     if (type === 'text') {
       toast.success('Message sent!', {
@@ -143,18 +154,7 @@ export default function ChatWindow({
 
   const handleInputChange = (value: string) => {
     setInputValue(value)
-    
-    if (!isTyping && value.length > 0) {
-      setIsTyping(true)
-    }
-
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current)
-    }
-
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false)
-    }, 1000)
+    handleTypingInputChange(value)
   }
 
   const handleReaction = (messageId: string, emoji: string) => {
@@ -365,7 +365,7 @@ export default function ChatWindow({
 
             <div className="flex-1">
               <h2 className="font-bold text-foreground">{room.matchedPetName || 'Unknown'}</h2>
-              {isTyping && (
+              {typingUsers.length > 0 && (
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -375,7 +375,9 @@ export default function ChatWindow({
                     animate={{ opacity: [0.3, 1, 0.3] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   >
-                    typing
+                    {typingUsers.length === 1
+                      ? `${typingUsers[0]?.userName ?? 'Someone'} is typing`
+                      : `${typingUsers.length} people are typing`}
                   </motion.span>
                   <motion.span
                     animate={{ scale: [1, 1.2, 1] }}
@@ -592,6 +594,29 @@ export default function ChatWindow({
               })}
             </div>
           ))}
+
+          {typingUsers.length > 0 && (
+            <motion.div
+              key="typing-indicators"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="flex items-end gap-2 flex-row"
+            >
+              <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
+                <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
+                  {typingUsers[0]?.userName?.[0] || '?'}
+                </AvatarFallback>
+              </Avatar>
+              <BubbleWrapper
+                isTyping
+                isOwn={false}
+                direction="incoming"
+              >
+                <div />
+              </BubbleWrapper>
+            </motion.div>
+          )}
         </div>
 
         <motion.div 

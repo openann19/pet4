@@ -11,12 +11,12 @@ import importPlugin from 'eslint-plugin-import';
 import tseslint from 'typescript-eslint';
 
 export default [
+  { ignores: ['**/dist/**', '**/build/**', '**/.next/**', '**/coverage/**', '**/node_modules/**'] },
   { linterOptions: { reportUnusedDisableDirectives: 'error' } },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked.map(c => ({ ...c, files: ['**/*.{ts,tsx}'] })),
   {
     files: ['**/*.{js,cjs,mjs,ts,tsx}'],
-    ignores: ['**/dist/**', '**/build/**', '**/.next/**', '**/coverage/**', '**/node_modules/**'],
     languageOptions: {
       ecmaVersion: 2022,
       globals: globals.browser,
@@ -76,16 +76,34 @@ export default [
       '@typescript-eslint/consistent-type-imports': 'error',
     },
   },
-  {
-    files: ['src/core/**/*.{ts,tsx}', 'src/api/**/*.{ts,tsx}', 'design-system/**/*.{ts,tsx}'],
+    {
+    files: ['src/core/**/*.{ts,tsx}', 'src/api/**/*.{ts,tsx}', 'design-system/**/*.{ts,tsx}'],                                                                  
     rules: {
       'no-restricted-syntax': [
         'error',
         {
           selector: 'Property[value.type="Identifier"][value.name="undefined"]',
-          message: 'Optional props must be omitted. If you truly need undefined, declare `T | undefined` explicitly.',
+          message: 'Optional props must be omitted. If you truly need undefined, declare `T | undefined` explicitly.',                                          
         },
       ],
+    },
+  },
+  {
+    files: ['**/*.mjs', 'scripts/**/*.{js,cjs,mjs}'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      globals: globals.node,
+      sourceType: 'module',
+    },
+    rules: {
+      'no-console': 'off',
+      'no-undef': 'off',
+    },
+  },
+  {
+    files: ['**/*.d.ts'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'off',
     },
   },
 ];

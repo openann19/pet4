@@ -1,4 +1,4 @@
-import { MapConfig } from './types';
+import type { MapConfig } from './types';
 
 const ENV = import.meta.env.MODE || 'development';
 

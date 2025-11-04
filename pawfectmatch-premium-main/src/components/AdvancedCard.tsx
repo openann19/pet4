@@ -1,6 +1,7 @@
-import { motion, HTMLMotionProps } from 'framer-motion'
+import type { HTMLMotionProps } from 'framer-motion';
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 export type CardVariant = 'glass' | 'gradient' | 'neon' | 'holographic' | 'premium' | 'minimal' | 'floating'
 export type CardSize = 'sm' | 'md' | 'lg' | 'xl'

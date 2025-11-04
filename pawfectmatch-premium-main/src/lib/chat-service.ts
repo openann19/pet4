@@ -4,7 +4,7 @@
  * Handles message sending, delivery status, read receipts, reactions, and real-time updates.
  */
 
-import { Message, MessageType, ReactionType, ReadReceipt, TypingIndicator } from './chat-types'
+import type { Message, MessageType, ReactionType, ReadReceipt, TypingIndicator } from './chat-types'
 import { generateULID } from './utils'
 import { createLogger } from './logger'
 

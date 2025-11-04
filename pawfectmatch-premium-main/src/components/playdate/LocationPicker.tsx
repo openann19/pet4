@@ -22,7 +22,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { PlaydateLocation } from '@/lib/playdate-types'
 import type { Location } from '@/lib/maps/types'
-import { getCurrentLocation, calculateDistance, formatDistance } from '@/lib/maps/utils'
+import { getCurrentLocation, formatDistance } from '@/lib/maps/utils'
+import { searchNearbyPlaces, searchPlacesByQuery, type MapboxPlace } from '@/lib/maps/mapbox-places'
 import { toast } from 'sonner'
 import { haptics } from '@/lib/haptics'
 
@@ -42,55 +43,13 @@ interface NearbyPlace {
   rating?: number
 }
 
-const MOCK_NEARBY_PLACES: NearbyPlace[] = [
-  {
-    id: '1',
-    name: 'Central Dog Park',
-    address: '123 Main St',
-    type: 'park',
-    location: { lat: 37.7749, lng: -122.4194 },
-    rating: 4.5
-  },
-  {
-    id: '2',
-    name: 'Pawfect Paws Cafe',
-    address: '456 Oak Ave',
-    type: 'cafe',
-    location: { lat: 37.7750, lng: -122.4195 },
-    rating: 4.8
-  },
-  {
-    id: '3',
-    name: 'Sunset Beach Trail',
-    address: '789 Beach Rd',
-    type: 'trail',
-    location: { lat: 37.7751, lng: -122.4196 },
-    rating: 4.6
-  },
-  {
-    id: '4',
-    name: 'Riverside Park',
-    address: '321 River Dr',
-    type: 'park',
-    location: { lat: 37.7752, lng: -122.4197 },
-    rating: 4.7
-  },
-  {
-    id: '5',
-    name: 'Pet Haven Meadow',
-    address: '654 Green St',
-    type: 'park',
-    location: { lat: 37.7748, lng: -122.4193 },
-    rating: 4.9
-  }
-]
-
 export default function LocationPicker({ value, onChange, onClose }: LocationPickerProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
-  const [, setUserLocation] = useState<Location | null>(null)
-  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>(MOCK_NEARBY_PLACES)
+  const [userLocation, setUserLocation] = useState<Location | null>(null)
+  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([])
   const [isLoadingLocation, setIsLoadingLocation] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null)
   const [customLocation, setCustomLocation] = useState({
     name: value?.name || '',
@@ -101,23 +60,84 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
     loadUserLocation()
   }, [])
 
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const timeoutId = setTimeout(() => {
+        void handleSearch(searchQuery.trim())
+      }, 500)
+      return () => clearTimeout(timeoutId)
+    }
+    if (userLocation) {
+      void loadNearbyPlaces()
+    }
+    return undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery])
+
   const loadUserLocation = async () => {
     setIsLoadingLocation(true)
     try {
       const location = await getCurrentLocation()
       setUserLocation(location)
-      
-      const placesWithDistance = MOCK_NEARBY_PLACES.map(place => ({
-        ...place,
-        distance: calculateDistance(location, place.location)
-      })).sort((a, b) => (a.distance || 0) - (b.distance || 0))
-      
-      setNearbyPlaces(placesWithDistance)
+      await loadNearbyPlaces()
       toast.success('Location detected')
-    } catch (error) {
+    } catch {
       toast.error('Could not get your location')
     } finally {
       setIsLoadingLocation(false)
+    }
+  }
+
+  const loadNearbyPlaces = async () => {
+    if (!userLocation) return
+    
+    setIsLoadingLocation(true)
+    try {
+      const places = await searchNearbyPlaces(userLocation, 5, 20)
+      const convertedPlaces: NearbyPlace[] = places.map((place: MapboxPlace) => ({
+        id: place.id,
+        name: place.name,
+        address: place.address,
+        type: place.type,
+        location: place.location,
+        distance: place.distance,
+        rating: place.rating
+      }))
+      setNearbyPlaces(convertedPlaces)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      toast.error(`Failed to load places: ${err.message}`)
+    } finally {
+      setIsLoadingLocation(false)
+    }
+  }
+
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) {
+      if (userLocation) {
+        loadNearbyPlaces()
+      }
+      return
+    }
+
+    setIsSearching(true)
+    try {
+      const places = await searchPlacesByQuery(query, userLocation || undefined, 20)
+      const convertedPlaces: NearbyPlace[] = places.map((place: MapboxPlace) => ({
+        id: place.id,
+        name: place.name,
+        address: place.address,
+        type: place.type,
+        location: place.location,
+        distance: place.distance,
+        rating: place.rating
+      }))
+      setNearbyPlaces(convertedPlaces)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      toast.error(`Search failed: ${err.message}`)
+    } finally {
+      setIsSearching(false)
     }
   }
 
@@ -209,7 +229,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
               placeholder="Search for parks, cafes, or places..."
               className="pl-10 pr-12 h-12 text-base"
             />
-            {isLoadingLocation && (
+            {(isLoadingLocation || isSearching) && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
                 <motion.div
                   animate={{ rotate: 360 }}

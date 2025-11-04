@@ -23,7 +23,7 @@ export default function VoiceRecorder({
   const animationFrameRef = useRef<number | undefined>(undefined)
   const audioContextRef = useRef<AudioContext | undefined>(undefined)
   const analyserRef = useRef<AnalyserNode | undefined>(undefined)
-  const timerRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const timerRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     startRecording()
@@ -69,7 +69,7 @@ export default function VoiceRecorder({
       mediaRecorder.start()
       visualize()
 
-      timerRef.current = setInterval(() => {
+      timerRef.current = window.setInterval(() => {
         setDuration(prev => {
           if (prev >= maxDuration) {
             handleStopAndSend()
@@ -79,7 +79,7 @@ export default function VoiceRecorder({
         })
       }, 1000)
 
-    } catch (error) {
+    } catch {
       toast.error('Unable to access microphone')
       onCancel()
     }

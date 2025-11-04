@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { MapPin, Upload, CurrencyDollar, X, Plus } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import { lostFoundAPI } from '@/lib/api/lost-found-api'
+import { lostFoundAPI } from '@/api/lost-found-api'
 import { MapLocationPicker } from './MapLocationPicker'
 import { createLogger } from '@/lib/logger'
 

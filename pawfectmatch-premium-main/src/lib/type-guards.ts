@@ -143,11 +143,8 @@ export function isPostMedia(value: unknown): value is PostMedia {
   const media = value as Partial<PostMedia>
   
   return typeof media.id === 'string' &&
-    media.type === 'image' &&
-    typeof media.url === 'string' &&
-    typeof media.thumbUrl === 'string' &&
-    typeof media.mediumUrl === 'string' &&
-    typeof media.fullUrl === 'string'
+    (media.type === 'photo' || media.type === 'video') &&
+    typeof media.url === 'string'
 }
 
 export function isPostMediaArray(value: unknown): value is PostMedia[] {
@@ -160,8 +157,8 @@ export function isPostVideo(value: unknown): value is PostVideo {
   const video = value as Partial<PostVideo>
   
   return typeof video.id === 'string' &&
-    typeof video.hlsUrl === 'string' &&
-    typeof video.posterUrl === 'string' &&
+    video.type === 'video' &&
+    typeof video.url === 'string' &&
     typeof video.duration === 'number'
 }
 
@@ -248,11 +245,11 @@ export function isReaction(value: unknown): value is Reaction {
   
   const reaction = value as Partial<Reaction>
   
-  return typeof reaction._id === 'string' &&
+  return (typeof reaction.id === 'string' || typeof reaction._id === 'string') &&
     typeof reaction.postId === 'string' &&
     typeof reaction.userId === 'string' &&
     typeof reaction.userName === 'string' &&
-    reaction.type === 'like' &&
+    typeof reaction.emoji === 'string' &&
     typeof reaction.createdAt === 'string'
 }
 

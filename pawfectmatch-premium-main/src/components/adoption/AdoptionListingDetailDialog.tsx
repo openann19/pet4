@@ -22,7 +22,7 @@ import {
   PaperPlaneRight
 } from '@phosphor-icons/react'
 import type { AdoptionListing } from '@/lib/adoption-marketplace-types'
-import { adoptionAPI } from '@/lib/api/adoption-api'
+import { adoptionAPI } from '@/api/adoption-api'
 import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'
 import { toast } from 'sonner'

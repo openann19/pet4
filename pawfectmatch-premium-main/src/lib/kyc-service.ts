@@ -4,7 +4,7 @@
  * Handles identity verification, age gate, consent management, and KYC pipeline.
  */
 
-import { KYCSubmission, KYCStatus, ConsentRecord, AgeVerification, KYCAuditLog } from './kyc-types'
+import type { KYCSubmission, KYCStatus, ConsentRecord, AgeVerification, KYCAuditLog } from './kyc-types'
 import { generateULID } from './utils'
 import { logger } from './logger'
 import { FixerError } from './fixer-error'

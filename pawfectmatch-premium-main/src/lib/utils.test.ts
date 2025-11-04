@@ -87,9 +87,7 @@ describe('utils', () => {
     });
 
     it('should contain timestamp component', () => {
-      const before = Date.now();
       const ulid = generateULID();
-      const after = Date.now();
       
       // ULID should contain timestamp in base36
       const timestampStr = ulid.substring(0, 8);

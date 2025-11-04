@@ -7,8 +7,9 @@ import type {
   LiveStreamFilters
 } from '@/lib/live-streaming-types'
 import { generateULID } from '@/lib/utils'
-import { signLiveKitToken, isTokenSigningConfigured } from '@/core/services/token-signing'
+import { signLiveKitToken, isTokenSigningConfigured, deleteLiveKitRoom, compositeStreamToHLS } from '@/core/services/token-signing'
 import { createLogger } from '@/lib/logger'
+import { realtime } from '@/lib/realtime'
 
 const logger = createLogger('LiveStreamingAPI')
 
@@ -164,17 +165,41 @@ export class LiveStreamingAPI {
     stream.endedAt = new Date().toISOString()
     stream.updatedAt = new Date().toISOString()
 
-    // TODO: Server-side composite to HLS and store VOD
-    // if (recordingEnabled) {
-    //   const vodUrl = await liveKitAPI.compositeToHLS(stream.roomId)
-    //   stream.vodUrl = vodUrl
-    //   stream.posterUrl = await generatePoster(vodUrl)
-    // }
+    // Server-side composite to HLS and store VOD
+    try {
+      const vodResult = await compositeStreamToHLS(stream.roomId)
+      if (vodResult) {
+        stream.vodUrl = vodResult.vodUrl
+        stream.posterUrl = vodResult.posterUrl
+        logger.info('VOD recording completed', {
+          streamId: stream.id,
+          vodUrl: vodResult.vodUrl
+        })
+      }
+    } catch (error) {
+      logger.error('Failed to create VOD recording', error instanceof Error ? error : new Error(String(error)), {
+        streamId: stream.id,
+        roomId: stream.roomId
+      })
+      // Don't fail stream ending if VOD recording fails
+    }
 
     await this.setStreams(streams)
 
-    // TODO: Close LiveKit room
-    // await liveKitAPI.deleteRoom(stream.roomId)
+    // Close LiveKit room
+    try {
+      await deleteLiveKitRoom(stream.roomId)
+      logger.info('LiveKit room closed', {
+        streamId: stream.id,
+        roomId: stream.roomId
+      })
+    } catch (error) {
+      logger.error('Failed to close LiveKit room', error instanceof Error ? error : new Error(String(error)), {
+        streamId: stream.id,
+        roomId: stream.roomId
+      })
+      // Don't fail stream ending if room deletion fails
+    }
 
     return stream
   }
@@ -359,7 +384,27 @@ export class LiveStreamingAPI {
       await this.setStreams(streams)
     }
 
-    // TODO: Broadcast reaction via WebSocket to all viewers
+    // Broadcast reaction via WebSocket to all viewers
+    try {
+      realtime.broadcastReaction(streamToUpdate?.roomId || `live:${streamId}`, {
+        id: reaction.id,
+        userId: reaction.userId,
+        userName: reaction.userName,
+        userAvatar: reaction.userAvatar,
+        emoji: reaction.emoji,
+        createdAt: reaction.createdAt
+      })
+      logger.debug('Reaction broadcasted', {
+        streamId,
+        reactionId: reaction.id
+      })
+    } catch (error) {
+      logger.error('Failed to broadcast reaction', error instanceof Error ? error : new Error(String(error)), {
+        streamId,
+        reactionId: reaction.id
+      })
+      // Don't fail reaction creation if broadcast fails
+    }
 
     return reaction
   }
@@ -404,7 +449,27 @@ export class LiveStreamingAPI {
     messages.push(message)
     await this.setChatMessages(messages)
 
-    // TODO: Broadcast via WebSocket: live:<roomId>:chat
+    // Broadcast via WebSocket: live:<roomId>:chat
+    try {
+      realtime.broadcastChatMessage(stream.roomId, {
+        id: message.id,
+        userId: message.userId,
+        userName: message.userName,
+        userAvatar: message.userAvatar,
+        text: message.text,
+        createdAt: message.createdAt
+      })
+      logger.debug('Chat message broadcasted', {
+        streamId,
+        messageId: message.id
+      })
+    } catch (error) {
+      logger.error('Failed to broadcast chat message', error instanceof Error ? error : new Error(String(error)), {
+        streamId,
+        messageId: message.id
+      })
+      // Don't fail message creation if broadcast fails
+    }
 
     return message
   }

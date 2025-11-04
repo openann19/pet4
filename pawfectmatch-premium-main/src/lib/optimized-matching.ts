@@ -1,7 +1,7 @@
 import { memoize } from './performance-utils'
 import type { Pet } from './types'
 
-export const calculateCompatibilityScore = memoize((pet1: Pet, pet2: Pet): number => {
+const _calculateCompatibilityScoreImpl = (pet1: Pet, pet2: Pet): number => {
   let score = 0
   let factors = 0
 
@@ -50,22 +50,21 @@ export const calculateCompatibilityScore = memoize((pet1: Pet, pet2: Pet): numbe
   }
 
   return Math.round(factors > 0 ? score : 50)
-})
+}
 
-export const filterCompatiblePets = memoize((
-  allPets: Pet[],
-  userPet: Pet | undefined,
-  swipedIds: Set<string>,
-  minScore: number = 0
-): Pet[] => {
+export const calculateCompatibilityScore = memoize(_calculateCompatibilityScoreImpl as (...args: unknown[]) => unknown) as typeof _calculateCompatibilityScoreImpl
+
+const _filterCompatiblePetsImpl = (allPets: Pet[], userPet: Pet | undefined, swipedIds: Set<string>, minScore: number = 0): Pet[] => {
   if (!userPet) return []
   
   return allPets.filter(pet => {
     if (pet.id === userPet.id || swipedIds.has(pet.id)) return false
-    const score = calculateCompatibilityScore(userPet, pet) as number
+    const score = calculateCompatibilityScore(userPet, pet)
     return score >= minScore
   })
-})
+}
+
+export const filterCompatiblePets = memoize(_filterCompatiblePetsImpl as (...args: unknown[]) => unknown) as typeof _filterCompatiblePetsImpl
 
 export const batchCalculateScores = (
   pets: Pet[],
@@ -75,7 +74,7 @@ export const batchCalculateScores = (
   
   for (const pet of pets) {
     if (pet.id !== userPet.id) {
-      scores.set(pet.id, calculateCompatibilityScore(userPet, pet) as number)
+      scores.set(pet.id, calculateCompatibilityScore(userPet, pet))
     }
   }
   

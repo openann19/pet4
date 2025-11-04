@@ -41,6 +41,9 @@ import VoiceRecorder from './VoiceRecorder'
 import MessageAttachments from './MessageAttachments'
 import SmartSuggestionsPanel from './SmartSuggestionsPanel'
 import TypingIndicatorComponent from './TypingIndicator'
+import { useTypingManager } from '@/hooks/use-typing-manager'
+import { realtime } from '@/lib/realtime'
+import { BubbleWrapper } from './BubbleWrapper'
 
 interface AdvancedChatWindowProps {
   room: ChatRoom
@@ -59,28 +62,35 @@ export default function AdvancedChatWindow({
 }: AdvancedChatWindowProps) {
   const [messages, setMessages] = useStorage<ChatMessage[]>(`chat-messages-${room.id}`, [])
   const [inputValue, setInputValue] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
   const [showStickers, setShowStickers] = useState(false)
   const [showTemplates, setShowTemplates] = useState(false)
   const [isRecordingVoice, setIsRecordingVoice] = useState(false)
   const [showSmartSuggestions, setShowSmartSuggestions] = useState(true)
-  const [awayMode, setAwayMode] = useStorage<boolean>(`away-mode-${currentUserId}`, false)
+  const [awayMode, setAwayMode] = useStorage<boolean>(`away-mode-${currentUserId}`, false)                                                                      
   
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const {
+    typingUsers,
+    handleInputChange: handleTypingInputChange,
+    handleMessageSend: handleTypingMessageSend
+  } = useTypingManager({
+    roomId: room.id,
+    currentUserId,
+    currentUserName,
+    realtimeClient: realtime
+  })
 
   useEffect(() => {
     scrollToBottom()
   }, [messages])
 
   useEffect(() => {
-    return () => {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current)
-      }
+    if (typingUsers.length > 0) {
+      scrollToBottom()
     }
-  }, [])
+  }, [typingUsers])
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -120,6 +130,7 @@ export default function AdvancedChatWindow({
     setShowStickers(false)
     setShowTemplates(false)
     setShowSmartSuggestions(false)
+    handleTypingMessageSend()
     
     toast.success('Message sent!', {
       duration: 1500,
@@ -133,18 +144,7 @@ export default function AdvancedChatWindow({
 
   const handleInputChange = (value: string) => {
     setInputValue(value)
-    
-    if (!isTyping && value.length > 0) {
-      setIsTyping(true)
-    }
-
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current)
-    }
-
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false)
-    }, 1000)
+    handleTypingInputChange(value)
   }
 
   const handleReaction = (messageId: string, emoji: string) => {
@@ -315,8 +315,8 @@ export default function AdvancedChatWindow({
 
           <div className="flex-1">
             <h2 className="font-bold text-foreground">{room.matchedPetName}</h2>
-            {room.isTyping && (
-              <TypingIndicatorComponent users={room.typingUsers || []} />
+            {typingUsers.length > 0 && (
+              <TypingIndicatorComponent users={typingUsers} />
             )}
           </div>
 
@@ -479,9 +479,32 @@ export default function AdvancedChatWindow({
                 </motion.div>
               )
             })}
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+
+          {typingUsers.length > 0 && (
+            <motion.div
+              key="typing-indicators"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="flex items-end gap-2 flex-row"
+            >
+              <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
+                <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
+                  {typingUsers[0]?.userName?.[0] || '?'}
+                </AvatarFallback>
+              </Avatar>
+              <BubbleWrapper
+                isTyping
+                isOwn={false}
+                direction="incoming"
+              >
+                <div />
+              </BubbleWrapper>
+            </motion.div>
+          )}
+        </div>
 
       {showSmartSuggestions && (messages || []).length >= 0 && (
         <SmartSuggestionsPanel

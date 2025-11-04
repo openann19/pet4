@@ -1,4 +1,3 @@
-import { config } from './config'
 import type { Message, Match, Notification } from './contracts'
 import { createLogger } from './logger'
 
@@ -13,17 +12,22 @@ interface QueuedEvent {
   timestamp: number
 }
 
+export interface WebRTCSignalData {
+  type: 'offer' | 'answer' | 'candidate' | 'end'
+  from: string
+  to: string
+  callId: string
+  data?: unknown
+}
+
 export class RealtimeClient {
-  private wsURL: string
   private listeners: Map<string, Set<EventCallback>> = new Map()
   private connected: boolean = false
-  private reconnectAttempts: number = 0
   private accessToken: string | null = null
   private offlineQueue: QueuedEvent[] = []
-  private reconnectTimeout: ReturnType<typeof setTimeout> | null = null
 
   constructor() {
-    this.wsURL = config.current.WS_URL
+    // Constructor intentionally empty
   }
 
   setAccessToken(token: string | null) {
@@ -37,16 +41,11 @@ export class RealtimeClient {
     }
 
     this.connected = true
-    this.reconnectAttempts = 0
     this.flushOfflineQueue()
   }
 
   disconnect() {
     this.connected = false
-    if (this.reconnectTimeout) {
-      clearTimeout(this.reconnectTimeout)
-      this.reconnectTimeout = null
-    }
   }
 
   on(event: string, callback: EventCallback) {
@@ -88,6 +87,12 @@ export class RealtimeClient {
     if (event === 'message_send') {
       // Trigger immediate delivery confirmation
       this.trigger('message_delivered', { messageId: (data as { messageId?: string }).messageId })
+    } else if (event === 'webrtc_signal') {
+      // Route WebRTC signaling data to the target user
+      const signalData = data as WebRTCSignalData
+      this.trigger(`webrtc_signal:${signalData.to}:${signalData.callId}`, signalData)
+      // Also trigger a generic event for the receiver to listen to
+      this.trigger('webrtc_signal_received', signalData)
     }
   }
 
@@ -122,16 +127,8 @@ export class RealtimeClient {
     }
   }
 
-  private _reconnect() {
-    if (this.connected) return
-
-    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000)
-    this.reconnectAttempts++
-
-    this.reconnectTimeout = setTimeout(() => {
-      this.connect()
-    }, delay)
-  }
+  // Reconnect logic will be implemented when WebSocket is fully integrated
+  // For now, connection is handled via connect() method
 
   emitMatchCreated(match: Match) {
     this.trigger('match_created', match)
@@ -155,6 +152,89 @@ export class RealtimeClient {
 
   emitTyping(userId: string, roomId: string, isTyping: boolean) {
     this.trigger('user_typing', { userId, roomId, isTyping })
+  }
+
+  /**
+   * Send WebRTC signaling data to another peer
+   * Used for establishing peer-to-peer video calls
+   */
+  async emitWebRTCSignal(signalData: WebRTCSignalData): Promise<{ success: boolean; error?: string }> {
+    return this.emit('webrtc_signal', signalData)
+  }
+
+  /**
+   * Listen for incoming WebRTC signaling data
+   * @param callId The call ID to listen for
+   * @param currentUserId The current user's ID to filter signals
+   * @param callback Callback function when signal is received
+   * @returns Cleanup function to remove listener
+   */
+  onWebRTCSignal(
+    callId: string,
+    currentUserId: string,
+    callback: (signal: WebRTCSignalData) => void
+  ): () => void {
+    const eventKey = `webrtc_signal:${currentUserId}:${callId}`
+    
+    const signalHandler = (data: unknown) => {
+      const signal = data as WebRTCSignalData
+      if (signal.callId === callId && signal.to === currentUserId) {
+        callback(signal)
+      }
+    }
+    
+    // Listen to both specific event and generic event
+    this.on(eventKey, signalHandler)
+    this.on('webrtc_signal_received', signalHandler)
+    
+    // Return cleanup function
+    return () => {
+      this.off(eventKey, signalHandler)
+      this.off('webrtc_signal_received', signalHandler)
+    }
+  }
+
+    /**
+   * Broadcast an event to all listeners in a room
+   * Used for live streaming events like reactions and chat messages
+   */
+  broadcastToRoom(roomId: string, event: string, data: unknown): void {
+    const roomEvent = `room:${roomId}:${event}`
+    this.trigger(roomEvent, data)
+    // Also trigger generic event for backwards compatibility
+    if (typeof data === 'object' && data !== null) {
+      this.trigger(event, { roomId, ...(data as Record<string, unknown>) })
+    } else {
+      this.trigger(event, { roomId })
+    }
+  }
+
+  /**
+   * Broadcast a reaction to all viewers in a stream room
+   */
+  broadcastReaction(roomId: string, reaction: {
+    id: string
+    userId: string
+    userName: string
+    userAvatar?: string
+    emoji: string
+    createdAt: string
+  }): void {
+    this.broadcastToRoom(roomId, 'reaction', reaction)
+  }
+
+  /**
+   * Broadcast a chat message to all viewers in a stream room
+   */
+  broadcastChatMessage(roomId: string, message: {
+    id: string
+    userId: string
+    userName: string
+    userAvatar?: string
+    text: string
+    createdAt: string
+  }): void {
+    this.broadcastToRoom(roomId, 'chat', message)
   }
 }
 

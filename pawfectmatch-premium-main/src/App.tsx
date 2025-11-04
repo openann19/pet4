@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { Heart, User, ChatCircle, Sparkle, Moon, Sun, Users, Translate, ShieldCheck } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { motion, AnimatePresence } from 'framer-motion'
-import { butterySmoothTransition, smoothPageTransition } from '@/lib/animations'
+import { butterySmoothTransition, smoothPageTransition } from '@/effects/animations'
 import SeedDataInitializer from '@/components/SeedDataInitializer'
 import WelcomeScreen from '@/components/WelcomeScreen'
 import AuthScreen from '@/components/AuthScreen'
@@ -36,6 +36,8 @@ type View = 'discover' | 'matches' | 'chat' | 'community' | 'profile' | 'adoptio
 type AppState = 'welcome' | 'auth' | 'main'
 
 function App() {
+  const NAV_BUTTON_BASE_CLASSES = 'flex flex-col items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px] sm:min-w-[70px]'
+  
   const [currentView, setCurrentView] = useState<View>('discover')
   const [appState, setAppState] = useState<AppState>('welcome')
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup')
@@ -143,7 +145,7 @@ function App() {
       {/* Ultra-premium ambient background with layered animated gradients */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {/* Floating particles - reduced count for performance */}
-        {typeof window !== 'undefined' && [...Array(8)].map((_, i) => {
+        {typeof window !== 'undefined' && Array.from({ length: 8 }).map((_, i) => {
           const width = window.innerWidth || 1920
           const height = window.innerHeight || 1080
           return (
@@ -518,7 +520,7 @@ function App() {
               }}
               whileHover={{ scale: 1.08, y: -3 }}
               whileTap={{ scale: 0.92 }}
-              className={`flex flex-col items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px] sm:min-w-[70px] ${
+              className={`${NAV_BUTTON_BASE_CLASSES} ${
                 currentView === 'discover'
                   ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
@@ -567,7 +569,7 @@ function App() {
               }}
               whileHover={{ scale: 1.08, y: -3 }}
               whileTap={{ scale: 0.92 }}
-              className={`flex flex-col items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px] sm:min-w-[70px] ${
+              className={`${NAV_BUTTON_BASE_CLASSES} ${
                 currentView === 'matches'
                   ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
@@ -607,7 +609,7 @@ function App() {
               }}
               whileHover={{ scale: 1.08, y: -3 }}
               whileTap={{ scale: 0.92 }}
-              className={`flex flex-col items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px] sm:min-w-[70px] ${
+              className={`${NAV_BUTTON_BASE_CLASSES} ${
                 currentView === 'chat'
                   ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
@@ -647,7 +649,7 @@ function App() {
               }}
               whileHover={{ scale: 1.08, y: -3 }}
               whileTap={{ scale: 0.92 }}
-              className={`flex flex-col items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px] sm:min-w-[70px] ${
+              className={`${NAV_BUTTON_BASE_CLASSES} ${
                 currentView === 'community'
                   ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
@@ -687,7 +689,7 @@ function App() {
               }}
               whileHover={{ scale: 1.08, y: -3 }}
               whileTap={{ scale: 0.92 }}
-              className={`flex flex-col items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px] sm:min-w-[70px] ${
+              className={`${NAV_BUTTON_BASE_CLASSES} ${
                 currentView === 'adoption'
                   ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
@@ -727,7 +729,7 @@ function App() {
               }}
               whileHover={{ scale: 1.08, y: -3 }}
               whileTap={{ scale: 0.92 }}
-              className={`flex flex-col items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px] sm:min-w-[70px] ${
+              className={`${NAV_BUTTON_BASE_CLASSES} ${
                 currentView === 'profile'
                   ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'

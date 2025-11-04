@@ -14,6 +14,7 @@ import type { Report } from '@/lib/contracts'
 import { generateULID } from '@/lib/utils'
 import { moderatePost, checkDuplicateContent } from '@/core/services/content-moderation'
 import { createLogger } from '@/lib/logger'
+import { enforceRateLimit } from '@/lib/rate-limiting'
 
 const logger = createLogger('CommunityAPI')
 
@@ -217,17 +218,18 @@ export class CommunityAPI {
               return scoreB - scoreA
             })
             break
-          case 'trending':
+                    case 'trending': {
             // Combine recency with engagement
             const now = Date.now()
             posts.sort((a, b) => {
               const ageA = now - new Date(a.createdAt).getTime()
               const ageB = now - new Date(b.createdAt).getTime()
-              const scoreA = (((a.reactionsCount ?? 0) * 2) + (a.commentsCount ?? 0) + ((a.sharesCount ?? 0) * 3)) / (ageA / 3600000) // Per hour
-              const scoreB = (((b.reactionsCount ?? 0) * 2) + (b.commentsCount ?? 0) + ((b.sharesCount ?? 0) * 3)) / (ageB / 3600000)
+              const scoreA = (((a.reactionsCount ?? 0) * 2) + (a.commentsCount ?? 0) + ((a.sharesCount ?? 0) * 3)) / (ageA / 3600000) // Per hour               
+              const scoreB = (((b.reactionsCount ?? 0) * 2) + (b.commentsCount ?? 0) + ((b.sharesCount ?? 0) * 3)) / (ageB / 3600000)                           
               return scoreB - scoreA
             })
             break
+          }
         }
       } else {
         // Default: featured first, then recent
@@ -273,6 +275,23 @@ export class CommunityAPI {
     }
     
     return post || null
+  }
+
+  /**
+   * Get all posts (public method for admin/moderation)
+   */
+  async getAllPosts(): Promise<Post[]> {
+    return await this.getPosts()
+  }
+
+  /**
+   * Get content fingerprints for duplicate detection
+   */
+  async getContentFingerprints(): Promise<string[]> {
+    const posts = await this.getPosts()
+    return posts
+      .filter(p => p.contentFingerprint)
+      .map(p => p.contentFingerprint!)
   }
 
   /**
@@ -350,7 +369,12 @@ export class CommunityAPI {
       throw new Error('Cannot comment on inactive post')
     }
 
-    // TODO: Rate limit check (max 50 comments per hour)
+    // Rate limit check (max 50 comments per hour)
+    await enforceRateLimit(data.authorId, {
+      maxRequests: 50,
+      windowMs: 60 * 60 * 1000, // 1 hour
+      action: 'comment'
+    })
     
     const comment: Comment = {
       id: generateULID(),
@@ -402,9 +426,9 @@ export class CommunityAPI {
     const report: Report = {
       id: generateULID(),
       reporterId: data.reporterId,
-      reportedEntityType: data.resourceType === 'user' ? 'user' : data.resourceType === 'post' ? 'pet' : 'message',
+      reportedEntityType: data.resourceType === 'user' ? 'user' : data.resourceType === 'post' ? 'pet' : 'message',                                             
       reportedEntityId: data.resourceId,
-      reason: (data.reason as 'spam' | 'inappropriate' | 'fake' | 'harassment' | 'other') || 'other',
+      reason: (data.reason as 'spam' | 'inappropriate' | 'fake' | 'harassment' | 'other') || 'other',                                                           
       details: data.details || '',
       status: 'pending',
       createdAt: new Date().toISOString()
@@ -423,6 +447,56 @@ export class CommunityAPI {
     })
     
     // Report is now available in moderation queue via getReports()
+  }
+
+  /**
+   * POST /community/appeals
+   * Appeal a moderation decision
+   */
+  async appealModeration(
+    resourceId: string,
+    resourceType: 'post' | 'comment' | 'user',
+    userId: string,
+    userName: string,
+    appealText: string,
+    reportId?: string
+  ): Promise<void> {
+    const appeals = await spark.kv.get<Array<{
+      id: string
+      resourceId: string
+      resourceType: 'post' | 'comment' | 'user'
+      userId: string
+      userName: string
+      appealText: string
+      reportId?: string
+      status: 'pending' | 'approved' | 'rejected'
+      createdAt: string
+      reviewedAt?: string
+      reviewedBy?: string
+    }>>('community-appeals') || []
+
+    const appeal = {
+      id: generateULID(),
+      resourceId,
+      resourceType,
+      userId,
+      userName,
+      appealText,
+      reportId,
+      status: 'pending' as const,
+      createdAt: new Date().toISOString()
+    }
+
+    appeals.push(appeal)
+    await spark.kv.set('community-appeals', appeals)
+
+    logger.info('Appeal submitted', {
+      appealId: appeal.id,
+      resourceType,
+      resourceId,
+      userId,
+      reportId
+    })
   }
   
   /**
@@ -537,5 +611,23 @@ export class CommunityAPI {
   }
 }
 
-export const communityAPI = new CommunityAPI()
+// Singleton instance with HMR-friendly pattern
+let communityAPIInstance: CommunityAPI | null = null
+
+export function getCommunityAPI(): CommunityAPI {
+  if (!communityAPIInstance) {
+    communityAPIInstance = new CommunityAPI()
+  }
+  return communityAPIInstance
+}
+
+// Export instance for backward compatibility (HMR-safe)
+export const communityAPI = getCommunityAPI()
+
+// HMR support: reset instance on hot module replacement
+if (import.meta.hot) {
+  import.meta.hot.accept(() => {
+    communityAPIInstance = null
+  })
+}
 

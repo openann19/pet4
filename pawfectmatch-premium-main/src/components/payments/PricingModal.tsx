@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Check, Sparkle, Crown, Lightning } from '@phosphor-icons/react'
-import { PlanDefinition } from '@/lib/payments-types'
+import type { PlanDefinition } from '@/lib/payments-types'
 import { PRODUCT_CATALOG } from '@/lib/payments-catalog'
 import { PaymentsService } from '@/lib/payments-service'
 import { toast } from 'sonner'

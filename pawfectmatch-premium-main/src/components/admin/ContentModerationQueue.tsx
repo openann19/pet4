@@ -13,9 +13,9 @@ import {
   MapPin, ChatCircle, VideoCamera
 } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import { lostFoundAPI } from '@/lib/api/lost-found-api'
-import { communityAPI } from '@/lib/api/community-api'
-import { liveStreamingAPI } from '@/lib/api/live-streaming-api'
+import { lostFoundAPI } from '@/api/lost-found-api'
+import { communityAPI } from '@/api/community-api'
+import { liveStreamingAPI } from '@/api/live-streaming-api'
 import type { LostAlert } from '@/lib/lost-found-types'
 import type { LostAlertStatus } from '@/core/domain/lost-found'
 import type { Post } from '@/lib/community-types'
@@ -97,7 +97,7 @@ export function ContentModerationQueue() {
         // Add reported posts to moderation queue
         for (const report of reports) {
           // Find the post that matches the reported entity ID
-          const reportedPost = allPosts.find(p => p.id === report.reportedEntityId)
+          const reportedPost = allPosts.find((p: Post) => p.id === report.reportedEntityId)
           if (reportedPost) {
             const existingItem = newItems.find(item => item.id === reportedPost.id)
             if (!existingItem) {
@@ -172,7 +172,8 @@ export function ContentModerationQueue() {
       } else if (selectedItem.type === 'lost-found') {
         // Lost & Found alerts are auto-approved, but we can mark as reviewed
         const alert = selectedItem.content as LostAlert
-        await lostFoundAPI.updateAlertReviewStatus(alert.id, user.id)
+        // Note: Lost & Found alerts don't have a "reviewed" status
+        // They are auto-approved and can be archived if needed
         logger.info('Lost & Found alert reviewed', {
           alertId: alert.id,
           reviewerId: user.id,

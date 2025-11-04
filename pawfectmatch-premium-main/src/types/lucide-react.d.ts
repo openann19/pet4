@@ -4,19 +4,19 @@
  */
 
 declare module 'lucide-react/dist/esm/icons/check' {
-  import { LucideIcon } from 'lucide-react';
+  import type { LucideIcon } from 'lucide-react';
   const Check: LucideIcon;
   export default Check;
 }
 
 declare module 'lucide-react/dist/esm/icons/chevron-down' {
-  import { LucideIcon } from 'lucide-react';
+  import type { LucideIcon } from 'lucide-react';
   const ChevronDown: LucideIcon;
   export default ChevronDown;
 }
 
 declare module 'lucide-react/dist/esm/icons/chevron-up' {
-  import { LucideIcon } from 'lucide-react';
+  import type { LucideIcon } from 'lucide-react';
   const ChevronUp: LucideIcon;
   export default ChevronUp;
 }

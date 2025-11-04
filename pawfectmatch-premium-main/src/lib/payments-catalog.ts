@@ -1,4 +1,4 @@
-import { ProductCatalog } from './payments-types'
+import type { ProductCatalog } from './payments-types'
 
 export const PRODUCT_CATALOG: ProductCatalog = {
   version: '1.0.0',

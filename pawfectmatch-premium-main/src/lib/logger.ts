@@ -70,7 +70,7 @@ class Logger {
     await Promise.all(this.handlers.map(handler => {
       try {
         return handler(entry)
-      } catch (err) {
+      } catch {
         // Silently ignore handler failures to preserve deterministic builds
         // Handler implementations should handle their own errors internally
         return Promise.resolve()

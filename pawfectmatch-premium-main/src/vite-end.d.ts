@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
-declare const GITHUB_RUNTIME_PERMANENT_NAME: string
-declare const BASE_KV_SERVICE_URL: string
+declare const _GITHUB_RUNTIME_PERMANENT_NAME: string
+declare const _BASE_KV_SERVICE_URL: string
 
 interface UserInfo {
   avatarUrl: string
@@ -19,8 +19,8 @@ interface SparkKV {
 
 interface Spark {
   llmPrompt: {
-    (strings: TemplateStringsArray, ...values: any[]): string
-    (strings: readonly string[], ...values: any[]): string
+    (strings: TemplateStringsArray, ...values: unknown[]): string
+    (strings: readonly string[], ...values: unknown[]): string
   }
   llm: (prompt: string, modelName?: string, jsonMode?: boolean) => Promise<string>
   user: () => Promise<UserInfo>

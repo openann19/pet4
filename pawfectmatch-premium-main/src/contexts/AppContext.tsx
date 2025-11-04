@@ -1,4 +1,5 @@
-import { createContext, useContext, ReactNode } from 'react'
+import type { ReactNode } from 'react';
+import { createContext, useContext } from 'react'
 import { useTheme, type Theme } from '@/hooks/useTheme'
 import { useLanguage } from '@/hooks/useLanguage'
 import { type Language, type translations } from '@/lib/i18n'

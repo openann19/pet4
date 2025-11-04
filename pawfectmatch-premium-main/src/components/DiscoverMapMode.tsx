@@ -6,11 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
 import type { Pet } from '@/lib/types';
-import { calculateDistance, snapToGrid, getCurrentLocation } from '@/lib/maps/utils';
+import { calculateDistance, snapToGrid, getCurrentLocation, formatDistance } from '@/lib/maps/utils';
 import type { Location } from '@/lib/maps/types';
 import PetDetailDialog from '@/components/PetDetailDialog';
 import { calculateCompatibility } from '@/lib/matching';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
+import InteractiveMap, { type MapMarker } from '@/components/maps/InteractiveMap';
+import L from 'leaflet';
 
 interface DiscoverMapModeProps {
   pets: Pet[];
@@ -54,9 +56,39 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
     }).sort((a, b) => a.distance - b.distance);
   }, [pets, userLocation]);
 
-  const handleMarkerClick = (pet: Pet) => {
+  const mapMarkers = useMemo((): MapMarker[] => {
+    return petsWithLocations.map((pet) => {
+      const petIcon = L.divIcon({
+        className: 'custom-pet-marker',
+        html: `
+          <div class="pet-marker-container">
+            <img src="${pet.photos?.[0] || '/placeholder-pet.png'}" alt="${pet.name}" class="pet-marker-image" />
+            <div class="pet-marker-badge">${Math.round(pet.distance)}km</div>
+          </div>
+        `,
+        iconSize: [50, 50],
+        iconAnchor: [25, 50],
+        popupAnchor: [0, -50],
+      });
+
+      return {
+        id: pet.id,
+        location: pet.locationData,
+        data: pet,
+        icon: petIcon,
+      };
+    });
+  }, [petsWithLocations]);
+
+  const mapCenter = useMemo((): Location => {
+    if (!userLocation) return { lat: 40.7128, lng: -74.006 };
+    return userLocation;
+  }, [userLocation]);
+
+  const handleMarkerClick = (marker: MapMarker) => {
     haptics.trigger('light');
-    setSelectedPet(pet);
+    setSelectedPet(marker.data as Pet);
+    setShowDetail(true);
   };
 
   const handleLike = () => {
@@ -77,62 +109,61 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
     ? calculateCompatibility(userPet, selectedPet)
     : 0;
 
+  if (!userLocation) {
+    return (
+      <div className="relative h-[calc(100vh-14rem)] max-h-[700px] bg-background rounded-2xl overflow-hidden border border-border shadow-xl flex items-center justify-center">
+        <div className="text-center space-y-4 p-8">
+          <MapPin size={64} className="mx-auto text-primary/30" weight="duotone" />
+          <p className="text-lg font-semibold text-foreground/70">
+            {t.map.loading}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative h-[calc(100vh-14rem)] max-h-[700px] bg-background rounded-2xl overflow-hidden border border-border shadow-xl">
-      <div className="absolute inset-0 bg-linear-to-br from-muted/50 via-background to-muted/30">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center space-y-4 p-8">
-            <MapPin size={64} className="mx-auto text-primary/30" weight="duotone" />
-            <div className="space-y-2">
-              <p className="text-lg font-semibold text-foreground/70">
-                {t.map.interactiveMap}
-              </p>
-              <p className="text-sm text-muted-foreground max-w-md">
-                {t.discover.noMore}
-              </p>
-              {userLocation && (
-                <Badge variant="secondary" className="mt-2">
-                  📌 {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}
-                </Badge>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {userLocation && petsWithLocations.slice(0, 15).map((pet, idx) => (
-          <motion.div
-            key={pet.id}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: idx * 0.05, duration: 0.3 }}
-            className="absolute cursor-pointer"
-            style={{
-              left: `${15 + (idx % 6) * 14}%`,
-              top: `${15 + Math.floor(idx / 6) * 22}%`,
-            }}
-            onClick={() => handleMarkerClick(pet)}
-          >
-            <div className="relative group">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-14 h-14 rounded-full overflow-hidden border-4 border-white shadow-lg relative"
-              >
-                <img
-                  src={pet.photos?.[0] || '/placeholder-pet.png'}
-                  alt={pet.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
-              </motion.div>
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white shadow-md" />
-              <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
-                {Math.round(pet.distance)}km
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      <style>{`
+        .pet-marker-container {
+          position: relative;
+          width: 50px;
+          height: 50px;
+        }
+        .pet-marker-image {
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 3px solid white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .pet-marker-badge {
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: hsl(var(--primary));
+          color: hsl(var(--primary-foreground));
+          font-size: 10px;
+          font-weight: bold;
+          padding: 2px 6px;
+          border-radius: 10px;
+          border: 2px solid white;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        .custom-pet-marker {
+          background: transparent;
+          border: none;
+        }
+      `}</style>
+      <InteractiveMap
+        center={mapCenter}
+        zoom={12}
+        markers={mapMarkers}
+        onMarkerClick={handleMarkerClick}
+        height="100%"
+        clusterMarkers={true}
+      />
 
       <AnimatePresence>
         {selectedPet && (

@@ -1,6 +1,6 @@
 "use client"
 
-import { ComponentProps } from "react"
+import type { ComponentProps } from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { Check as CheckIcon, ChevronRight as ChevronRightIcon, Circle as CircleIcon } from "lucide-react"
 

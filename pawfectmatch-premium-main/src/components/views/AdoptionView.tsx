@@ -10,8 +10,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { AdoptionListing } from '@/lib/adoption-marketplace-types'
 import { AdoptionListingCard } from '@/components/adoption/AdoptionListingCard'
 import { AdoptionListingDetailDialog } from '@/components/adoption/AdoptionListingDetailDialog'
+import { CreateAdoptionListingDialog } from '@/components/adoption/CreateAdoptionListingDialog'
 import { MyApplicationsView } from '@/components/adoption/MyApplicationsView'
-import { adoptionAPI } from '@/lib/api/adoption-api'
+import { adoptionAPI } from '@/api/adoption-api'
 import { useApp } from '@/contexts/AppContext'
 import { toast } from 'sonner'
 import { createLogger } from '@/lib/logger'
@@ -31,6 +32,7 @@ export default function AdoptionView() {
   const [userApplicationsCount, setUserApplicationsCount] = useState(0)
   const [selectedListing, setSelectedListing] = useState<AdoptionListing | null>(null)
   const [showDetailDialog, setShowDetailDialog] = useState(false)
+  const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [cursor, setCursor] = useState<string | undefined>()
 
   useEffect(() => {
@@ -150,10 +152,7 @@ export default function AdoptionView() {
             )}
           </Button>
           <Button
-            onClick={() => {
-              // NOTE: Create listing dialog implementation pending
-              toast.info('Create listing feature coming soon')
-            }}
+            onClick={() => setShowCreateDialog(true)}
             className="gap-2"
           >
             <Plus size={20} weight="fill" />
@@ -244,6 +243,15 @@ export default function AdoptionView() {
           )}
         </AnimatePresence>
       </ScrollArea>
+
+      <CreateAdoptionListingDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        onSuccess={() => {
+          loadListings()
+          loadUserApplicationsCount()
+        }}
+      />
 
       <AdoptionListingDetailDialog
         listing={selectedListing}

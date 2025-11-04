@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
-import { Plus, Sparkle, Fire, TrendUp, Heart, PawPrint, ArrowsClockwise } from '@phosphor-icons/react'
+import { Plus, Sparkle, Fire, TrendUp, Heart, PawPrint, ArrowsClockwise, MapPin } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { PostCard } from '@/components/community/PostCard'
 import { PostComposer } from '@/components/community/PostComposer'
+import { RankingSkeleton } from '@/components/community/RankingSkeleton'
 import { AdoptionCard } from '@/components/adoption/AdoptionCard'
 import { AdoptionDetailDialog } from '@/components/adoption/AdoptionDetailDialog'
-import { communityAPI } from '@/lib/api/community-api'
-import { adoptionAPI } from '@/lib/api/adoption-api'
+import { communityAPI } from '@/api/community-api'
+import { adoptionAPI } from '@/api/adoption-api'
 import type { Post } from '@/lib/community-types'
 import type { AdoptionProfile } from '@/lib/adoption-types'
 import { useApp } from '@/contexts/AppContext'
@@ -22,9 +23,34 @@ import { filterPostsByFollows } from '@/core/services/follow-graph'
 
 const logger = createLogger('CommunityView')
 
+function mapSizeToAdoptionSize(petSize: string): 'small' | 'medium' | 'large' | 'extra-large' {
+  if (petSize === 'tiny') return 'small'
+  if (petSize === 'small') return 'small'
+  if (petSize === 'medium') return 'medium'
+  if (petSize === 'large') return 'large'
+  if (petSize === 'extra-large') return 'extra-large'
+  return 'small'
+}
+
+function mapStatusToAdoptionStatus(status: string): AdoptionProfile['status'] {
+  if (status === 'active') return 'available'
+  if (status === 'adopted') return 'adopted'
+  if (status === 'pending_review') return 'pending'
+  if (status === 'on-hold') return 'on-hold'
+  return 'available'
+}
+
+function mapEnergyLevel(energyLevel: string): 'low' | 'medium' | 'high' {
+  if (energyLevel === 'very-high') return 'high'
+  if (energyLevel === 'low') return 'low'
+  if (energyLevel === 'medium') return 'medium'
+  if (energyLevel === 'high') return 'high'
+  return 'medium'
+}
+
 export default function CommunityView() {
   const { t } = useApp()
-  const [activeTab, setActiveTab] = useState<'feed' | 'adoption'>('feed')
+  const [activeTab, setActiveTab] = useState<'feed' | 'adoption' | 'lost-found'>('feed')
   const [feedTab, setFeedTab] = useState<'for-you' | 'following'>('for-you')
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
@@ -86,7 +112,7 @@ export default function CommunityView() {
         await loadTrendingTags()
         haptics.success()
         toast.success(t.community?.refreshed || 'Feed refreshed!')
-      } catch (error) {
+      } catch {
         haptics.error()
         toast.error(t.community?.refreshError || 'Failed to refresh')
       } finally {
@@ -211,8 +237,8 @@ export default function CommunityView() {
         cursor: loadMore ? adoptionCursor : undefined
       })
       
-      if (loadMore) {
-        setAdoptionProfiles((currentProfiles) => [...(Array.isArray(currentProfiles) ? currentProfiles : []), ...(Array.isArray(response.listings) ? response.listings.map(l => ({
+            if (loadMore) {
+        setAdoptionProfiles((currentProfiles) => [...(Array.isArray(currentProfiles) ? currentProfiles : []), ...(Array.isArray(response.listings) ? response.listings.map(l => ({                                                              
           _id: l.id,
           petId: l.petId,
           petName: l.petName,
@@ -220,18 +246,18 @@ export default function CommunityView() {
           breed: l.petBreed,
           age: l.petAge,
           gender: l.petGender,
-          size: (l.petSize === 'tiny' ? 'small' : l.petSize === 'extra-large' ? 'extra-large' : l.petSize === 'large' ? 'large' : l.petSize === 'medium' ? 'medium' : 'small') as 'small' | 'medium' | 'large' | 'extra-large',
+          size: mapSizeToAdoptionSize(l.petSize),
           location: l.location?.city || 'Unknown',
           shelterId: l.ownerId,
           shelterName: l.ownerName,
-          status: (l.status === 'active' ? 'available' : l.status === 'adopted' ? 'adopted' : l.status === 'pending_review' ? 'pending' : 'on-hold') as 'available' | 'pending' | 'adopted' | 'on-hold',
+          status: mapStatusToAdoptionStatus(l.status),
           description: l.petDescription,
           healthStatus: 'Good',
           vaccinated: l.vaccinated,
           spayedNeutered: l.spayedNeutered,
           goodWithKids: l.goodWithKids,
           goodWithPets: l.goodWithPets,
-          energyLevel: l.energyLevel === 'very-high' ? 'high' : l.energyLevel,
+          energyLevel: mapEnergyLevel(l.energyLevel),
           specialNeeds: l.specialNeeds,
           adoptionFee: l.fee?.amount || 0,
           postedDate: l.createdAt,
@@ -242,8 +268,8 @@ export default function CommunityView() {
           contactPhone: undefined,
           applicationUrl: undefined
         })) : [])])
-      } else {
-        setAdoptionProfiles(Array.isArray(response.listings) ? response.listings.map(l => ({
+            } else {
+        setAdoptionProfiles(Array.isArray(response.listings) ? response.listings.map(l => ({                                                                    
           _id: l.id,
           petId: l.petId,
           petName: l.petName,
@@ -251,18 +277,18 @@ export default function CommunityView() {
           breed: l.petBreed,
           age: l.petAge,
           gender: l.petGender,
-          size: (l.petSize === 'tiny' ? 'small' : l.petSize === 'extra-large' ? 'extra-large' : l.petSize === 'large' ? 'large' : l.petSize === 'medium' ? 'medium' : 'small') as 'small' | 'medium' | 'large' | 'extra-large',
+          size: mapSizeToAdoptionSize(l.petSize),
           location: l.location?.city || 'Unknown',
           shelterId: l.ownerId,
           shelterName: l.ownerName,
-          status: (l.status === 'active' ? 'available' : l.status === 'adopted' ? 'adopted' : l.status === 'pending_review' ? 'pending' : 'on-hold') as 'available' | 'pending' | 'adopted' | 'on-hold',
+          status: mapStatusToAdoptionStatus(l.status),
           description: l.petDescription,
           healthStatus: 'Good',
           vaccinated: l.vaccinated,
           spayedNeutered: l.spayedNeutered,
           goodWithKids: l.goodWithKids,
           goodWithPets: l.goodWithPets,
-          energyLevel: l.energyLevel === 'very-high' ? 'high' : l.energyLevel,
+          energyLevel: mapEnergyLevel(l.energyLevel),
           specialNeeds: l.specialNeeds,
           adoptionFee: l.fee?.amount || 0,
           postedDate: l.createdAt,
@@ -412,7 +438,7 @@ export default function CommunityView() {
                       await loadTrendingTags()
                       haptics.success()
                       toast.success(t.community?.refreshed || 'Feed refreshed!')
-                    } catch (error) {
+                    } catch {
                       haptics.error()
                       toast.error(t.community?.refreshError || 'Failed to refresh')
                     } finally {
@@ -448,14 +474,18 @@ export default function CommunityView() {
         transition={{ delay: 0.1 }}
       >
         <Tabs value={activeTab} onValueChange={handleMainTabChange}>
-          <TabsList className="grid w-full grid-cols-2 bg-card shadow-md">
+          <TabsList className="grid w-full grid-cols-3 bg-card shadow-md">
             <TabsTrigger value="feed" className="gap-2">
-              <Fire size={18} weight={activeTab === 'feed' ? 'fill' : 'regular'} />
+              <Fire size={18} weight={activeTab === 'feed' ? 'fill' : 'regular'} />                                                                             
               {t.community?.feed || 'Feed'}
             </TabsTrigger>
             <TabsTrigger value="adoption" className="gap-2">
-              <Heart size={18} weight={activeTab === 'adoption' ? 'fill' : 'regular'} />
+              <Heart size={18} weight={activeTab === 'adoption' ? 'fill' : 'regular'} />                                                                        
               {t.adoption?.title || 'Adoption'}
+            </TabsTrigger>
+            <TabsTrigger value="lost-found" className="gap-2">
+              <MapPin size={18} weight={activeTab === 'lost-found' ? 'fill' : 'regular'} />                                                                        
+              {t.map?.lostAndFound || 'Lost & Found'}
             </TabsTrigger>
           </TabsList>
 
@@ -505,33 +535,7 @@ export default function CommunityView() {
 
               <TabsContent value={feedTab} className="mt-6 space-y-4 max-w-3xl mx-auto">
             {loading && posts.length === 0 ? (
-              <>
-                {[1, 2, 3].map(i => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="bg-card rounded-xl p-4 space-y-3 border border-border/50 shadow-md"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-12 w-12 rounded-full" />
-                      <div className="space-y-2 flex-1">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-20" />
-                      </div>
-                    </div>
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-4/5" />
-                    <Skeleton className="h-64 w-full rounded-lg" />
-                    <div className="flex gap-4">
-                      <Skeleton className="h-8 w-20" />
-                      <Skeleton className="h-8 w-20" />
-                      <Skeleton className="h-8 w-20" />
-                    </div>
-                  </motion.div>
-                ))}
-              </>
+              <RankingSkeleton count={3} variant="post" />
             ) : posts.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}

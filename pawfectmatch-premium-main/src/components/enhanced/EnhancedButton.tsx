@@ -1,7 +1,9 @@
-import { forwardRef, useRef, ComponentProps } from 'react'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { VariantProps } from 'class-variance-authority'
-import { MicroInteractions } from '@/lib/micro-interactions'
+import type { ComponentProps } from 'react';
+import { forwardRef, useRef } from 'react'
+import type { buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'
+import type { VariantProps } from 'class-variance-authority'
+import { MicroInteractions } from '@/effects/micro-interactions'
 import { haptics } from '@/lib/haptics'
 import { cn } from '@/lib/utils'
 
@@ -52,7 +54,7 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
               }
             }
           }
-        } catch (error) {
+        } catch {
           MicroInteractions.animateError(element)
           if (hapticFeedback) {
             haptics.notification('error')

@@ -18,7 +18,7 @@ export function parseLocation(location: string): Coordinates | null {
 
   for (const pattern of patterns) {
     const match = location.match(pattern)
-    if (match) {
+    if (match && match[1] && match[2]) {
       const lat = parseFloat(match[1])
       const lon = parseFloat(match[2])
       if (isValidCoordinate(lat, lon)) {

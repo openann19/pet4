@@ -1,12 +1,18 @@
 import { useState, useEffect, memo } from 'react'
 import { motion } from 'framer-motion'
-import { Heart, ChatCircle, BookmarkSimple, Share, DotsThree, MapPin, Tag } from '@phosphor-icons/react'
+import { Heart, ChatCircle, BookmarkSimple, Share, DotsThree, MapPin, Tag, Flag } from '@phosphor-icons/react'                                                        
 import { Button } from '@/components/ui/button'
 import { Avatar } from '@/components/ui/avatar'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import type { Post } from '@/lib/community-types'
-import { communityAPI } from '@/lib/api/community-api'
+import { communityAPI } from '@/api/community-api'
 import { communityService } from '@/lib/community-service'
 import { triggerHaptic } from '@/lib/haptics'
 import { toast } from 'sonner'
@@ -14,6 +20,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { useApp } from '@/contexts/AppContext'
 import { CommentsSheet } from './CommentsSheet'
 import { MediaViewer } from './MediaViewer'
+import { ReportDialog } from './ReportDialog'
 import { createLogger } from '@/lib/logger'
 
 const logger = createLogger('PostCard')
@@ -33,6 +40,7 @@ function PostCardComponent({ post, onAuthorClick }: PostCardProps) {
   const [showComments, setShowComments] = useState(false)
   const [showMediaViewer, setShowMediaViewer] = useState(false)
   const [mediaViewerIndex, setMediaViewerIndex] = useState(0)
+  const [showReportDialog, setShowReportDialog] = useState(false)
 
   useEffect(() => {
     // Check if user has reacted to this post
@@ -90,13 +98,18 @@ function PostCardComponent({ post, onAuthorClick }: PostCardProps) {
           text: post.text?.slice(0, 100) || '',
           url: `${window.location.origin}/community/post/${post.id}`
         })
-      } catch (err) {
+      } catch {
         // Share was cancelled by user - no need to log
       }
     } else {
       await navigator.clipboard.writeText(`${window.location.origin}/community/post/${post.id}`)
       toast.success(t.community?.linkCopied || 'Link copied to clipboard')
     }
+  }
+
+  const handleReport = () => {
+    triggerHaptic('selection')
+    setShowReportDialog(true)
   }
 
   const handleCommentClick = () => {
@@ -177,11 +190,26 @@ function PostCardComponent({ post, onAuthorClick }: PostCardProps) {
             </div>
           </motion.button>
           
-          <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
-            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-primary/10 transition-colors duration-200">
-              <DotsThree size={22} weight="bold" />
-            </Button>
-          </motion.div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-9 w-9 rounded-full hover:bg-primary/10 transition-colors duration-200"
+                  aria-label="Post options"
+                >
+                  <DotsThree size={22} weight="bold" />
+                </Button>
+              </motion.div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleReport} className="text-destructive">
+                <Flag size={18} className="mr-2" />
+                Report Post
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
       {/* Post Text */}
@@ -208,7 +236,7 @@ function PostCardComponent({ post, onAuthorClick }: PostCardProps) {
             <motion.img
               key={currentMediaIndex}
               src={typeof post.media[currentMediaIndex] === 'string' 
-                ? post.media[currentMediaIndex] as string
+                ? post.media[currentMediaIndex]
                 : (post.media[currentMediaIndex] as { url: string }).url}
               alt="Post media"
               className="w-full h-full object-cover cursor-pointer"
@@ -345,6 +373,17 @@ function PostCardComponent({ post, onAuthorClick }: PostCardProps) {
         media={allMedia}
         initialIndex={mediaViewerIndex}
         authorName={post.authorName}
+      />
+
+      <ReportDialog
+        open={showReportDialog}
+        onOpenChange={setShowReportDialog}
+        resourceType="post"
+        resourceId={post.id}
+        resourceName={`Post by ${post.authorName}`}
+        onReported={() => {
+          toast.success('Report submitted. Thank you for helping keep our community safe.')
+        }}
       />
       </Card>
     </motion.div>

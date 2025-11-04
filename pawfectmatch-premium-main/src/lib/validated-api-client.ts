@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import type { z } from 'zod'
 import { config } from './config'
 import { generateCorrelationId } from './utils'
 import { apiErrorSchema, type APIError } from './api-schemas'

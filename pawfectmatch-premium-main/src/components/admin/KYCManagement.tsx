@@ -54,7 +54,7 @@ export function KYCManagement() {
       toast.success('KYC session verified!')
       await loadSessions()
       setSelectedSession(null)
-    } catch (error) {
+    } catch {
       toast.error('Failed to verify session')
     } finally {
       setLoading(false)
@@ -75,7 +75,7 @@ export function KYCManagement() {
       setSelectedSession(null)
       setRejectText('')
       setRejectReason('blurry_document')
-    } catch (error) {
+    } catch {
       toast.error('Failed to reject session')
     } finally {
       setLoading(false)

@@ -196,7 +196,7 @@ export function createMemoizedSelector<T, R>(
       lastInput = data
     }
 
-    return lastResult as R
+    return lastResult
   }
 }
 
@@ -206,7 +206,7 @@ export function batchSync<T>(
 ): (item: T) => void {
   const { maxWait = 50, maxSize = 20 } = options
   let queue: T[] = []
-  let timeoutId: NodeJS.Timeout | null = null
+  let timeoutId: number | null = null
 
   const flush = () => {
     if (queue.length === 0) return
@@ -231,7 +231,7 @@ export function batchSync<T>(
     }
 
     if (timeoutId === null) {
-      timeoutId = setTimeout(flush, maxWait)
+      timeoutId = window.setTimeout(flush, maxWait) as unknown as number
     }
   }
 }

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Sparkle, Crown, Lightning, CreditCard } from '@phosphor-icons/react'
 import { PaymentsService } from '@/lib/payments-service'
-import { Subscription, UserEntitlements } from '@/lib/payments-types'
+import type { Subscription, UserEntitlements } from '@/lib/payments-types'
 import { getPlanById } from '@/lib/payments-catalog'
 import { PricingModal } from './PricingModal'
 import { toast } from 'sonner'
@@ -53,7 +53,7 @@ export function SubscriptionStatusCard() {
         description: 'Your benefits will remain active until the end of your billing period.'
       })
       await loadSubscriptionData()
-    } catch (error) {
+    } catch {
       toast.error('Failed to cancel subscription')
     } finally {
       setCanceling(false)

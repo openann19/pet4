@@ -22,8 +22,6 @@ export interface PermissionRequest {
 }
 
 class PermissionsManager {
-  private _permissionCache: Map<PermissionType, PermissionStatus> = new Map()
-
   async checkPermission(type: PermissionType): Promise<PermissionStatus> {
     switch (type) {
       case 'camera':

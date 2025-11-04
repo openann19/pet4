@@ -336,7 +336,7 @@ export const communityService = {
     const savedPosts = userSaves
       .map(save => posts.find(p => p._id === save.postId || p.id === save.postId))
       .filter((p): p is CommunityPost => p !== undefined)
-      .filter(Boolean) as CommunityPost[]
+      .filter(Boolean)
     
     return savedPosts
   },

@@ -10,12 +10,10 @@ interface ImageLoadOptions {
 class ImageLoader {
   private cache: LRUCache<string, HTMLImageElement>
   private pendingLoads: Map<string, Promise<HTMLImageElement>>
-  private _observers: Map<string, IntersectionObserver>
 
   constructor(cacheSize: number = 100) {
     this.cache = new LRUCache(cacheSize)
     this.pendingLoads = new Map()
-    this._observers = new Map()
   }
 
   preload(src: string, options: ImageLoadOptions = {}): Promise<HTMLImageElement> {

@@ -9,13 +9,13 @@ declare module '@github/spark/spark' {
 }
 
 declare module '@github/spark/spark-vite-plugin' {
-  import { PluginOption } from 'vite';
+  import type { PluginOption } from 'vite';
   const plugin: () => PluginOption;
   export default plugin;
 }
 
 declare module '@github/spark/vitePhosphorIconProxyPlugin' {
-  import { PluginOption } from 'vite';
+  import type { PluginOption } from 'vite';
   const plugin: () => PluginOption;
   export default plugin;
 }

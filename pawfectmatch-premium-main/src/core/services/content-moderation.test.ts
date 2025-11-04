@@ -8,11 +8,13 @@ import {
   moderateMediaContent,
   moderatePost,
   generateContentFingerprint,
-  checkDuplicateContent,
-  NSFW_REVIEW_THRESHOLD,
-  NSFW_BLOCK_THRESHOLD,
-  PROFANITY_REVIEW_THRESHOLD
+  checkDuplicateContent
 } from './content-moderation'
+
+// Default thresholds for testing (matches admin config defaults)
+const DEFAULT_NSFW_REVIEW_THRESHOLD = 0.56 // 80% of 0.7
+const DEFAULT_NSFW_BLOCK_THRESHOLD = 0.9
+const DEFAULT_PROFANITY_REVIEW_THRESHOLD = 0.5
 
 describe('ContentModeration', () => {
   describe('generateContentFingerprint', () => {
@@ -48,8 +50,8 @@ describe('ContentModeration', () => {
       const result = await moderateTextContent('This is a safe post about pets')
       
       expect(result.passed).toBe(true)
-      expect(result.nsfwScore).toBeLessThan(NSFW_REVIEW_THRESHOLD)
-      expect(result.profanityScore).toBeLessThan(PROFANITY_REVIEW_THRESHOLD)
+      expect(result.nsfwScore).toBeLessThan(DEFAULT_NSFW_REVIEW_THRESHOLD)
+      expect(result.profanityScore).toBeLessThan(DEFAULT_PROFANITY_REVIEW_THRESHOLD)
       expect(result.blockedReasons).toHaveLength(0)
       expect(result.requiresReview).toBe(false)
       expect(result.contentFingerprint).toBeTruthy()
@@ -58,7 +60,7 @@ describe('ContentModeration', () => {
     it('should require review for borderline NSFW content', async () => {
       const result = await moderateTextContent('This is explicit content about adult topics')
       
-      expect(result.nsfwScore).toBeGreaterThanOrEqual(NSFW_REVIEW_THRESHOLD)
+      expect(result.nsfwScore).toBeGreaterThanOrEqual(DEFAULT_NSFW_REVIEW_THRESHOLD)
       expect(result.requiresReview).toBe(true)
       expect(result.blockedReasons.length).toBeGreaterThan(0)
     })
@@ -73,11 +75,11 @@ describe('ContentModeration', () => {
   })
   
   describe('moderateMediaContent', () => {
-    it('should pass safe media', async () => {
-      const result = await moderateMediaContent('https://example.com/safe-image.jpg', 'image')
+        it('should pass safe media', async () => {
+      const result = await moderateMediaContent('https://example.com/safe-image.jpg', 'image')                                                                  
       
       expect(result.passed).toBe(true)
-      expect(result.nsfwScore).toBeLessThan(NSFW_BLOCK_THRESHOLD)
+      expect(result.nsfwScore).toBeLessThan(DEFAULT_NSFW_BLOCK_THRESHOLD)
       expect(result.contentFingerprint).toBeTruthy()
     })
     
@@ -97,7 +99,7 @@ describe('ContentModeration', () => {
       )
       
       expect(result.passed).toBe(true)
-      expect(result.nsfwScore).toBeLessThan(NSFW_BLOCK_THRESHOLD)
+      expect(result.nsfwScore).toBeLessThan(DEFAULT_NSFW_BLOCK_THRESHOLD)
       expect(result.contentFingerprint).toBeTruthy()
     })
     

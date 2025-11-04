@@ -1,4 +1,5 @@
-import { useEffect, useCallback, useRef, ReactNode } from 'react'
+import type { ReactNode } from 'react';
+import { useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'

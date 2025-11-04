@@ -1,6 +1,7 @@
 import type { Call, CallType, GroupCall } from './call-types'
 import { logger } from './logger'
 import { FixerError } from './fixer-error'
+import { createWebRTCPeer, type WebRTCPeer } from './webrtc-peer'
 
 export function generateCallId(): string {
   return `call-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
@@ -159,57 +160,70 @@ export function stopMediaStream(stream?: MediaStream) {
   }
 }
 
-export async function establishCallConnection(
-  onStatusChange: (status: Call['status']) => void,
-  localStream: MediaStream,
+export interface CallConnectionConfig {
+  callId: string
+  localUserId: string
   remoteUserId: string
-): Promise<RTCPeerConnection> {
-  // Real WebRTC connection establishment
-  onStatusChange('ringing')
+  isInitiator: boolean
+  localStream: MediaStream
+  onRemoteStream: (stream: MediaStream) => void
+  onStatusChange: (status: Call['status']) => void
+}
+
+/**
+ * Establish a WebRTC peer-to-peer connection using SimplePeer
+ */
+export async function establishCallConnection(config: CallConnectionConfig): Promise<WebRTCPeer> {
+  config.onStatusChange('ringing')
   
   try {
-    // In a real implementation, this would use WebRTC PeerConnection
-    // to establish connection with the remote peer through signaling server
-    // For now, we use real WebRTC with actual media streams
-    
-    // Create RTCPeerConnection (real WebRTC)
-    const peerConnection = new RTCPeerConnection({
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-      ]
+    const peer = createWebRTCPeer({
+      callId: config.callId,
+      localUserId: config.localUserId,
+      remoteUserId: config.remoteUserId,
+      isInitiator: config.isInitiator,
+      localStream: config.localStream,
+      onRemoteStream: config.onRemoteStream,
+      onConnectionStateChange: (state) => {
+        if (state === 'connecting') {
+          config.onStatusChange('connecting')
+        } else if (state === 'connected') {
+          config.onStatusChange('active')
+        } else if (state === 'failed') {
+          config.onStatusChange('failed')
+        } else if (state === 'disconnected') {
+          config.onStatusChange('ended')
+        }
+      }
     })
+
+    await peer.connect()
     
-    // Add local tracks to peer connection
-    localStream.getTracks().forEach(track => {
-      peerConnection.addTrack(track, localStream)
-    })
-    
-    onStatusChange('connecting')
-    
-    // In real app, we would:
-    // 1. Create and send SDP offer
-    // 2. Wait for SDP answer
-    // 3. Exchange ICE candidates
-    // 4. Wait for connection to be established
-    
-    // For this implementation, we mark as active when ready
-    onStatusChange('active')
-    
-    // Return peer connection so caller can manage cleanup
-    return peerConnection
+    return peer
     
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to establish call connection', err, { action: 'establishCallConnection', remoteUserId })
-    onStatusChange('failed')
-    throw new FixerError('Failed to establish call connection', { action: 'establishCallConnection', remoteUserId }, 'CALL_CONNECTION_ERROR')
+    logger.error('Failed to establish call connection', err, { 
+      action: 'establishCallConnection', 
+      callId: config.callId,
+      remoteUserId: config.remoteUserId 
+    })
+    config.onStatusChange('failed')
+    throw new FixerError('Failed to establish call connection', { 
+      action: 'establishCallConnection', 
+      callId: config.callId,
+      remoteUserId: config.remoteUserId 
+    }, 'CALL_CONNECTION_ERROR')
   }
 }
 
-export function closePeerConnection(peerConnection?: RTCPeerConnection) {
-  if (peerConnection) {
-    peerConnection.close()
+export function closePeerConnection(peer?: WebRTCPeer | RTCPeerConnection) {
+  if (peer && 'destroy' in peer) {
+    // WebRTCPeer instance
+    peer.destroy()
+  } else if (peer && 'close' in peer) {
+    // RTCPeerConnection (legacy support)
+    peer.close()
   }
 }
 
@@ -238,37 +252,4 @@ export function createGroupCall(
   }
 }
 
-export function createFakeParticipantStream(participantName: string): MediaStream {
-  const canvas = document.createElement('canvas')
-  canvas.width = 640
-  canvas.height = 480
-  const ctx = canvas.getContext('2d')
-  
-  if (ctx) {
-    ctx.fillStyle = '#1a1a2e'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = '#ffffff'
-    ctx.font = '24px Inter'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(participantName, canvas.width / 2, canvas.height / 2)
-  }
-  
-  const stream = canvas.captureStream(30)
-  
-  const audioContext = new AudioContext()
-  const oscillator = audioContext.createOscillator()
-  const gainNode = audioContext.createGain()
-  gainNode.gain.value = 0.01
-  oscillator.connect(gainNode)
-  const destination = audioContext.createMediaStreamDestination()
-  gainNode.connect(destination)
-  oscillator.start()
-  
-  const audioTrack = destination.stream.getAudioTracks()[0]
-  if (audioTrack) {
-    stream.addTrack(audioTrack)
-  }
-  
-  return stream
-}
+

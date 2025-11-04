@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import { toast } from 'sonner'
-import { communityAPI } from '@/lib/api/community-api'
+import { communityAPI } from '@/api/community-api'
 import type { PostVisibility, PostKind } from '@/lib/community-types'
 import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'
@@ -19,6 +19,7 @@ import { VideoCompressor, type VideoMetadata, type CompressionProgress } from '@
 import { createLogger } from '@/lib/logger'
 import type { Icon } from '@phosphor-icons/react'
 import { moderatePost, checkDuplicateContent } from '@/core/services/content-moderation'
+import { uploadImage } from '@/lib/image-upload'
 
 const logger = createLogger('PostComposer')
 
@@ -72,32 +73,66 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
   const [cropSize, setCropSize] = useState<CropSize>('original')
   const [showMediaOptions, setShowMediaOptions] = useState(false)
   const videoInputRef = useRef<HTMLInputElement>(null)
+  const imageInputRef = useRef<HTMLInputElement>(null)
   const videoPreviewRef = useRef<HTMLVideoElement>(null)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
 
   const remainingChars = MAX_CHARS - text.length
   const canPost = text.trim().length > 0 && remainingChars >= 0 && !isSubmitting && !videoState.isCompressing
 
-  const handleImageUpload = (crop?: CropSize) => {
+  const handleImageFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
     if (images.length >= MAX_IMAGES) {
       toast.error(t.community?.maxImagesReached || `Maximum ${MAX_IMAGES} images allowed`)
       haptics.error()
       return
     }
-    
-    const aspectRatios = {
-      square: '800/800',
-      portrait: '600/800',
-      landscape: '800/600',
-      original: '800/600'
+
+    try {
+      setIsUploadingImage(true)
+      
+      // Determine max dimensions based on crop size
+      const aspectRatios = {
+        square: { max: 800 },
+        portrait: { max: 800 },
+        landscape: { max: 1920 },
+        original: { max: 1920 }
+      }
+      
+      const maxDimension = aspectRatios[cropSize].max
+      
+      // Upload image with compression and EXIF stripping
+      const result = await uploadImage(file, {
+        maxWidthOrHeight: maxDimension,
+        maxSizeMB: 1
+      })
+
+      setImages(prev => [...prev, result.url])
+      haptics.selection()
+      toast.success(t.community?.imageAdded || 'Image added')
+      setShowMediaOptions(false)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to upload image', err)
+      toast.error(err.message || 'Failed to upload image')
+      haptics.error()
+    } finally {
+      setIsUploadingImage(false)
+      // Reset file input
+      if (imageInputRef.current) {
+        imageInputRef.current.value = ''
+      }
     }
-    
-    const [width, height] = aspectRatios[crop || cropSize].split('/').map(Number)
-    const mockImageUrl = `https://picsum.photos/seed/${Date.now()}/${width}/${height}`
-    setImages(prev => [...prev, mockImageUrl])
-    haptics.selection()
-    toast.success(t.community?.imageAdded || 'Image added')
-    setShowMediaOptions(false)
+  }
+
+  const handleImageUpload = (_crop?: CropSize) => {
+    // Trigger file input click
+    if (imageInputRef.current) {
+      imageInputRef.current.click()
+    }
   }
 
   const handleVideoFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -271,7 +306,8 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
       const moderationResult = await moderatePost(text.trim(), mediaUrls)
       
       // Check for duplicate content
-      const existingFingerprints = await communityAPI.getContentFingerprints()
+      const existingFingerprintsArray = await communityAPI.getContentFingerprints()
+      const existingFingerprints = new Set(existingFingerprintsArray)
       const isDuplicate = await checkDuplicateContent(
         moderationResult.contentFingerprint,
         existingFingerprints
@@ -316,10 +352,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
           lat: location.lat,
           lon: location.lng
         } : undefined,
-        visibility,
-        nsfwScore: moderationResult.nsfwScore,
-        contentFingerprint: moderationResult.contentFingerprint,
-        requiresReview: moderationResult.requiresReview
+        visibility
       })
       
       haptics.success()
@@ -355,6 +388,15 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        {/* Hidden file input for image upload */}
+        <input
+          ref={imageInputRef}
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+          className="hidden"
+          onChange={handleImageFileSelect}
+          disabled={isUploadingImage}
+        />
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             {t.community?.createPost || 'Create Post'}

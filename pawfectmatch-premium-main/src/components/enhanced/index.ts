@@ -1,6 +1,6 @@
 export { PremiumCard } from './PremiumCard'
 export { FloatingActionButton } from './FloatingActionButton'
-export { ParticleEffect } from './ParticleEffect'
+export { ParticleEffect } from '@/effects/visual'
 export { PremiumButton } from './PremiumButton'
 export { GlowingBadge } from './GlowingBadge'
 export { SmartToast, SmartToastContainer, type SmartToastProps, type ToastType, type ToastAction } from './SmartToast'

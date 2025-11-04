@@ -118,15 +118,19 @@ export function useBottomSheet(config: OverlayConfig & { swipeThreshold?: number
   const currentY = useRef(0)
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    startY.current = e.touches[0].clientY
+    if (e.touches[0]) {
+      startY.current = e.touches[0].clientY
+    }
   }, [])
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    currentY.current = e.touches[0].clientY
-    const diff = currentY.current - startY.current
+    if (e.touches[0]) {
+      currentY.current = e.touches[0].clientY
+      const diff = currentY.current - startY.current
 
-    if (diff > 0 && overlayManager.overlayRef.current) {
-      overlayManager.overlayRef.current.style.transform = `translateY(${diff}px)`
+      if (diff > 0 && overlayManager.overlayRef.current) {
+        overlayManager.overlayRef.current.style.transform = `translateY(${diff}px)`
+      }
     }
   }, [overlayManager.overlayRef])
 

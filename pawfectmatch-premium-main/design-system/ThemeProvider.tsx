@@ -1,7 +1,8 @@
-import { createContext, useContext, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useEffect, type ReactNode } from 'react'
 import { useStorage } from '@/hooks/useStorage'
 import { applyTheme, type ThemeMode } from './themes'
 
+/* eslint-disable react-refresh/only-export-components */
 interface ThemeContextType {
   mode: ThemeMode
   setMode: (mode: ThemeMode | ((current: ThemeMode) => ThemeMode)) => void
@@ -35,3 +36,4 @@ export function useThemeSystem() {
   }
   return context
 }
+/* eslint-enable react-refresh/only-export-components */

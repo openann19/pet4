@@ -138,7 +138,7 @@ export default function PetHealthDashboard({ pet, onClose }: PetHealthDashboardP
       date: new Date().toISOString().split('T')[0] ?? '',
       veterinarian: 'Dr. Smith' as string,
       clinic: 'Happy Paws Veterinary' as string,
-      createdAt: new Date().toISOString() as string
+      createdAt: new Date().toISOString()
     }
     setVaccinations(current => [...(current || []), newVaccination])
     toast.success('Vaccination added', { description: 'Vaccination record created successfully' })
@@ -152,8 +152,8 @@ export default function PetHealthDashboard({ pet, onClose }: PetHealthDashboardP
       title: 'Annual Checkup',
       date: new Date().toISOString().split('T')[0] ?? '',
       description: 'Routine annual health examination',
-      createdAt: new Date().toISOString() as string,
-      updatedAt: new Date().toISOString() as string
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     }
     setHealthRecords(current => [...(current || []), newRecord])
     toast.success('Health record added', {
@@ -170,7 +170,7 @@ export default function PetHealthDashboard({ pet, onClose }: PetHealthDashboardP
       dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] ?? '',
       completed: false,
       notificationsSent: 0,
-      createdAt: new Date().toISOString() as string
+      createdAt: new Date().toISOString()
     }
     setReminders(current => [...(current || []), newReminder])
     toast.success('Reminder added', { description: 'Reminder created successfully' })

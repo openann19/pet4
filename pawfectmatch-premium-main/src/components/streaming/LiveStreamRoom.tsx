@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
-import { liveStreamingAPI } from '@/lib/api/live-streaming-api'
+import { liveStreamingAPI } from '@/api/live-streaming-api'
 import type { LiveStream, LiveStreamChatMessage } from '@/lib/live-streaming-types'
 import { haptics } from '@/lib/haptics'
 import { logger } from '@/lib/logger'

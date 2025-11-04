@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { UserEntitlements, EntitlementKey } from '@/lib/payments-types'
+import type { UserEntitlements, EntitlementKey } from '@/lib/payments-types'
 import { PaymentsService } from '@/lib/payments-service'
 
 export function useEntitlements() {

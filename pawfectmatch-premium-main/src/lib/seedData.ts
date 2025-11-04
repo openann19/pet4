@@ -114,7 +114,7 @@ Return ONLY valid JSON in this exact structure:
         name: pet.name,
         breed: pet.breed,
         age: pet.age,
-        gender: pet.gender as 'male' | 'female',
+        gender: pet.gender,
         size: pet.size,
         photo: pet.photo,
         photos: [pet.photo],

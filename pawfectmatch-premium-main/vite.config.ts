@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
-import { defineConfig, PluginOption } from "vite";
+import type { PluginOption } from "vite";
+import { defineConfig } from "vite";
 import { resolve } from 'path'
 
 const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
@@ -14,7 +15,7 @@ export default defineConfig(async () => {
   ];
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+     
     const iconModule = await import("@github/spark/vitePhosphorIconProxyPlugin") as { default?: () => PluginOption };
     if (iconModule?.default && typeof iconModule.default === 'function') {
       plugins.push(iconModule.default());
@@ -24,7 +25,7 @@ export default defineConfig(async () => {
   }
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+     
     const sparkModule = await import("@github/spark/spark-vite-plugin") as { default?: () => PluginOption };
     if (sparkModule?.default && typeof sparkModule.default === 'function') {
       plugins.push(sparkModule.default());
@@ -40,5 +41,18 @@ export default defineConfig(async () => {
         '@': resolve(projectRoot, 'src')
       }
     },
+    server: {
+      hmr: {
+        overlay: true
+      },
+      watch: {
+        // Ignore duplicate files and node_modules
+        ignored: ['**/node_modules/**', '**/.git/**']
+      }
+    },
+    optimizeDeps: {
+      // Prevent pre-bundling issues that can cause restarts
+      exclude: []
+    }
   };
 });

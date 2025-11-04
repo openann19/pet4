@@ -109,7 +109,7 @@ export function VerificationDialog({
       toast.success('Document uploaded!', {
         description: `${DOCUMENT_TYPE_LABELS[documentType]} has been uploaded successfully`
       })
-    } catch (error) {
+    } catch {
       toast.error('Upload failed', {
         description: 'Failed to upload document. Please try again.'
       })
@@ -162,7 +162,7 @@ export function VerificationDialog({
       toast.success('Submitted for review!', {
         description: `Your verification request has been submitted. Expected review time: ${requirements.estimatedReviewTime}`
       })
-    } catch (error) {
+    } catch {
       toast.error('Submission failed', {
         description: 'Failed to submit verification request. Please try again.'
       })

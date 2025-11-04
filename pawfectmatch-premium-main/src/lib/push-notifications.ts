@@ -188,7 +188,11 @@ class DeepLinkManager {
       }
     } else if (data.path && typeof data.path === 'string') {
       const params = data.params && typeof data.params === 'object' ? data.params as Record<string, unknown> : {}
-      this.navigate(data.path, params)
+      const stringParams: Record<string, string> = {}
+      for (const [key, value] of Object.entries(params)) {
+        stringParams[key] = String(value)
+      }
+      this.navigate(data.path, stringParams)
     }
   }
 }

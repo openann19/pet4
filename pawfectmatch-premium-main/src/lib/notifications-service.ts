@@ -1,5 +1,5 @@
 import { pushNotifications as pushNotificationManager, deepLinks as deepLinkManager } from './push-notifications'
-import { lostFoundAPI } from './api/lost-found-api'
+import { lostFoundAPI } from '@/api/lost-found-api'
 import type { LostAlert, Sighting } from './lost-found-types'
 import type { Post } from './community-types'
 import type { LiveStream } from './live-streaming-types'
@@ -292,6 +292,145 @@ export class NotificationsService {
    */
   hasPermission(): boolean {
     return pushNotificationManager.hasPermission()
+  }
+
+  /**
+   * Query users within a radius of a location
+   * Returns list of user IDs within the specified radius
+   */
+  private async queryUsersInRadius(
+    centerLat: number,
+    centerLon: number,
+    radiusKm: number
+  ): Promise<string[]> {
+    try {
+      // Get all user locations from KV storage
+      const userLocations = await spark.kv.get<Array<{
+        userId: string
+        lat: number
+        lon: number
+        lastUpdated: string
+      }>>('user-locations') || []
+
+      const nearbyUsers: string[] = []
+
+      for (const userLoc of userLocations) {
+        const distance = this.calculateDistance(
+          centerLat,
+          centerLon,
+          userLoc.lat,
+          userLoc.lon
+        )
+
+        if (distance <= radiusKm) {
+          nearbyUsers.push(userLoc.userId)
+        }
+      }
+
+      return nearbyUsers
+    } catch (error) {
+      logger.error('Failed to query users in radius', error instanceof Error ? error : new Error(String(error)), {
+        centerLat,
+        centerLon,
+        radiusKm
+      })
+      return []
+    }
+  }
+
+  /**
+   * Calculate distance between two coordinates using Haversine formula
+   */
+  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371 // Earth radius in km
+    const dLat = this.toRad(lat2 - lat1)
+    const dLon = this.toRad(lon2 - lon1)
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c
+  }
+
+  private toRad(degrees: number): number {
+    return degrees * (Math.PI / 180)
+  }
+
+  /**
+   * Trigger geofenced push notifications for a lost alert
+   * Sends notifications to users within the specified radius
+   */
+  async triggerGeofencedNotifications(
+    alert: LostAlert,
+    radiusKm: number = 10 // Default 10km radius
+  ): Promise<void> {
+    try {
+      if (!alert.lastSeen.lat || !alert.lastSeen.lon) {
+        logger.warn('Alert missing location data, skipping geofenced notifications', {
+          alertId: alert.id
+        })
+        return
+      }
+
+      // Check if notifications were already sent for this alert
+      const notificationKey = `geofence-notifications:${alert.id}`
+      const alreadySent = await spark.kv.get<boolean>(notificationKey)
+
+      if (alreadySent) {
+        logger.debug('Geofenced notifications already sent for this alert', {
+          alertId: alert.id
+        })
+        return
+      }
+
+      // Query users within radius
+      const nearbyUserIds = await this.queryUsersInRadius(
+        alert.lastSeen.lat,
+        alert.lastSeen.lon,
+        radiusKm
+      )
+
+      if (nearbyUserIds.length === 0) {
+        logger.debug('No users found within radius', {
+          alertId: alert.id,
+          radiusKm
+        })
+        return
+      }
+
+      // Send notifications to nearby users (excluding alert owner)
+      const userIdsToNotify = nearbyUserIds.filter(userId => userId !== alert.ownerId)
+      
+      let notificationsSent = 0
+      for (const userId of userIdsToNotify) {
+        try {
+          await this.notifyNewLostAlert(alert, userId)
+          notificationsSent++
+        } catch (error) {
+          logger.error('Failed to send notification to user', error instanceof Error ? error : new Error(String(error)), {
+            userId,
+            alertId: alert.id
+          })
+          // Continue with other users even if one fails
+        }
+      }
+
+      // Mark notifications as sent
+      await spark.kv.set(notificationKey, true)
+
+      logger.info('Geofenced notifications sent', {
+        alertId: alert.id,
+        notificationsSent,
+        totalUsers: userIdsToNotify.length,
+        radiusKm
+      })
+    } catch (error) {
+      logger.error('Failed to trigger geofenced notifications', error instanceof Error ? error : new Error(String(error)), {
+        alertId: alert.id
+      })
+      // Don't throw - this is a background operation
+    }
   }
 }
 

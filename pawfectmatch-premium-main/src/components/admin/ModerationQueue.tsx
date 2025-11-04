@@ -68,7 +68,7 @@ export function ModerationQueue() {
       await loadQueue()
       setSelectedTask(null)
       setDetailPhoto(null)
-    } catch (error) {
+    } catch {
       toast.error('Failed to take task')
     } finally {
       setLoading(false)
@@ -95,7 +95,7 @@ export function ModerationQueue() {
       setSelectedTask(null)
       setDetailPhoto(null)
       setDecisionText('')
-    } catch (error) {
+    } catch {
       toast.error('Failed to approve photo')
     } finally {
       setLoading(false)
@@ -123,7 +123,7 @@ export function ModerationQueue() {
       setDetailPhoto(null)
       setDecisionText('')
       setDecisionReason('other')
-    } catch (error) {
+    } catch {
       toast.error('Failed to reject photo')
     } finally {
       setLoading(false)
@@ -150,7 +150,7 @@ export function ModerationQueue() {
       setSelectedTask(null)
       setDetailPhoto(null)
       setDecisionText('')
-    } catch (error) {
+    } catch {
       toast.error('Failed to hold photo')
     } finally {
       setLoading(false)

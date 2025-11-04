@@ -11,8 +11,7 @@ import {
   requestMediaPermissions,
   stopMediaStream,
   getActualResolution,
-  createGroupCall,
-  createFakeParticipantStream
+  createGroupCall
 } from '@/lib/call-utils'
 import { toast } from 'sonner'
 import { createLogger } from '@/lib/logger'
@@ -67,6 +66,9 @@ export function useGroupCall(
       const participants = new Map<string, CallParticipant>()
       const streams = new Map<string, MediaStream>()
 
+      // Note: Group calls require SFU (Selective Forwarding Unit) or mesh architecture
+      // For production, implement using WebRTC SFU service or mesh peer connections
+      // Each participant would need individual peer connections or routing through SFU
       initialParticipants.forEach(participant => {
         const callParticipant: CallParticipant = {
           id: participant.id,
@@ -79,10 +81,8 @@ export function useGroupCall(
           joinedAt: new Date().toISOString()
         }
         participants.set(participant.id, callParticipant)
-
-        const fakeStream = createFakeParticipantStream(participant.name)
-        streams.set(participant.id, fakeStream)
-        participantStreamsRef.current.set(participant.id, fakeStream)
+        // Streams will be added when peer connections are established
+        // This requires SFU architecture for production use
       })
 
       const session: GroupCallSession = {
@@ -149,8 +149,9 @@ export function useGroupCall(
       joinedAt: new Date().toISOString()
     }
 
-    const fakeStream = createFakeParticipantStream(participant.name)
-    participantStreamsRef.current.set(participant.id, fakeStream)
+    // For production: Establish peer connection or SFU connection for this participant
+    // Stream will be added when connection is established
+    // This requires SFU architecture for group calls
 
     setActiveGroupCall(prev => {
       if (!prev) return null
@@ -159,7 +160,7 @@ export function useGroupCall(
       newParticipants.set(participant.id, callParticipant)
 
       const newStreams = new Map(prev.streams)
-      newStreams.set(participant.id, fakeStream)
+      // Stream will be added when peer connection is established
 
       return {
         ...prev,

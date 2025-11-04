@@ -556,6 +556,12 @@ export const translations = {
     },
     lostFound: {
       title: 'Lost & Found',
+      alerts: 'alerts',
+      allTime: 'All time',
+      last24h: 'Last 24h',
+      last7d: 'Last 7 days',
+      last30d: 'Last 30 days',
+      sightingReported: 'Sighting reported',
       subtitle: 'Help reunite pets with their families',
       reportLost: 'Report Lost Pet',
       reportSighting: 'Report Sighting',

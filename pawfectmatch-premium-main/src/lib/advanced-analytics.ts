@@ -14,6 +14,11 @@ export type EventName =
   | 'message_sent'
   | 'story_created'
   | 'story_viewed'
+  | 'story_view_completed'
+  | 'story_reaction'
+  | 'story_interaction'
+  | 'story_reaction_received'
+  | 'story_view_received'
   | 'profile_edited'
   | 'filter_applied'
   | 'photo_uploaded'
@@ -314,7 +319,7 @@ export async function getUserBehaviorInsights(userId: string): Promise<UserBehav
   const viewedPets = userEvents
     .filter(e => e.name === 'pet_viewed')
     .map(e => e.properties.petId)
-    .filter((petId): petId is string => typeof petId === 'string') as string[]
+    .filter((petId): petId is string => typeof petId === 'string')
   const mostViewedPets: string[] = Array.from(new Set(viewedPets)).slice(0, 10)
 
   const matches = userEvents.filter(e => e.name === 'match_created').length

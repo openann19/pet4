@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PaymentsService } from '@/lib/payments-service'
-import { Subscription, AuditLogEntry, RevenueMetrics } from '@/lib/payments-types'
+import type { Subscription, AuditLogEntry, RevenueMetrics } from '@/lib/payments-types'
 import { MagnifyingGlass, CurrencyDollar, Users, TrendUp, Gift, X, ArrowCounterClockwise } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
@@ -41,7 +41,7 @@ export function SubscriptionAdminPanel() {
       setSubscriptions(subs)
       setAuditLogs(logs)
       setMetrics(rev)
-    } catch (error) {
+    } catch {
       toast.error('Failed to load data')
     } finally {
       setLoading(false)
@@ -70,7 +70,7 @@ export function SubscriptionAdminPanel() {
       setCompMonths('1')
       setSelectedSubscription(null)
       await loadData()
-    } catch (error) {
+    } catch {
       toast.error('Failed to comp subscription')
     }
   }
@@ -91,7 +91,7 @@ export function SubscriptionAdminPanel() {
 
       toast.success('Subscription canceled')
       await loadData()
-    } catch (error) {
+    } catch {
       toast.error('Failed to cancel subscription')
     }
   }

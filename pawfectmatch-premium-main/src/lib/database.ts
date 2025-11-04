@@ -195,7 +195,7 @@ export class DatabaseService {
     return allKeys.filter(key => !key.startsWith('_'))
   }
 
-  async clearCollection<T extends DBRecord>(collectionName: string): Promise<void> {
+  async clearCollection(collectionName: string): Promise<void> {
     const { storage } = await import('./storage')
     await storage.delete(collectionName)
   }

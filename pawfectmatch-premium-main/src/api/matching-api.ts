@@ -1,10 +1,11 @@
 import type { PetProfile, OwnerPreferences, SwipeRecord, MatchRecord } from '@/core/domain/pet-model'
 import type { MatchScore, HardGateResult } from '@/core/domain/matching-engine'
 import type { MatchingConfig } from '@/core/domain/matching-config'
-import type { Report, ReportReason } from '@/lib/contracts'
+import type { Report, ReportReason, Match } from '@/lib/contracts'
 import { evaluateHardGates, calculateMatchScore } from '@/core/domain/matching-engine'
 import { DEFAULT_MATCHING_WEIGHTS, DEFAULT_HARD_GATES } from '@/core/domain/matching-config'
 import { generateULID } from '@/lib/utils'
+import { getRealtimeEvents } from '@/lib/realtime-events'
 import type { UpdateOwnerPreferencesData, UpdateMatchingConfigData } from '@/api/types'
 
 export interface DiscoverRequest {
@@ -152,7 +153,14 @@ export class MatchingAPI {
     await this.recordSwipe(swipeRecord)
 
     if (request.action === 'like' || request.action === 'superlike') {
-      const mutualLike = await this.checkMutualLike(request.petId, request.targetPetId)
+      const realtimeEvents = getRealtimeEvents()
+      
+      await realtimeEvents.notifyLikeReceived(request.petId, request.targetPetId).catch((error) => {
+        const logger = require('@/lib/logger').createLogger('MatchingAPI')
+        logger.error('Failed to emit like_received event', error instanceof Error ? error : new Error(String(error)))
+      })
+
+      const mutualLike = await this.checkMutualLike(request.petId, request.targetPetId)                                                                         
       
       if (mutualLike) {
         const matchId = generateULID()
@@ -178,6 +186,31 @@ export class MatchingAPI {
           await this.recordMatch(matchRecord)
 
           await this.createChatRoom(chatRoomId, request.petId, request.targetPetId)
+
+          const match: Match = {
+            id: matchId,
+            petAId: request.petId,
+            petBId: request.targetPetId,
+            compatibilityScore: matchScore.totalScore,
+            compatibilityBreakdown: {
+              personality: matchScore.factorScores.temperamentFit,
+              interests: matchScore.factorScores.intentMatch,
+              size: matchScore.factorScores.sizeCompatibility,
+              age: matchScore.factorScores.lifeStageProximity,
+              location: matchScore.factorScores.distance,
+              overall: matchScore.totalScore
+            },
+            status: 'active',
+            chatRoomId,
+            createdAt: new Date().toISOString(),
+            lastInteractionAt: new Date().toISOString()
+          }
+
+          const realtimeEvents = getRealtimeEvents()
+          await realtimeEvents.notifyMatchCreated(match).catch((error) => {
+            const logger = require('@/lib/logger').createLogger('MatchingAPI')
+            logger.error('Failed to emit match_created event', error instanceof Error ? error : new Error(String(error)))
+          })
 
           return {
             recorded: true,

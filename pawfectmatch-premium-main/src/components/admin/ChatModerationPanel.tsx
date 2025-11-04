@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { MessageReport } from '@/lib/chat-types'
+import type { MessageReport } from '@/lib/chat-types'
 import { toast } from 'sonner'
 import { useStorage } from '@/hooks/useStorage'
 import { createLogger } from '@/lib/logger'
@@ -64,7 +64,7 @@ export default function ChatModerationPanel() {
               action,
             }
           : r
-      ) as MessageReport[]
+      )
 
       const { storage } = await import('@/lib/storage')
       await storage.set('message-reports', updatedReports)

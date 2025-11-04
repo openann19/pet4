@@ -21,6 +21,10 @@ export class AuthService {
   private refreshToken: string | null = null
   private refreshAttempted: boolean = false
 
+  getAccessToken(): string | null {
+    return this.accessToken
+  }
+
   async login(credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> {
     const existingUsers = await storage.get<User[]>('all-users') || []
     const user = existingUsers.find(
@@ -182,7 +186,7 @@ export class AuthService {
       this.refreshAttempted = false
 
       return tokens
-    } catch (error) {
+    } catch {
       await this.logout()
       return null
     }

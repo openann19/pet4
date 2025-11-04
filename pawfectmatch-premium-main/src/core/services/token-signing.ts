@@ -141,3 +141,87 @@ export function isTokenSigningConfigured(): boolean {
   return false
 }
 
+/**
+ * Delete a LiveKit room
+ * 
+ * In production, this should:
+ * 1. Call LiveKit server API to delete the room
+ * 2. Handle cleanup of room resources
+ * 3. Disconnect all participants
+ */
+export async function deleteLiveKitRoom(
+  roomId: string,
+  _config?: TokenSigningConfig
+): Promise<void> {
+  // In production, use LiveKit SDK:
+  // import { RoomServiceClient } from 'livekit-server-sdk'
+  // const roomService = new RoomServiceClient(config.apiUrl, config.apiKey, config.apiSecret)
+  // await roomService.deleteRoom(roomId)
+  
+  logger.info('LiveKit room deletion requested', {
+    roomId
+  })
+  
+  // Placeholder implementation - in production this would actually delete the room
+  // For now, we just log the action
+  logger.warn('LiveKit room deletion not implemented - placeholder', {
+    roomId
+  })
+}
+
+/**
+ * Trigger HLS VOD recording and composite
+ * 
+ * In production, this should:
+ * 1. Start LiveKit recording if not already started
+ * 2. Composite recorded segments to HLS format
+ * 3. Store VOD in CDN/storage
+ * 4. Generate poster frame
+ * 5. Return VOD URL and poster URL
+ */
+export async function compositeStreamToHLS(
+  roomId: string,
+  _config?: TokenSigningConfig
+): Promise<{ vodUrl: string; posterUrl: string } | null> {
+  // In production, use LiveKit SDK:
+  // import { RoomServiceClient } from 'livekit-server-sdk'
+  // const roomService = new RoomServiceClient(config.apiUrl, config.apiKey, config.apiSecret)
+  // 
+  // // Start recording if not already started
+  // const recording = await roomService.startRecording({
+  //   room: roomId,
+  //   output: {
+  //     filepath: `vod/${roomId}/${Date.now()}.m3u8`
+  //   }
+  // })
+  // 
+  // // Wait for recording to complete
+  // await recording.waitForCompletion()
+  // 
+  // // Composite to HLS
+  // const vodUrl = await roomService.compositeToHLS(roomId, {
+  //   layout: 'grid',
+  //   output: {
+  //     filepath: `vod/${roomId}/composite.m3u8`
+  //   }
+  // })
+  // 
+  // // Generate poster frame
+  // const posterUrl = await generatePosterFromHLS(vodUrl)
+  // 
+  // return { vodUrl, posterUrl }
+  
+  logger.info('HLS VOD recording requested', {
+    roomId
+  })
+  
+  // Placeholder implementation
+  logger.warn('HLS VOD recording not implemented - placeholder', {
+    roomId
+  })
+  
+  // Return null to indicate recording not available
+  // In production, this would return actual VOD URLs
+  return null
+}
+

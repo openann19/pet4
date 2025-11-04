@@ -356,7 +356,7 @@ export function NotificationTabs({
             const k = seg.key;
             const selectedBool = selected === k;
             const label = seg.label[locale] ?? seg.label.en;
-            const badgeData = formatBadge((counts[k] ?? seg.badge) as number | undefined, locale);
+            const badgeData = formatBadge((counts[k] ?? seg.badge), locale);
             return (
               <button
                 key={k}
