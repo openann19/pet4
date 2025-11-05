@@ -1,4 +1,4 @@
-import { useStorage } from '@/hooks/useStorage'
+import { useStorage } from '../src/hooks/useStorage'
 import { createContext, useContext, useEffect, type ReactNode } from 'react'
 import { applyTheme, type ThemeMode } from './themes'
 
