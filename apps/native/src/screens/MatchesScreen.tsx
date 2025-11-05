@@ -15,33 +15,50 @@ export default function MatchesScreen(): React.JSX.Element {
   const [matches] = useStorage<Match[]>('matches', []);
   const navigation = useNavigation();
 
+  const handleVideoCall = (match: Match) => {
+    navigation.navigate('Call' as never, {
+      callId: `call_${match.id}_${Date.now()}`,
+      remoteUserId: match.id,
+      remoteName: match.matchedPetName,
+      remotePhoto: match.matchedPetPhoto,
+    } as never);
+  };
+
   const renderMatch = ({ item }: { item: Match }) => (
-    <TouchableOpacity
-      style={styles.matchCard}
-      onPress={() => navigation.navigate('Chat' as never, { matchId: item.id } as never)}
-    >
-      <Image
-        source={{ uri: item.matchedPetPhoto || 'https://via.placeholder.com/100' }}
-        style={styles.matchImage}
-      />
-      <View style={styles.matchInfo}>
-        <Text style={styles.matchName}>{item.matchedPetName}</Text>
-        <View style={styles.compatibilityBar}>
-          <View
-            style={[
-              styles.compatibilityFill,
-              { width: `${item.compatibilityScore}%` },
-            ]}
-          />
+    <View style={styles.matchCard}>
+      <TouchableOpacity
+        style={styles.matchContent}
+        onPress={() => navigation.navigate('Chat' as never, { matchId: item.id } as never)}
+      >
+        <Image
+          source={{ uri: item.matchedPetPhoto || 'https://via.placeholder.com/100' }}
+          style={styles.matchImage}
+        />
+        <View style={styles.matchInfo}>
+          <Text style={styles.matchName}>{item.matchedPetName}</Text>
+          <View style={styles.compatibilityBar}>
+            <View
+              style={[
+                styles.compatibilityFill,
+                { width: `${item.compatibilityScore}%` },
+              ]}
+            />
+          </View>
+          <Text style={styles.compatibilityText}>
+            {item.compatibilityScore}% Compatible
+          </Text>
+          <Text style={styles.matchDate}>
+            Matched {new Date(item.matchedAt).toLocaleDateString()}
+          </Text>
         </View>
-        <Text style={styles.compatibilityText}>
-          {item.compatibilityScore}% Compatible
-        </Text>
-        <Text style={styles.matchDate}>
-          Matched {new Date(item.matchedAt).toLocaleDateString()}
-        </Text>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.callButton}
+        onPress={() => handleVideoCall(item)}
+      >
+        <Text style={styles.callButtonText}>📹</Text>
+      </TouchableOpacity>
+    </View>
   );
 
   if (matches.length === 0) {
@@ -99,7 +116,6 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   matchCard: {
-    flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
@@ -109,6 +125,21 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  matchContent: {
+    flexDirection: 'row',
+  },
+  callButton: {
+    marginTop: 12,
+    backgroundColor: '#3b82f6',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  callButtonText: {
+    fontSize: 20,
   },
   matchImage: {
     width: 80,

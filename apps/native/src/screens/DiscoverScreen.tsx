@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
@@ -16,12 +17,14 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
-import type { Pet, SwipeAction } from '../types';
+import type { Pet, SwipeAction, UserProfile } from '../types';
 import { useStorage } from '../hooks/useStorage';
 import { SwipeableCard } from '../components/SwipeableCard';
 import { FadeInView } from '../components/FadeInView';
 import { AnimatedButton } from '../components/AnimatedButton';
 import { SpringConfig } from '../animations/springConfigs';
+import { StoriesBar, StoryViewer, CreateStoryDialog, type Story } from '../components/stories';
+import { useStories } from '../hooks/stories/useStories';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -30,7 +33,50 @@ export default function DiscoverScreen(): React.JSX.Element {
   const [pets, setPets] = useStorage<Pet[]>('available-pets', []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeHistory, setSwipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
+  const [userProfile] = useStorage<UserProfile>('user-profile', {
+    id: 'user-1',
+    name: 'Pet Owner',
+    email: 'owner@pet3.com',
+    location: 'San Francisco, CA',
+    pets: [],
+    createdAt: new Date().toISOString(),
+  });
   const buttonScale = useSharedValue(1);
+
+  // Stories management
+  const { stories, createStory, markStoryAsViewed } = useStories(userProfile.id);
+  const [showStoryViewer, setShowStoryViewer] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+  const [showCreateStoryDialog, setShowCreateStoryDialog] = useState(false);
+
+  const handleStoryPress = (story: Story) => {
+    const storyIndex = stories.findIndex((s) => s.id === story.id);
+    setSelectedStoryIndex(storyIndex);
+    setShowStoryViewer(true);
+  };
+
+  const handleStoryComplete = async (storyId: string) => {
+    await markStoryAsViewed(storyId);
+  };
+
+  const handleCreateStory = async (
+    imageUri: string,
+    text?: string,
+    privacy?: 'public' | 'friends' | 'private'
+  ) => {
+    const result = await createStory(
+      imageUri,
+      userProfile.name,
+      userProfile.avatar,
+      text,
+      privacy
+    );
+    if (result.success) {
+      Alert.alert('Success', 'Story created!');
+    } else {
+      Alert.alert('Error', result.error || 'Failed to create story');
+    }
+  };
 
   const handleSwipe = async (action: 'like' | 'pass' | 'superlike') => {
     const currentPet = pets[currentIndex];
@@ -74,6 +120,14 @@ export default function DiscoverScreen(): React.JSX.Element {
 
   return (
     <GestureHandlerRootView style={styles.container}>
+      {/* Stories Bar */}
+      <StoriesBar
+        stories={stories}
+        onStoryPress={handleStoryPress}
+        onAddStory={() => setShowCreateStoryDialog(true)}
+        currentUserId={userProfile.id}
+      />
+
       <View style={styles.cardContainer}>
         {/* Next card (underneath) */}
         {nextPet && (
@@ -162,6 +216,22 @@ export default function DiscoverScreen(): React.JSX.Element {
           textStyle={styles.buttonText}
         />
       </FadeInView>
+
+      {/* Story Viewer Modal */}
+      <StoryViewer
+        visible={showStoryViewer}
+        stories={stories}
+        initialStoryIndex={selectedStoryIndex}
+        onClose={() => setShowStoryViewer(false)}
+        onStoryComplete={handleStoryComplete}
+      />
+
+      {/* Create Story Dialog */}
+      <CreateStoryDialog
+        visible={showCreateStoryDialog}
+        onClose={() => setShowCreateStoryDialog(false)}
+        onCreateStory={handleCreateStory}
+      />
     </GestureHandlerRootView>
   );
 }

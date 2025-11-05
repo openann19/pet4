@@ -90,6 +90,17 @@ export interface SwipeAction {
   timestamp: string;
 }
 
+export interface Reaction {
+  emoji: string;
+  users: string[];
+}
+
+export interface LocationData {
+  latitude: number;
+  longitude: number;
+  address?: string;
+}
+
 export interface Message {
   id: string;
   matchId: string;
@@ -97,7 +108,10 @@ export interface Message {
   content: string;
   timestamp: string;
   read: boolean;
-  type: 'text' | 'image' | 'location';
+  type: 'text' | 'image' | 'location' | 'sticker' | 'voice';
+  reactions?: Reaction[];
+  locationData?: LocationData;
+  voiceDuration?: number;
 }
 
 export interface ChatRoom {

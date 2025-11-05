@@ -200,6 +200,20 @@ export default function SettingsScreen() {
           />
         </SettingSection>
 
+        <SettingSection title="Video Calls">
+          <SettingRow
+            icon="📹"
+            label="Video Quality"
+            value="1080p"
+            onPress={() => Alert.alert('Video Quality', 'Quality settings coming soon!')}
+          />
+          <SettingRow
+            icon="🎥"
+            label="Camera Preferences"
+            onPress={() => Alert.alert('Camera', 'Camera settings coming soon!')}
+          />
+        </SettingSection>
+
         <SettingSection title="About">
           <SettingRow
             icon="ℹ️"
