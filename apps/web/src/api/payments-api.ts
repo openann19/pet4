@@ -4,20 +4,20 @@
  * Handles entitlements, subscriptions, consumables, and billing through backend API.
  */
 
+import type { UsageCounter } from '@/core/domain/business'
 import { APIClient } from '@/lib/api-client'
 import { ENDPOINTS } from '@/lib/endpoints'
+import { createLogger } from '@/lib/logger'
 import type {
-  UserEntitlements,
-  Subscription,
-  BillingIssue,
   AuditLogEntry,
+  BillingIssue,
+  ConsumableKey,
   PlanTier,
   PlatformStore,
-  ConsumableKey,
   RevenueMetrics,
+  Subscription,
+  UserEntitlements,
 } from '@/lib/payments-types'
-import type { UsageCounter } from '@/core/domain/business'
-import { createLogger } from '@/lib/logger'
 
 const logger = createLogger('PaymentsApi')
 
@@ -149,8 +149,8 @@ class PaymentsApiImpl {
     try {
       const request: UpdateEntitlementsRequest = {
         planTier,
-        reason,
-        actorUserId
+        ...(reason !== undefined && { reason }),
+        ...(actorUserId !== undefined && { actorUserId })
       }
 
       const response = await APIClient.put<UpdateEntitlementsResponse>(
@@ -246,7 +246,7 @@ class PaymentsApiImpl {
       const request: AddConsumableRequest = {
         consumableKey,
         quantity,
-        actorUserId
+        ...(actorUserId !== undefined && { actorUserId })
       }
 
       const response = await APIClient.post<AddConsumableResponse>(

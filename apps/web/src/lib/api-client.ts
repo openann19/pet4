@@ -32,6 +32,38 @@ export interface APIError extends Error {
   details?: Record<string, unknown>
 }
 
+export class APIClientError extends Error implements APIError {
+  status: number
+  code?: string
+  details?: Record<string, unknown>
+
+  constructor(
+    message: string,
+    init: { status: number; code?: string; details?: Record<string, unknown>; cause?: unknown },
+  ) {
+    super(message, init.cause ? { cause: init.cause } : undefined)
+    this.name = 'APIClientError'
+    this.status = init.status
+    this.code = init.code
+    this.details = init.details
+  }
+}
+
+export class NetworkError extends Error {
+  readonly status = 0
+  readonly code = 'NETWORK_UNREACHABLE'
+  readonly url: string
+  readonly method: string
+  readonly isNetworkError = true as const
+
+  constructor(message: string, options: { url: string; method: string; cause?: unknown }) {
+    super(message, options.cause ? { cause: options.cause } : undefined)
+    this.name = 'NetworkError'
+    this.url = options.url
+    this.method = options.method
+  }
+}
+
 export interface RetryConfig {
   attempts: number
   delay: number
@@ -184,7 +216,7 @@ class APIClientImpl {
         await this.ensureSuccessfulResponse(response)
         return response.json() as Promise<APIResponse<T>>
       } catch (error) {
-        throw this.normaliseRequestError(error)
+        throw this.normaliseRequestError(error, endpoint, (requestInit.method ?? 'GET').toString())
       } finally {
         clearTimeout(timeoutId)
       }
@@ -235,27 +267,47 @@ class APIClientImpl {
     }
   }
 
-  private async createAPIError(response: Response): Promise<APIError> {
+  private async createAPIError(response: Response): Promise<APIClientError> {
     const errorDetails = await this.parseErrorDetails(response)
 
-    const error = new Error(errorDetails.message || `HTTP ${response.status}`) as APIError
-    error.status = response.status
-    error.code = errorDetails.code
-    error.details = errorDetails.details
-
-    return error
+    return new APIClientError(errorDetails.message || `HTTP ${response.status}`, {
+      status: response.status,
+      code: errorDetails.code,
+      details: errorDetails.details,
+    })
   }
 
-  private normaliseRequestError(error: unknown): Error {
+  private normaliseRequestError(error: unknown, endpoint: string, method: string): Error {
+    if (error instanceof NetworkError) {
+      return error
+    }
+
     if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        return new NetworkError('Request timed out while contacting backend service', {
+          url: endpoint,
+          method,
+          cause: error,
+        })
+      }
+
+      if (error instanceof TypeError) {
+        return new NetworkError('Unable to reach backend service', {
+          url: endpoint,
+          method,
+          cause: error,
+        })
+      }
+
       return error
     }
 
     if (typeof error === 'object' && error !== null && 'message' in error) {
-      return new Error(String((error as { message: unknown }).message))
+      const message = String((error as { message: unknown }).message)
+      return new NetworkError(message, { url: endpoint, method, cause: error })
     }
 
-    return new Error('Network request failed')
+    return new NetworkError('Network request failed', { url: endpoint, method, cause: error })
   }
 
   // Public API methods

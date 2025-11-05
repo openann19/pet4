@@ -1,0 +1,104 @@
+import { useMemo } from 'react'
+import {
+  canEditListing,
+  canReceiveApplications,
+  isValidApplicationStatusTransition,
+  isValidListingStatusTransition,
+  type AdoptionApplicationStatus,
+  type AdoptionListingStatus
+} from '@pet/domain/adoption'
+import {
+  canEditPost,
+  canReceiveComments,
+  isValidCommentStatusTransition,
+  isValidPostStatusTransition,
+  type CommentStatus,
+  type PostStatus
+} from '@pet/domain/community'
+import { evaluateHardGates, calculateMatchScore } from '@pet/domain/matching-engine'
+import type { MatchScore } from '@pet/domain/matching-engine'
+import { sampleHardGates, sampleMatchingWeights, sampleOwnerPreferences, samplePets } from '@mobile/data/mockData'
+
+export interface AdoptionSnapshot {
+  canEditActiveListing: boolean
+  canReceiveApplications: boolean
+  statusTransitions: Array<{ status: string; allowed: boolean }>
+  applicationTransitions: Array<{ status: string; allowed: boolean }>
+}
+
+export interface CommunitySnapshot {
+  canEditPendingPost: boolean
+  canReceiveCommentsOnActivePost: boolean
+  postTransitions: Array<{ status: string; allowed: boolean }>
+  commentTransitions: Array<{ status: string; allowed: boolean }>
+}
+
+export interface MatchingSnapshot {
+  hardGatesPassed: boolean
+  hardGateFailures: Array<{ code: string; message: string }>
+  score: MatchScore
+}
+
+export interface DomainSnapshots {
+  adoption: AdoptionSnapshot
+  community: CommunitySnapshot
+  matching: MatchingSnapshot
+}
+
+export function useDomainSnapshots(): DomainSnapshots {
+  return useMemo(() => {
+    const [petAlpha, petBravo] = samplePets
+
+    const adoptionStatuses: AdoptionListingStatus[] = ['adopted', 'withdrawn']
+    const applicationStatuses: AdoptionApplicationStatus[] = ['under_review', 'accepted', 'rejected']
+
+    const adoption: AdoptionSnapshot = {
+      canEditActiveListing: canEditListing('active'),
+      canReceiveApplications: canReceiveApplications('active'),
+      statusTransitions: adoptionStatuses.map(status => ({
+        status,
+        allowed: isValidListingStatusTransition('active', status)
+      })),
+      applicationTransitions: applicationStatuses.map(status => ({
+        status,
+        allowed: isValidApplicationStatusTransition('submitted', status)
+      }))
+    }
+
+    const postStatuses: PostStatus[] = ['active', 'rejected', 'archived']
+    const commentStatuses: CommentStatus[] = ['deleted', 'hidden', 'active']
+
+    const community: CommunitySnapshot = {
+      canEditPendingPost: canEditPost('pending_review'),
+      canReceiveCommentsOnActivePost: canReceiveComments('active'),
+      postTransitions: postStatuses.map(status => ({
+        status,
+        allowed: isValidPostStatusTransition('pending_review', status)
+      })),
+      commentTransitions: commentStatuses.map(status => ({
+        status,
+        allowed: isValidCommentStatusTransition('active', status)
+      }))
+    }
+
+    const hardGateEvaluation = evaluateHardGates(
+      petAlpha,
+      petBravo,
+      sampleOwnerPreferences,
+      sampleHardGates
+    )
+
+    const score = calculateMatchScore(petAlpha, petBravo, sampleMatchingWeights)
+
+    const matching: MatchingSnapshot = {
+      hardGatesPassed: hardGateEvaluation.passed,
+      hardGateFailures: hardGateEvaluation.failureReasons.map(reason => ({
+        code: reason.code,
+        message: reason.message.en
+      })),
+      score
+    }
+
+    return { adoption, community, matching }
+  }, [])
+}

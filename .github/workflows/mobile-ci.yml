@@ -1,0 +1,95 @@
+name: Mobile CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/shared/**'
+      - '.github/workflows/mobile-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/shared/**'
+      - '.github/workflows/mobile-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Type check mobile
+        run: |
+          cd apps/mobile
+          pnpm typecheck
+      - name: Type check shared
+        run: |
+          cd packages/shared
+          pnpm typecheck
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint mobile
+        run: |
+          cd apps/mobile
+          pnpm lint
+      - name: Lint shared
+        run: |
+          cd packages/shared
+          pnpm lint
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Test mobile
+        run: |
+          cd apps/mobile
+          pnpm test:run
+      - name: Test shared
+        run: |
+          cd packages/shared
+          pnpm test:run
+      - name: Coverage mobile
+        run: |
+          cd apps/mobile
+          pnpm test:cov
+      - name: Coverage shared
+        run: |
+          cd packages/shared
+          pnpm test:cov
+

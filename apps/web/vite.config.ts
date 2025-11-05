@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 import tailwindcss from '@tailwindcss/vite';
@@ -5,7 +6,8 @@ import react from '@vitejs/plugin-react-swc';
 import type { PluginOption } from 'vite';
 import { defineConfig } from 'vite';
 
-const projectRoot = process.env.PROJECT_ROOT ?? import.meta.dirname;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = process.env.PROJECT_ROOT ?? __dirname;
 
 const loadOptionalPlugin = async (specifier: string): Promise<PluginOption | null> => {
   try {
@@ -37,7 +39,7 @@ export default defineConfig(async () => {
     plugins,
     resolve: {
       alias: {
-        '@': path.resolve(projectRoot, 'src'),
+        '@': path.resolve(projectRoot, './src'),
       },
     },
     server: {

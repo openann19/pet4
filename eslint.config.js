@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { fixupPluginRules } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import importPlugin from 'eslint-plugin-import';
@@ -7,6 +9,8 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default tseslint.config(
   {
@@ -44,7 +48,7 @@ export default tseslint.config(
           './apps/*/tsconfig.json',
           './packages/*/tsconfig.json',
         ],
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: __dirname,
       },
     },
     plugins: {
@@ -94,7 +98,6 @@ export default tseslint.config(
       '@typescript-eslint/no-type-alias': 'off', // Allow type aliases
       '@typescript-eslint/explicit-function-return-type': 'off', // Inferred is fine
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
 
@@ -156,6 +159,19 @@ export default tseslint.config(
       'no-redeclare': 'off',
       '@typescript-eslint/no-redeclare': 'error',
       'no-unused-vars': 'off',
+    },
+  },
+  // TypeScript-specific overrides
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
     },
   },
   // Mobile-specific overrides

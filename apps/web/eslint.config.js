@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { fixupPluginRules } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import importPlugin from 'eslint-plugin-import';
@@ -10,6 +12,8 @@ import sonarjs from 'eslint-plugin-sonarjs';
 import unicorn from 'eslint-plugin-unicorn';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const tsFiles = ['**/*.{ts,tsx}'];
 
@@ -35,7 +39,7 @@ export default tseslint.config(
       globals: globals.browser,
       parserOptions: {
         project: ['tsconfig.json'],
-        tsconfigRootDir: import.meta.dirname,
+        tsconfigRootDir: __dirname,
       },
     },
     plugins: {

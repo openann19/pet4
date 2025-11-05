@@ -56,7 +56,6 @@
     "emitDecoratorMetadata": false,
     "maxNodeModuleJsDepth": 1,
     "disableSizeLimit": false,
-    "declarationDir": null,
     "plugins": []
   },
   "exclude": [
