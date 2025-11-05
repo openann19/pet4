@@ -89,3 +89,17 @@ desktop.ini
 # Misc
 *.local
 .turbo
+
+# Expo and React Native
+.expo/
+.expo-shared/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.ipa
+*.aab
+*.apk
+.metro-health-check*
