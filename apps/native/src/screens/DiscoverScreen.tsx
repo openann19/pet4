@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,48 +6,31 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  Animated,
-  PanResponder,
 } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+  runOnJS,
+} from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import type { Pet, SwipeAction } from '../types';
 import { useStorage } from '../hooks/useStorage';
+import { SwipeableCard } from '../components/SwipeableCard';
+import { FadeInView } from '../components/FadeInView';
+import { AnimatedButton } from '../components/AnimatedButton';
+import { SpringConfig } from '../animations/springConfigs';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const SWIPE_THRESHOLD = 120;
 
 export default function DiscoverScreen(): React.JSX.Element {
   const navigation = useNavigation();
   const [pets, setPets] = useStorage<Pet[]>('available-pets', []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeHistory, setSwipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
-  const position = useRef(new Animated.ValueXY()).current;
-  const rotate = position.x.interpolate({
-    inputRange: [-SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2],
-    outputRange: ['-10deg', '0deg', '10deg'],
-    extrapolate: 'clamp',
-  });
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: (_, gesture) => {
-        position.setValue({ x: gesture.dx, y: gesture.dy });
-      },
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dx > SWIPE_THRESHOLD) {
-          handleSwipe('like');
-        } else if (gesture.dx < -SWIPE_THRESHOLD) {
-          handleSwipe('pass');
-        } else {
-          Animated.spring(position, {
-            toValue: { x: 0, y: 0 },
-            useNativeDriver: false,
-          }).start();
-        }
-      },
-    })
-  ).current;
+  const buttonScale = useSharedValue(1);
 
   const handleSwipe = async (action: 'like' | 'pass' | 'superlike') => {
     const currentPet = pets[currentIndex];
@@ -61,88 +44,125 @@ export default function DiscoverScreen(): React.JSX.Element {
     };
 
     await setSwipeHistory([...swipeHistory, swipe]);
+    setCurrentIndex(currentIndex + 1);
+  };
 
-    Animated.timing(position, {
-      toValue: {
-        x: action === 'like' ? SCREEN_WIDTH * 1.5 : -SCREEN_WIDTH * 1.5,
-        y: 0,
-      },
-      duration: 250,
-      useNativeDriver: false,
-    }).start(() => {
-      position.setValue({ x: 0, y: 0 });
-      setCurrentIndex(currentIndex + 1);
+  const animateButton = (index: number) => {
+    buttonScale.value = withSpring(1.2, SpringConfig.bouncy, () => {
+      buttonScale.value = withSpring(1, SpringConfig.snappy);
     });
   };
 
   const currentPet = pets[currentIndex];
+  const nextPet = pets[currentIndex + 1];
 
   if (!currentPet) {
     return (
       <View style={styles.container}>
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>🐾</Text>
-          <Text style={styles.emptyTitle}>No More Pets</Text>
-          <Text style={styles.emptySubtitle}>
-            Check back later for new matches!
-          </Text>
-        </View>
+        <FadeInView>
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyText}>🐾</Text>
+            <Text style={styles.emptyTitle}>No More Pets</Text>
+            <Text style={styles.emptySubtitle}>
+              Check back later for new matches!
+            </Text>
+          </View>
+        </FadeInView>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        activeOpacity={0.95}
-        onPress={() => navigation.navigate('PetDetail' as never, { pet: currentPet } as never)}
-      >
-        <Animated.View
-          style={[
-            styles.card,
-            {
-              transform: [{ translateX: position.x }, { translateY: position.y }, { rotate }],
-            },
-          ]}
-          {...panResponder.panHandlers}
-        >
-          <Image source={{ uri: currentPet.photo }} style={styles.image} />
-          <View style={styles.cardContent}>
-            <View style={styles.header}>
-              <Text style={styles.name}>{currentPet.name}, {currentPet.age}</Text>
-              {currentPet.verified && <Text style={styles.verified}>✓</Text>}
+    <GestureHandlerRootView style={styles.container}>
+      <View style={styles.cardContainer}>
+        {/* Next card (underneath) */}
+        {nextPet && (
+          <FadeInView style={styles.nextCard}>
+            <View style={styles.card}>
+              <Image source={{ uri: nextPet.photo }} style={styles.image} />
+              <View style={styles.cardOverlay} />
             </View>
-            <Text style={styles.breed}>{currentPet.breed}</Text>
-            <Text style={styles.location}>📍 {currentPet.location}</Text>
-            <Text style={styles.bio} numberOfLines={3}>
-              {currentPet.bio}
-            </Text>
-            <Text style={styles.tapHint}>Tap for details</Text>
-          </View>
-        </Animated.View>
-      </TouchableOpacity>
+          </FadeInView>
+        )}
 
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={[styles.button, styles.passButton]}
-          onPress={() => handleSwipe('pass')}
+        {/* Current card (on top) */}
+        <SwipeableCard
+          onSwipeLeft={() => {
+            animateButton(0);
+            handleSwipe('pass');
+          }}
+          onSwipeRight={() => {
+            animateButton(2);
+            handleSwipe('like');
+          }}
+          onSwipeUp={() => {
+            animateButton(1);
+            handleSwipe('superlike');
+          }}
         >
-          <Text style={styles.buttonText}>✕</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, styles.superlikeButton]}
-          onPress={() => handleSwipe('superlike')}
-        >
-          <Text style={styles.buttonText}>★</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, styles.likeButton]}
-          onPress={() => handleSwipe('like')}
-        >
-          <Text style={styles.buttonText}>♥</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.95}
+            onPress={() => navigation.navigate('PetDetail' as never, { pet: currentPet } as never)}
+            style={styles.card}
+          >
+            <Image source={{ uri: currentPet.photo }} style={styles.image} />
+            <View style={styles.gradient} />
+            <View style={styles.cardContent}>
+              <FadeInView delay={100}>
+                <View style={styles.header}>
+                  <Text style={styles.name}>{currentPet.name}, {currentPet.age}</Text>
+                  {currentPet.verified && <Text style={styles.verified}>✓</Text>}
+                </View>
+              </FadeInView>
+              <FadeInView delay={150}>
+                <Text style={styles.breed}>{currentPet.breed}</Text>
+              </FadeInView>
+              <FadeInView delay={200}>
+                <Text style={styles.location}>📍 {currentPet.location}</Text>
+              </FadeInView>
+              <FadeInView delay={250}>
+                <Text style={styles.bio} numberOfLines={3}>
+                  {currentPet.bio}
+                </Text>
+              </FadeInView>
+              <FadeInView delay={300}>
+                <Text style={styles.tapHint}>Tap for details • Swipe to match</Text>
+              </FadeInView>
+            </View>
+          </TouchableOpacity>
+        </SwipeableCard>
       </View>
-    </View>
+
+      <FadeInView delay={350} style={styles.actions}>
+        <AnimatedButton
+          title="✕"
+          onPress={() => {
+            animateButton(0);
+            handleSwipe('pass');
+          }}
+          style={[styles.button, styles.passButton]}
+          textStyle={styles.buttonText}
+        />
+        <AnimatedButton
+          title="★"
+          onPress={() => {
+            animateButton(1);
+            handleSwipe('superlike');
+          }}
+          style={[styles.button, styles.superlikeButton]}
+          textStyle={styles.buttonText}
+        />
+        <AnimatedButton
+          title="♥"
+          onPress={() => {
+            animateButton(2);
+            handleSwipe('like');
+          }}
+          style={[styles.button, styles.likeButton]}
+          textStyle={styles.buttonText}
+        />
+      </FadeInView>
+    </GestureHandlerRootView>
   );
 }
 
@@ -153,25 +173,54 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  card: {
+  cardContainer: {
     width: SCREEN_WIDTH * 0.9,
     height: SCREEN_HEIGHT * 0.7,
+    position: 'relative',
+  },
+  nextCard: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    opacity: 0.5,
+    transform: [{ scale: 0.95 }],
+  },
+  card: {
+    width: '100%',
+    height: '100%',
     borderRadius: 20,
     backgroundColor: '#fff',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowRadius: 12,
+    elevation: 8,
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
-    height: '70%',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    height: '100%',
+    position: 'absolute',
+  },
+  cardOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  },
+  gradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '50%',
+    backgroundColor: 'transparent',
+    backgroundImage: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
   },
   cardContent: {
-    padding: 20,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 24,
   },
   header: {
     flexDirection: 'row',
@@ -179,67 +228,77 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   name: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#ffffff',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
   verified: {
-    fontSize: 20,
-    color: '#4CAF50',
+    fontSize: 24,
+    color: '#22c55e',
     marginLeft: 8,
   },
   breed: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 4,
+    fontSize: 18,
+    color: '#f3f4f6',
+    marginBottom: 6,
+    fontWeight: '500',
   },
   location: {
-    fontSize: 14,
-    color: '#999',
+    fontSize: 16,
+    color: '#e5e7eb',
     marginBottom: 12,
   },
   bio: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
+    fontSize: 15,
+    color: '#f9fafb',
+    lineHeight: 22,
   },
   tapHint: {
-    fontSize: 12,
-    color: '#999',
+    fontSize: 13,
+    color: '#d1d5db',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: 12,
+    fontStyle: 'italic',
   },
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    width: SCREEN_WIDTH * 0.7,
-    marginTop: 20,
+    width: SCREEN_WIDTH * 0.75,
+    marginTop: 30,
+    paddingHorizontal: 20,
   },
   button: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 6,
   },
   passButton: {
-    backgroundColor: '#ff4458',
+    backgroundColor: '#ef4444',
   },
   likeButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#22c55e',
   },
   superlikeButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#3b82f6',
+    width: 72,
+    height: 72,
+    borderRadius: 36,
   },
   buttonText: {
-    fontSize: 28,
-    color: '#fff',
+    fontSize: 32,
+    color: '#ffffff',
+    fontWeight: 'bold',
   },
   emptyState: {
     alignItems: 'center',
