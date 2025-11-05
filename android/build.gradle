@@ -1,0 +1,28 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.9.24'
+        reactNativeVersion = '0.76.6'
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath('com.android.tools.build:gradle:8.7.2')
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.sumsub.com/repository/maven-public' }
+    }
+}
+
+tasks.register("clean", Delete::class) {
+    delete(rootProject.buildDir)
+}
