@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import type { UserProfile, Pet } from '../types';
 import { useStorage } from '../hooks/useStorage';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen(): React.JSX.Element {
+  const navigation = useNavigation();
   const [userProfile] = useStorage<UserProfile>('user-profile', {
     id: 'user-1',
     name: 'Pet Owner',
@@ -65,13 +67,41 @@ export default function ProfileScreen(): React.JSX.Element {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Settings</Text>
-        <TouchableOpacity style={styles.settingItem}>
-          <Text style={styles.settingText}>Edit Profile</Text>
+        <Text style={styles.sectionTitle}>Quick Access</Text>
+        <TouchableOpacity 
+          style={styles.settingItem}
+          onPress={() => navigation.navigate('Map' as never)}
+        >
+          <Text style={styles.settingText}>🗺️ Map View</Text>
           <Text style={styles.settingArrow}>›</Text>
         </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.settingItem}
+          onPress={() => navigation.navigate('Notifications' as never)}
+        >
+          <Text style={styles.settingText}>🔔 Notifications</Text>
+          <Text style={styles.settingArrow}>›</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.settingItem}
+          onPress={() => navigation.navigate('SavedPosts' as never)}
+        >
+          <Text style={styles.settingText}>📖 Saved Posts</Text>
+          <Text style={styles.settingArrow}>›</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.settingItem}
+          onPress={() => navigation.navigate('Settings' as never)}
+        >
+          <Text style={styles.settingText}>⚙️ Settings</Text>
+          <Text style={styles.settingArrow}>›</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Account</Text>
         <TouchableOpacity style={styles.settingItem}>
-          <Text style={styles.settingText}>Notifications</Text>
+          <Text style={styles.settingText}>Edit Profile</Text>
           <Text style={styles.settingArrow}>›</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.settingItem}>

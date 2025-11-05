@@ -15,6 +15,10 @@ import PetDetailScreen from './src/screens/PetDetailScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import SignupScreen from './src/screens/SignupScreen';
+import MapScreen from './src/screens/MapScreen';
+import NotificationsScreen from './src/screens/NotificationsScreen';
+import SavedPostsScreen from './src/screens/SavedPostsScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 import DataInitializer from './src/components/DataInitializer';
 import { useStorage } from './src/hooks/useStorage';
 
@@ -147,6 +151,54 @@ export default function App(): React.JSX.Element {
                 options={{
                   headerShown: true,
                   title: 'Pet Details',
+                  headerStyle: {
+                    backgroundColor: '#6366f1',
+                  },
+                  headerTintColor: '#fff',
+                }}
+              />
+              <Stack.Screen
+                name="Map"
+                component={MapScreen}
+                options={{
+                  headerShown: true,
+                  title: 'Map',
+                  headerStyle: {
+                    backgroundColor: '#6366f1',
+                  },
+                  headerTintColor: '#fff',
+                }}
+              />
+              <Stack.Screen
+                name="Notifications"
+                component={NotificationsScreen}
+                options={{
+                  headerShown: true,
+                  title: 'Notifications',
+                  headerStyle: {
+                    backgroundColor: '#6366f1',
+                  },
+                  headerTintColor: '#fff',
+                }}
+              />
+              <Stack.Screen
+                name="SavedPosts"
+                component={SavedPostsScreen}
+                options={{
+                  headerShown: true,
+                  title: 'Saved Posts',
+                  headerStyle: {
+                    backgroundColor: '#6366f1',
+                  },
+                  headerTintColor: '#fff',
+                }}
+              />
+              <Stack.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{
+                  headerShown: true,
+                  title: 'Settings',
                   headerStyle: {
                     backgroundColor: '#6366f1',
                   },
