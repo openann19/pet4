@@ -22,6 +22,8 @@ import StatsCard from '@/components/StatsCard'
 import PetsDemoPage from '@/components/demo/PetsDemoPage'
 import { UltraThemeSettings } from '@/components/settings/UltraThemeSettings'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { ErrorBoundary } from '@/components/error/ErrorBoundary'
+import { OfflineIndicator } from '@/components/network/OfflineIndicator'
 import '@/lib/profile-generator-helper' // Expose generateProfiles to window
 import type { Pet, Match, SwipeAction } from '@/lib/types'
 import type { Playdate } from '@/lib/playdate-types'
@@ -149,6 +151,20 @@ function App() {
   }, [])
 
   useEffect(() => {
+    // Initialize performance monitoring in production
+    if (process.env.NODE_ENV === 'production') {
+      import('@/lib/monitoring/performance').then(({ initPerformanceMonitoring }) => {
+        initPerformanceMonitoring((metric) => {
+          // Log performance metrics (could send to analytics service)
+          if (metric.rating === 'poor') {
+            console.warn(`Poor ${metric.name}: ${metric.value}ms`);
+          }
+        });
+      });
+    }
+  }, [])
+
+  useEffect(() => {
     if (hasSeenWelcome && isAuthenticated) {
       setAppState('main')
     } else if (hasSeenWelcome) {
@@ -184,11 +200,13 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/demo/pets" element={<PetsDemoPage />} />
-      <Route path="*" element={
-        <>
-          {appState === 'welcome' && (
+    <ErrorBoundary>
+      <OfflineIndicator />
+      <Routes>
+        <Route path="/demo/pets" element={<PetsDemoPage />} />
+        <Route path="*" element={
+          <>
+            {appState === 'welcome' && (
             <WelcomeScreen 
               onGetStarted={handleWelcomeGetStarted}
               onSignIn={handleWelcomeSignIn}
@@ -586,7 +604,8 @@ function App() {
           )}
         </>
       } />
-    </Routes>
+      </Routes>
+    </ErrorBoundary>
   )
 }
 
