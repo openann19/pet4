@@ -16,5 +16,14 @@
     "design-system/**/*.tsx",
     "scripts/**/*.ts"
   ],
-  "exclude": ["node_modules", "dist", "build", ".next", "coverage", "src/lib/kyc-native.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    ".next",
+    "coverage",
+    "storybook-static",
+    "src/lib/kyc-native.ts",
+    "**/*.stories.tsx"
+  ]
 }

@@ -1,27 +1,34 @@
-module.exports = {
+module.exports = Object.freeze({
   testEnvironment: 'jsdom',
+  testEnvironmentOptions: {
+    pretendToBeVisual: true,
+  },
   setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
   testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.(ts|tsx)',
-    '<rootDir>/src/**/*.(test|spec).(ts|tsx)',
+    '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
+    '<rootDir>/src/**/*.{test,spec}.{ts,tsx}',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   collectCoverageFrom: [
-    'src/**/*.(ts|tsx)',
+    'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/**/__tests__/**',
     '!src/**/index.ts',
   ],
-  coverageReporters: ['text', 'lcov', 'html'],
   coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
+  clearMocks: true,
+  resetMocks: true,
+  restoreMocks: true,
   testTimeout: 10000,
   verbose: true,
-  forceExit: true,
   detectOpenHandles: true,
-};
+  maxWorkers: '50%',
+});
