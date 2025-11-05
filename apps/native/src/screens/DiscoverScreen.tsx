@@ -9,6 +9,7 @@ import {
   Animated,
   PanResponder,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import type { Pet, SwipeAction } from '../types';
 import { useStorage } from '../hooks/useStorage';
 
@@ -16,6 +17,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 120;
 
 export default function DiscoverScreen(): React.JSX.Element {
+  const navigation = useNavigation();
   const [pets, setPets] = useStorage<Pet[]>('available-pets', []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeHistory, setSwipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
@@ -91,28 +93,34 @@ export default function DiscoverScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <Animated.View
-        style={[
-          styles.card,
-          {
-            transform: [{ translateX: position.x }, { translateY: position.y }, { rotate }],
-          },
-        ]}
-        {...panResponder.panHandlers}
+      <TouchableOpacity
+        activeOpacity={0.95}
+        onPress={() => navigation.navigate('PetDetail' as never, { pet: currentPet } as never)}
       >
-        <Image source={{ uri: currentPet.photo }} style={styles.image} />
-        <View style={styles.cardContent}>
-          <View style={styles.header}>
-            <Text style={styles.name}>{currentPet.name}, {currentPet.age}</Text>
-            {currentPet.verified && <Text style={styles.verified}>✓</Text>}
+        <Animated.View
+          style={[
+            styles.card,
+            {
+              transform: [{ translateX: position.x }, { translateY: position.y }, { rotate }],
+            },
+          ]}
+          {...panResponder.panHandlers}
+        >
+          <Image source={{ uri: currentPet.photo }} style={styles.image} />
+          <View style={styles.cardContent}>
+            <View style={styles.header}>
+              <Text style={styles.name}>{currentPet.name}, {currentPet.age}</Text>
+              {currentPet.verified && <Text style={styles.verified}>✓</Text>}
+            </View>
+            <Text style={styles.breed}>{currentPet.breed}</Text>
+            <Text style={styles.location}>📍 {currentPet.location}</Text>
+            <Text style={styles.bio} numberOfLines={3}>
+              {currentPet.bio}
+            </Text>
+            <Text style={styles.tapHint}>Tap for details</Text>
           </View>
-          <Text style={styles.breed}>{currentPet.breed}</Text>
-          <Text style={styles.location}>📍 {currentPet.location}</Text>
-          <Text style={styles.bio} numberOfLines={3}>
-            {currentPet.bio}
-          </Text>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      </TouchableOpacity>
 
       <View style={styles.actions}>
         <TouchableOpacity
@@ -194,6 +202,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     lineHeight: 20,
+  },
+  tapHint: {
+    fontSize: 12,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 8,
   },
   actions: {
     flexDirection: 'row',

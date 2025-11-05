@@ -5,10 +5,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DiscoverScreen from './src/screens/DiscoverScreen';
 import MatchesScreen from './src/screens/MatchesScreen';
 import ChatScreen from './src/screens/ChatScreen';
+import ChatListScreen from './src/screens/ChatListScreen';
 import CommunityScreen from './src/screens/CommunityScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import AdoptionScreen from './src/screens/AdoptionScreen';
 import LostFoundScreen from './src/screens/LostFoundScreen';
+import PetDetailScreen from './src/screens/PetDetailScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import SignupScreen from './src/screens/SignupScreen';
@@ -49,6 +51,15 @@ function MainTabs(): React.JSX.Element {
           title: 'Matches',
           tabBarLabel: 'Matches',
           tabBarIcon: () => '💝',
+        }}
+      />
+      <Tab.Screen
+        name="ChatList"
+        component={ChatListScreen}
+        options={{
+          title: 'Chats',
+          tabBarLabel: 'Chats',
+          tabBarIcon: () => '💬',
         }}
       />
       <Tab.Screen
@@ -114,6 +125,18 @@ export default function App(): React.JSX.Element {
                 options={{
                   headerShown: true,
                   title: 'Chat',
+                  headerStyle: {
+                    backgroundColor: '#6366f1',
+                  },
+                  headerTintColor: '#fff',
+                }}
+              />
+              <Stack.Screen
+                name="PetDetail"
+                component={PetDetailScreen}
+                options={{
+                  headerShown: true,
+                  title: 'Pet Details',
                   headerStyle: {
                     backgroundColor: '#6366f1',
                   },
