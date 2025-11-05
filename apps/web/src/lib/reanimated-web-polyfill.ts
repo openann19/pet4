@@ -176,7 +176,6 @@ export function useAnimatedStyle<T extends CSSProperties>(
   updater: () => T,
   dependencies?: unknown[]
 ): AnimatedStyle<T> {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => {
     const style = updater();
     
@@ -221,7 +220,6 @@ export function useAnimatedProps<T>(
   updater: () => T,
   dependencies?: unknown[]
 ): T {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => updater(), dependencies ?? []);
 }
 
@@ -254,7 +252,6 @@ export function useWorkletCallback<T extends (...args: unknown[]) => unknown>(
   fn: T,
   deps?: unknown[]
 ): T {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useCallback(fn, deps ?? []);
 }
 
@@ -263,7 +260,6 @@ export function useDerivedValue<T>(
   updater: () => T,
   dependencies?: unknown[]
 ): SharedValue<T> {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const value = useMemo(() => updater(), dependencies ?? []);
   return useSharedValue(value);
 }
