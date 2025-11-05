@@ -5,7 +5,7 @@ export interface AppEnvironment {
 
 export function getAppEnvironment(env?: string): AppEnvironment {
   return {
-    env: env ?? process.env.NODE_ENV ?? 'development',
+    env: env ?? process.env['NODE_ENV'] ?? 'development',
     timestamp: Date.now()
   };
 }

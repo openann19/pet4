@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "install:all": "npm install",
+    "install:all": "npm install --legacy-peer-deps",
     "mobile:build:eas": "cd apps/native && eas build --platform all --profile production",
     "mobile:build:android": "cd apps/native && eas build --platform android --profile production",
     "mobile:build:ios": "cd apps/native && eas build --platform ios --profile production",
@@ -16,7 +16,8 @@
     "shared:build": "cd packages/shared && npm run build",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "postinstall": "cd packages/shared && npm install && npm run build"
   },
   "devDependencies": {
     "@expo/metro-config": "^0.18.11",
