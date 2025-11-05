@@ -1,5 +1,8 @@
+import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import path from 'node:path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('tailwindcss').Config} */
 const DEFAULT_THEME = {
@@ -140,7 +143,7 @@ const DEFAULT_THEME = {
   darkMode: ['selector', '[data-appearance="dark"]'],
 };
 
-const themePath = path.join(import.meta.dirname, 'theme.json');
+const themePath = path.join(__dirname, 'theme.json');
 
 const loadCustomTheme = () => {
   if (!fs.existsSync(themePath)) {
@@ -156,6 +159,7 @@ const loadCustomTheme = () => {
   }
 };
 
+// Note: Using shallow merge. For nested theme overrides, consider using a deep merge utility.
 const theme = Object.freeze({ ...DEFAULT_THEME, ...loadCustomTheme() });
 
 export default {
