@@ -1,7 +1,6 @@
 import { ENV } from '@/config/env'
 import { createLogger } from '@/lib/logger'
 import * as Sentry from '@sentry/browser'
-import { Integrations } from '@sentry/tracing'
 
 const logger = createLogger('Sentry')
 
@@ -17,11 +16,11 @@ class SentryConfigImpl {
       tracesSampleRate: ENV.VITE_SENTRY_TRACES_SAMPLE_RATE || 0.1,
       
       integrations: [
-        new Integrations.BrowserTracing() as unknown as Sentry.Integration
+        Sentry.browserTracingIntegration()
       ],
 
             // Performance monitoring
-      beforeSend: (event: Sentry.Event, _hint?: Sentry.EventHint): Sentry.Event | null => {
+      beforeSend: (event: Sentry.ErrorEvent, _hint?: Sentry.EventHint): Sentry.ErrorEvent | null => {
         // Filter out non-critical errors in development
         if (ENV.VITE_ENVIRONMENT === 'development') {
           if (event.exception?.values?.[0]?.type === 'ChunkLoadError') {

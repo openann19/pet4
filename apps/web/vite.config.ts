@@ -40,6 +40,7 @@ export default defineConfig(async () => {
     resolve: {
       alias: {
         '@': path.resolve(projectRoot, './src'),
+        'react-native-reanimated': path.resolve(projectRoot, './src/lib/reanimated-web-polyfill.ts'),
       },
     },
     server: {
@@ -51,7 +52,27 @@ export default defineConfig(async () => {
       },
     },
     optimizeDeps: {
-      exclude: [],
+      exclude: ['react-native-reanimated'],
+      esbuildOptions: {
+        resolveExtensions: ['.web.js', '.web.ts', '.web.tsx', '.js', '.jsx', '.json', '.ts', '.tsx'],
+      },
+    },
+    build: {
+      commonjsOptions: {
+        transformMixedEsModules: true,
+        include: [/node_modules/],
+      },
+      rollupOptions: {
+        external: (id: string) => {
+          // Externalize optional tensorflow dependencies
+          return id === '@tensorflow/tfjs' || 
+                 id === '@tensorflow/tfjs-core' || 
+                 id === '@tensorflow/tfjs-converter' ||
+                 id.startsWith('@tensorflow/tfjs/') ||
+                 id.startsWith('@tensorflow/tfjs-core/') ||
+                 id.startsWith('@tensorflow/tfjs-converter/');
+        },
+      },
     },
   };
 });

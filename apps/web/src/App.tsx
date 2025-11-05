@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense, useMemo } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { useStorage } from '@/hooks/useStorage'
 import { Toaster } from '@/components/ui/sonner'
-import { Heart, User, ChatCircle, Sparkle, Moon, Sun, Users, Translate, ShieldCheck, MapPin } from '@phosphor-icons/react'
+import { Heart, User, ChatCircle, Sparkle, Moon, Sun, Users, Translate, ShieldCheck, MapPin, Palette } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { AnimatedView } from '@/effects/reanimated/animated-view'
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation'
@@ -20,6 +20,11 @@ import QuickActionsMenu from '@/components/QuickActionsMenu'
 import GenerateProfilesButton from '@/components/GenerateProfilesButton'
 import StatsCard from '@/components/StatsCard'
 import PetsDemoPage from '@/components/demo/PetsDemoPage'
+import { UltraThemeSettings } from '@/components/settings/UltraThemeSettings'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { ErrorBoundary } from '@/components/error/ErrorBoundary'
+import { OfflineIndicator } from '@/components/network/OfflineIndicator'
+import { InstallPrompt } from '@/components/pwa/InstallPrompt'
 import '@/lib/profile-generator-helper' // Expose generateProfiles to window
 import type { Pet, Match, SwipeAction } from '@/lib/types'
 import type { Playdate } from '@/lib/playdate-types'
@@ -58,6 +63,7 @@ function App() {
   const [showStats, setShowStats] = useState(false)
   const [showMap, setShowMap] = useState(false)
   const [showAdminConsole, setShowAdminConsole] = useState(false)
+  const [showThemeSettings, setShowThemeSettings] = useState(false)
 
   // Reanimated navigation button animation for Lost & Found
   const lostFoundAnimation = useNavButtonAnimation({
@@ -81,6 +87,7 @@ function App() {
   const headerButton3 = useHeaderButtonAnimation({ delay: 0.4, scale: 1.1, translateY: -2, rotation: -3 })
   const headerButton4 = useHeaderButtonAnimation({ delay: 0.45, scale: 1.12, translateY: -3, rotation: -5 })
   const headerButton5 = useHeaderButtonAnimation({ delay: 0.5, scale: 1.12, translateY: -3, rotation: -5 })
+  const headerButton6 = useHeaderButtonAnimation({ delay: 0.55, scale: 1.12, translateY: -3, rotation: -5 })
   
   // Language button icon rotation
   const languageIconRotation = useIconRotation({ enabled: language === 'bg', targetRotation: 360 })
@@ -101,6 +108,8 @@ function App() {
   const mapContent = useModalAnimation({ isVisible: showMap, duration: 300 })
   const adminModal = useModalAnimation({ isVisible: showAdminConsole, duration: 200 })
   const adminContent = useModalAnimation({ isVisible: showAdminConsole, duration: 300 })
+  const themeModal = useModalAnimation({ isVisible: showThemeSettings, duration: 200 })
+  const themeContent = useModalAnimation({ isVisible: showThemeSettings, duration: 300 })
   
   // Reanimated animations for main app
   const headerAnimation = useHeaderAnimation({ delay: 0.1 })
@@ -143,6 +152,20 @@ function App() {
   }, [])
 
   useEffect(() => {
+    // Initialize performance monitoring in production
+    if (process.env.NODE_ENV === 'production') {
+      import('@/lib/monitoring/performance').then(({ initPerformanceMonitoring }) => {
+        initPerformanceMonitoring((metric) => {
+          // Log performance metrics (could send to analytics service)
+          if (metric.rating === 'poor') {
+            console.warn(`Poor ${metric.name}: ${metric.value}ms`);
+          }
+        });
+      });
+    }
+  }, [])
+
+  useEffect(() => {
     if (hasSeenWelcome && isAuthenticated) {
       setAppState('main')
     } else if (hasSeenWelcome) {
@@ -178,11 +201,14 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/demo/pets" element={<PetsDemoPage />} />
-      <Route path="*" element={
-        <>
-          {appState === 'welcome' && (
+    <ErrorBoundary>
+      <OfflineIndicator />
+      <InstallPrompt />
+      <Routes>
+        <Route path="/demo/pets" element={<PetsDemoPage />} />
+        <Route path="*" element={
+          <>
+            {appState === 'welcome' && (
             <WelcomeScreen 
               onGetStarted={handleWelcomeGetStarted}
               onSignIn={handleWelcomeSignIn}
@@ -323,6 +349,26 @@ function App() {
                   ) : (
                     <Moon size={20} weight="bold" className="text-foreground" />
                   )}
+                </Button>
+              </AnimatedView>
+              <AnimatedView 
+                style={headerButton6.buttonStyle}
+                onMouseEnter={headerButton6.handleEnter}
+                onMouseLeave={headerButton6.handleLeave}
+                onClick={headerButton6.handleTap}
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    haptics.impact('medium')
+                    setShowThemeSettings(true)
+                  }}
+                  className="rounded-full hover:bg-primary/15 active:bg-primary/25 transition-all duration-300 shadow-lg hover:shadow-primary/20"
+                  aria-label="Theme Settings"
+                  title="Ultra Theme Settings"
+                >
+                  <Palette size={20} weight="bold" className="text-foreground" />
                 </Button>
               </AnimatedView>
             </AnimatedView>
@@ -544,12 +590,24 @@ function App() {
         </AnimatedView>
       )}
 
+      {showThemeSettings && (
+        <Dialog open={showThemeSettings} onOpenChange={setShowThemeSettings}>
+          <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto p-0">
+            <DialogTitle className="sr-only">Ultra Theme Settings</DialogTitle>
+            <AnimatedView style={themeContent.style}>
+              <UltraThemeSettings />
+            </AnimatedView>
+          </DialogContent>
+        </Dialog>
+      )}
+
       <Toaster />
     </div>
           )}
         </>
       } />
-    </Routes>
+      </Routes>
+    </ErrorBoundary>
   )
 }
 

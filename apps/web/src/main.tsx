@@ -7,15 +7,23 @@ import './lib/storage';
 
 import './lib/theme-init';
 
-import App from './App.tsx';
-import { ErrorFallback } from './ErrorFallback.tsx';
-import { AppProvider } from './contexts/AppContext.tsx';
-import { AuthProvider } from './contexts/AuthContext.tsx';
-import { UIProvider } from './contexts/UIContext.tsx';
+// Initialize PWA service worker in production
+import { registerServiceWorker } from './lib/pwa/service-worker-registration';
+
+import App from './App';
+import { ErrorFallback } from './ErrorFallback';
+import { AppProvider } from './contexts/AppContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { UIProvider } from './contexts/UIContext';
 
 import "./index.css";
 import "./main.css";
 import "./styles/theme.css";
+
+// Register service worker for PWA functionality
+if (import.meta.env.PROD) {
+  registerServiceWorker();
+}
 
 createRoot(document.getElementById('root')!).render(
   <ErrorBoundary FallbackComponent={ErrorFallback}>

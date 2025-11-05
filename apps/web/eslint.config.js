@@ -1,6 +1,5 @@
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { fixupPluginRules } from '@eslint/eslintrc';
 import js from '@eslint/js';
 import importPlugin from 'eslint-plugin-import';
 import promise from 'eslint-plugin-promise';
@@ -43,14 +42,14 @@ export default tseslint.config(
       },
     },
     plugins: {
-      import: fixupPluginRules(importPlugin),
-      promise: fixupPluginRules(promise),
-      react: fixupPluginRules(react),
-      'react-hooks': fixupPluginRules(reactHooks),
+      import: importPlugin,
+      promise: promise,
+      react: react,
+      'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      security: fixupPluginRules(security),
-      sonarjs: fixupPluginRules(sonarjs),
-      unicorn: fixupPluginRules(unicorn),
+      security: security,
+      sonarjs: sonarjs,
+      unicorn: unicorn,
     },
     settings: {
       react: { version: 'detect' },
