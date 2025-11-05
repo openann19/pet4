@@ -28,6 +28,7 @@ export default tseslint.config(
       'backend/**',
     ],
   },
+  { linterOptions: { reportUnusedDisableDirectives: 'error' } },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
@@ -52,6 +53,11 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
       'jsx-a11y': jsxA11y,
       import: fixupPluginRules(importPlugin),
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
     },
     rules: {
       // Strict TypeScript rules
@@ -97,7 +103,7 @@ export default tseslint.config(
       'react/react-in-jsx-scope': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
-      'react-refresh/only-export-components': 'warn',
+      'react-refresh/only-export-components': ['error', { allowConstantExport: true }],
 
       // Accessibility
       'jsx-a11y/alt-text': 'error',
@@ -150,7 +156,6 @@ export default tseslint.config(
       'no-redeclare': 'off',
       '@typescript-eslint/no-redeclare': 'error',
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
   // Mobile-specific overrides
@@ -162,16 +167,14 @@ export default tseslint.config(
       },
     },
     rules: {
-      // Allow console in mobile for debugging (can be removed later)
       'no-console': 'warn',
-      // React Native specific rules can be added here
     },
   },
   // Test files
   {
     files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/tests/**/*.{ts,tsx}'],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off', // Allow any in tests
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
