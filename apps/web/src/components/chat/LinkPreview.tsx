@@ -12,6 +12,7 @@ import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reani
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
 import { AnimatedView } from '@/effects/reanimated/animated-view'
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { safeHref } from '@/lib/url-safety'
 
 export interface LinkPreviewProps {
   url: string
@@ -31,7 +32,8 @@ export function LinkPreview({
   className,
 }: LinkPreviewProps) {
   const reduced = useReducedMotion()
-  const showContent = !isLoading && (!!title || !!image)
+  const safeUrl = useMemo(() => safeHref(url), [url])
+  const showContent = !isLoading && (!!title || !!image) && safeUrl !== null
 
   const s = useSharedValue(showContent ? 1 : 0)
   const dur = getReducedMotionDuration(360, reduced)
@@ -42,6 +44,8 @@ export function LinkPreview({
 
   const skeletonStyle = useAnimatedStyle(() => ({ opacity: 1 - s.value })) as AnimatedStyle
   const contentStyle = useAnimatedStyle(() => ({ opacity: s.value })) as AnimatedStyle
+
+  if (!safeUrl) return null
 
   return (
     <div
@@ -67,9 +71,9 @@ export function LinkPreview({
       {showContent && (
         <AnimatedView style={contentStyle} className="relative">
           <a
-            href={url}
+            href={safeUrl}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener noreferrer nofollow ugc"
             className="flex gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded-lg"
           >
             {image && (
