@@ -119,6 +119,7 @@ const resolveWorkspacePackagePlugin = (): PluginOption => {
   };
 };
 
+
 export default defineConfig(async (): Promise<UserConfig> => {
   const plugins: PluginOption[] = [
     resolveWorkspacePackagePlugin(),
@@ -167,6 +168,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
     resolve: {
       alias: {
         '@': path.resolve(projectRoot, './src'),
+        'react-native': 'react-native-web',
         'react-native-reanimated': path.resolve(projectRoot, './src/lib/reanimated-web-polyfill.ts'),
       },
       conditions: ['import', 'module', 'browser', 'default'],
@@ -195,8 +197,10 @@ export default defineConfig(async (): Promise<UserConfig> => {
       },
     },
     optimizeDeps: {
-      exclude: ['react-native', 'react-native-reanimated'],
-      include: ['@petspark/shared'],
+      exclude: ['react-native', 'react-native-reanimated', 'react-native-gesture-handler', 'nsfwjs'],
+      include: [
+        '@petspark/shared',
+      ],
       esbuildOptions: {
         loader: {
           '.js': 'jsx',
@@ -206,6 +210,8 @@ export default defineConfig(async (): Promise<UserConfig> => {
         define: {
           'process.env.NODE_ENV': '"development"',
         },
+        // esbuild automatically transforms CommonJS to ESM
+        target: 'esnext',
       },
       entries: [],
     },
@@ -213,16 +219,19 @@ export default defineConfig(async (): Promise<UserConfig> => {
       commonjsOptions: {
         transformMixedEsModules: true,
         include: [/node_modules/],
+        // Transform CommonJS require/exports to ESM
+        strictRequires: true,
+        defaultIsModuleExports: true,
       },
       rollupOptions: {
-        external: (id: string) => {
-          // Externalize optional tensorflow dependencies
-          return id === '@tensorflow/tfjs' || 
-                 id === '@tensorflow/tfjs-core' || 
-                 id === '@tensorflow/tfjs-converter' ||
-                 id.startsWith('@tensorflow/tfjs/') ||
-                 id.startsWith('@tensorflow/tfjs-core/') ||
-                 id.startsWith('@tensorflow/tfjs-converter/');
+        external: () => {
+          // NSFWJS is loaded from CDN at runtime, not bundled
+          // Only externalize if explicitly needed for CDN loading
+          return false;
+        },
+        output: {
+          // Ensure proper format
+          format: 'es',
         },
       },
     },

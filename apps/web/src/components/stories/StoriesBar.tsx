@@ -1,11 +1,12 @@
-import { ScrollArea } from '@/components/ui/scroll-area'
-import type { Story } from '@/lib/stories-types'
-import { filterActiveStories, groupStoriesByUser } from '@/lib/stories-utils'
-import { motion } from 'framer-motion'
 import { useState } from 'react'
-import CreateStoryDialog from './CreateStoryDialog'
+import { motion } from 'framer-motion'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import StoryRing from './StoryRing'
 import StoryViewer from './StoryViewer'
+import CreateStoryDialog from './CreateStoryDialog'
+import { groupStoriesByUser, filterActiveStories } from '@petspark/shared'
+import type { Story } from '@petspark/shared'
+
 
 interface StoriesBarProps {
   allStories: Story[]
@@ -18,6 +19,7 @@ interface StoriesBarProps {
   onStoryCreated: (story: Story) => void
   onStoryUpdate: (story: Story) => void
 }
+
 
 export default function StoriesBar({
   allStories,
@@ -33,11 +35,13 @@ export default function StoriesBar({
   const [viewingStories, setViewingStories] = useState<Story[] | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
 
+
   const activeStories = filterActiveStories(allStories)
   const storiesByUser = groupStoriesByUser(activeStories)
   
   const ownStories = activeStories.filter(s => s.userId === currentUserId)
   const otherStories = activeStories.filter(s => s.userId !== currentUserId)
+
 
   const handleStoryRingClick = (userId: string) => {
     const userStories = storiesByUser.get(userId)
@@ -46,6 +50,7 @@ export default function StoriesBar({
     }
   }
 
+
   const handleOwnStoryClick = () => {
     if (ownStories.length > 0) {
       setViewingStories(ownStories)
@@ -53,6 +58,7 @@ export default function StoriesBar({
       setShowCreateDialog(true)
     }
   }
+
 
   if (activeStories.length === 0 && ownStories.length === 0) {
     return (
@@ -78,6 +84,7 @@ export default function StoriesBar({
           </div>
         </motion.div>
 
+
         <CreateStoryDialog
           open={showCreateDialog}
           onOpenChange={setShowCreateDialog}
@@ -86,16 +93,18 @@ export default function StoriesBar({
           petId={currentUserPetId}
           petName={currentUserPetName}
           petPhoto={currentUserPetPhoto}
-          {...(currentUserAvatar !== undefined ? { userAvatar: currentUserAvatar } : {})}
+          userAvatar={currentUserAvatar}
           onStoryCreated={onStoryCreated}
         />
       </>
     )
   }
 
+
   const uniqueUserIds = Array.from(new Set([
     ...otherStories.map(s => s.userId)
   ]))
+
 
   return (
     <>
@@ -114,13 +123,14 @@ export default function StoriesBar({
               onClick={handleOwnStoryClick}
             />
 
+
             {uniqueUserIds.map(userId => {
               const userStories = storiesByUser.get(userId)
               
               if (!userStories || userStories.length === 0) return null
               
               const firstStory = userStories[0]
-              if (!firstStory) return null
+
 
               return (
                 <StoryRing
@@ -139,16 +149,18 @@ export default function StoriesBar({
         </ScrollArea>
       </motion.div>
 
+
       {viewingStories && (
         <StoryViewer
           stories={viewingStories}
           currentUserId={currentUserId}
           currentUserName={currentUserName}
-          {...(currentUserAvatar !== undefined ? { currentUserAvatar } : {})}
+          currentUserAvatar={currentUserAvatar}
           onClose={() => setViewingStories(null)}
           onStoryUpdate={onStoryUpdate}
         />
       )}
+
 
       <CreateStoryDialog
         open={showCreateDialog}
@@ -158,7 +170,7 @@ export default function StoriesBar({
         petId={currentUserPetId}
         petName={currentUserPetName}
         petPhoto={currentUserPetPhoto}
-        {...(currentUserAvatar !== undefined ? { userAvatar: currentUserAvatar } : {})}
+        userAvatar={currentUserAvatar}
         onStoryCreated={onStoryCreated}
       />
     </>

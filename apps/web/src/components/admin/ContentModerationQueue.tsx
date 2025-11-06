@@ -308,9 +308,6 @@ export function ContentModerationQueue() {
               })()}
             </div>
           )}
-          {post.nsfwScore && post.nsfwScore > 0.7 && (
-            <Badge variant="destructive">NSFW Score: {(post.nsfwScore * 100).toFixed(0)}%</Badge>
-          )}
         </div>
       )
     } else if (item.type === 'live-stream') {
@@ -457,20 +454,6 @@ export function ContentModerationQueue() {
             <div className="space-y-6">
               <div className="space-y-4">
                 {renderContentPreview(selectedItem)}
-                
-                {selectedItem.type === 'community' && (selectedItem.content as Post).nsfwScore && (
-                  <Card className="p-4">
-                    <h3 className="font-semibold mb-2">Content Safety Check</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span>NSFW Score:</span>
-                        <Badge variant={(selectedItem.content as Post).nsfwScore! > 0.7 ? 'destructive' : 'outline'}>
-                          {((selectedItem.content as Post).nsfwScore! * 100).toFixed(0)}%
-                        </Badge>
-                      </div>
-                    </div>
-                  </Card>
-                )}
               </div>
 
               {selectedItem.status === 'pending' && (

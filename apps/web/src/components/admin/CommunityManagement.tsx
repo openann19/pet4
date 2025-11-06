@@ -1,7 +1,9 @@
-import { useState } from 'react'
+'use client'
+
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useStorage } from '@/hooks/useStorage'
 import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
@@ -9,61 +11,198 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Trash, Flag, Eye, EyeSlash, MagnifyingGlass, ChatCircle, ShareNetwork } from '@phosphor-icons/react'
 import { toast } from 'sonner'
-import { motion } from 'framer-motion'
-import type { CommunityPost } from '@/lib/community-types'
+import type { Post } from '@/lib/community-types'
 import { PostCard } from '@/components/community/PostCard'
+import { communityService } from '@/lib/community-service'
+import { createLogger } from '@/lib/logger'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+
+const logger = createLogger('CommunityManagement')
+
+interface PostItemProps {
+  post: Post
+  isHidden: boolean
+  onHide: (postId: string) => void
+  onUnhide: (postId: string) => void
+  onDelete: (post: Post) => void
+}
+
+function PostItem({ post, isHidden, onHide, onUnhide, onDelete }: PostItemProps) {
+  const opacity = useSharedValue(0)
+  const translateY = useSharedValue(20)
+
+  useEffect(() => {
+    opacity.value = withTiming(1, { duration: 300 })
+    translateY.value = withTiming(0, { duration: 300 })
+  }, [opacity, translateY])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [{ translateY: translateY.value }]
+    }
+  }) as AnimatedStyle
+
+  const postId = post._id ?? post.id
+  if (!postId) {
+    return null
+  }
+
+  return (
+    <AnimatedView style={animatedStyle} className="relative">
+      <div className="absolute top-4 right-4 z-10 flex gap-2">
+        {isHidden ? (
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => onUnhide(postId)}
+          >
+            <Eye size={16} className="mr-2" />
+            Unhide
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onHide(postId)}
+          >
+            <EyeSlash size={16} className="mr-2" />
+            Hide
+          </Button>
+        )}
+        <Button
+          size="sm"
+          variant="destructive"
+          onClick={() => onDelete(post)}
+        >
+          <Trash size={16} className="mr-2" />
+          Delete
+        </Button>
+      </div>
+      <PostCard post={post} />
+    </AnimatedView>
+  )
+}
 
 export default function CommunityManagement() {
-  const [posts] = useStorage<CommunityPost[]>('community-posts', [])
+  const [posts, setPosts] = useState<Post[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [flaggedPosts] = useStorage<string[]>('flagged-posts', [])
   const [hiddenPosts, setHiddenPosts] = useStorage<string[]>('hidden-posts', [])
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null)
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [activeTab, setActiveTab] = useState<'all' | 'flagged' | 'hidden'>('all')
 
-  const allPosts = posts || []
-  const flaggedPostsList = allPosts.filter(p => p._id && flaggedPosts?.includes(p._id))
-  const hiddenPostsList = allPosts.filter(p => p._id && hiddenPosts?.includes(p._id))
+  const loadPosts = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      const feedResponse = await communityService.getFeed({ limit: 1000 })
+      setPosts(feedResponse.posts)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to load posts', err, { action: 'loadPosts' })
+      toast.error('Failed to load posts')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
 
-  const filteredPosts = () => {
-    let list = activeTab === 'all' ? allPosts : activeTab === 'flagged' ? flaggedPostsList : hiddenPostsList
+  useEffect(() => {
+    void loadPosts()
+  }, [loadPosts])
+
+  const flaggedPostsList = useMemo(() => {
+    return posts.filter(p => {
+      const postId = p._id ?? p.id
+      return postId && flaggedPosts?.includes(postId)
+    })
+  }, [posts, flaggedPosts])
+
+  const hiddenPostsList = useMemo(() => {
+    return posts.filter(p => {
+      const postId = p._id ?? p.id
+      return postId && hiddenPosts?.includes(postId)
+    })
+  }, [posts, hiddenPosts])
+
+  const filteredPosts = useMemo(() => {
+    let list = activeTab === 'all' ? posts : activeTab === 'flagged' ? flaggedPostsList : hiddenPostsList
     
     if (searchQuery) {
+      const query = searchQuery.toLowerCase()
       list = list.filter(p => 
-        p.text?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.authorName?.toLowerCase().includes(searchQuery.toLowerCase())
+        (p.text?.toLowerCase().includes(query) ?? false) ||
+        (p.authorName?.toLowerCase().includes(query) ?? false)
       )
     }
     
-    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  }
+    return list.sort((a, b) => {
+      const dateA = new Date(a.createdAt ?? 0).getTime()
+      const dateB = new Date(b.createdAt ?? 0).getTime()
+      return dateB - dateA
+    })
+  }, [posts, flaggedPostsList, hiddenPostsList, activeTab, searchQuery])
 
-  const handleHidePost = (postId: string) => {
-    setHiddenPosts(prev => [...(prev || []), postId])
+  const handleHidePost = useCallback((postId: string) => {
+    setHiddenPosts(prev => {
+      if (prev?.includes(postId)) {
+        return prev
+      }
+      return [...(prev || []), postId]
+    })
     toast.success('Post hidden from feed')
-  }
+  }, [setHiddenPosts])
 
-  const handleUnhidePost = (postId: string) => {
+  const handleUnhidePost = useCallback((postId: string) => {
     setHiddenPosts(prev => (prev || []).filter(id => id !== postId))
     toast.success('Post restored to feed')
-  }
+  }, [setHiddenPosts])
 
-  const handleDeletePost = async () => {
-    if (!selectedPost) return
-    toast.success('Post deleted successfully')
-    setShowDeleteDialog(false)
-    setSelectedPost(null)
-  }
+  const handleDeletePost = useCallback(async () => {
+    if (!selectedPost) {
+      return
+    }
 
-  const stats = {
-    total: allPosts.length,
-    flagged: flaggedPostsList.length,
-    hidden: hiddenPostsList.length,
-    last24h: allPosts.filter(p => 
-      new Date(p.createdAt).getTime() > Date.now() - 24 * 60 * 60 * 1000
-    ).length
-  }
+    const postId = selectedPost._id ?? selectedPost.id
+    if (!postId) {
+      toast.error('Invalid post ID')
+      return
+    }
+
+    try {
+      await communityService.deletePost(postId)
+      toast.success('Post deleted successfully')
+      setShowDeleteDialog(false)
+      setSelectedPost(null)
+      await loadPosts()
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to delete post', err, { postId, action: 'deletePost' })
+      toast.error('Failed to delete post')
+    }
+  }, [selectedPost, loadPosts])
+
+  const handleDeleteClick = useCallback((post: Post) => {
+    setSelectedPost(post)
+    setShowDeleteDialog(true)
+  }, [])
+
+  const stats = useMemo(() => {
+    const now = Date.now()
+    const last24h = now - 24 * 60 * 60 * 1000
+    return {
+      total: posts.length,
+      flagged: flaggedPostsList.length,
+      hidden: hiddenPostsList.length,
+      last24h: posts.filter(p => {
+        const createdAt = new Date(p.createdAt ?? 0).getTime()
+        return createdAt > last24h
+      }).length
+    }
+  }, [posts, flaggedPostsList, hiddenPostsList])
 
   return (
     <div className="flex-1 overflow-auto p-6 space-y-6">
@@ -126,7 +265,8 @@ export default function CommunityManagement() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between gap-4">
+          <CardTitle>Posts</CardTitle>
+          <div className="flex items-center justify-between gap-4 mt-4">
             <div className="flex-1 relative">
               <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
               <Input
@@ -150,54 +290,31 @@ export default function CommunityManagement() {
         <CardContent>
           <ScrollArea className="h-[600px]">
             <div className="space-y-4">
-              {filteredPosts().length === 0 ? (
+              {isLoading ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">Loading posts...</p>
+                </div>
+              ) : filteredPosts.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">No posts found</p>
                 </div>
               ) : (
-                filteredPosts().map((post, index) => (
-                  <motion.div
-                    key={post._id || post.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="relative"
-                  >
-                    <div className="absolute top-4 right-4 z-10 flex gap-2">
-                      {post._id && hiddenPosts?.includes(post._id) ? (
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => post._id && handleUnhidePost(post._id)}
-                        >
-                          <Eye size={16} className="mr-2" />
-                          Unhide
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => post._id && handleHidePost(post._id)}
-                        >
-                          <EyeSlash size={16} className="mr-2" />
-                          Hide
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => {
-                          setSelectedPost(post)
-                          setShowDeleteDialog(true)
-                        }}
-                      >
-                        <Trash size={16} className="mr-2" />
-                        Delete
-                      </Button>
-                    </div>
-                    <PostCard post={post} />
-                  </motion.div>
-                ))
+                filteredPosts.map((post) => {
+                  const postId = post._id ?? post.id
+                  if (!postId) {
+                    return null
+                  }
+                  return (
+                    <PostItem
+                      key={postId}
+                      post={post}
+                      isHidden={hiddenPosts?.includes(postId) ?? false}
+                      onHide={handleHidePost}
+                      onUnhide={handleUnhidePost}
+                      onDelete={handleDeleteClick}
+                    />
+                  )
+                })
               )}
             </div>
           </ScrollArea>
@@ -216,7 +333,7 @@ export default function CommunityManagement() {
             <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeletePost}>
+            <Button variant="destructive" onClick={() => void handleDeletePost()}>
               Delete
             </Button>
           </DialogFooter>

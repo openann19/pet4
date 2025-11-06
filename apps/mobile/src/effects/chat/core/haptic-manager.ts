@@ -1,148 +1,108 @@
 /**
- * Haptic Manager for Chat Effects
- * 
- * Manages haptic feedback with cooldown (≥250ms) and respect for reduced motion.
- * Prevents haptic spam and ensures consistent tactile feedback.
- * 
- * Location: apps/mobile/src/effects/chat/core/haptic-manager.ts
+ * Haptic Manager — RN-friendly, web-safe, cooldown + reduced motion aware
  */
 
-import * as Haptics from 'expo-haptics'
-import { createLogger } from '../../../utils/logger'
-import { isReduceMotionEnabled } from './reduced-motion'
+import { useEffect } from 'react'
+import { isReduceMotionEnabled, useReducedMotion } from './reduced-motion'
 
-const logger = createLogger('haptic-manager')
+// Lazy import haptics (Expo or custom wrapper), safe on web
+let Haptics: any = null
+try { 
+  Haptics = require('expo-haptics') 
+} catch {}
 
-/**
- * Haptic feedback types supported by the manager
- */
+// Optional: your wrapper can still be used; fallback to Expo if present
+let custom: any = null
+try { 
+  custom = require('@/lib/haptics') 
+} catch {}
+
 export type HapticType = 'selection' | 'light' | 'medium' | 'success'
 
-/**
- * Haptic Manager with cooldown enforcement
- * 
- * Ensures haptics are not triggered more frequently than 250ms apart.
- * Respects reduced motion preference (no haptics if enabled).
- */
+/** monotonic time for precise cooldowns */
+const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now())
+
 export class HapticManager {
-  private lastTriggerTime: number = 0
-  private readonly cooldownMs: number = 250
-  private reducedMotionEnabled: boolean = false
+  private lastTs = -Infinity
+  private cooldownMs: number
+  private reduced = isReduceMotionEnabled()
 
-  constructor() {
-    // Check reduced motion preference on initialization
-    this.updateReducedMotionPreference()
+  constructor(cooldownMs = 250) { 
+    this.cooldownMs = cooldownMs 
   }
 
-  /**
-   * Update reduced motion preference (call when preference changes)
-   */
-  updateReducedMotionPreference(): void {
-    this.reducedMotionEnabled = isReduceMotionEnabled()
+  updateReducedMotion(v?: boolean) {
+    this.reduced = typeof v === 'boolean' ? v : isReduceMotionEnabled()
   }
 
-  /**
-   * Trigger haptic feedback with cooldown enforcement
-   * 
-   * @param type - Type of haptic feedback
-   * @param bypassCooldown - If true, bypasses cooldown (use sparingly)
-   * @returns true if haptic was triggered, false if skipped
-   */
-  trigger(type: HapticType, bypassCooldown: boolean = false): boolean {
-    // Respect reduced motion - no haptics if enabled
-    if (this.reducedMotionEnabled) {
-      return false
-    }
+  trigger(t: HapticType, bypassCooldown = false): boolean {
+    if (this.reduced) return false
 
-    // Check cooldown
-    const now = Date.now()
-    const timeSinceLastTrigger = now - this.lastTriggerTime
+    const ts = now()
+    if (!bypassCooldown && ts - this.lastTs < this.cooldownMs) return false
 
-    if (!bypassCooldown && timeSinceLastTrigger < this.cooldownMs) {
-      logger.debug('Haptic skipped due to cooldown', {
-        type,
-        timeSinceLastTrigger,
-        cooldownMs: this.cooldownMs,
-      })
-      return false
-    }
-
-    // Trigger haptic based on type
     try {
-      switch (type) {
-        case 'selection':
-          void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-          break
-        case 'light':
-          void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-          break
-        case 'medium':
-          void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-          break
-        case 'success':
-          void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-          break
-        default:
-          logger.warn('Unknown haptic type', { type })
-          return false
+      // Prefer custom wrapper if available, else Expo Haptics
+      if (custom?.haptics?.[t]) {
+        custom.haptics[t]()
+      } else if (Haptics) {
+        switch (t) {
+          case 'selection': 
+            Haptics.selectionAsync?.()
+            break
+          case 'light':     
+            Haptics.impactAsync?.(Haptics.ImpactFeedbackStyle.Light)
+            break
+          case 'medium':    
+            Haptics.impactAsync?.(Haptics.ImpactFeedbackStyle.Medium)
+            break
+          case 'success':   
+            Haptics.notificationAsync?.(Haptics.NotificationFeedbackType.Success)
+            break
+        }
+      } else {
+        // web/no-op
+        return false
       }
 
-      this.lastTriggerTime = now
+      this.lastTs = ts
       return true
-    } catch (error) {
-      // Haptics may not be available on all platforms/devices
-      logger.warn('Failed to trigger haptic', error instanceof Error ? error : new Error(String(error)))                                                        
+    } catch {
       return false
     }
   }
 
-  /**
-   * Get time since last haptic trigger
-   */
-  getTimeSinceLastTrigger(): number {
-    return Date.now() - this.lastTriggerTime
+  getTimeSinceLastTrigger(): number { 
+    return now() - this.lastTs 
   }
 
-  /**
-   * Check if cooldown is active
-   */
-  isCooldownActive(): boolean {
-    return this.getTimeSinceLastTrigger() < this.cooldownMs
+  isCooldownActive(): boolean { 
+    return this.getTimeSinceLastTrigger() < this.cooldownMs 
   }
 
-  /**
-   * Reset cooldown (for testing or special cases)
-   */
-  resetCooldown(): void {
-    this.lastTriggerTime = 0
+  resetCooldown(): void { 
+    this.lastTs = -Infinity 
   }
 }
 
-// Singleton instance
-let hapticManagerInstance: HapticManager | null = null
+let singleton: HapticManager | null = null
 
-/**
- * Get the singleton HapticManager instance
- */
-export function getHapticManager(): HapticManager {
-  if (!hapticManagerInstance) {
-    hapticManagerInstance = new HapticManager()
-  }
-  return hapticManagerInstance
+export function getHapticManager(): HapticManager { 
+  return (singleton ??= new HapticManager()) 
 }
 
-/**
- * Hook to use HapticManager in React components
- */
-export function useHapticManager(): HapticManager {
-  return getHapticManager()
-}
-
-/**
- * Convenience function to trigger haptic feedback
- * Uses the singleton instance
- */
-export function triggerHaptic(type: HapticType, bypassCooldown: boolean = false): boolean {
+export function triggerHaptic(type: HapticType, bypassCooldown = false): boolean {
   return getHapticManager().trigger(type, bypassCooldown)
 }
 
+/** React hook to auto-sync reduced motion with the singleton */
+export function useHapticManager(): HapticManager {
+  const reduced = useReducedMotion()
+  const mgr = getHapticManager()
+
+  useEffect(() => { 
+    mgr.updateReducedMotion(reduced) 
+  }, [reduced, mgr])
+
+  return mgr
+}

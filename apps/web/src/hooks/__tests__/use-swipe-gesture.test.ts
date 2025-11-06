@@ -281,7 +281,7 @@ describe('useSwipeGesture', () => {
 
       const moveEvent = {
         preventDefault: vi.fn(),
-        touches: [{ clientX: 120, clientY: 250 }]
+        touches: [{ clientX: 150, clientY: 210 }]
       } as unknown as React.TouchEvent
 
       act(() => {
@@ -289,7 +289,7 @@ describe('useSwipeGesture', () => {
         result.current.handlers.onTouchMove(moveEvent)
       })
 
-      expect(result.current.swipeDistance).toBeGreaterThan(0)
+      expect(result.current.swipeDistance).toBe(50)
     })
   })
 })

@@ -1,6 +1,5 @@
 import type { PostStatus } from '@/core/domain/community'
 import { canReceiveComments, isValidPostStatusTransition } from '@/core/domain/community'
-import { checkDuplicateContent, moderatePost } from '@/core/services/content-moderation'
 import { APIClient } from '@/lib/api-client'
 import type {
     Comment,
@@ -22,6 +21,7 @@ export interface CreatePostRequest extends CreatePostData {
   authorId: string
   authorName: string
   authorAvatar?: string
+  status?: PostStatus // Optional - defaults to pending_review on backend
 }
 
 export interface CreatePostResponse {
@@ -90,8 +90,7 @@ export class CommunityAPI {
 
   /**
    * POST /community/posts
-   * Create a new post (pre-upload NSFW filter, profanity check)
-   * Content must pass moderation before being stored
+   * Create a new post - all posts require manual admin approval
    */
   async createPost(
     data: CreatePostData & {
@@ -101,45 +100,12 @@ export class CommunityAPI {
     }
   ): Promise<Post> {
     try {
-      // Extract media URLs for moderation
-      const mediaUrls: string[] = data.media || []
-      
-      // Moderate content before storage
-      const moderationResult = await moderatePost(
-        data.text || '',
-        mediaUrls
-      )
-      
-      // Check for duplicate content (get fingerprints from API)
-      try {
-        const fingerprintsResponse = await APIClient.get<{ fingerprints: string[] }>(
-          '/community/posts/fingerprints'
-        )
-        const existingFingerprints = new Set(fingerprintsResponse.data.fingerprints)
-        
-        const isDuplicate = await checkDuplicateContent(
-          moderationResult.contentFingerprint,
-          existingFingerprints
-        )
-        
-        if (isDuplicate) {
-          throw new Error('Duplicate content detected - this post has already been submitted')
-        }
-      } catch (error) {
-        // If fingerprint check fails, continue anyway (backend will check)
-        logger.warn('Failed to check duplicate content', error instanceof Error ? error : new Error(String(error)))
-      }
-      
-      // Block content that fails moderation
-      if (!moderationResult.passed) {
-        throw new Error(`Content moderation failed: ${moderationResult.blockedReasons.join(', ')}`)
-      }
-      
       const request: CreatePostRequest = {
         ...data,
         authorId: data.authorId,
         authorName: data.authorName,
-        ...(data.authorAvatar ? { authorAvatar: data.authorAvatar } : {})
+        ...(data.authorAvatar ? { authorAvatar: data.authorAvatar } : {}),
+        status: 'pending_review' as PostStatus // All posts require manual approval
       }
 
       const response = await APIClient.post<CreatePostResponse>(
@@ -149,11 +115,15 @@ export class CommunityAPI {
 
       const post = response.data.post
 
-      if (post.status === 'pending_review') {
-        logger.info('Post requires review', { 
+      // Ensure post is set to pending_review for manual approval
+      if (post.status !== 'pending_review') {
+        logger.info('Post created, awaiting admin approval', { 
           postId: post.id,
-          nsfwScore: moderationResult.nsfwScore,
-          reasons: moderationResult.blockedReasons 
+          currentStatus: post.status
+        })
+      } else {
+        logger.info('Post created and queued for admin approval', { 
+          postId: post.id
         })
       }
 

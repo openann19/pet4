@@ -1,5 +1,7 @@
 import { useState, useRef, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useSharedValue, withSpring, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { Presence } from '@petspark/motion'
 import { MagnifyingGlass, X, Clock, TrendUp, Sparkle } from '@phosphor-icons/react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -166,14 +168,13 @@ export function SmartSearch<T extends Record<string, any>>({
         )}
       </div>
 
-      <AnimatePresence>
-        {showDropdown && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-          >
+      <Presence visible={showDropdown}>
+        <AnimatedView
+          style={{
+            opacity: 1,
+            transform: [{ translateY: 0 }, { scale: 1 }],
+          }}
+        >
             <Card className="absolute top-full mt-2 w-full max-h-[400px] overflow-y-auto shadow-xl border z-50 p-2">
               {query.trim() ? (
                 <>
@@ -259,9 +260,8 @@ export function SmartSearch<T extends Record<string, any>>({
                 </>
               )}
             </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </AnimatedView>
+      </Presence>
     </div>
   )
 }

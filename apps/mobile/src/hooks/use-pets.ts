@@ -7,6 +7,7 @@ import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { usePetsStore } from '../store/pets-store'
 import { useUserStore } from '../store/user-store'
+import { queryKeys, mutationKeys } from '../lib/query-client'
 import type { ApiResponse, PaginatedResponse } from '../types/api'
 import type { Match, PetProfile } from '../types/pet'
 
@@ -76,7 +77,7 @@ async function dislikePet(petId: string): Promise<ApiResponse<null>> {
  */
 export function usePets(cursor?: string): UseQueryResult<PaginatedResponse<PetProfile>> {
   return useQuery({
-    queryKey: ['pets', cursor],
+    queryKey: cursor ? [...queryKeys.pets.list, cursor] : queryKeys.pets.list,
     queryFn: () => fetchPets(cursor),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
@@ -92,6 +93,7 @@ export function useLikePet(): UseMutationResult<ApiResponse<Match | null>, unkno
   const { markAsSwiped, markAsLiked } = usePetsStore()
 
   return useMutation({
+    mutationKey: mutationKeys.like,
     mutationFn: (petId: string) => likePet(petId),
     onMutate: async (petId: string) => {
       // Cancel outgoing refetches
@@ -128,11 +130,11 @@ export function useLikePet(): UseMutationResult<ApiResponse<Match | null>, unkno
       }
 
       // Invalidate matches query
-      void queryClient.invalidateQueries({ queryKey: ['matches'] })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.matches.list })
     },
     onSettled: () => {
       // Refetch pets to ensure consistency
-      void queryClient.invalidateQueries({ queryKey: ['pets'] })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.pets.list })
     },
   })
 }
@@ -145,6 +147,7 @@ export function useDislikePet(): UseMutationResult<ApiResponse<null>, unknown, s
   const { markAsSwiped } = usePetsStore()
 
   return useMutation({
+    mutationKey: mutationKeys.dislike,
     mutationFn: (petId: string) => dislikePet(petId),
     onMutate: async (petId: string): Promise<{ previousPets?: PaginatedResponse<PetProfile> }> => {
       await queryClient.cancelQueries({ queryKey: ['pets'] })
@@ -170,7 +173,7 @@ export function useDislikePet(): UseMutationResult<ApiResponse<null>, unknown, s
     },
     onSettled: () => {
       // Refetch pets to ensure consistency
-      void queryClient.invalidateQueries({ queryKey: ['pets'] })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.pets.list })
     },
   })
 }

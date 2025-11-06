@@ -1,4 +1,6 @@
-import { useState } from 'react'
+'use client'
+
+import { useState, useCallback } from 'react'
 import { useStorage } from '@/hooks/useStorage'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -26,15 +28,18 @@ import {
   ClipboardText,
   ArrowLeft
 } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useSidebarAnimation } from '@/effects/reanimated/use-sidebar-animation'
 import { cn } from '@/lib/utils'
+import { createLogger } from '@/lib/logger'
+
+const logger = createLogger('AdminLayout')
 
 type AdminView = 'dashboard' | 'reports' | 'users' | 'content' | 'verification' | 'settings' | 'map-settings' | 'audit' | 'performance' | 'system-map' | 'moderation' | 'content-moderation' | 'kyc' | 'api-config' | 'subscriptions' | 'community' | 'adoption' | 'adoption-applications' | 'adoption-listings' | 'lost-found' | 'live-streams' | 'business-config' | 'chat-moderation'
 
 interface AdminUser {
   name: string
   role?: string
-  [key: string]: unknown
 }
 
 interface AdminLayoutProps {
@@ -47,6 +52,40 @@ interface AdminLayoutProps {
 export default function AdminLayout({ children, currentView, onViewChange, onExit }: AdminLayoutProps) {
   const [currentUser] = useStorage<AdminUser | null>('current-user', null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
+
+  const sidebarAnimation = useSidebarAnimation({
+    isOpen: sidebarOpen,
+    openWidth: 280,
+    closedWidth: 80,
+    enableOpacity: true
+  })
+
+  const handleSidebarToggle = useCallback(() => {
+    try {
+      setSidebarOpen((prev) => !prev)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to toggle sidebar', err)
+    }
+  }, [])
+
+  const handleViewChange = useCallback((view: AdminView) => {
+    try {
+      onViewChange(view)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to change view', err, { view })
+    }
+  }, [onViewChange])
+
+  const handleExit = useCallback(() => {
+    try {
+      onExit?.()
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to exit admin console', err)
+    }
+  }, [onExit])
 
   const menuItems = [
     { id: 'dashboard' as AdminView, label: 'Dashboard', icon: ChartBar },
@@ -73,9 +112,8 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      <motion.aside
-        initial={false}
-        animate={{ width: sidebarOpen ? 280 : 80 }}
+      <AnimatedView
+        style={sidebarAnimation.widthStyle}
         className="border-r border-border bg-card flex flex-col shrink-0"
       >
         <div className="p-4 sm:p-6 flex items-center justify-between shrink-0">
@@ -84,15 +122,13 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
               <ShieldCheck className="text-white" size={20} weight="fill" />
             </div>
             {sidebarOpen && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+              <AnimatedView
+                style={sidebarAnimation.opacityStyle}
                 className="min-w-0"
               >
                 <h2 className="font-bold text-lg truncate">Admin Console</h2>
                 <p className="text-xs text-muted-foreground truncate">Moderation & Management</p>
-              </motion.div>
+              </AnimatedView>
             )}
           </div>
           {onExit ? (
@@ -100,7 +136,7 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={onExit}
+                onClick={handleExit}
                 className="rounded-full hover:bg-destructive/10 shrink-0"
                 aria-label="Exit Admin Console"
               >
@@ -112,7 +148,14 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => window.location.href = '/'}
+                onClick={() => {
+                  try {
+                    window.location.href = '/'
+                  } catch (error) {
+                    const err = error instanceof Error ? error : new Error(String(error))
+                    logger.error('Failed to navigate to main app', err)
+                  }
+                }}
                 className="rounded-full hover:bg-primary/10 shrink-0"
                 aria-label="Go to Main App"
                 title="Go to Main App"
@@ -139,7 +182,7 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
                     'w-full justify-start gap-3 h-11',
                     !sidebarOpen && 'justify-center px-2'
                   )}
-                  onClick={() => onViewChange(item.id)}
+                  onClick={() => handleViewChange(item.id)}
                   title={!sidebarOpen ? item.label : undefined}
                 >
                   <Icon size={20} weight={isActive ? 'fill' : 'regular'} className="shrink-0" />
@@ -156,7 +199,7 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
           {currentUser && sidebarOpen && (
             <div className="px-3 py-2 text-sm">
               <p className="font-semibold truncate">{currentUser.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{currentUser.role || 'Admin'}</p>
+              <p className="text-xs text-muted-foreground truncate">{currentUser.role ?? 'Admin'}</p>
             </div>
           )}
           
@@ -164,7 +207,14 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
             <Button
               variant="ghost"
               className={cn('w-full justify-start gap-3', !sidebarOpen && 'justify-center')}
-              onClick={() => window.location.href = '/'}
+              onClick={() => {
+                try {
+                  window.location.href = '/'
+                } catch (error) {
+                  const err = error instanceof Error ? error : new Error(String(error))
+                  logger.error('Failed to navigate to main app', err)
+                }
+              }}
               title={!sidebarOpen ? 'Go to Main App' : undefined}
             >
               <ArrowLeft size={20} className="shrink-0" />
@@ -175,7 +225,9 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
           <Button
             variant="ghost"
             className={cn('w-full justify-start gap-3', !sidebarOpen && 'justify-center')}
-            onClick={() => {}}
+            onClick={() => {
+              logger.info('Sign out clicked - handler not implemented')
+            }}
             title={!sidebarOpen ? 'Sign Out' : undefined}
           >
             <SignOut size={20} className="shrink-0" />
@@ -186,13 +238,13 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
             variant="ghost"
             size="sm"
             className="w-full"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={handleSidebarToggle}
             title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
           >
             {sidebarOpen ? '←' : '→'}
           </Button>
         </div>
-      </motion.aside>
+      </AnimatedView>
 
       <main className="flex-1 overflow-auto">
         <div className="p-4 sm:p-6 lg:p-8 min-h-full">

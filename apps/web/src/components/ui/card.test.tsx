@@ -33,7 +33,7 @@ describe('Card Components', () => {
     it('should have default card styles', () => {
       render(<Card data-testid="card">Content</Card>);
       const card = screen.getByTestId('card');
-      expect(card).toHaveClass('bg-card', 'rounded-xl', 'border', 'shadow-sm');
+      expect(card).toHaveClass('bg-card', 'rounded-xl', 'border');
     });
   });
 

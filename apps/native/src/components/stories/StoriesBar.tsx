@@ -1,169 +1,264 @@
-import React from 'react';
+import React, { useState } from 'react'
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   Pressable,
-  Image,
-} from 'react-native';
-import { StoryRing } from './StoryRing';
-
-export interface StoryItem {
-  id: string;
-  uri: string;
-  type: 'image' | 'video';
-  duration?: number;
-  createdAt: string;
-}
-
-export interface Story {
-  id: string;
-  userId: string;
-  userName: string;
-  userPhoto?: string;
-  hasViewed: boolean;
-  stories: StoryItem[];
-  createdAt: string;
-}
+  Animated,
+} from 'react-native'
+import { StoryRing } from './StoryRing'
+import StoryViewer from './StoryViewer'
+import CreateStoryDialog from './CreateStoryDialog'
+import { groupStoriesByUser, filterActiveStories } from '@petspark/shared'
+import type { Story } from '@petspark/shared'
 
 interface StoriesBarProps {
-  stories: Story[];
-  onStoryPress: (story: Story) => void;
-  onAddStory: () => void;
-  currentUserId?: string;
+  allStories: Story[]
+  currentUserId: string
+  currentUserName: string
+  currentUserPetId: string
+  currentUserPetName: string
+  currentUserPetPhoto: string
+  currentUserAvatar?: string
+  onStoryCreated: (story: Story) => void
+  onStoryUpdate: (story: Story) => void
 }
 
 export const StoriesBar: React.FC<StoriesBarProps> = ({
-  stories,
-  onStoryPress,
-  onAddStory,
-  currentUserId = 'user-1',
+  allStories,
+  currentUserId,
+  currentUserName,
+  currentUserPetId,
+  currentUserPetName,
+  currentUserPetPhoto,
+  currentUserAvatar,
+  onStoryCreated,
+  onStoryUpdate
 }) => {
-  // Separate user's stories from others
-  const userStories = stories.filter((s) => s.userId === currentUserId);
-  const otherStories = stories.filter((s) => s.userId !== currentUserId);
+  const [viewingStories, setViewingStories] = useState<Story[] | null>(null)
+  const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [fadeAnim] = useState(new Animated.Value(0))
+
+  const activeStories = filterActiveStories(allStories)
+  const storiesByUser = groupStoriesByUser(activeStories)
+
+  const ownStories = activeStories.filter(s => s.userId === currentUserId)
+  const otherStories = activeStories.filter(s => s.userId !== currentUserId)
+
+  React.useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start()
+  }, [])
+
+  const handleStoryRingClick = (userId: string) => {
+    const userStories = storiesByUser.get(userId)
+    if (userStories && userStories.length > 0) {
+      setViewingStories(userStories)
+    }
+  }
+
+  const handleOwnStoryClick = () => {
+    if (ownStories.length > 0) {
+      setViewingStories(ownStories)
+    } else {
+      setShowCreateDialog(true)
+    }
+  }
+
+  if (activeStories.length === 0 && ownStories.length === 0) {
+    return (
+      <>
+        <Animated.View
+          style={[
+            styles.emptyContainer,
+            { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [-10, 0]
+            }) }] }
+          ]}
+        >
+          <View style={styles.emptyContent}>
+            <View>
+              <Text style={styles.emptyTitle}>Share Your Story</Text>
+              <Text style={styles.emptySubtitle}>
+                Be the first to share a story!
+              </Text>
+            </View>
+            <Pressable
+              style={styles.addButton}
+              onPress={() => setShowCreateDialog(true)}
+            >
+              <Text style={styles.addButtonText}>+</Text>
+            </Pressable>
+          </View>
+        </Animated.View>
+
+        <CreateStoryDialog
+          open={showCreateDialog}
+          onOpenChange={setShowCreateDialog}
+          userId={currentUserId}
+          userName={currentUserName}
+          petId={currentUserPetId}
+          petName={currentUserPetName}
+          petPhoto={currentUserPetPhoto}
+          userAvatar={currentUserAvatar}
+          onStoryCreated={onStoryCreated}
+        />
+      </>
+    )
+  }
+
+  const uniqueUserIds = Array.from(new Set([
+    ...otherStories.map(s => s.userId)
+  ]))
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.container}
-      contentContainerStyle={styles.content}
-    >
-      {/* Add Story Button */}
-      <Pressable style={styles.addStoryContainer} onPress={onAddStory}>
-        <View style={styles.addStoryRing}>
-          <View style={styles.addStoryButton}>
-            <Text style={styles.addStoryIcon}>+</Text>
-          </View>
-        </View>
-        <Text style={styles.storyLabel}>Your Story</Text>
-      </Pressable>
-
-      {/* User's Stories (if any) */}
-      {userStories.map((story) => (
-        <Pressable
-          key={story.id}
-          style={styles.storyContainer}
-          onPress={() => onStoryPress(story)}
+    <>
+      <Animated.View
+        style={[
+          styles.container,
+          { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [-10, 0]
+          }) }] }
+        ]}
+      >
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContent}
         >
           <StoryRing
-            hasViewed={story.hasViewed}
-            userPhoto={story.userPhoto}
-            userName={story.userName}
+            stories={ownStories}
+            petName={currentUserPetName}
+            petPhoto={currentUserPetPhoto}
+            isOwn
+            onClick={handleOwnStoryClick}
           />
-          <Text style={styles.storyLabel}>Your Story</Text>
-        </Pressable>
-      ))}
 
-      {/* Other Users' Stories */}
-      {otherStories.map((story) => (
-        <Pressable
-          key={story.id}
-          style={styles.storyContainer}
-          onPress={() => onStoryPress(story)}
-        >
-          <StoryRing
-            hasViewed={story.hasViewed}
-            userPhoto={story.userPhoto}
-            userName={story.userName}
-          />
-          <Text style={styles.storyLabel} numberOfLines={1}>
-            {story.userName}
-          </Text>
-        </Pressable>
-      ))}
+          {uniqueUserIds.map(userId => {
+            const userStories = storiesByUser.get(userId)
 
-      {/* Empty State */}
-      {stories.length === 0 && (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyText}>
-            Be the first to share a story! 📸
-          </Text>
-        </View>
+            if (!userStories || userStories.length === 0) return null
+
+            const firstStory = userStories[0]
+
+            return (
+              <StoryRing
+                key={userId}
+                stories={userStories}
+                petName={firstStory.petName}
+                petPhoto={firstStory.petPhoto}
+                hasUnviewed={!userStories.some(s =>
+                  Array.isArray(s.views) && s.views.some(v => v.userId === currentUserId)
+                )}
+                onClick={() => handleStoryRingClick(userId)}
+              />
+            )
+          })}
+        </ScrollView>
+      </Animated.View>
+
+      {viewingStories && (
+        <StoryViewer
+          stories={viewingStories}
+          currentUserId={currentUserId}
+          currentUserName={currentUserName}
+          currentUserAvatar={currentUserAvatar}
+          onClose={() => setViewingStories(null)}
+          onStoryUpdate={onStoryUpdate}
+        />
       )}
-    </ScrollView>
-  );
-};
+
+      <CreateStoryDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+        userId={currentUserId}
+        userName={currentUserName}
+        petId={currentUserPetId}
+        petName={currentUserPetName}
+        petPhoto={currentUserPetPhoto}
+        userAvatar={currentUserAvatar}
+        onStoryCreated={onStoryCreated}
+      />
+    </>
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 24,
+    marginHorizontal: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  content: {
-    paddingHorizontal: 12,
+  scrollContainer: {
     paddingVertical: 16,
-    gap: 12,
   },
-  addStoryContainer: {
+  scrollContent: {
+    paddingHorizontal: 16,
+    gap: 16,
+    paddingBottom: 8,
+  },
+  emptyContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 24,
+    marginHorizontal: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  emptyContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    width: 72,
+    padding: 16,
   },
-  addStoryRing: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    borderWidth: 2,
-    borderColor: '#d1d5db',
-    borderStyle: 'dashed',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 6,
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 4,
   },
-  addStoryButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#f3f4f6',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addStoryIcon: {
-    fontSize: 32,
-    color: '#3b82f6',
-    fontWeight: 'bold',
-  },
-  storyContainer: {
-    alignItems: 'center',
-    width: 72,
-  },
-  storyLabel: {
-    fontSize: 12,
-    color: '#374151',
-    textAlign: 'center',
-    marginTop: 4,
-    width: 72,
-  },
-  emptyState: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  emptyText: {
+  emptySubtitle: {
     fontSize: 14,
     color: '#6b7280',
-    textAlign: 'center',
   },
-});
+  addButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#667eea',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  addButtonText: {
+    fontSize: 24,
+    color: '#ffffff',
+    fontWeight: 'bold',
+  },
+})
+
+export default StoriesBar

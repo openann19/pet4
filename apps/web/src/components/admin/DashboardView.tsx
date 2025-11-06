@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useStorage } from '@/hooks/useStorage'
 import type { Match, Pet } from '@/lib/types'
-import type { Icon } from '@phosphor-icons/react'
 import {
   ChatCircle,
   CheckCircle,
@@ -82,6 +81,7 @@ export default function DashboardView() {
         })
       } catch (error) {
         // Fallback to local calculations if API fails
+        console.warn('Failed to load system stats from API, falling back to local calculations:', error)
         const uniqueOwners = new Set((allPets || []).map(p => p.ownerId || p.ownerName))
         setStats({
           totalUsers: uniqueOwners.size,
@@ -179,7 +179,7 @@ export default function DashboardView() {
         {statCards.map((stat, index) => {
           const Icon = stat.icon
           const TrendIcon = stat.trend === 'up' ? TrendUp : stat.trend === 'down' ? TrendDown : Clock
-          
+
           return (
             <motion.div
               key={stat.title}
@@ -289,7 +289,8 @@ export default function DashboardView() {
 }
 
 interface ActivityItemProps {
-  icon: Icon
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  icon: any
   title: string
   description: string
   time: string
@@ -306,7 +307,7 @@ function ActivityItem({ icon: Icon, title, description, time, type }: ActivityIt
 
   return (
     <div className="flex items-start gap-4">
-      <div className={`p-2 rounded-lg bg-muted ${colorMap[type]}`}>                                                                    
+      <div className={`p-2 rounded-lg bg-muted ${colorMap[type]}`}>
         <Icon size={16} weight="fill" />
       </div>
       <div className="flex-1 space-y-1">
@@ -319,16 +320,16 @@ function ActivityItem({ icon: Icon, title, description, time, type }: ActivityIt
 }
 
 interface HealthItemProps {
-  service: string;
-  status: 'operational' | 'down';
-  uptime: string;
+  service: string
+  status: 'operational' | 'down'
+  uptime: string
 }
 
 function HealthItem({ service, status, uptime }: HealthItemProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className={`w-2 h-2 rounded-full ${status === 'operational' ? 'bg-green-600' : 'bg-red-600'}`} />                                                  
+        <div className={`w-2 h-2 rounded-full ${status === 'operational' ? 'bg-green-600' : 'bg-red-600'}`} />
         <span className="text-sm font-medium">{service}</span>
       </div>
       <div className="flex items-center gap-3">

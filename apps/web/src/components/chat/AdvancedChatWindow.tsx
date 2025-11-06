@@ -36,17 +36,388 @@ import {
   Translate as TranslateIcon,
   X
 } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
+import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation'
+import { AnimatePresence } from '@/effects/reanimated/animate-presence'
 import { useEffect, useRef, useState } from 'react'
+import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
+import { springConfigs } from '@/effects/reanimated/transitions'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 import { toast } from 'sonner'
+import { useSendWarp } from '@/effects/chat/bubbles/use-send-warp'
+import { useReceiveAirCushion } from '@/effects/chat/bubbles/use-receive-air-cushion'
+import { useReactionBurst } from '@/effects/chat/reactions/use-reaction-burst'
+import { useScrollFabMagnetic } from '@/effects/chat/ui/use-scroll-fab-magnetic'
 import MessageAttachments from './MessageAttachments'
 import MessageReactions from './MessageReactions'
 import SmartSuggestionsPanel from './SmartSuggestionsPanel'
 import TypingIndicatorComponent from './TypingIndicator'
 import VoiceRecorder from './VoiceRecorder'
 import { WebBubbleWrapper } from './WebBubbleWrapper'
+import { LiquidDots } from './LiquidDots'
+import { PresenceAvatar } from './PresenceAvatar'
+import { ConfettiBurst } from './ConfettiBurst'
+import { ReactionBurstParticles } from './ReactionBurstParticles'
+import { VoiceWaveform } from './VoiceWaveform'
 
 const logger = createLogger('AdvancedChatWindow')
+
+function StickerButton({ sticker, onSelect }: { sticker: { id: string; emoji: string }; onSelect: (emoji: string) => void }) {
+  const hover = useHoverAnimation({ scale: 1.2 })
+  
+  return (
+    <AnimatedView
+      style={hover.animatedStyle}
+      onMouseEnter={hover.handleMouseEnter}
+      onMouseLeave={hover.handleMouseLeave}
+      onMouseDown={hover.handleMouseDown}
+      onMouseUp={hover.handleMouseUp}
+      onClick={() => onSelect(sticker.emoji)}
+      className="text-3xl p-2 rounded-xl hover:bg-white/20 transition-colors cursor-pointer"
+    >
+      {sticker.emoji}
+    </AnimatedView>
+  )
+}
+
+function ReactionButton({ emoji }: { emoji: string }) {
+  const hover = useHoverAnimation({ scale: 1.2 })
+  
+  return (
+    <AnimatedView
+      style={hover.animatedStyle}
+      onMouseEnter={hover.handleMouseEnter}
+      onMouseLeave={hover.handleMouseLeave}
+      onMouseDown={hover.handleMouseDown}
+      onMouseUp={hover.handleMouseUp}
+      className="text-2xl p-2 rounded-xl hover:bg-white/20 transition-colors cursor-pointer"
+    >
+      {emoji}
+    </AnimatedView>
+  )
+}
+
+function SendButtonIcon() {
+  const translateX = useSharedValue(0)
+  const scale = useSharedValue(1)
+  
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { scale: scale.value }
+    ]
+  })) as AnimatedStyle
+  
+  const handleMouseEnter = () => {
+    translateX.value = withSpring(5, springConfigs.smooth)
+  }
+  
+  const handleMouseLeave = () => {
+    translateX.value = withSpring(0, springConfigs.smooth)
+  }
+  
+  const handleMouseDown = () => {
+    scale.value = withSpring(0.9, springConfigs.smooth)
+  }
+  
+  const handleMouseUp = () => {
+    scale.value = withSpring(1, springConfigs.smooth)
+  }
+  
+  return (
+    <AnimatedView 
+      style={iconStyle}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+    >
+      <PaperPlaneRight size={20} weight="fill" />
+    </AnimatedView>
+  )
+}
+
+function TemplatePanel({ onClose, onSelect }: { onClose: () => void; onSelect: (template: MessageTemplate) => void }) {
+  const animation = useEntryAnimation({ initialY: -10, delay: 0 })
+  
+  return (
+    <AnimatedView
+      style={animation.animatedStyle}
+      className="glass-effect p-3 rounded-xl space-y-2"
+    >
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold">Message Templates</h4>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6"
+          onClick={onClose}
+        >
+          <X size={14} />
+        </Button>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {MESSAGE_TEMPLATES.slice(0, 4).map((template) => (
+          <TemplateButton
+            key={template.id}
+            template={template}
+            onSelect={onSelect}
+          />
+        ))}
+      </div>
+    </AnimatedView>
+  )
+}
+
+function TemplateButton({ template, onSelect }: { template: MessageTemplate; onSelect: (template: MessageTemplate) => void }) {
+  const templateHover = useHoverAnimation({ scale: 1.02 })
+  
+  return (
+    <AnimatedView
+      style={templateHover.animatedStyle}
+      onMouseEnter={templateHover.handleMouseEnter}
+      onMouseLeave={templateHover.handleMouseLeave}
+      onMouseDown={templateHover.handleMouseDown}
+      onMouseUp={templateHover.handleMouseUp}
+      onClick={() => onSelect(template)}
+      className="text-left p-2 rounded-lg glass-effect hover:bg-white/20 transition-colors cursor-pointer"
+    >
+      <div className="flex items-center gap-2 mb-1">
+        <span>{template.icon}</span>
+        <span className="text-xs font-semibold">{template.title}</span>
+      </div>
+      <p className="text-xs text-muted-foreground line-clamp-2">
+        {template.content}
+      </p>
+    </AnimatedView>
+  )
+}
+
+function TypingIndicator({ users }: { users: Array<{ userName?: string }> }) {
+  const animation = useEntryAnimation({ initialY: 20, delay: 0 })
+  
+  return (
+    <AnimatedView
+      style={animation.animatedStyle}
+      className="flex items-end gap-2 flex-row"
+    >
+      <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
+        <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
+          {users[0]?.userName?.[0] || '?'}
+        </AvatarFallback>
+      </Avatar>
+      <WebBubbleWrapper
+        showTyping
+        isIncoming
+      >
+        <LiquidDots enabled dotColor="#9ca3af" />
+      </WebBubbleWrapper>
+    </AnimatedView>
+  )
+}
+
+function DateGroup({ date, delay }: { date: string; delay: number }) {
+  const animation = useEntryAnimation({ initialScale: 0.8, delay })
+  
+  return (
+    <AnimatedView style={animation.animatedStyle} className="flex justify-center">
+      <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
+        {date}
+      </div>
+    </AnimatedView>
+  )
+}
+
+function MessageItem({ 
+  message, 
+  isCurrentUser, 
+  currentUserId, 
+  delay,
+  onReaction,
+  onTranslate
+}: { 
+  message: ChatMessage
+  isCurrentUser: boolean
+  currentUserId: string
+  delay: number
+  onReaction: (messageId: string, emoji: string) => void
+  onTranslate: (messageId: string) => void
+}) {
+  const bubbleHover = useHoverAnimation({ scale: 1.02 })
+  
+  // Premium send/receive effects
+  const sendWarp = useSendWarp({
+    enabled: isCurrentUser && message.status === 'sent',
+    onStatusChange: (status) => {
+      if (status === 'sent') {
+        // Status change handled by effect
+      }
+    },
+  })
+  
+  const receiveAir = useReceiveAirCushion({
+    enabled: !isCurrentUser,
+    isNew: delay < 100, // Consider messages with low delay as new
+    isMention: false, // TODO: detect mentions
+  })
+  
+  // Combine entry animation with send/receive effects
+  const messageAnimation = useEntryAnimation({ 
+    initialY: 20, 
+    initialScale: 0.95, 
+    delay 
+  })
+  
+  // Trigger send warp when message is sent
+  useEffect(() => {
+    if (isCurrentUser && message.status === 'sent') {
+      sendWarp.trigger()
+    }
+  }, [isCurrentUser, message.status, sendWarp])
+  
+  // Combine all animations
+  const combinedStyle = useAnimatedStyle(() => {
+    const entryStyle = messageAnimation.animatedStyle
+    const effectStyle = isCurrentUser ? sendWarp.animatedStyle : receiveAir.animatedStyle
+    
+    return {
+      ...entryStyle,
+      ...effectStyle,
+    }
+  })
+  
+  return (
+    <AnimatedView
+      style={combinedStyle}
+      className={`flex items-end gap-2 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'}`}
+    >
+      {!isCurrentUser && message.senderAvatar && (
+        <PresenceAvatar
+          src={message.senderAvatar}
+          {...(message.senderName ? { alt: message.senderName } : {})}
+          fallback={message.senderName ?? '?'}
+          status="online"
+          size={32}
+          className="shrink-0"
+        />
+      )}
+
+      <div className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
+        <WebBubbleWrapper
+          isIncoming={!isCurrentUser}
+          index={delay / 50}
+          glowOpacity={isCurrentUser ? sendWarp.glowOpacity.value : 0}
+          glowIntensity={isCurrentUser ? sendWarp.bloomIntensity.value : 0}
+          className="relative"
+        >
+          <AnimatedView
+            style={bubbleHover.animatedStyle}
+            onMouseEnter={bubbleHover.handleMouseEnter}
+            onMouseLeave={bubbleHover.handleMouseLeave}
+            className={`relative group ${
+              message.type === 'sticker' ? 'p-0' : 'p-3'
+            } rounded-2xl shadow-lg ${
+              isCurrentUser
+                ? 'bg-linear-to-br from-primary to-accent text-white'
+                : 'glass-strong backdrop-blur-xl border border-white/20'
+            }`}
+          >
+            {message.type === 'text' && (
+              <>
+                <p className="text-sm wrap-break-word">{message.content}</p>
+                {message.metadata?.translation?.translatedText && (
+                  <div className="mt-2 pt-2 border-t border-white/20 text-xs opacity-80">
+                    <div className="flex items-center gap-1 mb-1">
+                      <TranslateIcon size={12} />
+                      <span>Translation:</span>
+                    </div>
+                    <p>{message.metadata.translation.translatedText}</p>
+                  </div>
+                )}
+              </>
+            )}
+            
+            {message.type === 'sticker' && (
+              <div className="text-5xl p-2">
+                {message.content}
+              </div>
+            )}
+
+            {message.type === 'voice' && message.attachments && (
+              <div className="space-y-2">
+                {message.metadata?.voiceNote?.waveform && (
+                  <VoiceWaveform
+                    waveform={message.metadata.voiceNote.waveform}
+                    duration={message.attachments[0]?.duration ?? 0}
+                    currentTime={0}
+                    isPlaying={false}
+                    width={200}
+                    height={40}
+                    color={isCurrentUser ? '#ffffff' : '#3B82F6'}
+                  />
+                )}
+                <MessageAttachments attachments={message.attachments} />
+              </div>
+            )}
+
+            {message.type === 'location' && message.metadata?.location && (
+              <div className="flex items-center gap-2">
+                <MapPin size={20} weight="fill" />
+                <div>
+                  <p className="text-sm font-medium">Shared Location</p>
+                  <p className="text-xs opacity-80">{message.metadata.location.address}</p>
+                </div>
+              </div>
+            )}
+
+            {message.type === 'pet-card' && message.metadata?.petCard && (
+              <div className="flex items-center gap-3 p-2 bg-white/10 rounded-lg">
+                <img 
+                  src={message.metadata.petCard.petPhoto} 
+                  alt={message.metadata.petCard.petName}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <p className="font-semibold text-sm">{message.metadata.petCard.petName}</p>
+                </div>
+              </div>
+            )}
+
+            <MessageReactions
+              reactions={Array.isArray(message.reactions) ? message.reactions : []}
+              availableReactions={REACTION_EMOJIS}
+              onReact={(emoji) => {
+                onReaction(message.id, emoji)
+              }}
+              currentUserId={currentUserId}
+            />
+
+            {!isCurrentUser && message.type === 'text' && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="absolute -bottom-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                onClick={() => onTranslate(message.id)}
+              >
+                <TranslateIcon size={14} />
+              </Button>
+            )}
+          </AnimatedView>
+        </WebBubbleWrapper>
+
+        <span className="text-xs text-muted-foreground mt-1 px-1 flex items-center gap-2">
+          {formatChatTime(message.timestamp)}
+          {isCurrentUser && (
+            <Badge variant="secondary" className="text-[10px] px-1 py-0">
+              {message.status}
+            </Badge>
+          )}
+        </span>
+      </div>
+    </AnimatedView>
+  )
+}
 
 interface AdvancedChatWindowProps {
   room: ChatRoom
@@ -69,10 +440,23 @@ export default function AdvancedChatWindow({
   const [showTemplates, setShowTemplates] = useState(false)
   const [isRecordingVoice, setIsRecordingVoice] = useState(false)
   const [showSmartSuggestions, setShowSmartSuggestions] = useState(true)
-  const [awayMode, setAwayMode] = useStorage<boolean>(`away-mode-${currentUserId}`, false)                                                                      
+  const [awayMode, setAwayMode] = useStorage<boolean>(`away-mode-${currentUserId}`, false)
+  const [scrollFabVisible, setScrollFabVisible] = useState(false)
+  const [previousBadgeCount, setPreviousBadgeCount] = useState(0)
   
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  // Visual celebration seeds (force restart on increment)
+  const [burstSeed, setBurstSeed] = useState(0)
+  const [confettiSeed, setConfettiSeed] = useState(0)
+  
+  // Scroll FAB magnetic effect
+  const scrollFab = useScrollFabMagnetic({
+    enabled: true,
+    isVisible: scrollFabVisible,
+    badgeCount: messages?.length ?? 0,
+    previousBadgeCount,
+  })
 
   const {
     typingUsers,
@@ -88,12 +472,41 @@ export default function AdvancedChatWindow({
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+  
+  useEffect(() => {
+    // Update badge count for scroll FAB
+    const currentCount = messages?.length ?? 0
+    if (currentCount > previousBadgeCount) {
+      setPreviousBadgeCount(previousBadgeCount)
+    }
+  }, [messages, previousBadgeCount])
 
   useEffect(() => {
     if (typingUsers.length > 0) {
       scrollToBottom()
     }
   }, [typingUsers])
+  
+  // Show scroll FAB when not at bottom
+  useEffect(() => {
+    const handleScroll = () => {
+      if (scrollRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = scrollRef.current
+        const isNearBottom = scrollHeight - scrollTop - clientHeight < 100
+        setScrollFabVisible(!isNearBottom)
+      }
+    }
+    
+    const scrollElement = scrollRef.current
+    if (scrollElement) {
+      scrollElement.addEventListener('scroll', handleScroll)
+      handleScroll() // Initial check
+      return () => {
+        scrollElement.removeEventListener('scroll', handleScroll)
+      }
+    }
+    return undefined
+  }, [messages])
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -139,6 +552,11 @@ export default function AdvancedChatWindow({
       duration: 1500,
       position: 'top-center'
     })
+
+    // big moment → confetti (stickers / special payloads)
+    if (type === 'sticker' || type === 'pet-card') {
+      setConfettiSeed((s) => s + 1)
+    }
 
     setTimeout(() => {
       setShowSmartSuggestions(true)
@@ -190,6 +608,23 @@ export default function AdvancedChatWindow({
         return msg
       })
     )
+  }
+  
+  // Reaction burst effect for visual feedback (triggered on reaction add)
+  const reactionBurst = useReactionBurst({
+    enabled: true,
+    onComplete: () => {
+      // Effect completed
+    },
+  })
+  
+  // Enhanced reaction handler with burst effect
+  const handleReactionWithBurst = (messageId: string, emoji: string) => {
+    handleReaction(messageId, emoji)
+    // restart the ring burst with a fresh deterministic seed
+    setBurstSeed((s) => s + 1)
+    // keep your internal hook if used elsewhere
+    reactionBurst.trigger?.()
   }
 
   const handleVoiceRecorded = (audioBlob: Blob, duration: number, waveform: number[]) => {
@@ -290,12 +725,13 @@ export default function AdvancedChatWindow({
   }
 
   const messageGroups = groupMessagesByDate(messages || [])
+  const headerAnimation = useEntryAnimation({ initialY: -20, delay: 0 })
+  const footerAnimation = useEntryAnimation({ initialY: 20, delay: 0 })
 
   return (
-    <div className="flex flex-col h-full">
-      <motion.div 
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+    <div className="flex flex-col h-full relative">
+      <AnimatedView
+        style={headerAnimation.animatedStyle}
         className="glass-strong border-b border-white/20 p-4 shadow-xl backdrop-blur-2xl"
       >
         <div className="flex items-center gap-3">
@@ -372,7 +808,7 @@ export default function AdvancedChatWindow({
             </PopoverContent>
           </Popover>
         </div>
-      </motion.div>
+      </AnimatedView>
 
       <div 
         ref={scrollRef}
@@ -380,157 +816,73 @@ export default function AdvancedChatWindow({
       >
         {messageGroups.map((group, groupIdx) => (
           <div key={group.date} className="space-y-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: groupIdx * 0.1 }}
-              className="flex justify-center"
-            >
-              <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
-                {group.date}
-              </div>
-            </motion.div>
+            <DateGroup date={group.date} delay={groupIdx * 100} />
 
             {group.messages.map((message, msgIdx) => {
               const isCurrentUser = message.senderId === currentUserId
               
               return (
-                <motion.div
+                <MessageItem
                   key={message.id}
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ 
-                    delay: msgIdx * 0.05,
-                    type: 'spring',
-                    stiffness: 300,
-                    damping: 30
-                  }}
-                  className={`flex items-end gap-2 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'}`}
-                >
-                  {!isCurrentUser && (
-                    <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
-                      <AvatarImage src={message.senderAvatar} alt={message.senderName} />
-                      <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
-                        {message.senderName?.[0] || '?'}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-
-                  <div className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className={`relative group ${
-                        message.type === 'sticker' ? 'p-0' : 'p-3'
-                      } rounded-2xl shadow-lg ${
-                        isCurrentUser
-                          ? 'bg-linear-to-br from-primary to-accent text-white'
-                          : 'glass-strong backdrop-blur-xl border border-white/20'
-                      }`}
-                    >
-                      {message.type === 'text' && (
-                        <>
-                          <p className="text-sm wrap-break-word">{message.content}</p>
-                          {message.metadata?.translation?.translatedText && (
-                            <div className="mt-2 pt-2 border-t border-white/20 text-xs opacity-80">
-                              <div className="flex items-center gap-1 mb-1">
-                                <TranslateIcon size={12} />
-                                <span>Translation:</span>
-                              </div>
-                              <p>{message.metadata.translation.translatedText}</p>
-                            </div>
-                          )}
-                        </>
-                      )}
-                      
-                      {message.type === 'sticker' && (
-                        <div className="text-5xl p-2">
-                          {message.content}
-                        </div>
-                      )}
-
-                      {message.type === 'voice' && message.attachments && (
-                        <MessageAttachments attachments={message.attachments} />
-                      )}
-
-                      {message.type === 'location' && message.metadata?.location && (
-                        <div className="flex items-center gap-2">
-                          <MapPin size={20} weight="fill" />
-                          <div>
-                            <p className="text-sm font-medium">Shared Location</p>
-                            <p className="text-xs opacity-80">{message.metadata.location.address}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {message.type === 'pet-card' && message.metadata?.petCard && (
-                        <div className="flex items-center gap-3 p-2 bg-white/10 rounded-lg">
-                          <img 
-                            src={message.metadata.petCard.petPhoto} 
-                            alt={message.metadata.petCard.petName}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                          <div>
-                            <p className="font-semibold text-sm">{message.metadata.petCard.petName}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      <MessageReactions
-                        reactions={Array.isArray(message.reactions) ? message.reactions : []}
-                        availableReactions={REACTION_EMOJIS}
-                        onReact={(emoji) => handleReaction(message.id, emoji)}
-                        currentUserId={currentUserId}
-                      />
-
-                      {!isCurrentUser && message.type === 'text' && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="absolute -bottom-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs"
-                          onClick={() => handleTranslateMessage(message.id)}
-                        >
-                          <TranslateIcon size={14} />
-                        </Button>
-                      )}
-                    </motion.div>
-
-                    <span className="text-xs text-muted-foreground mt-1 px-1 flex items-center gap-2">
-                      {formatChatTime(message.timestamp)}
-                      {isCurrentUser && (
-                        <Badge variant="secondary" className="text-[10px] px-1 py-0">
-                          {message.status}
-                        </Badge>
-                      )}
-                    </span>
-                  </div>
-                </motion.div>
+                  message={message}
+                  isCurrentUser={isCurrentUser}
+                  currentUserId={currentUserId}
+                  delay={msgIdx * 50}
+                  onReaction={handleReactionWithBurst}
+                  onTranslate={handleTranslateMessage}
+                />
               )
             })}
             </div>
           ))}
 
           {typingUsers.length > 0 && (
-            <motion.div
-              key="typing-indicators"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="flex items-end gap-2 flex-row"
-            >
-              <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
-                <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
-                  {typingUsers[0]?.userName?.[0] || '?'}
-                </AvatarFallback>
-              </Avatar>
-              <WebBubbleWrapper
-                showTyping
-                isIncoming
-              >
-                <div />
-              </WebBubbleWrapper>
-            </motion.div>
+            <AnimatePresence>
+              <TypingIndicator key="typing-indicators" users={typingUsers} />
+            </AnimatePresence>
           )}
+
+        {/* Overlays — reaction ring + confetti (mounted once, restart via seed) */}
+        <ReactionBurstParticles
+          key={`burst-${burstSeed}`}
+          enabled
+          seed={burstSeed}
+          className="pointer-events-none"
+        />
+        <ConfettiBurst
+          key={`confetti-${confettiSeed}`}
+          enabled
+          seed={confettiSeed}
+          className="pointer-events-none"
+        />
         </div>
+
+      {/* Scroll to Bottom FAB */}
+      {scrollFabVisible && (
+        <AnimatedView
+          style={scrollFab.animatedStyle}
+          className="fixed bottom-24 right-6 z-40"
+        >
+          <Button
+            size="icon"
+            className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
+            onClick={() => {
+              scrollToBottom()
+              setScrollFabVisible(false)
+            }}
+          >
+            <PaperPlaneRight size={20} weight="fill" />
+            {(messages?.length ?? 0) > previousBadgeCount && (
+              <AnimatedView
+                style={scrollFab.badgeAnimatedStyle}
+                className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+              >
+                <span>{(messages?.length ?? 0) - previousBadgeCount}</span>
+              </AnimatedView>
+            )}
+          </Button>
+        </AnimatedView>
+      )}
 
       {showSmartSuggestions && (messages || []).length >= 0 && (
         <SmartSuggestionsPanel
@@ -539,9 +891,8 @@ export default function AdvancedChatWindow({
         />
       )}
 
-      <motion.div 
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+      <AnimatedView
+        style={footerAnimation.animatedStyle}
         className="glass-strong border-t border-white/20 p-4 shadow-2xl backdrop-blur-2xl space-y-3"
       >
         <div className="flex items-center gap-2 overflow-x-auto pb-2">
@@ -566,42 +917,9 @@ export default function AdvancedChatWindow({
         </div>
 
         {showTemplates && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="glass-effect p-3 rounded-xl space-y-2"
-          >
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-semibold">Message Templates</h4>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={() => setShowTemplates(false)}
-              >
-                <X size={14} />
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {MESSAGE_TEMPLATES.slice(0, 4).map((template) => (
-                <motion.button
-                  key={template.id}
-                  onClick={() => handleTemplateSelect(template)}
-                  className="text-left p-2 rounded-lg glass-effect hover:bg-white/20 transition-colors"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span>{template.icon}</span>
-                    <span className="text-xs font-semibold">{template.title}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {template.content}
-                  </p>
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
+          <AnimatePresence>
+            <TemplatePanel key="templates" onClose={() => setShowTemplates(false)} onSelect={handleTemplateSelect} />
+          </AnimatePresence>
         )}
 
         <div className="flex items-end gap-2">
@@ -627,29 +945,18 @@ export default function AdvancedChatWindow({
                 <TabsContent value="stickers" className="space-y-3">
                   <div className="grid grid-cols-6 gap-2">
                     {CHAT_STICKERS.map((sticker) => (
-                      <motion.button
+                      <StickerButton
                         key={sticker.id}
-                        onClick={() => handleSendMessage(sticker.emoji, 'sticker')}
-                        className="text-3xl p-2 rounded-xl hover:bg-white/20 transition-colors"
-                        whileHover={{ scale: 1.2, rotate: 10 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        {sticker.emoji}
-                      </motion.button>
+                        sticker={sticker}
+                        onSelect={(emoji) => handleSendMessage(emoji, 'sticker')}
+                      />
                     ))}
                   </div>
                 </TabsContent>
                 <TabsContent value="reactions" className="space-y-3">
                   <div className="grid grid-cols-6 gap-2">
                     {REACTION_EMOJIS.map((emoji) => (
-                      <motion.button
-                        key={emoji}
-                        className="text-2xl p-2 rounded-xl hover:bg-white/20 transition-colors"
-                        whileHover={{ scale: 1.2 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        {emoji}
-                      </motion.button>
+                      <ReactionButton key={emoji} emoji={emoji} />
                     ))}
                   </div>
                 </TabsContent>
@@ -690,12 +997,7 @@ export default function AdvancedChatWindow({
                 size="icon"
                 className="shrink-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all"
               >
-                <motion.div
-                  whileHover={{ x: 5 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <PaperPlaneRight size={20} weight="fill" />
-                </motion.div>
+                <SendButtonIcon />
               </Button>
             </>
           ) : (
@@ -705,7 +1007,7 @@ export default function AdvancedChatWindow({
             />
           )}
         </div>
-      </motion.div>
+      </AnimatedView>
     </div>
   )
 }

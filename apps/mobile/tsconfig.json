@@ -19,11 +19,16 @@
     "noEmit": true,
     "incremental": true,
     "baseUrl": ".",
-    "types": [],
+    "types": ["vitest/globals"],
     "paths": {
+      "@/*": ["./src/*"],
       "@mobile/*": ["./src/*"],
       "@pet/domain/*": ["../web/src/core/domain/*"],
-      "@petspark/shared": ["../../packages/shared/src"]
+      "@petspark/shared": ["../../packages/shared/src"],
+      "@shared/types": ["../../packages/shared/src/types/index.ts"],
+      "@shared/utils": ["../../packages/shared/src/utils/index.ts"],
+      "@ui-mobile/*": ["../../packages/ui-mobile/*"],
+      "@ui-mobile": ["../../packages/ui-mobile/index.ts"]
     }
   },
   "include": [

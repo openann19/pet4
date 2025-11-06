@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence } from 'react-native-reanimated'
+import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 import { Microphone, X, Check } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
 import { toast } from 'sonner'
 
 interface VoiceRecorderProps {
@@ -25,8 +28,27 @@ export default function VoiceRecorder({
   const analyserRef = useRef<AnalyserNode | undefined>(undefined)
   const timerRef = useRef<number | undefined>(undefined)
 
+  // Animation values
+  const containerOpacity = useSharedValue(0)
+  const containerScale = useSharedValue(0.9)
+  const micScale = useSharedValue(1)
+
   useEffect(() => {
     startRecording()
+    
+    // Animate container in
+    containerOpacity.value = withTiming(1, { duration: 300 })
+    containerScale.value = withTiming(1, { duration: 300 })
+    
+    // Animate microphone icon
+    micScale.value = withRepeat(
+      withSequence(
+        withTiming(1.2, { duration: 750 }),
+        withTiming(1, { duration: 750 })
+      ),
+      -1,
+      true
+    )
     
     return () => {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
@@ -142,20 +164,29 @@ export default function VoiceRecorder({
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
+  const containerStyle = useAnimatedStyle(() => ({
+    opacity: containerOpacity.value,
+    transform: [{ scale: containerScale.value }],
+  })) as AnimatedStyle
+
+  const micStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: micScale.value }],
+  })) as AnimatedStyle
+
+  const containerStyleValue = useAnimatedStyleValue(containerStyle)
+  const micStyleValue = useAnimatedStyleValue(micStyle)
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
+    <div
+      style={containerStyleValue}
       className="flex-1 flex items-center gap-3 glass-effect rounded-2xl p-3"
     >
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
+      <div
+        style={micStyleValue}
         className="shrink-0"
       >
         <Microphone size={24} weight="fill" className="text-red-500" />
-      </motion.div>
+      </div>
 
       <div className="flex-1 space-y-2">
         <div className="flex items-center gap-2">
@@ -170,13 +201,7 @@ export default function VoiceRecorder({
         
         <div className="flex items-center gap-0.5 h-6">
           {waveform.map((value, idx) => (
-            <motion.div
-              key={idx}
-              className="flex-1 bg-primary rounded-full"
-              initial={{ height: 0 }}
-              animate={{ height: `${value * 100}%` }}
-              transition={{ duration: 0.1 }}
-            />
+            <WaveformBar key={idx} value={value} />
           ))}
         </div>
       </div>
@@ -193,10 +218,31 @@ export default function VoiceRecorder({
       <Button
         size="icon"
         onClick={handleStopAndSend}
-        className="shrink-0 bg-gradient-to-br from-primary to-accent"
+        className="shrink-0 bg-linear-to-br from-primary to-accent"
       >
         <Check size={20} weight="bold" />
       </Button>
-    </motion.div>
+    </div>
+  )
+}
+
+function WaveformBar({ value }: { value: number }) {
+  const height = useSharedValue(0)
+
+  useEffect(() => {
+    height.value = withTiming(value * 100, { duration: 100 })
+  }, [value, height])
+
+  const barStyle = useAnimatedStyle(() => ({
+    height: `${height.value}%`,
+  })) as AnimatedStyle
+
+  return (
+    <AnimatedView
+      style={barStyle}
+      className="flex-1 bg-primary rounded-full"
+    >
+      <div />
+    </AnimatedView>
   )
 }

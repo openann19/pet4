@@ -1,36 +1,47 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useStorage } from '@/hooks/useStorage'
+import { useQuery } from '@tanstack/react-query'
+import { queryKeys } from '@/lib/query-client'
+import { matchingAPI } from '@/lib/api-services'
 import type { Pet, Match } from '@/lib/types'
 import { generateMatchReasoning } from '@/lib/matching'
+import { useUserPets } from '@/hooks/api/use-user'
 
-export function useMatches() {
-  const [matches] = useStorage<Match[]>('matches', [])
-  const [allPets] = useStorage<Pet[]>('all-pets', [])
-  const [userPets] = useStorage<Pet[]>('user-pets', [])
+export function useMatches(petId?: string) {
+  const { data: userPets } = useUserPets()
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
   const [matchReasoning, setMatchReasoning] = useState<string[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+
+  const petsArray = Array.isArray(userPets) ? userPets : []
+  const activePetId = petId || (petsArray.length > 0 ? petsArray[0]?.id : undefined)
+
+  const { data: matches = [], isLoading } = useQuery({
+    queryKey: activePetId ? [...queryKeys.matches.list, activePetId] : queryKeys.matches.list,
+    queryFn: () => {
+      if (!activePetId) {
+        return Promise.resolve([])
+      }
+      return matchingAPI.getMatches(activePetId)
+    },
+    enabled: !!activePetId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  })
 
   const userPet = useMemo(() => {
-    return Array.isArray(userPets) && userPets.length > 0 ? userPets[0] : undefined
-  }, [userPets])
+    return petsArray.length > 0 ? petsArray[0] : undefined
+  }, [petsArray])
 
   const matchedPets = useMemo(() => {
-    if (!Array.isArray(matches) || !Array.isArray(allPets)) return []
+    if (!Array.isArray(matches)) return []
     return matches
       .filter(m => m.status === 'active')
       .map(match => {
-        const pet = allPets.find(p => p.id === match.matchedPetId)
-        return pet ? { ...pet, match } : null
+        // Note: This assumes matches contain pet data or we need to fetch pets separately
+        // For now, returning match data structure
+        return { match, petId: match.matchedPetId || match.petId }
       })
-      .filter((p): p is Pet & { match: Match } => p !== null)
-  }, [matches, allPets])
-
-  useEffect(() => {
-    if (matches !== undefined) {
-      setIsLoading(false)
-    }
+      .filter((p): p is { match: Match; petId: string } => p.petId !== undefined)
   }, [matches])
 
   useEffect(() => {
@@ -53,7 +64,6 @@ export function useMatches() {
 
   return {
     matches,
-    allPets,
     userPets,
     userPet,
     matchedPets,

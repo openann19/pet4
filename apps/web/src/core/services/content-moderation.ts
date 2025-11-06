@@ -9,13 +9,13 @@ import { createLogger } from '@/lib/logger'
 import { getPhotoModerationConfig } from '@/lib/api-config'
 import Filter from 'bad-words'
 import * as toxicity from '@tensorflow-models/toxicity'
-import * as nsfwjs from 'nsfwjs'
+import { loadNSFWModel } from '@/lib/nsfw/loader'
 
 const logger = createLogger('ContentModeration')
 
 // Initialize models lazily
 let toxicityModel: toxicity.ToxicityClassifier | null = null
-let nsfwModel: nsfwjs.NSFWJS | null = null
+let nsfwModel: Awaited<ReturnType<typeof loadNSFWModel>> | null = null
 let modelsInitialized = false
 
 // Bad words filter instance
@@ -54,6 +54,7 @@ async function getModerationConfig() {
   }
 }
 
+
 /**
  * Initialize ML models for content moderation
  * Models are loaded lazily on first use
@@ -75,13 +76,23 @@ async function initializeModels(): Promise<void> {
     ])
     logger.info('Toxicity model loaded successfully')
 
-    // Load NSFW.js model for image/video moderation
-    nsfwModel = await nsfwjs.load()
-    logger.info('NSFW model loaded successfully')
+    // Load NSFW.js model dynamically from CDN (browser-only)
+    try {
+      nsfwModel = await loadNSFWModel()
+      logger.info('NSFW model loaded successfully')
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to load NSFW model', err, {
+        errorMessage: err.message,
+        errorStack: err.stack,
+      })
+      // Continue without NSFW model - will use fallback detection
+      nsfwModel = null
+    }
 
     modelsInitialized = true
   } catch (error) {
-    logger.error('Failed to initialize moderation models', error instanceof Error ? error : new Error(String(error)))
+    logger.error('Failed to initialize moderation models', error instanceof Error ? error : new Error(String(error)))                                           
     // Continue without models - will fall back to keyword-based detection
   }
 }
@@ -258,7 +269,7 @@ async function detectNSFWMedia(mediaUrl: string, mediaType: 'image' | 'video'): 
     logger.debug('Media NSFW detection completed', {
       mediaUrl,
       maxScore,
-      predictions: predictions.map(p => ({ className: p.className, probability: p.probability }))
+      predictions: predictions.map((p: { className: string; probability: number }) => ({ className: p.className, probability: p.probability }))
     })
 
     return maxScore

@@ -29,9 +29,17 @@ import type { Story } from '@/lib/stories-types'
 import type { Match, Pet, SwipeAction } from '@/lib/types'
 import type { VerificationRequest } from '@/lib/verification-types'
 import { BookmarkSimple, ChartBar, Heart, Info, MapPin, NavigationArrow, PawPrint, Sparkle, SquaresFour, X } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence, withDelay, interpolate, Extrapolation } from 'react-native-reanimated'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { Presence } from '@petspark/motion'
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
+import { usePageTransition } from '@/effects/reanimated/use-page-transition'
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
 import { toast } from 'sonner'
+import { AnimatedBadge } from '@/components/enhanced/AnimatedBadge'
 
 const logger = createLogger('DiscoverView')
 
@@ -79,16 +87,17 @@ export default function DiscoverView() {
   })
 
   const {
-    x,
-    rotate,
-    opacity,
-    likeOpacity,
-    passOpacity,
+    animatedStyle: swipeAnimatedStyle,
+    likeOpacityStyle,
+    passOpacityStyle,
     isDragging,
     direction,
-    handleDragStart,
-    handleDrag,
-    handleDragEnd,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
     reset: resetSwipe,
   } = useSwipe({
     onSwipe: (dir) => {
@@ -283,7 +292,333 @@ export default function DiscoverView() {
     }, 300)
   }
 
-  // handleDragStart, handleDrag, handleDragEnd are now provided by useSwipe hook
+  // Animation hooks for empty states - always declared at top level
+  const emptyStateIconScale = useSharedValue(0)
+  const emptyStateIconRotate = useSharedValue(-180)
+  const emptyStateIconRotation = useSharedValue(0)
+  const emptyStatePulseScale = useSharedValue(1)
+  const emptyStatePulseOpacity = useSharedValue(0.5)
+  const emptyStateTitleOpacity = useSharedValue(0)
+  const emptyStateTitleY = useSharedValue(20)
+  const emptyStateDescOpacity = useSharedValue(0)
+  const emptyStateDescY = useSharedValue(20)
+  
+  // Animation hooks for "no more" state - always declared at top level
+  const noMoreIconScale = useSharedValue(0)
+  const noMorePulseScale = useSharedValue(1)
+  const noMorePulseOpacity = useSharedValue(0.5)
+
+  useEffect(() => {
+    if (!userPet || availablePets.length === 0 || discoveryIndex >= availablePets.length) {
+      emptyStateIconScale.value = withSpring(1, springConfigs.bouncy)
+      emptyStateIconRotate.value = withSpring(0, springConfigs.bouncy)
+      emptyStateIconRotation.value = withRepeat(
+        withTiming(360, { duration: 3000 }),
+        -1,
+        false
+      )
+      emptyStatePulseScale.value = withRepeat(
+        withSequence(
+          withTiming(1.5, { duration: 1000 }),
+          withTiming(1, { duration: 1000 })
+        ),
+        -1,
+        true
+      )
+      emptyStatePulseOpacity.value = withRepeat(
+        withSequence(
+          withTiming(0, { duration: 1000 }),
+          withTiming(0.5, { duration: 1000 })
+        ),
+        -1,
+        true
+      )
+      emptyStateTitleOpacity.value = withDelay(200, withTiming(1, timingConfigs.smooth))
+      emptyStateTitleY.value = withDelay(200, withTiming(0, timingConfigs.smooth))
+      emptyStateDescOpacity.value = withDelay(300, withTiming(1, timingConfigs.smooth))
+      emptyStateDescY.value = withDelay(300, withTiming(0, timingConfigs.smooth))
+      
+      if (availablePets.length === 0 || discoveryIndex >= availablePets.length) {
+        noMoreIconScale.value = withSpring(1, springConfigs.bouncy)
+        noMorePulseScale.value = withRepeat(
+          withSequence(
+            withTiming(1.2, { duration: 750 }),
+            withTiming(1, { duration: 750 })
+          ),
+          -1,
+          true
+        )
+        noMorePulseOpacity.value = withRepeat(
+          withSequence(
+            withTiming(0, { duration: 1000 }),
+            withTiming(0.5, { duration: 1000 })
+          ),
+          -1,
+          true
+        )
+      }
+    }
+  }, [userPet, availablePets.length, discoveryIndex, emptyStateIconScale, emptyStateIconRotate, emptyStateIconRotation, emptyStatePulseScale, emptyStatePulseOpacity, emptyStateTitleOpacity, emptyStateTitleY, emptyStateDescOpacity, emptyStateDescY, noMoreIconScale, noMorePulseScale, noMorePulseOpacity])
+
+  const emptyStateIconStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: emptyStateIconScale.value },
+      { rotate: `${emptyStateIconRotate.value}deg` }
+    ]
+  })) as AnimatedStyle
+
+  const emptyStateRotateStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${emptyStateIconRotation.value}deg` }]
+  })) as AnimatedStyle
+
+  const emptyStatePulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: emptyStatePulseScale.value }],
+    opacity: emptyStatePulseOpacity.value
+  })) as AnimatedStyle
+
+  const emptyStateTitleStyle = useAnimatedStyle(() => ({
+    opacity: emptyStateTitleOpacity.value,
+    transform: [{ translateY: emptyStateTitleY.value }]
+  })) as AnimatedStyle
+
+  const emptyStateDescStyle = useAnimatedStyle(() => ({
+    opacity: emptyStateDescOpacity.value,
+    transform: [{ translateY: emptyStateDescY.value }]
+  })) as AnimatedStyle
+
+  const noMoreIconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: noMoreIconScale.value }]
+  })) as AnimatedStyle
+
+  const noMorePulseStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: noMorePulseScale.value }]
+  })) as AnimatedStyle
+
+  // Animation hooks for swipe hint
+  const swipeHintOpacity = useSharedValue(0)
+  const swipeHintY = useSharedValue(0)
+  const swipeHintLeftX = useSharedValue(0)
+  const swipeHintRightX = useSharedValue(0)
+
+  useEffect(() => {
+    if (showSwipeHint && currentIndex === 0) {
+      swipeHintOpacity.value = withTiming(1, timingConfigs.smooth)
+      swipeHintY.value = withRepeat(
+        withSequence(
+          withTiming(10, { duration: 750 }),
+          withTiming(0, { duration: 750 })
+        ),
+        -1,
+        true
+      )
+      swipeHintLeftX.value = withRepeat(
+        withSequence(
+          withTiming(-10, { duration: 750 }),
+          withTiming(0, { duration: 750 })
+        ),
+        -1,
+        true
+      )
+      swipeHintRightX.value = withRepeat(
+        withSequence(
+          withTiming(10, { duration: 750 }),
+          withTiming(0, { duration: 750 })
+        ),
+        -1,
+        true
+      )
+    } else {
+      swipeHintOpacity.value = withTiming(0, timingConfigs.smooth)
+    }
+  }, [showSwipeHint, currentIndex, swipeHintOpacity, swipeHintY, swipeHintLeftX, swipeHintRightX])
+
+  const swipeHintContainerStyle = useAnimatedStyle(() => ({
+    opacity: swipeHintOpacity.value
+  })) as AnimatedStyle
+
+  const swipeHintYStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: swipeHintY.value }]
+  })) as AnimatedStyle
+
+  const swipeHintLeftStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: swipeHintLeftX.value }]
+  })) as AnimatedStyle
+
+  const swipeHintRightStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: swipeHintRightX.value }]
+  })) as AnimatedStyle
+
+  // Animation hooks for swipe hint
+  const swipeHintOpacity = useSharedValue(0)
+  const swipeHintY = useSharedValue(0)
+  const swipeHintLeftX = useSharedValue(0)
+  const swipeHintRightX = useSharedValue(0)
+
+  useEffect(() => {
+    if (showSwipeHint && currentIndex === 0) {
+      swipeHintOpacity.value = withTiming(1, timingConfigs.smooth)
+      swipeHintY.value = withRepeat(
+        withSequence(
+          withTiming(10, { duration: 750 }),
+          withTiming(0, { duration: 750 })
+        ),
+        -1,
+        true
+      )
+      swipeHintLeftX.value = withRepeat(
+        withSequence(
+          withTiming(-10, { duration: 750 }),
+          withTiming(0, { duration: 750 })
+        ),
+        -1,
+        true
+      )
+      swipeHintRightX.value = withRepeat(
+        withSequence(
+          withTiming(10, { duration: 750 }),
+          withTiming(0, { duration: 750 })
+        ),
+        -1,
+        true
+      )
+    } else {
+      swipeHintOpacity.value = withTiming(0, timingConfigs.smooth)
+    }
+  }, [showSwipeHint, currentIndex, swipeHintOpacity, swipeHintY, swipeHintLeftX, swipeHintRightX])
+
+  const swipeHintContainerStyle = useAnimatedStyle(() => ({
+    opacity: swipeHintOpacity.value
+  })) as AnimatedStyle
+
+  const swipeHintYStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: swipeHintY.value }]
+  })) as AnimatedStyle
+
+  const swipeHintLeftStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: swipeHintLeftX.value }]
+  })) as AnimatedStyle
+
+  // Animation hooks for pass button icon rotation
+  const passButtonIconRotate = useSharedValue(0)
+
+  useEffect(() => {
+    passButtonIconRotate.value = withRepeat(
+      withSequence(
+        withTiming(-10, { duration: 500 }),
+        withTiming(10, { duration: 500 }),
+        withTiming(0, { duration: 500 })
+      ),
+      -1,
+      false
+    )
+  }, [passButtonIconRotate])
+
+  const passButtonIconStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${passButtonIconRotate.value}deg` }]
+  })) as AnimatedStyle
+
+  // Animation hooks for compatibility badge
+  const compatibilityBadgeScale = useSharedValue(0)
+  const compatibilityBadgeRotate = useSharedValue(-180)
+  const compatibilityBadgeY = useSharedValue(-20)
+  const compatibilityBadgeOpacity = useSharedValue(0)
+  const compatibilityBadgeHoverScale = useSharedValue(1)
+  const compatibilityGlowOpacity = useSharedValue(0.3)
+
+  useEffect(() => {
+    if (currentPet) {
+      compatibilityBadgeScale.value = withDelay(400, withSpring(1, { stiffness: 350, damping: 20 }))
+      compatibilityBadgeRotate.value = withDelay(400, withSpring(0, { stiffness: 350, damping: 20 }))
+      compatibilityBadgeY.value = withDelay(400, withSpring(0, { stiffness: 350, damping: 20 }))
+      compatibilityBadgeOpacity.value = withDelay(400, withTiming(1, { duration: 300 }))
+      compatibilityGlowOpacity.value = withRepeat(
+        withSequence(
+          withTiming(0.5, { duration: 1000 }),
+          withTiming(0.3, { duration: 1000 })
+        ),
+        -1,
+        true
+      )
+    }
+  }, [currentPet, compatibilityBadgeScale, compatibilityBadgeRotate, compatibilityBadgeY, compatibilityBadgeOpacity, compatibilityGlowOpacity])
+
+  const compatibilityBadgeStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: compatibilityBadgeScale.value * compatibilityBadgeHoverScale.value },
+      { rotate: `${compatibilityBadgeRotate.value}deg` },
+      { translateY: compatibilityBadgeY.value }
+    ],
+    opacity: compatibilityBadgeOpacity.value
+  })) as AnimatedStyle
+
+  const compatibilityGlowStyle = useAnimatedStyle(() => ({
+    opacity: compatibilityGlowOpacity.value
+  })) as AnimatedStyle
+
+  // Animation hooks for button hover/tap
+  const passButtonHover = useHoverLift({ scale: 1.05, translateY: -2 })
+  const likeButtonHover = useHoverLift({ scale: 1.05, translateY: -2 })
+  const likeButtonShimmerX = useSharedValue(-100)
+  const likeButtonHeartScale = useSharedValue(1)
+
+  useEffect(() => {
+    likeButtonShimmerX.value = withRepeat(
+      withTiming(200, { duration: 2000 }),
+      -1,
+      false
+    )
+    likeButtonHeartScale.value = withRepeat(
+      withSequence(
+        withTiming(1.3, { duration: 500 }),
+        withTiming(1, { duration: 1000 })
+      ),
+      -1,
+      true
+    )
+  }, [likeButtonShimmerX, likeButtonHeartScale])
+
+  const likeButtonShimmerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: `${likeButtonShimmerX.value}%` }]
+  })) as AnimatedStyle
+
+  const likeButtonHeartStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: likeButtonHeartScale.value }]
+  })) as AnimatedStyle
+
+  // Animation hooks for distance badge
+  const distanceBadgeScale = useSharedValue(0)
+  const distanceBadgeOpacity = useSharedValue(0)
+
+  useEffect(() => {
+    if (currentPet?.distance !== undefined) {
+      distanceBadgeScale.value = withDelay(100, withSpring(1, springConfigs.bouncy))
+      distanceBadgeOpacity.value = withDelay(100, withTiming(1, timingConfigs.smooth))
+    }
+  }, [currentPet?.distance, distanceBadgeScale, distanceBadgeOpacity])
+
+  const distanceBadgeStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: distanceBadgeScale.value }],
+    opacity: distanceBadgeOpacity.value
+  })) as AnimatedStyle
+
+  // Animation hooks for breakdown dialog
+  const breakdownDialogOpacity = useSharedValue(0)
+  const breakdownDialogY = useSharedValue(20)
+
+  useEffect(() => {
+    if (breakdownDialog.isOpen) {
+      breakdownDialogOpacity.value = withTiming(1, timingConfigs.smooth)
+      breakdownDialogY.value = withTiming(0, timingConfigs.smooth)
+    } else {
+      breakdownDialogOpacity.value = withTiming(0, timingConfigs.smooth)
+      breakdownDialogY.value = withTiming(20, timingConfigs.smooth)
+    }
+  }, [breakdownDialog.isOpen, breakdownDialogOpacity, breakdownDialogY])
+
+  const breakdownDialogStyle = useAnimatedStyle(() => ({
+    opacity: breakdownDialogOpacity.value,
+    transform: [{ translateY: breakdownDialogY.value }]
+  })) as AnimatedStyle
 
   if (isLoading) {
     return null
@@ -291,84 +626,68 @@ export default function DiscoverView() {
 
   if (!userPet) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="w-24 h-24 rounded-full bg-linear-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">                                                                 
+        <AnimatedView
+          style={emptyStateIconStyle}
+          className="w-24 h-24 rounded-full bg-linear-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"                        
         >
-          <motion.div
-            animate={{ rotate: [0, 360] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-          >
+          <AnimatedView style={emptyStateRotateStyle}>
             <Sparkle size={48} className="text-primary" />
-          </motion.div>
-          <motion.div
-            className="absolute inset-0 rounded-full bg-linear-to-br from-primary/20 to-accent/20"
-            animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+          </AnimatedView>
+          <AnimatedView
+            style={emptyStatePulseStyle}
+            className="absolute inset-0 rounded-full bg-linear-to-br from-primary/20 to-accent/20"                                                              
           />
-        </motion.div>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        </AnimatedView>
+        <AnimatedView
+          style={emptyStateTitleStyle}
           className="text-2xl font-bold mb-2"
+          as="h2"
         >
           {t.discover.createProfile}
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+        </AnimatedView>
+        <AnimatedView
+          style={emptyStateDescStyle}
           className="text-muted-foreground mb-6 max-w-md"
+          as="p"
         >
           {t.discover.createProfileDesc}
-        </motion.p>
+        </AnimatedView>
       </div>
     )
   }
 
   if (availablePets.length === 0 || discoveryIndex >= availablePets.length) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="w-24 h-24 rounded-full bg-linear-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">                                                                 
+        <AnimatedView
+          style={noMoreIconStyle}
+          className="w-24 h-24 rounded-full bg-linear-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"                        
         >
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
+          <AnimatedView style={noMorePulseStyle}>
             <Heart size={48} className="text-primary" />
-          </motion.div>
-          <motion.div
-            className="absolute inset-0 rounded-full bg-linear-to-br from-primary/20 to-accent/20"
-            animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+          </AnimatedView>
+          <AnimatedView
+            style={noMoreRingStyle}
+            className="absolute inset-0 rounded-full bg-linear-to-br from-primary/20 to-accent/20"                                                              
           />
-        </motion.div>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        </AnimatedView>
+        <AnimatedView
+          style={emptyStateTitleStyle}
           className="text-2xl font-bold mb-2"
+          as="h2"
         >
           {t.discover.noMore}
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+        </AnimatedView>
+        <AnimatedView
+          style={emptyStateDescStyle}
           className="text-muted-foreground mb-6 max-w-md"
+          as="p"
         >
           {availablePets.length === 0 && currentIndex === 0
             ? t.discover.noMoreDescAdjust
             : t.discover.noMoreDesc}
-        </motion.p>
+        </AnimatedView>
       </div>
     )
   }
@@ -420,40 +739,32 @@ export default function DiscoverView() {
             </Button>
           </div>
           <div className="flex items-center gap-2">
-            {prefs.maxDistance < 100 && (
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              >
-                <Badge 
-                  variant="outline" 
-                  className="gap-1.5 text-xs font-semibold border-primary/30 bg-primary/5 text-primary px-2 py-1"
-                >
-                  <NavigationArrow size={14} weight="fill" />
-                  Within {prefs.maxDistance} miles
-                </Badge>
-              </motion.div>
-            )}
-            <motion.div
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            >
+            <Presence visible={prefs.maxDistance < 100}>
+              {prefs.maxDistance < 100 && (
+                <AnimatedView>
+                  <Badge 
+                    variant="outline" 
+                    className="gap-1.5 text-xs font-semibold border-primary/30 bg-primary/5 text-primary px-2 py-1"                                               
+                  >
+                    <NavigationArrow size={14} weight="fill" />
+                    Within {prefs.maxDistance} miles
+                  </Badge>
+                </AnimatedView>
+              )}
+            </Presence>
+            <AnimatedView>
               <Badge
                 variant={showAdoptableOnly ? "default" : "outline"}
-                className="gap-1.5 text-xs font-semibold cursor-pointer hover:bg-primary/10 transition-colors px-2 py-1"
+                className="gap-1.5 text-xs font-semibold cursor-pointer hover:bg-primary/10 transition-colors px-2 py-1"                                        
                 onClick={() => {
                   haptics.trigger('selection')
                   setShowAdoptableOnly(!showAdoptableOnly)
                 }}
               >
                 <PawPrint size={14} weight="fill" />
-                {t.adoption?.adoptable || 'Adoptable'}
+                {t.adoption?.adoptable ?? 'Adoptable'}
               </Badge>
-            </motion.div>
+            </AnimatedView>
             <Button
               variant="outline"
               size="sm"
@@ -503,174 +814,115 @@ export default function DiscoverView() {
           }}
         />
       ) : (
-        <div className="relative h-[500px] sm:h-[600px] flex items-center justify-center mb-6">
-          <AnimatePresence mode="wait">
-          {currentPet && (
-            <motion.div
-              key={currentPet.id}
-              style={{ x, rotate, opacity }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={1}
-              onDragStart={handleDragStart}
-              onDrag={handleDrag}
-              onDragEnd={handleDragEnd}
-              initial={{ scale: 0.75, opacity: 0, rotateY: -30, y: 50 }}
-              animate={{ 
-                scale: isDragging ? 1.08 : 1, 
-                opacity: 1, 
-                rotateY: 0,
-                y: 0,
-                transition: { 
-                  type: 'spring', 
-                  stiffness: 280, 
-                  damping: 25,
-                  scale: {
-                    type: 'spring',
-                    stiffness: 400,
-                    damping: 20
-                  }
-                }
-              }}
-              exit={{
-                x: direction === 'right' ? 1000 : -1000,
-                opacity: 0,
-                rotate: direction === 'right' ? 50 : -50,
-                scale: 0.4,
-                y: direction === 'right' ? -50 : 50,
-                transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] }
-              }}
-              className="absolute inset-0 cursor-grab active:cursor-grabbing touch-none"
-            >
-              <motion.div
-                className="absolute -top-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-linear-to-r from-primary to-accent rounded-full text-white font-bold text-lg shadow-2xl z-50 border-4 border-white"
-                style={{ opacity: likeOpacity, scale: likeOpacity }}
+        <div className="relative h-[500px] sm:h-[600px] flex items-center justify-center mb-6">                                                                 
+          <Presence visible={!!currentPet}>
+            {currentPet && (
+              <AnimatedView
+                key={currentPet.id}
+                style={swipeAnimatedStyle}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                className="absolute inset-0 cursor-grab active:cursor-grabbing touch-none"                                                                        
               >
-                <Heart size={24} weight="fill" className="inline mr-2" />
-                LIKE
-              </motion.div>
-              <motion.div
-                className="absolute -top-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-linear-to-r from-gray-500 to-gray-700 rounded-full text-white font-bold text-lg shadow-2xl z-50 border-4 border-white"
-                style={{ opacity: passOpacity, scale: passOpacity }}
-              >
-                PASS
-                <X size={24} weight="bold" className="inline ml-2" />
-              </motion.div>
-              {showSwipeHint && currentIndex === 0 && (
-                <motion.div
-                  className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
+                <AnimatedView
+                  className="absolute -top-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-linear-to-r from-primary to-accent rounded-full text-white font-bold text-lg shadow-2xl z-50 border-4 border-white"                                           
+                  style={likeOpacityStyle}
                 >
-                  <motion.div
-                    className="flex gap-12"
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse' }}
-                  >
-                    <motion.div
-                      className="flex items-center gap-2 glass-strong px-4 py-2 rounded-full backdrop-blur-xl border border-white/30"
-                      animate={{ x: [-10, 0, -10] }}
-                      transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse' }}
+                  <Heart size={24} weight="fill" className="inline mr-2" />
+                  LIKE
+                </AnimatedView>
+                <AnimatedView
+                  className="absolute -top-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-linear-to-r from-gray-500 to-gray-700 rounded-full text-white font-bold text-lg shadow-2xl z-50 border-4 border-white"                                        
+                  style={passOpacityStyle}
+                >
+                  PASS
+                  <X size={24} weight="bold" className="inline ml-2" />
+                </AnimatedView>
+              {showSwipeHint && currentIndex === 0 && (
+                <AnimatedView
+                  style={swipeHintContainerStyle}
+                  className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"                                                        
+                >
+                  <AnimatedView style={swipeHintYStyle} className="flex gap-12">
+                    <AnimatedView
+                      style={swipeHintLeftStyle}
+                      className="flex items-center gap-2 glass-strong px-4 py-2 rounded-full backdrop-blur-xl border border-white/30"                           
                     >
                       <span className="text-2xl">👈</span>
-                      <span className="text-white font-semibold drop-shadow-lg">{t.discover.swipeHintPass}</span>
-                    </motion.div>
-                    <motion.div
-                      className="flex items-center gap-2 glass-strong px-4 py-2 rounded-full backdrop-blur-xl border border-white/30"
-                      animate={{ x: [10, 0, 10] }}
-                      transition={{ duration: 1.5, repeat: Infinity, repeatType: 'reverse' }}
+                      <span className="text-white font-semibold drop-shadow-lg">{t.discover.swipeHintPass}</span>                                               
+                    </AnimatedView>
+                    <AnimatedView
+                      style={swipeHintRightStyle}
+                      className="flex items-center gap-2 glass-strong px-4 py-2 rounded-full backdrop-blur-xl border border-white/30"                           
                     >
-                      <span className="text-white font-semibold drop-shadow-lg">{t.discover.swipeHintLike}</span>
+                      <span className="text-white font-semibold drop-shadow-lg">{t.discover.swipeHintLike}</span>                                               
                       <span className="text-2xl">👉</span>
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
+                    </AnimatedView>
+                  </AnimatedView>
+                </AnimatedView>
               )}
               <div className="h-full overflow-hidden rounded-3xl glass-strong premium-shadow backdrop-blur-2xl">
                 <div className="relative h-full flex flex-col bg-linear-to-br from-white/50 to-white/30">
                   <div className="relative h-96 overflow-hidden group">
-                    <motion.div 
-                      className="absolute inset-0 bg-linear-to-br from-primary/25 via-accent/15 to-secondary/20 z-10 pointer-events-none"
-                      initial={{ opacity: 0 }}
-                      whileHover={{ opacity: 1 }}
-                      transition={{ duration: 0.4 }}
+                    <AnimatedView 
+                      className="absolute inset-0 bg-linear-to-br from-primary/25 via-accent/15 to-secondary/20 z-10 pointer-events-none"                       
+                      style={useAnimatedStyle(() => ({ opacity: 0 })) as AnimatedStyle}
+                      onMouseEnter={() => {}}
                     />
-                    <motion.img
+                    <img
                       src={currentPet.photo}
                       alt={currentPet.name}
-                      className="w-full h-full object-cover"
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                      className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-110"
                     />
-                    <motion.div
-                      className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent"
-                    />
-                    <motion.div
-                      initial={{ scale: 0, rotate: -180, y: -20, opacity: 0 }}
-                      animate={{ scale: 1, rotate: 0, y: 0, opacity: 1 }}
-                      transition={{ 
-                        delay: 0.4, 
-                        type: 'spring', 
-                        stiffness: 350, 
-                        damping: 20,
-                        opacity: { duration: 0.3 }
-                      }}
+                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
+                    <AnimatedView
+                      style={compatibilityBadgeStyle}
                       className="absolute top-4 right-4 glass-strong px-4 py-2 rounded-full font-bold text-lg shadow-2xl backdrop-blur-xl border-2 border-white/40"
-                      whileHover={{ 
-                        scale: 1.15, 
-                        borderColor: 'rgba(245, 158, 11, 0.9)',
-                        boxShadow: '0 0 30px rgba(245, 158, 11, 0.5)'
+                      onMouseEnter={() => {
+                        compatibilityBadgeHoverScale.value = withSpring(1.15, springConfigs.bouncy)
                       }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <motion.span
-                        className="bg-linear-to-r from-accent via-primary to-secondary bg-clip-text text-transparent"
-                        animate={{ 
-                          backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                        }}
-                        transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-                        style={{ backgroundSize: '200% auto' }}
-                      >
-                        {compatibilityScore}% {t.discover.match}
-                      </motion.span>
-                      <motion.div
-                        className="absolute inset-0 rounded-full"
-                        animate={{
-                          boxShadow: [
-                            '0 0 10px rgba(245, 158, 11, 0.3)',
-                            '0 0 20px rgba(245, 158, 11, 0.5)',
-                            '0 0 10px rgba(245, 158, 11, 0.3)'
-                          ]
-                        }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
-                    </motion.div>
-                    <motion.button
-                      onClick={() => {
-                        haptics.trigger('selection')
-                        selectedPetDialog.open()
+                      onMouseLeave={() => {
+                        compatibilityBadgeHoverScale.value = withSpring(1, springConfigs.bouncy)
                       }}
-                      className="absolute top-4 left-4 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl"
-                      whileHover={{ scale: 1.15, rotate: 360, borderColor: 'rgba(255, 255, 255, 0.6)' }}
-                      whileTap={{ scale: 0.9 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <Info size={20} className="text-white drop-shadow-lg" weight="bold" />
-                    </motion.button>
-                    <motion.button
                       onClick={() => {
                         haptics.trigger('selection')
                         breakdownDialog.toggle()
                       }}
-                      className="absolute bottom-4 right-4 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl"
-                      whileHover={{ scale: 1.15, borderColor: 'rgba(255, 255, 255, 0.6)' }}
-                      whileTap={{ scale: 0.9 }}
-                      animate={breakdownDialog.isOpen ? { rotate: 360 } : {}}
-                      transition={{ duration: 0.3 }}
                     >
-                      <ChartBar size={20} className="text-white drop-shadow-lg" weight={breakdownDialog.isOpen ? 'fill' : 'bold'} />
-                    </motion.button>
+                      <span className="bg-linear-to-r from-accent via-primary to-secondary bg-clip-text text-transparent animate-gradient">
+                        {compatibilityScore}% {t.discover.match}
+                      </span>
+                      <AnimatedView
+                        className="absolute inset-0 rounded-full"
+                        style={compatibilityGlowStyle}
+                      />
+                    </AnimatedView>
+                    <AnimatedView
+                      className="absolute top-4 left-4 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl cursor-pointer transition-transform hover:scale-110 active:scale-90"
+                      onClick={() => {
+                        haptics.trigger('selection')
+                        selectedPetDialog.open()
+                      }}
+                    >
+                      <Info size={20} className="text-white drop-shadow-lg" weight="bold" />                                                                    
+                    </AnimatedView>
+                    <AnimatedView
+                      className="absolute bottom-4 right-4 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl cursor-pointer transition-transform hover:scale-110 active:scale-90"
+                      onClick={() => {
+                        haptics.trigger('selection')
+                        breakdownDialog.toggle()
+                      }}
+                      style={useAnimatedStyle(() => ({
+                        transform: [{ rotate: breakdownDialog.isOpen ? '360deg' : '0deg' }]
+                      })) as AnimatedStyle}
+                    >
+                      <ChartBar size={20} className="text-white drop-shadow-lg" weight={breakdownDialog.isOpen ? 'fill' : 'bold'} />                            
+                    </AnimatedView>
                   </div>
 
                   <div className="flex-1 p-6 overflow-y-auto">
@@ -692,19 +944,15 @@ export default function DiscoverView() {
                             {currentPet.location}
                           </p>
                           {currentPet.distance !== undefined && (
-                            <motion.div
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 }}
-                            >
+                            <AnimatedView style={distanceBadgeStyle}>
                               <Badge 
                                 variant="secondary" 
                                 className="gap-1 bg-linear-to-r from-primary/10 to-accent/10 border border-primary/20 text-foreground font-semibold px-2 py-0.5"
                               >
-                                <NavigationArrow size={12} weight="fill" className="text-primary" />
+                                <NavigationArrow size={12} weight="fill" className="text-primary" />                                                            
                                 {formatDistance(currentPet.distance)}
                               </Badge>
-                            </motion.div>
+                            </AnimatedView>
                           )}
                         </div>
                       </div>
@@ -755,69 +1003,66 @@ export default function DiscoverView() {
                     </div>
                   </div>
 
-                  <div className="p-6 glass-effect border-t border-white/20 flex gap-4 backdrop-blur-xl">
-                    <motion.div className="flex-1" whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
+                  <div className="p-6 glass-effect border-t border-white/20 flex gap-4 backdrop-blur-xl">                                                       
+                    <AnimatedView 
+                      style={passButtonHover.animatedStyle}
+                      onMouseEnter={passButtonHover.handleEnter}
+                      onMouseLeave={passButtonHover.handleLeave}
+                      className="flex-1"
+                    >
                       <Button
                         size="lg"
                         variant="outline"
-                        className="w-full h-14 border-2 glass-effect hover:glass-strong hover:border-destructive/50 hover:bg-destructive/10 group backdrop-blur-xl transition-all"
+                        className="w-full h-14 border-2 glass-effect hover:glass-strong hover:border-destructive/50 hover:bg-destructive/10 group backdrop-blur-xl transition-all"                                                              
                         onClick={() => {
                           haptics.trigger('light')
                           handleSwipe('pass')
                         }}
                       >
-                        <motion.div
-                          animate={{ rotate: [0, -10, 10, 0] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          <X size={28} weight="bold" className="text-foreground/70 group-hover:text-destructive transition-colors drop-shadow-lg" />
-                        </motion.div>
+                        <AnimatedView style={passButtonIconStyle}>
+                          <X size={28} weight="bold" className="text-foreground/70 group-hover:text-destructive transition-colors drop-shadow-lg" />            
+                        </AnimatedView>
                       </Button>
-                    </motion.div>
-                    <motion.div className="flex-1" whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
+                    </AnimatedView>
+                    <AnimatedView 
+                      style={likeButtonHover.animatedStyle}
+                      onMouseEnter={likeButtonHover.handleEnter}
+                      onMouseLeave={likeButtonHover.handleLeave}
+                      className="flex-1"
+                    >
                       <Button
                         size="lg"
-                        className="w-full h-14 bg-linear-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 shadow-2xl hover:shadow-accent/50 transition-all group relative overflow-hidden neon-glow"
+                        className="w-full h-14 bg-linear-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 shadow-2xl hover:shadow-accent/50 transition-all group relative overflow-hidden neon-glow"                                                                   
                         onClick={() => {
                           haptics.trigger('success')
                           handleSwipe('like')
                         }}
                       >
-                        <motion.div
-                          className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent"
-                          animate={{
-                            x: ['-100%', '200%'],
-                          }}
-                          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                        <AnimatedView
+                          className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent"                                              
+                          style={likeButtonShimmerStyle}
                         />
-                        <motion.div
-                          animate={{ scale: [1, 1.3, 1] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                        >
-                          <Heart size={28} weight="fill" className="relative z-10 drop-shadow-2xl" />
-                        </motion.div>
+                        <AnimatedView style={likeButtonHeartStyle}>
+                          <Heart size={28} weight="fill" className="relative z-10 drop-shadow-2xl" />                                                           
+                        </AnimatedView>
                       </Button>
-                    </motion.div>
+                    </AnimatedView>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </AnimatedView>
           )}
-        </AnimatePresence>
+        </Presence>
         </div>
       )}
 
       {breakdownDialog.isOpen && compatibilityFactors && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-        >
-          <CompatibilityBreakdown factors={compatibilityFactors} className="mb-6" />
-        </motion.div>
+        <AnimatedView style={breakdownDialogStyle}>
+          <CompatibilityBreakdown factors={compatibilityFactors} className="mb-6" />                                                                            
+        </AnimatedView>
       )}
 
-      <AnimatePresence>
+      <Presence visible={selectedPetDialog.isOpen && !!currentPet}>
         {selectedPetDialog.isOpen && currentPet && (
           <EnhancedPetDetailView
             pet={currentPet}
@@ -835,7 +1080,7 @@ export default function DiscoverView() {
             showActions={true}
           />
         )}
-      </AnimatePresence>
+      </Presence>
 
       <MatchCelebration
         show={celebrationDialog.isOpen}

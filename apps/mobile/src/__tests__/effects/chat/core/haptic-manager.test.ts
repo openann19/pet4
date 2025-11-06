@@ -12,6 +12,7 @@ import { getHapticManager, triggerHaptic } from '../../../../effects/chat/core/h
 vi.mock('expo-haptics', () => ({
   impactAsync: vi.fn(),
   notificationAsync: vi.fn(),
+  selectionAsync: vi.fn(),
   ImpactFeedbackStyle: {
     Light: 0,
     Medium: 1,
@@ -24,11 +25,20 @@ vi.mock('expo-haptics', () => ({
   },
 }))
 
+// Mock performance.now() for consistent timing
+const mockPerformanceNow = vi.fn(() => 1000)
+vi.stubGlobal('performance', {
+  now: mockPerformanceNow,
+})
+
 describe('Haptic Manager', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockPerformanceNow.mockReturnValue(1000)
     const manager = getHapticManager()
     manager.resetCooldown()
+    // @ts-expect-error - test access
+    manager.updateReducedMotion(false)
   })
 
   describe('trigger', () => {
@@ -47,9 +57,15 @@ describe('Haptic Manager', () => {
       expect(Haptics.notificationAsync).toHaveBeenCalledWith(Haptics.NotificationFeedbackType.Success)
     })
 
+    it('should trigger selection haptic', () => {
+      triggerHaptic('selection')
+      expect(Haptics.selectionAsync).toHaveBeenCalled()
+    })
+
     it('should respect cooldown', () => {
       triggerHaptic('light')
       vi.clearAllMocks()
+      mockPerformanceNow.mockReturnValue(1200) // 200ms later, still in cooldown
       triggerHaptic('light')
       // Should not trigger again due to cooldown
       expect(Haptics.impactAsync).not.toHaveBeenCalled()
@@ -57,8 +73,17 @@ describe('Haptic Manager', () => {
 
     it('should bypass cooldown when requested', () => {
       triggerHaptic('light', true)
+      mockPerformanceNow.mockReturnValue(1100)
       triggerHaptic('light', true)
       expect(Haptics.impactAsync).toHaveBeenCalledTimes(2)
+    })
+
+    it('should not trigger when reduced motion is enabled', () => {
+      const manager = getHapticManager()
+      // @ts-expect-error - test access
+      manager.updateReducedMotion(true)
+      triggerHaptic('light')
+      expect(Haptics.impactAsync).not.toHaveBeenCalled()
     })
   })
 
@@ -69,12 +94,11 @@ describe('Haptic Manager', () => {
       expect(manager.isCooldownActive()).toBe(true)
     })
 
-    it('should return false after cooldown period', async () => {
+    it('should return false after cooldown period', () => {
       const manager = getHapticManager()
       triggerHaptic('light')
-      await new Promise((resolve) => setTimeout(resolve, 260))
+      mockPerformanceNow.mockReturnValue(2000) // 1000ms later, past cooldown
       expect(manager.isCooldownActive()).toBe(false)
     })
   })
 })
-

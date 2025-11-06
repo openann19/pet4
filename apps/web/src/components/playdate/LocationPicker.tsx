@@ -1,31 +1,30 @@
-import { Badge } from '@/components/ui/badge'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  MapPin,
+  MagnifyingGlass,
+  MapTrifold,
+  ListBullets,
+  NavigationArrow,
+  Star,
+  Park,
+  Coffee,
+  House,
+  Path,
+  Buildings,
+  X
+} from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { haptics } from '@/lib/haptics'
-import { searchNearbyPlaces, searchPlacesByQuery, type MapboxPlace } from '@/lib/maps/mapbox-places'
-import type { Location } from '@/lib/maps/types'
-import { formatDistance, getCurrentLocation } from '@/lib/maps/utils'
 import type { PlaydateLocation } from '@/lib/playdate-types'
-import {
-    Buildings,
-    Coffee,
-    House,
-    ListBullets,
-    MagnifyingGlass,
-    MapPin,
-    MapTrifold,
-    NavigationArrow,
-    Park,
-    Path,
-    Star,
-    X
-} from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import type { Location } from '@/lib/maps/types'
+import { getCurrentLocation, calculateDistance, formatDistance } from '@/lib/maps/utils'
 import { toast } from 'sonner'
+import { haptics } from '@/lib/haptics'
 
 interface LocationPickerProps {
   value?: PlaydateLocation
@@ -43,13 +42,55 @@ interface NearbyPlace {
   rating?: number
 }
 
+const MOCK_NEARBY_PLACES: NearbyPlace[] = [
+  {
+    id: '1',
+    name: 'Central Dog Park',
+    address: '123 Main St',
+    type: 'park',
+    location: { lat: 37.7749, lng: -122.4194 },
+    rating: 4.5
+  },
+  {
+    id: '2',
+    name: 'Pawfect Paws Cafe',
+    address: '456 Oak Ave',
+    type: 'cafe',
+    location: { lat: 37.7750, lng: -122.4195 },
+    rating: 4.8
+  },
+  {
+    id: '3',
+    name: 'Sunset Beach Trail',
+    address: '789 Beach Rd',
+    type: 'trail',
+    location: { lat: 37.7751, lng: -122.4196 },
+    rating: 4.6
+  },
+  {
+    id: '4',
+    name: 'Riverside Park',
+    address: '321 River Dr',
+    type: 'park',
+    location: { lat: 37.7752, lng: -122.4197 },
+    rating: 4.7
+  },
+  {
+    id: '5',
+    name: 'Pet Haven Meadow',
+    address: '654 Green St',
+    type: 'park',
+    location: { lat: 37.7748, lng: -122.4193 },
+    rating: 4.9
+  }
+]
+
 export default function LocationPicker({ value, onChange, onClose }: LocationPickerProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
-  const [userLocation, setUserLocation] = useState<Location | null>(null)
-  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([])
+  const [_userLocation, setUserLocation] = useState<Location | null>(null)
+  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>(MOCK_NEARBY_PLACES)
   const [isLoadingLocation, setIsLoadingLocation] = useState(false)
-  const [isSearching, setIsSearching] = useState(false)
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null)
   const [customLocation, setCustomLocation] = useState({
     name: value?.name || '',
@@ -60,90 +101,23 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
     loadUserLocation()
   }, [])
 
-  useEffect(() => {
-    if (searchQuery.trim()) {
-      const timeoutId = setTimeout(() => {
-        void handleSearch(searchQuery.trim())
-      }, 500)
-      return () => clearTimeout(timeoutId)
-    }
-    if (userLocation) {
-      void loadNearbyPlaces()
-    }
-    return undefined
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery])
-
   const loadUserLocation = async () => {
     setIsLoadingLocation(true)
     try {
       const location = await getCurrentLocation()
       setUserLocation(location)
-      await loadNearbyPlaces()
+      
+      const placesWithDistance = MOCK_NEARBY_PLACES.map(place => ({
+        ...place,
+        distance: calculateDistance(location, place.location)
+      })).sort((a, b) => (a.distance || 0) - (b.distance || 0))
+      
+      setNearbyPlaces(placesWithDistance)
       toast.success('Location detected')
-    } catch {
+    } catch (error) {
       toast.error('Could not get your location')
     } finally {
       setIsLoadingLocation(false)
-    }
-  }
-
-  const loadNearbyPlaces = async () => {
-    if (!userLocation) return
-    
-    setIsLoadingLocation(true)
-    try {
-      const places = await searchNearbyPlaces(userLocation, 5, 20)
-      const convertedPlaces: NearbyPlace[] = places.map((place: MapboxPlace) => {
-        const nearbyPlace: NearbyPlace = {
-          id: place.id,
-          name: place.name,
-          address: place.address,
-          type: place.type,
-          location: place.location
-        }
-        if (place.distance !== undefined) nearbyPlace.distance = place.distance
-        if (place.rating !== undefined) nearbyPlace.rating = place.rating
-        return nearbyPlace
-      })
-      setNearbyPlaces(convertedPlaces)
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      toast.error(`Failed to load places: ${err.message}`)
-    } finally {
-      setIsLoadingLocation(false)
-    }
-  }
-
-  const handleSearch = async (query: string) => {
-    if (!query.trim()) {
-      if (userLocation) {
-        loadNearbyPlaces()
-      }
-      return
-    }
-
-    setIsSearching(true)
-    try {
-      const places = await searchPlacesByQuery(query, userLocation || undefined, 20)
-      const convertedPlaces: NearbyPlace[] = places.map((place: MapboxPlace) => {
-        const nearbyPlace: NearbyPlace = {
-          id: place.id,
-          name: place.name,
-          address: place.address,
-          type: place.type,
-          location: place.location
-        }
-        if (place.distance !== undefined) nearbyPlace.distance = place.distance
-        if (place.rating !== undefined) nearbyPlace.rating = place.rating
-        return nearbyPlace
-      })
-      setNearbyPlaces(convertedPlaces)
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      toast.error(`Search failed: ${err.message}`)
-    } finally {
-      setIsSearching(false)
     }
   }
 
@@ -235,7 +209,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
               placeholder="Search for parks, cafes, or places..."
               className="pl-10 pr-12 h-12 text-base"
             />
-            {(isLoadingLocation || isSearching) && (
+            {isLoadingLocation && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
                 <motion.div
                   animate={{ rotate: 360 }}
@@ -285,14 +259,14 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                           onClick={() => handleSelectPlace(place)}
                         >
                           <div className="flex items-start gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-background to-muted flex items-center justify-center shrink-0 border">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-background to-muted flex items-center justify-center flex-shrink-0 border">
                               {getPlaceIcon(place.type)}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-2 mb-1">
                                 <h4 className="font-semibold text-base">{place.name}</h4>
                                 {place.rating && (
-                                  <Badge variant="secondary" className="flex items-center gap-1 shrink-0">
+                                  <Badge variant="secondary" className="flex items-center gap-1 flex-shrink-0">
                                     <Star size={12} weight="fill" className="text-yellow-500" />
                                     {place.rating}
                                   </Badge>
@@ -315,7 +289,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                               <motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shrink-0"
+                                className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0"
                               >
                                 <MapPin size={14} weight="fill" className="text-white" />
                               </motion.div>

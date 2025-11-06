@@ -256,10 +256,14 @@ class PerformanceMonitorImpl {
   measure(name: string, startMark: string, endMark?: string): void {
     if ('performance' in window && 'measure' in performance) {
       try {
-        performance.measure(name, startMark, endMark)
+        if (endMark !== undefined) {
+          performance.measure(name, startMark, endMark)
+        } else {
+          performance.measure(name, startMark)
+        }
       } catch (e) {
         const err = e instanceof Error ? e : new Error(String(e))
-        logger.warn('Failed to create performance measure', err, { name, startMark, endMark })
+        logger.warn('Failed to create performance measure', { error: err, name, startMark, endMark })
       }
     }
   }

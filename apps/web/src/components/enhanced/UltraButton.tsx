@@ -4,13 +4,8 @@
  */
 
 import { type ReactNode, type ButtonHTMLAttributes } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import {
-  useMagneticHover,
-  useElasticScale,
-  useRippleEffect,
-  useGlowBorder,
-} from '@/effects/reanimated';
+import { MotionView } from '@petspark/motion';
+import { useMagnetic, usePressBounce, useShimmer } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -38,33 +33,13 @@ export function UltraButton({
   onClick,
   ...props
 }: UltraButtonProps) {
-  const magnetic = useMagneticHover({
-    strength: 0.3,
-    maxDistance: 40,
-    enabled: enableMagnetic,
-  });
+  const magnetic = useMagnetic(40);
 
-  const elastic = useElasticScale({
-    scaleDown: 0.96,
-    scaleUp: 1.04,
-  });
+  const elastic = usePressBounce(0.96);
 
-  const ripple = useRippleEffect({
-    color: glowColor,
-    opacity: 0.4,
-  });
-
-  const glow = useGlowBorder({
-    enabled: enableGlow,
-    color: glowColor,
-    intensity: 12,
-    speed: 2000,
-  });
+  const shimmer = useShimmer(240);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (enableRipple) {
-      ripple.addRipple(e);
-    }
     if (onClick) {
       onClick(e);
     }
@@ -72,45 +47,31 @@ export function UltraButton({
 
   return (
     <div
-      ref={magnetic.handleRef}
-      onMouseEnter={magnetic.handleMouseEnter}
-      onMouseLeave={magnetic.handleMouseLeave}
-      onMouseMove={magnetic.handleMouseMove}
+      onPointerMove={enableMagnetic ? magnetic.onPointerMove : undefined}
+      onPointerLeave={enableMagnetic ? magnetic.onPointerLeave : undefined}
       className="inline-block relative"
     >
-      <AnimatedView style={magnetic.animatedStyle}>
-        <div
-          onMouseDown={elastic.handlePressIn}
-          onMouseUp={elastic.handlePressOut}
-          onMouseLeave={elastic.handlePressOut}
-        >
-          <AnimatedView style={elastic.animatedStyle}>
-            <Button
-              variant={variant}
-              size={size}
-              className={cn('relative overflow-hidden', className)}
-              onClick={handleClick}
-              {...props}
-            >
-              {enableGlow && (
-                <AnimatedView style={glow.animatedStyle}>
-                  <div className="absolute inset-0 pointer-events-none" />
-                </AnimatedView>
-              )}
-              <span className="relative z-10">{children}</span>
-              {ripple.ripples.map((r) => (
-                <AnimatedView
-                  key={r.id}
-                  style={ripple.animatedStyle}
-                  className="absolute rounded-full pointer-events-none"
-                >
-                  <div />
-                </AnimatedView>
-              ))}
-            </Button>
-          </AnimatedView>
-        </div>
-      </AnimatedView>
+      <MotionView animatedStyle={magnetic.animatedStyle}>
+        <MotionView animatedStyle={elastic.animatedStyle}>
+          <Button
+            variant={variant}
+            size={size}
+            className={cn('relative overflow-hidden', className)}
+            onClick={handleClick}
+            {...props}
+          >
+            {enableGlow && (
+              <MotionView animatedStyle={shimmer.animatedStyle}>
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ backgroundColor: glowColor }}
+                />
+              </MotionView>
+            )}
+            <span className="relative z-10">{children}</span>
+          </Button>
+        </MotionView>
+      </MotionView>
     </div>
   );
 }

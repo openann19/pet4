@@ -82,7 +82,7 @@ export async function generateAdoptionProfiles(count: number = 12): Promise<Adop
       goodWithKids: data.goodWithKids,
       goodWithPets: data.goodWithPets,
       energyLevel: data.energyLevel,
-      specialNeeds: data.specialNeeds ?? undefined,
+      ...(data.specialNeeds !== undefined && data.specialNeeds !== null && { specialNeeds: data.specialNeeds }),
       adoptionFee: data.adoptionFee,
       postedDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
       personality: data.personality,

@@ -419,7 +419,7 @@ class AdoptionMarketplaceService {
           message: apiApp.reason || apiApp.experience || '',
           homeType: (apiApp.householdType === 'house' ? 'house' : apiApp.householdType === 'apartment' ? 'apartment' : apiApp.householdType === 'condo' ? 'condo' : 'other') as 'house' | 'apartment' | 'condo' | 'farm' | 'other',
           hasYard: apiApp.hasYard,
-          yardFenced: undefined,
+          yardFenced: false,
           hasOtherPets: apiApp.hasOtherPets,
           otherPetsDetails: apiApp.otherPetsDetails,
           hasChildren: apiApp.hasChildren,
@@ -437,7 +437,7 @@ class AdoptionMarketplaceService {
           reviewedBy: undefined,
           reviewNotes: apiApp.reviewNotes,
           ownerNotes: undefined
-        })) as AdoptionApplication[])
+        })) as unknown as AdoptionApplication[])
         .filter((a: AdoptionApplication) => a.status === 'submitted' || a.status === 'under_review')
         .sort((a: AdoptionApplication, b: AdoptionApplication) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
     } catch (error) {
@@ -473,7 +473,7 @@ class AdoptionMarketplaceService {
       petGender: profile.gender,
       petSize: profile.size === 'extra-large' ? 'extra-large' : profile.size,
       petSpecies: originalData?.petSpecies || 'dog',
-      petColor: originalData?.petColor,
+      petColor: originalData?.petColor || '',
       petPhotos: profile.photos,
       petDescription: profile.description,
       status: statusMap[profile.status] || 'pending_review',
@@ -490,18 +490,18 @@ class AdoptionMarketplaceService {
       microchipped: originalData?.microchipped || false,
       goodWithKids: profile.goodWithKids,
       goodWithPets: profile.goodWithPets,
-      goodWithCats: originalData?.goodWithCats,
-      goodWithDogs: originalData?.goodWithDogs,
+      ...(originalData?.goodWithCats !== undefined && { goodWithCats: originalData.goodWithCats }),
+      ...(originalData?.goodWithDogs !== undefined && { goodWithDogs: originalData.goodWithDogs }),
       energyLevel: profile.energyLevel === 'high' ? 'high' : profile.energyLevel,
       temperament: profile.personality || [],
-      specialNeeds: profile.specialNeeds,
+      ...(profile.specialNeeds !== undefined && { specialNeeds: profile.specialNeeds }),
       reasonForAdoption: originalData?.reasonForAdoption || '',
       createdAt: profile.postedDate,
       updatedAt: profile.postedDate,
       viewsCount: 0,
       applicationsCount: 0,
       featured: false
-    }
+    } as AdoptionListing
   }
 }
 

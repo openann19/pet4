@@ -1,9 +1,15 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { animate, motion, useMotionValue, useTransform } from 'framer-motion'
-import { type ReactNode } from 'react'
+import { type ReactNode, useCallback } from 'react'
+import { useAnimatedStyle } from 'react-native-reanimated'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useBubbleTilt } from '@/effects/reanimated/use-bubble-tilt'
+import { useBubbleEntry } from '@/effects/reanimated/use-bubble-entry'
+import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation'
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
 import { TypingDotsWeb } from './TypingDotsWeb'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 
 export interface WebBubbleWrapperProps {
   children: ReactNode
@@ -19,10 +25,11 @@ export interface WebBubbleWrapperProps {
   enable3DTilt?: boolean
   enableSwipeReply?: boolean
   staggerDelay?: number
+  glowOpacity?: number
+  glowIntensity?: number
 }
 
 const DEFAULT_STAGGER_DELAY = 0.04
-const TILT_SENSITIVITY = 50
 
 export function WebBubbleWrapper({
   children,
@@ -36,53 +43,111 @@ export function WebBubbleWrapper({
   className,
   bubbleClassName,
   enable3DTilt = true,
-  staggerDelay = DEFAULT_STAGGER_DELAY
+  staggerDelay = DEFAULT_STAGGER_DELAY,
+  glowOpacity = 0,
+  glowIntensity = 0.85,
 }: WebBubbleWrapperProps) {
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  const rotateX = useTransform(y, [-TILT_SENSITIVITY, TILT_SENSITIVITY], [10, -10])
-  const rotateY = useTransform(x, [-TILT_SENSITIVITY, TILT_SENSITIVITY], [-10, 10])
+  const bubbleTilt = useBubbleTilt({
+    enabled: enable3DTilt,
+    maxTilt: 10,
+  })
+  
+  const bubbleEntry = useBubbleEntry({
+    index,
+    staggerDelay: staggerDelay * 1000,
+    direction: isIncoming ? 'incoming' : 'outgoing',
+    enabled: true,
+    isNew: true,
+  })
+  
+  const bubbleHover = useHoverAnimation({
+    scale: 1.02,
+    enabled: enable3DTilt,
+  })
+  
+  const reactionEntry = useEntryAnimation({
+    initialScale: 0,
+    delay: 100,
+    enabled: hasReaction,
+  })
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!enable3DTilt) return
     const rect = e.currentTarget.getBoundingClientRect()
     const offsetX = e.clientX - rect.left - rect.width / 2
     const offsetY = e.clientY - rect.top - rect.height / 2
-    x.set(offsetX)
-    y.set(offsetY)
-  }
+    bubbleTilt.handleMove(offsetX, offsetY, rect.width, rect.height)
+  }, [enable3DTilt, bubbleTilt])
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     if (!enable3DTilt) return
-    animate(x, 0, { duration: 0.3 })
-    animate(y, 0, { duration: 0.3 })
-  }
+    bubbleTilt.handleLeave()
+  }, [enable3DTilt, bubbleTilt])
 
-  const handleContextMenu = (e: React.MouseEvent) => {
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     if (onLongPress) {
       onLongPress()
     }
-  }
+  }, [onLongPress])
+
+  const containerStyle = useAnimatedStyle(() => {
+    return {
+      opacity: bubbleEntry.opacity.value,
+      transform: [
+        { translateY: bubbleEntry.translateY.value },
+        { translateX: bubbleEntry.translateX.value },
+        { scale: bubbleEntry.scale.value },
+        { rotateX: `${bubbleTilt.rotateX.value}deg` },
+        { rotateY: `${bubbleTilt.rotateY.value}deg` },
+      ],
+    }
+  }) as AnimatedStyle
+
+  const bubbleStyle = bubbleHover.animatedStyle
+  
+  // Glow trail style for send effect
+  const glowStyle = useAnimatedStyle(() => {
+    if (glowOpacity <= 0) {
+      return {}
+    }
+    
+    const glowColor = isIncoming ? 'rgba(59, 130, 246, 0.6)' : 'rgba(255, 255, 255, 0.8)'
+    
+    return {
+      position: 'absolute',
+      inset: '-4px',
+      borderRadius: 'inherit',
+      background: `radial-gradient(circle, ${glowColor} 0%, transparent 70%)`,
+      opacity: glowOpacity * glowIntensity,
+      filter: `blur(8px)`,
+      pointerEvents: 'none',
+      zIndex: -1,
+    }
+  }) as AnimatedStyle
 
   return (
-    <motion.div
+    <AnimatedView
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
       onContextMenu={handleContextMenu}
+      style={containerStyle}
       className={cn('relative', className)}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        delay: index * staggerDelay,
-        type: 'spring',
-        stiffness: 100,
-        damping: 15
-      }}
-      {...(enable3DTilt ? { style: { rotateX, rotateY, transformStyle: 'preserve-3d' as const } } : undefined)}
     >
-      <motion.div
+      {/* Glow trail effect */}
+      {glowOpacity > 0 && (
+        <AnimatedView style={glowStyle}>
+          <div />
+        </AnimatedView>
+      )}
+      
+      <AnimatedView
+        style={bubbleStyle}
+        onMouseEnter={bubbleHover.handleMouseEnter}
+        onMouseLeave={bubbleHover.handleMouseLeave}
+        onMouseDown={bubbleHover.handleMouseDown}
+        onMouseUp={bubbleHover.handleMouseUp}
         className={cn(
           'relative max-w-[85%] rounded-2xl px-4 py-2 shadow-lg transition-all duration-200',
           isIncoming
@@ -90,11 +155,6 @@ export function WebBubbleWrapper({
             : 'bg-blue-600 text-white self-end rounded-br-sm',
           bubbleClassName
         )}
-        style={{
-          alignSelf: isIncoming ? 'flex-start' : 'flex-end'
-        }}
-        {...(enable3DTilt ? { whileHover: { scale: 1.02 } } : undefined)}
-        whileTap={{ scale: 0.98 }}
       >
         {showTyping ? (
           <TypingDotsWeb
@@ -104,23 +164,16 @@ export function WebBubbleWrapper({
         ) : (
           children
         )}
-      </motion.div>
+      </AnimatedView>
       {hasReaction && (
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{
-            type: 'spring',
-            stiffness: 500,
-            damping: 15,
-            delay: 0.1
-          }}
+        <AnimatedView
+          style={reactionEntry.animatedStyle}
           className="absolute -bottom-4 -right-2 text-base pointer-events-none"
         >
           {reactionEmoji}
-        </motion.div>
+        </AnimatedView>
       )}
-    </motion.div>
+    </AnimatedView>
   )
 }
 

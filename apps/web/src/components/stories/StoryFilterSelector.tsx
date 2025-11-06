@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+'use client'
+
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, MagnifyingGlass, Sliders } from '@phosphor-icons/react'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -14,12 +16,12 @@ import {
 } from '@/lib/story-templates'
 import { cn } from '@/lib/utils'
 
-interface StoryFilterSelectorProps {
-  selectedFilter: StoryFilter
-  onSelectFilter: (filter: StoryFilter) => void
-  mediaPreview?: string
-  intensity?: number
-  onIntensityChange?: (intensity: number) => void
+export interface StoryFilterSelectorProps {
+  readonly selectedFilter: StoryFilter
+  readonly onSelectFilter: (filter: StoryFilter) => void
+  readonly mediaPreview?: string
+  readonly intensity?: number
+  readonly onIntensityChange?: (intensity: number) => void
 }
 
 export default function StoryFilterSelector({ 
@@ -28,30 +30,65 @@ export default function StoryFilterSelector({
   mediaPreview,
   intensity = 1,
   onIntensityChange
-}: StoryFilterSelectorProps) {
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [localIntensity, setLocalIntensity] = useState(intensity)
+}: StoryFilterSelectorProps): JSX.Element {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [localIntensity, setLocalIntensity] = useState<number>(intensity)
   const previewRefs = useRef<Map<string, HTMLImageElement>>(new Map())
 
-  const filteredFilters = getFiltersByCategory(selectedCategory).filter(filter =>
-    filter.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredFilters = useMemo(() => {
+    const categoryFilters = getFiltersByCategory(selectedCategory)
+    const normalizedQuery = searchQuery.toLowerCase().trim()
+    
+    if (normalizedQuery === '') {
+      return categoryFilters
+    }
+    
+    return categoryFilters.filter((filter) =>
+      filter.name.toLowerCase().includes(normalizedQuery)
+    )
+  }, [selectedCategory, searchQuery])
 
   useEffect(() => {
     previewRefs.current.forEach((img, filterId) => {
-      const filter = STORY_FILTERS.find(f => f.id === filterId)
+      const filter = STORY_FILTERS.find((f) => f.id === filterId)
       if (filter && img) {
         img.style.filter = filter.cssFilter
       }
     })
   }, [])
 
-  const handleIntensityChange = (value: number[]) => {
+  useEffect(() => {
+    setLocalIntensity(intensity)
+  }, [intensity])
+
+  const handleIntensityChange = useCallback((value: readonly number[]) => {
     const newIntensity = value[0] ?? 1
     setLocalIntensity(newIntensity)
     onIntensityChange?.(newIntensity)
-  }
+  }, [onIntensityChange])
+
+  const handleCategorySelect = useCallback((categoryId: string) => {
+    setSelectedCategory(categoryId)
+  }, [])
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }, [])
+
+  const handleFilterSelect = useCallback((filter: StoryFilter) => {
+    onSelectFilter(filter)
+  }, [onSelectFilter])
+
+  const handleImageRef = useCallback((filterId: string) => {
+    return (el: HTMLImageElement | null) => {
+      if (el) {
+        previewRefs.current.set(filterId, el)
+      } else {
+        previewRefs.current.delete(filterId)
+      }
+    }
+  }, [])
 
   return (
     <div className="space-y-4">
@@ -61,8 +98,9 @@ export default function StoryFilterSelector({
           <Input
             placeholder="Search filters..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
             className="pl-10"
+            aria-label="Search story filters"
           />
         </div>
 
@@ -73,13 +111,15 @@ export default function StoryFilterSelector({
                 key={category.id}
                 variant={selectedCategory === category.id ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setSelectedCategory(category.id)}
+                onClick={() => handleCategorySelect(category.id)}
                 className={cn(
                   "whitespace-nowrap",
                   selectedCategory === category.id && "bg-gradient-to-r from-primary to-accent"
                 )}
+                aria-pressed={selectedCategory === category.id}
+                aria-label={`Filter category: ${category.name}`}
               >
-                <span className="mr-1.5">{category.icon}</span>
+                <span className="mr-1.5" aria-hidden="true">{category.icon}</span>
                 {category.name}
               </Button>
             ))}
@@ -122,7 +162,9 @@ export default function StoryFilterSelector({
                   duration: 0.2,
                   delay: index * 0.03
                 }}
-                onClick={() => onSelectFilter(filter)}
+                onClick={() => handleFilterSelect(filter)}
+                aria-label={`Select filter: ${filter.name}`}
+                aria-pressed={selectedFilter.id === filter.id}
                 className={cn(
                   "relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200 bg-muted",
                   selectedFilter.id === filter.id
@@ -134,13 +176,12 @@ export default function StoryFilterSelector({
               >
                 {mediaPreview ? (
                   <img
-                    ref={(el) => {
-                      if (el) previewRefs.current.set(filter.id, el)
-                    }}
+                    ref={handleImageRef(filter.id)}
                     src={mediaPreview}
-                    alt={filter.name}
+                    alt={`Preview with ${filter.name} filter`}
                     className="w-full h-full object-cover"
                     style={{ filter: filter.cssFilter }}
+                    loading="lazy"
                   />
                 ) : (
                   <div 

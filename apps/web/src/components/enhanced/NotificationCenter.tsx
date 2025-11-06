@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useStorage } from '@/hooks/useStorage'
-import { motion } from 'framer-motion'
+import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item'
+import { MotionView } from '@petspark/motion'
 import { Bell, X, Check, CheckCircle } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -124,10 +125,11 @@ export function NotificationCenter() {
                       <div className="px-4 py-2 text-xs font-semibold text-muted-foreground">
                         Today
                       </div>
-                      {groupedNotifications.today.map(notification => (
+                      {groupedNotifications.today.map((notification, index) => (
                         <NotificationItem
                           key={notification.id}
                           notification={notification}
+                          index={index}
                           onMarkAsRead={markAsRead}
                           onDelete={deleteNotification}
                         />
@@ -140,10 +142,11 @@ export function NotificationCenter() {
                       <div className="px-4 py-2 text-xs font-semibold text-muted-foreground">
                         Earlier
                       </div>
-                      {groupedNotifications.earlier.map(notification => (
+                      {groupedNotifications.earlier.map((notification, index) => (
                         <NotificationItem
                           key={notification.id}
                           notification={notification}
+                          index={groupedNotifications.today.length + index}
                           onMarkAsRead={markAsRead}
                           onDelete={deleteNotification}
                         />
@@ -176,17 +179,19 @@ export function NotificationCenter() {
 function NotificationItem({
   notification,
   onMarkAsRead,
-  onDelete
+  onDelete,
+  index
 }: {
   notification: Notification
   onMarkAsRead: (id: string) => void
   onDelete: (id: string) => void
+  index: number
 }) {
+  const staggered = useStaggeredItem({ index, staggerDelay: 30 })
+
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
+    <MotionView
+      animatedStyle={staggered.itemStyle}
       className={cn(
         'group relative p-4 hover:bg-muted/50 transition-colors',
         !notification.read && 'bg-primary/5'
@@ -246,7 +251,7 @@ function NotificationItem({
           <X size={14} />
         </Button>
       </div>
-    </motion.div>
+    </AnimatedView>
   )
 }
 

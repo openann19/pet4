@@ -5,13 +5,58 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React from 'react'
 import { useColorScheme } from 'react-native'
 import { linking } from './linking'
+import { SignInForm } from '@ui-mobile'
+import { PostComposer } from '@ui-mobile';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 export type RootStackParamList = {
   MainTabs: undefined
   UploadAndEdit: { onDone: (uri: string) => void; onCancel?: () => void }
+  SignIn: undefined
+  SignUp: undefined
+  PostComposer: { onPostCreated?: () => void } | undefined
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
+
+type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>
+type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
+type PostComposerScreenProps = NativeStackScreenProps<RootStackParamList, 'PostComposer'>;
+
+function SignInScreen({ navigation }: SignInScreenProps): React.JSX.Element {
+  return (
+    <SignInForm
+      onSuccess={() => {
+        navigation.replace('MainTabs')
+      }}
+      onSwitchToSignUp={() => {
+        navigation.navigate('SignUp')
+      }}
+    />
+  )
+}
+
+function SignUpScreen({ navigation }: SignUpScreenProps): React.JSX.Element {
+  // TODO: Create SignUpForm component
+  // For now, navigate back to SignIn
+  React.useEffect(() => {
+    navigation.navigate('SignIn')
+  }, [navigation])
+  
+  return <React.Fragment />
+}
+
+function PostComposerScreen({ navigation, route }: PostComposerScreenProps): React.JSX.Element {
+  return (
+    <PostComposer
+      open={true}
+      onOpenChange={(open) => {
+        if (!open) navigation.goBack();
+      }}
+      onPostCreated={route.params?.onPostCreated}
+    />
+  );
+}
 
 export function AppNavigator(): React.JSX.Element {
   const colorScheme = useColorScheme()
@@ -30,6 +75,30 @@ export function AppNavigator(): React.JSX.Element {
             presentation: 'modal',
             headerShown: true,
             title: 'Upload & Edit',
+          }}
+        />
+        <Stack.Screen 
+          name="SignIn" 
+          component={SignInScreen}
+          options={{
+            headerShown: true,
+            title: 'Sign In',
+          }}
+        />
+        <Stack.Screen 
+          name="SignUp" 
+          component={SignUpScreen}
+          options={{
+            headerShown: true,
+            title: 'Sign Up',
+          }}
+        />
+        <Stack.Screen 
+          name="PostComposer" 
+          component={PostComposerScreen}
+          options={{
+            headerShown: true,
+            title: 'Create Post',
           }}
         />
       </Stack.Navigator>

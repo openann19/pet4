@@ -7,7 +7,6 @@ import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { useApp } from '@/contexts/AppContext'
-import { checkDuplicateContent, moderatePost } from '@/core/services/content-moderation'
 import { useStorage } from '@/hooks/useStorage'
 import type { PostKind, PostVisibility } from '@/lib/community-types'
 import { haptics } from '@/lib/haptics'
@@ -288,55 +287,8 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
       const user = await spark.user()
       
-      // Prepare media URLs for moderation
-      const mediaUrls: string[] = []
-      if (videoState.file) {
-        // For video, use the compressed blob URL if available, otherwise preview URL
-        if (videoState.compressedBlob) {
-          const videoUrl = URL.createObjectURL(videoState.compressedBlob)
-          mediaUrls.push(videoUrl)
-        } else if (videoState.previewUrl) {
-          mediaUrls.push(videoState.previewUrl)
-        }
-      } else {
-        mediaUrls.push(...images)
-      }
-
-      // Run content moderation before creating post
-      const moderationResult = await moderatePost(text.trim(), mediaUrls)
-      
-      // Check for duplicate content
-      const existingFingerprintsArray = await communityAPI.getContentFingerprints()
-      const existingFingerprints = new Set(existingFingerprintsArray)
-      const isDuplicate = await checkDuplicateContent(
-        moderationResult.contentFingerprint,
-        existingFingerprints
-      )
-      
-      if (isDuplicate) {
-        haptics.error()
-        toast.error('This content appears to be a duplicate. Please create original content.')
-        return
-      }
-
-      // Block submission if content failed moderation
-      if (!moderationResult.passed) {
-        haptics.error()
-        const reasons = moderationResult.blockedReasons.join(', ')
-        toast.error(`Content blocked: ${reasons}`, { duration: 5000 })
-        logger.warn('Post blocked by content moderation', {
-          nsfwScore: moderationResult.nsfwScore,
-          profanityScore: moderationResult.profanityScore,
-          blockedReasons: moderationResult.blockedReasons,
-          fingerprint: moderationResult.contentFingerprint
-        })
-        return
-      }
-
-      // Show warning if content requires review
-      if (moderationResult.requiresReview) {
-        toast.info('Your post is under review and will be visible once approved.')
-      }
+      // All posts require manual admin approval
+      toast.info('Your post has been submitted and will be visible once approved by an administrator.')
       
       const postData: Parameters<typeof communityAPI.createPost>[0] = {
         authorId: user.id,

@@ -294,7 +294,7 @@ export async function createGroupedNotifications(
     read: false,
     archived: false,
     priority: 'normal' as const,
-    avatarUrl: item.avatarUrl,
+    ...(item.avatarUrl !== undefined && { avatarUrl: item.avatarUrl }),
     groupId,
     metadata: {
       userName: item.name

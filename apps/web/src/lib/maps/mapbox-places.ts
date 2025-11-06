@@ -171,7 +171,7 @@ export async function searchNearbyPlaces(
           location: placeLocation,
           distance,
           category,
-          rating: undefined // Mapbox doesn't provide ratings, would need to integrate with another service
+          // rating is optional, omit if not available
         }
       })
       .sort((a, b) => (a.distance || 0) - (b.distance || 0))

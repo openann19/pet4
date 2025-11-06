@@ -1,7 +1,12 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { useEffect } from 'react'
+import { useSharedValue, withSpring, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { Presence } from '@petspark/motion'
 import { X, CheckCircle, Warning, Info, XCircle } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { springConfigs } from '@/effects/reanimated/transitions'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -53,13 +58,36 @@ export function SmartToast({
   position = 'top',
 }: SmartToastProps) {
   const Icon = icons[type]
+  const opacity = useSharedValue(0)
+  const translateY = useSharedValue(position === 'top' ? -20 : 20)
+  const translateX = useSharedValue(0)
+  const scale = useSharedValue(0.95)
+
+  useEffect(() => {
+    opacity.value = withSpring(1, springConfigs.smooth)
+    translateY.value = withSpring(0, springConfigs.smooth)
+    scale.value = withSpring(1, springConfigs.smooth)
+  }, [opacity, translateY, scale])
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [
+      { translateY: translateY.value },
+      { translateX: translateX.value },
+      { scale: scale.value }
+    ]
+  })) as AnimatedStyle
+
+  const handleDismiss = () => {
+    opacity.value = withTiming(0, { duration: 200 })
+    translateX.value = withTiming(300, { duration: 200 })
+    scale.value = withTiming(0.9, { duration: 200 })
+    setTimeout(() => onDismiss(id), 200)
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: position === 'top' ? -20 : 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, x: 300, scale: 0.9 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+    <AnimatedView
+      style={animatedStyle}
       className={cn(
         'relative flex items-start gap-3 p-4 rounded-xl border backdrop-blur-xl shadow-xl min-w-[320px] max-w-md',
         colors[type]
@@ -78,7 +106,7 @@ export function SmartToast({
             size="sm"
             onClick={() => {
               action.onClick()
-              onDismiss(id)
+              handleDismiss()
             }}
             className="mt-2 h-7 text-xs font-medium hover:bg-background/50"
           >
@@ -88,13 +116,13 @@ export function SmartToast({
       </div>
 
       <button
-        onClick={() => onDismiss(id)}
+        onClick={handleDismiss}
         className="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
         aria-label="Dismiss notification"
       >
         <X size={16} />
       </button>
-    </motion.div>
+    </AnimatedView>
   )
 }
 
@@ -114,13 +142,13 @@ export function SmartToastContainer({
         position === 'top' ? 'top-4' : 'bottom-4'
       )}
     >
-      <AnimatePresence mode="popLayout">
+      <Presence visible={toasts.length > 0}>
         {toasts.map((toast) => (
           <div key={toast.id} className="pointer-events-auto">
             <SmartToast {...toast} onDismiss={onDismiss} position={position} />
           </div>
         ))}
-      </AnimatePresence>
+      </Presence>
     </div>
   )
 }

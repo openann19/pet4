@@ -76,7 +76,8 @@ describe('contrast', () => {
     })
 
     it('should return true for 4.5:1 contrast', () => {
-      expect(meetsAANormal('#3B82F6', '#FFFFFF')).toBe(true)
+      expect(meetsAANormal('#000000', '#FFFFFF')).toBe(true)
+      expect(meetsAANormal('#1E40AF', '#FFFFFF')).toBe(true)
     })
 
     it('should return false for low contrast', () => {
@@ -111,7 +112,7 @@ describe('contrast', () => {
   describe('getAccessibleTextColor', () => {
     it('should return white for dark backgrounds', () => {
       expect(getAccessibleTextColor('#000000')).toBe('#FFFFFF')
-      expect(getAccessibleTextColor('#3B82F6')).toBe('#FFFFFF')
+      expect(getAccessibleTextColor('#1E293B')).toBe('#FFFFFF')
     })
 
     it('should return black for light backgrounds', () => {

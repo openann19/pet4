@@ -1,9 +1,19 @@
-import { motion } from 'framer-motion'
+'use client'
+
+import { useCallback, useMemo } from 'react'
 import { Phone, PhoneDisconnect, VideoCamera } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import type { Call } from '@/lib/call-types'
 import { haptics } from '@/lib/haptics'
+import { createLogger } from '@/lib/logger'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useModalAnimation, useGlowPulse, useBounceOnTap } from '@/effects/reanimated'
+import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
+import { useEffect } from 'react'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+
+const logger = createLogger('IncomingCallNotification')
 
 interface IncomingCallNotificationProps {
   call: Call
@@ -19,97 +29,147 @@ export default function IncomingCallNotification({
   callerAvatar,
   onAccept,
   onDecline
-}: IncomingCallNotificationProps) {
-  const handleAccept = () => {
-    haptics.trigger('success')
-    onAccept()
-  }
+}: IncomingCallNotificationProps): JSX.Element {
+  const modalAnimation = useModalAnimation({ isVisible: true, duration: 300 })
+  const glowPulse = useGlowPulse({ duration: 1500, intensity: 0.4, enabled: true })
+  
+  const avatarScale = useSharedValue(1)
 
-  const handleDecline = () => {
-    haptics.trigger('heavy')
-    onDecline()
-  }
+  const handleAccept = useCallback((): void => {
+    try {
+      haptics.success()
+      logger.info('Call accepted', { callId: call.id, callerName, callType: call.type })
+      onAccept()
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to accept call', err, { callId: call.id, callerName })
+      haptics.error()
+    }
+  }, [call.id, call.type, callerName, onAccept])
+
+  const handleDecline = useCallback((): void => {
+    try {
+      haptics.heavy()
+      logger.info('Call declined', { callId: call.id, callerName, callType: call.type })
+      onDecline()
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to decline call', err, { callId: call.id, callerName })
+      haptics.error()
+    }
+  }, [call.id, call.type, callerName, onDecline])
+
+  const acceptBounce = useBounceOnTap({
+    scale: 0.98,
+    onPress: handleAccept,
+    hapticFeedback: false
+  })
+  
+  const declineBounce = useBounceOnTap({
+    scale: 0.98,
+    onPress: handleDecline,
+    hapticFeedback: false
+  })
+
+  useEffect(() => {
+    avatarScale.value = withRepeat(
+      withSequence(
+        withTiming(1.05, { duration: 1000 }),
+        withTiming(1, { duration: 1000 })
+      ),
+      -1,
+      true
+    )
+  }, [avatarScale])
+
+  const avatarAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: avatarScale.value }]
+    }
+  }) as AnimatedStyle
+
+  const callTypeLabel = useMemo<string>(() => {
+    return call.type === 'video' ? 'Incoming video call' : 'Incoming call'
+  }, [call.type])
+
+  const callTypeIcon = useMemo(() => {
+    return call.type === 'video' ? (
+      <VideoCamera size={16} weight="fill" aria-hidden="true" />
+    ) : (
+      <Phone size={16} weight="fill" aria-hidden="true" />
+    )
+  }, [call.type])
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9, y: -20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, y: -20 }}
+    <AnimatedView
+      style={modalAnimation.style}
       className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4"
+      role="alertdialog"
+      aria-labelledby="incoming-call-title"
+      aria-describedby="incoming-call-description"
+      aria-modal="true"
     >
-      <motion.div
-        animate={{
-          boxShadow: [
-            '0 10px 40px rgba(0,0,0,0.2)',
-            '0 15px 50px rgba(245,158,11,0.4)',
-            '0 10px 40px rgba(0,0,0,0.2)'
-          ]
-        }}
-        transition={{ duration: 1.5, repeat: Infinity }}
+      <AnimatedView
+        style={glowPulse.animatedStyle}
         className="glass-strong backdrop-blur-2xl rounded-3xl p-6 border border-white/30 shadow-2xl"
       >
         <div className="flex items-center gap-4 mb-6">
-          <motion.div
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
-          >
+          <AnimatedView style={avatarAnimatedStyle}>
             <Avatar className="w-16 h-16 ring-4 ring-primary/30">
               <AvatarImage src={callerAvatar} alt={callerName} />
               <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white text-2xl font-bold">
-                {callerName[0]}
+                {callerName[0] ?? '?'}
               </AvatarFallback>
             </Avatar>
-          </motion.div>
+          </AnimatedView>
 
           <div className="flex-1">
-            <h3 className="font-bold text-lg text-foreground">{callerName}</h3>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              {call.type === 'video' ? (
-                <>
-                  <VideoCamera size={16} weight="fill" />
-                  <span>Incoming video call...</span>
-                </>
-              ) : (
-                <>
-                  <Phone size={16} weight="fill" />
-                  <span>Incoming call...</span>
-                </>
-              )}
+            <h3 id="incoming-call-title" className="font-bold text-lg text-foreground">
+              {callerName}
+            </h3>
+            <div 
+              id="incoming-call-description"
+              className="flex items-center gap-2 text-sm text-muted-foreground"
+              role="status"
+              aria-live="polite"
+            >
+              {callTypeIcon}
+              <span>{callTypeLabel}...</span>
             </div>
           </div>
         </div>
 
-        <div className="flex gap-3">
-          <motion.div
+        <div className="flex gap-3" role="group" aria-label="Call actions">
+          <AnimatedView
+            style={declineBounce.animatedStyle}
             className="flex-1"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
           >
             <Button
-              onClick={handleDecline}
+              onClick={declineBounce.handlePress}
               variant="outline"
               className="w-full h-12 border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+              aria-label="Decline call"
             >
-              <PhoneDisconnect size={20} weight="fill" className="mr-2" />
+              <PhoneDisconnect size={20} weight="fill" className="mr-2" aria-hidden="true" />
               Decline
             </Button>
-          </motion.div>
+          </AnimatedView>
 
-          <motion.div
+          <AnimatedView
+            style={acceptBounce.animatedStyle}
             className="flex-1"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
           >
             <Button
-              onClick={handleAccept}
+              onClick={acceptBounce.handlePress}
               className="w-full h-12 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg"
+              aria-label="Accept call"
             >
-              <Phone size={20} weight="fill" className="mr-2" />
+              <Phone size={20} weight="fill" className="mr-2" aria-hidden="true" />
               Accept
             </Button>
-          </motion.div>
+          </AnimatedView>
         </div>
-      </motion.div>
-    </motion.div>
+      </AnimatedView>
+    </AnimatedView>
   )
 }

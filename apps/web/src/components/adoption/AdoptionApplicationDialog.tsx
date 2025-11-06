@@ -1,5 +1,6 @@
+'use client'
+
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import {
   Dialog,
   DialogContent,
@@ -20,8 +21,24 @@ import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'
 import { PaperPlaneRight } from '@phosphor-icons/react'
 import { createLogger } from '@/lib/logger'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useRotation } from '@/effects/reanimated/use-rotation'
 
 const logger = createLogger('AdoptionApplicationDialog')
+
+function LoadingSpinner() {
+  const rotationAnimation = useRotation({
+    enabled: true,
+    duration: 1000,
+    repeat: true
+  })
+
+  return (
+    <AnimatedView style={rotationAnimation.rotationStyle} className="inline-block">
+      <PaperPlaneRight size={18} />
+    </AnimatedView>
+  )
+}
 
 interface AdoptionApplicationDialogProps {
   profile: AdoptionProfile
@@ -56,7 +73,7 @@ export function AdoptionApplicationDialog({
     e.preventDefault()
     
     if (!formData.applicantName || !formData.applicantEmail || !formData.reason) {
-      toast.error(t.adoption?.fillRequired || 'Please fill in all required fields')
+      toast.error(t.adoption?.fillRequired ?? 'Please fill in all required fields')
       haptics.trigger('error')
       return
     }
@@ -75,9 +92,9 @@ export function AdoptionApplicationDialog({
 
       haptics.trigger('success')
       toast.success(
-        t.adoption?.applicationSubmitted || 'Application Submitted!',
+        t.adoption?.applicationSubmitted ?? 'Application Submitted!',
         {
-          description: t.adoption?.applicationSubmittedDesc || 
+          description: t.adoption?.applicationSubmittedDesc ?? 
             'The shelter will review your application and contact you soon.'
         }
       )
@@ -100,7 +117,7 @@ export function AdoptionApplicationDialog({
     } catch (error) {
       logger.error('Failed to submit application', error instanceof Error ? error : new Error(String(error)))
       haptics.trigger('error')
-      toast.error(t.adoption?.applicationFailed || 'Failed to submit application. Please try again.')
+      toast.error(t.adoption?.applicationFailed ?? 'Failed to submit application. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -111,21 +128,23 @@ export function AdoptionApplicationDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
-            {t.adoption?.applyToAdopt || 'Apply to Adopt'} {profile.petName}
+            {t.adoption?.applyToAdopt ?? 'Apply to Adopt'} {profile.petName}
           </DialogTitle>
           <DialogDescription>
-            {t.adoption?.applicationDesc || 
+            {t.adoption?.applicationDesc ?? 
               'Fill out this application to express your interest in adopting. The shelter will review and contact you.'}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+        <form onSubmit={(e) => {
+          void handleSubmit(e)
+        }} className="space-y-6 mt-4">
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">{t.adoption?.contactInfo || 'Contact Information'}</h3>
+            <h3 className="font-semibold text-lg">{t.adoption?.contactInfo ?? 'Contact Information'}</h3>
             
             <div className="space-y-2">
               <Label htmlFor="name">
-                {t.adoption?.fullName || 'Full Name'} <span className="text-destructive">*</span>
+                {t.adoption?.fullName ?? 'Full Name'} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="name"
@@ -137,7 +156,7 @@ export function AdoptionApplicationDialog({
 
             <div className="space-y-2">
               <Label htmlFor="email">
-                {t.adoption?.email || 'Email'} <span className="text-destructive">*</span>
+                {t.adoption?.email ?? 'Email'} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="email"
@@ -149,7 +168,7 @@ export function AdoptionApplicationDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">{t.adoption?.phone || 'Phone Number'}</Label>
+              <Label htmlFor="phone">{t.adoption?.phone ?? 'Phone Number'}</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -160,38 +179,38 @@ export function AdoptionApplicationDialog({
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">{t.adoption?.householdInfo || 'Household Information'}</h3>
+            <h3 className="font-semibold text-lg">{t.adoption?.householdInfo ?? 'Household Information'}</h3>
             
             <div className="space-y-2">
-              <Label>{t.adoption?.householdType || 'Household Type'}</Label>
+              <Label>{t.adoption?.householdType ?? 'Household Type'}</Label>
               <RadioGroup
                 value={formData.householdType}
                 onValueChange={(value) => 
-                  setFormData({ ...formData, householdType: value as any })
+                  setFormData({ ...formData, householdType: value as 'house' | 'apartment' | 'condo' | 'other' })
                 }
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="house" id="house" />
                   <Label htmlFor="house" className="font-normal cursor-pointer">
-                    {t.adoption?.house || 'House'}
+                    {t.adoption?.house ?? 'House'}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="apartment" id="apartment" />
                   <Label htmlFor="apartment" className="font-normal cursor-pointer">
-                    {t.adoption?.apartment || 'Apartment'}
+                    {t.adoption?.apartment ?? 'Apartment'}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="condo" id="condo" />
                   <Label htmlFor="condo" className="font-normal cursor-pointer">
-                    {t.adoption?.condo || 'Condo'}
+                    {t.adoption?.condo ?? 'Condo'}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="other" id="other" />
                   <Label htmlFor="other" className="font-normal cursor-pointer">
-                    {t.adoption?.other || 'Other'}
+                    {t.adoption?.other ?? 'Other'}
                   </Label>
                 </div>
               </RadioGroup>
@@ -206,7 +225,7 @@ export function AdoptionApplicationDialog({
                 }
               />
               <Label htmlFor="yard" className="font-normal cursor-pointer">
-                {t.adoption?.hasYard || 'I have a yard'}
+                {t.adoption?.hasYard ?? 'I have a yard'}
               </Label>
             </div>
 
@@ -220,12 +239,12 @@ export function AdoptionApplicationDialog({
                   }
                 />
                 <Label htmlFor="other-pets" className="font-normal cursor-pointer">
-                  {t.adoption?.hasOtherPets || 'I have other pets'}
+                  {t.adoption?.hasOtherPets ?? 'I have other pets'}
                 </Label>
               </div>
               {formData.hasOtherPets && (
                 <Input
-                  placeholder={t.adoption?.describeOtherPets || 'Describe your other pets...'}
+                  placeholder={t.adoption?.describeOtherPets ?? 'Describe your other pets...'}
                   value={formData.otherPetsDetails}
                   onChange={(e) => setFormData({ ...formData, otherPetsDetails: e.target.value })}
                 />
@@ -242,12 +261,12 @@ export function AdoptionApplicationDialog({
                   }
                 />
                 <Label htmlFor="children" className="font-normal cursor-pointer">
-                  {t.adoption?.hasChildren || 'I have children'}
+                  {t.adoption?.hasChildren ?? 'I have children'}
                 </Label>
               </div>
               {formData.hasChildren && (
                 <Input
-                  placeholder={t.adoption?.childrenAges || 'Ages of children...'}
+                  placeholder={t.adoption?.childrenAges ?? 'Ages of children...'}
                   value={formData.childrenAges}
                   onChange={(e) => setFormData({ ...formData, childrenAges: e.target.value })}
                 />
@@ -256,15 +275,15 @@ export function AdoptionApplicationDialog({
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">{t.adoption?.additionalInfo || 'Additional Information'}</h3>
+            <h3 className="font-semibold text-lg">{t.adoption?.additionalInfo ?? 'Additional Information'}</h3>
             
             <div className="space-y-2">
               <Label htmlFor="experience">
-                {t.adoption?.petExperience || 'Pet ownership experience'}
+                {t.adoption?.petExperience ?? 'Pet ownership experience'}
               </Label>
               <Textarea
                 id="experience"
-                placeholder={t.adoption?.experiencePlaceholder || 'Tell us about your experience with pets...'}
+                placeholder={t.adoption?.experiencePlaceholder ?? 'Tell us about your experience with pets...'}
                 value={formData.experience}
                 onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                 rows={3}
@@ -273,11 +292,11 @@ export function AdoptionApplicationDialog({
 
             <div className="space-y-2">
               <Label htmlFor="reason">
-                {t.adoption?.whyAdopt || 'Why do you want to adopt this pet?'} <span className="text-destructive">*</span>
+                {t.adoption?.whyAdopt ?? 'Why do you want to adopt this pet?'} <span className="text-destructive">*</span>
               </Label>
               <Textarea
                 id="reason"
-                placeholder={t.adoption?.reasonPlaceholder || 'Tell us why you want to adopt...'}
+                placeholder={t.adoption?.reasonPlaceholder ?? 'Tell us why you want to adopt...'}
                 value={formData.reason}
                 onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
                 rows={4}
@@ -294,7 +313,7 @@ export function AdoptionApplicationDialog({
               className="flex-1"
               disabled={isSubmitting}
             >
-              {t.common?.cancel || 'Cancel'}
+              {t.common?.cancel ?? 'Cancel'}
             </Button>
             <Button
               type="submit"
@@ -303,18 +322,13 @@ export function AdoptionApplicationDialog({
             >
               {isSubmitting ? (
                 <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <PaperPlaneRight size={18} />
-                  </motion.div>
-                  {t.common?.submitting || 'Submitting...'}
+                  <LoadingSpinner />
+                  {t.common?.submitting ?? 'Submitting...'}
                 </>
               ) : (
                 <>
                   <PaperPlaneRight size={18} weight="fill" />
-                  {t.adoption?.submitApplication || 'Submit Application'}
+                  {t.adoption?.submitApplication ?? 'Submit Application'}
                 </>
               )}
             </Button>

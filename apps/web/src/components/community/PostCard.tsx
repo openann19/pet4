@@ -1,3 +1,7 @@
+'use client'
+
+import { memo, useEffect, useState, useCallback } from 'react'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withSequence } from 'react-native-reanimated'
 import { communityAPI } from '@/api/community-api'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -16,9 +20,11 @@ import { triggerHaptic } from '@/lib/haptics'
 import { createLogger } from '@/lib/logger'
 import { BookmarkSimple, ChatCircle, DotsThree, Flag, Heart, MapPin, Share, Tag } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
-import { motion } from 'framer-motion'
-import { memo, useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useHoverTap } from '@/effects/reanimated'
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 import { CommentsSheet } from './CommentsSheet'
 import type { MediaItem } from './MediaViewer'
 import { MediaViewer } from './MediaViewer'
@@ -33,11 +39,11 @@ interface PostCardProps {
   onPostClick?: (postId: string) => void
 }
 
-function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) {
+function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps): JSX.Element {
   const { t } = useApp()
   const [isLiked, setIsLiked] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
-  const [likesCount, setLikesCount] = useState(post.reactionsCount || 0)
+  const [likesCount, setLikesCount] = useState(post.reactionsCount ?? 0)
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
   const [showFullText, setShowFullText] = useState(false)
   const [showComments, setShowComments] = useState(false)
@@ -46,23 +52,129 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
   const [showReportDialog, setShowReportDialog] = useState(false)
   const [showPostDetail, setShowPostDetail] = useState(false)
 
+  // Container animation
+  const containerOpacity = useSharedValue(0)
+  const containerTranslateY = useSharedValue(20)
+
   useEffect(() => {
-    // Check if user has reacted to this post
-    // NOTE: User reaction check should query user's reactions for this post
+    containerOpacity.value = withTiming(1, timingConfigs.smooth)
+    containerTranslateY.value = withTiming(0, timingConfigs.smooth)
+  }, [containerOpacity, containerTranslateY])
+
+  const containerStyle = useAnimatedStyle(() => {
+    return {
+      opacity: containerOpacity.value,
+      transform: [{ translateY: containerTranslateY.value }]
+    }
+  }) as AnimatedStyle
+
+  // Author button hover
+  const authorButtonHover = useHoverTap({
+    hoverScale: 1,
+    tapScale: 1,
+    damping: 25,
+    stiffness: 400
+  })
+  const authorButtonTranslateX = useSharedValue(0)
+
+  const authorButtonStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: authorButtonTranslateX.value },
+        { scale: authorButtonHover.scale.value }
+      ]
+    }
+  }) as AnimatedStyle
+
+  const handleAuthorMouseEnter = useCallback(() => {
+    authorButtonHover.handleMouseEnter()
+    authorButtonTranslateX.value = withSpring(2, springConfigs.smooth)
+  }, [authorButtonHover, authorButtonTranslateX])
+
+  const handleAuthorMouseLeave = useCallback(() => {
+    authorButtonHover.handleMouseLeave()
+    authorButtonTranslateX.value = withSpring(0, springConfigs.smooth)
+  }, [authorButtonHover, authorButtonTranslateX])
+
+  // Avatar hover/tap
+  const avatarHover = useHoverTap({
+    hoverScale: 1.05,
+    tapScale: 0.95,
+    damping: 20,
+    stiffness: 400
+  })
+
+  // Options button hover/tap
+  const optionsButtonHover = useHoverTap({
+    hoverScale: 1.08,
+    tapScale: 0.95
+  })
+
+  // Media image opacity
+  const mediaOpacity = useSharedValue(0)
+
+  useEffect(() => {
+    mediaOpacity.value = withTiming(1, timingConfigs.fast)
+  }, [currentMediaIndex, mediaOpacity])
+
+  const mediaStyle = useAnimatedStyle(() => {
+    return {
+      opacity: mediaOpacity.value
+    }
+  }) as AnimatedStyle
+
+  // Like button animation
+  const likeScale = useSharedValue(1)
+
+  useEffect(() => {
+    if (isLiked) {
+      likeScale.value = withSequence(
+        withSpring(1.3, springConfigs.bouncy),
+        withSpring(1, springConfigs.smooth)
+      )
+    }
+  }, [isLiked, likeScale])
+
+  const likeButtonHover = useHoverTap({
+    tapScale: 0.85
+  })
+
+  const likeButtonStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: likeScale.value * likeButtonHover.scale.value }]
+    }
+  }) as AnimatedStyle
+
+  // Bookmark button animation
+  const bookmarkHover = useHoverTap({
+    tapScale: 0.85
+  })
+
+  useEffect(() => {
     setIsLiked(false)
     setIsSaved(false)
   }, [post.id])
 
-  const handleLike = async () => {
+  const handleLike = useCallback(async () => {
     triggerHaptic('selection')
     
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const spark = (window as any).spark
+      if (!spark) {
+        toast.error('User service not available')
+        return
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       const user = await spark.user()
       const result = await communityAPI.toggleReaction(
         post.id,
-        user.id,
-        user.login || 'User',
-        user.avatarUrl,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        user.id as string,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (user.login ?? 'User') as string,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        user.avatarUrl as string | undefined,
         '❤️'
       )
       
@@ -76,9 +188,9 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
       logger.error('Failed to toggle reaction', error instanceof Error ? error : new Error(String(error)))
       toast.error('Failed to react to post')
     }
-  }
+  }, [post.id, logger])
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     triggerHaptic('selection')
     
     if (isSaved) {
@@ -90,39 +202,42 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
       setIsSaved(true)
       toast.success(t.community?.saved || 'Post saved')
     }
-  }
+  }, [isSaved, post.id, t])
 
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     triggerHaptic('selection')
     
     if (navigator.share) {
       try {
         await navigator.share({
           title: `Post by ${post.authorName}`,
-          text: post.text?.slice(0, 100) || '',
+          text: post.text?.slice(0, 100) ?? '',
           url: `${window.location.origin}/community/post/${post.id}`
         })
       } catch {
         // Share was cancelled by user - no need to log
       }
     } else {
-      await navigator.clipboard.writeText(`${window.location.origin}/community/post/${post.id}`)
-      toast.success(t.community?.linkCopied || 'Link copied to clipboard')
+      void navigator.clipboard.writeText(`${window.location.origin}/community/post/${post.id}`).then(() => {
+        toast.success(t.community?.linkCopied || 'Link copied to clipboard')
+      }).catch(() => {
+        // Clipboard write failed - silently fail
+      })
     }
-  }
+  }, [post.authorName, post.text, post.id, t])
 
-  const handleReport = () => {
+  const handleReport = useCallback(() => {
     triggerHaptic('selection')
     setShowReportDialog(true)
-  }
+  }, [])
 
-  const handleMediaClick = (index: number) => {
+  const handleMediaClick = useCallback((index: number) => {
     setMediaViewerIndex(index)
     setShowMediaViewer(true)
     triggerHaptic('selection')
-  }
+  }, [])
 
-  const handleCardClick = (e: React.MouseEvent) => {
+  const handleCardClick = useCallback((e: React.MouseEvent) => {
     // Don't open detail view if clicking on interactive elements
     const target = e.target as HTMLElement
     if (
@@ -137,18 +252,18 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
     triggerHaptic('selection')
     setShowPostDetail(true)
     onPostClick?.(post.id)
-  }
+  }, [onPostClick, post.id])
 
-  const handleCommentClick = () => {
+  const handleCommentClick = useCallback(() => {
     setShowComments(true)
     triggerHaptic('selection')
-  }
+  }, [])
 
-  const truncatedText = (post.text?.length || 0) > 150 ? post.text?.slice(0, 150) + '...' : post.text || ''
-  const shouldShowMore = (post.text?.length || 0) > 150
+  const truncatedText = (post.text?.length ?? 0) > 150 ? post.text?.slice(0, 150) + '...' : post.text ?? ''
+  const shouldShowMore = (post.text?.length ?? 0) > 150
 
   // Convert media strings or PostMedia objects to MediaItem format for MediaViewer
-  const allMedia = (post.media || []).map((item, index) => {
+  const allMedia = (post.media ?? []).map((item, index) => {
     if (typeof item === 'string') {
       return {
         id: `media-${index}`,
@@ -161,7 +276,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
       const mediaItem: MediaItem = {
         id: item.id || `media-${index}`,
         url: item.url,
-        thumbnail: item.thumbnail || item.url,
+        thumbnail: item.thumbnail ?? item.url,
         type: item.type,
       }
       if (item.width !== undefined) {
@@ -176,38 +291,36 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-      >
+      <AnimatedView style={containerStyle}>
         <Card 
           className="overflow-hidden bg-linear-to-br from-card via-card to-card/95 border border-border/60 shadow-lg hover:shadow-xl hover:border-border transition-all duration-500 backdrop-blur-sm cursor-pointer"
           onClick={handleCardClick}
         >
         {/* Author Header */}
         <div className="flex items-center justify-between p-4 pb-3">
-          <motion.button
+          <AnimatedView
+            style={authorButtonStyle}
+            onMouseEnter={handleAuthorMouseEnter}
+            onMouseLeave={handleAuthorMouseLeave}
             onClick={() => onAuthorClick?.(post.authorId)}
-            className="flex items-center gap-3 group"
-            whileHover={{ x: 2 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className="flex items-center gap-3 group cursor-pointer"
           >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            <AnimatedView
+              style={avatarHover.animatedStyle}
+              onMouseEnter={avatarHover.handleMouseEnter}
+              onMouseLeave={avatarHover.handleMouseLeave}
+              onClick={avatarHover.handlePress}
             >
               <Avatar className="h-11 w-11 ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all duration-300">
                 {post.authorAvatar ? (
                   <img src={post.authorAvatar} alt={post.authorName} className="object-cover" />
                 ) : (
                   <div className="w-full h-full bg-linear-to-br from-primary/20 to-accent/20 flex items-center justify-center text-primary font-bold text-base">
-                    {post.authorName?.[0]?.toUpperCase() || '?'}
+                    {post.authorName?.[0]?.toUpperCase() ?? '?'}
                   </div>
                 )}
               </Avatar>
-            </motion.div>
+            </AnimatedView>
             <div className="text-left">
               <p className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors duration-200">
                 {post.authorName}
@@ -216,11 +329,16 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
                 {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
               </p>
             </div>
-          </motion.button>
+          </AnimatedView>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <motion.div whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
+              <AnimatedView
+                style={optionsButtonHover.animatedStyle}
+                onMouseEnter={optionsButtonHover.handleMouseEnter}
+                onMouseLeave={optionsButtonHover.handleMouseLeave}
+                onClick={optionsButtonHover.handlePress}
+              >
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -229,7 +347,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
                 >
                   <DotsThree size={22} weight="bold" />
                 </Button>
-              </motion.div>
+              </AnimatedView>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={handleReport} className="text-destructive">
@@ -261,18 +379,17 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
       {post.media && post.media.length > 0 && post.media[currentMediaIndex] && (
         <div className="relative bg-muted">
           <div className="relative aspect-square overflow-hidden">
-            <motion.img
-              key={currentMediaIndex}
-              src={typeof post.media[currentMediaIndex] === 'string' 
-                ? post.media[currentMediaIndex] as string
-                : (post.media[currentMediaIndex] as { url: string }).url}
-              alt="Post media"
-              className="w-full h-full object-cover cursor-pointer"
-              onClick={() => handleMediaClick(currentMediaIndex)}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            />
+            <AnimatedView style={mediaStyle} className="w-full h-full">
+              <img
+                key={currentMediaIndex}
+                src={typeof post.media[currentMediaIndex] === 'string' 
+                  ? post.media[currentMediaIndex]
+                  : (post.media[currentMediaIndex] as { url: string }).url}
+                alt="Post media"
+                className="w-full h-full object-cover cursor-pointer"
+                onClick={() => handleMediaClick(currentMediaIndex)}
+              />
+            </AnimatedView>
           </div>
           
           {/* Media Navigation Dots */}
@@ -306,13 +423,16 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-4">
           <button
-            onClick={handleLike}
+            onClick={() => {
+              void handleLike()
+            }}
             className="flex items-center gap-1.5 group"
           >
-            <motion.div
-              whileTap={{ scale: 0.85 }}
-              animate={isLiked ? { scale: [1, 1.3, 1] } : {}}
-              transition={{ duration: 0.3 }}
+            <AnimatedView
+              style={likeButtonStyle}
+              onMouseEnter={likeButtonHover.handleMouseEnter}
+              onMouseLeave={likeButtonHover.handleMouseLeave}
+              onClick={likeButtonHover.handlePress}
             >
               <Heart
                 size={24}
@@ -321,7 +441,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
                   isLiked ? 'text-red-500' : 'text-foreground group-hover:text-red-500'
                 }`}
               />
-            </motion.div>
+            </AnimatedView>
             {likesCount > 0 && (
               <span className="text-sm font-medium text-foreground">{likesCount}</span>
             )}
@@ -337,11 +457,13 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
               className="text-foreground group-hover:text-primary transition-colors"
             />
             {(post.commentsCount ?? 0) > 0 && (
-              <span className="text-sm font-medium text-foreground">{post.commentsCount}</span>
+              <span className="text-sm font-medium text-foreground">{post.commentsCount ?? 0}</span>
             )}
           </button>
 
-          <button onClick={handleShare} className="group">
+          <button onClick={() => {
+            void handleShare()
+          }} className="group">
             <Share
               size={24}
               weight="regular"
@@ -350,8 +472,15 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
           </button>
         </div>
 
-        <button onClick={handleSave}>
-          <motion.div whileTap={{ scale: 0.85 }}>
+        <button onClick={() => {
+          void handleSave()
+        }}>
+          <AnimatedView
+            style={bookmarkHover.animatedStyle}
+            onMouseEnter={bookmarkHover.handleMouseEnter}
+            onMouseLeave={bookmarkHover.handleMouseLeave}
+            onClick={bookmarkHover.handlePress}
+          >
             <BookmarkSimple
               size={24}
               weight={isSaved ? 'fill' : 'regular'}
@@ -359,14 +488,14 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
                 isSaved ? 'text-primary' : 'text-foreground hover:text-primary'
               }`}
             />
-          </motion.div>
+          </AnimatedView>
         </button>
       </div>
 
       {/* Tags and Location */}
-      {((post.tags && post.tags.length > 0) || post.location) && (
+      {((post.tags?.length ?? 0) > 0 || post.location) && (
         <div className="px-4 pb-3 flex flex-wrap gap-2">
-          {post.tags && post.tags.slice(0, 3).map(tag => (
+          {post.tags?.slice(0, 3).map(tag => (
             <Badge key={tag} variant="secondary" className="text-xs">
               <Tag size={12} className="mr-1" />
               {tag}
@@ -408,13 +537,13 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps) 
         onOpenChange={setShowReportDialog}
         resourceType="post"
         resourceId={post.id}
-                            resourceName={`Post by ${post.authorName}`}
-          onReported={() => {
-            toast.success('Report submitted. Thank you for helping keep our community safe.')
-          }}
-        />
+        resourceName={`Post by ${post.authorName}`}
+        onReported={() => {
+          toast.success('Report submitted. Thank you for helping keep our community safe.')
+        }}
+      />
         </Card>
-      </motion.div>
+      </AnimatedView>
 
       <PostDetailView
         open={showPostDetail}

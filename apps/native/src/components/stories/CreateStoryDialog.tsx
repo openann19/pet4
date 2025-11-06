@@ -12,31 +12,41 @@ import {
   SafeAreaView,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import type { Story } from '@petspark/shared';
 
 const { width, height } = Dimensions.get('window');
 
-type Privacy = 'public' | 'friends' | 'private';
-
 interface CreateStoryDialogProps {
-  visible: boolean;
-  onClose: () => void;
-  onCreateStory: (imageUri: string, text?: string, privacy?: Privacy) => Promise<void>;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  userId: string;
+  userName: string;
+  petId: string;
+  petName: string;
+  petPhoto: string;
+  userAvatar?: string;
+  onStoryCreated: (story: Story) => void;
 }
 
 export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
-  visible,
-  onClose,
-  onCreateStory,
+  open,
+  onOpenChange,
+  userId,
+  userName,
+  petId,
+  petName,
+  petPhoto,
+  userAvatar,
+  onStoryCreated,
 }) => {
   const [image, setImage] = useState<string | null>(null);
-  const [text, setText] = useState('');
-  const [privacy, setPrivacy] = useState<Privacy>('public');
+  const [caption, setCaption] = useState('');
   const [isPosting, setIsPosting] = useState(false);
 
   const requestPermissions = async () => {
     const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
     const { status: libraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (cameraStatus !== 'granted' || libraryStatus !== 'granted') {
       Alert.alert(
         'Permissions Required',
@@ -86,12 +96,33 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
 
     setIsPosting(true);
     try {
-      await onCreateStory(image, text, privacy);
+      // Create a new story object
+      const newStory: Story = {
+        id: `story-${Date.now()}`,
+        userId,
+        userName,
+        userAvatar,
+        petId,
+        petName,
+        petPhoto,
+        type: 'photo',
+        mediaUrl: image,
+        caption: caption.trim() || undefined,
+        duration: 5,
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        visibility: 'everyone',
+        viewCount: 0,
+        views: [],
+        reactions: [],
+      };
+
+      onStoryCreated(newStory);
+
       // Reset state
       setImage(null);
-      setText('');
-      setPrivacy('public');
-      onClose();
+      setCaption('');
+      onOpenChange(false);
     } catch (error) {
       Alert.alert('Error', 'Failed to create story');
     } finally {
@@ -101,13 +132,12 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
 
   const handleClose = () => {
     setImage(null);
-    setText('');
-    setPrivacy('public');
-    onClose();
+    setCaption('');
+    onOpenChange(false);
   };
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
+    <Modal visible={open} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -147,68 +177,13 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
             <View style={styles.overlayContainer}>
               <TextInput
                 style={styles.textInput}
-                placeholder="Add text to your story..."
+                placeholder="Add caption to your story..."
                 placeholderTextColor="rgba(255, 255, 255, 0.6)"
-                value={text}
-                onChangeText={setText}
+                value={caption}
+                onChangeText={setCaption}
                 multiline
                 maxLength={200}
               />
-            </View>
-
-            {/* Privacy Selector */}
-            <View style={styles.privacyContainer}>
-              <Text style={styles.privacyLabel}>Privacy:</Text>
-              <View style={styles.privacyButtons}>
-                <Pressable
-                  style={[
-                    styles.privacyButton,
-                    privacy === 'public' && styles.privacyButtonActive,
-                  ]}
-                  onPress={() => setPrivacy('public')}
-                >
-                  <Text
-                    style={[
-                      styles.privacyButtonText,
-                      privacy === 'public' && styles.privacyButtonTextActive,
-                    ]}
-                  >
-                    🌍 Public
-                  </Text>
-                </Pressable>
-                <Pressable
-                  style={[
-                    styles.privacyButton,
-                    privacy === 'friends' && styles.privacyButtonActive,
-                  ]}
-                  onPress={() => setPrivacy('friends')}
-                >
-                  <Text
-                    style={[
-                      styles.privacyButtonText,
-                      privacy === 'friends' && styles.privacyButtonTextActive,
-                    ]}
-                  >
-                    👥 Friends
-                  </Text>
-                </Pressable>
-                <Pressable
-                  style={[
-                    styles.privacyButton,
-                    privacy === 'private' && styles.privacyButtonActive,
-                  ]}
-                  onPress={() => setPrivacy('private')}
-                >
-                  <Text
-                    style={[
-                      styles.privacyButtonText,
-                      privacy === 'private' && styles.privacyButtonTextActive,
-                    ]}
-                  >
-                    🔒 Private
-                  </Text>
-                </Pressable>
-              </View>
             </View>
 
             {/* Action Buttons */}
@@ -332,40 +307,6 @@ const styles = StyleSheet.create({
     minHeight: 100,
     textAlignVertical: 'top',
   },
-  privacyContainer: {
-    position: 'absolute',
-    bottom: 120,
-    left: 20,
-    right: 20,
-  },
-  privacyLabel: {
-    fontSize: 14,
-    color: '#ffffff',
-    marginBottom: 8,
-  },
-  privacyButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  privacyButton: {
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    backgroundColor: '#374151',
-    alignItems: 'center',
-  },
-  privacyButtonActive: {
-    backgroundColor: '#3b82f6',
-  },
-  privacyButtonText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#9ca3af',
-  },
-  privacyButtonTextActive: {
-    color: '#ffffff',
-  },
   actionsContainer: {
     position: 'absolute',
     bottom: 20,
@@ -402,3 +343,5 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 });
+
+export default CreateStoryDialog;

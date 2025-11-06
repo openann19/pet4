@@ -1,8 +1,14 @@
-import { motion, type HTMLMotionProps } from 'framer-motion'
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
+import { AnimatedView, useAnimatedStyleValue } from '@/effects/reanimated/animated-view'
+import { useSharedValue, useAnimatedStyle, withTiming, withRepeat } from 'react-native-reanimated'
+import { useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { haptics } from '@/lib/haptics'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import type { ButtonHTMLAttributes } from 'react'
 
-interface PremiumButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
+interface PremiumButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'gradient'
   size?: 'sm' | 'md' | 'lg'
   icon?: React.ReactNode
@@ -22,7 +28,49 @@ export function PremiumButton({
   onClick,
   ...props
 }: PremiumButtonProps) {
-    const variants = {
+  const hoverLift = useHoverLift({ scale: 1.05 })
+  const bounceOnTap = useBounceOnTap({ scale: 0.95, hapticFeedback: false })
+  const rotation = useSharedValue(0)
+
+  useEffect(() => {
+    if (loading) {
+      rotation.value = withRepeat(
+        withTiming(360, { duration: 1000 }),
+        -1,
+        false
+      )
+    } else {
+      rotation.value = 0
+    }
+  }, [loading, rotation])
+
+  const loadingStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }]
+  })) as AnimatedStyle
+
+  const buttonStyle = useAnimatedStyle(() => {
+    const hoverScale = hoverLift.scale.value
+    const tapScale = bounceOnTap.scale.value
+    const hoverY = hoverLift.translateY.value
+    
+    return {
+      transform: [
+        { scale: hoverScale * tapScale },
+        { translateY: hoverY }
+      ]
+    }
+  }) as AnimatedStyle
+
+  const buttonStyleValue = useAnimatedStyleValue(buttonStyle)
+  const loadingStyleValue = useAnimatedStyleValue(loadingStyle)
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    haptics.impact('light')
+    bounceOnTap.handlePress()
+    onClick?.(e)
+  }
+
+  const variants = {
     primary: 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-hover-bg)] hover:text-[var(--btn-primary-hover-fg)] active:bg-[var(--btn-primary-press-bg)] active:text-[var(--btn-primary-press-fg)] disabled:bg-[var(--btn-primary-disabled-bg)] disabled:text-[var(--btn-primary-disabled-fg)] focus-visible:ring-2 focus-visible:ring-[var(--btn-primary-focus-ring)]',
     secondary: 'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] hover:bg-[var(--btn-secondary-hover-bg)] hover:text-[var(--btn-secondary-hover-fg)] active:bg-[var(--btn-secondary-press-bg)] active:text-[var(--btn-secondary-press-fg)] disabled:bg-[var(--btn-secondary-disabled-bg)] disabled:text-[var(--btn-secondary-disabled-fg)] focus-visible:ring-2 focus-visible:ring-[var(--btn-secondary-focus-ring)]',
     accent: 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-hover-bg)] hover:text-[var(--btn-primary-hover-fg)] active:bg-[var(--btn-primary-press-bg)] active:text-[var(--btn-primary-press-fg)] disabled:bg-[var(--btn-primary-disabled-bg)] disabled:text-[var(--btn-primary-disabled-fg)] focus-visible:ring-2 focus-visible:ring-[var(--btn-primary-focus-ring)]',
@@ -37,14 +85,11 @@ export function PremiumButton({
   }
 
   return (
-    <motion.button
-      onClick={(e) => {
-        haptics.impact('light')
-        onClick?.(e)
-      }}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+    <button
+      onClick={handleClick}
+      onMouseEnter={hoverLift.handleEnter}
+      onMouseLeave={hoverLift.handleLeave}
+      style={buttonStyleValue}
       className={cn(
         'relative overflow-hidden rounded-xl font-semibold',
         'shadow-lg transition-all duration-300',
@@ -58,10 +103,9 @@ export function PremiumButton({
       {...props}
     >
       {loading ? (
-        <motion.div
+        <div
+          style={loadingStyleValue}
           className="h-5 w-5 rounded-full border-2 border-current border-t-transparent"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
         />
       ) : (
         <>
@@ -70,8 +114,6 @@ export function PremiumButton({
           {icon && iconPosition === 'right' && icon}
         </>
       )}
-
-
-    </motion.button>
+    </button>
   )
 }

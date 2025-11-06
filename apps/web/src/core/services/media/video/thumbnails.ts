@@ -79,12 +79,12 @@ async function generateNativeThumbnails(uri: string, count: number): Promise<str
   try {
     // Dynamic import to avoid bundling if not available
     const FFmpegKitModule = await import('ffmpeg-kit-react-native')
-    const FFmpegKit = FFmpegKitModule.default ?? FFmpegKitModule.FFmpegKit
+    const FFmpegKit = FFmpegKitModule.default ?? (FFmpegKitModule as any).FFmpegKit
 
     const FileSystemModule = await import('expo-file-system')
     const FileSystem = FileSystemModule.default
 
-    const cacheDir = FileSystem.cacheDirectory
+    const cacheDir = (FileSystem as any).cacheDirectory
     if (!cacheDir) {
       return []
     }
@@ -117,4 +117,3 @@ async function generateNativeThumbnails(uri: string, count: number): Promise<str
     return []
   }
 }
-

@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion'
 import { Plus } from '@phosphor-icons/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { filterActiveStories } from '@/lib/stories-utils'
-import type { Story } from '@/lib/stories-types'
+import { filterActiveStories } from '@petspark/shared'
+import type { Story } from '@petspark/shared'
 
 interface StoryRingProps {
   stories: Story[]

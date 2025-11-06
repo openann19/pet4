@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { Presence } from '@petspark/motion'
 import { cn } from '@/lib/utils'
 
 interface ProgressiveImageProps {
@@ -79,42 +81,52 @@ export function ProgressiveImage({
     }
   }, [src, priority, loadImage])
 
+  const placeholderOpacity = useSharedValue(1)
+  const imageOpacity = useSharedValue(0)
+
+  useEffect(() => {
+    if (isLoaded) {
+      placeholderOpacity.value = withTiming(0, { duration: 300 })
+      imageOpacity.value = withTiming(1, { duration: 300 })
+    }
+  }, [isLoaded, placeholderOpacity, imageOpacity])
+
+  const placeholderStyle = useAnimatedStyle(() => ({
+    opacity: placeholderOpacity.value,
+  }))
+
+  const imageStyle = useAnimatedStyle(() => ({
+    opacity: imageOpacity.value,
+  }))
+
   return (
     <div
       className={cn('relative overflow-hidden', containerClassName)}
       style={{ aspectRatio }}
     >
-      <AnimatePresence mode="wait">
-        {!isLoaded && placeholderSrc && (
-          <motion.img
-            key="placeholder"
+      <Presence visible={!isLoaded && !!placeholderSrc}>
+        <AnimatedView
+          style={placeholderStyle}
+          className={cn('absolute inset-0 w-full h-full', className)}
+        >
+          <img
             ref={imgRef}
             src={placeholderSrc}
             alt={alt}
-            className={cn(
-              'absolute inset-0 w-full h-full object-cover',
-              className
-            )}
+            className={cn('w-full h-full object-cover', className)}
             style={{ filter: `blur(${blurAmount}px)` }}
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
           />
-        )}
-      </AnimatePresence>
+        </AnimatedView>
+      </Presence>
 
-      <motion.img
-        src={currentSrc}
-        alt={alt}
-        className={cn(
-          'w-full h-full object-cover',
-          className
-        )}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isLoaded ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-        sizes={sizes}
-      />
+      <AnimatedView style={imageStyle} className={cn('w-full h-full', className)}>
+        <img
+          src={currentSrc}
+          alt={alt}
+          className={cn('w-full h-full object-cover', className)}
+          sizes={sizes}
+        />
+      </AnimatedView>
 
       {!isLoaded && !placeholderSrc && (
         <div className="absolute inset-0 bg-muted animate-pulse" />

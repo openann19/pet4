@@ -1,0 +1,27 @@
+{
+  "name": "@petspark/motion",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native-reanimated": ">=3.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-native": "^0.73.0",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "typescript": "~5.7.2"
+  }
+}

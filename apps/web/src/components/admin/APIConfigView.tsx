@@ -1,3 +1,8 @@
+'use client'
+
+import type { ReactNode } from 'react'
+import { useCallback, useState } from 'react'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -20,8 +25,57 @@ import {
   VideoCamera,
   Warning
 } from '@phosphor-icons/react'
-import { useState } from 'react'
-import { toast } from 'sonner'
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { triggerHaptic } from '@/lib/haptics'
+import { createLogger } from '@/lib/logger'
+import type { UseBounceOnTapReturn } from '@/effects/reanimated/use-bounce-on-tap'
+import type { UseHoverLiftReturn } from '@/effects/reanimated/use-hover-lift'
+
+const logger = createLogger('APIConfigView')
+
+interface AnimatedButtonProps {
+  children: ReactNode
+  onClick: () => void
+  disabled?: boolean
+  variant?: 'default' | 'outline' | 'destructive' | 'secondary' | 'ghost' | 'link'
+  size?: 'default' | 'sm' | 'lg' | 'icon'
+  className?: string
+  bounceAnimation: UseBounceOnTapReturn
+}
+
+function AnimatedButton({
+  children,
+  onClick,
+  disabled = false,
+  variant = 'default',
+  size = 'default',
+  className = '',
+  bounceAnimation
+}: AnimatedButtonProps): JSX.Element {
+  const handleClick = useCallback((): void => {
+    if (disabled) return
+    bounceAnimation.handlePress()
+    onClick()
+  }, [disabled, onClick, bounceAnimation])
+
+  return (
+    <AnimatedView
+      style={bounceAnimation.animatedStyle}
+      className={className}
+    >
+      <Button
+        variant={variant}
+        size={size}
+        onClick={handleClick}
+        disabled={disabled}
+      >
+        {children}
+      </Button>
+    </AnimatedView>
+  )
+}
 
 export interface APIConfig {
   maps: {
@@ -156,35 +210,88 @@ export default function APIConfigView() {
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({})
   const [testingService, setTestingService] = useState<string | null>(null)
 
-  const toggleSecret = (key: string) => {
-    setShowSecrets(prev => ({ ...prev, [key]: !prev[key] }))
-  }
+  const toggleSecret = useCallback((key: string): void => {
+    try {
+      triggerHaptic('light')
+      setShowSecrets(prev => ({ ...prev, [key]: !prev[key] }))
+      logger.info('Secret visibility toggled', { key, visible: !showSecrets[key] })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to toggle secret visibility', err, { key })
+    }
+  }, [showSecrets])
 
-  const updateConfig = (section: keyof APIConfig, field: string, value: string | boolean | number) => {
-    setConfig((current: APIConfig) => ({
-      ...current,
-      [section]: {
-        ...current[section],
-        [field]: value
-      }
-    }))
-    toast.success('Configuration updated')
-  }
+  const updateConfig = useCallback((
+    section: keyof APIConfig,
+    field: string,
+    value: string | boolean | number
+  ): void => {
+    try {
+      triggerHaptic('selection')
+      setConfig((current: APIConfig) => {
+        if (!current) {
+          logger.warn('Config is null, using defaults')
+          return DEFAULT_CONFIG
+        }
+        return {
+          ...current,
+          [section]: {
+            ...current[section],
+            [field]: value
+          }
+        }
+      })
+      toast.success('Configuration updated')
+      logger.info('Configuration updated', { section, field, value })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to update configuration', err, { section, field, value })
+      toast.error('Failed to update configuration')
+    }
+  }, [setConfig])
 
-  const testConnection = async (service: string) => {
-    setTestingService(service)
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setTestingService(null)
-    toast.success(`${service} connection test successful`)
-  }
+  const testConnection = useCallback(async (service: string): Promise<void> => {
+    try {
+      triggerHaptic('light')
+      setTestingService(service)
+      logger.info('Testing connection', { service })
+      
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      setTestingService(null)
+      triggerHaptic('success')
+      toast.success(`${service} connection test successful`)
+      logger.info('Connection test successful', { service })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      setTestingService(null)
+      triggerHaptic('error')
+      toast.error(`${service} connection test failed`)
+      logger.error('Connection test failed', err, { service })
+    }
+  }, [])
 
-  const resetToDefaults = (section: keyof APIConfig) => {
-    setConfig((current: APIConfig) => ({
-      ...current,
-      [section]: DEFAULT_CONFIG[section]
-    }))
-    toast.success('Reset to default configuration')
-  }
+  const resetToDefaults = useCallback((section: keyof APIConfig): void => {
+    try {
+      triggerHaptic('medium')
+      setConfig((current: APIConfig) => ({
+        ...current,
+        [section]: DEFAULT_CONFIG[section]
+      }))
+      toast.success('Reset to default configuration')
+      logger.info('Configuration reset to defaults', { section })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to reset configuration', err, { section })
+      toast.error('Failed to reset configuration')
+    }
+  }, [setConfig])
+
+  const buttonBounce = useBounceOnTap({ intensity: 0.95, duration: 150 })
+  const testButtonBounce = useBounceOnTap({ intensity: 0.92, duration: 180 })
+  const resetButtonBounce = useBounceOnTap({ intensity: 0.93, duration: 160 })
+  const iconButtonBounce = useBounceOnTap({ intensity: 0.9, duration: 120 })
+  const cardHover = useHoverLift({ intensity: 1.02 })
 
   return (
     <div className="flex-1 flex flex-col">
@@ -205,21 +312,27 @@ export default function APIConfigView() {
 
       <ScrollArea className="flex-1">
         <div className="p-6 space-y-6 max-w-6xl">
-          <Card className="border-amber-500/50 bg-amber-500/5">
-            <CardContent className="pt-6">
-              <div className="flex gap-3">
-                <Warning size={24} className="text-amber-600 shrink-0" weight="fill" />
-                <div className="space-y-1">
-                  <p className="font-medium text-amber-900 dark:text-amber-100">
-                    Security Notice
-                  </p>
-                  <p className="text-sm text-amber-800 dark:text-amber-200">
-                    API keys and secrets are stored securely using Spark's KV storage. Never share these credentials or commit them to version control. All keys are encrypted at rest.
-                  </p>
+          <AnimatedView
+            style={cardHover.animatedStyle}
+            onMouseEnter={cardHover.handleEnter}
+            onMouseLeave={cardHover.handleLeave}
+          >
+            <Card className="border-amber-500/50 bg-amber-500/5">
+              <CardContent className="pt-6">
+                <div className="flex gap-3">
+                  <Warning size={24} className="text-amber-600 shrink-0" weight="fill" />
+                  <div className="space-y-1">
+                    <p className="font-medium text-amber-900 dark:text-amber-100">
+                      Security Notice
+                    </p>
+                    <p className="text-sm text-amber-800 dark:text-amber-200">
+                      API keys and secrets are stored securely using Spark's KV storage. Never share these credentials or commit them to version control. All keys are encrypted at rest.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </AnimatedView>
 
           <Tabs defaultValue="maps" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9">
@@ -281,13 +394,14 @@ export default function APIConfigView() {
                             placeholder="sk_..."
                           />
                         </div>
-                        <Button
+                        <AnimatedButton
                           variant="outline"
                           size="icon"
                           onClick={() => toggleSecret('maps-key')}
+                          bounceAnimation={iconButtonBounce}
                         >
                           {showSecrets['maps-key'] ? <EyeSlash size={20} /> : <Eye size={20} />}
-                        </Button>
+                        </AnimatedButton>
                       </div>
                     </div>
                   )}
@@ -303,17 +417,22 @@ export default function APIConfigView() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button
+                    <AnimatedButton
                       onClick={() => testConnection('Maps')}
                       disabled={testingService === 'Maps'}
                       className="flex-1"
+                      bounceAnimation={testButtonBounce}
                     >
                       <TestTube size={20} className="mr-2" />
                       {testingService === 'Maps' ? 'Testing...' : 'Test Connection'}
-                    </Button>
-                    <Button variant="outline" onClick={() => resetToDefaults('maps')}>
+                    </AnimatedButton>
+                    <AnimatedButton
+                      onClick={() => resetToDefaults('maps')}
+                      variant="outline"
+                      bounceAnimation={resetButtonBounce}
+                    >
                       Reset
-                    </Button>
+                    </AnimatedButton>
                   </div>
                 </CardContent>
               </Card>

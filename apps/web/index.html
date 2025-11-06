@@ -10,6 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="/src/main.css" rel="stylesheet" />
     <script>
+      // Polyfill for CommonJS exports/module (fallback only - Vite should handle transformation)
+      if (typeof exports === 'undefined') {
+        window.exports = {};
+      }
+      if (typeof module === 'undefined') {
+        window.module = { exports: window.exports };
+      }
+      
       // Initialize theme immediately to prevent flash of unstyled content
       (function() {
         try {

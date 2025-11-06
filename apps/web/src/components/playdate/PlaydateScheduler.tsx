@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { useStorage } from '@/hooks/useStorage'
 import { haptics } from '@/lib/haptics'
 import type { Playdate, PlaydateLocation, PlaydateStatus, PlaydateType } from '@/lib/playdate-types'
 import type { Match, Pet } from '@/lib/types'
@@ -35,8 +34,10 @@ import {
 } from '@phosphor-icons/react'
 import { differenceInDays, format, isPast } from 'date-fns'
 import { AnimatePresence, motion } from 'framer-motion'
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { useKV } from '@/hooks/useStorage'
+import { ErrorBoundary } from '@/components/error/ErrorBoundary'
 
 const LocationPicker = lazy(() => import('./LocationPicker'))
 
@@ -49,7 +50,7 @@ interface PlaydateSchedulerProps {
 }
 
 export default function PlaydateScheduler({ match, userPet, onClose, onStartVideoCall, onStartVoiceCall }: PlaydateSchedulerProps) {
-  const [playdates, setPlaydates] = useStorage<Playdate[]>('playdates', [])
+  const [playdates, setPlaydates] = useKV<Playdate[]>('playdates', [])
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [showLocationPicker, setShowLocationPicker] = useState(false)
   const [selectedLocation, setSelectedLocation] = useState<PlaydateLocation | null>(null)
@@ -72,7 +73,11 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
     notes: ''
   })
 
-  const matchPlaydates = (playdates || []).filter(p => p.matchId === match.id)
+  // Memoize filtered playdates to avoid recalculation on every render
+  const matchPlaydates = useMemo(
+    () => (playdates || []).filter((p: Playdate) => p.matchId === match.id),
+    [playdates, match.id]
+  )
 
   const getPlaydateIcon = (type: PlaydateType) => {
     switch (type) {
@@ -100,7 +105,7 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
     }
   }
 
-  const handleCreatePlaydate = () => {
+  const handleCreatePlaydate = useCallback(() => {
     if (!selectedLocation) {
       toast.error('Please select a location')
       return
@@ -127,21 +132,21 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
       updatedAt: new Date().toISOString()
     }
 
-    setPlaydates(current => [...(current || []), newPlaydate])
+    setPlaydates((current: Playdate[] | undefined) => [...(current || []), newPlaydate])
     haptics.success()
     toast.success('Playdate scheduled!', {
       description: `Invitation sent for ${format(new Date(playdateDate), 'MMM dd, yyyy')}`
     })
     setShowCreateForm(false)
     setSelectedLocation(null)
-  }
+  }, [selectedLocation, match.id, match.matchedPetId, userPet.id, userPet.ownerId, formData, setPlaydates])
 
-  const handleLocationChange = (location: PlaydateLocation) => {
+  const handleLocationChange = useCallback((location: PlaydateLocation) => {
     setSelectedLocation(location)
     setShowLocationPicker(false)
-  }
+  }, [])
 
-  const handleShareLocation = (playdate: Playdate) => {
+  const handleShareLocation = useCallback((playdate: Playdate) => {
     if (!playdate.location.lat || !playdate.location.lng) {
       toast.error('Location coordinates not available')
       return
@@ -163,9 +168,9 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
       toast.success('Location link copied to clipboard!')
     }
     haptics.success()
-  }
+  }, [])
 
-  const handleGetDirections = (playdate: Playdate) => {
+  const handleGetDirections = useCallback((playdate: Playdate) => {
     if (!playdate.location.lat || !playdate.location.lng) {
       toast.info('Opening location in maps...')
       const searchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -178,11 +183,11 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
     const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${playdate.location.lat},${playdate.location.lng}`
     window.open(directionsUrl, '_blank')
     haptics.success()
-  }
+  }, [])
 
-  const handleConfirmPlaydate = (playdateId: string) => {
-    setPlaydates(current =>
-      (current || []).map(p =>
+  const handleConfirmPlaydate = useCallback((playdateId: string) => {
+    setPlaydates((current: Playdate[] | undefined) =>
+      (current || []).map((p: Playdate) =>
         p.id === playdateId
           ? { ...p, status: 'confirmed' as PlaydateStatus, updatedAt: new Date().toISOString() }
           : p
@@ -190,11 +195,11 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
     )
     haptics.success()
     toast.success('Playdate confirmed!', { description: 'Both parties have confirmed' })
-  }
+  }, [setPlaydates])
 
-  const handleCancelPlaydate = (playdateId: string) => {
-    setPlaydates(current =>
-      (current || []).map(p =>
+  const handleCancelPlaydate = useCallback((playdateId: string) => {
+    setPlaydates((current: Playdate[] | undefined) =>
+      (current || []).map((p: Playdate) =>
         p.id === playdateId
           ? { ...p, status: 'cancelled' as PlaydateStatus, updatedAt: new Date().toISOString() }
           : p
@@ -202,7 +207,7 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
     )
     haptics.light()
     toast.info('Playdate cancelled', { description: 'The other party has been notified' })
-  }
+  }, [setPlaydates])
 
   return (
     <motion.div
@@ -231,6 +236,7 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
                 size="icon" 
                 onClick={onStartVideoCall}
                 className="hover:bg-primary/10"
+                aria-label="Start video call"
                 title="Start video call"
               >
                 <VideoCamera size={22} weight="fill" className="text-primary" />
@@ -242,12 +248,19 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
                 size="icon" 
                 onClick={onStartVoiceCall}
                 className="hover:bg-primary/10"
+                aria-label="Start voice call"
                 title="Start voice call"
               >
                 <Phone size={22} weight="fill" className="text-primary" />
               </Button>
             )}
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onClose}
+              aria-label="Close playdate scheduler"
+              title="Close"
+            >
               <X size={24} />
             </Button>
           </div>
@@ -605,22 +618,37 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
       </div>
 
       {showLocationPicker && (
-        <Suspense fallback={<div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="text-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"
+        <ErrorBoundary
+          fallback={
+            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+              <Card className="p-6">
+                <div className="text-center">
+                  <p className="text-destructive mb-2">Failed to load location picker</p>
+                  <Button onClick={() => setShowLocationPicker(false)}>Close</Button>
+                </div>
+              </Card>
+            </div>
+          }
+        >
+          <Suspense fallback={
+            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">                             
+              <div className="text-center">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"                                                      
+                />
+                <p className="text-muted-foreground">Loading map...</p>
+              </div>
+            </div>
+          }>
+            <LocationPicker
+              {...(selectedLocation !== null ? { value: selectedLocation } : {})}
+              onChange={handleLocationChange}
+              onClose={() => setShowLocationPicker(false)}
             />
-            <p className="text-muted-foreground">Loading map...</p>
-          </div>
-        </div>}>
-          <LocationPicker
-            {...(selectedLocation !== null ? { value: selectedLocation } : {})}
-            onChange={handleLocationChange}
-            onClose={() => setShowLocationPicker(false)}
-          />
-        </Suspense>
+          </Suspense>
+        </ErrorBoundary>
       )}
     </motion.div>
   )

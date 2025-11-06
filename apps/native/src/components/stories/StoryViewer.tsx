@@ -8,53 +8,59 @@ import {
   Image,
   Dimensions,
   SafeAreaView,
+  Animated,
 } from 'react-native';
-import Animated, {
+import AnimatedReanimated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   runOnJS,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import type { Story, StoryItem } from './StoriesBar';
+import type { Story } from '@petspark/shared';
 
 const { width, height } = Dimensions.get('window');
 const STORY_DURATION = 5000; // 5 seconds per story
 
 interface StoryViewerProps {
-  visible: boolean;
-  stories: Story[];
-  initialStoryIndex: number;
-  initialItemIndex?: number;
-  onClose: () => void;
-  onStoryComplete: (storyId: string) => void;
+  stories: Story[]
+  initialIndex?: number
+  currentUserId: string
+  currentUserName: string
+  currentUserAvatar?: string
+  onClose: () => void
+  onComplete?: () => void
+  onStoryUpdate?: (story: Story) => void
 }
 
 export const StoryViewer: React.FC<StoryViewerProps> = ({
-  visible,
   stories,
-  initialStoryIndex,
-  initialItemIndex = 0,
+  initialIndex = 0,
+  currentUserId,
+  currentUserName,
+  currentUserAvatar,
   onClose,
-  onStoryComplete,
+  onComplete,
+  onStoryUpdate
 }) => {
-  const [currentStoryIndex, setCurrentStoryIndex] = useState(initialStoryIndex);
-  const [currentItemIndex, setCurrentItemIndex] = useState(initialItemIndex);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isPaused, setIsPaused] = useState(false);
-  
-  const progress = useSharedValue(0);
+  const [progress, setProgress] = useState(0);
+
+  const progressAnimation = useSharedValue(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const currentStory = stories[currentStoryIndex];
-  const currentItem = currentStory?.stories[currentItemIndex];
+  const startTimeRef = useRef<number>(Date.now());
 
-  // Progress bar animation
+  const currentStory = stories[currentIndex];
+
+  // Progress animation
   useEffect(() => {
-    if (!visible || isPaused || !currentItem) return;
+    if (isPaused || !currentStory) return;
 
-    progress.value = 0;
-    const duration = currentItem.duration || STORY_DURATION;
+    progressAnimation.value = 0;
+    const duration = currentStory.duration * 1000 || STORY_DURATION;
 
-    progress.value = withTiming(1, {
+    progressAnimation.value = withTiming(1, {
       duration,
     });
 
@@ -67,33 +73,24 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
         clearTimeout(timerRef.current);
       }
     };
-  }, [visible, currentStoryIndex, currentItemIndex, isPaused]);
+  }, [currentIndex, isPaused, currentStory]);
 
   const goToNext = () => {
-    if (currentItemIndex < currentStory.stories.length - 1) {
-      // Next item in current story
-      setCurrentItemIndex((prev) => prev + 1);
-    } else if (currentStoryIndex < stories.length - 1) {
-      // Next story
-      onStoryComplete(currentStory.id);
-      setCurrentStoryIndex((prev) => prev + 1);
-      setCurrentItemIndex(0);
+    if (currentIndex < stories.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+      setProgress(0);
+      progressAnimation.value = 0;
     } else {
-      // End of all stories
-      onStoryComplete(currentStory.id);
+      onComplete?.();
       onClose();
     }
   };
 
   const goToPrevious = () => {
-    if (currentItemIndex > 0) {
-      // Previous item in current story
-      setCurrentItemIndex((prev) => prev - 1);
-    } else if (currentStoryIndex > 0) {
-      // Previous story
-      const prevStoryIndex = currentStoryIndex - 1;
-      setCurrentStoryIndex(prevStoryIndex);
-      setCurrentItemIndex(stories[prevStoryIndex].stories.length - 1);
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+      setProgress(0);
+      progressAnimation.value = 0;
     }
   };
 
@@ -133,30 +130,36 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
     panGesture
   );
 
-  if (!visible || !currentStory || !currentItem) return null;
+  const progressBarStyle = useAnimatedStyle(() => ({
+    width: `${progressAnimation.value * 100}%`,
+  }));
+
+  const getInitial = (name: string): string => {
+    return name.charAt(0).toUpperCase();
+  };
+
+  if (!currentStory) return null;
 
   return (
-    <Modal visible={visible} animationType="fade" statusBarTranslucent>
+    <Modal visible={true} animationType="fade" statusBarTranslucent>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaView style={styles.container}>
           {/* Progress Bars */}
           <View style={styles.progressContainer}>
-            {currentStory.stories.map((_, index) => (
+            {stories.map((_, index) => (
               <View key={index} style={styles.progressBarContainer}>
                 <View
                   style={[
                     styles.progressBar,
-                    index < currentItemIndex && styles.progressBarCompleted,
-                    index > currentItemIndex && styles.progressBarEmpty,
+                    index < currentIndex && styles.progressBarCompleted,
+                    index > currentIndex && styles.progressBarEmpty,
                   ]}
                 >
-                  {index === currentItemIndex && (
-                    <Animated.View
+                  {index === currentIndex && (
+                    <AnimatedReanimated.View
                       style={[
                         styles.progressBarFill,
-                        {
-                          width: `${progress.value * 100}%`,
-                        },
+                        progressBarStyle,
                       ]}
                     />
                   )}
@@ -168,19 +171,27 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.userInfo}>
-              {currentStory.userPhoto ? (
+              {currentStory.userAvatar ? (
                 <Image
-                  source={{ uri: currentStory.userPhoto }}
+                  source={{ uri: currentStory.userAvatar }}
                   style={styles.userPhoto}
                 />
               ) : (
                 <View style={styles.userPhotoPlaceholder}>
                   <Text style={styles.userPhotoText}>
-                    {currentStory.userName.charAt(0).toUpperCase()}
+                    {getInitial(currentStory.userName)}
                   </Text>
                 </View>
               )}
-              <Text style={styles.userName}>{currentStory.userName}</Text>
+              <View>
+                <Text style={styles.userName}>{currentStory.petName}</Text>
+                <Text style={styles.timestamp}>
+                  {new Date(currentStory.createdAt).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </Text>
+              </View>
             </View>
             <Pressable onPress={onClose} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>✕</Text>
@@ -190,18 +201,26 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
           {/* Story Content */}
           <GestureDetector gesture={composedGesture}>
             <View style={styles.content}>
-              {currentItem.type === 'image' ? (
+              {currentStory.type === 'photo' && (
                 <Image
-                  source={{ uri: currentItem.uri }}
+                  source={{ uri: currentStory.mediaUrl }}
                   style={styles.storyImage}
                   resizeMode="contain"
                 />
-              ) : (
+              )}
+
+              {currentStory.type === 'video' && (
                 <View style={styles.videoPlaceholder}>
                   <Text style={styles.videoText}>Video Player</Text>
                   <Text style={styles.videoSubtext}>
                     Video support coming soon
                   </Text>
+                </View>
+              )}
+
+              {currentStory.caption && (
+                <View style={styles.captionContainer}>
+                  <Text style={styles.caption}>{currentStory.caption}</Text>
                 </View>
               )}
             </View>
@@ -290,6 +309,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#ffffff',
   },
+  timestamp: {
+    fontSize: 12,
+    color: '#ffffff',
+    opacity: 0.8,
+  },
   closeButton: {
     width: 32,
     height: 32,
@@ -329,6 +353,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#9ca3af',
   },
+  captionContainer: {
+    position: 'absolute',
+    bottom: 100,
+    left: 16,
+    right: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 12,
+    padding: 16,
+  },
+  caption: {
+    fontSize: 16,
+    color: '#ffffff',
+    textAlign: 'center',
+  },
   pauseIndicator: {
     position: 'absolute',
     top: '50%',
@@ -346,3 +384,5 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 });
+
+export default StoryViewer;

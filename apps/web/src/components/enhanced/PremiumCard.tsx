@@ -1,20 +1,46 @@
-import { motion, type HTMLMotionProps } from 'framer-motion'
+import { useEffect } from 'react'
+import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated'
+import { MotionView } from '@petspark/motion'
+import { useHoverLift } from '@petspark/motion'
 import { cn } from '@/lib/utils'
 
-interface PremiumCardProps extends HTMLMotionProps<'div'> {
+interface PremiumCardProps {
   variant?: 'default' | 'glass' | 'elevated' | 'gradient'
   hover?: boolean
   glow?: boolean
+  className?: string
+  children?: React.ReactNode
+  style?: React.CSSProperties
+  [key: string]: unknown
 }
 
-export function PremiumCard({ 
-  variant = 'default', 
-  hover = true, 
+export function PremiumCard({
+  variant = 'default',
+  hover = true,
   glow = false,
-  className, 
-  children, 
-  ...props 
+  className,
+  children,
+  style,
+  ...props
 }: PremiumCardProps) {
+  const opacity = useSharedValue(0)
+  const translateY = useSharedValue(20)
+  const hoverLift = useHoverLift(8)
+
+  useEffect(() => {
+    opacity.value = withTiming(1, { duration: 220 })
+    translateY.value = withTiming(0, { duration: 220 })
+  }, [opacity, translateY])
+
+  const entryStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+  }))
+
+  const combinedStyle = hover && hoverLift.animatedStyle ?
+    [entryStyle, hoverLift.animatedStyle] :
+    entryStyle
+
   const variants = {
     default: 'bg-card border border-border',
     glass: 'glass-card',
@@ -23,17 +49,10 @@ export function PremiumCard({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-      {...(hover ? { 
-        whileHover: { 
-          y: -8, 
-          scale: 1.02,
-          transition: { duration: 0.3, ease: [0.4, 0, 0.2, 1] }
-        } 
-      } : {})}
+    <MotionView
+      animatedStyle={combinedStyle}
+      onMouseEnter={hover ? hoverLift.onMouseEnter : undefined}
+      onMouseLeave={hover ? hoverLift.onMouseLeave : undefined}
       className={cn(
         'rounded-xl p-6 transition-all duration-300',
         variants[variant],
@@ -44,6 +63,6 @@ export function PremiumCard({
       {...props}
     >
       {children}
-    </motion.div>
+    </MotionView>
   )
 }

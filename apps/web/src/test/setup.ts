@@ -59,10 +59,52 @@ vi.mock('react-native-gesture-handler', () => ({
 
 // Mock react-native-reanimated
 vi.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
-  return Reanimated;
-});
+  const mockSharedValue = (initial: number) => {
+    const value = { value: initial }
+    return value
+  }
+  
+  return {
+    default: {
+      call: () => {}
+    },
+    useSharedValue: vi.fn((initial: number) => mockSharedValue(initial)),
+    useAnimatedStyle: vi.fn((fn: () => Record<string, unknown>) => {
+      try {
+        return fn()
+      } catch {
+        return {}
+      }
+    }),
+    withSpring: vi.fn((toValue: number) => toValue),
+    withTiming: vi.fn((toValue: number) => toValue),
+    withDelay: vi.fn((delay: number, animation: number) => animation),
+    withSequence: vi.fn((...animations: number[]) => animations[animations.length - 1]),
+    withRepeat: vi.fn((animation: number) => animation),
+    interpolate: vi.fn((value: number, inputRange: number[], outputRange: number[]) => {
+      if (value <= inputRange[0]) return outputRange[0]
+      if (value >= inputRange[inputRange.length - 1]) return outputRange[outputRange.length - 1]
+      return outputRange[0]
+    }),
+    Extrapolation: {
+      CLAMP: 'clamp',
+      EXTEND: 'extend',
+      IDENTITY: 'identity'
+    },
+    Easing: {
+      linear: (t: number) => t,
+      ease: (t: number) => t,
+      quad: (t: number) => t * t,
+      cubic: (t: number) => t * t * t,
+      in: (easing: (t: number) => number) => easing,
+      out: (easing: (t: number) => number) => easing,
+      inOut: (easing: (t: number) => number) => easing,
+      elastic: () => (t: number) => t
+    },
+    cancelAnimation: vi.fn(),
+    withDecay: vi.fn((toValue: number) => toValue)
+  }
+})
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers);

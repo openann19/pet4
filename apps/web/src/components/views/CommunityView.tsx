@@ -22,7 +22,12 @@ import { createLogger } from '@/lib/logger'
 import type { LostAlert } from '@/lib/lost-found-types'
 import type { LostPetAlert } from '@/lib/maps/types'
 import { ArrowsClockwise, Fire, Heart, MapPin, PawPrint, Plus, Sparkle, TrendUp } from '@phosphor-icons/react'
-import { animate, motion, useMotionValue, useTransform } from 'framer-motion'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, interpolate, Extrapolation, withRepeat, withSequence } from 'react-native-reanimated'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
+import { usePageTransition } from '@/effects/reanimated/use-page-transition'
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -32,16 +37,16 @@ function convertLostAlertToLostPetAlert(alert: LostAlert): LostPetAlert {
   return {
     id: alert.id,
     petId: alert.id,
-    petName: alert.petSummary.name || 'Unknown',
-    petPhoto: alert.photos[0] || '',
-    breed: alert.petSummary.breed || 'Unknown',
+    petName: alert.petSummary.name ?? 'Unknown',
+    petPhoto: alert.photos[0] ?? '',
+    breed: alert.petSummary.breed ?? 'Unknown',
     lastSeen: {
       lat: alert.lastSeen.lat ?? 0,
       lng: alert.lastSeen.lon ?? 0
     },
     lastSeenTime: new Date(alert.createdAt),
-    description: alert.description || '',
-    contactInfo: alert.contactMask || '',
+    description: alert.description ?? '',
+    contactInfo: alert.contactMask ?? '',
     radius: 10, // Default radius
     status: alert.status === 'active' ? 'active' : alert.status === 'found' ? 'found' : 'expired',
     sightings: [],
@@ -51,7 +56,7 @@ function convertLostAlertToLostPetAlert(alert: LostAlert): LostPetAlert {
 }
 
 
-export default function CommunityView() {
+export default function CommunityView(): JSX.Element {
   const { t } = useApp()
   const [activeTab, setActiveTab] = useState<'feed' | 'adoption' | 'lost-found'>('feed')
   const [feedTab, setFeedTab] = useState<'for-you' | 'following'>('for-you')
@@ -65,13 +70,65 @@ export default function CommunityView() {
   const observerTarget = useRef<HTMLDivElement>(null)
   
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const pullDistance = useMotionValue(0)
-  const pullOpacity = useTransform(pullDistance, [0, 80], [0, 1])
-  const pullRotation = useTransform(pullDistance, [0, 80], [0, 360])
-  const pullScale = useTransform(pullDistance, [0, 80], [0.5, 1])
-  const containerRef = useRef<HTMLDivElement>(null)
-  const startY = useRef(0)
-  const isPulling = useRef(false)
+  const pullDistance = useSharedValue(0)
+  
+  const pullOpacityStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(
+        pullDistance.value,
+        [0, 80],
+        [0, 1],
+        Extrapolation.CLAMP
+      )
+    }
+  }) as AnimatedStyle
+  
+  const pullRotationStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{
+        rotate: `${interpolate(
+          pullDistance.value,
+          [0, 80],
+          [0, 360],
+          Extrapolation.CLAMP
+        )}deg`
+      }]
+    }
+  }) as AnimatedStyle
+  
+  const pullScaleStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{
+        scale: interpolate(
+          pullDistance.value,
+          [0, 80],
+          [0.5, 1],
+          Extrapolation.CLAMP
+        )
+      }]
+    }
+  }) as AnimatedStyle
+  
+  const pullTranslateStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: pullDistance.value }]
+    }
+  }) as AnimatedStyle
+  
+  const mainTabsOpacity = useSharedValue(0)
+  const mainTabsTranslateY = useSharedValue(20)
+  
+  useEffect(() => {
+    mainTabsOpacity.value = withTiming(1, { ...timingConfigs.smooth, delay: 100 })
+    mainTabsTranslateY.value = withTiming(0, { ...timingConfigs.smooth, delay: 100 })
+  }, [mainTabsOpacity, mainTabsTranslateY])
+  
+  const mainTabsStyle = useAnimatedStyle(() => {
+    return {
+      opacity: mainTabsOpacity.value,
+      transform: [{ translateY: mainTabsTranslateY.value }]
+    }
+  }) as AnimatedStyle
   
   const [adoptionProfiles, setAdoptionProfiles] = useState<AdoptionProfile[]>([])
   const [adoptionLoading, setAdoptionLoading] = useState(true)
@@ -87,39 +144,41 @@ export default function CommunityView() {
   const [showLostAlertDialog, setShowLostAlertDialog] = useState(false)
 
   const loadLostFoundAlerts = useCallback(async () => {
-    if (activeTab !== 'lost-found' || lostFoundLoading) return;
+    if (activeTab !== 'lost-found' || lostFoundLoading) return
     
-    setLostFoundLoading(true);
+    setLostFoundLoading(true)
     try {
-      const result = await lostFoundAPI.queryAlerts({ status: ['active'] });
-      setLostFoundAlerts(result.alerts.map(convertLostAlertToLostPetAlert));
+      const result = await lostFoundAPI.queryAlerts({ status: ['active'] })
+      setLostFoundAlerts(result.alerts.map(convertLostAlertToLostPetAlert))
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to load lost found alerts', err);
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to load lost found alerts', err)
     } finally {
-      setLostFoundLoading(false);
+      setLostFoundLoading(false)
     }
-  }, [activeTab, lostFoundLoading]);
+  }, [activeTab, lostFoundLoading])
 
   useEffect(() => {
-    loadLostFoundAlerts();
+    void loadLostFoundAlerts();
   }, [loadLostFoundAlerts]);
 
-  const handleTouchStart = useCallback((e: globalThis.TouchEvent) => {
-    if (containerRef.current && containerRef.current.scrollTop === 0 && activeTab === 'feed' && e.touches?.[0]) {
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    const container = containerRef.current
+    if (container?.scrollTop === 0 && activeTab === 'feed' && e.touches?.[0]) {
       startY.current = e.touches[0].clientY
       isPulling.current = true
     }
   }, [activeTab])
 
-  const handleTouchMove = useCallback((e: globalThis.TouchEvent) => {
-    if (!isPulling.current || !containerRef.current || !e.touches?.[0]) return
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    const container = containerRef.current
+    if (!isPulling.current || !container || !e.touches?.[0]) return
 
     const currentY = e.touches[0].clientY
     const diff = currentY - startY.current
 
     if (diff > 0 && diff < 120) {
-      pullDistance.set(diff)
+      pullDistance.value = diff
     }
   }, [pullDistance])
 
@@ -127,7 +186,7 @@ export default function CommunityView() {
     if (!isPulling.current) return
     isPulling.current = false
 
-    const distance = pullDistance.get()
+    const distance = pullDistance.value
     
     if (distance > 80) {
       setIsRefreshing(true)
@@ -137,52 +196,56 @@ export default function CommunityView() {
         await loadFeed()
         await loadTrendingTags()
         haptics.success()
-        toast.success(t.community?.refreshed || 'Feed refreshed!')
-      } catch {
+        toast.success(t.community?.refreshed ?? 'Feed refreshed!')
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error))
+        logger.error('Failed to refresh feed', err)
         haptics.error()
-        toast.error(t.community?.refreshError || 'Failed to refresh')
+        toast.error(t.community?.refreshError ?? 'Failed to refresh')
       } finally {
         setIsRefreshing(false)
       }
     }
 
-    animate(pullDistance, 0, {
-      type: 'spring',
-      stiffness: 300,
-      damping: 30
-    })
-  }, [pullDistance, t])
+    pullDistance.value = withSpring(0, springConfigs.smooth)
+  }, [pullDistance, t, loadFeed, loadTrendingTags])
 
   useEffect(() => {
     const container = containerRef.current
     if (!container || activeTab !== 'feed') return
 
-    container.addEventListener('touchstart', handleTouchStart, { passive: true })
-    container.addEventListener('touchmove', handleTouchMove, { passive: true })
-    container.addEventListener('touchend', handleTouchEnd, { passive: true })
+    const touchStartHandler = (e: TouchEvent) => handleTouchStart(e)
+    const touchMoveHandler = (e: TouchEvent) => handleTouchMove(e)
+    const touchEndHandler = () => {
+      void handleTouchEnd()
+    }
+
+    container.addEventListener('touchstart', touchStartHandler, { passive: true })                                                                               
+    container.addEventListener('touchmove', touchMoveHandler, { passive: true })
+    container.addEventListener('touchend', touchEndHandler, { passive: true })
 
     return () => {
-      container.removeEventListener('touchstart', handleTouchStart)
-      container.removeEventListener('touchmove', handleTouchMove)
-      container.removeEventListener('touchend', handleTouchEnd)
+      container.removeEventListener('touchstart', touchStartHandler)
+      container.removeEventListener('touchmove', touchMoveHandler)
+      container.removeEventListener('touchend', touchEndHandler)
     }
   }, [handleTouchStart, handleTouchMove, handleTouchEnd, activeTab])
 
   useEffect(() => {
     if (activeTab === 'feed') {
-      loadFeed()
-      loadTrendingTags()
+      void loadFeed()
+      void loadTrendingTags()
     } else if (activeTab === 'adoption') {
-      loadAdoptionProfiles()
+      void loadAdoptionProfiles()
     }
-  }, [activeTab, feedTab])
+  }, [activeTab, feedTab, loadFeed, loadTrendingTags, loadAdoptionProfiles])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0]
-        if (entry?.isIntersecting && hasMore && !loading && !loadingRef.current && activeTab === 'feed') {
-          loadFeed(true)
+        if (entry?.isIntersecting && hasMore && !loading && !loadingRef.current && activeTab === 'feed') {                                                      
+          void loadFeed(true)
         }
       },
       { threshold: 0.1 }
@@ -199,8 +262,8 @@ export default function CommunityView() {
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0]
-        if (entry?.isIntersecting && adoptionHasMore && !adoptionLoading && !adoptionLoadingRef.current && activeTab === 'adoption') {
-          loadAdoptionProfiles(true)
+        if (entry?.isIntersecting && adoptionHasMore && !adoptionLoading && !adoptionLoadingRef.current && activeTab === 'adoption') {                          
+          void loadAdoptionProfiles(true)
         }
       },
       { threshold: 0.1 }
@@ -338,19 +401,22 @@ export default function CommunityView() {
     }
   }
 
-  const loadTrendingTags = async () => {
+  const loadTrendingTags = useCallback(async () => {
     try {
-      // Extract tags from posts
+      const response = await communityAPI.getFeed({ mode: feedTab, limit: 100 })
       const allTags: string[] = []
-      posts.forEach(post => {
-        if (post.tags && Array.isArray(post.tags)) {
-          allTags.push(...post.tags)
-        }
-      })
+      
+      if (Array.isArray(response.posts)) {
+        response.posts.forEach(post => {
+          if (post.tags && Array.isArray(post.tags)) {
+            allTags.push(...post.tags)
+          }
+        })
+      }
       
       // Count tag frequency
       const tagCounts = allTags.reduce((acc, tag) => {
-        acc[tag] = (acc[tag] || 0) + 1
+        acc[tag] = (acc[tag] ?? 0) + 1
         return acc
       }, {} as Record<string, number>)
       
@@ -363,18 +429,18 @@ export default function CommunityView() {
       setTrendingTags(sortedTags)
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load trending tags', err, { action: 'loadTrendingTags' })
+      logger.error('Failed to load trending tags', err, { action: 'loadTrendingTags' })                                                                         
       setTrendingTags([])
     }
-  }
+  }, [feedTab])
 
   const handleAuthorClick = (authorId: string): void => {
     logger.info('View author profile', { action: 'viewAuthorProfile', authorId })
   }
 
   const handlePostCreated = useCallback(() => {
-    loadFeed()
-    loadTrendingTags()
+    void loadFeed()
+    void loadTrendingTags()
   }, [feedTab])
 
   const handleMainTabChange = (value: string) => {
@@ -408,68 +474,189 @@ export default function CommunityView() {
     haptics.trigger('light')
   }
 
+  // Animation hooks
+  const headerTransition = usePageTransition({ isVisible: true, direction: 'down', duration: 300 })
+  const trendingTransition = usePageTransition({ isVisible: trendingTags.length > 0, direction: 'up', duration: 300 })
+  const refreshButtonHover = useHoverLift({ scale: 1.05 })
+  const createButtonHover = useHoverLift({ scale: 1.05 })
+  const emptyStateTransition = usePageTransition({ isVisible: posts.length === 0 && !loading, direction: 'fade', duration: 500 })
+  
+  // Empty state animation
+  const emptyScale = useSharedValue(1)
+  const emptyRotation = useSharedValue(0)
+  const loadingRotation = useSharedValue(0)
+  
+  useEffect(() => {
+    if (posts.length === 0 && !loading) {
+      emptyScale.value = withRepeat(
+        withSequence(
+          withTiming(1.1, { duration: 1000 }),
+          withTiming(1, { duration: 1000 })
+        ),
+        -1,
+        true
+      )
+      emptyRotation.value = withRepeat(
+        withSequence(
+          withTiming(5, { duration: 500 }),
+          withTiming(-5, { duration: 500 }),
+          withTiming(0, { duration: 500 })
+        ),
+        -1,
+        false
+      )
+    }
+  }, [posts.length, loading, emptyScale, emptyRotation])
+  
+  useEffect(() => {
+    if (loading || adoptionLoading) {
+      loadingRotation.value = withRepeat(
+        withTiming(360, { duration: 1000 }),
+        -1,
+        false
+      )
+    } else {
+      loadingRotation.value = 0
+    }
+  }, [loading, adoptionLoading, loadingRotation])
+  
+  const emptyStateStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: emptyScale.value },
+      { rotate: `${emptyRotation.value}deg` }
+    ]
+  })) as AnimatedStyle
+  
+  // Adoption skeleton animation
+  const adoptionSkeletonOpacity = useSharedValue(0)
+  const adoptionSkeletonTranslateY = useSharedValue(20)
+  
+  useEffect(() => {
+    if (adoptionLoading && adoptionProfiles.length === 0) {
+      adoptionSkeletonOpacity.value = withTiming(1, timingConfigs.smooth)
+      adoptionSkeletonTranslateY.value = withTiming(0, timingConfigs.smooth)
+    }
+  }, [adoptionLoading, adoptionProfiles.length, adoptionSkeletonOpacity, adoptionSkeletonTranslateY])
+  
+  
+  // Adoption empty state animation
+  const adoptionEmptyScale = useSharedValue(1)
+  const adoptionEmptyRotation = useSharedValue(0)
+  
+  useEffect(() => {
+    if (adoptionProfiles.length === 0 && !adoptionLoading) {
+      adoptionEmptyScale.value = withRepeat(
+        withSequence(
+          withTiming(1.1, { duration: 1000 }),
+          withTiming(1, { duration: 1000 })
+        ),
+        -1,
+        true
+      )
+      adoptionEmptyRotation.value = withRepeat(
+        withSequence(
+          withTiming(5, { duration: 500 }),
+          withTiming(-5, { duration: 500 }),
+          withTiming(0, { duration: 500 })
+        ),
+        -1,
+        false
+      )
+    }
+  }, [adoptionProfiles.length, adoptionLoading, adoptionEmptyScale, adoptionEmptyRotation])
+  
+  
+  // Adoption profile card entry animation
+  const adoptionCardOpacity = useSharedValue(0)
+  const adoptionCardTranslateY = useSharedValue(20)
+  
+  useEffect(() => {
+    if (adoptionProfiles.length > 0) {
+      adoptionCardOpacity.value = withTiming(1, timingConfigs.smooth)
+      adoptionCardTranslateY.value = withTiming(0, timingConfigs.smooth)
+    }
+  }, [adoptionProfiles.length, adoptionCardOpacity, adoptionCardTranslateY])
+  
+  
+  // Adoption loading spinner
+  const adoptionLoadingRotation = useSharedValue(0)
+  
+  useEffect(() => {
+    if (adoptionLoading) {
+      adoptionLoadingRotation.value = withRepeat(
+        withTiming(360, { duration: 1000 }),
+        -1,
+        false
+      )
+    } else {
+      adoptionLoadingRotation.value = 0
+    }
+  }, [adoptionLoading, adoptionLoadingRotation])
+  
+  const adoptionLoadingSpinnerStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${adoptionLoadingRotation.value}deg` }],
+  })) as AnimatedStyle
+
   return (
     <div ref={containerRef} className="max-w-6xl mx-auto space-y-6 pb-8 relative">
       {/* Pull-to-Refresh Indicator */}
-      <motion.div
+      <AnimatedView
         className="absolute top-0 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
-        style={{
-          y: pullDistance,
-          opacity: pullOpacity
-        }}
+        style={[pullTranslateStyle, pullOpacityStyle]}
       >
-        <motion.div
+        <AnimatedView
           className="bg-card/95 backdrop-blur-xl shadow-xl rounded-full p-3 border border-border/50"
-          style={{
-            rotate: pullRotation,
-            scale: pullScale
-          }}
+          style={[pullRotationStyle, pullScaleStyle]}
         >
           <ArrowsClockwise 
             size={24} 
             weight="bold" 
             className={`${isRefreshing ? 'animate-spin' : ''} text-primary`}
           />
-        </motion.div>
-      </motion.div>
+        </AnimatedView>
+      </AnimatedView>
 
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
-      >
+      <AnimatedView style={headerTransition.style} className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-            {t.community?.title || 'Community'}
+            {t.community?.title ?? 'Community'}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {activeTab === 'feed' 
-              ? (t.community?.feed || 'Share and discover pet moments')
-              : (t.adoption?.subtitle || 'Find your perfect companion')}
+              ? (t.community?.feed ?? 'Share and discover pet moments')
+              : (t.adoption?.subtitle ?? 'Find your perfect companion')}
           </p>
         </div>
         <div className="flex items-center gap-2">
           {activeTab === 'feed' && (
             <>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <AnimatedView
+                style={refreshButtonHover.animatedStyle}
+                onMouseEnter={refreshButtonHover.handleEnter}
+                onMouseLeave={refreshButtonHover.handleLeave}
+              >
                 <Button 
                   variant="outline" 
                   size="icon"
-                  onClick={async () => {
-                    setIsRefreshing(true)
-                    haptics.impact()
-                    try {
-                      await loadFeed()
-                      await loadTrendingTags()
-                      haptics.success()
-                      toast.success(t.community?.refreshed || 'Feed refreshed!')
-                    } catch {
-                      haptics.error()
-                      toast.error(t.community?.refreshError || 'Failed to refresh')
-                    } finally {
-                      setIsRefreshing(false)
-                    }
+                  onClick={() => {
+                    void (async () => {
+                      setIsRefreshing(true)
+                      haptics.impact()
+                      try {
+                        await loadFeed()
+                        await loadTrendingTags()
+                        haptics.success()
+                        toast.success(t.community?.refreshed ?? 'Feed refreshed!')
+                      } catch (error) {
+                        const err = error instanceof Error ? error : new Error(String(error))
+                        logger.error('Failed to refresh feed', err)
+                        haptics.error()
+                        toast.error(t.community?.refreshError ?? 'Failed to refresh')
+                      } finally {
+                        setIsRefreshing(false)
+                      }
+                    })()
                   }}
                   disabled={isRefreshing}
                   className="shadow-md"
@@ -480,38 +667,38 @@ export default function CommunityView() {
                     className={isRefreshing ? 'animate-spin' : ''}
                   />
                 </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              </AnimatedView>
+              <AnimatedView
+                style={createButtonHover.animatedStyle}
+                onMouseEnter={createButtonHover.handleEnter}
+                onMouseLeave={createButtonHover.handleLeave}
+              >
                 <Button size="lg" className="gap-2 shadow-lg" onClick={handleCreatePost}>
                   <Plus size={20} weight="bold" />
-                  <span className="hidden sm:inline">{t.community?.createPost || 'Create Post'}</span>
-                  <span className="sm:hidden">{t.community?.post || 'Post'}</span>
+                    <span className="hidden sm:inline">{t.community?.createPost ?? 'Create Post'}</span>
+                    <span className="sm:hidden">{t.community?.post ?? 'Post'}</span>
                 </Button>
-              </motion.div>
+              </AnimatedView>
             </>
           )}
         </div>
-      </motion.div>
+      </AnimatedView>
 
       {/* Main Tabs - Feed & Adoption */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
+      <AnimatedView style={mainTabsStyle}>
         <Tabs value={activeTab} onValueChange={handleMainTabChange}>
           <TabsList className="grid w-full grid-cols-3 bg-card shadow-md">
             <TabsTrigger value="feed" className="gap-2">
               <Fire size={18} weight={activeTab === 'feed' ? 'fill' : 'regular'} />                                                                             
-              {t.community?.feed || 'Feed'}
+              {t.community?.feed ?? 'Feed'}
             </TabsTrigger>
             <TabsTrigger value="adoption" className="gap-2">
               <Heart size={18} weight={activeTab === 'adoption' ? 'fill' : 'regular'} />                                                                        
-              {t.adoption?.title || 'Adoption'}
+              {t.adoption?.title ?? 'Adoption'}
             </TabsTrigger>
             <TabsTrigger value="lost-found" className="gap-2">
               <MapPin size={18} weight={activeTab === 'lost-found' ? 'fill' : 'regular'} />                                                                        
-              {t.map?.lostAndFound || 'Lost & Found'}
+              {t.map?.lostAndFound ?? 'Lost & Found'}
             </TabsTrigger>
           </TabsList>
 
@@ -519,15 +706,14 @@ export default function CommunityView() {
           <TabsContent value="feed" className="mt-6 space-y-6">
             {/* Trending Tags */}
             {trendingTags.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+              <AnimatedView
+                style={trendingTransition.style}
                 className="bg-gradient-to-br from-card via-card to-card/50 rounded-xl p-4 border border-border/50 shadow-lg"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <TrendUp size={20} className="text-accent" weight="bold" />
                   <h3 className="font-semibold text-foreground">
-                    {t.community?.trending || 'Trending Today'}
+                    {t.community?.trending ?? 'Trending Today'}
                   </h3>
                   <Fire size={16} className="text-destructive ml-auto" weight="fill" />
                 </div>
@@ -543,7 +729,7 @@ export default function CommunityView() {
                     </Badge>
                   ))}
                 </div>
-              </motion.div>
+              </AnimatedView>
             )}
 
             {/* Feed Sub-Tabs */}
@@ -551,11 +737,11 @@ export default function CommunityView() {
               <TabsList className="grid w-full grid-cols-2 bg-card shadow-md max-w-md mx-auto">
                 <TabsTrigger value="for-you" className="gap-2">
                   <Sparkle size={18} weight={feedTab === 'for-you' ? 'fill' : 'regular'} />
-                  {t.community?.forYou || 'For You'}
+                  {t.community?.forYou ?? 'For You'}
                 </TabsTrigger>
                 <TabsTrigger value="following" className="gap-2">
                   <Fire size={18} weight={feedTab === 'following' ? 'fill' : 'regular'} />
-                  {t.community?.following || 'Following'}
+                  {t.community?.following ?? 'Following'}
                 </TabsTrigger>
               </TabsList>
 
@@ -563,73 +749,58 @@ export default function CommunityView() {
             {loading && posts.length === 0 ? (
               <RankingSkeleton count={3} variant="post" />
             ) : posts.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+              <AnimatedView
+                style={emptyStateTransition.style}
                 className="text-center py-20"
               >
-                <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
+                <AnimatedView
+                  style={emptyStateStyle}
                   className="text-8xl mb-6"
                 >
                   🐾
-                </motion.div>
-                <h3 className="text-2xl font-bold text-foreground mb-2">
-                  {t.community?.noPosts || 'No posts yet'}
-                </h3>
-                <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                  {feedTab === 'following'
-                    ? (t.community?.noFollowingPosts || 'Follow some pets to see their posts here!')
-                    : (t.community?.noPostsDesc || 'Be the first to share something amazing!')}
-                </p>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button size="lg" className="gap-2 shadow-lg" onClick={handleCreatePost}>
-                    <Plus size={20} weight="bold" />
-                    {t.community?.createPost || 'Create Post'}
-                  </Button>
-                </motion.div>
-              </motion.div>
+                </AnimatedView>
+                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                    {t.community?.noPosts ?? 'No posts yet'}
+                  </h3>
+                  <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                    {feedTab === 'following'
+                      ? (t.community?.noFollowingPosts ?? 'Follow some pets to see their posts here!')
+                      : (t.community?.noPostsDesc ?? 'Be the first to share something amazing!')}
+                  </p>
+                  <AnimatedView
+                    style={createButtonHover.animatedStyle}
+                    onMouseEnter={createButtonHover.handleEnter}
+                    onMouseLeave={createButtonHover.handleLeave}
+                  >
+                    <Button size="lg" className="gap-2 shadow-lg" onClick={handleCreatePost}>
+                      <Plus size={20} weight="bold" />
+                      {t.community?.createPost ?? 'Create Post'}
+                    </Button>
+                  </AnimatedView>
+              </AnimatedView>
             ) : (
               <>
-                {posts.map((post, index) => (
-                  <motion.div
+                {posts.map((post) => (
+                  <PostCard
                     key={post.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(index * 0.05, 0.3) }}
-                  >
-                    <PostCard
-                      post={post}
-                      onAuthorClick={handleAuthorClick}
-                    />
-                  </motion.div>
+                    post={post}
+                    onAuthorClick={handleAuthorClick}
+                  />
                 ))}
 
                 {/* Infinite scroll trigger */}
                 <div ref={observerTarget} className="h-20 flex items-center justify-center">
                   {loading && (
                     <div className="flex items-center gap-2 text-muted-foreground">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      >
+                      <AnimatedView style={loadingSpinnerStyle}>
                         <Sparkle size={20} />
-                      </motion.div>
-                      <span className="text-sm">{t.common?.loading || 'Loading...'}</span>
+                      </AnimatedView>
+                      <span className="text-sm">{t.common?.loading ?? 'Loading...'}</span>
                     </div>
                   )}
                   {!hasMore && posts.length > 0 && (
                     <div className="text-center text-muted-foreground text-sm py-8">
-                      {t.community?.endOfFeed || "You're all caught up! 🎉"}
+                      {t.community?.endOfFeed ?? "You're all caught up! 🎉"}
                     </div>
                   )}
                 </div>
@@ -644,12 +815,9 @@ export default function CommunityView() {
             {adoptionLoading && adoptionProfiles.length === 0 ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3, 4, 5, 6].map(i => (
-                  <motion.div
+                  <div
                     key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="bg-card rounded-xl overflow-hidden border border-border/50 shadow-md"
+                    className="bg-card rounded-xl overflow-hidden border border-border/50 shadow-md"                                                            
                   >
                     <Skeleton className="h-64 w-full" />
                     <div className="p-4 space-y-3">
@@ -661,54 +829,38 @@ export default function CommunityView() {
                         <Skeleton className="h-6 w-20" />
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             ) : adoptionProfiles.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+              <AnimatedView
+                style={usePageTransition({ isVisible: true, direction: 'fade', duration: 500 }).style}
                 className="text-center py-20"
               >
-                <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
+                <AnimatedView
+                  style={emptyStateStyle}
                   className="text-8xl mb-6"
                 >
                   🏠
-                </motion.div>
+                </AnimatedView>
                 <h3 className="text-2xl font-bold text-foreground mb-2">
-                  {t.adoption?.noProfiles || 'No pets available for adoption'}
+                  {t.adoption?.noProfiles ?? 'No pets available for adoption'}
                 </h3>
                 <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                  {t.adoption?.noProfilesDesc || 'Check back soon for pets looking for their forever homes.'}
+                  {t.adoption?.noProfilesDesc ?? 'Check back soon for pets looking for their forever homes.'}
                 </p>
-              </motion.div>
+              </AnimatedView>
             ) : (
               <>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {adoptionProfiles.map((profile, index) => (
-                    <motion.div
+                  {adoptionProfiles.map((profile) => (
+                    <AdoptionCard
                       key={profile._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: Math.min(index * 0.05, 0.3) }}
-                    >
-                      <AdoptionCard
-                        profile={profile}
-                        onSelect={setSelectedAdoptionProfile}
-                        onFavorite={handleToggleFavorite}
-                        isFavorited={Array.isArray(favoritedProfiles) && favoritedProfiles.includes(profile._id)}
-                      />
-                    </motion.div>
+                      profile={profile}
+                      onSelect={setSelectedAdoptionProfile}
+                      onFavorite={handleToggleFavorite}
+                      isFavorited={Array.isArray(favoritedProfiles) && favoritedProfiles.includes(profile._id)}
+                    />
                   ))}
                 </div>
 
@@ -716,18 +868,15 @@ export default function CommunityView() {
                 <div ref={adoptionObserverTarget} className="h-20 flex items-center justify-center">
                   {adoptionLoading && (
                     <div className="flex items-center gap-2 text-muted-foreground">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      >
+                      <AnimatedView style={adoptionLoadingSpinnerStyle}>
                         <PawPrint size={20} />
-                      </motion.div>
-                      <span className="text-sm">{t.common?.loading || 'Loading...'}</span>
+                      </AnimatedView>
+                      <span className="text-sm">{t.common?.loading ?? 'Loading...'}</span>
                     </div>
                   )}
                   {!adoptionHasMore && adoptionProfiles.length > 0 && (
                     <div className="text-center text-muted-foreground text-sm py-8">
-                      {t.adoption?.endOfList || "You've seen all available pets! 🐾"}
+                      {t.adoption?.endOfList ?? "You've seen all available pets! 🐾"}
                     </div>
                   )}
                 </div>
@@ -738,33 +887,35 @@ export default function CommunityView() {
           <TabsContent value="lost-found" className="mt-6 space-y-6">
             <LostFoundMap
               alerts={lostFoundAlerts}
-              onReportSighting={async (alertId, location) => {
-                try {
-                  const { userService } = await import('@/lib/user-service')
-                  const currentUser = await userService.user()
-                  if (!currentUser) {
-                    toast.error('You must be logged in to report sightings');
-                    return;
+              onReportSighting={(alertId, location) => {
+                void (async () => {
+                  try {
+                    const { userService } = await import('@/lib/user-service')
+                    const currentUser = await userService.user()
+                    if (!currentUser) {
+                      toast.error('You must be logged in to report sightings')
+                      return
+                    }
+                    await lostFoundAPI.createSighting({
+                      alertId,
+                      whenISO: new Date().toISOString(),
+                      lat: location.lat,
+                      lon: location.lng,
+                      radiusM: 1000,
+                      description: '',
+                      photos: [],
+                      contactMask: '',
+                      reporterId: typeof currentUser.id === 'string' ? currentUser.id : '',                                                                       
+                      reporterName: typeof currentUser['name'] === 'string' ? currentUser['name'] : 'Anonymous',                                                  
+                      ...(currentUser.avatarUrl && { reporterAvatar: currentUser.avatarUrl }),                                                                    
+                    })
+                    toast.success(t.lostFound?.sightingSubmitted ?? 'Sighting reported')                                                                         
+                  } catch (error) {
+                    const err = error instanceof Error ? error : new Error(String(error))                                                                        
+                    logger.error('Failed to report sighting', err)
+                    toast.error('Failed to report sighting')
                   }
-                  await lostFoundAPI.createSighting({
-                    alertId,
-                    whenISO: new Date().toISOString(),
-                    lat: location.lat,
-                    lon: location.lng,
-                    radiusM: 1000,
-                    description: '',
-                    photos: [],
-                    contactMask: '',
-                    reporterId: typeof currentUser.id === 'string' ? currentUser.id : '',
-                    reporterName: typeof currentUser['name'] === 'string' ? currentUser['name'] : 'Anonymous',
-                    ...(currentUser.avatarUrl && { reporterAvatar: currentUser.avatarUrl }),
-                  });
-                  toast.success(t.lostFound?.sightingSubmitted || 'Sighting reported');
-                } catch (error) {
-                  const err = error instanceof Error ? error : new Error(String(error));
-                  logger.error('Failed to report sighting', err);
-                  toast.error('Failed to report sighting');
-                }
+                })()
               }}
               onReportLost={() => {
                 setShowLostAlertDialog(true)
@@ -773,7 +924,7 @@ export default function CommunityView() {
             />
           </TabsContent>
         </Tabs>
-      </motion.div>
+      </AnimatedView>
       <PostComposer
         open={showComposer}
         onOpenChange={setShowComposer}
@@ -791,9 +942,8 @@ export default function CommunityView() {
       <CreateLostAlertDialog
         open={showLostAlertDialog}
         onClose={() => setShowLostAlertDialog(false)}
-        onSuccess={async () => {
-          // Reload lost & found alerts
-          await loadLostFoundAlerts()
+        onSuccess={() => {
+          void loadLostFoundAlerts()
         }}
       />
     </div>

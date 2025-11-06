@@ -15,6 +15,7 @@ import { ErrorFallback } from './ErrorFallback';
 import { AppProvider } from './contexts/AppContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider } from './contexts/UIContext';
+import { QueryProvider } from './components/QueryProvider';
 
 import "./index.css";
 import "./main.css";
@@ -39,13 +40,15 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <BrowserRouter>
-      <AppProvider>
-        <UIProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </UIProvider>
-      </AppProvider>
+      <QueryProvider>
+        <AppProvider>
+          <UIProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </UIProvider>
+        </AppProvider>
+      </QueryProvider>
     </BrowserRouter>
    </ErrorBoundary>
 )

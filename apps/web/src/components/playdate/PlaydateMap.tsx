@@ -22,8 +22,16 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
 
   useEffect(() => {
     getCurrentLocation()
-      .then(location => setUserLocation(location))
-      .catch(() => {})
+      .then(location => {
+        setUserLocation(location)
+      })
+      .catch((error: unknown) => {
+        // Location access denied or unavailable - component handles gracefully
+        // User can still view playdates without their location
+        if (error instanceof Error && error.name !== 'NotAllowedError') {
+          // Only handle unexpected errors, permission denials are expected
+        }
+      })
   }, [])
 
   const playdatesWithLocation = playdates.filter(

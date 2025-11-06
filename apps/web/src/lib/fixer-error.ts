@@ -23,7 +23,9 @@ export class FixerError extends Error {
     super(message)
     this.name = 'FixerError'
     this.context = context
-    this.code = code
+    if (code !== undefined) {
+      this.code = code
+    }
     this.timestamp = new Date().toISOString()
 
     // Maintain proper stack trace for where our error was thrown (only available on V8)

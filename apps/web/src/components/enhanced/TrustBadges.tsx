@@ -1,6 +1,10 @@
+import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated'
+import { useEffect } from 'react'
+import { MotionView } from '@petspark/motion'
+import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { CheckCircle, Heart, Lightning, Sparkle, Star, Trophy } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import type { Icon } from '@phosphor-icons/react'
 
 interface TrustBadge {
   type: 'verified' | 'health' | 'responsive' | 'experienced' | 'top-rated' | 'favorite'
@@ -71,6 +75,44 @@ const SIZE_CONFIG = {
   }
 }
 
+interface BadgeAnimatedProps {
+  index: number
+  animated: boolean
+  sizeConfig: typeof SIZE_CONFIG[keyof typeof SIZE_CONFIG]
+  config: typeof BADGE_CONFIG[keyof typeof BADGE_CONFIG]
+  Icon: Icon
+}
+
+function BadgeAnimated({ index, animated, sizeConfig, config, Icon }: BadgeAnimatedProps) {
+  const staggered = useStaggeredItem({ index, staggerDelay: 50 })
+  const scale = useSharedValue(animated ? 0.8 : 1)
+
+  useEffect(() => {
+    if (animated) {
+      scale.value = withTiming(1, { duration: 300 })
+    }
+  }, [animated, scale])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: staggered.opacity.value,
+      transform: [
+        { translateY: staggered.y.value },
+        { scale: scale.value }
+      ]
+    }
+  })
+
+  return (
+    <MotionView
+      animatedStyle={animatedStyle}
+      className={`${sizeConfig.containerClass} ${config.bgColor} ${config.borderColor} border rounded-full flex items-center justify-center ${config.color} transition-all duration-300 hover:scale-110 cursor-default`}
+    >
+      <Icon size={sizeConfig.iconSize} className={config.color} />
+    </MotionView>
+  )
+}
+
 export function TrustBadges({ badges, size = 'md', animated = true }: TrustBadgesProps) {
   if (!badges || !Array.isArray(badges) || badges.length === 0) {
     return null
@@ -86,37 +128,14 @@ export function TrustBadges({ badges, size = 'md', animated = true }: TrustBadge
           const Icon = config.icon
 
           const content = (
-            <motion.div
+            <BadgeAnimated
               key={badge.type}
-              {...(animated ? {
-                initial: { scale: 0, opacity: 0 },
-                animate: { scale: 1, opacity: 1 },
-                transition: {
-                  type: 'spring',
-                  stiffness: 500,
-                  damping: 30,
-                  delay: index * 0.05
-                }
-              } : {})}
-              whileHover={{ scale: 1.1, y: -2 }}
-              className={`
-                ${sizeConfig.containerClass}
-                ${config.bgColor}
-                ${config.borderColor}
-                border-2
-                rounded-full
-                flex items-center justify-center
-                cursor-help
-                transition-all duration-200
-                shadow-sm hover:shadow-md
-              `}
-            >
-              <Icon 
-                size={sizeConfig.iconSize} 
-                weight="fill" 
-                className={config.color}
-              />
-            </motion.div>
+              index={index}
+              animated={animated}
+              sizeConfig={sizeConfig}
+              config={config}
+              Icon={Icon}
+            />
           )
 
           return (
@@ -144,18 +163,26 @@ interface TrustScoreProps {
   showLabel?: boolean
 }
 
-export function TrustScore({ score, size = 'md', showLabel = true }: TrustScoreProps) {
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-green-500'
-    if (score >= 60) return 'text-accent'
-    if (score >= 40) return 'text-yellow-500'
+export function TrustScore({ score, size = 'md', showLabel = false }: TrustScoreProps) {
+  const strokeDasharray = useSharedValue(0)
+  const circumference = 2 * Math.PI * 20 // r = 20
+
+  useEffect(() => {
+    const targetDash = (score / 100) * circumference
+    strokeDasharray.value = withTiming(targetDash, { duration: 1000 })
+  }, [score, circumference, strokeDasharray])
+
+  const getScoreColor = (scoreValue: number) => {
+    if (scoreValue >= 80) return 'text-green-500'
+    if (scoreValue >= 60) return 'text-accent'
+    if (scoreValue >= 40) return 'text-yellow-500'
     return 'text-muted-foreground'
   }
 
-  const getScoreLabel = (score: number) => {
-    if (score >= 80) return 'Highly Trusted'
-    if (score >= 60) return 'Trusted'
-    if (score >= 40) return 'Established'
+  const getScoreLabel = (scoreValue: number) => {
+    if (scoreValue >= 80) return 'Highly Trusted'
+    if (scoreValue >= 60) return 'Trusted'
+    if (scoreValue >= 40) return 'Established'
     return 'New'
   }
 
@@ -164,6 +191,12 @@ export function TrustScore({ score, size = 'md', showLabel = true }: TrustScoreP
     md: 'text-sm',
     lg: 'text-base'
   }
+
+  const circleAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      strokeDasharray: `${strokeDasharray.value} ${circumference}`,
+    }
+  })
 
   return (
     <div className="flex items-center gap-2">
@@ -178,19 +211,20 @@ export function TrustScore({ score, size = 'md', showLabel = true }: TrustScoreP
             fill="none"
             className="text-muted/20"
           />
-          <motion.circle
-            cx="24"
-            cy="24"
-            r="20"
-            stroke="currentColor"
-            strokeWidth="3"
-            fill="none"
-            strokeLinecap="round"
-            className={getScoreColor(score)}
-            initial={{ strokeDasharray: '0 126' }}
-            animate={{ strokeDasharray: `${(score / 100) * 126} 126` }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-          />
+          <MotionView
+            animatedStyle={circleAnimatedStyle}
+          >
+            <circle
+              cx="24"
+              cy="24"
+              r="20"
+              stroke="currentColor"
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+              className={getScoreColor(score)}
+            />
+          </MotionView>
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
           <span className={`font-bold ${sizeClasses[size]} ${getScoreColor(score)}`}>

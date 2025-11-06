@@ -12,7 +12,9 @@ import {
   ArrowRight,
   Calendar,
   CheckCircle,
-  Clock, ShieldCheck,
+  Clock,
+  IdentificationCard,
+  ShieldCheck,
   User,
   Warning,
   XCircle
@@ -53,13 +55,13 @@ export function KYCManagement() {
 
   const handleVerify = async () => {
     if (!selectedSession) return
-    
+
     setLoading(true)
     try {
       const { userService } = await import('@/lib/user-service')
       const user = await userService.user()
       if (!user) throw new Error('Not authenticated')
-      
+
       await kycApi.manualKYCReview({
         submissionId: selectedSession.id,
         decision: 'verified',
@@ -77,13 +79,13 @@ export function KYCManagement() {
 
   const handleReject = async () => {
     if (!selectedSession || !rejectText) return
-    
+
     setLoading(true)
     try {
       const { userService } = await import('@/lib/user-service')
       const user = await userService.user()
       if (!user) throw new Error('Not authenticated')
-      
+
       await kycApi.manualKYCReview({
         submissionId: selectedSession.id,
         decision: 'rejected',
@@ -164,7 +166,7 @@ export function KYCManagement() {
         <Card className="p-4">
           <div className="text-sm text-muted-foreground">Pass Rate</div>
           <div className="text-2xl font-bold mt-1">
-            {sessions.length > 0 
+            {sessions.length > 0
               ? Math.round((sessions.filter(s => s.status === 'verified').length / sessions.length) * 100)
               : 0}%
           </div>
@@ -227,6 +229,10 @@ export function KYCManagement() {
                               <div className="flex items-center gap-2 text-muted-foreground">
                                 <User size={14} />
                                 <span>User ID: {session.userId.substring(0, 16)}...</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-muted-foreground">
+                                <IdentificationCard size={14} />
+                                <span>Documents: {session.documents?.length || 0}</span>
                               </div>
                               <div className="flex items-center gap-2 text-muted-foreground">
                                 <Calendar size={14} />

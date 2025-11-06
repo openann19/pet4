@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react'
-import { useStorage } from '@/hooks/useStorage'
-import { motion, AnimatePresence } from 'framer-motion'
+'use client'
+
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useKV } from '@github/spark/hooks'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence, withDelay, interpolate, Extrapolation } from 'react-native-reanimated'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
@@ -43,9 +45,10 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { NotificationTabs, type TabKey } from './NotificationTabs'
-import { useLanguage } from '@/hooks/useLanguage'
-import { analytics } from '@/lib/analytics'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useHoverTap } from '@/effects/reanimated'
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 
 export interface PremiumNotification {
   id: string
@@ -103,9 +106,11 @@ interface NotificationPreferences {
   pushEnabled: boolean
 }
 
-export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificationCenterProps) {
-  const [notifications, setNotifications] = useStorage<PremiumNotification[]>('premium-notifications', [])
-  const [preferences, setPreferences] = useStorage<NotificationPreferences>('notification-preferences', {
+export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificationCenterProps): JSX.Element {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+  const [notifications, setNotifications] = useKV<PremiumNotification[]>('premium-notifications', [])
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+  const [preferences, setPreferences] = useKV<NotificationPreferences>('notification-preferences', {
     quietHours: { enabled: false, start: '22:00', end: '08:00' },
     groupSimilar: true,
     showPreviews: true,
@@ -113,41 +118,32 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
     pushEnabled: true
   })
   
-  const { language } = useLanguage()
   const [filter, setFilter] = useState<'all' | 'unread' | 'archived'>('all')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [view, setView] = useState<'grouped' | 'list'>('grouped')
   const [showSettings, setShowSettings] = useState(false)
 
-  const allNotifications = notifications || []
+  const allNotifications: PremiumNotification[] = (notifications ?? []) as PremiumNotification[]
   
-  // Calculate unread counts per tab
-  const unreadCounts = useMemo(() => {
-    const all = allNotifications.filter(n => !n.read && !n.archived).length
-    const matches = allNotifications.filter(n => !n.read && !n.archived && (n.type === 'match' || n.type === 'like')).length
-    const messages = allNotifications.filter(n => !n.read && !n.archived && n.type === 'message').length
-    return { all, matches, messages }
-  }, [allNotifications])
-
-  // Filter notifications based on filter state (all/unread/archived) - tab filtering happens in renderPanel
-  const filteredNotifications = useMemo(() => {
-    return allNotifications
-      .filter(n => {
-        if (filter === 'archived') return n.archived
-        if (filter === 'unread') return !n.read && !n.archived
-        return !n.archived
-      })
-      .sort((a, b) => b.timestamp - a.timestamp)
-  }, [allNotifications, filter])
+  const filteredNotifications = allNotifications
+    .filter((n: PremiumNotification) => {
+      if (filter === 'archived') return n.archived
+      if (filter === 'unread') return !n.read && !n.archived
+      return !n.archived
+    })
+    .filter((n: PremiumNotification) => selectedCategory === 'all' || n.type === selectedCategory)
+    .sort((a: PremiumNotification, b: PremiumNotification) => b.timestamp - a.timestamp)
 
   const groupedNotifications = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (!preferences?.groupSimilar || view === 'list') {
       return []
     }
 
-    const groups: Map<string, PremiumNotification[]> = new Map()
+    const groups = new Map<string, PremiumNotification[]>()
     
-    filteredNotifications.forEach(notification => {
-      const groupKey = notification.groupId || `${notification.type}-${notification.metadata?.userName || notification.metadata?.petName || 'solo'}`
+    filteredNotifications.forEach((notification: PremiumNotification) => {
+      const groupKey = notification.groupId ?? `${notification.type}-${notification.metadata?.userName ?? notification.metadata?.petName ?? 'solo'}`
       
       if (!groups.has(groupKey)) {
         groups.set(groupKey, [])
@@ -158,10 +154,7 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
     return Array.from(groups.entries())
       .map(([key, notifs]): NotificationGroup => {
         const latest = notifs[0]
-        if (!latest) {
-          throw new Error('Notification group is empty')
-        }
-        const allRead = notifs.every(n => n.read)
+        const allRead = notifs.every((n: PremiumNotification) => n.read)
         
         return {
           id: key,
@@ -170,89 +163,98 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
           title: notifs.length === 1 ? latest.title : `${latest.title} and ${notifs.length - 1} more`,
           summary: notifs.length === 1 
             ? latest.message 
-            : `${notifs.length} notifications from ${latest.metadata?.userName || latest.metadata?.petName || 'various users'}`,
+            : `${notifs.length} notifications from ${latest.metadata?.userName ?? latest.metadata?.petName ?? 'various users'}`,
           timestamp: latest.timestamp,
           read: allRead
         }
       })
       .sort((a, b) => b.timestamp - a.timestamp)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   }, [filteredNotifications, preferences?.groupSimilar, view])
 
-  const unreadCount = allNotifications.filter(n => !n.read && !n.archived).length
-  const archivedCount = allNotifications.filter(n => n.archived).length
+  const unreadCount = allNotifications.filter((n: PremiumNotification) => !n.read && !n.archived).length
+  const archivedCount = allNotifications.filter((n: PremiumNotification) => n.archived).length
 
-  const markAsRead = (id: string) => {
+  const markAsRead = useCallback((id: string) => {
     haptics.trigger('light')
-    setNotifications(current =>
-      (current || []).map(n => n.id === id ? { ...n, read: true } : n)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    setNotifications((current: PremiumNotification[] | undefined) =>
+      (current ?? []).map((n: PremiumNotification) => n.id === id ? { ...n, read: true } : n)
     )
-  }
+  }, [setNotifications])
 
-  const markGroupAsRead = (groupId: string) => {
+  const markGroupAsRead = useCallback((groupId: string) => {
     haptics.trigger('medium')
     const group = groupedNotifications.find(g => g.id === groupId)
     if (group) {
-      setNotifications(current =>
-        (current || []).map(n => 
-          group.notifications.some(gn => gn.id === n.id) ? { ...n, read: true } : n
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      setNotifications((current: PremiumNotification[] | undefined) =>
+        (current ?? []).map((n: PremiumNotification) => 
+          group.notifications.some((gn: PremiumNotification) => gn.id === n.id) ? { ...n, read: true } : n
         )
       )
     }
-  }
+  }, [groupedNotifications, setNotifications])
 
-  const markAllAsRead = () => {
+  const markAllAsRead = useCallback(() => {
     haptics.trigger('medium')
-    setNotifications(current =>
-      (current || []).map(n => ({ ...n, read: true }))
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    setNotifications((current: PremiumNotification[] | undefined) =>
+      (current ?? []).map((n: PremiumNotification) => ({ ...n, read: true }))
     )
-  }
+  }, [setNotifications])
 
-  const archiveNotification = (id: string) => {
+  const archiveNotification = useCallback((id: string) => {
     haptics.trigger('medium')
-    setNotifications(current =>
-      (current || []).map(n => n.id === id ? { ...n, archived: true, read: true } : n)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    setNotifications((current: PremiumNotification[] | undefined) =>
+      (current ?? []).map((n: PremiumNotification) => n.id === id ? { ...n, archived: true, read: true } : n)
     )
-  }
+  }, [setNotifications])
 
-  const archiveGroup = (groupId: string) => {
+  const archiveGroup = useCallback((groupId: string) => {
     haptics.trigger('heavy')
     const group = groupedNotifications.find(g => g.id === groupId)
     if (group) {
-      setNotifications(current =>
-        (current || []).map(n => 
-          group.notifications.some(gn => gn.id === n.id) 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      setNotifications((current: PremiumNotification[] | undefined) =>
+        (current ?? []).map((n: PremiumNotification) => 
+          group.notifications.some((gn: PremiumNotification) => gn.id === n.id) 
             ? { ...n, archived: true, read: true } 
             : n
         )
       )
     }
-  }
+  }, [groupedNotifications, setNotifications])
 
-  const deleteNotification = (id: string) => {
+  const deleteNotification = useCallback((id: string) => {
     haptics.trigger('medium')
-    setNotifications(current =>
-      (current || []).filter(n => n.id !== id)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    setNotifications((current: PremiumNotification[] | undefined) =>
+      (current ?? []).filter((n: PremiumNotification) => n.id !== id)
     )
-  }
+  }, [setNotifications])
 
-  const deleteGroup = (groupId: string) => {
+  const deleteGroup = useCallback((groupId: string) => {
     haptics.trigger('heavy')
     const group = groupedNotifications.find(g => g.id === groupId)
     if (group) {
-      setNotifications(current =>
-        (current || []).filter(n => !group.notifications.some(gn => gn.id === n.id))
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      setNotifications((current: PremiumNotification[] | undefined) =>
+        (current ?? []).filter((n: PremiumNotification) => !group.notifications.some((gn: PremiumNotification) => gn.id === n.id))
       )
     }
-  }
+  }, [groupedNotifications, setNotifications])
 
-  const deleteAllArchived = () => {
+  const deleteAllArchived = useCallback(() => {
     haptics.trigger('heavy')
-    setNotifications(current =>
-      (current || []).filter(n => !n.archived)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    setNotifications((current: PremiumNotification[] | undefined) =>
+      (current ?? []).filter((n: PremiumNotification) => !n.archived)
     )
-  }
+  }, [setNotifications])
 
-  const getNotificationIcon = (type: PremiumNotification['type'], priority: PremiumNotification['priority']) => {
+  const getNotificationIcon = useCallback((type: PremiumNotification['type'], priority: PremiumNotification['priority']) => {
     const iconProps = {
       size: 24,
       weight: priority === 'urgent' || priority === 'critical' ? 'fill' : 'regular'
@@ -282,9 +284,9 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
       default:
         return <Bell {...iconProps} />
     }
-  }
+  }, [])
 
-  const getPriorityStyles = (priority: PremiumNotification['priority']) => {
+  const getPriorityStyles = useCallback((priority: PremiumNotification['priority']) => {
     switch (priority) {
       case 'critical':
         return 'border-l-4 border-l-destructive bg-gradient-to-r from-destructive/10 to-transparent'
@@ -297,45 +299,110 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
       case 'low':
         return 'border-l border-l-border/50'
     }
-  }
+  }, [])
 
-  const getTimeGroup = (timestamp: number) => {
+  const getTimeGroup = useCallback((timestamp: number) => {
     const date = new Date(timestamp)
     if (isToday(date)) return 'Today'
     if (isYesterday(date)) return 'Yesterday'
     if (isSameWeek(date, new Date())) return 'This Week'
     return 'Earlier'
-  }
+  }, [])
 
+  const notificationsByTime = useMemo(() => {
+    const groups: Record<string, PremiumNotification[]> = {
+      'Today': [],
+      'Yesterday': [],
+      'This Week': [],
+      'Earlier': []
+    }
 
-  // Handle tab change with analytics
-  const handleTabChange = (from: TabKey, to: TabKey): void => {
-    analytics.track('notification.tab_changed', { from, to })
-  }
+    filteredNotifications.forEach((notification: PremiumNotification) => {
+      const group = getTimeGroup(notification.timestamp)
+      groups[group].push(notification)
+    })
 
-  // Handle optimistic unread count updates
-  const handleMarkAllAsRead = () => {
-    markAllAsRead()
-  }
+    return Object.entries(groups).filter(([_, notifs]) => notifs.length > 0)
+  }, [filteredNotifications, getTimeGroup])
+
+  const categories = [
+    { value: 'all', label: 'All', icon: Bell },
+    { value: 'match', label: 'Matches', icon: Heart },
+    { value: 'message', label: 'Messages', icon: ChatCircle },
+    { value: 'like', label: 'Likes', icon: Heart },
+    { value: 'achievement', label: 'Achievements', icon: Crown },
+    { value: 'social', label: 'Social', icon: Users },
+  ]
+
+  // Bell icon animation
+  const bellRotate = useSharedValue(0)
+  const bellScale = useSharedValue(1)
+
+  useEffect(() => {
+    bellRotate.value = withRepeat(
+      withSequence(
+        withTiming(-10, { duration: 125 }),
+        withTiming(10, { duration: 125 }),
+        withTiming(-10, { duration: 125 }),
+        withTiming(0, { duration: 125 })
+      ),
+      -1,
+      false
+    )
+    bellScale.value = withRepeat(
+      withSequence(
+        withTiming(1.1, { duration: 250 }),
+        withTiming(1, { duration: 250 })
+      ),
+      -1,
+      false
+    )
+  }, [bellRotate, bellScale])
+
+  const bellStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { rotate: `${bellRotate.value}deg` },
+        { scale: bellScale.value }
+      ]
+    }
+  }) as AnimatedStyle
+
+  // Settings panel animation
+  const settingsHeight = useSharedValue(0)
+  const settingsOpacity = useSharedValue(0)
+
+  useEffect(() => {
+    if (showSettings) {
+      settingsHeight.value = withSpring(1, springConfigs.smooth)
+      settingsOpacity.value = withTiming(1, timingConfigs.fast)
+    } else {
+      settingsHeight.value = withSpring(0, springConfigs.smooth)
+      settingsOpacity.value = withTiming(0, timingConfigs.fast)
+    }
+  }, [showSettings, settingsHeight, settingsOpacity])
+
+  const settingsStyle = useAnimatedStyle(() => {
+    return {
+      opacity: settingsOpacity.value,
+      height: interpolate(
+        settingsHeight.value,
+        [0, 1],
+        [0, 200],
+        Extrapolation.CLAMP
+      )
+    }
+  }) as AnimatedStyle
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="right" className="w-full sm:max-w-2xl p-0 overflow-hidden flex flex-col">
-        <SheetHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-br from-background via-primary/5 to-accent/5 shrink-0">
+        <SheetHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-br from-background via-primary/5 to-accent/5 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <motion.div
-                animate={{
-                  rotate: [0, -10, 10, -10, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{
-                  duration: 0.5,
-                  ease: "easeInOut"
-                }}
-              >
+              <AnimatedView style={bellStyle}>
                 <BellRinging size={28} weight="fill" className="text-primary" />
-              </motion.div>
+              </AnimatedView>
               <div>
                 <SheetTitle className="text-xl">Notifications</SheetTitle>
                 {unreadCount > 0 && (
@@ -367,7 +434,7 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={handleMarkAllAsRead} disabled={unreadCount === 0}>
+                  <DropdownMenuItem onClick={markAllAsRead} disabled={unreadCount === 0}>
                     <Check size={16} className="mr-2" />
                     Mark all as read
                   </DropdownMenuItem>
@@ -387,74 +454,108 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
             </div>
           </div>
 
-          <AnimatePresence>
-            {showSettings && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="pt-4 space-y-4 border-t border-border/30 mt-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="quiet-hours" className="text-sm font-medium">
-                      <MoonStars size={16} className="inline mr-2" />
-                      Quiet hours
-                    </Label>
-                    <Switch
-                      id="quiet-hours"
-                      checked={preferences?.quietHours.enabled || false}
-                      onCheckedChange={(enabled) => {
-                        setPreferences(current => ({
-                          ...current,
-                          quietHours: { ...current.quietHours, enabled }
-                        }))
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="group-similar" className="text-sm font-medium">
-                      <Sparkle size={16} className="inline mr-2" />
-                      Group similar
-                    </Label>
-                    <Switch
-                      id="group-similar"
-                      checked={preferences?.groupSimilar || false}
-                      onCheckedChange={(groupSimilar) => {
-                        setPreferences(current => ({
-                          ...current,
-                          groupSimilar
-                        }))
-                      }}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="sound" className="text-sm font-medium">
-                      <Bell size={16} className="inline mr-2" />
-                      Sound
-                    </Label>
-                    <Switch
-                      id="sound"
-                      checked={preferences?.soundEnabled || false}
-                      onCheckedChange={(soundEnabled) => {
-                        setPreferences(current => ({
-                          ...current,
-                          soundEnabled
-                        }))
-                      }}
-                    />
-                  </div>
+          {showSettings && (
+            <AnimatedView style={settingsStyle} className="overflow-hidden">
+              <div className="pt-4 space-y-4 border-t border-border/30 mt-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="quiet-hours" className="text-sm font-medium">
+                    <MoonStars size={16} className="inline mr-2" />
+                    Quiet hours
+                  </Label>
+                  <Switch
+                    id="quiet-hours"
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                    checked={preferences?.quietHours.enabled ?? false}
+                    onCheckedChange={(enabled) => {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                      setPreferences((current: NotificationPreferences | undefined) => ({
+                        ...current!,
+                        quietHours: { ...current!.quietHours, enabled }
+                      }))
+                    }}
+                  />
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="group-similar" className="text-sm font-medium">
+                    <Sparkle size={16} className="inline mr-2" />
+                    Group similar
+                  </Label>
+                  <Switch
+                    id="group-similar"
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                    checked={preferences?.groupSimilar ?? false}
+                    onCheckedChange={(groupSimilar) => {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                      setPreferences((current: NotificationPreferences | undefined) => ({
+                        ...current!,
+                        groupSimilar
+                      }))
+                    }}
+                  />
+                </div>
 
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="sound" className="text-sm font-medium">
+                    <Bell size={16} className="inline mr-2" />
+                    Sound
+                  </Label>
+                  <Switch
+                    id="sound"
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                    checked={preferences?.soundEnabled ?? false}
+                    onCheckedChange={(soundEnabled) => {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                      setPreferences((current: NotificationPreferences | undefined) => ({
+                        ...current!,
+                        soundEnabled
+                      }))
+                    }}
+                  />
+                </div>
+              </div>
+            </AnimatedView>
+          )}
+
+          <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-2 -mb-2">
+            {categories.map((cat) => {
+              const Icon = cat.icon
+              const count = allNotifications.filter((n: PremiumNotification) => 
+                (cat.value === 'all' || n.type === cat.value) && !n.read && !n.archived
+              ).length
+
+              return (
+                <Button
+                  key={cat.value}
+                  variant={selectedCategory === cat.value ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => {
+                    haptics.trigger('selection')
+                    setSelectedCategory(cat.value)
+                  }}
+                  className={cn(
+                    'rounded-full flex-shrink-0 h-9',
+                    selectedCategory === cat.value && 'shadow-lg'
+                  )}
+                >
+                  <Icon size={16} weight="fill" className="mr-1.5" />
+                  {cat.label}
+                  {count > 0 && (
+                    <Badge
+                      variant="secondary"
+                      className="ml-2 px-1.5 min-w-[20px] h-5 rounded-full text-xs font-bold"
+                    >
+                      {count}
+                    </Badge>
+                  )}
+                </Button>
+              )
+            })}
+          </div>
         </SheetHeader>
 
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as any)} className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between gap-2 px-6 py-3 bg-muted/30 shrink-0">
+        <Tabs value={filter} onValueChange={(v) => setFilter(v as 'all' | 'unread' | 'archived')} className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between gap-2 px-6 py-3 bg-muted/30 flex-shrink-0">
             <TabsList className="grid w-full grid-cols-3 h-10">
               <TabsTrigger value="all" className="rounded-full">
                 All
@@ -475,195 +576,56 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
           </div>
 
           <TabsContent value={filter} className="flex-1 overflow-hidden mt-0">
-            {/* Segmented tabs using NotificationTabs component - replaces category slider */}
-            <NotificationTabs
-              locale={language}
-              unread={unreadCounts}
-              onTabChange={handleTabChange}
-              onRequestClose={onClose}
-              renderPanel={(tabKey) => {
-                // Filter notifications by tab and current filter state
-                const tabFilteredNotifications = allNotifications
-                  .filter(n => {
-                    if (filter === 'archived') return n.archived
-                    if (filter === 'unread') return !n.read && !n.archived
-                    return !n.archived
-                  })
-                  .filter(n => {
-                    if (tabKey === 'all') return true
-                    if (tabKey === 'matches') return n.type === 'match' || n.type === 'like'
-                    if (tabKey === 'messages') return n.type === 'message'
-                    return true
-                  })
-                  .sort((a, b) => b.timestamp - a.timestamp)
-
-                // Calculate grouped notifications (no hooks inside renderPanel)
-                const tabGroupedNotifications = (() => {
-                  if (!preferences?.groupSimilar || view === 'list') {
-                    return []
-                  }
-
-                  const groups: Map<string, PremiumNotification[]> = new Map()
-                  
-                  tabFilteredNotifications.forEach(notification => {
-                    const groupKey = notification.groupId || `${notification.type}-${notification.metadata?.userName || notification.metadata?.petName || 'solo'}`
-                    
-                    if (!groups.has(groupKey)) {
-                      groups.set(groupKey, [])
-                    }
-                    groups.get(groupKey)!.push(notification)
-                  })
-
-                  return Array.from(groups.entries())
-                    .map(([key, notifs]): NotificationGroup => {
-                      const latest = notifs[0]
-                      if (!latest) {
-                        throw new Error('Notification group is empty')
-                      }
-                      const allRead = notifs.every(n => n.read)
-                      
-                      return {
-                        id: key,
-                        type: latest.type,
-                        notifications: notifs,
-                        title: notifs.length === 1 ? latest.title : `${latest.title} and ${notifs.length - 1} more`,                                            
-                        summary: notifs.length === 1 
-                          ? latest.message 
-                          : `${notifs.length} notifications from ${latest.metadata?.userName || latest.metadata?.petName || 'various users'}`,                  
-                        timestamp: latest.timestamp,
-                        read: allRead
-                      }
-                    })
-                    .sort((a, b) => b.timestamp - a.timestamp)
-                })()
-
-                // Calculate time-grouped notifications (no hooks inside renderPanel)
-                const tabNotificationsByTime = (() => {
-                  const groups: Record<string, PremiumNotification[]> = {
-                    'Today': [],
-                    'Yesterday': [],
-                    'This Week': [],
-                    'Earlier': []
-                  }
-
-                  tabFilteredNotifications.forEach(notification => {
-                    const group = getTimeGroup(notification.timestamp)
-                    const groupArray = groups[group]
-                    if (groupArray) {
-                      groupArray.push(notification)
-                    }
-                  })
-
-                  return Object.entries(groups).filter(([_, notifs]) => notifs.length > 0)
-                })()
-
-                return (
-                  <ScrollArea className="h-full">
-                    <div className="p-4">
-                      <AnimatePresence mode="popLayout">
-                        {tabFilteredNotifications.length === 0 ? (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            className="flex flex-col items-center justify-center py-16 px-4"
-                          >
-                            <motion.div
-                              animate={{
-                                rotate: [0, -10, 10, -10, 0],
-                                scale: [1, 1.05, 1]
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                repeatDelay: 3
-                              }}
-                            >
-                              <Bell size={64} weight="thin" className="text-muted-foreground/40" />
-                            </motion.div>
-                            <p className="text-muted-foreground mt-4 text-center text-lg font-medium">
-                              {filter === 'unread' && 'All caught up!'}
-                              {filter === 'archived' && 'No archived notifications'}
-                              {filter === 'all' && 'No notifications yet'}
-                            </p>
-                            <p className="text-sm text-muted-foreground/60 mt-1 text-center max-w-xs">
-                              {filter === 'unread' && "You've read all your notifications"}
-                              {filter === 'archived' && 'Archived notifications will appear here'}
-                              {filter === 'all' && "We'll notify you when something important happens"}
-                            </p>
-                          </motion.div>
-                        ) : view === 'grouped' && tabGroupedNotifications.length > 0 ? (
-                          <div className="space-y-3">
-                            {tabGroupedNotifications.map((group, index) => (
-                              <motion.div
-                                key={group.id}
-                                layout
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, x: -20, height: 0 }}
-                                transition={{ 
-                                  delay: index * 0.03,
-                                  layout: { duration: 0.2 }
-                                }}
-                              >
-                                <NotificationGroupItem
-                                  group={group}
-                                  onMarkAsRead={markGroupAsRead}
-                                  onArchive={archiveGroup}
-                                  onDelete={deleteGroup}
-                                  getIcon={getNotificationIcon}
-                                  getPriorityStyles={getPriorityStyles}
-                                  preferences={preferences || null}
-                                />
-                              </motion.div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="space-y-6">
-                            {tabNotificationsByTime.map(([timeGroup, notifs]) => (
-                              <div key={timeGroup}>
-                                <h3 className="text-sm font-semibold text-muted-foreground mb-3 px-1">
-                                  {timeGroup}
-                                </h3>
-                                <div className="space-y-2">
-                                  {notifs.map((notification, index) => (
-                                    <motion.div
-                                      key={notification.id}
-                                      layout
-                                      initial={{ opacity: 0, x: 20 }}
-                                      animate={{ opacity: 1, x: 0 }}
-                                      exit={{ opacity: 0, x: -20, height: 0 }}
-                                      transition={{ 
-                                        delay: index * 0.02,
-                                        layout: { duration: 0.2 }
-                                      }}
-                                    >
-                                      <PremiumNotificationItem
-                                        notification={notification}
-                                        onMarkAsRead={markAsRead}
-                                        onArchive={archiveNotification}
-                                        onDelete={deleteNotification}
-                                        getIcon={getNotificationIcon}
-                                        getPriorityStyles={getPriorityStyles}
-                                        preferences={preferences || null}
-                                      />
-                                    </motion.div>
-                                  ))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </ScrollArea>
-                )
-              }}
-              storageKey="notifications:lastTab"
-              edgeFade={true}
-              className="flex-1 flex flex-col overflow-hidden h-full"
-              ariaLabel={language === 'bg' ? 'Сегменти известия' : 'Notification segments'}
-            />
+            <ScrollArea className="h-full">
+              <div className="p-4">
+                {filteredNotifications.length === 0 ? (
+                  <EmptyState filter={filter} />
+                ) : view === 'grouped' && groupedNotifications.length > 0 ? (
+                  <div className="space-y-3">
+                    {groupedNotifications.map((group) => (
+                      <NotificationGroupItem
+                        key={group.id}
+                        group={group}
+                        index={0}
+                        onMarkAsRead={markGroupAsRead}
+                        onArchive={archiveGroup}
+                        onDelete={deleteGroup}
+                        getIcon={getNotificationIcon}
+                        getPriorityStyles={getPriorityStyles}
+                        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                        preferences={preferences ?? null}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {notificationsByTime.map(([timeGroup, notifs]) => (
+                      <div key={timeGroup}>
+                        <h3 className="text-sm font-semibold text-muted-foreground mb-3 px-1">
+                          {timeGroup}
+                        </h3>
+                        <div className="space-y-2">
+                          {notifs.map((notification) => (
+                            <PremiumNotificationItem
+                              key={notification.id}
+                              notification={notification}
+                              index={0}
+                              onMarkAsRead={markAsRead}
+                              onArchive={archiveNotification}
+                              onDelete={deleteNotification}
+                              getIcon={getNotificationIcon}
+                              getPriorityStyles={getPriorityStyles}
+                              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                              preferences={preferences ?? null}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
           </TabsContent>
         </Tabs>
       </SheetContent>
@@ -671,8 +633,84 @@ export function PremiumNotificationCenter({ isOpen, onClose }: PremiumNotificati
   )
 }
 
+interface EmptyStateProps {
+  filter: 'all' | 'unread' | 'archived'
+}
+
+function EmptyState({ filter }: EmptyStateProps): JSX.Element {
+  const emptyOpacity = useSharedValue(0)
+  const emptyScale = useSharedValue(0.9)
+  const bellRotate = useSharedValue(0)
+  const bellScale = useSharedValue(1)
+
+  useEffect(() => {
+    emptyOpacity.value = withTiming(1, timingConfigs.smooth)
+    emptyScale.value = withSpring(1, springConfigs.smooth)
+    
+    bellRotate.value = withDelay(
+      2000,
+      withRepeat(
+        withSequence(
+          withTiming(-10, { duration: 200 }),
+          withTiming(10, { duration: 200 }),
+          withTiming(-10, { duration: 200 }),
+          withTiming(0, { duration: 200 })
+        ),
+        -1,
+        false
+      )
+    )
+    bellScale.value = withDelay(
+      2000,
+      withRepeat(
+        withSequence(
+          withTiming(1.05, { duration: 400 }),
+          withTiming(1, { duration: 400 })
+        ),
+        -1,
+        false
+      )
+    )
+  }, [emptyOpacity, emptyScale, bellRotate, bellScale])
+
+  const emptyStyle = useAnimatedStyle(() => {
+    return {
+      opacity: emptyOpacity.value,
+      transform: [{ scale: emptyScale.value }]
+    }
+  }) as AnimatedStyle
+
+  const bellAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { rotate: `${bellRotate.value}deg` },
+        { scale: bellScale.value }
+      ]
+    }
+  }) as AnimatedStyle
+
+  return (
+    <AnimatedView style={emptyStyle} className="flex flex-col items-center justify-center py-16 px-4">
+      <AnimatedView style={bellAnimatedStyle}>
+        <Bell size={64} weight="thin" className="text-muted-foreground/40" />
+      </AnimatedView>
+      <p className="text-muted-foreground mt-4 text-center text-lg font-medium">
+        {filter === 'unread' && 'All caught up!'}
+        {filter === 'archived' && 'No archived notifications'}
+        {filter === 'all' && 'No notifications yet'}
+      </p>
+      <p className="text-sm text-muted-foreground/60 mt-1 text-center max-w-xs">
+        {filter === 'unread' && "You've read all your notifications"}
+        {filter === 'archived' && 'Archived notifications will appear here'}
+        {filter === 'all' && "We'll notify you when something important happens"}
+      </p>
+    </AnimatedView>
+  )
+}
+
 interface NotificationGroupItemProps {
   group: NotificationGroup
+  index: number
   onMarkAsRead: (groupId: string) => void
   onArchive: (groupId: string) => void
   onDelete: (groupId: string) => void
@@ -683,34 +721,81 @@ interface NotificationGroupItemProps {
 
 function NotificationGroupItem({
   group,
+  index: _index,
   onMarkAsRead,
   onArchive,
-  onDelete,
+  onDelete: _onDelete,
   getIcon,
-  getPriorityStyles,
-  preferences
-}: NotificationGroupItemProps) {
+  getPriorityStyles: _getPriorityStyles,
+  preferences: _preferences
+}: NotificationGroupItemProps): JSX.Element {
   const [isExpanded, setIsExpanded] = useState(false)
   const latestNotification = group.notifications[0]
-  if (!latestNotification) return null
+
+  const itemOpacity = useSharedValue(0)
+  const itemTranslateY = useSharedValue(20)
+  const groupHover = useHoverTap({
+    hoverScale: 1.005,
+    tapScale: 1
+  })
+  const iconHover = useHoverTap({
+    hoverScale: 1.05,
+    tapScale: 1
+  })
+
+  useEffect(() => {
+    itemOpacity.value = withTiming(1, { duration: 200 })
+    itemTranslateY.value = withSpring(0, springConfigs.smooth)
+  }, [itemOpacity, itemTranslateY])
+
+  const itemStyle = useAnimatedStyle(() => {
+    return {
+      opacity: itemOpacity.value,
+      transform: [
+        { translateY: itemTranslateY.value },
+        { scale: groupHover.scale.value }
+      ]
+    }
+  }) as AnimatedStyle
+
+  const iconStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: iconHover.scale.value }]
+    }
+  }) as AnimatedStyle
+
+  const unreadDotScale = useSharedValue(group.read ? 0 : 1)
+
+  useEffect(() => {
+    unreadDotScale.value = withSpring(group.read ? 0 : 1, springConfigs.bouncy)
+  }, [group.read, unreadDotScale])
+
+  const unreadDotStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: unreadDotScale.value }]
+    }
+  }) as AnimatedStyle
 
   return (
     <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-      <motion.div
+      <AnimatedView
+        style={itemStyle}
+        onMouseEnter={groupHover.handleMouseEnter}
+        onMouseLeave={groupHover.handleMouseLeave}
         className={cn(
           'relative rounded-xl overflow-hidden transition-all bg-card border border-border/50',
-          !group.read && 'ring-2 ring-primary/20',
-          getPriorityStyles(latestNotification.priority)
+          !group.read && 'ring-2 ring-primary/20'
         )}
-        whileHover={{ scale: 1.005 }}
       >
         <div className="p-4">
           <div className="flex items-start gap-3">
-            <motion.div
-              className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 relative"
-              whileHover={{ scale: 1.05 }}
+            <AnimatedView
+              style={iconStyle}
+              onMouseEnter={iconHover.handleMouseEnter}
+              onMouseLeave={iconHover.handleMouseLeave}
+              className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 relative"
             >
-              {getIcon(group.type as any, latestNotification.priority)}
+              {getIcon(group.type as PremiumNotification['type'], latestNotification.priority)}
               {group.notifications.length > 1 && (
                 <Badge 
                   variant="destructive" 
@@ -719,7 +804,7 @@ function NotificationGroupItem({
                   {group.notifications.length}
                 </Badge>
               )}
-            </motion.div>
+            </AnimatedView>
 
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
@@ -727,19 +812,13 @@ function NotificationGroupItem({
                   <h4 className="font-semibold text-sm leading-tight">
                     {group.title}
                   </h4>
-                  {preferences?.showPreviews && (
-                    <p className="text-sm mt-1 text-muted-foreground leading-relaxed">
-                      {group.summary}
-                    </p>
-                  )}
+                  <p className="text-sm mt-1 text-muted-foreground leading-relaxed">
+                    {group.summary}
+                  </p>
                 </div>
 
                 {!group.read && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1"
-                  />
+                  <AnimatedView style={unreadDotStyle} className="flex-shrink-0 w-2 h-2 rounded-full bg-primary mt-1" />
                 )}
               </div>
 
@@ -767,15 +846,6 @@ function NotificationGroupItem({
                     onClick={() => onArchive(group.id)}
                   >
                     <Archive size={16} />
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => onDelete(group.id)}
-                  >
-                    <Trash size={16} />
                   </Button>
 
                   {group.notifications.length > 1 && (
@@ -809,13 +879,14 @@ function NotificationGroupItem({
             ))}
           </div>
         </CollapsibleContent>
-      </motion.div>
+      </AnimatedView>
     </Collapsible>
   )
 }
 
 interface PremiumNotificationItemProps {
   notification: PremiumNotification
+  index: number
   onMarkAsRead: (id: string) => void
   onArchive: (id: string) => void
   onDelete: (id: string) => void
@@ -826,56 +897,207 @@ interface PremiumNotificationItemProps {
 
 function PremiumNotificationItem({
   notification,
+  index: _index,
   onMarkAsRead,
   onArchive,
   onDelete,
   getIcon,
   getPriorityStyles,
   preferences
-}: PremiumNotificationItemProps) {
+}: PremiumNotificationItemProps): JSX.Element {
   const [isHovered, setIsHovered] = useState(false)
 
+  const itemOpacity = useSharedValue(0)
+  const itemTranslateX = useSharedValue(20)
+  const itemHover = useHoverTap({
+    hoverScale: 1.01,
+    tapScale: 1
+  })
+  const imageHover = useHoverTap({
+    hoverScale: 1.02,
+    tapScale: 1
+  })
+
+  useEffect(() => {
+    itemOpacity.value = withTiming(1, { duration: 200 })
+    itemTranslateX.value = withSpring(0, springConfigs.smooth)
+  }, [itemOpacity, itemTranslateX])
+
+  const itemStyle = useAnimatedStyle(() => {
+    return {
+      opacity: itemOpacity.value,
+      transform: [
+        { translateX: itemTranslateX.value },
+        { scale: itemHover.scale.value }
+      ]
+    }
+  }) as AnimatedStyle
+
+  const imageStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: imageHover.scale.value }]
+    }
+  }) as AnimatedStyle
+
+  // Icon pulse animation for urgent/critical
+  const iconScale = useSharedValue(1)
+  const iconPulseEnabled = !notification.read && (notification.priority === 'urgent' || notification.priority === 'critical')
+
+  useEffect(() => {
+    if (iconPulseEnabled) {
+      iconScale.value = withRepeat(
+        withSequence(
+          withTiming(1.05, { duration: 500 }),
+          withTiming(1, { duration: 500 })
+        ),
+        -1,
+        false
+      )
+    } else {
+      iconScale.value = withSpring(1, springConfigs.smooth)
+    }
+  }, [iconPulseEnabled, iconScale])
+
+  const iconAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: iconScale.value }]
+    }
+  }) as AnimatedStyle
+
+  // Unread dot animation
+  const unreadDotScale = useSharedValue(notification.read ? 0 : 1)
+
+  useEffect(() => {
+    unreadDotScale.value = withSpring(notification.read ? 0 : 1, springConfigs.bouncy)
+  }, [notification.read, unreadDotScale])
+
+  const unreadDotStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: unreadDotScale.value }]
+    }
+  }) as AnimatedStyle
+
+  // Action buttons animation
+  const actionButtonsOpacity = useSharedValue(isHovered || notification.priority === 'urgent' ? 1 : 0)
+
+  useEffect(() => {
+    actionButtonsOpacity.value = withTiming(
+      isHovered || notification.priority === 'urgent' ? 1 : 0,
+      timingConfigs.fast
+    )
+  }, [isHovered, notification.priority, actionButtonsOpacity])
+
+  const actionButton1Style = useAnimatedStyle(() => {
+    return {
+      opacity: actionButtonsOpacity.value,
+      transform: [{ scale: actionButtonsOpacity.value }]
+    }
+  }) as AnimatedStyle
+
+  const actionButton2Style = useAnimatedStyle(() => {
+    return {
+      opacity: actionButtonsOpacity.value,
+      transform: [{ scale: actionButtonsOpacity.value }]
+    }
+  }) as AnimatedStyle
+
+  const actionButton3Style = useAnimatedStyle(() => {
+    return {
+      opacity: actionButtonsOpacity.value,
+      transform: [{ scale: actionButtonsOpacity.value }]
+    }
+  }) as AnimatedStyle
+
+  // Priority bar animation
+  const priorityBarOpacity = useSharedValue(
+    (notification.priority === 'urgent' || notification.priority === 'critical') && !notification.read ? 1 : 0
+  )
+
+  useEffect(() => {
+    if ((notification.priority === 'urgent' || notification.priority === 'critical') && !notification.read) {
+      priorityBarOpacity.value = withRepeat(
+        withSequence(
+          withTiming(0.5, { duration: notification.priority === 'critical' ? 400 : 750 }),
+          withTiming(1, { duration: notification.priority === 'critical' ? 400 : 750 })
+        ),
+        -1,
+        false
+      )
+    } else {
+      priorityBarOpacity.value = 0
+    }
+  }, [notification.priority, notification.read, priorityBarOpacity])
+
+  const priorityBarStyle = useAnimatedStyle(() => {
+    return {
+      opacity: priorityBarOpacity.value
+    }
+  }) as AnimatedStyle
+
+  // Critical pulse animation
+  const criticalPulse = useSharedValue(0)
+
+  useEffect(() => {
+    if (notification.priority === 'critical' && !notification.read) {
+      criticalPulse.value = withRepeat(
+        withSequence(
+          withTiming(0, { duration: 0 }),
+          withTiming(1, { duration: 1000 }),
+          withTiming(0, { duration: 1000 })
+        ),
+        -1,
+        false
+      )
+    } else {
+      criticalPulse.value = 0
+    }
+  }, [notification.priority, notification.read, criticalPulse])
+
+  const criticalPulseStyle = useAnimatedStyle(() => {
+    return {
+      boxShadow: `0 0 0 ${criticalPulse.value * 4}px rgba(239, 68, 68, ${0.2 * (1 - criticalPulse.value)})`
+    }
+  }) as AnimatedStyle
+
   return (
-    <motion.div
+    <AnimatedView
+      style={itemStyle}
+      onMouseEnter={() => {
+        setIsHovered(true)
+        itemHover.handleMouseEnter()
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false)
+        itemHover.handleMouseLeave()
+      }}
       className={cn(
         'relative rounded-xl overflow-hidden transition-all',
         !notification.read && 'bg-primary/5',
         getPriorityStyles(notification.priority)
       )}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      whileHover={{ scale: 1.01 }}
     >
       <div className="p-4">
         <div className="flex items-start gap-3">
-          <motion.div
+          <AnimatedView
+            style={iconAnimatedStyle}
             className={cn(
-              'shrink-0 rounded-xl overflow-hidden',
+              'flex-shrink-0 rounded-xl overflow-hidden',
               notification.avatarUrl ? 'w-12 h-12' : 'w-12 h-12 flex items-center justify-center',
               !notification.avatarUrl && notification.priority === 'urgent' && 'bg-destructive/10',
               !notification.avatarUrl && notification.priority === 'high' && 'bg-accent/10',
               !notification.avatarUrl && notification.priority === 'normal' && 'bg-primary/10',
               !notification.avatarUrl && notification.priority === 'low' && 'bg-muted'
             )}
-            animate={{
-              scale: !notification.read && (notification.priority === 'urgent' || notification.priority === 'critical')
-                ? [1, 1.05, 1] 
-                : 1
-            }}
-            transition={{ 
-              duration: 1, 
-              repeat: !notification.read && (notification.priority === 'urgent' || notification.priority === 'critical') ? Infinity : 0 
-            }}
           >
             {notification.avatarUrl ? (
               <Avatar className="w-12 h-12">
                 <AvatarImage src={notification.avatarUrl} />
-                <AvatarFallback>{notification.metadata?.userName?.[0] || '?'}</AvatarFallback>
+                <AvatarFallback>{notification.metadata?.userName?.[0] ?? '?'}</AvatarFallback>
               </Avatar>
             ) : (
               getIcon(notification.type, notification.priority)
             )}
-          </motion.div>
+          </AnimatedView>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
@@ -899,25 +1121,23 @@ function PremiumNotificationItem({
               </div>
 
               {!notification.read && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1"
-                />
+                <AnimatedView style={unreadDotStyle} className="flex-shrink-0 w-2 h-2 rounded-full bg-primary mt-1" />
               )}
             </div>
 
             {notification.imageUrl && (
-              <motion.div 
+              <AnimatedView 
+                style={imageStyle}
+                onMouseEnter={imageHover.handleMouseEnter}
+                onMouseLeave={imageHover.handleMouseLeave}
                 className="mt-3 rounded-lg overflow-hidden w-full h-32 bg-muted"
-                whileHover={{ scale: 1.02 }}
               >
                 <img 
                   src={notification.imageUrl} 
                   alt="" 
                   className="w-full h-full object-cover"
                 />
-              </motion.div>
+              </AnimatedView>
             )}
 
             {notification.metadata && (
@@ -948,58 +1168,38 @@ function PremiumNotificationItem({
               </span>
 
               <div className="flex items-center gap-1">
-                <AnimatePresence>
-                  {(isHovered || notification.priority === 'urgent') && (
-                    <>
-                      {!notification.read && (
-                        <motion.div
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0, opacity: 0 }}
-                        >
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 rounded-full"
-                            onClick={() => onMarkAsRead(notification.id)}
-                          >
-                            <Check size={16} />
-                          </Button>
-                        </motion.div>
-                      )}
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={{ delay: 0.05 }}
-                      >
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 rounded-full"
-                          onClick={() => onArchive(notification.id)}
-                        >
-                          <Archive size={16} />
-                        </Button>
-                      </motion.div>
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={{ delay: 0.1 }}
-                      >
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
-                          onClick={() => onDelete(notification.id)}
-                        >
-                          <Trash size={16} />
-                        </Button>
-                      </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
+                {!notification.read && (
+                  <AnimatedView style={actionButton1Style}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full"
+                      onClick={() => onMarkAsRead(notification.id)}
+                    >
+                      <Check size={16} />
+                    </Button>
+                  </AnimatedView>
+                )}
+                <AnimatedView style={actionButton2Style}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full"
+                    onClick={() => onArchive(notification.id)}
+                  >
+                    <Archive size={16} />
+                  </Button>
+                </AnimatedView>
+                <AnimatedView style={actionButton3Style}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
+                    onClick={() => onDelete(notification.id)}
+                  >
+                    <Trash size={16} />
+                  </Button>
+                </AnimatedView>
 
                 {notification.actionLabel && (
                   <Button
@@ -1018,34 +1218,18 @@ function PremiumNotificationItem({
       </div>
 
       {(notification.priority === 'urgent' || notification.priority === 'critical') && !notification.read && (
-        <motion.div
+        <AnimatedView
+          style={priorityBarStyle}
           className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-destructive via-accent to-destructive"
-          animate={{
-            opacity: [0.5, 1, 0.5]
-          }}
-          transition={{
-            duration: notification.priority === 'critical' ? 0.8 : 1.5,
-            repeat: Infinity
-          }}
         />
       )}
 
       {notification.priority === 'critical' && !notification.read && (
-        <motion.div
+        <AnimatedView
+          style={criticalPulseStyle}
           className="absolute inset-0 pointer-events-none"
-          animate={{
-            boxShadow: [
-              '0 0 0 0 rgba(239, 68, 68, 0)',
-              '0 0 0 4px rgba(239, 68, 68, 0.2)',
-              '0 0 0 0 rgba(239, 68, 68, 0)'
-            ]
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity
-          }}
         />
       )}
-    </motion.div>
+    </AnimatedView>
   )
 }

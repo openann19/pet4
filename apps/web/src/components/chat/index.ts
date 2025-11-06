@@ -15,3 +15,15 @@ export { TypingPlaceholder } from './TypingPlaceholder'
 export type { TypingPlaceholderProps } from './TypingPlaceholder'
 
 export { default as MessageBubble } from './MessageBubble'
+
+export { ReactionBurstParticles } from './ReactionBurstParticles'
+export type { ReactionBurstParticlesProps } from './ReactionBurstParticles'
+
+export { ConfettiBurst } from './ConfettiBurst'
+export type { ConfettiBurstProps, ConfettiParticle } from './ConfettiBurst'
+
+export { LinkPreview } from './LinkPreview'
+export type { LinkPreviewProps } from './LinkPreview'
+
+export { PresenceAvatar } from './PresenceAvatar'
+export type { PresenceAvatarProps } from './PresenceAvatar'

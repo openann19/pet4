@@ -1,4 +1,6 @@
-import { motion } from 'framer-motion'
+'use client'
+
+import { useCallback, useEffect } from 'react'
 import { X, Funnel, Check, Eraser } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -7,6 +9,10 @@ import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { useFilters } from '@/hooks/useFilters'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
+import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 
 interface FilterOption {
   id: string
@@ -58,9 +64,9 @@ export function AdvancedFilterPanel({
     },
   })
 
-  const handleApply = () => {
+  const handleApply = useCallback(() => {
     applyFilters()
-  }
+  }, [applyFilters])
 
   return (
     <Card className="w-full max-w-md p-6 space-y-6">
@@ -89,24 +95,15 @@ export function AdvancedFilterPanel({
             {category.type === 'multi-select' && category.options && (
               <div className="flex flex-wrap gap-2">
                 {category.options.map((option) => {
-                  const isSelected = ((localValues[category.id] as string[]) || []).includes(option.id)
+                  const isSelected = ((localValues[category.id] as string[]) ?? []).includes(option.id)
                   return (
-                    <motion.button
+                    <FilterOptionButton
                       key={option.id}
+                      option={option}
+                      isSelected={isSelected}
                       onClick={() => handleMultiSelect(category.id, option.id)}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={cn(
-                        'flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-200',
-                        isSelected
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'bg-background border-border hover:border-primary/50'
-                      )}
-                    >
-                      {option.icon}
-                      <span className="text-sm font-medium">{option.label}</span>
-                      {isSelected && <Check size={16} weight="bold" />}
-                    </motion.button>
+                      showCheck={true}
+                    />
                   )
                 })}
               </div>
@@ -117,21 +114,14 @@ export function AdvancedFilterPanel({
                 {category.options.map((option) => {
                   const isSelected = localValues[category.id] === option.id
                   return (
-                    <motion.button
+                    <FilterOptionButton
                       key={option.id}
+                      option={option}
+                      isSelected={isSelected}
                       onClick={() => handleSingleSelect(category.id, option.id)}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={cn(
-                        'flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all duration-200',
-                        isSelected
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'bg-background border-border hover:border-primary/50'
-                      )}
-                    >
-                      {option.icon}
-                      <span className="text-sm font-medium">{option.label}</span>
-                    </motion.button>
+                      showCheck={false}
+                      className="justify-center py-3 rounded-lg"
+                    />
                   )
                 })}
               </div>
@@ -144,42 +134,29 @@ export function AdvancedFilterPanel({
                     {category.min} {category.unit}
                   </span>
                   <span className="font-semibold text-primary">
-                    {(localValues[category.id] as number | undefined) || category.min || 0} {category.unit}
+                    {(localValues[category.id] as number | undefined) ?? category.min ?? 0} {category.unit}
                   </span>
                   <span className="text-muted-foreground">
                     {category.max} {category.unit}
                   </span>
                 </div>
                 <Slider
-                  value={[(localValues[category.id] as number | undefined) || category.min || 0]}
+                  value={[(localValues[category.id] as number | undefined) ?? category.min ?? 0] as number[]}
                   onValueChange={(value) => handleRangeChange(category.id, value)}
-                  min={category.min || 0}
-                  max={category.max || 100}
-                  step={category.step || 1}
+                  min={category.min ?? 0}
+                  max={category.max ?? 100}
+                  step={category.step ?? 1}
                   className="w-full"
                 />
               </div>
             )}
 
             {category.type === 'toggle' && (
-              <button
-                onClick={() => handleToggle(category.id)}
-                className="flex items-center justify-between w-full p-3 rounded-lg border-2 border-border hover:border-primary/50 transition-all duration-200"
-              >
-                <span className="text-sm font-medium">{category.label}</span>
-                <div
-                  className={cn(
-                    'w-11 h-6 rounded-full transition-colors duration-200',
-                    localValues[category.id] ? 'bg-primary' : 'bg-muted'
-                  )}
-                >
-                  <motion.div
-                    animate={{ x: localValues[category.id] ? 20 : 0 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                    className="w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-white shadow-md"
-                  />
-                </div>
-              </button>
+              <ToggleSwitch
+                label={category.label}
+                checked={localValues[category.id] as boolean}
+                onChange={() => handleToggle(category.id)}
+              />
             )}
           </div>
         ))}
@@ -206,5 +183,88 @@ export function AdvancedFilterPanel({
         </Button>
       </div>
     </Card>
+  )
+}
+
+interface FilterOptionButtonProps {
+  option: FilterOption
+  isSelected: boolean
+  onClick: () => void
+  showCheck: boolean
+  className?: string
+}
+
+function FilterOptionButton({ option, isSelected, onClick, showCheck, className }: FilterOptionButtonProps) {
+  const bounceAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false })
+
+  return (
+    <AnimatedView style={bounceAnimation.animatedStyle}>
+      <button
+        onClick={() => {
+          bounceAnimation.handlePress()
+          onClick()
+        }}
+        className={cn(
+          'flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-200',
+          isSelected
+            ? 'bg-primary text-primary-foreground border-primary'
+            : 'bg-background border-border hover:border-primary/50',
+          className
+        )}
+      >
+        {option.icon}
+        <span className="text-sm font-medium">{option.label}</span>
+        {showCheck && isSelected && <Check size={16} weight="bold" />}
+      </button>
+    </AnimatedView>
+  )
+}
+
+interface ToggleSwitchProps {
+  label: string
+  checked: boolean
+  onChange: () => void
+}
+
+function ToggleSwitch({ label, checked, onChange }: ToggleSwitchProps) {
+  const translateX = useSharedValue(checked ? 20 : 0)
+
+  const toggleAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false })
+
+  useEffect(() => {
+    translateX.value = withTiming(checked ? 20 : 0, { duration: 200 })
+  }, [checked, translateX])
+
+  const handleClick = useCallback(() => {
+    toggleAnimation.handlePress()
+    onChange()
+  }, [onChange, toggleAnimation])
+
+  const thumbStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }]
+    }
+  }) as AnimatedStyle
+
+  return (
+    <AnimatedView style={toggleAnimation.animatedStyle}>
+      <button
+        onClick={handleClick}
+        className="flex items-center justify-between w-full p-3 rounded-lg border-2 border-border hover:border-primary/50 transition-all duration-200"
+      >
+        <span className="text-sm font-medium">{label}</span>
+        <div
+          className={cn(
+            'w-11 h-6 rounded-full transition-colors duration-200',
+            checked ? 'bg-primary' : 'bg-muted'
+          )}
+        >
+          <AnimatedView
+            style={thumbStyle}
+            className="w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-white shadow-md"
+          />
+        </div>
+      </button>
+    </AnimatedView>
   )
 }

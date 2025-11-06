@@ -1,0 +1,200 @@
+import React, { useCallback, useRef, useEffect } from 'react'
+import { Pressable, Text, StyleSheet, View, type ViewStyle } from 'react-native'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  measure,
+  runOnUI,
+} from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
+import { usePressBounce } from '@petspark/motion'
+import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
+const AnimatedView = Animated.View
+
+export interface SegmentedControlOption {
+  label: string
+  value: string
+  icon?: React.ReactNode
+}
+
+export interface SegmentedControlProps {
+  options: SegmentedControlOption[]
+  value?: string | string[]
+  onValueChange?: (value: string | string[]) => void
+  multiSelect?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  style?: ViewStyle
+  testID?: string
+  accessibilityLabel: string
+}
+
+const SPRING_CONFIG = { stiffness: 400, damping: 20 }
+
+export function SegmentedControl({
+  options,
+  value,
+  onValueChange,
+  multiSelect = false,
+  size = 'md',
+  style,
+  testID = 'segmented-control',
+  accessibilityLabel,
+}: SegmentedControlProps): React.JSX.Element {
+  const containerRef = useRef<View>(null)
+  const buttonRefs = useRef<(View | null)[]>([])
+  const indicatorPosition = useSharedValue(0)
+  const indicatorWidth = useSharedValue(0)
+  const reducedMotion = useReducedMotionSV()
+  const selectedValues = Array.isArray(value) ? value : value ? [value] : []
+
+  const updateIndicator = useCallback(() => {
+    const selectedIndex = options.findIndex((opt) => selectedValues.includes(opt.value))
+    if (selectedIndex >= 0 && buttonRefs.current[selectedIndex]) {
+      const button = buttonRefs.current[selectedIndex]
+      if (button) {
+        runOnUI(() => {
+          'worklet'
+          const measurements = measure(button)
+          if (measurements) {
+            indicatorPosition.value = reducedMotion.value
+              ? withTiming(measurements.pageX, { duration: 200 })
+              : withSpring(measurements.pageX, SPRING_CONFIG)
+            indicatorWidth.value = reducedMotion.value
+              ? withTiming(measurements.width, { duration: 200 })
+              : withSpring(measurements.width, SPRING_CONFIG)
+          }
+        })()
+      }
+    }
+  }, [options, selectedValues, indicatorPosition, indicatorWidth, reducedMotion])
+
+  useEffect(() => {
+    updateIndicator()
+  }, [updateIndicator, selectedValues])
+
+  const indicatorStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: indicatorPosition.value }],
+    width: indicatorWidth.value,
+  }))
+
+  const handleOptionPress = useCallback(
+    (optionValue: string) => {
+      if (multiSelect) {
+        const newValues = selectedValues.includes(optionValue)
+          ? selectedValues.filter((v) => v !== optionValue)
+          : [...selectedValues, optionValue]
+        onValueChange?.(newValues)
+      } else {
+        onValueChange?.(optionValue)
+      }
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+      setTimeout(updateIndicator, 100)
+    },
+    [multiSelect, selectedValues, onValueChange, updateIndicator]
+  )
+
+  const sizeStyles: Record<string, ViewStyle> = {
+    sm: { paddingHorizontal: 8, paddingVertical: 4, minHeight: 36 },
+    md: { paddingHorizontal: 12, paddingVertical: 6, minHeight: 44 },
+    lg: { paddingHorizontal: 16, paddingVertical: 8, minHeight: 52 },
+  }
+
+  const textSizeStyles: Record<string, { fontSize: number }> = {
+    sm: { fontSize: 14 },
+    md: { fontSize: 16 },
+    lg: { fontSize: 18 },
+  }
+
+  return (
+    <View
+      ref={containerRef}
+      style={[styles.container, style]}
+      testID={testID}
+      accessibilityRole="tablist"
+      accessibilityLabel={accessibilityLabel}
+    >
+      <AnimatedView style={[styles.indicator, indicatorStyle]} />
+      {options.map((option, index) => {
+        const isSelected = selectedValues.includes(option.value)
+        return (
+          <AnimatedPressable
+            key={option.value}
+            ref={(ref) => {
+              buttonRefs.current[index] = ref
+            }}
+            onPress={() => handleOptionPress(option.value)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isSelected }}
+            style={[
+              styles.button,
+              sizeStyles[size],
+              isSelected && styles.buttonSelected,
+            ]}
+          >
+            {option.icon && <View style={styles.iconContainer}>{option.icon}</View>}
+            <Text
+              style={[
+                styles.text,
+                textSizeStyles[size],
+                isSelected ? styles.textSelected : styles.textUnselected,
+              ]}
+            >
+              {option.label}
+            </Text>
+          </AnimatedPressable>
+        )
+      })}
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+    padding: 4,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    position: 'relative',
+  },
+  indicator: {
+    position: 'absolute',
+    top: 4,
+    bottom: 4,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  button: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    borderRadius: 8,
+  },
+  buttonSelected: {
+    // Selected state handled by indicator
+  },
+  iconContainer: {
+    marginRight: 4,
+  },
+  text: {
+    fontWeight: '500',
+  },
+  textSelected: {
+    color: '#000000',
+  },
+  textUnselected: {
+    color: '#64748b',
+  },
+})
+

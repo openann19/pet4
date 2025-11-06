@@ -28,6 +28,7 @@ import { haptics } from '@/lib/haptics'
 import StoryTemplateSelector from './StoryTemplateSelector'
 import StoryFilterSelector from './StoryFilterSelector'
 
+
 interface CreateStoryDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -40,6 +41,7 @@ interface CreateStoryDialogProps {
   onStoryCreated: (story: Story) => void
 }
 
+
 export default function CreateStoryDialog({
   open,
   onOpenChange,
@@ -51,6 +53,8 @@ export default function CreateStoryDialog({
   userAvatar,
   onStoryCreated
 }: CreateStoryDialogProps) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [mediaFile, setMediaFile] = useState<File | null>(null)
   const [mediaPreview, setMediaPreview] = useState<string>('')
   const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo')
   const [caption, setCaption] = useState('')
@@ -70,7 +74,8 @@ export default function CreateStoryDialog({
     return firstFilter
   })
   const [filterIntensity, setFilterIntensity] = useState(1)
-  const [selectedMusic] = useState(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedMusic, setSelectedMusic] = useState(() => {
     const firstMusic = STORY_MUSIC_TRACKS[0]
     if (!firstMusic) {
       throw new Error('STORY_MUSIC_TRACKS array is empty')
@@ -79,15 +84,20 @@ export default function CreateStoryDialog({
   })
   const [isProcessing, setIsProcessing] = useState(false)
 
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
+
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
+
     const isVideo = file.type.startsWith('video/')
     setMediaType(isVideo ? 'video' : 'photo')
+    setMediaFile(file)
+
 
     const reader = new FileReader()
     reader.onloadend = () => {
@@ -96,17 +106,22 @@ export default function CreateStoryDialog({
     reader.readAsDataURL(file)
   }
 
+
   const handleCameraCapture = () => {
     cameraInputRef.current?.click()
   }
+
 
   const handleGallerySelect = () => {
     fileInputRef.current?.click()
   }
 
+
   const handleRemoveMedia = () => {
+    setMediaFile(null)
     setMediaPreview('')
   }
+
 
   const handleCreate = async () => {
     if (!mediaPreview) {
@@ -114,8 +129,10 @@ export default function CreateStoryDialog({
       return
     }
 
+
     setIsProcessing(true)
     haptics.trigger('success')
+
 
     try {
       const newStory = createStory(
@@ -130,13 +147,16 @@ export default function CreateStoryDialog({
         userAvatar
       )
 
+
       if (caption) {
         newStory.caption = caption
       }
 
+
       if (selectedTemplate.id !== 'template-classic') {
         newStory.template = selectedTemplate
       }
+
 
       if (selectedMusic && selectedMusic.id !== 'music-1') {
         newStory.music = {
@@ -145,10 +165,11 @@ export default function CreateStoryDialog({
           artist: selectedMusic.artist ?? '',
           provider: selectedMusic.provider ?? 'licensed',
           duration: selectedMusic.duration ?? 30,
-          previewUrl: selectedMusic.previewUrl,
+          previewUrl: selectedMusic.previewUrl ?? '',
           startTime: 0
         }
       }
+
 
       onStoryCreated(newStory)
       
@@ -157,20 +178,24 @@ export default function CreateStoryDialog({
         duration: 3000
       })
 
+
       handleClose()
-    } catch {
+    } catch (error) {
       toast.error('Failed to create story')
     } finally {
       setIsProcessing(false)
     }
   }
 
+
   const handleClose = () => {
+    setMediaFile(null)
     setMediaPreview('')
     setCaption('')
     setVisibility('everyone')
     onOpenChange(false)
   }
+
 
   return (
     <>
@@ -190,11 +215,13 @@ export default function CreateStoryDialog({
         onChange={handleFileSelect}
       />
 
+
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden glass-strong">
           <DialogHeader>
             <DialogTitle>Create Story</DialogTitle>
           </DialogHeader>
+
 
           <Tabs defaultValue="content" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
@@ -203,6 +230,7 @@ export default function CreateStoryDialog({
               <TabsTrigger value="filters">Filters</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
+
 
             <TabsContent value="content" className="space-y-4">
               {!mediaPreview ? (
@@ -222,6 +250,7 @@ export default function CreateStoryDialog({
                         <p className="text-xs text-muted-foreground">Use your camera</p>
                       </div>
                     </motion.button>
+
 
                     <motion.button
                       onClick={handleGallerySelect}
@@ -265,6 +294,7 @@ export default function CreateStoryDialog({
                     </Button>
                   </div>
 
+
                   <div className="space-y-2">
                     <Label htmlFor="caption">Caption (optional)</Label>
                     <Textarea
@@ -284,12 +314,14 @@ export default function CreateStoryDialog({
               )}
             </TabsContent>
 
+
             <TabsContent value="templates" className="space-y-4">
               <StoryTemplateSelector
                 selectedTemplate={selectedTemplate}
                 onSelectTemplate={setSelectedTemplate}
               />
             </TabsContent>
+
 
             <TabsContent value="filters" className="space-y-4">
               <StoryFilterSelector
@@ -300,6 +332,7 @@ export default function CreateStoryDialog({
                 onIntensityChange={setFilterIntensity}
               />
             </TabsContent>
+
 
             <TabsContent value="settings" className="space-y-4">
               <div className="space-y-3">
@@ -329,6 +362,7 @@ export default function CreateStoryDialog({
                 </RadioGroup>
               </div>
 
+
               <div className="glass-effect p-4 rounded-lg space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin size={16} />
@@ -341,6 +375,7 @@ export default function CreateStoryDialog({
               </div>
             </TabsContent>
           </Tabs>
+
 
           <div className="flex gap-2 justify-end pt-4 border-t">
             <Button

@@ -1,5 +1,7 @@
-import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { useSharedValue, withTiming, useAnimatedStyle, withSequence, withDelay } from 'react-native-reanimated'
+import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 
 /**
  * Seeded Random Number Generator
@@ -29,6 +31,69 @@ interface ParticleEffectProps {
   count?: number
   colors?: string[]
   triggerKey?: number
+}
+
+function ParticleAnimated({ particle }: { particle: Particle }) {
+  const opacity = useSharedValue(0)
+  const scale = useSharedValue(0)
+  const translateX = useSharedValue(0)
+  const translateY = useSharedValue(0)
+
+  useEffect(() => {
+    const delayMs = particle.delay * 1000
+    const durationMs = particle.duration * 1000
+
+    opacity.value = withDelay(
+      delayMs,
+      withSequence(
+        withTiming(1, { duration: durationMs * 0.2 }),
+        withTiming(1, { duration: durationMs * 0.6 }),
+        withTiming(0, { duration: durationMs * 0.2 })
+      )
+    )
+
+    scale.value = withDelay(
+      delayMs,
+      withSequence(
+        withTiming(1, { duration: durationMs * 0.2 }),
+        withTiming(1, { duration: durationMs * 0.6 }),
+        withTiming(0, { duration: durationMs * 0.2 })
+      )
+    )
+
+    translateX.value = withDelay(
+      delayMs,
+      withTiming(particle.x, { duration: durationMs })
+    )
+
+    translateY.value = withDelay(
+      delayMs,
+      withTiming(particle.y, { duration: durationMs })
+    )
+  }, [particle, opacity, scale, translateX, translateY])
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value }
+    ]
+  })) as AnimatedStyle
+
+  const styleValue = useAnimatedStyleValue(animatedStyle)
+
+  return (
+    <div
+      className="absolute rounded-full"
+      style={{
+        ...styleValue,
+        width: particle.size,
+        height: particle.size,
+        backgroundColor: particle.color,
+      }}
+    />
+  )
 }
 
 export function ParticleEffect({ 
@@ -70,32 +135,7 @@ export function ParticleEffect({
   return (
     <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-hidden">
       {particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          className="absolute rounded-full"
-          style={{
-            width: particle.size,
-            height: particle.size,
-            backgroundColor: particle.color,
-          }}
-          initial={{ 
-            x: 0, 
-            y: 0, 
-            opacity: 0, 
-            scale: 0 
-          }}
-          animate={{
-            x: particle.x,
-            y: particle.y,
-            opacity: [0, 1, 1, 0],
-            scale: [0, 1, 1, 0]
-          }}
-          transition={{
-            duration: particle.duration,
-            delay: particle.delay,
-            ease: [0.34, 1.56, 0.64, 1]
-          }}
-        />
+        <ParticleAnimated key={particle.id} particle={particle} />
       ))}
     </div>
   )

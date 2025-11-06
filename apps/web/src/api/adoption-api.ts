@@ -246,6 +246,19 @@ class AdoptionApiImpl {
       return []
     }
   }
+
+  /**
+   * Delete adoption profile (admin only)
+   */
+  async deleteProfile(profileId: string): Promise<void> {
+    try {
+      await APIClient.delete(ENDPOINTS.ADOPTION.DELETE_LISTING(profileId))
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to delete adoption profile', err, { profileId })
+      throw err
+    }
+  }
 }
 
 export const adoptionApi = new AdoptionApiImpl()

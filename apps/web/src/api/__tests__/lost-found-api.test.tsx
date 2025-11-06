@@ -111,7 +111,15 @@ beforeAll(async () => {
     res.end()
   })
 
-  await new Promise<void>(resolve => server.listen(8080, resolve))
+  await new Promise<void>(resolve => {
+    server.listen(0, () => {
+      const address = server.address()
+      if (address && typeof address === 'object') {
+        process.env.TEST_API_PORT = String(address.port)
+      }
+      resolve()
+    })
+  })
 })
 
 afterAll(async () => {

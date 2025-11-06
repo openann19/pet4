@@ -1,11 +1,16 @@
-import { useState, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+'use client'
+
+import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withDelay } from 'react-native-reanimated'
 import { MagnifyingGlass, X, Crown, Clock } from '@phosphor-icons/react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
 import { useStorage } from '@/hooks/useStorage'
+import { useBounceOnTap } from '@/effects/reanimated'
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
 import {
   STICKER_CATEGORIES,
   STICKER_LIBRARY,
@@ -13,11 +18,11 @@ import {
   searchStickers,
   getPremiumStickers,
   getRecentStickers,
-  getAnimationClass,
   type Sticker
 } from '@/lib/sticker-library'
 import { haptics } from '@/lib/haptics'
 import { cn } from '@/lib/utils'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 
 interface StickerPickerProps {
   onSelectSticker: (sticker: Sticker) => void
@@ -29,6 +34,10 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [recentStickerIds, setRecentStickerIds] = useStorage<string[]>('recent-stickers', [])
   const [hoveredSticker, setHoveredSticker] = useState<string | null>(null)
+  
+  const containerOpacity = useSharedValue(0)
+  const containerY = useSharedValue(20)
+  const contentOpacity = useSharedValue(0)
 
   const displayedStickers = useMemo(() => {
     if (searchQuery.trim()) {
@@ -62,19 +71,45 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
     onSelectSticker(sticker)
   }
 
-  const handleCategoryChange = (categoryId: string) => {
+  const handleCategoryChange = useCallback((categoryId: string) => {
     haptics.impact('light')
     setSelectedCategory(categoryId)
     setSearchQuery('')
-  }
+  }, [])
 
   const recentCount = recentStickerIds?.length || 0
 
+  useEffect(() => {
+    containerOpacity.value = withTiming(1, timingConfigs.smooth)
+    containerY.value = withSpring(0, springConfigs.smooth)
+    contentOpacity.value = withDelay(100, withTiming(1, timingConfigs.smooth))
+  }, [containerOpacity, containerY, contentOpacity])
+
+  const containerStyle = useAnimatedStyle(() => {
+    return {
+      opacity: containerOpacity.value,
+      transform: [{ translateY: containerY.value }]
+    }
+  }) as AnimatedStyle
+
+  const contentStyle = useAnimatedStyle(() => {
+    return {
+      opacity: contentOpacity.value
+    }
+  }) as AnimatedStyle
+
+  const handleClose = useCallback(() => {
+    haptics.impact('light')
+    containerOpacity.value = withTiming(0, timingConfigs.fast)
+    containerY.value = withTiming(20, timingConfigs.fast)
+    setTimeout(() => {
+      onClose()
+    }, 150)
+  }, [containerOpacity, containerY, onClose])
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
+    <AnimatedView
+      style={containerStyle}
       className="fixed inset-x-0 bottom-0 z-50 max-h-[70vh] bg-card/95 backdrop-blur-2xl border-t border-border/40 shadow-2xl sm:bottom-20 sm:left-auto sm:right-4 sm:w-[420px] sm:rounded-2xl sm:border sm:max-h-[600px]"
     >
       <div className="flex flex-col h-full max-h-[70vh] sm:max-h-[600px]">
@@ -90,10 +125,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => {
-              haptics.impact('light')
-              onClose()
-            }}
+            onClick={handleClose}
             className="rounded-full"
           >
             <X size={20} />
@@ -174,71 +206,102 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
         )}
 
         <ScrollArea className="flex-1 px-4">
-          <AnimatePresence mode="wait">
+          <AnimatedView style={contentStyle}>
             {displayedStickers.length === 0 ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center py-12 text-center"
-              >
+              <div className="flex flex-col items-center justify-center py-12 text-center">
                 <div className="text-6xl mb-4 opacity-50">🔍</div>
                 <p className="text-muted-foreground">
                   {searchQuery ? 'No stickers found' : 'No stickers in this category'}
                 </p>
-              </motion.div>
+              </div>
             ) : (
-              <motion.div
-                key="grid"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="grid grid-cols-6 sm:grid-cols-7 gap-2 py-4"
-              >
+              <div className="grid grid-cols-6 sm:grid-cols-7 gap-2 py-4">
                 {displayedStickers.map((sticker, index) => (
-                  <motion.button
+                  <StickerButton
                     key={sticker.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.01 }}
+                    sticker={sticker}
+                    index={index}
+                    isHovered={hoveredSticker === sticker.id}
+                    onHover={() => setHoveredSticker(sticker.id)}
+                    onLeave={() => setHoveredSticker(null)}
                     onClick={() => handleStickerClick(sticker)}
-                    onMouseEnter={() => setHoveredSticker(sticker.id)}
-                    onMouseLeave={() => setHoveredSticker(null)}
-                    className={cn(
-                      "relative aspect-square rounded-xl flex items-center justify-center text-4xl hover:bg-muted/50 active:scale-95 transition-all duration-200",
-                      hoveredSticker === sticker.id && "bg-muted/50"
-                    )}
-                    title={sticker.label}
-                  >
-                    <motion.span
-                      className={cn(
-                        "select-none",
-                        hoveredSticker === sticker.id && sticker.animation && getAnimationClass(sticker.animation)
-                      )}
-                      animate={
-                        hoveredSticker === sticker.id
-                          ? { scale: [1, 1.2, 1] }
-                          : { scale: 1 }
-                      }
-                      transition={{ duration: 0.3 }}
-                    >
-                      {sticker.emoji}
-                    </motion.span>
-                    {sticker.premium && (
-                      <Crown
-                        size={12}
-                        weight="fill"
-                        className="absolute top-0.5 right-0.5 text-accent"
-                      />
-                    )}
-                  </motion.button>
+                  />
                 ))}
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          </AnimatedView>
         </ScrollArea>
       </div>
-    </motion.div>
+    </AnimatedView>
+  )
+}
+
+interface StickerButtonProps {
+  sticker: Sticker
+  index: number
+  isHovered: boolean
+  onHover: () => void
+  onLeave: () => void
+  onClick: () => void
+}
+
+function StickerButton({ sticker, index, isHovered, onHover, onLeave, onClick }: StickerButtonProps) {
+  const opacity = useSharedValue(0)
+  const scale = useSharedValue(0.8)
+  const hoverScale = useSharedValue(1)
+  
+  const bounceAnimation = useBounceOnTap({
+    onPress: onClick,
+    scale: 0.9,
+    hapticFeedback: false
+  })
+
+  useEffect(() => {
+    const delay = index * 10
+    opacity.value = withDelay(delay, withTiming(1, timingConfigs.smooth))
+    scale.value = withDelay(delay, withSpring(1, springConfigs.smooth))
+  }, [index, opacity, scale])
+
+  useEffect(() => {
+    if (isHovered) {
+      hoverScale.value = withSpring(1.2, springConfigs.bouncy, () => {
+        hoverScale.value = withSpring(1, springConfigs.smooth)
+      })
+    } else {
+      hoverScale.value = withSpring(1, springConfigs.smooth)
+    }
+  }, [isHovered, hoverScale])
+
+  const buttonStyle = useAnimatedStyle(() => {
+    const combinedScale = scale.value * hoverScale.value * bounceAnimation.scale.value
+    return {
+      opacity: opacity.value,
+      transform: [{ scale: combinedScale }]
+    }
+  }) as AnimatedStyle
+
+  return (
+    <AnimatedView
+      style={buttonStyle}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+      onClick={bounceAnimation.handlePress}
+      className={cn(
+        "relative aspect-square rounded-xl flex items-center justify-center text-4xl hover:bg-muted/50 cursor-pointer",
+        isHovered && "bg-muted/50"
+      )}
+      title={sticker.label}
+    >
+      <span className="select-none">
+        {sticker.emoji}
+      </span>
+      {sticker.premium && (
+        <Crown
+          size={12}
+          weight="fill"
+          className="absolute top-0.5 right-0.5 text-accent"
+        />
+      )}
+    </AnimatedView>
   )
 }

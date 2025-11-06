@@ -1,3 +1,5 @@
+'use client'
+
 import { adoptionApi } from '@/api/adoption-api'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -29,11 +31,256 @@ import {
   Warning,
   XCircle
 } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item'
+import { useExpandCollapse } from '@/effects/reanimated/use-expand-collapse'
+import { useRotation } from '@/effects/reanimated/use-rotation'
 
 const logger = createLogger('AdoptionApplicationReview')
+
+function LoadingSpinner() {
+  const rotationAnimation = useRotation({
+    enabled: true,
+    duration: 1000,
+    repeat: true
+  })
+
+  return (
+    <>
+      <AnimatedView style={rotationAnimation.rotationStyle} className="mr-2 inline-block">
+        <Clock size={16} />
+      </AnimatedView>
+      Processing...
+    </>
+  )
+}
+
+interface ApplicationCardProps {
+  application: ApplicationWithProfile
+  index: number
+  isExpanded: boolean
+  onToggleExpanded: (appId: string) => void
+  onReviewClick: (application: ApplicationWithProfile, action: 'approve' | 'reject') => void
+  getStatusColor: (status: ApplicationStatus) => string
+  getStatusIcon: (status: ApplicationStatus) => React.ReactNode
+}
+
+function ApplicationCard({
+  application,
+  index,
+  isExpanded,
+  onToggleExpanded,
+  onReviewClick,
+  getStatusColor,
+  getStatusIcon
+}: ApplicationCardProps) {
+  const staggeredAnimation = useStaggeredItem({
+    index,
+    delay: 0,
+    staggerDelay: 50
+  })
+  const expandAnimation = useExpandCollapse({
+    isExpanded,
+    duration: 300,
+    enableOpacity: true
+  })
+
+  return (
+    <AnimatedView
+      key={application._id}
+      style={staggeredAnimation.itemStyle}
+    >
+      <Card className={`overflow-hidden transition-all duration-300 ${
+        application.status === 'pending' 
+          ? 'border-amber-500/30 shadow-lg shadow-amber-500/5' 
+          : ''
+      }`}>
+        <CardHeader className="pb-3">
+          <div className="flex items-start gap-4">
+            <Avatar className="h-16 w-16 border-2 border-primary/20">
+              {application.profile?.petPhoto ? (
+                <AvatarImage src={application.profile.petPhoto} alt={application.profile.petName} />
+              ) : null}
+              <AvatarFallback>
+                <PawPrint size={24} weight="fill" />
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    {application.applicantName}
+                    {application.status === 'pending' && (
+                      <Badge variant="secondary" className={getStatusColor(application.status)}>
+                        {getStatusIcon(application.status)}
+                        <span className="ml-1">Pending Review</span>
+                      </Badge>
+                    )}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Applying for: <span className="font-medium text-foreground">{application.profile?.petName ?? 'Unknown Pet'}</span>
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Submitted {new Date(application.submittedAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+                
+                {application.status !== 'pending' && (
+                  <Badge variant="secondary" className={getStatusColor(application.status)}>
+                    {getStatusIcon(application.status)}
+                    <span className="ml-1 capitalize">{application.status}</span>
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-3 pb-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="flex items-center gap-2 text-sm">
+              <EnvelopeSimple size={16} className="text-muted-foreground" />
+              <span className="text-muted-foreground truncate">{application.applicantEmail}</span>
+            </div>
+            {application.applicantPhone && (
+              <div className="flex items-center gap-2 text-sm">
+                <Phone size={16} className="text-muted-foreground" />
+                <span className="text-muted-foreground">{application.applicantPhone}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-2 text-sm">
+              <House size={16} className="text-muted-foreground" />
+              <span className="text-muted-foreground capitalize">{application.householdType}</span>
+              {application.hasYard && <span className="text-xs text-green-600">• Has Yard</span>}
+            </div>
+          </div>
+
+          {isExpanded && (
+            <AnimatedView
+              style={expandAnimation.heightStyle}
+              className="overflow-hidden"
+            >
+              <Separator className="my-3" />
+              
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold">Household Details</h4>
+                    <div className="space-y-1 text-sm">
+                      <p className="flex items-center gap-2">
+                        <span className="text-muted-foreground">Other Pets:</span>
+                        <span className="font-medium">{application.hasOtherPets ? 'Yes' : 'No'}</span>
+                      </p>
+                      {application.hasOtherPets && application.otherPetsDetails && (
+                        <p className="text-muted-foreground text-xs pl-4">{application.otherPetsDetails}</p>
+                      )}
+                      <p className="flex items-center gap-2">
+                        <span className="text-muted-foreground">Children:</span>
+                        <span className="font-medium">{application.hasChildren ? 'Yes' : 'No'}</span>
+                      </p>
+                      {application.hasChildren && application.childrenAges && (
+                        <p className="text-muted-foreground text-xs pl-4">Ages: {application.childrenAges}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {application.experience && (
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold">Pet Experience</h4>
+                      <p className="text-sm text-muted-foreground">{application.experience}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <h4 className="text-sm font-semibold">Why They Want to Adopt</h4>
+                  <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg">
+                    {application.reason}
+                  </p>
+                </div>
+
+                {application.reviewNotes && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold flex items-center gap-2">
+                      <ChatCircle size={16} weight="fill" />
+                      Review Notes
+                    </h4>
+                    <p className="text-sm text-muted-foreground bg-accent/10 p-3 rounded-lg border border-accent/20">
+                      {application.reviewNotes}
+                    </p>
+                    {application.reviewedAt && (
+                      <p className="text-xs text-muted-foreground">
+                        Reviewed on {new Date(application.reviewedAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </AnimatedView>
+          )}
+        </CardContent>
+
+        <CardFooter className="flex items-center justify-between gap-3 pt-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onToggleExpanded(application._id)}
+            className="gap-2"
+          >
+            {isExpanded ? (
+              <>
+                <CaretUp size={16} weight="bold" />
+                Show Less
+              </>
+            ) : (
+              <>
+                <CaretDown size={16} weight="bold" />
+                Show Details
+              </>
+            )}
+          </Button>
+
+          {application.status === 'pending' && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onReviewClick(application, 'reject')}
+                className="gap-2 border-red-500/30 hover:bg-red-500/10 hover:text-red-600"
+              >
+                <XCircle size={16} weight="fill" />
+                Reject
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => onReviewClick(application, 'approve')}
+                className="gap-2 bg-green-600 hover:bg-green-700"
+              >
+                <CheckCircle size={16} weight="fill" />
+                Approve
+              </Button>
+            </div>
+          )}
+        </CardFooter>
+      </Card>
+    </AnimatedView>
+  )
+}
 
 type ApplicationStatus = 'pending' | 'approved' | 'rejected' | 'withdrawn'
 
@@ -89,7 +336,7 @@ export default function AdoptionApplicationReview() {
         setLoading(false)
       }
     }
-    loadData()
+    void loadData()
   }, [])
 
   const applicationsWithProfiles: ApplicationWithProfile[] = applications.map(app => {
@@ -125,12 +372,17 @@ export default function AdoptionApplicationReview() {
     })
   }
 
-  const handleReviewClick = (application: ApplicationWithProfile, action: 'approve' | 'reject') => {
-    setSelectedApplication(application)
-    setReviewAction(action)
-    setReviewNotes('')
-    setShowReviewDialog(true)
-  }
+  const handleReviewClick = useCallback((application: ApplicationWithProfile, action: 'approve' | 'reject') => {
+    try {
+      setSelectedApplication(application)
+      setReviewAction(action)
+      setReviewNotes('')
+      setShowReviewDialog(true)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to open review dialog', err, { applicationId: application._id, action })
+    }
+  }, [])
 
   const handleSubmitReview = async () => {
     if (!selectedApplication || !reviewAction) return
@@ -182,7 +434,7 @@ export default function AdoptionApplicationReview() {
         reviewAction === 'approve' ? 'Application Approved!' : 'Application Rejected',
         {
           description: reviewAction === 'approve' 
-            ? `${selectedApplication.applicantName} has been approved to adopt ${selectedApplication.profile?.petName || 'this pet'}.`
+            ? `${selectedApplication.applicantName} has been approved to adopt ${selectedApplication.profile?.petName ?? 'this pet'}.`
             : `Application from ${selectedApplication.applicantName} has been rejected.`
         }
       )
@@ -200,17 +452,22 @@ export default function AdoptionApplicationReview() {
     }
   }
 
-  const toggleExpanded = (appId: string) => {
-    setExpandedApplications(prev => {
-      const next = new Set(prev)
-      if (next.has(appId)) {
-        next.delete(appId)
-      } else {
-        next.add(appId)
-      }
-      return next
-    })
-  }
+  const toggleExpanded = useCallback((appId: string) => {
+    try {
+      setExpandedApplications(prev => {
+        const next = new Set(prev)
+        if (next.has(appId)) {
+          next.delete(appId)
+        } else {
+          next.add(appId)
+        }
+        return next
+      })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to toggle expanded state', err, { appId })
+    }
+  }, [])
 
   const stats = {
     total: applicationsWithProfiles.length,
@@ -373,210 +630,18 @@ export default function AdoptionApplicationReview() {
                   <p className="text-muted-foreground">No applications found</p>
                 </div>
               ) : (
-                filteredApplications().map((application, index) => {
-                  const isExpanded = expandedApplications.has(application._id)
-                  
-                  return (
-                    <motion.div
-                      key={application._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <Card className={`overflow-hidden transition-all duration-300 ${
-                        application.status === 'pending' 
-                          ? 'border-amber-500/30 shadow-lg shadow-amber-500/5' 
-                          : ''
-                      }`}>
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start gap-4">
-                            <Avatar className="h-16 w-16 border-2 border-primary/20">
-                              {application.profile?.petPhoto ? (
-                                <AvatarImage src={application.profile.petPhoto} alt={application.profile.petName} />
-                              ) : null}
-                              <AvatarFallback>
-                                <PawPrint size={24} weight="fill" />
-                              </AvatarFallback>
-                            </Avatar>
-                            
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-4">
-                                <div>
-                                  <h3 className="font-semibold text-lg flex items-center gap-2">
-                                    {application.applicantName}
-                                    {application.status === 'pending' && (
-                                      <Badge variant="secondary" className={getStatusColor(application.status)}>
-                                        {getStatusIcon(application.status)}
-                                        <span className="ml-1">Pending Review</span>
-                                      </Badge>
-                                    )}
-                                  </h3>
-                                  <p className="text-sm text-muted-foreground">
-                                    Applying for: <span className="font-medium text-foreground">{application.profile?.petName || 'Unknown Pet'}</span>
-                                  </p>
-                                  <p className="text-xs text-muted-foreground mt-1">
-                                    Submitted {new Date(application.submittedAt).toLocaleDateString('en-US', {
-                                      month: 'short',
-                                      day: 'numeric',
-                                      year: 'numeric',
-                                      hour: '2-digit',
-                                      minute: '2-digit'
-                                    })}
-                                  </p>
-                                </div>
-                                
-                                {application.status !== 'pending' && (
-                                  <Badge variant="secondary" className={getStatusColor(application.status)}>
-                                    {getStatusIcon(application.status)}
-                                    <span className="ml-1 capitalize">{application.status}</span>
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </CardHeader>
-
-                        <CardContent className="space-y-3 pb-3">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <div className="flex items-center gap-2 text-sm">
-                              <EnvelopeSimple size={16} className="text-muted-foreground" />
-                              <span className="text-muted-foreground truncate">{application.applicantEmail}</span>
-                            </div>
-                            {application.applicantPhone && (
-                              <div className="flex items-center gap-2 text-sm">
-                                <Phone size={16} className="text-muted-foreground" />
-                                <span className="text-muted-foreground">{application.applicantPhone}</span>
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2 text-sm">
-                              <House size={16} className="text-muted-foreground" />
-                              <span className="text-muted-foreground capitalize">{application.householdType}</span>
-                              {application.hasYard && <span className="text-xs text-green-600">• Has Yard</span>}
-                            </div>
-                          </div>
-
-                          <AnimatePresence>
-                            {isExpanded && (
-                              <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 'auto', opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="overflow-hidden"
-                              >
-                                <Separator className="my-3" />
-                                
-                                <div className="space-y-3">
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                      <h4 className="text-sm font-semibold">Household Details</h4>
-                                      <div className="space-y-1 text-sm">
-                                        <p className="flex items-center gap-2">
-                                          <span className="text-muted-foreground">Other Pets:</span>
-                                          <span className="font-medium">{application.hasOtherPets ? 'Yes' : 'No'}</span>
-                                        </p>
-                                        {application.hasOtherPets && application.otherPetsDetails && (
-                                          <p className="text-muted-foreground text-xs pl-4">{application.otherPetsDetails}</p>
-                                        )}
-                                        <p className="flex items-center gap-2">
-                                          <span className="text-muted-foreground">Children:</span>
-                                          <span className="font-medium">{application.hasChildren ? 'Yes' : 'No'}</span>
-                                        </p>
-                                        {application.hasChildren && application.childrenAges && (
-                                          <p className="text-muted-foreground text-xs pl-4">Ages: {application.childrenAges}</p>
-                                        )}
-                                      </div>
-                                    </div>
-
-                                    {application.experience && (
-                                      <div className="space-y-2">
-                                        <h4 className="text-sm font-semibold">Pet Experience</h4>
-                                        <p className="text-sm text-muted-foreground">{application.experience}</p>
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  <div className="space-y-2">
-                                    <h4 className="text-sm font-semibold">Why They Want to Adopt</h4>
-                                    <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg">
-                                      {application.reason}
-                                    </p>
-                                  </div>
-
-                                  {application.reviewNotes && (
-                                    <div className="space-y-2">
-                                      <h4 className="text-sm font-semibold flex items-center gap-2">
-                                        <ChatCircle size={16} weight="fill" />
-                                        Review Notes
-                                      </h4>
-                                      <p className="text-sm text-muted-foreground bg-accent/10 p-3 rounded-lg border border-accent/20">
-                                        {application.reviewNotes}
-                                      </p>
-                                      {application.reviewedAt && (
-                                        <p className="text-xs text-muted-foreground">
-                                          Reviewed on {new Date(application.reviewedAt).toLocaleDateString('en-US', {
-                                            month: 'short',
-                                            day: 'numeric',
-                                            year: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                          })}
-                                        </p>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </CardContent>
-
-                        <CardFooter className="flex items-center justify-between gap-3 pt-0">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleExpanded(application._id)}
-                            className="gap-2"
-                          >
-                            {isExpanded ? (
-                              <>
-                                <CaretUp size={16} weight="bold" />
-                                Show Less
-                              </>
-                            ) : (
-                              <>
-                                <CaretDown size={16} weight="bold" />
-                                Show Details
-                              </>
-                            )}
-                          </Button>
-
-                          {application.status === 'pending' && (
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleReviewClick(application, 'reject')}
-                                className="gap-2 border-red-500/30 hover:bg-red-500/10 hover:text-red-600"
-                              >
-                                <XCircle size={16} weight="fill" />
-                                Reject
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={() => handleReviewClick(application, 'approve')}
-                                className="gap-2 bg-green-600 hover:bg-green-700"
-                              >
-                                <CheckCircle size={16} weight="fill" />
-                                Approve
-                              </Button>
-                            </div>
-                          )}
-                        </CardFooter>
-                      </Card>
-                    </motion.div>
-                  )
-                })
+                filteredApplications().map((application, index) => (
+                  <ApplicationCard
+                    key={application._id}
+                    application={application}
+                    index={index}
+                    isExpanded={expandedApplications.has(application._id)}
+                    onToggleExpanded={toggleExpanded}
+                    onReviewClick={handleReviewClick}
+                    getStatusColor={getStatusColor}
+                    getStatusIcon={getStatusIcon}
+                  />
+                ))
               )}
             </div>
           </ScrollArea>
@@ -665,21 +730,14 @@ export default function AdoptionApplicationReview() {
               Cancel
             </Button>
             <Button
-              onClick={handleSubmitReview}
+              onClick={() => {
+                void handleSubmitReview()
+              }}
               disabled={isSubmitting}
               className={reviewAction === 'approve' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
             >
               {isSubmitting ? (
-                <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="mr-2"
-                  >
-                    <Clock size={16} />
-                  </motion.div>
-                  Processing...
-                </>
+                <LoadingSpinner />
               ) : (
                 <>
                   {reviewAction === 'approve' ? 'Approve Application' : 'Reject Application'}

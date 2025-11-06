@@ -32,13 +32,12 @@ export default tseslint.config(
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   {
-    files: ['**/*.{js,cjs,mjs,ts,tsx}'],
+    files: ['**/*.{js,cjs,mjs}'],
     languageOptions: {
       ecmaVersion: 2022,
       globals: globals.browser,
       parserOptions: {
-        project: ['tsconfig.json'],
-        tsconfigRootDir: __dirname,
+        // Don't use TypeScript parser for JS files
       },
     },
     plugins: {
@@ -53,6 +52,12 @@ export default tseslint.config(
     },
     settings: {
       react: { version: 'detect' },
+      'import/resolver': {
+        alias: {
+          map: [['@', path.resolve(__dirname, './src')]],
+          extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+        },
+      },
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -65,7 +70,7 @@ export default tseslint.config(
       'sonarjs/no-duplicate-string': ['error', { threshold: 5 }],
       'promise/catch-or-return': 'error',
       'security/detect-object-injection': 'off',
-      'import/no-unresolved': 'error',
+      'import/no-unresolved': ['error', { ignore: ['^@/', '^@tailwindcss/', '^vitest/'] }],
       'import/named': 'error',
       'import/default': 'error',
       'import/namespace': 'error',
@@ -121,6 +126,14 @@ export default tseslint.config(
   },
   {
     files: tsFiles,
+    languageOptions: {
+      ecmaVersion: 2022,
+      globals: globals.browser,
+      parserOptions: {
+        project: ['tsconfig.json'],
+        tsconfigRootDir: __dirname,
+      },
+    },
     plugins: {
       '@typescript-eslint': tseslint.plugin,
     },

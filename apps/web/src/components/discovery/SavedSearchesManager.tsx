@@ -1,6 +1,7 @@
-import { useState } from 'react'
+'use client'
+
+import { useCallback, useMemo, useState } from 'react'
 import { useStorage } from '@/hooks/useStorage'
-import { motion, AnimatePresence } from 'framer-motion'
 import {
   BookmarkSimple,
   Plus,
@@ -19,7 +20,16 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import type { SavedSearch } from '@/lib/saved-search-types'
 import type { DiscoveryPreferences } from '@/components/DiscoveryFilters'
 import { toast } from 'sonner'
-import { haptics } from '@/lib/haptics'
+import { triggerHaptic } from '@/lib/haptics'
+import { createLogger } from '@/lib/logger'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useModalAnimation } from '@/effects/reanimated/use-modal-animation'
+import { useExpandCollapse } from '@/effects/reanimated/use-expand-collapse'
+import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item'
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
+
+const logger = createLogger('SavedSearchesManager')
 
 interface SavedSearchesManagerProps {
   currentPreferences: DiscoveryPreferences
@@ -27,97 +37,309 @@ interface SavedSearchesManagerProps {
   onClose: () => void
 }
 
+interface SearchItemProps {
+  search: SavedSearch
+  index: number
+  totalItems: number
+  editingId: string | null
+  searchName: string
+  getPreferencesSummary: (prefs: DiscoveryPreferences) => string
+  onEdit: (id: string, name: string) => void
+  onUpdate: (id: string) => void
+  onCancelEdit: () => void
+  onTogglePin: (id: string) => void
+  onDelete: (id: string, name: string) => void
+  onApply: (search: SavedSearch) => void
+}
+
+function SearchItem({
+  search,
+  index,
+  totalItems,
+  editingId,
+  searchName,
+  getPreferencesSummary,
+  onEdit,
+  onUpdate,
+  onCancelEdit,
+  onTogglePin,
+  onDelete,
+  onApply
+}: SearchItemProps): JSX.Element {
+  const itemAnimation = useStaggeredItem({ index, totalItems })
+  const itemBounce = useBounceOnTap({ intensity: 0.98, duration: 150 })
+  const itemHover = useHoverLift({ intensity: 1.01 })
+  const applyBounce = useBounceOnTap({ intensity: 0.95, duration: 150 })
+  const pinBounce = useBounceOnTap({ intensity: 0.9, duration: 120 })
+  const editBounce = useBounceOnTap({ intensity: 0.9, duration: 120 })
+  const deleteBounce = useBounceOnTap({ intensity: 0.9, duration: 120 })
+
+  const isEditing = editingId === search.id
+
+  return (
+    <AnimatedView
+      style={itemAnimation.animatedStyle}
+      className="group p-4 rounded-lg border bg-card hover:shadow-md transition-all"
+      onMouseEnter={itemHover.handleEnter}
+      onMouseLeave={itemHover.handleLeave}
+    >
+      {isEditing ? (
+        <div className="space-y-3">
+          <Input
+            value={searchName}
+            onChange={e => onEdit(search.id, e.target.value)}
+            placeholder="Search name"
+            autoFocus
+          />
+          <div className="flex gap-2">
+            <AnimatedView style={itemBounce.animatedStyle}>
+              <Button
+                size="sm"
+                onClick={() => {
+                  itemBounce.handlePress()
+                  onUpdate(search.id)
+                }}
+                className="flex-1"
+              >
+                <Check size={16} className="mr-2" />
+                Save
+              </Button>
+            </AnimatedView>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onCancelEdit}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="flex items-start justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{search.icon}</span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h4 className="font-semibold">{search.name}</h4>
+                  {search.isPinned && (
+                    <Star size={14} className="text-yellow-500" weight="fill" />
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {getPreferencesSummary(search.preferences)}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <AnimatedView style={pinBounce.animatedStyle}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    pinBounce.handlePress()
+                    onTogglePin(search.id)
+                  }}
+                  className="h-8 w-8"
+                >
+                  <Star
+                    size={16}
+                    weight={search.isPinned ? 'fill' : 'regular'}
+                    className={search.isPinned ? 'text-yellow-500' : ''}
+                  />
+                </Button>
+              </AnimatedView>
+              <AnimatedView style={editBounce.animatedStyle}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    editBounce.handlePress()
+                    onEdit(search.id, search.name)
+                  }}
+                  className="h-8 w-8"
+                >
+                  <Pencil size={16} />
+                </Button>
+              </AnimatedView>
+              <AnimatedView style={deleteBounce.animatedStyle}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    deleteBounce.handlePress()
+                    onDelete(search.id, search.name)
+                  }}
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                >
+                  <Trash size={16} />
+                </Button>
+              </AnimatedView>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-muted-foreground">
+              {search.useCount > 0 && `Used ${search.useCount} time${search.useCount !== 1 ? 's' : ''}`}
+              {search.lastUsed &&
+                ` • Last: ${new Date(search.lastUsed).toLocaleDateString()}`}
+            </div>
+            <AnimatedView style={applyBounce.animatedStyle}>
+              <Button
+                size="sm"
+                onClick={() => {
+                  applyBounce.handlePress()
+                  onApply(search)
+                }}
+              >
+                Apply
+              </Button>
+            </AnimatedView>
+          </div>
+        </>
+      )}
+    </AnimatedView>
+  )
+}
+
 export default function SavedSearchesManager({
   currentPreferences,
   onApplySearch,
   onClose
-}: SavedSearchesManagerProps) {
+}: SavedSearchesManagerProps): JSX.Element {
   const [savedSearches, setSavedSearches] = useStorage<SavedSearch[]>('saved-searches', [])
   const [showSaveForm, setShowSaveForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [searchName, setSearchName] = useState('')
 
-  const handleSaveCurrentSearch = () => {
-    if (!searchName.trim()) {
-      toast.error('Please enter a name for this search')
-      return
+  const modalAnimation = useModalAnimation({ isVisible: true, duration: 300 })
+  const saveFormExpand = useExpandCollapse({ isExpanded: showSaveForm, duration: 300 })
+  const saveButtonBounce = useBounceOnTap({ intensity: 0.95, duration: 150 })
+  const cardHover = useHoverLift({ intensity: 1.02 })
+
+  const handleSaveCurrentSearch = useCallback((): void => {
+    try {
+      if (!searchName.trim()) {
+        toast.error('Please enter a name for this search')
+        return
+      }
+
+      const newSearch: SavedSearch = {
+        id: `search-${Date.now()}`,
+        name: searchName.trim(),
+        icon: '🔍',
+        preferences: currentPreferences,
+        isPinned: false,
+        useCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+
+      setSavedSearches(current => [...(current || []), newSearch])
+      triggerHaptic('success')
+      toast.success('Search saved!', { description: `"${searchName}" has been saved` })
+      logger.info('Search saved', { searchId: newSearch.id, searchName: newSearch.name })
+      setSearchName('')
+      setShowSaveForm(false)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to save search', err, { searchName })
+      toast.error('Failed to save search')
+      triggerHaptic('error')
     }
+  }, [searchName, currentPreferences, setSavedSearches])
 
-    const newSearch: SavedSearch = {
-      id: `search-${Date.now()}`,
-      name: searchName.trim(),
-      icon: '🔍',
-      preferences: currentPreferences,
-      isPinned: false,
-      useCount: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+  const handleUpdateSearch = useCallback((id: string): void => {
+    try {
+      if (!searchName.trim()) {
+        toast.error('Please enter a name')
+        return
+      }
 
-    setSavedSearches(current => [...(current || []), newSearch])
-    haptics.success()
-    toast.success('Search saved!', { description: `"${searchName}" has been saved` })
-    setSearchName('')
-    setShowSaveForm(false)
-  }
-
-  const handleUpdateSearch = (id: string) => {
-    if (!searchName.trim()) {
-      toast.error('Please enter a name')
-      return
-    }
-
-    setSavedSearches(current =>
-      (current || []).map(s =>
-        s.id === id
-          ? {
-              ...s,
-              name: searchName.trim(),
-              preferences: currentPreferences,
-              updatedAt: new Date().toISOString()
-            }
-          : s
+      setSavedSearches(current =>
+        (current || []).map(s =>
+          s.id === id
+            ? {
+                ...s,
+                name: searchName.trim(),
+                preferences: currentPreferences,
+                updatedAt: new Date().toISOString()
+              }
+            : s
+        )
       )
-    )
-    haptics.light()
-    toast.success('Search updated')
-    setEditingId(null)
-    setSearchName('')
-  }
+      triggerHaptic('light')
+      toast.success('Search updated')
+      logger.info('Search updated', { searchId: id, searchName: searchName.trim() })
+      setEditingId(null)
+      setSearchName('')
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to update search', err, { searchId: id, searchName })
+      toast.error('Failed to update search')
+      triggerHaptic('error')
+    }
+  }, [searchName, currentPreferences, setSavedSearches])
 
-  const handleApplySearch = (search: SavedSearch) => {
-    setSavedSearches(current =>
-      (current || []).map(s =>
-        s.id === search.id
-          ? { ...s, useCount: s.useCount + 1, lastUsed: new Date().toISOString() }
-          : s
+  const handleApplySearch = useCallback((search: SavedSearch): void => {
+    try {
+      setSavedSearches(current =>
+        (current || []).map(s =>
+          s.id === search.id
+            ? { ...s, useCount: s.useCount + 1, lastUsed: new Date().toISOString() }
+            : s
+        )
       )
-    )
-    onApplySearch(search.preferences)
-    haptics.selection()
-    toast.success('Search applied', { description: `Filters updated to "${search.name}"` })
-    onClose()
-  }
+      onApplySearch(search.preferences)
+      triggerHaptic('selection')
+      toast.success('Search applied', { description: `Filters updated to "${search.name}"` })
+      logger.info('Search applied', { searchId: search.id, searchName: search.name })
+      onClose()
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to apply search', err, { searchId: search.id, searchName: search.name })
+      toast.error('Failed to apply search')
+      triggerHaptic('error')
+    }
+  }, [setSavedSearches, onApplySearch, onClose])
 
-  const handleTogglePin = (id: string) => {
-    setSavedSearches(current =>
-      (current || []).map(s => (s.id === id ? { ...s, isPinned: !s.isPinned } : s))
-    )
-    haptics.light()
-  }
+  const handleTogglePin = useCallback((id: string): void => {
+    try {
+      setSavedSearches(current =>
+        (current || []).map(s => (s.id === id ? { ...s, isPinned: !s.isPinned } : s))
+      )
+      triggerHaptic('light')
+      logger.info('Search pin toggled', { searchId: id })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to toggle pin', err, { searchId: id })
+      triggerHaptic('error')
+    }
+  }, [setSavedSearches])
 
-  const handleDeleteSearch = (id: string, name: string) => {
-    setSavedSearches(current => (current || []).filter(s => s.id !== id))
-    haptics.light()
-    toast.info('Search deleted', { description: `"${name}" has been removed` })
-  }
+  const handleDeleteSearch = useCallback((id: string, name: string): void => {
+    try {
+      setSavedSearches(current => (current || []).filter(s => s.id !== id))
+      triggerHaptic('light')
+      toast.info('Search deleted', { description: `"${name}" has been removed` })
+      logger.info('Search deleted', { searchId: id, searchName: name })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to delete search', err, { searchId: id, searchName: name })
+      toast.error('Failed to delete search')
+      triggerHaptic('error')
+    }
+  }, [setSavedSearches])
 
-  const sortedSearches = [...(savedSearches || [])].sort((a, b) => {
-    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
-    return b.useCount - a.useCount
-  })
+  const sortedSearches = useMemo(() => {
+    return [...(savedSearches || [])].sort((a, b) => {
+      if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
+      return b.useCount - a.useCount
+    })
+  }, [savedSearches])
 
-  const getPreferencesSummary = (prefs: DiscoveryPreferences) => {
+  const getPreferencesSummary = useCallback((prefs: DiscoveryPreferences): string => {
     const parts: string[] = []
     if (prefs.minAge !== 0 || prefs.maxAge !== 15) {
       parts.push(`${prefs.minAge}-${prefs.maxAge}y`)
@@ -132,13 +354,11 @@ export default function SavedSearchesManager({
       parts.push(`${prefs.personalities.length} traits`)
     }
     return parts.length > 0 ? parts.join(' • ') : 'All filters'
-  }
+  }, [])
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <AnimatedView
+      style={modalAnimation.style}
       className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 overflow-auto"
     >
       <div className="max-w-3xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -164,42 +384,54 @@ export default function SavedSearchesManager({
                 <CardTitle>Current Filters</CardTitle>
                 <CardDescription>Save your current search criteria</CardDescription>
               </div>
-              <Button onClick={() => setShowSaveForm(!showSaveForm)} size="sm">
-                <Plus size={16} className="mr-2" />
-                Save Current
-              </Button>
+              <AnimatedView
+                style={cardHover.animatedStyle}
+                onMouseEnter={cardHover.handleEnter}
+                onMouseLeave={cardHover.handleLeave}
+              >
+                <Button
+                  onClick={() => setShowSaveForm(!showSaveForm)}
+                  size="sm"
+                >
+                  <Plus size={16} className="mr-2" />
+                  Save Current
+                </Button>
+              </AnimatedView>
             </div>
           </CardHeader>
           <CardContent>
-            <AnimatePresence>
-              {showSaveForm && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mb-4"
-                >
-                  <div className="flex gap-2">
-                    <div className="flex-1">
-                      <Label htmlFor="search-name" className="sr-only">
-                        Search Name
-                      </Label>
-                      <Input
-                        id="search-name"
-                        placeholder="e.g., Active dogs under 5"
-                        value={searchName}
-                        onChange={e => setSearchName(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handleSaveCurrentSearch()}
-                      />
-                    </div>
+            {showSaveForm && (
+              <AnimatedView
+                style={saveFormExpand.heightStyle}
+                className="mb-4 overflow-hidden"
+              >
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Label htmlFor="search-name" className="sr-only">
+                      Search Name
+                    </Label>
+                    <Input
+                      id="search-name"
+                      placeholder="e.g., Active dogs under 5"
+                      value={searchName}
+                      onChange={e => setSearchName(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          saveButtonBounce.handlePress()
+                          handleSaveCurrentSearch()
+                        }
+                      }}
+                    />
+                  </div>
+                  <AnimatedView style={saveButtonBounce.animatedStyle}>
                     <Button onClick={handleSaveCurrentSearch}>
                       <FloppyDisk size={16} className="mr-2" />
                       Save
                     </Button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  </AnimatedView>
+                </div>
+              </AnimatedView>
+            )}
 
             <div className="text-sm text-muted-foreground">
               {getPreferencesSummary(currentPreferences)}
@@ -218,129 +450,45 @@ export default function SavedSearchesManager({
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[500px]">
-              <AnimatePresence>
-                {sortedSearches.length === 0 ? (
-                  <div className="text-center py-12">
-                    <BookmarkSimple size={48} className="mx-auto text-muted-foreground mb-3" />
-                    <p className="text-muted-foreground">No saved searches yet</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Save your current filters to quickly access them later
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {sortedSearches.map((search, index) => (
-                      <motion.div
-                        key={search.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -100 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="group p-4 rounded-lg border bg-card hover:shadow-md transition-all"
-                      >
-                        {editingId === search.id ? (
-                          <div className="space-y-3">
-                            <Input
-                              value={searchName}
-                              onChange={e => setSearchName(e.target.value)}
-                              placeholder="Search name"
-                              autoFocus
-                            />
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                onClick={() => handleUpdateSearch(search.id)}
-                                className="flex-1"
-                              >
-                                <Check size={16} className="mr-2" />
-                                Save
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  setEditingId(null)
-                                  setSearchName('')
-                                }}
-                                className="flex-1"
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xl">{search.icon}</span>
-                                <div>
-                                  <div className="flex items-center gap-2">
-                                    <h4 className="font-semibold">{search.name}</h4>
-                                    {search.isPinned && (
-                                      <Star size={14} className="text-yellow-500" weight="fill" />
-                                    )}
-                                  </div>
-                                  <p className="text-xs text-muted-foreground">
-                                    {getPreferencesSummary(search.preferences)}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => handleTogglePin(search.id)}
-                                  className="h-8 w-8"
-                                >
-                                  <Star
-                                    size={16}
-                                    weight={search.isPinned ? 'fill' : 'regular'}
-                                    className={search.isPinned ? 'text-yellow-500' : ''}
-                                  />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    setEditingId(search.id)
-                                    setSearchName(search.name)
-                                  }}
-                                  className="h-8 w-8"
-                                >
-                                  <Pencil size={16} />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  onClick={() => handleDeleteSearch(search.id, search.name)}
-                                  className="h-8 w-8 text-destructive hover:text-destructive"
-                                >
-                                  <Trash size={16} />
-                                </Button>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                              <div className="text-xs text-muted-foreground">
-                                {search.useCount > 0 && `Used ${search.useCount} time${search.useCount !== 1 ? 's' : ''}`}
-                                {search.lastUsed &&
-                                  ` • Last: ${new Date(search.lastUsed).toLocaleDateString()}`}
-                              </div>
-                              <Button size="sm" onClick={() => handleApplySearch(search)}>
-                                Apply
-                              </Button>
-                            </div>
-                          </>
-                        )}
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-              </AnimatePresence>
+              {sortedSearches.length === 0 ? (
+                <div className="text-center py-12">
+                  <BookmarkSimple size={48} className="mx-auto text-muted-foreground mb-3" />
+                  <p className="text-muted-foreground">No saved searches yet</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Save your current filters to quickly access them later
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {sortedSearches.map((search, index) => (
+                    <SearchItem
+                      key={search.id}
+                      search={search}
+                      index={index}
+                      totalItems={sortedSearches.length}
+                      editingId={editingId}
+                      searchName={searchName}
+                      getPreferencesSummary={getPreferencesSummary}
+                      onEdit={(id, name) => {
+                        setEditingId(id)
+                        setSearchName(name)
+                      }}
+                      onUpdate={handleUpdateSearch}
+                      onCancelEdit={() => {
+                        setEditingId(null)
+                        setSearchName('')
+                      }}
+                      onTogglePin={handleTogglePin}
+                      onDelete={handleDeleteSearch}
+                      onApply={handleApplySearch}
+                    />
+                  ))}
+                </div>
+              )}
             </ScrollArea>
           </CardContent>
         </Card>
       </div>
-    </motion.div>
+    </AnimatedView>
   )
 }
