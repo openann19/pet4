@@ -73,8 +73,8 @@ export function useGroupCall(
         const callParticipant: CallParticipant = {
           id: participant.id,
           name: participant.name,
-          avatar: participant.avatar,
-          petName: participant.petName,
+          ...(participant.avatar !== undefined && { avatar: participant.avatar }),
+          ...(participant.petName !== undefined && { petName: participant.petName }),
           isMuted: false,
           isVideoEnabled: type === 'video',
           isSpeaking: false,
@@ -93,8 +93,8 @@ export function useGroupCall(
         localParticipant: {
           id: currentUserId,
           name: currentUserName,
-          avatar: currentUserAvatar,
-          petName: currentPetName,
+          ...(currentUserAvatar !== undefined && { avatar: currentUserAvatar }),
+          ...(currentPetName !== undefined && { petName: currentPetName }),
           isMuted: false,
           isVideoEnabled: type === 'video',
           isSpeaking: false,
@@ -141,8 +141,8 @@ export function useGroupCall(
     const callParticipant: CallParticipant = {
       id: participant.id,
       name: participant.name,
-      avatar: participant.avatar,
-      petName: participant.petName,
+      ...(participant.avatar !== undefined && { avatar: participant.avatar }),
+      ...(participant.petName !== undefined && { petName: participant.petName }),
       isMuted: false,
       isVideoEnabled: activeGroupCall.call.type === 'video',
       isSpeaking: false,
@@ -297,7 +297,7 @@ export function useGroupCall(
       return {
         ...prev,
         layout: 'spotlight',
-        spotlightParticipantId: participantId
+        ...(participantId !== undefined && { spotlightParticipantId: participantId })
       }
     })
   }

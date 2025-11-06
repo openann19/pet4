@@ -1,6 +1,13 @@
 /// <reference types="vite/client" />
-declare const _GITHUB_RUNTIME_PERMANENT_NAME: string
-declare const _BASE_KV_SERVICE_URL: string
+
+interface ImportMetaEnv {
+  readonly VITE_STUN_SERVERS?: string
+  readonly VITE_TURN_SERVERS?: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
 
 interface UserInfo {
   avatarUrl: string

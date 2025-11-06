@@ -7,12 +7,46 @@
  * Location: apps/web/src/core/services/media/video-engine.ts
  */
 
+import type {
+  EditOptions,
+  EditedMedia,
+  MediaInput,
+  VideoOperation,
+} from '@/core/types/media-types'
+
 export interface VideoFrameCallback {
   (): void
 }
 
 export interface VideoFrameCleanup {
   (): void
+}
+
+/**
+ * Edit video with operations
+ * @param input - Video input
+ * @param operations - Video operations to apply
+ * @param options - Edit options
+ * @returns Edited media
+ */
+export async function editVideo(
+  input: MediaInput,
+  _operations: VideoOperation[],
+  _options: EditOptions = {}
+): Promise<EditedMedia> {
+  // Video editing is not yet implemented
+  // For now, return the input as-is
+  if (input.type !== 'video') {
+    throw new Error('editVideo requires video input')
+  }
+  
+  return {
+    uri: input.uri,
+    type: 'video',
+    ...(input.width !== undefined && { width: input.width }),
+    ...(input.height !== undefined && { height: input.height }),
+    ...(input.durationSec !== undefined && { durationSec: input.durationSec }),
+  }
 }
 
 /**

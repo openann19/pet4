@@ -57,7 +57,7 @@ export function setStorageItem<T>(
     const entry: StorageEntry<T> = {
       value,
       timestamp: Date.now(),
-      ttl: options.ttl,
+      ...(options.ttl !== undefined ? { ttl: options.ttl } : {}),
     };
     localStorage.setItem(key, JSON.stringify(entry));
     return true;

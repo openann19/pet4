@@ -3,7 +3,7 @@
  * Location: src/hooks/use-camera.ts
  */
 
-import { Camera } from 'expo-camera'
+import { useCameraPermissions, type CameraViewRef } from 'expo-camera'
 import * as Haptics from 'expo-haptics'
 import * as ImageManipulator from 'expo-image-manipulator'
 import type { RefObject } from 'react'
@@ -19,17 +19,22 @@ export interface CameraResult {
 }
 
 export interface UseCameraReturn {
-  permission: Awaited<ReturnType<typeof Camera.useCameraPermissions>>[0] | null
+  permission: PermissionResponse | null
   requestPermission: () => Promise<boolean>
-  cameraRef: RefObject<Camera>
+  cameraRef: RefObject<CameraViewRef>
   takePicture: () => Promise<CameraResult | null>
   isProcessing: boolean
 }
 
+interface PermissionResponse {
+  granted: boolean
+  canAskAgain: boolean
+}
+
 export function useCamera(): UseCameraReturn {
-  const [permission, requestPermission] = Camera.useCameraPermissions()
+  const [permission, requestPermission] = useCameraPermissions()
   const [isProcessing, setIsProcessing] = useState(false)
-  const cameraRef = useRef<Camera>(null)
+  const cameraRef = useRef<CameraViewRef>(null)
 
   const takePicture = async (): Promise<CameraResult | null> => {
     if (!cameraRef.current || !permission?.granted) {
@@ -40,8 +45,9 @@ export function useCamera(): UseCameraReturn {
       setIsProcessing(true)
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
 
-      const photo = await cameraRef.current.takePictureAsync({
+      const photo = await cameraRef.current.takePicture({
         quality: 0.8,
+        base64: false,
       })
 
       // Compress and resize for optimal performance

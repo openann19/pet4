@@ -311,8 +311,8 @@ export class ModerationService {
 
     const decision: ModerationDecision = {
       action,
-      reason,
-      reasonText,
+      ...(reason ? { reason } : {}),
+      ...(reasonText ? { reasonText } : {}),
       reviewerId,
       reviewerName,
       reviewedAt: new Date().toISOString(),
@@ -438,7 +438,7 @@ export class KYCService {
 
     if ('sessions' in response.data) {
       const sessions = (response.data as KYCSessionListResponse).sessions
-      return sessions.length > 0 ? sessions[0] : null
+      return sessions.length > 0 ? sessions[0] ?? null : null
     }
 
     return response.data as KYCSession

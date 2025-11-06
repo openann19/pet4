@@ -54,8 +54,8 @@ class SentryConfigImpl {
   setUser(user: { id: string; email?: string; username?: string }): void {
     Sentry.setUser({
       id: user.id,
-      email: user.email,
-      username: user.username
+      ...(user.email ? { email: user.email } : {}),
+      ...(user.username ? { username: user.username } : {}),
     })
   }
 

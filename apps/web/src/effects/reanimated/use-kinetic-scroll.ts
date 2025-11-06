@@ -8,7 +8,6 @@ import { useCallback, useState, useRef } from 'react';
 
 export interface UseKineticScrollOptions {
   damping?: number;
-  mass?: number;
   velocityMultiplier?: number;
   clamp?: [number, number];
 }
@@ -16,7 +15,6 @@ export interface UseKineticScrollOptions {
 export function useKineticScroll(options: UseKineticScrollOptions = {}) {
   const {
     damping = 0.998,
-    mass = 1,
     velocityMultiplier = 1,
     clamp,
   } = options;
@@ -66,12 +64,12 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
     if (!isDragging) return;
     setIsDragging(false);
 
-    offset.value = withDecay({
-      velocity: velocity.value,
-      deceleration: damping,
-      clamp,
-    });
-  }, [isDragging, damping, clamp]);
+    const decayConfig = clamp !== undefined 
+      ? { velocity: velocity.value, deceleration: damping, rubberBandEffect: true as const, clamp }
+      : { velocity: velocity.value, deceleration: damping };
+    
+    offset.value = withDecay(decayConfig);
+  }, [isDragging, damping, clamp, velocity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],

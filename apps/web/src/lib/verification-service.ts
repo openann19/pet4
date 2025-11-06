@@ -66,7 +66,7 @@ export class VerificationService {
         status: approve ? 'verified' : 'rejected',
         reviewedAt: now,
         reviewedBy: 'system',
-        rejectionReason: approve ? undefined : 'Document unclear or incomplete'
+        ...(approve ? {} : { rejectionReason: 'Document unclear or incomplete' })
       }))
     }
   }

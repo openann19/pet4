@@ -82,7 +82,7 @@ class StripeServiceImpl {
 
       if (result.error) {
         logger.error('Payment confirmation failed', result.error)
-        return { success: false, error: result.error.message }
+        return { success: false, error: result.error.message || 'Payment confirmation failed' }
       }
 
       // On redirect, this won't be reached

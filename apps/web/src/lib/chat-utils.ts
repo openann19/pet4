@@ -156,7 +156,7 @@ export function createChatRoom(
     matchId,
     matchedPetId: petId2,
     matchedPetName: petName2,
-    matchedPetPhoto: petPhoto2,
+    ...(petPhoto2 ? { matchedPetPhoto: petPhoto2 } : {}),
     unreadCount: {},
     createdAt: now,
     updatedAt: now,

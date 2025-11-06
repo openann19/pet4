@@ -1,2 +1,2 @@
-export type { OptionalWithUndef } from './optional-with-undef.js'
+export type { OptionalWithUndef } from './optional-with-undef'
 

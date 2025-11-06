@@ -22,8 +22,8 @@ export async function startKYC(
     const result = await kycApi.startKYC({ userId, provider })
     return {
       sessionId: result.submissionId,
-      providerToken: result.providerToken,
-      url: result.url,
+      ...(result.providerToken ? { providerToken: result.providerToken } : {}),
+      ...(result.url ? { url: result.url } : {}),
     }
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
@@ -99,7 +99,7 @@ export async function manualKYCReview(
       submissionId,
       decision,
       actorUserId,
-      reason,
+      ...(reason ? { reason } : {}),
     })
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
@@ -120,7 +120,7 @@ export async function recordAgeVerification(
     return await kycApi.recordAgeVerification({
       userId,
       ageVerified,
-      country,
+      ...(country ? { country } : {}),
     })
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
@@ -146,8 +146,8 @@ export async function recordConsent(
       type,
       version,
       accepted,
-      ipAddress,
-      userAgent,
+      ...(ipAddress ? { ipAddress } : {}),
+      ...(userAgent ? { userAgent } : {}),
     })
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))

@@ -5,16 +5,16 @@
  */
 
 import type { Purchase, BusinessConfig } from './business-types'
+import type { OptionalWithUndef } from '../types/optional-with-undef'
 import { generateULID } from './utils'
 import { PaymentsService } from './payments-service'
-import { APIClient } from '@/lib/api-client'
+import { APIClient } from './api-client'
 import { createLogger } from './logger'
 
 const logger = createLogger('purchase-service')
 
 const ERROR_VERIFICATION_FAILED = 'Verification failed'
 const ERROR_INVALID_RECEIPT = 'Invalid receipt'
-const ERROR_INVALID_RESPONSE_FORMAT = 'Invalid response format'
 
 interface VerificationResponse {
   valid: boolean
@@ -26,10 +26,6 @@ interface VerificationResponse {
   currency?: string
   transactionId?: string
   error?: string
-}
-
-function isValidVerificationResponse(data: unknown): data is VerificationResponse {
-  return typeof data === 'object' && data !== null && 'valid' in data && typeof (data as VerificationResponse).valid === 'boolean'
 }
 
 /**
@@ -60,7 +56,7 @@ export async function verifyReceipt(
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined
     logger.error('Receipt verification failed', error instanceof Error ? error : new Error(String(error)))
-    return { valid: false, error: errorMessage || ERROR_VERIFICATION_FAILED }
+    return { valid: false, error: errorMessage ?? ERROR_VERIFICATION_FAILED }
   }
 }
 
@@ -84,15 +80,15 @@ async function verifyStripeReceipt(
       const purchase: Purchase = {
         id: generateULID(),
         userId,
-        sku: data.sku || 'premium_monthly',
+        sku: data.sku ?? 'premium_monthly',
         type: 'subscription',
         platform: 'web',
-        receipt: data.receipt || receipt,
+        receipt: data.receipt ?? receipt,
         status: 'active',
         startedAt: new Date().toISOString(),
         ...(data.expiresAt && { expiresAt: data.expiresAt }),
         ...(data.amount !== undefined && { amount: data.amount }),
-        currency: data.currency || 'USD',
+        currency: data.currency ?? 'USD',
         ...(data.transactionId && { transactionId: data.transactionId }),
         verifiedAt: new Date().toISOString(),
       }
@@ -103,11 +99,11 @@ async function verifyStripeReceipt(
       return { valid: true, purchase }
     }
 
-    return { valid: false, error: data.error || ERROR_INVALID_RECEIPT }
+    return { valid: false, error: data.error ?? ERROR_INVALID_RECEIPT }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined
     logger.error('Stripe receipt verification failed', error instanceof Error ? error : new Error(String(error)))
-    return { valid: false, error: errorMessage || ERROR_VERIFICATION_FAILED }
+    return { valid: false, error: errorMessage ?? ERROR_VERIFICATION_FAILED }
   }
 }
 
@@ -130,15 +126,15 @@ async function verifyAppleReceipt(
       const purchase: Purchase = {
         id: generateULID(),
         userId,
-        sku: data.sku || 'premium_monthly',
-        type: (data.type || 'subscription') as Purchase['type'],
+        sku: data.sku ?? 'premium_monthly',
+        type: (data.type ?? 'subscription') as Purchase['type'],
         platform: 'ios',
-        receipt: data.receipt || receipt,
+        receipt: data.receipt ?? receipt,
         status: 'active',
         startedAt: new Date().toISOString(),
         ...(data.expiresAt && { expiresAt: data.expiresAt }),
         ...(data.amount !== undefined && { amount: data.amount }),
-        currency: data.currency || 'USD',
+        currency: data.currency ?? 'USD',
         ...(data.transactionId && { transactionId: data.transactionId }),
         verifiedAt: new Date().toISOString(),
       }
@@ -149,11 +145,11 @@ async function verifyAppleReceipt(
       return { valid: true, purchase }
     }
 
-    return { valid: false, error: data.error || ERROR_INVALID_RECEIPT }
+    return { valid: false, error: data.error ?? ERROR_INVALID_RECEIPT }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined
     logger.error('Apple receipt verification failed', error instanceof Error ? error : new Error(String(error)))
-    return { valid: false, error: errorMessage || ERROR_VERIFICATION_FAILED }
+    return { valid: false, error: errorMessage ?? ERROR_VERIFICATION_FAILED }
   }
 }
 
@@ -176,15 +172,15 @@ async function verifyGoogleReceipt(
       const purchase: Purchase = {
         id: generateULID(),
         userId,
-        sku: data.sku || 'premium_monthly',
-        type: (data.type || 'subscription') as Purchase['type'],
+        sku: data.sku ?? 'premium_monthly',
+        type: (data.type ?? 'subscription') as Purchase['type'],
         platform: 'android',
-        receipt: data.receipt || receipt,
+        receipt: data.receipt ?? receipt,
         status: 'active',
         startedAt: new Date().toISOString(),
         ...(data.expiresAt && { expiresAt: data.expiresAt }),
         ...(data.amount !== undefined && { amount: data.amount }),
-        currency: data.currency || 'USD',
+        currency: data.currency ?? 'USD',
         ...(data.transactionId && { transactionId: data.transactionId }),
         verifiedAt: new Date().toISOString(),
       }
@@ -195,11 +191,11 @@ async function verifyGoogleReceipt(
       return { valid: true, purchase }
     }
 
-    return { valid: false, error: data.error || ERROR_INVALID_RECEIPT }
+    return { valid: false, error: data.error ?? ERROR_INVALID_RECEIPT }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : undefined
     logger.error('Google Play receipt verification failed', error instanceof Error ? error : new Error(String(error)))
-    return { valid: false, error: errorMessage || ERROR_VERIFICATION_FAILED }
+    return { valid: false, error: errorMessage ?? ERROR_VERIFICATION_FAILED }
   }
 }
 
@@ -272,9 +268,9 @@ export async function handleRefund(
       status: 'refunded'
     })
 
-    // Revoke entitlements
+    // Revoke entitlements - downgrade if user has a paid plan
     const entitlements = await PaymentsService.getUserEntitlements(purchase.userId)
-    if (entitlements.swipeDailyCap === 'unlimited') {
+    if (entitlements.planTier !== 'free') {
       // Downgrade to free plan
       await PaymentsService.updateEntitlements(purchase.userId, 'free', reason)
     }
@@ -307,7 +303,7 @@ export async function getBusinessConfig(): Promise<BusinessConfig | null> {
  * Update business config (admin only)
  */
 export async function updateBusinessConfig(
-  config: Partial<BusinessConfig>,
+  config: OptionalWithUndef<BusinessConfig>,
   updatedBy: string
 ): Promise<BusinessConfig> {
   try {

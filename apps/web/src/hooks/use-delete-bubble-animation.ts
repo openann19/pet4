@@ -69,15 +69,15 @@ export function useDeleteBubbleAnimation(
         case 'self-delete': {
           scale.value = withSequence(
             withSpring(1.1, springConfigs.snappy),
-            withTiming(0, { duration, easing: timingConfigs.smooth.easing })
+            withTiming(0, { ...timingConfigs.smooth, duration })
           )
           translateY.value = withTiming(-40, {
-            duration,
-            easing: timingConfigs.smooth.easing
+            ...timingConfigs.smooth,
+            duration
           })
           opacity.value = withTiming(0, {
-            duration,
-            easing: timingConfigs.smooth.easing
+            ...timingConfigs.smooth,
+            duration
           })
           height.value = withTiming(
             0,

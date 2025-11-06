@@ -37,11 +37,11 @@ export const communityService = {
     try {
       return await communityApi.createPost({
         kind: postData.kind || 'photo',
-        petIds: postData.petIds,
-        text: postData.text,
+        ...(postData.petIds ? { petIds: postData.petIds } : {}),
+        ...(postData.text ? { text: postData.text } : {}),
         media: Array.isArray(postData.media) ? postData.media.filter((m): m is string => typeof m === 'string') : [],
-        location: postData.location,
-        tags: postData.tags,
+        ...(postData.location ? { location: postData.location } : {}),
+        ...(postData.tags ? { tags: postData.tags } : {}),
         visibility: postData.visibility || 'public',
       })
     } catch (error) {
@@ -118,7 +118,7 @@ export const communityService = {
     try {
       return await communityApi.addComment(postId, {
         text: commentData.text,
-        parentId: commentData.parentId,
+        ...(commentData.parentId !== undefined && { parentId: commentData.parentId }),
       })
     } catch (error) {
       logger.error('Failed to add comment', error instanceof Error ? error : new Error(String(error)), { postId })
@@ -207,7 +207,7 @@ export const communityService = {
     try {
       return await communityApi.reportContent(targetType, targetId, {
         reasons,
-        description,
+        ...(description !== undefined && { description }),
       })
     } catch (error) {
       logger.error('Failed to report content', error instanceof Error ? error : new Error(String(error)), { targetType, targetId })

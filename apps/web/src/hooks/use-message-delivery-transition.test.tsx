@@ -70,13 +70,13 @@ describe('useMessageDeliveryTransition', () => {
   it('should handle status change effect', () => {
     const { result, rerender } = renderHook(
       ({ status, previousStatus }: { status: MessageStatus; previousStatus?: MessageStatus }) =>
-        useMessageDeliveryTransition({ status, previousStatus }),
-      { initialProps: { status: 'sent', previousStatus: undefined } }
+        useMessageDeliveryTransition({ status, ...(previousStatus !== undefined && { previousStatus }) }),
+      { initialProps: { status: 'sent' as MessageStatus } }
     )
 
     expect(result.current.colorIntensity.value).toBe(0)
 
-    rerender({ status: 'delivered', previousStatus: 'sent' })
+    rerender({ status: 'delivered' as MessageStatus, previousStatus: 'sent' as MessageStatus } as { status: MessageStatus; previousStatus?: MessageStatus })
 
     expect(result.current.colorIntensity.value).toBeGreaterThanOrEqual(0)
   })

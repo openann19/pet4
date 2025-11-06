@@ -42,7 +42,7 @@ export class PhotoModerationAuditService {
         action: options.action,
         performedBy: options.performedBy,
         performedAt: now,
-        reason: options.reason,
+        ...(options.reason !== undefined && { reason: options.reason }),
         previousStatus: options.previousStatus,
         newStatus: options.newStatus,
         metadata: options.metadata ?? {}

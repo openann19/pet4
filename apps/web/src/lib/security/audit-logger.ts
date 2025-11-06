@@ -6,11 +6,11 @@ const logger = createLogger('AuditLogger')
 export interface AuditEvent {
   action: string
   resource: string
-  resourceId?: string
-  userId?: string
-  metadata?: Record<string, any>
-  ipAddress?: string
-  userAgent?: string
+  resourceId?: string | undefined
+  userId?: string | undefined
+  metadata?: Record<string, unknown> | undefined
+  ipAddress?: string | undefined
+  userAgent?: string | undefined
   timestamp: string
   severity: 'low' | 'medium' | 'high' | 'critical'
 }
@@ -26,16 +26,20 @@ class AuditLoggerImpl {
     resource: string,
     options: Partial<AuditEvent> = {}
   ): Promise<void> {
+    const currentUserId = this.getCurrentUserId()
+    const userId = options.userId ?? currentUserId
+    const ipAddress = await this.getClientIP()
+    
     const event: AuditEvent = {
       action,
       resource,
-      resourceId: options.resourceId,
-      userId: options.userId || this.getCurrentUserId(),
-      metadata: options.metadata || {},
-      ipAddress: await this.getClientIP(),
+      ...(options.resourceId ? { resourceId: options.resourceId } : {}),
+      ...(userId ? { userId } : {}),
+      metadata: options.metadata ?? {},
+      ...(ipAddress ? { ipAddress } : {}),
       userAgent: navigator.userAgent,
       timestamp: new Date().toISOString(),
-      severity: options.severity || 'low'
+      severity: options.severity ?? 'low'
     }
 
     // Add to queue
@@ -58,11 +62,11 @@ class AuditLoggerImpl {
     action: string,
     resource: string,
     resourceId: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<void> {
     await this.logEvent(action, resource, {
       resourceId,
-      metadata,
+      ...(metadata ? { metadata } : {}),
       severity: 'high'
     })
   }
@@ -83,10 +87,10 @@ class AuditLoggerImpl {
   async logSecurityEvent(
     event: 'login_attempt' | 'password_reset' | 'account_locked' | 'suspicious_activity',
     userId?: string,
-    details?: Record<string, any>
+    details?: Record<string, unknown>
   ): Promise<void> {
     await this.logEvent('security_event', 'user', {
-      userId,
+      ...(userId ? { userId } : {}),
       metadata: { event, ...details },
       severity: 'high'
     })
@@ -100,7 +104,7 @@ class AuditLoggerImpl {
   ): Promise<void> {
     await this.logEvent('data_access', resource, {
       resourceId,
-      userId,
+      ...(userId ? { userId } : {}),
       metadata: { accessType },
       severity: accessType === 'delete' ? 'high' : 'low'
     })
@@ -121,9 +125,9 @@ class AuditLoggerImpl {
 
   private scheduleFlush(): void {
     if (this.flushTimer) return
-
+    
     this.flushTimer = setTimeout(() => {
-      this.flushEvents()
+      void this.flushEvents()
     }, this.FLUSH_INTERVAL)
   }
 
@@ -155,8 +159,9 @@ class AuditLoggerImpl {
       if (token) {
         const parts = token.split('.')
         if (parts[1]) {
-          const payload = JSON.parse(atob(parts[1]))
-          return payload.sub || payload.userId
+          const payload = JSON.parse(atob(parts[1])) as Record<string, unknown>
+          const userId = typeof payload['sub'] === 'string' ? payload['sub'] : typeof payload['userId'] === 'string' ? payload['userId'] : undefined
+          return userId
         }
       }
     } catch (error) {
@@ -169,8 +174,8 @@ class AuditLoggerImpl {
     try {
       // In production, this should come from backend
       const response = await fetch('https://api.ipify.org?format=json')
-      const data = await response.json()
-      return data.ip
+      const data = await response.json() as { ip?: string }
+      return typeof data.ip === 'string' ? data.ip : undefined
     } catch (error) {
       logger.error('Failed to get client IP', error)
       return undefined
@@ -188,7 +193,7 @@ export const auditLogger = new AuditLoggerImpl()
 // Flush events on page unload
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
-    auditLogger.cleanup()
+    void auditLogger.cleanup()
   })
 }
 

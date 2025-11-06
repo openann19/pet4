@@ -1,4 +1,5 @@
-import { useEffect, RefObject } from 'react';
+import { useEffect } from 'react';
+import type { RefObject } from 'react';
 
 /**
  * Hook for trapping focus within a container (useful for modals and dialogs)
@@ -45,6 +46,10 @@ export function useFocusTrap(
 
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
+      
+      if (firstElement === undefined || lastElement === undefined) {
+        return;
+      }
 
       if (event.shiftKey) {
         // Shift + Tab
@@ -63,8 +68,9 @@ export function useFocusTrap(
 
     // Focus first element when trap is enabled
     const focusableElements = getFocusableElements();
-    if (focusableElements.length > 0) {
-      focusableElements[0].focus();
+    const firstElement = focusableElements[0];
+    if (firstElement !== undefined) {
+      firstElement.focus();
     }
 
     container.addEventListener('keydown', handleTabKey);

@@ -1,10 +1,12 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { existsSync } from 'node:fs';
 
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react-swc';
-import type { PluginOption } from 'vite';
 import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import type { PluginOption, UserConfig } from 'vite';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = process.env['PROJECT_ROOT'] ?? __dirname;
@@ -68,14 +70,79 @@ const handleJSXImportAnalysisPlugin = (): PluginOption => ({
   },
 });
 
-export default defineConfig(async () => {
+// Plugin to resolve @petspark/shared workspace package
+const resolveWorkspacePackagePlugin = (): PluginOption => {
+  const sharedPackagePath = path.resolve(projectRoot, '../../packages/shared/src');
+  
+  return {
+    name: 'resolve-workspace-package',
+    enforce: 'pre',
+    resolveId(id, importer) {
+      // Resolve @petspark/shared to its index.ts
+      if (id === '@petspark/shared') {
+        return path.resolve(sharedPackagePath, 'index.ts');
+      }
+      // Resolve sub-imports like @petspark/shared/rng
+      if (id.startsWith('@petspark/shared/')) {
+        const subPath = id.replace('@petspark/shared/', '');
+        return path.resolve(sharedPackagePath, `${subPath}.ts`);
+      }
+      // Handle relative imports from within the shared package
+      // When importer is from shared package, resolve relative imports to .ts files
+      if (importer && importer.includes('packages/shared/src')) {
+        if (id.startsWith('./') || id.startsWith('../')) {
+          const importerDir = path.dirname(importer);
+          const resolved = path.resolve(importerDir, id);
+          
+          // If it ends with .js, try resolving to .ts (TypeScript ES module pattern)
+          if (id.endsWith('.js')) {
+            const withTs = resolved.replace(/\.js$/, '.ts');
+            if (existsSync(withTs)) {
+              return withTs;
+            }
+          }
+          
+          // If no extension, try .ts first
+          if (!path.extname(resolved)) {
+            const withTs = `${resolved}.ts`;
+            if (existsSync(withTs)) {
+              return withTs;
+            }
+          }
+          
+          // Fallback to original resolution
+          return resolved;
+        }
+      }
+      return null;
+    },
+  };
+};
+
+export default defineConfig(async (): Promise<UserConfig> => {
   const plugins: PluginOption[] = [
-    react({
-      jsxRuntime: 'automatic',
-    }),
+    resolveWorkspacePackagePlugin(),
+    react({}),
     transformJSXInJSPlugin(),
     handleJSXImportAnalysisPlugin(),
     tailwindcss(),
+    nodePolyfills({
+      include: [
+        'util',
+        'assert',
+        'process',
+        'stream',
+        'events',
+        'buffer',
+        'crypto',
+      ],
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+      protocolImports: true,
+    }),
   ];
 
   const optionalPlugins = await Promise.all([
@@ -91,18 +158,28 @@ export default defineConfig(async () => {
 
   return {
     plugins,
+    define: {
+      'process.env': {},
+      'process.version': JSON.stringify(''),
+      'process.platform': JSON.stringify('browser'),
+      'process.browser': true,
+      'process.nextTick': ((fn: () => void) => setTimeout(fn, 0)) as typeof process.nextTick,
+    },
     resolve: {
       alias: {
         '@': path.resolve(projectRoot, './src'),
         'react-native-reanimated': path.resolve(projectRoot, './src/lib/reanimated-web-polyfill.ts'),
       },
       conditions: ['import', 'module', 'browser', 'default'],
-      extensions: ['.web.js', '.web.jsx', '.web.ts', '.web.tsx', '.jsx', '.js', '.tsx', '.ts', '.json'],
+      extensions: ['.web.js', '.web.jsx', '.web.ts', '.web.tsx', '.jsx', '.js', '.tsx', '.ts', '.json'],                                                        
       dedupe: ['react', 'react-dom'],
     },
     esbuild: {
-      include: /node_modules\/react-native-reanimated\/.*\.js$/,
-      loader: 'jsx',
+      include: [
+        /node_modules\/react-native-reanimated\/.*\.js$/,
+        /packages\/shared\/src\/.*\.ts$/
+      ],
+      loader: 'tsx',
       jsx: 'automatic',
     },
     server: {
@@ -119,11 +196,16 @@ export default defineConfig(async () => {
     },
     optimizeDeps: {
       exclude: ['react-native', 'react-native-reanimated'],
+      include: ['@petspark/shared'],
       esbuildOptions: {
         loader: {
           '.js': 'jsx',
+          '.ts': 'ts',
         },
         resolveExtensions: ['.web.js', '.web.ts', '.web.tsx', '.js', '.jsx', '.json', '.ts', '.tsx'],
+        define: {
+          'process.env.NODE_ENV': '"development"',
+        },
       },
       entries: [],
     },

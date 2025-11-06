@@ -3,7 +3,8 @@
  * Supports both touch and mouse double-click events
  */
 
-import { useRef, useEffect, RefObject } from 'react';
+import { useRef, useEffect } from 'react';
+import type { RefObject } from 'react';
 
 interface DoubleTapHandlers {
   onDoubleTap?: () => void;
@@ -18,15 +19,15 @@ interface DoubleTapOptions {
 export function useDoubleTap<T extends HTMLElement = HTMLDivElement>(
   handlers: DoubleTapHandlers = {},
   options: DoubleTapOptions = {}
-): RefObject<T> {
+): RefObject<T | null> {
   const {
     delay = 300,
     enabled = true,
   } = options;
 
-  const ref = useRef<T>(null);
+  const ref = useRef<T | null>(null);
   const lastTapTime = useRef<number>(0);
-  const singleTapTimer = useRef<number>();
+  const singleTapTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     const element = ref.current;
@@ -51,7 +52,7 @@ export function useDoubleTap<T extends HTMLElement = HTMLDivElement>(
         lastTapTime.current = now;
         
         // Wait to see if another tap comes
-        singleTapTimer.current = window.setTimeout(() => {
+        singleTapTimer.current = setTimeout(() => {
           handlers.onSingleTap?.();
           singleTapTimer.current = undefined;
         }, delay);

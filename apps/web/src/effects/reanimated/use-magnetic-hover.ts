@@ -4,7 +4,7 @@
  */
 
 import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 export interface UseMagneticHoverOptions {
   strength?: number;

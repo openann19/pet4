@@ -21,12 +21,34 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     fallbackToCacheTimeout: 0
   },
   assetBundlePatterns: ['**/*'],
+  splash: {
+    image: './assets/icon.png',
+    resizeMode: 'contain',
+    backgroundColor: '#ffffff'
+  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'com.pawfectmatch.app',
     infoPlist: {
       NSCameraUsageDescription: 'We use the camera so you can verify your identity and pets.',
-      NSPhotoLibraryAddUsageDescription: 'Allow PetSpark to save photos that are used for verification.'
+      NSPhotoLibraryAddUsageDescription: 'Allow PetSpark to save photos that are used for verification.',
+      NSPhotoLibraryUsageDescription: 'Allow PetSpark to access your photos to share pet profiles.',
+      NSLocationWhenInUseUsageDescription: 'PetSpark uses your location to help you find pets nearby and connect with local pet owners.',
+      NSLocationAlwaysAndWhenInUseUsageDescription: 'PetSpark uses your location to help you find pets nearby and connect with local pet owners.',
+      NSMicrophoneUsageDescription: 'PetSpark uses the microphone for video calls and voice messages.',
+      NSUserTrackingUsageDescription: 'PetSpark uses tracking to provide personalized content and improve your experience.'
+    },
+    privacyManifests: {
+      NSPrivacyAccessedAPITypes: [
+        {
+          NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
+          NSPrivacyAccessedAPITypeReasons: ['CA92.1']
+        },
+        {
+          NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
+          NSPrivacyAccessedAPITypeReasons: ['C617.1']
+        }
+      ]
     }
   },
   android: {
@@ -38,10 +60,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     permissions: [
       'android.permission.INTERNET',
       'android.permission.CAMERA',
-      'android.permission.ACCESS_NETWORK_STATE'
+      'android.permission.ACCESS_NETWORK_STATE',
+      'android.permission.ACCESS_FINE_LOCATION',
+      'android.permission.ACCESS_COARSE_LOCATION',
+      'android.permission.RECORD_AUDIO',
+      'android.permission.READ_EXTERNAL_STORAGE',
+      'android.permission.WRITE_EXTERNAL_STORAGE'
     ],
     blockedPermissions: [],
-    softwareKeyboardLayoutMode: 'pan'
+    softwareKeyboardLayoutMode: 'pan',
+    intentFilters: []
   },
   extra: {
     eas: {

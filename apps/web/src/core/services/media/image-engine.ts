@@ -209,7 +209,7 @@ async function loadEncoded(uri: string): Promise<Uint8Array> {
   if (!isWeb()) {
     const FileSystem = await import('expo-file-system')
     const base64 = await FileSystem.default.readAsStringAsync(uri, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding: 'base64' as const,
     })
     const binaryString = atob(base64)
     const bytes = new Uint8Array(binaryString.length)
@@ -233,6 +233,7 @@ export async function applyImagePipeline(
   try {
     ImageOpsSchema.parse(ops)
 
+    // Dynamic import for React Native Skia (only available in native environments)
     const { Skia } = await import('@shopify/react-native-skia')
 
     const encoded = await loadEncoded(input.uri)
@@ -248,7 +249,8 @@ export async function applyImagePipeline(
     let current = baseImage
 
     const run = (
-      draw: (canvas: NonNullable<ReturnType<typeof Skia.Surface.MakeOffscreen>['getCanvas']>) => void,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      draw: (canvas: any) => void,
       nextW = w,
       nextH = h
     ): void => {
@@ -467,13 +469,14 @@ export async function applyImagePipeline(
 
     const FileSystem = await import('expo-file-system')
     const ext = isPng ? 'png' : 'jpg'
-    const cacheDir = FileSystem.default.cacheDirectory
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cacheDir = (FileSystem.default as any).cacheDirectory as string | undefined
     if (!cacheDir) {
       throw new Error('File system cache directory not available')
     }
     const outPath = `${cacheDir}edit-${Date.now()}.${ext}`
     await FileSystem.default.writeAsStringAsync(outPath, outB64, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding: 'base64' as const,
     })
     const info = await FileSystem.default.getInfoAsync(outPath)
     return {
@@ -481,7 +484,7 @@ export async function applyImagePipeline(
       uri: outPath,
       width: w,
       height: h,
-      bytes: info.size ?? undefined,
+      ...(info.size !== undefined && { bytes: info.size }),
     }
   } catch (error) {
     const err =

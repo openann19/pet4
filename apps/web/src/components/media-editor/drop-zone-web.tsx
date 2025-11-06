@@ -11,13 +11,13 @@ export interface DropZoneWebProps {
 }
 
 export function DropZoneWeb({ onDrop }: DropZoneWebProps): React.ReactElement | null {
-  if (!isWeb) {
-    return null
-  }
-
   const ref = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
+    if (!isWeb) {
+      return
+    }
+
     const element = ref.current
     if (!element) {
       return
@@ -49,20 +49,11 @@ export function DropZoneWeb({ onDrop }: DropZoneWebProps): React.ReactElement | 
     }
   }, [onDrop])
 
-  return (
-    <AnimatedView
-      ref={ref as React.Ref<HTMLDivElement>}
-      style={styles.box}
-      accessibilityRole="button"
-      {...({ 'aria-label': 'Drop photo or video here' } as React.HTMLAttributes<HTMLDivElement>)}
-    >
-      <Text style={styles.text}>Drag & drop photo or video</Text>
-    </AnimatedView>
-  )
-}
+  if (!isWeb) {
+    return null
+  }
 
-const styles = StyleSheet.create({
-  box: {
+  const dropZoneStyle: Record<string, unknown> = {
     borderWidth: 1,
     borderColor: '#666',
     borderStyle: 'dashed',
@@ -73,7 +64,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 12,
     minHeight: 120,
-  },
+  }
+
+  return (
+    <AnimatedView
+      ref={ref as React.Ref<HTMLDivElement>}
+      style={dropZoneStyle}
+      accessibilityRole="button"
+      {...({ 'aria-label': 'Drop photo or video here' } as React.HTMLAttributes<HTMLDivElement>)}
+    >
+      <Text style={styles.text}>Drag & drop photo or video</Text>
+    </AnimatedView>
+  )
+}
+
+const styles = StyleSheet.create({
   text: {
     color: '#999',
     fontSize: 14,

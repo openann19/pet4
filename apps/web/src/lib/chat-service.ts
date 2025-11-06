@@ -5,7 +5,7 @@
  * Migrated from spark.kv to use backend API endpoints.
  */
 
-import type { Message, MessageType, ReactionType, ReadReceipt, TypingIndicator } from './chat-types'
+import type { Message, MessageType, ReactionType } from './chat-types'
 import { chatApi } from '@/api/chat-api'
 import { createLogger } from './logger'
 
@@ -33,7 +33,7 @@ export async function sendMessage(
     type,
     content,
     status: 'sending',
-    metadata,
+    ...(metadata !== undefined && { metadata }),
     createdAt: new Date().toISOString(),
   }
 
@@ -48,7 +48,7 @@ export async function sendMessage(
     const response = await chatApi.sendMessage(roomId, {
       type,
       content,
-      metadata,
+      ...(metadata !== undefined && { metadata }),
     })
 
     // Update optimistic message with server response

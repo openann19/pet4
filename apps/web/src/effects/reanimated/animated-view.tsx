@@ -1,6 +1,6 @@
 'use client'
 
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties, ReactNode, MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
 type AnimatedStyleReturn = {
@@ -40,11 +40,11 @@ export type AnimatedStyle =
 
 interface AnimatedViewProps {
   children: ReactNode
-  style?: AnimatedStyle
-  className?: string
-  onMouseEnter?: () => void
-  onMouseLeave?: () => void
-  onClick?: (e?: React.MouseEvent) => void
+  style?: AnimatedStyle | Record<string, unknown> | unknown
+  className?: string | undefined
+  onMouseEnter?: MouseEventHandler<HTMLDivElement> | undefined
+  onMouseLeave?: MouseEventHandler<HTMLDivElement> | undefined
+  onClick?: MouseEventHandler<HTMLDivElement> | undefined
   [key: string]: unknown
 }
 
@@ -151,7 +151,7 @@ export function AnimatedView({
   onClick,
   ...props
 }: AnimatedViewProps) {
-  const computedStyle = animatedStyle ? useAnimatedStyleValue(animatedStyle) : {}
+  const computedStyle = animatedStyle ? useAnimatedStyleValue(animatedStyle as AnimatedStyle) : {}
 
   return (
     <div

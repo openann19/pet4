@@ -250,9 +250,11 @@ export function confirmAction(
       label: 'Confirm',
       onClick: onConfirm,
     },
-    cancel: onCancel ? {
-      label: 'Cancel',
-      onClick: onCancel,
-    } : undefined
+    ...(onCancel && {
+      cancel: {
+        label: 'Cancel',
+        onClick: onCancel,
+      }
+    })
   })
 }

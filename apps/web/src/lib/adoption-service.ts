@@ -113,7 +113,7 @@ export const adoptionService = {
     try {
       await adoptionApi.updateApplicationStatus(applicationId, {
         status,
-        reviewNotes,
+        ...(reviewNotes !== undefined && { reviewNotes })
       })
     } catch (error) {
       logger.error('Failed to update application status', error instanceof Error ? error : new Error(String(error)), { applicationId, status })

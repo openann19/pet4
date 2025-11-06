@@ -49,19 +49,27 @@ describe('getVideoThumbnails', () => {
 
       // Simulate metadata loaded
       setTimeout(() => {
-        if (mockVideo.onloadedmetadata) {
-          mockVideo.onloadedmetadata({} as Event)
-        }
+        mockVideo.addEventListener.mock.calls
+          .filter(([event]) => event === 'loadedmetadata')
+          .forEach(([_, handler]) => {
+            if (typeof handler === 'function') {
+              handler({} as Event)
+            }
+          })
       }, 0)
 
       // Simulate seeked
       setTimeout(() => {
-        if (mockVideo.onseeked) {
-          mockVideo.onseeked({} as Event)
-        }
+        mockVideo.addEventListener.mock.calls
+          .filter(([event]) => event === 'seeked')
+          .forEach(([_, handler]) => {
+            if (typeof handler === 'function') {
+              handler({} as Event)
+            }
+          })
       }, 100)
 
-      const thumbnails = await getVideoThumbnails('blob:test', 4)
+      await getVideoThumbnails('blob:test', 4)
 
       // Should attempt to generate thumbnails
       expect(document.createElement).toHaveBeenCalledWith('video')
@@ -78,9 +86,13 @@ describe('getVideoThumbnails', () => {
       vi.spyOn(document, 'createElement').mockReturnValue(mockVideo as unknown as HTMLVideoElement)
 
       setTimeout(() => {
-        if (mockVideo.onerror) {
-          mockVideo.onerror({} as Event)
-        }
+        mockVideo.addEventListener.mock.calls
+          .filter(([event]) => event === 'error')
+          .forEach(([_, handler]) => {
+            if (typeof handler === 'function') {
+              handler({} as Event)
+            }
+          })
       }, 0)
 
       const thumbnailsResult = await getVideoThumbnails('blob:test', 4)

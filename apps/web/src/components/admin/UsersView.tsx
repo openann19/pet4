@@ -16,6 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useStorage } from '@/hooks/useStorage'
 import type { Pet } from '@/lib/types'
+import type { Icon } from '@phosphor-icons/react'
 import {
   Calendar,
   CheckCircle,
@@ -28,7 +29,6 @@ import {
 } from '@phosphor-icons/react'
 import type { VariantProps } from 'class-variance-authority'
 import { AnimatePresence, motion } from 'framer-motion'
-import type React from 'react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -409,7 +409,7 @@ function StatusBadge({ status }: { status: string }) {
 interface InfoCardProps {
   label: string;
   value: string | number;
-  icon: React.ComponentType<{ size?: number; className?: string; color?: string }>;
+  icon: Icon;
 }
 
 function InfoCard({ label, value, icon: Icon }: InfoCardProps) {

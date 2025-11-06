@@ -58,7 +58,7 @@ export class PhotoModerationEventService {
         previousStatus,
         newStatus,
         timestamp: new Date().toISOString(),
-        metadata
+        ...(metadata !== undefined && { metadata })
       }
 
       const wsManager = this.getWSManager()

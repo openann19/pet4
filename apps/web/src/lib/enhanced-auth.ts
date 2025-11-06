@@ -66,8 +66,8 @@ export class EnhancedAuthService {
         } else {
           userProfile = await db.update<UserProfile>('users', userProfile.id, {
             lastSeenAt: new Date().toISOString(),
-            avatarUrl: currentUser.avatarUrl ?? undefined,
-            email: currentUser.email ?? undefined,
+            ...(currentUser.avatarUrl ? { avatarUrl: currentUser.avatarUrl } : {}),
+            ...(currentUser.email ? { email: currentUser.email } : {}),
             displayName: currentUser.displayName ?? currentUser.login ?? userProfile.displayName
           })
         }
@@ -105,9 +105,9 @@ export class EnhancedAuthService {
     const userProfile = await db.create<UserProfile>('users', {
       githubId: user.id,
       githubLogin: user.login ?? user.email ?? user.id,
-      email: user.email ?? undefined,
+      ...(user.email ? { email: user.email } : {}),
       displayName: user.displayName ?? user.login ?? 'Anonymous',
-      avatarUrl: user.avatarUrl ?? undefined,
+      ...(user.avatarUrl ? { avatarUrl: user.avatarUrl } : {}),
       roles,
       status: 'active',
       preferences: {
@@ -168,7 +168,7 @@ export class EnhancedAuthService {
 
     const session = await db.create<Session>('sessions', {
       userId: user.id,
-      githubUserId: user.githubId,
+      ...(user.githubId ? { githubUserId: user.githubId } : {}),
       expiresAt: expiresAt.toISOString(),
       lastActivityAt: new Date().toISOString()
     })

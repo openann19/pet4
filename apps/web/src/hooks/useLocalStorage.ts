@@ -37,7 +37,7 @@ export function useLocalStorage<T>(
       try {
         const valueToStore = value instanceof Function ? value(storedValue) : value;
         setStoredValue(valueToStore);
-        setStorageItem(key, valueToStore, { ttl });
+        setStorageItem(key, valueToStore, ttl !== undefined ? { ttl } : {});
       } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));
         logger.error(`Error setting localStorage key`, err, { key });

@@ -26,8 +26,8 @@ export interface PeerConfig {
  * Get STUN/TURN server configuration from environment or defaults
  */
 function getIceServers(): RTCIceServer[] {
-  const stunServers: unknown = import.meta.env.VITE_STUN_SERVERS
-  const turnServers: unknown = import.meta.env.VITE_TURN_SERVERS
+  const stunServers: unknown = import.meta.env['VITE_STUN_SERVERS']
+  const turnServers: unknown = import.meta.env['VITE_TURN_SERVERS']
 
   const servers: RTCIceServer[] = []
 

@@ -1,4 +1,5 @@
-import type { ApiClientConfig, ApiError, ApiResponse, RequestOptions } from './types.js'
+import type { ApiClientConfig, ApiResponse, RequestOptions } from './types'
+import { ApiError } from './types'
 
 export function createApiClient(config: ApiClientConfig) {
   const {
@@ -45,7 +46,7 @@ export function createApiClient(config: ApiClientConfig) {
       clearTimeout(timeoutId)
 
       const responseHeaders: Record<string, string> = {}
-      response.headers.forEach((value, key) => {
+      response.headers.forEach((value: string, key: string) => {
         responseHeaders[key] = value
       })
 

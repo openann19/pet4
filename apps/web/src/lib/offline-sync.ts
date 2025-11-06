@@ -3,6 +3,7 @@ import { createLogger } from './logger'
 import { storage } from './storage'
 import { APIClient } from './api-client'
 import { ENDPOINTS } from './endpoints'
+import type { ReactionType } from './chat-types'
 
 const logger = createLogger('offline-sync')
 
@@ -234,7 +235,7 @@ class OfflineSyncManager {
         logger.debug('Executing: react_to_message', { actionId: action.id })
         const { chatApi } = await import('@/api/chat-api')
         const data = action.data as { messageId: string; reaction: string; userId: string }
-        await chatApi.addReaction(data.messageId, { reaction: data.reaction as unknown })
+        await chatApi.addReaction(data.messageId, { reaction: data.reaction as ReactionType })
         break
       }
       case 'update_profile': {

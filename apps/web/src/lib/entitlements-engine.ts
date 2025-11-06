@@ -132,7 +132,7 @@ export async function incrementUsage(
     return {
       success: false,
       remaining: checkResult.remaining ?? 0,
-      limit: checkResult.limit,
+      ...(checkResult.limit !== undefined ? { limit: checkResult.limit } : {}),
     }
   }
 
@@ -146,9 +146,7 @@ export async function incrementUsage(
     // If API fails, return success but log warning (optimistic client-side check passed)
     return {
       success: true,
-      remaining: entitlements.swipeDailyCap === 'unlimited' 
-        ? undefined 
-        : (checkResult.remaining ?? 0),
+      ...(entitlements.swipeDailyCap !== 'unlimited' ? { remaining: entitlements.swipeDailyCap - (usage.swipes ?? 0) } : {}),
     }
   }
 }

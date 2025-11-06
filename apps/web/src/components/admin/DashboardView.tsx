@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useStorage } from '@/hooks/useStorage'
 import type { Match, Pet } from '@/lib/types'
+import type { Icon } from '@phosphor-icons/react'
 import {
   ChatCircle,
   CheckCircle,
@@ -15,7 +16,6 @@ import {
   Users
 } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
-import type React from 'react'
 import { useEffect, useState } from 'react'
 
 interface Report {
@@ -289,7 +289,7 @@ export default function DashboardView() {
 }
 
 interface ActivityItemProps {
-  icon: React.ComponentType<{ size?: number; className?: string; weight?: 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone' }>
+  icon: Icon
   title: string
   description: string
   time: string

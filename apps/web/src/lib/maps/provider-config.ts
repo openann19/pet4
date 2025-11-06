@@ -20,29 +20,29 @@ const DEFAULT_PROVIDER_CONFIG: MapProviderConfig = {
 };
 
 function getEnvConfig(): MapProviderConfig {
-  const env = import.meta.env.MODE || 'development';
+  const env = import.meta.env['MODE'] || 'development';
   
   const configs: Record<string, Partial<MapProviderConfig>> = {
     development: {
-      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY || '',
-      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY || '',
-      GEOCODING_ENDPOINT: import.meta.env.VITE_GEOCODING_ENDPOINT || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER || 'maplibre') as 'maplibre' | 'mapbox',
+      MAP_STYLE_URL: import.meta.env['VITE_MAP_STYLE_URL'] || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
+      MAP_TILES_API_KEY: import.meta.env['VITE_MAP_TILES_API_KEY'] || '',
+      GEOCODING_API_KEY: import.meta.env['VITE_GEOCODING_API_KEY'] || '',
+      GEOCODING_ENDPOINT: import.meta.env['VITE_GEOCODING_ENDPOINT'] || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+      PROVIDER: (import.meta.env['VITE_MAP_PROVIDER'] || 'maplibre') as 'maplibre' | 'mapbox',
     },
     staging: {
-      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY || '',
-      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY || '',
-      GEOCODING_ENDPOINT: import.meta.env.VITE_GEOCODING_ENDPOINT || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER || 'maplibre') as 'maplibre' | 'mapbox',
+      MAP_STYLE_URL: import.meta.env['VITE_MAP_STYLE_URL'] || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
+      MAP_TILES_API_KEY: import.meta.env['VITE_MAP_TILES_API_KEY'] || '',
+      GEOCODING_API_KEY: import.meta.env['VITE_GEOCODING_API_KEY'] || '',
+      GEOCODING_ENDPOINT: import.meta.env['VITE_GEOCODING_ENDPOINT'] || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+      PROVIDER: (import.meta.env['VITE_MAP_PROVIDER'] || 'maplibre') as 'maplibre' | 'mapbox',
     },
     production: {
-      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY || '',
-      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY || '',
-      GEOCODING_ENDPOINT: import.meta.env.VITE_GEOCODING_ENDPOINT || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER || 'maplibre') as 'maplibre' | 'mapbox',
+      MAP_STYLE_URL: import.meta.env['VITE_MAP_STYLE_URL'] || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
+      MAP_TILES_API_KEY: import.meta.env['VITE_MAP_TILES_API_KEY'] || '',
+      GEOCODING_API_KEY: import.meta.env['VITE_GEOCODING_API_KEY'] || '',
+      GEOCODING_ENDPOINT: import.meta.env['VITE_GEOCODING_ENDPOINT'] || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+      PROVIDER: (import.meta.env['VITE_MAP_PROVIDER'] || 'maplibre') as 'maplibre' | 'mapbox',
     },
   };
 

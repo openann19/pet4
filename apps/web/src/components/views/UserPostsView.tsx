@@ -132,7 +132,6 @@ export default function UserPostsView({
         <div className="flex items-center gap-3 flex-1">
           <Avatar
             {...(authorAvatar && { src: authorAvatar })}
-            alt={authorName}
             className="w-10 h-10"
           >
             <User size={20} />

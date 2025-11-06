@@ -247,8 +247,8 @@ export function createGroupCall(
     startTime: new Date().toISOString(),
     duration: 0,
     quality: 'excellent',
-    playdateId,
-    title
+    ...(playdateId && { playdateId }),
+    ...(title && { title })
   }
 }
 

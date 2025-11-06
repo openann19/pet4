@@ -310,8 +310,8 @@ export function applyTemplateToProfile(
     interests: template.defaults.interests,
     lookingFor: template.defaults.lookingFor,
     bio: partialData.bio || template.defaults.bio || '',
-    size: partialData.size || template.defaults.size,
-    activityLevel: partialData.activityLevel || template.defaults.activityLevel,
-    breed: partialData.breed || template.defaults.breed || ''
+    ...(partialData.size || template.defaults.size ? { size: partialData.size || template.defaults.size } : {}),
+    ...(partialData.activityLevel || template.defaults.activityLevel ? { activityLevel: partialData.activityLevel || template.defaults.activityLevel } : {}),
+    ...(partialData.breed || template.defaults.breed ? { breed: partialData.breed || template.defaults.breed || '' } : {})
   }
 }

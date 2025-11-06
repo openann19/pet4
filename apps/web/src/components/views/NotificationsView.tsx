@@ -247,7 +247,6 @@ export default function NotificationsView({
                 >
                   <Avatar
                     {...(notification.actorAvatar && { src: notification.actorAvatar })}
-                    alt={notification.actorName}
                     className="w-12 h-12"
                   >
                     <Icon size={20} />

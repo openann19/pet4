@@ -41,11 +41,11 @@ export async function createMatchNotification(
     priority: 'high',
     actionLabel: 'View Match',
     actionUrl: `/matches/${matchId}`,
-    avatarUrl,
+    ...(avatarUrl ? { avatarUrl } : {}),
     metadata: {
       petName: matchedPetName,
       matchId,
-      compatibilityScore
+      ...(compatibilityScore !== undefined ? { compatibilityScore } : {}),
     }
   })
 }
@@ -63,7 +63,7 @@ export async function createMessageNotification(
     priority: 'normal',
     actionLabel: 'Reply',
     actionUrl: `/chat/${roomId}`,
-    avatarUrl,
+    ...(avatarUrl ? { avatarUrl } : {}),
     metadata: {
       userName: senderName,
       messageId: roomId
@@ -84,7 +84,7 @@ export async function createLikeNotification(
       : `${petName} and ${count - 1} others liked your pet`,
     priority: 'normal',
     actionLabel: 'View Profile',
-    avatarUrl,
+    ...(avatarUrl ? { avatarUrl } : {}),
     metadata: {
       petName,
       count
@@ -142,8 +142,8 @@ export async function createStoryNotification(
       : `${userName} and others shared new stories`,
     priority: 'low',
     actionLabel: 'Watch',
-    avatarUrl,
-    imageUrl,
+    ...(avatarUrl ? { avatarUrl } : {}),
+    ...(imageUrl ? { imageUrl } : {}),
     metadata: {
       userName,
       count
@@ -177,7 +177,7 @@ export async function createAchievementNotification(
     message: `You earned "${achievementName}" - ${description}`,
     priority: 'high',
     actionLabel: 'View Achievements',
-    imageUrl,
+    ...(imageUrl ? { imageUrl } : {}),
     metadata: {
       achievementBadge: badge || achievementName
     }
@@ -195,9 +195,9 @@ export async function createSocialNotification(
     title,
     message,
     priority: 'normal',
-    avatarUrl,
+    ...(avatarUrl ? { avatarUrl } : {}),
     metadata: {
-      userName
+      ...(userName ? { userName } : {}),
     }
   })
 }
@@ -214,9 +214,9 @@ export async function createEventNotification(
     message: eventDetails,
     priority: 'normal',
     actionLabel: 'View Event',
-    imageUrl,
+    ...(imageUrl ? { imageUrl } : {}),
     metadata: {
-      location,
+      ...(location ? { location } : {}),
       eventType: eventName
     }
   })

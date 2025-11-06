@@ -74,8 +74,12 @@ export class SwipeEngine {
     onStateChange?: (state: SwipeState, metrics: SwipeMetrics) => void
     onCommit?: (result: SwipeResult) => void
   }) {
-    this.onStateChange = callbacks.onStateChange
-    this.onCommit = callbacks.onCommit
+    if (callbacks.onStateChange !== undefined) {
+      this.onStateChange = callbacks.onStateChange
+    }
+    if (callbacks.onCommit !== undefined) {
+      this.onCommit = callbacks.onCommit
+    }
   }
 
   public start(x: number, y: number) {

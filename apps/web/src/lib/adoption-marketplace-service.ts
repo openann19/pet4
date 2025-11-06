@@ -72,13 +72,13 @@ class AdoptionMarketplaceService {
     try {
       const response = await adoptionApi.getAdoptionProfiles({
         status: 'active',
-        breed: filters?.breed?.join(','),
-        minAge: filters?.ageMin,
-        maxAge: filters?.ageMax,
-        size: filters?.size,
-        location: filters?.location,
-        goodWithKids: filters?.goodWithKids,
-        goodWithPets: filters?.goodWithPets
+        ...(filters?.breed && { breed: filters.breed.join(',') }),
+        ...(filters?.ageMin !== undefined && { minAge: filters.ageMin }),
+        ...(filters?.ageMax !== undefined && { maxAge: filters.ageMax }),
+        ...(filters?.size && filters.size.length > 0 && { size: filters.size }),
+        ...(filters?.location && { location: filters.location }),
+        ...(filters?.goodWithKids !== undefined && { goodWithKids: filters.goodWithKids }),
+        ...(filters?.goodWithPets !== undefined && { goodWithPets: filters.goodWithPets })
       })
       
       let listings = response.profiles.map((p: AdoptionProfile) => this.convertProfileToListing(p))
@@ -199,9 +199,9 @@ class AdoptionMarketplaceService {
         householdType: data.homeType === 'house' ? 'house' : data.homeType === 'apartment' ? 'apartment' : data.homeType === 'condo' ? 'condo' : 'other',
         hasYard: data.hasYard,
         hasOtherPets: data.hasOtherPets,
-        otherPetsDetails: data.otherPetsDetails,
+        ...(data.otherPetsDetails && { otherPetsDetails: data.otherPetsDetails }),
         hasChildren: data.hasChildren,
-        childrenAges: data.childrenAges,
+        ...(data.childrenAges && { childrenAges: data.childrenAges }),
         experience: data.message || '',
         reason: data.message
       })
@@ -235,7 +235,7 @@ class AdoptionMarketplaceService {
         reviewedBy: undefined,
         reviewNotes: apiApp.reviewNotes,
         ownerNotes: undefined
-      } as AdoptionApplication
+      } as unknown as AdoptionApplication
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to create application', err, { listingId: data.listingId })
@@ -278,7 +278,7 @@ class AdoptionMarketplaceService {
         reviewedBy: undefined,
         reviewNotes: apiApp.reviewNotes,
         ownerNotes: undefined
-      } as AdoptionApplication
+      } as unknown as AdoptionApplication
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to get application', err, { id })
@@ -317,7 +317,7 @@ class AdoptionMarketplaceService {
         reviewedBy: undefined,
         reviewNotes: apiApp.reviewNotes,
         ownerNotes: undefined
-      } as AdoptionApplication))
+      } as unknown as AdoptionApplication))
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to get listing applications', err, { listingId })
@@ -356,7 +356,7 @@ class AdoptionMarketplaceService {
         reviewedBy: undefined,
         reviewNotes: apiApp.reviewNotes,
         ownerNotes: undefined
-      } as AdoptionApplication))
+      } as unknown as AdoptionApplication))
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to get user applications', err, { userId })
@@ -374,7 +374,7 @@ class AdoptionMarketplaceService {
       const apiStatus = status === 'submitted' || status === 'under_review' ? 'pending' : status === 'accepted' ? 'approved' : 'rejected'
       await adoptionApi.updateApplicationStatus(applicationId, {
         status: apiStatus,
-        reviewNotes: notes
+        ...(notes !== undefined && { reviewNotes: notes })
       })
       
       // If accepted, update listing status to adopted
@@ -465,7 +465,7 @@ class AdoptionMarketplaceService {
       id: profile._id,
       ownerId: profile.shelterId,
       ownerName: profile.shelterName,
-      ownerAvatar: originalData?.ownerAvatar,
+      ...(originalData?.ownerAvatar !== undefined && { ownerAvatar: originalData.ownerAvatar }),
       petId: profile.petId,
       petName: profile.petName,
       petBreed: profile.breed,

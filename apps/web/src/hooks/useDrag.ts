@@ -3,7 +3,8 @@
  * Supports both touch and mouse drag events with bounds
  */
 
-import { useState, useRef, useEffect, RefObject } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import type { RefObject } from 'react';
 
 interface DragPosition {
   x: number;
@@ -30,14 +31,14 @@ interface DragOptions {
 export function useDrag<T extends HTMLElement = HTMLDivElement>(
   handlers: DragHandlers = {},
   options: DragOptions = {}
-): RefObject<T> {
+): RefObject<T | null> {
   const {
     enabled = true,
     bounds,
     axis = 'both',
   } = options;
 
-  const ref = useRef<T>(null);
+  const ref = useRef<T | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const startPos = useRef<DragPosition>({ x: 0, y: 0 });
   const currentPos = useRef<DragPosition>({ x: 0, y: 0 });

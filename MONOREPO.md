@@ -173,7 +173,28 @@ Run the validation script to verify the setup:
 
 ### Peer Dependency Conflicts
 
-The repository uses `.npmrc` with `legacy-peer-deps=true` to handle React version differences between web (React 19) and native (React 18).
+#### React Version Alignment
+
+Both applications now use React 18 for consistency:
+
+- **Web app**: React 18.2.0 (`apps/web/package.json`)
+- **Mobile app**: React 18.2.0 (`apps/mobile/package.json`) - Expo SDK 51 requires React 18
+
+This alignment simplifies dependency management and ensures consistent behavior across platforms.
+
+**Configuration:**
+
+1. **Dependency Management**: Both apps use the same React version, eliminating version conflicts
+2. **Metro Configuration**: `apps/mobile/metro.config.js` is configured to resolve dependencies from both app-local and workspace root `node_modules`
+3. **Installation**: Standard pnpm installation without special peer dependency handling
+
+**Benefits:**
+
+- No runtime conflicts between web and mobile dev servers
+- Consistent React behavior across platforms
+- Simplified debugging and testing
+
+**Future Migration**: When Expo SDK supports React 19 (expected with SDK 53+), both apps can be upgraded together to React 19.
 
 ### Module Resolution Issues
 

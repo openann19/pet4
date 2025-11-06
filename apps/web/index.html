@@ -33,8 +33,10 @@
               // Normalize error for potential logging if logger is available
               const err = error instanceof Error ? error : new Error(String(error));
               try {
-                if (typeof window !== 'undefined' && (window as Window & { __logger__?: { error: (msg: string, err: Error, data?: unknown) => void } }).__logger__) {
-                  (window as Window & { __logger__?: { error: (msg: string, err: Error, data?: unknown) => void } }).__logger__?.error('Theme preset initialization failed', err, { source: 'index.html' });
+                if (typeof window !== 'undefined' && window.__logger__) {
+                  if (window.__logger__.error) {
+                    window.__logger__.error('Theme preset initialization failed', err, { source: 'index.html' });
+                  }
                 }
               } catch (loggerError) {
                 // Silent fallback if logger unavailable
@@ -61,8 +63,10 @@
               // Normalize error for potential logging if logger is available
               const err = error instanceof Error ? error : new Error(String(error));
               try {
-                if (typeof window !== 'undefined' && (window as Window & { __logger__?: { error: (msg: string, err: Error, data?: unknown) => void } }).__logger__) {
-                  (window as Window & { __logger__?: { error: (msg: string, err: Error, data?: unknown) => void } }).__logger__?.error('Theme initialization failed', err, { source: 'index.html' });
+                if (typeof window !== 'undefined' && window.__logger__) {
+                  if (window.__logger__.error) {
+                    window.__logger__.error('Theme initialization failed', err, { source: 'index.html' });
+                  }
                 }
               } catch (loggerError) {
                 // Silent fallback if logger unavailable
@@ -85,8 +89,10 @@
           // Normalize error for potential logging if logger is available
           const err = error instanceof Error ? error : new Error(String(error));
           try {
-            if (typeof window !== 'undefined' && (window as Window & { __logger__?: { error: (msg: string, err: Error, data?: unknown) => void } }).__logger__) {
-              (window as Window & { __logger__?: { error: (msg: string, err: Error, data?: unknown) => void } }).__logger__?.error('Theme initialization failed', err, { source: 'index.html' });
+            if (typeof window !== 'undefined' && window.__logger__) {
+              if (window.__logger__.error) {
+                window.__logger__.error('Theme initialization failed', err, { source: 'index.html' });
+              }
             }
           } catch (loggerError) {
             // Silent fallback if logger unavailable

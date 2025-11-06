@@ -3,7 +3,8 @@
  * Supports touch and mouse events with configurable delay
  */
 
-import { useRef, useEffect, useCallback, RefObject } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
+import type { RefObject } from 'react';
 
 interface LongPressHandlers {
   onLongPress?: () => void;
@@ -21,14 +22,14 @@ interface LongPressOptions {
 export function useLongPress<T extends HTMLElement = HTMLDivElement>(
   handlers: LongPressHandlers = {},
   options: LongPressOptions = {}
-): RefObject<T> {
+): RefObject<T | null> {
   const {
     delay = 500,
     moveThreshold = 10,
     enabled = true,
   } = options;
 
-  const ref = useRef<T>(null);
+  const ref = useRef<T | null>(null);
   const timerRef = useRef<number>();
   const startX = useRef<number>(0);
   const startY = useRef<number>(0);

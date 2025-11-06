@@ -239,8 +239,7 @@ export async function updateFeatureFlag(
       modifiedBy
     }
     await storage.set('feature-flags', currentFlags)
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
+  } catch {
     // Fallback to local storage if API fails
     const currentFlags = await storage.get<Record<FeatureFlagKey, FeatureFlag>>('feature-flags') || DEFAULT_FLAGS
     currentFlags[flagKey] = {
@@ -256,8 +255,7 @@ export async function updateFeatureFlag(
 export async function getABTestVariant(testId: string, userId: string): Promise<ABTestVariant | null> {
   try {
     return await featureFlagsApi.getABTestVariant(testId, userId)
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
+  } catch {
     // Fallback to local storage if API fails
     const tests = await storage.get<Record<string, ABTest>>('ab-tests') || {}
     const test = tests[testId]
@@ -297,8 +295,7 @@ export async function trackABTestExposure(
 ): Promise<void> {
   try {
     await featureFlagsApi.trackABTestExposure(testId, userId, variantId)
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
+  } catch {
     // Fallback to local storage if API fails
     const exposures = await storage.get<Array<{
       testId: string

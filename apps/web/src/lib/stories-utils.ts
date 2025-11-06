@@ -19,7 +19,7 @@ export function createStory(
     id: generateULID(),
     userId,
     userName,
-    userAvatar,
+    ...(userAvatar ? { userAvatar } : {}),
     petId,
     petName,
     petPhoto,
@@ -204,7 +204,7 @@ export function addStoryView(
   const newView: StoryView = {
     userId,
     userName,
-    userAvatar,
+    ...(userAvatar ? { userAvatar } : {}),
     viewedAt: new Date().toISOString(),
     viewDuration,
     completedView

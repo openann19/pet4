@@ -100,7 +100,9 @@ class AnalyticsService {
 
   private async initializeSession() {
     const userId = localStorage.getItem('user-id') || undefined
-    this.userId = userId
+    if (userId) {
+      this.userId = userId
+    }
 
     await this.trackEvent('session_start', {
       entryPoint: window.location.pathname,
@@ -114,7 +116,7 @@ class AnalyticsService {
       name,
       timestamp: new Date().toISOString(),
       sessionId: this.sessionId,
-      userId: this.userId,
+      ...(this.userId ? { userId: this.userId } : {}),
       properties: {
         ...properties,
         url: window.location.href,
@@ -173,7 +175,7 @@ class AnalyticsService {
 
     const session: UserSession = {
       id: this.sessionId,
-      userId: this.userId,
+      ...(this.userId ? { userId: this.userId } : {}),
       startTime: new Date(this.sessionStart).toISOString(),
       endTime: new Date().toISOString(),
       events: this.events,
@@ -183,7 +185,7 @@ class AnalyticsService {
         language: navigator.language,
         screenSize: `${window.innerWidth}x${window.innerHeight}`
       },
-      entryPoint: (this.events[0]?.properties?.pathname as string | undefined) || '/',
+      entryPoint: (this.events[0]?.properties?.['pathname'] as string | undefined) || '/',
       exitPoint: window.location.pathname
     }
 
@@ -354,7 +356,7 @@ export async function getUserBehaviorInsights(userId: string): Promise<UserBehav
 
     const viewedPets = userEvents
       .filter(e => e.name === 'pet_viewed')
-      .map(e => e.properties.petId)
+      .map(e => e.properties['petId'])
       .filter((petId): petId is string => typeof petId === 'string')
     const mostViewedPets: string[] = Array.from(new Set(viewedPets)).slice(0, 10)
 
@@ -370,7 +372,7 @@ export async function getUserBehaviorInsights(userId: string): Promise<UserBehav
 
     const likedPets = userEvents
       .filter(e => e.name === 'pet_liked')
-      .map(e => e.properties.breed)
+      .map(e => e.properties['breed'])
       .filter((breed): breed is string => typeof breed === 'string')
     const preferredPetTypes: string[] = Array.from(new Set(likedPets)).slice(0, 5)
 

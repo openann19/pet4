@@ -86,7 +86,7 @@ export function handleAppDeepLink(url: string): DeepLinkParams | null {
     return {
       type: type as DeepLinkParams['type'],
       id,
-      location,
+      ...(location ? { location } : {}),
     };
   } catch {
     return null;

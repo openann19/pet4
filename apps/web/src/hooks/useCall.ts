@@ -52,19 +52,19 @@ export function useCall(roomId: string, currentUserId: string, currentUserName: 
         call: {
           ...call,
           videoQuality: preferredQuality,
-          actualResolution
+          ...(actualResolution !== undefined && { actualResolution })
         },
         localParticipant: {
           id: currentUserId,
           name: currentUserName,
-          avatar: currentUserAvatar,
+          ...(currentUserAvatar !== undefined && { avatar: currentUserAvatar }),
           isMuted: false,
           isVideoEnabled: type === 'video'
         },
         remoteParticipant: {
           id: recipientId,
           name: recipientName,
-          avatar: recipientAvatar,
+          ...(recipientAvatar !== undefined && { avatar: recipientAvatar }),
           isMuted: false,
           isVideoEnabled: type === 'video'
         },
@@ -133,19 +133,18 @@ export function useCall(roomId: string, currentUserId: string, currentUserName: 
           ...incomingCall, 
           status: 'connecting',
           videoQuality: preferredQuality,
-          actualResolution
+          ...(actualResolution !== undefined && { actualResolution })
         },
         localParticipant: {
           id: currentUserId,
           name: currentUserName,
-          avatar: currentUserAvatar,
+          ...(currentUserAvatar !== undefined && { avatar: currentUserAvatar }),
           isMuted: false,
           isVideoEnabled: incomingCall.type === 'video'
         },
         remoteParticipant: {
           id: incomingCall.initiatorId,
           name: 'Pet Owner',
-          avatar: undefined,
           isMuted: false,
           isVideoEnabled: incomingCall.type === 'video'
         },

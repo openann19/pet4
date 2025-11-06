@@ -214,7 +214,7 @@ export class ValidatedAPIClient {
     return this.request(endpoint, schema, {
       ...options,
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined
+      ...(data ? { body: JSON.stringify(data) } : {}),
     })
   }
 

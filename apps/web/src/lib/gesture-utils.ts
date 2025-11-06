@@ -58,8 +58,7 @@ export function getPlatformGestureConfig(): {
   return {
     pan: {
       enabled: true,
-      activeOffsetX: isWeb ? undefined : [-10, 10],
-      activeOffsetY: isWeb ? undefined : [-10, 10],
+      ...(isWeb ? {} : { activeOffsetX: [-10, 10], activeOffsetY: [-10, 10] }),
       minPointers: 1,
       maxPointers: 1
     },

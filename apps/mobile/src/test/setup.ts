@@ -1,10 +1,26 @@
-import '@testing-library/jest-native/extend-expect'
+// Re-enable testing-library now that resolver conditions are set
 import { cleanup } from '@testing-library/react-native'
 import { afterEach, vi } from 'vitest'
 
 // Cleanup after each test
 afterEach(() => {
   cleanup()
+})
+
+// Set globals/env expected by app code
+// @ts-expect-error - global assignment for tests
+global.__DEV__ = false
+process.env['EXPO_PUBLIC_API_URL'] = process.env['EXPO_PUBLIC_API_URL'] ?? ''
+process.env['EXPO_PUBLIC_ANALYTICS_ENDPOINT'] = process.env['EXPO_PUBLIC_ANALYTICS_ENDPOINT'] ?? ''
+
+// Help surface early syntax errors with clearer stacks during environment boot
+process.on('uncaughtException', (err) => {
+  // eslint-disable-next-line no-console
+  console.error('uncaughtException:', err && (err as Error).stack || err)
+})
+process.on('unhandledRejection', (reason) => {
+  // eslint-disable-next-line no-console
+  console.error('unhandledRejection:', reason)
 })
 
 // Mock React Native modules

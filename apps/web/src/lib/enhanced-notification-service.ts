@@ -304,9 +304,9 @@ export class EnhancedNotificationService {
   private getDeepLink(type: Notification['type'], data: Record<string, unknown>): string {
     switch (type) {
       case 'match_created':
-        return `/matches/${data.matchId as string}`
+        return `/matches/${data['matchId'] as string}`
       case 'new_message':
-        return `/chat/${data.chatRoomId as string}`
+        return `/chat/${data['chatRoomId'] as string}`
       case 'like_received':
         return '/discover'
       default:

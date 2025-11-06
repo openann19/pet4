@@ -26,22 +26,22 @@ function convertLiveStream(apiStream: LiveStreamAPI): LiveStream {
     id: apiStream.id,
     hostId: apiStream.hostId,
     hostName: apiStream.hostName,
-    hostAvatar: apiStream.hostAvatar,
+    ...(apiStream.hostAvatar ? { hostAvatar: apiStream.hostAvatar } : {}),
     title: apiStream.title,
-    description: apiStream.description,
+    ...(apiStream.description ? { description: apiStream.description } : {}),
     category: apiStream.category as LiveStream['category'], // Type assertion needed due to different category enums
     status,
     allowChat: apiStream.allowChat,
     maxDuration: apiStream.maxDuration || 60,
     startedAt: apiStream.startedAt || apiStream.createdAt,
-    endedAt: apiStream.endedAt,
+    ...(apiStream.endedAt ? { endedAt: apiStream.endedAt } : {}),
     viewerCount: apiStream.viewerCount,
     peakViewerCount: apiStream.peakViewerCount,
     totalViews: apiStream.viewerCount, // Approximate
     likesCount: apiStream.reactionsCount || 0,
     roomToken: apiStream.roomId,
-    recordingUrl: apiStream.vodUrl,
-    thumbnailUrl: apiStream.posterUrl || apiStream.thumbnail,
+    ...(apiStream.vodUrl && { recordingUrl: apiStream.vodUrl }),
+    ...(apiStream.posterUrl || apiStream.thumbnail ? { thumbnailUrl: apiStream.posterUrl || apiStream.thumbnail } : {}),
     tags: []
   }
 }
@@ -52,7 +52,7 @@ function convertStreamChatMessage(apiMessage: LiveStreamChatMessage): StreamChat
     streamId: apiMessage.streamId,
     userId: apiMessage.userId,
     userName: apiMessage.userName,
-    userAvatar: apiMessage.userAvatar,
+    ...(apiMessage.userAvatar ? { userAvatar: apiMessage.userAvatar } : {}),
     message: apiMessage.text,
     timestamp: apiMessage.createdAt,
     type: 'message'
@@ -79,16 +79,16 @@ class StreamingService {
       const apiData: CreateLiveStreamData = {
         title: data.title,
         category: data.category as CreateLiveStreamData['category'], // Type assertion
-        description: data.description,
+        ...(data.description !== undefined && { description: data.description }),
         allowChat: data.allowChat,
-        maxDuration: data.maxDuration
+        ...(data.maxDuration !== undefined && { maxDuration: data.maxDuration })
       }
 
       const result = await liveStreamingAPI.createRoom({
         ...apiData,
         hostId,
         hostName,
-        hostAvatar
+        ...(hostAvatar ? { hostAvatar } : {}),
       })
 
       return convertLiveStream(result.stream)

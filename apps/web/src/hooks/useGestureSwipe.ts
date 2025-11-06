@@ -3,7 +3,8 @@
  * Supports swipe up, down, left, right with configurable threshold
  */
 
-import { useRef, useEffect, RefObject } from 'react';
+import { useRef, useEffect } from 'react';
+import type { RefObject } from 'react';
 
 export type SwipeDirection = 'up' | 'down' | 'left' | 'right';
 
@@ -27,7 +28,7 @@ interface SwipeOptions {
 export function useGestureSwipe<T extends HTMLElement = HTMLDivElement>(
   handlers: SwipeHandlers = {},
   options: SwipeOptions = {}
-): RefObject<T> {
+): RefObject<T | null> {
   const {
     threshold = 50,
     velocityThreshold = 0.3,

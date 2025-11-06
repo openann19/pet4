@@ -365,8 +365,8 @@ export function parseVersion(version: string): { major: number; minor: number; p
     major: parseInt(match[1] ?? '0', 10),
     minor: parseInt(match[2] ?? '0', 10),
     patch: parseInt(match[3] ?? '0', 10),
-    prerelease: match[4],
-    build: match[5]
+    ...(match[4] && { prerelease: match[4] }),
+    ...(match[5] && { build: match[5] })
   }
 }
 

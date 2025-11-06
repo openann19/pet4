@@ -3,7 +3,8 @@
  * Supports multi-touch pinch gestures for zooming
  */
 
-import { useRef, useEffect, RefObject } from 'react';
+import { useRef, useEffect } from 'react';
+import type { RefObject } from 'react';
 
 interface PinchZoomHandlers {
   onPinch?: (scale: number) => void;
@@ -20,14 +21,14 @@ interface PinchZoomOptions {
 export function usePinchZoom<T extends HTMLElement = HTMLDivElement>(
   handlers: PinchZoomHandlers = {},
   options: PinchZoomOptions = {}
-): RefObject<T> {
+): RefObject<T | null> {
   const {
     minScale = 0.5,
     maxScale = 3,
     enabled = true,
   } = options;
 
-  const ref = useRef<T>(null);
+  const ref = useRef<T | null>(null);
   const initialDistance = useRef<number>(0);
   const currentScale = useRef<number>(1);
   const isPinching = useRef<boolean>(false);

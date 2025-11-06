@@ -38,14 +38,14 @@ export function useChatMessages({
       roomId,
       senderId: currentUserId,
       senderName: currentUserName,
-      senderAvatar: currentUserAvatar,
+      ...(currentUserAvatar !== undefined && currentUserAvatar !== null && { senderAvatar: currentUserAvatar }),
       content: type === 'text' ? content.trim() : content,
       type,
       timestamp: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       status: 'sent',
       reactions: [],
-      metadata
+      ...(metadata !== undefined && { metadata })
     }
 
     setMessages((current) => [...(current || []), newMessage])

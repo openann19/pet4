@@ -36,7 +36,7 @@ const ENV_CONFIGS: Record<Environment, AppConfig> = {
     SENTRY_DSN: 'https://sentry.io/staging',
     FEATURE_FLAGS_ENDPOINT: 'https://api-staging.pawfectmatch.app/api/features',
     BUILD_VERSION: '1.0.0-rc',
-    COMMIT_SHA: import.meta.env.VITE_COMMIT_SHA || 'unknown'
+    COMMIT_SHA: import.meta.env['VITE_COMMIT_SHA'] || 'unknown'
   },
   prod: {
     ENV: 'prod',
@@ -48,7 +48,7 @@ const ENV_CONFIGS: Record<Environment, AppConfig> = {
     SENTRY_DSN: 'https://sentry.io/prod',
     FEATURE_FLAGS_ENDPOINT: 'https://api.pawfectmatch.app/api/features',
     BUILD_VERSION: '1.0.0',
-    COMMIT_SHA: import.meta.env.VITE_COMMIT_SHA || 'unknown'
+    COMMIT_SHA: import.meta.env['VITE_COMMIT_SHA'] || 'unknown'
   }
 }
 

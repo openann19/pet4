@@ -77,11 +77,11 @@ class PushNotificationManager {
         body: notification.body,
         icon: notification.icon || '/icon-192.png',
         badge: notification.badge || '/badge-72.png',
-        image: notification.image,
-        data: notification.data,
-        tag: notification.tag,
-        requireInteraction: notification.requireInteraction,
-        actions: notification.actions
+        ...(notification.image ? { image: notification.image } : {}),
+        ...(notification.data ? { data: notification.data } : {}),
+        ...(notification.tag ? { tag: notification.tag } : {}),
+        ...(notification.requireInteraction !== undefined ? { requireInteraction: notification.requireInteraction } : {}),
+        ...(notification.actions ? { actions: notification.actions } : {}),
       }
       await this.registration.showNotification(notification.title, options)
     } catch (error) {
@@ -181,18 +181,18 @@ class DeepLinkManager {
   }
 
   handlePushNotificationClick(data: Record<string, unknown>) {
-    if (data.url && typeof data.url === 'string') {
-      const route = this.parseDeepLink(data.url)
+    if (data['url'] && typeof data['url'] === 'string') {
+      const route = this.parseDeepLink(data['url'])
       if (route) {
-        this.navigate(route.path, route.params)
+        this.navigate(route['path'], route['params'])
       }
-    } else if (data.path && typeof data.path === 'string') {
-      const params = data.params && typeof data.params === 'object' ? data.params as Record<string, unknown> : {}
+    } else if (data['path'] && typeof data['path'] === 'string') {
+      const params = data['params'] && typeof data['params'] === 'object' ? data['params'] as Record<string, unknown> : {}                                               
       const stringParams: Record<string, string> = {}
       for (const [key, value] of Object.entries(params)) {
         stringParams[key] = String(value)
       }
-      this.navigate(data.path, stringParams)
+      this.navigate(data['path'], stringParams)
     }
   }
 }

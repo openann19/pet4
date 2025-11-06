@@ -28,7 +28,7 @@ export class NotificationsService {
         id: `lost-alert-${alert.id}`,
         title: `Lost Pet Alert: ${alert.petSummary.name}`,
         body: `${alert.petSummary.species} • Last seen ${new Date(alert.lastSeen.whenISO).toLocaleDateString()}`,
-        icon: alert.photos && alert.photos.length > 0 ? alert.photos[0] : '/icon-192.png',
+        icon: (alert.photos && alert.photos.length > 0 ? alert.photos[0] : '/icon-192.png') || '/icon-192.png',
         ...(alert.photos && alert.photos.length > 0 ? { image: alert.photos[0] } : {}),
         tag: 'lost-alert',
         data: {
@@ -67,7 +67,7 @@ export class NotificationsService {
         id: `sighting-${sighting.id}`,
         title: `New Sighting Reported!`,
         body: `Someone reported seeing ${alert.petSummary.name}`,
-        icon: alert.photos && alert.photos.length > 0 ? alert.photos[0] : '/icon-192.png',
+        icon: (alert.photos && alert.photos.length > 0 ? alert.photos[0] : '/icon-192.png') || '/icon-192.png',
         ...(sighting.photos && sighting.photos.length > 0 ? { image: sighting.photos[0] } : {}),
         tag: 'sighting',
         data: {
@@ -191,7 +191,7 @@ export class NotificationsService {
         const alert = await lostFoundAPI.getAlertById(alertId)
         if (!alert) return
 
-        const iconUrl = alert.photos && alert.photos.length > 0 ? alert.photos[0] : '/icon-192.png'
+        const iconUrl = (alert.photos && alert.photos.length > 0 ? alert.photos[0] : '/icon-192.png') || '/icon-192.png'
         await pushNotificationManager.showNotification({
           id: `alert-view-${alertId}-${viewCount}`,
           title: `${viewCount} People Viewed Your Alert`,
@@ -293,46 +293,6 @@ export class NotificationsService {
    */
   hasPermission(): boolean {
     return pushNotificationManager.hasPermission()
-  }
-
-  /**
-   * Query users within a radius of a location
-   * Returns list of user IDs within the specified radius
-   */
-  private async queryUsersInRadius(
-    centerLat: number,
-    centerLon: number,
-    radiusKm: number
-  ): Promise<string[]> {
-    try {
-      return await notificationsApi.queryNearbyUsers(centerLat, centerLon, radiusKm)
-    } catch (error) {
-      logger.error('Failed to query users in radius', error instanceof Error ? error : new Error(String(error)), {
-        centerLat,
-        centerLon,
-        radiusKm
-      })
-      return []
-    }
-  }
-
-  /**
-   * Calculate distance between two coordinates using Haversine formula
-   */
-  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371 // Earth radius in km
-    const dLat = this.toRad(lat2 - lat1)
-    const dLon = this.toRad(lon2 - lon1)
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-    return R * c
-  }
-
-  private toRad(degrees: number): number {
-    return degrees * (Math.PI / 180)
   }
 
   /**

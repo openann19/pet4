@@ -59,7 +59,7 @@ describe('Deep Linking System', () => {
       expect(chatHandler).toHaveBeenCalled()
       const call = chatHandler.mock.calls[0]?.[0] as DeepLinkRoute
       expect(call).toBeDefined()
-      expect(call?.params.id).toBe('123')
+      expect(call?.params['id']).toBe('123')
     })
 
     it('should parse query parameters', () => {
@@ -83,7 +83,7 @@ describe('Deep Linking System', () => {
       expect(chatHandler).toHaveBeenCalled()
       const call = chatHandler.mock.calls[0]?.[0] as DeepLinkRoute
       expect(call).toBeDefined()
-      expect(call?.query.messageId).toBe('456')
+      expect(call?.query['messageId']).toBe('456')
     })
   })
 

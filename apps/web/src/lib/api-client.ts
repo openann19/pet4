@@ -44,8 +44,12 @@ export class APIClientError extends Error implements APIError {
     super(message, init.cause ? { cause: init.cause } : undefined)
     this.name = 'APIClientError'
     this.status = init.status
-    this.code = init.code
-    this.details = init.details
+    if (init.code !== undefined) {
+      this.code = init.code
+    }
+    if (init.details !== undefined) {
+      this.details = init.details
+    }
   }
 }
 
@@ -172,7 +176,10 @@ class APIClientImpl {
     }
 
     const data: { accessToken: string; refreshToken?: string } = await response.json()
-    this.saveTokens({ accessToken: data.accessToken, refreshToken: data.refreshToken })
+    this.saveTokens({ 
+      accessToken: data.accessToken, 
+      ...(data.refreshToken ? { refreshToken: data.refreshToken } : {})
+    })
   }
 
   private async makeRequest<T>(endpoint: string, config: RequestConfig = {}): Promise<APIResponse<T>> {
@@ -236,7 +243,7 @@ class APIClientImpl {
     }
 
     if (this.accessToken) {
-      merged.Authorization = `Bearer ${this.accessToken}`
+      merged['Authorization'] = `Bearer ${this.accessToken}`
     }
 
     return merged
@@ -272,8 +279,8 @@ class APIClientImpl {
 
     return new APIClientError(errorDetails.message || `HTTP ${response.status}`, {
       status: response.status,
-      code: errorDetails.code,
-      details: errorDetails.details,
+      ...(errorDetails.code ? { code: errorDetails.code } : {}),
+      ...(errorDetails.details ? { details: errorDetails.details } : {}),
     })
   }
 
@@ -322,7 +329,7 @@ class APIClientImpl {
   async post<T>(endpoint: string, data?: unknown, config: RequestConfig = {}): Promise<APIResponse<T>> {
     return this.makeRequest<T>(endpoint, {
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
+      ...(data ? { body: JSON.stringify(data) } : {}),
       ...config
     })
   }
@@ -330,7 +337,7 @@ class APIClientImpl {
   async put<T>(endpoint: string, data?: unknown, config: RequestConfig = {}): Promise<APIResponse<T>> {
     return this.makeRequest<T>(endpoint, {
       method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
+      ...(data ? { body: JSON.stringify(data) } : {}),
       idempotent: true,
       ...config
     })
@@ -339,7 +346,7 @@ class APIClientImpl {
   async patch<T>(endpoint: string, data?: unknown, config: RequestConfig = {}): Promise<APIResponse<T>> {
     return this.makeRequest<T>(endpoint, {
       method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
+      ...(data ? { body: JSON.stringify(data) } : {}),
       ...config
     })
   }
@@ -354,7 +361,10 @@ class APIClientImpl {
 
   // Authentication methods
   setTokens(accessToken: string, refreshToken?: string): void {
-    this.saveTokens({ accessToken, refreshToken })
+    this.saveTokens({ 
+      accessToken, 
+      ...(refreshToken ? { refreshToken } : {})
+    })
   }
 
   logout(): void {
