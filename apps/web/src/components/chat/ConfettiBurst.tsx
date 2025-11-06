@@ -6,7 +6,7 @@
  * Location: apps/web/src/components/chat/ConfettiBurst.tsx
  */
 
-import React, { useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -65,7 +65,7 @@ export function ConfettiBurst({
       const r = useSharedValue(0)
       const s = useSharedValue(rng.range(0.85, 1.25))
       const o = useSharedValue(0)
-      const color = colors[i % colors.length]
+      const color = colors[i % colors.length] ?? colors[0] ?? '#22c55e'
       const w = rng.rangeInt(6, 12)
       const h = rng.rangeInt(6, 12)
       const delay = i * (reduced ? 0 : 5)

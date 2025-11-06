@@ -109,7 +109,7 @@ export function ReactionBurstParticles({
     if (!enabled) return
 
     for (let i = 0; i < particles.length; i++) {
-      const particle = particles[i]
+      const particle = particles[i]!
       if (reduced) {
         particle.opacity.value = withTiming(1, { duration: 0 })
         particle.scale.value = withTiming(1, { duration: 0 })

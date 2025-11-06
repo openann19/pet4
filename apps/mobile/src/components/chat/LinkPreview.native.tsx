@@ -22,10 +22,12 @@ export interface LinkPreviewProps {
 }
 
 export function LinkPreview({
-  url, title, description, image, isLoading = false,
-}: {
-  url: string; title?: string; description?: string; image?: string; isLoading?: boolean; className?: string
-}) {
+  url,
+  title,
+  description,
+  image,
+  isLoading = false,
+}: LinkPreviewProps): React.ReactElement {
   const reduced = useReducedMotion()
   const showContent = !isLoading && (!!title || !!image)
   const s = useSharedValue(showContent ? 1 : 0)
@@ -55,7 +57,13 @@ export function LinkPreview({
       {/* Content */}
       {showContent && (
         <Animated.View style={contentStyle}>
-          <TouchableOpacity onPress={() => Linking.openURL(url)} activeOpacity={0.9} style={styles.row}>
+          <TouchableOpacity
+            onPress={() => {
+              void Linking.openURL(url)
+            }}
+            activeOpacity={0.9}
+            style={styles.row}
+          >
             {image ? <Image source={{ uri: image }} style={styles.thumb} /> : null}
             <View style={{ flex: 1, marginLeft: 12 }}>
               {title ? <Text numberOfLines={1} style={styles.title}>{title}</Text> : null}

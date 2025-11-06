@@ -1,6 +1,7 @@
 import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
+import React from 'react';
 
 // React Native (web) minimal shims
 // @ts-expect-error - Global dev flag
@@ -62,9 +63,71 @@ vi.mock('react-native-gesture-handler', () => ({
 }));
 
 // Reanimated mock (stable across tests)
-vi.mock('react-native-reanimated', async () => {
-  const mock = await import('react-native-reanimated/mock')
-  return { default: mock, ...mock }
+vi.mock('react-native-reanimated', () => {
+  const mockSharedValue = (initial: number) => {
+    const value = { value: initial }
+    return value
+  }
+  
+  const AnimatedComponent = ({ children, style, ...props }: { children?: React.ReactNode; style?: Record<string, unknown>; [key: string]: unknown }) => {
+    return React.createElement('div', { style, ...props }, children)
+  }
+  
+  const AnimatedA = ({ children, style, ...props }: { children?: React.ReactNode; style?: Record<string, unknown>; [key: string]: unknown }) => {
+    return React.createElement('a', { style, ...props }, children)
+  }
+  
+  const AnimatedNamespace = {
+    View: AnimatedComponent,
+    div: AnimatedComponent,
+    a: AnimatedA,
+    Image: AnimatedComponent,
+    Text: AnimatedComponent,
+  }
+  
+  // Make default export work as both component and namespace
+  Object.assign(AnimatedComponent, AnimatedNamespace)
+  
+  return {
+    default: AnimatedComponent,
+    Animated: AnimatedNamespace,
+    useSharedValue: vi.fn((initial: number) => mockSharedValue(initial)),
+    useAnimatedStyle: vi.fn((fn: () => Record<string, unknown>) => {
+      try {
+        return fn()
+      } catch {
+        return {}
+      }
+    }),
+    withSpring: vi.fn((toValue: number) => toValue),
+    withTiming: vi.fn((toValue: number) => toValue),
+    withDelay: vi.fn((delay: number, animation: number) => animation),
+    withSequence: vi.fn((...animations: number[]) => animations[animations.length - 1]),
+    withRepeat: vi.fn((animation: number) => animation),
+    interpolate: vi.fn((value: number, inputRange: number[], outputRange: number[]) => {
+      if (value <= inputRange[0]) return outputRange[0]
+      if (value >= inputRange[inputRange.length - 1]) return outputRange[outputRange.length - 1]
+      return outputRange[0]
+    }),
+    Extrapolation: {
+      CLAMP: 'clamp',
+      EXTEND: 'extend',
+      IDENTITY: 'identity'
+    },
+    Easing: {
+      linear: (t: number) => t,
+      ease: (t: number) => t,
+      quad: (t: number) => t * t,
+      cubic: (t: number) => t * t * t,
+      in: (easing: (t: number) => number) => easing,
+      out: (easing: (t: number) => number) => easing,
+      inOut: (easing: (t: number) => number) => easing,
+      elastic: () => (t: number) => t
+    },
+    cancelAnimation: vi.fn(),
+    withDecay: vi.fn((toValue: number) => toValue),
+    runOnJS: vi.fn((fn: () => void) => fn),
+  }
 })
 
 // Extend Vitest's expect with jest-dom matchers

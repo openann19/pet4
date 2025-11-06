@@ -37,7 +37,6 @@ describe('Haptic Manager', () => {
     mockPerformanceNow.mockReturnValue(1000)
     const manager = getHapticManager()
     manager.resetCooldown()
-    // @ts-expect-error - test access
     manager.updateReducedMotion(false)
   })
 
@@ -80,7 +79,6 @@ describe('Haptic Manager', () => {
 
     it('should not trigger when reduced motion is enabled', () => {
       const manager = getHapticManager()
-      // @ts-expect-error - test access
       manager.updateReducedMotion(true)
       triggerHaptic('light')
       expect(Haptics.impactAsync).not.toHaveBeenCalled()

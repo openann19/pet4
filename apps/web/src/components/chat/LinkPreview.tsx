@@ -7,9 +7,10 @@
  * Location: apps/web/src/components/chat/LinkPreview.tsx
  */
 
-import React, { useMemo } from 'react'
-import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated'
+import { useMemo } from 'react'
+import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated'
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 
 export interface LinkPreviewProps {

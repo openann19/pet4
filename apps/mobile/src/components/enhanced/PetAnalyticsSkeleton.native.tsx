@@ -7,7 +7,7 @@
 
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.native'
 import { SmartSkeleton } from './SmartSkeleton.native'
 
 export function PetAnalyticsSkeleton(): React.JSX.Element {

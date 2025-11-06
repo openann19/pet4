@@ -204,9 +204,11 @@ export function useSubmitApplication(): UseMutationResult<
         queryKey: queryKeys.adoption.applications(),
       })
       // Invalidate pet's applications
-      void queryClient.invalidateQueries({
-        queryKey: queryKeys.adoption.petApplications(data.petId),
-      })
+      if (data.petId || data.adoptionProfileId) {
+        void queryClient.invalidateQueries({
+          queryKey: queryKeys.adoption.petApplications(data.petId || data.adoptionProfileId || ''),
+        })
+      }
     },
   })
 }

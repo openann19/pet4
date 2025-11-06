@@ -843,18 +843,29 @@ export default function AdvancedChatWindow({
           )}
 
         {/* Overlays — reaction ring + confetti (mounted once, restart via seed) */}
-        <ReactionBurstParticles
-          key={`burst-${burstSeed}`}
-          enabled
-          seed={burstSeed}
-          className="pointer-events-none"
-        />
-        <ConfettiBurst
-          key={`confetti-${confettiSeed}`}
-          enabled
-          seed={confettiSeed}
-          className="pointer-events-none"
-        />
+        {/* Only render when seeds > 0 to avoid initial mount animations */}
+        {burstSeed > 0 && (
+          <ReactionBurstParticles
+            key={`burst-${burstSeed}`}
+            enabled={true}
+            seed={`reaction-${room.id}-${burstSeed}`}
+            className="pointer-events-none fixed inset-0 z-50"
+            onComplete={() => {
+              // Effect completed, can reset seed after delay if needed
+            }}
+          />
+        )}
+        {confettiSeed > 0 && (
+          <ConfettiBurst
+            key={`confetti-${confettiSeed}`}
+            enabled={true}
+            seed={`confetti-${room.id}-${confettiSeed}`}
+            className="pointer-events-none fixed inset-0 z-50"
+            onComplete={() => {
+              // Effect completed, can reset seed after delay if needed
+            }}
+          />
+        )}
         </div>
 
       {/* Scroll to Bottom FAB */}

@@ -33,5 +33,6 @@ export type { LinkPreviewProps } from './LinkPreview.native'
 export { PresenceAvatar } from './PresenceAvatar.native'
 export type { PresenceAvatarProps } from './PresenceAvatar.native'
 
-
+export { LiquidDots } from './LiquidDots.native'
+export type { LiquidDotsProps } from './LiquidDots.native'
 

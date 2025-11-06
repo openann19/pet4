@@ -48,5 +48,7 @@ export { EnhancedPetDetailView, type EnhancedPetDetailViewProps } from './Enhanc
 export { PremiumCard, type PremiumCardProps } from './PremiumCard.native'
 export { SmartSearch } from './SmartSearch.native'
 export type { SmartSearchProps } from './SmartSearch.native'
+export { NotificationCenter } from './NotificationCenter.native'
+export type { NotificationItem, NotificationCenterProps, NotificationType } from './NotificationCenter.native'
 export { UltraButton, type UltraButtonProps } from './UltraButton.native'
 export { UltraCard, type UltraCardProps } from './UltraCard.native'

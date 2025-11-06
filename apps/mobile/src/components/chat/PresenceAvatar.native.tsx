@@ -12,9 +12,18 @@ import Animated, { useSharedValue, withRepeat, withTiming, useAnimatedStyle } fr
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
 
 // Optional gradient ring using Expo LinearGradient if available
-let LinearGradient: any = null
+type LinearGradientComponent = React.ComponentType<{
+  colors: string[]
+  start: { x: number; y: number }
+  end: { x: number; y: number }
+  style: unknown
+}>
+
+let LinearGradient: LinearGradientComponent | null = null
 try {
-  LinearGradient = require('expo-linear-gradient').LinearGradient
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const expoLinearGradient = require('expo-linear-gradient')
+  LinearGradient = expoLinearGradient.LinearGradient as LinearGradientComponent
 } catch {
   // LinearGradient not available
 }
@@ -29,8 +38,12 @@ export interface PresenceAvatarProps {
 }
 
 export function PresenceAvatar({
-  src, fallback, status = 'online', size = 40,
-}: { src?: string; alt?: string; fallback?: string; status?: 'online'|'away'|'busy'|'offline'; size?: number; className?: string }) {
+  src,
+  alt,
+  fallback,
+  status = 'online',
+  size = 40,
+}: PresenceAvatarProps): React.ReactElement {
   const reduced = useReducedMotion()
   const rot = useSharedValue(0)
   const dur = getReducedMotionDuration(3600, reduced)
@@ -69,7 +82,11 @@ export function PresenceAvatar({
 
       <View style={[styles.avatarWrap, { width: size, height: size, borderRadius: size / 2 }]}>
         {src ? (
-          <Image source={{ uri: src }} style={{ width: size, height: size, borderRadius: size / 2 }} />
+          <Image
+            source={{ uri: src }}
+            style={{ width: size, height: size, borderRadius: size / 2 }}
+            accessibilityLabel={alt || fallback || 'Avatar'}
+          />
         ) : (
           <View style={[styles.fallback, { width: size, height: size, borderRadius: size / 2 }]}>
             <Text style={styles.fallbackText}>{(fallback?.[0] ?? '?').toUpperCase()}</Text>

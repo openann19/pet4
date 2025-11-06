@@ -4,12 +4,12 @@ import { LinkPreview } from '../LinkPreview'
 
 describe('LinkPreview', () => {
   it('shows skeleton when loading and content when loaded', () => {
-    const { rerender } = render(
+    const { container, rerender } = render(
       <LinkPreview url="https://example.com" isLoading image="https://x/y.jpg" />
     )
     // aria-busy true when loading
-    const loadingElement = screen.getByRole('region', { hidden: true }) || screen.getByRole('generic')
-    expect(loadingElement).toHaveAttribute('aria-busy', 'true')
+    const loadingElement = container.querySelector('[aria-busy="true"]')
+    expect(loadingElement).toBeInTheDocument()
 
     rerender(
       <LinkPreview
@@ -20,9 +20,10 @@ describe('LinkPreview', () => {
         isLoading={false}
       />
     )
-    // link visible
-    const link = screen.getByRole('link', { name: /example|example\.com/i })
+    // link visible - check by href or text content
+    const link = container.querySelector('a[href="https://example.com/path"]')
     expect(link).toBeInTheDocument()
+    expect(link).toHaveTextContent(/example/i)
   })
 })
 

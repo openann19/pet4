@@ -54,9 +54,10 @@ function useConfettiParticles(
   if (particlesRef.current.length !== particleCount) {
     const rng = createSeededRNG(seed)
     const newParticles: ConfettiParticle[] = []
+    const colorCount = Math.max(1, colors.length)
 
     for (let i = 0; i < particleCount; i++) {
-      const color = colors[Math.floor(rng.range(0, colors.length))]
+      const color = colors[Math.floor(rng.range(0, colorCount))] ?? colors[0] ?? '#ffffff'
       const w = Math.max(6, Math.floor(rng.range(6, 12)))
       const h = Math.max(6, Math.floor(rng.range(6, 12)))
       const delay = Math.floor(rng.range(0, reduced ? 0 : 400))
@@ -111,7 +112,7 @@ export function ConfettiBurst({
     if (!enabled) return
 
     for (let i = 0; i < particles.length; i++) {
-      const particle = particles[i]
+      const particle = particles[i]!
       if (reduced) {
         particle.o.value = withTiming(1, { duration: 0 })
         particle.y.value = withTiming(40, { duration: getReducedMotionDuration(120, true) }, () => {

@@ -12,7 +12,6 @@ import {
   Pressable,
   StyleSheet,
   Modal,
-  type ViewStyle,
 } from 'react-native'
 import Animated, {
   useSharedValue,
@@ -50,7 +49,7 @@ export function EnhancedPetDetailView({
   compatibilityScore,
   matchReasons,
   showActions = true,
-}: EnhancedPetDetailViewProps): React.JSX.Element {
+}: EnhancedPetDetailViewProps): React.JSX.Element | null {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
   const photos = pet.photos && pet.photos.length > 0 ? pet.photos : [pet.photo]

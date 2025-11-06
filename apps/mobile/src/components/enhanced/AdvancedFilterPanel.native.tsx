@@ -12,16 +12,8 @@ import {
   StyleSheet,
   type ViewStyle,
 } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { useFilters } from '@/hooks/useFilters'
-import { timingConfigs } from '@/effects/reanimated/transitions'
-
-const AnimatedView = Animated.createAnimatedComponent(View)
 
 export interface FilterOption {
   id: string
@@ -64,7 +56,6 @@ export function AdvancedFilterPanel({
     resetFilters,
     handleMultiSelect,
     handleSingleSelect,
-    handleRangeChange,
     handleToggle,
   } = useFilters({
     categories,
@@ -167,13 +158,13 @@ export function AdvancedFilterPanel({
                 onPress={() => handleToggle(category.id)}
                 style={[
                   styles.toggle,
-                  localValues[category.id] && styles.toggleActive,
+                  Boolean(localValues[category.id]) && styles.toggleActive,
                 ]}
               >
                 <Text
                   style={[
                     styles.toggleText,
-                    localValues[category.id] && styles.toggleTextActive,
+                    Boolean(localValues[category.id]) && styles.toggleTextActive,
                   ]}
                 >
                   {localValues[category.id] ? 'Enabled' : 'Disabled'}

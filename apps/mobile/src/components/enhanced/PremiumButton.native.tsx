@@ -1,11 +1,6 @@
 import React, { useCallback } from 'react'
 import { Pressable, Text, StyleSheet, ActivityIndicator, View, type ViewStyle, type TextStyle } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated'
+import Animated from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { usePressBounce } from '@petspark/motion'
 
@@ -23,8 +18,6 @@ export interface PremiumButtonProps {
   style?: ViewStyle
   testID?: string
 }
-
-const SPRING_CONFIG = { stiffness: 400, damping: 20 }
 
 export function PremiumButton({
   variant = 'primary',

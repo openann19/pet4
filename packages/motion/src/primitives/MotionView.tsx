@@ -9,7 +9,7 @@ const isWeb = typeof window !== 'undefined' && typeof document !== 'undefined';
  * Accepts animated style fragments and provides web performance optimizations.
  */
 export const MotionView = forwardRef<
-  typeof Animated.View,
+  Animated.View,
   ViewProps & {
     animatedStyle?: AnimatedStyle<ViewStyle>;
   }

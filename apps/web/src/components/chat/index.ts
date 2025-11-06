@@ -27,3 +27,9 @@ export type { LinkPreviewProps } from './LinkPreview'
 
 export { PresenceAvatar } from './PresenceAvatar'
 export type { PresenceAvatarProps } from './PresenceAvatar'
+
+export { LiquidDots } from './LiquidDots'
+export type { LiquidDotsProps } from './LiquidDots'
+
+export { AdvancedChatWindow } from './window'
+export type { AdvancedChatWindowProps } from './window/AdvancedChatWindow'

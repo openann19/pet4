@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
-import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
 
 export interface AchievementBadgeProps {
   size?: number
@@ -20,15 +19,18 @@ export function AchievementBadge({
   testID = 'achievement-badge',
 }: AchievementBadgeProps): React.JSX.Element {
   const scale = useSharedValue(0)
-  const reducedMotion = useReducedMotionSV()
 
   useEffect(() => {
-    if (reducedMotion.value) {
-      scale.value = withTiming(1, { duration: 200 })
-    } else {
-      scale.value = withSpring(1, { stiffness: 300, damping: 20 })
+    scale.value = withSpring(1, { stiffness: 250, damping: 18 })
+    const timeout = setTimeout(() => {
+      scale.value = withTiming(0.95, { duration: 200 })
+      scale.value = withSpring(1, { stiffness: 250, damping: 18 })
+    }, 800)
+
+    return () => {
+      clearTimeout(timeout)
     }
-  }, [scale, reducedMotion])
+  }, [scale])
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],

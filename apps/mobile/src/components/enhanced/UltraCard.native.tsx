@@ -10,9 +10,10 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
+  withDelay,
 } from 'react-native-reanimated'
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
+import { springConfigs } from '@/effects/reanimated/transitions'
 
 const AnimatedView = Animated.createAnimatedComponent(View)
 
@@ -44,10 +45,10 @@ export function UltraCard({
 
   useEffect(() => {
     if (enableReveal) {
-      const delay = index * 50
-      opacity.value = withTiming(1, { duration: 300, delay })
-      translateY.value = withSpring(0, { ...springConfigs.smooth, delay })
-      rotateY.value = withSpring(0, { ...springConfigs.smooth, delay })
+      const delayMs = index * 50
+      opacity.value = withDelay(delayMs, withTiming(1, { duration: 300 }))
+      translateY.value = withDelay(delayMs, withSpring(0, springConfigs.smooth))
+      rotateY.value = withDelay(delayMs, withSpring(0, springConfigs.smooth))
     } else {
       opacity.value = 1
       translateY.value = 0
@@ -119,7 +120,10 @@ const styles = StyleSheet.create({
   },
   glowOverlay: {
     position: 'absolute',
-    inset: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     borderRadius: 16,
     opacity: 0.2,
   },

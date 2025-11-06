@@ -16,13 +16,12 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  useAnimatedGestureHandler,
   runOnJS,
 } from 'react-native-reanimated'
 import {
   GestureHandlerRootView,
   GestureDetector,
-  PanGestureHandler,
+  Gesture,
 } from 'react-native-gesture-handler'
 import * as Haptics from 'expo-haptics'
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
@@ -102,14 +101,14 @@ export function EnhancedCarousel({
     return
   }, [autoPlay, autoPlayInterval, goToNext, itemCount])
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: () => {
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
       opacity.value = withTiming(0.8, timingConfigs.fast)
-    },
-    onActive: (event) => {
+    })
+    .onUpdate((event) => {
       translateX.value = -currentIndex * SCREEN_WIDTH + event.translationX
-    },
-    onEnd: (event) => {
+    })
+    .onEnd((event) => {
       opacity.value = withTiming(1, timingConfigs.fast)
 
       const threshold = SCREEN_WIDTH * 0.25
@@ -120,8 +119,7 @@ export function EnhancedCarousel({
       } else {
         translateX.value = withSpring(-currentIndex * SCREEN_WIDTH, springConfigs.smooth)
       }
-    },
-  })
+    })
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -138,7 +136,7 @@ export function EnhancedCarousel({
 
   return (
     <GestureHandlerRootView style={[styles.container, style]} {...props}>
-      <GestureDetector gesture={gestureHandler}>
+      <GestureDetector gesture={panGesture}>
         <AnimatedView style={[styles.carousel, animatedStyle]}>
           {items.map((item, index) => (
             <View key={index} style={styles.slide}>

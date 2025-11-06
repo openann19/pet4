@@ -111,7 +111,8 @@ export function EnhancedButton({
         }
       }
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+      // Extract error for logging if needed
+      error instanceof Error ? error : new Error(String(error))
       errorShake.value = withSequence(
         withTiming(-5, { duration: 50 }),
         withTiming(5, { duration: 50 }),
