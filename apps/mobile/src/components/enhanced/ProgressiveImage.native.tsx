@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { View, Image, StyleSheet, type ImageStyle, type ViewStyle } from 'react-native'
 import Animated, {
   useSharedValue,
@@ -9,7 +9,6 @@ import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
 
 export interface ProgressiveImageProps {
   src: string
-  alt: string
   placeholderSrc?: string
   style?: ViewStyle
   imageStyle?: ImageStyle
@@ -23,7 +22,6 @@ export interface ProgressiveImageProps {
 
 export function ProgressiveImage({
   src,
-  alt,
   placeholderSrc,
   style,
   imageStyle,
@@ -84,7 +82,7 @@ export function ProgressiveImage({
     <View
       style={[
         styles.container,
-        aspectRatio && { aspectRatio },
+        ...(aspectRatio ? [{ aspectRatio }] : []),
         style,
       ]}
       testID={testID}

@@ -17,7 +17,6 @@ import Animated, {
   withDelay,
   Easing,
 } from 'react-native-reanimated'
-import { View } from 'react-native'
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng'
 

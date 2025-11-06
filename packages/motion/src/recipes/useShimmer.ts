@@ -1,7 +1,6 @@
 import { useSharedValue, withTiming, useAnimatedStyle, withRepeat } from 'react-native-reanimated';
 import { useEffect } from 'react';
-import { motion } from '../tokens';
-import { useReducedMotionSV, getReducedMotionDuration } from '../reduced-motion';
+import { useReducedMotionSV } from '../reduced-motion';
 
 export interface UseShimmerOptions {
   width?: number;
