@@ -206,8 +206,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
           <div className="max-h-[calc(90vh-400px)] overflow-y-auto">
             <div className="p-6 sm:p-8 space-y-6">
               {pet.trustProfile && (
-                <AnimatedView
-                >
+                <AnimatedView>
                   <PetRatings 
                     trustProfile={pet.trustProfile} 
                     {...(pet.ratings !== undefined ? { ratings: pet.ratings } : {})}
@@ -426,6 +425,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
             </div>
           </div>
         </AnimatedView>
+  )}
       </DialogContent>
     </Dialog>
   )
