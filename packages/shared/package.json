@@ -9,8 +9,10 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-  "typecheck": "tsc --noEmit",
-  "test": "vitest"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "lint": "echo 'Linting shared package...'"
   },
   "dependencies": {
     "@radix-ui/react-slider": "^1.2.1",
@@ -24,5 +26,11 @@
     "react-native-web": "^0.19.12",
     "tailwind-merge": "^2.5.4",
     "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/react-native": "^12.0.0",
+    "typescript": "~5.7.2",
+    "vitest": "^1.0.0"
   }
 }

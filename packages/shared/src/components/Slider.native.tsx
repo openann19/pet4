@@ -1,7 +1,13 @@
 import React, { useMemo } from "react"
 import { View, StyleSheet, PanResponder, Animated, AccessibilityRole } from "react-native"
 import type { ViewStyle } from "react-native"
-import { useTheme } from "@react-navigation/native"
+
+// Inline theme fallback instead of requiring navigation
+const useTheme = () => ({
+  colors: {
+    border: "#ddd",
+  },
+})
 
 export type SliderProps = {
   min?: number
