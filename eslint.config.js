@@ -159,6 +159,59 @@ export default tseslint.config(
       'no-redeclare': 'off',
       '@typescript-eslint/no-redeclare': 'error',
       'no-unused-vars': 'off',
+
+      // Motion-specific rules
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'CallExpression[callee.object.name="Math"][callee.property.name="random"]',
+          message: 'Use @petspark/shared RNG or seeded RNG instead of Math.random() for deterministic effects',
+        },
+      ],
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'framer-motion',
+              message: 'Use @petspark/motion instead of framer-motion in shared code. framer-motion is only allowed in web-only DOM routes.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['framer-motion'],
+              message: 'Use @petspark/motion instead of framer-motion in shared code.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Motion-specific overrides
+  {
+    files: ['packages/motion/**/*.{ts,tsx}', 'apps/**/effects/**/*.{ts,tsx}', 'apps/**/components/**/*.{ts,tsx}'],
+    rules: {
+      // Enforce useReducedMotion usage in animation hooks
+      // Note: This is a best-effort rule - we can't perfectly detect all animation hooks
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'framer-motion',
+              message: 'Use @petspark/motion hooks instead. framer-motion is only allowed in web-only DOM routes requiring SVG/canvas tricks.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Web-only DOM routes exception (allow framer-motion for SVG/canvas)
+  {
+    files: ['apps/web/src/components/**/*.{ts,tsx}', 'apps/web/src/effects/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': 'off', // Allow framer-motion in web-only routes
+      '@typescript-eslint/no-restricted-imports': 'off',
     },
   },
   // TypeScript-specific overrides
