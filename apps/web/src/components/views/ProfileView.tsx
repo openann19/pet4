@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useStorage } from '@/hooks/useStorage'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Plus, PawPrint, Pencil, Heart } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -55,46 +55,46 @@ export default function ProfileView() {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-          <motion.div
+          <MotionView
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
             className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-2xl relative"
           >
-            <motion.div
+            <MotionView
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
               <PawPrint size={48} className="text-white" weight="fill" />
-            </motion.div>
-            <motion.div
+            </MotionView>
+            <MotionView
               className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent"
               animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
-          </motion.div>
-          <motion.h2
+          </MotionView>
+          <MotionView
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="text-2xl font-bold mb-2"
           >
             {t.profile.createProfile}
-          </motion.h2>
-          <motion.p
+          </MotionView>
+          <MotionView
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             className="text-muted-foreground mb-6 max-w-md"
           >
             {t.profile.noPetsDesc}
-          </motion.p>
-          <motion.div
+          </MotionView>
+          <MotionView
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <motion.div
+            <MotionView
               whileHover={{ scale: 1.05, boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)' }}
               whileTap={{ scale: 0.95 }}
             >
@@ -106,8 +106,8 @@ export default function ProfileView() {
                 <Plus size={20} weight="bold" className="mr-2" />
                 {t.profile.createProfileBtn}
               </Button>
-            </motion.div>
-          </motion.div>
+            </MotionView>
+          </MotionView>
         </div>
 
         <CreatePetDialog 
@@ -120,7 +120,7 @@ export default function ProfileView() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-4 sm:space-y-8 px-2 sm:px-4">
-      <motion.div
+      <MotionView
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
@@ -130,15 +130,15 @@ export default function ProfileView() {
           currentPreset={themePreset}
           onPresetChange={handleThemePresetChange}
         />
-      </motion.div>
+      </MotionView>
 
-      <motion.div
+      <MotionView
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.075 }}
       >
         <SubscriptionStatusCard />
-      </motion.div>
+      </MotionView>
 
       {totalSwipes > 0 && (
         <StatsCard
@@ -148,7 +148,7 @@ export default function ProfileView() {
         />
       )}
 
-      <motion.div
+      <MotionView
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -156,15 +156,15 @@ export default function ProfileView() {
       >
         <h3 className="text-lg font-bold mb-4">Story Highlights</h3>
         <HighlightsBar onlyOwn={true} />
-      </motion.div>
+      </MotionView>
 
-      <motion.div
+      <MotionView
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
         <VisualAnalysisDemo />
-      </motion.div>
+      </MotionView>
       
       <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4">
         <div className="flex-1 min-w-0">
@@ -181,7 +181,7 @@ export default function ProfileView() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {(userPets || []).map((pet, idx) => (
-          <motion.div
+          <MotionView
             key={pet.id}
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -189,7 +189,7 @@ export default function ProfileView() {
             whileHover={{ y: -12, scale: 1.03 }}
           >
             <div className="overflow-hidden rounded-3xl glass-strong premium-shadow backdrop-blur-2xl group relative border border-white/20">
-              <motion.div
+              <MotionView
                 className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
               />
               <div className="relative h-64 overflow-hidden">
@@ -201,17 +201,17 @@ export default function ProfileView() {
                   whileHover={{ scale: 1.12 }}
                   transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
                 />
-                <motion.div
+                <MotionView
                   className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                 />
-                <motion.button
+                <MotionView as="button"
                   onClick={() => handleEdit(pet)}
                   className="absolute top-3 right-3 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl"
                   whileHover={{ scale: 1.2, rotate: 360, borderColor: 'rgba(255, 255, 255, 0.6)' }}
                   whileTap={{ scale: 0.9 }}
                 >
                   <Pencil size={20} className="text-white drop-shadow-lg" weight="bold" />
-                </motion.button>
+                </MotionView>
               </div>
 
               <div className="p-5 bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-md">
@@ -269,11 +269,11 @@ export default function ProfileView() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </MotionView>
         ))}
       </div>
 
-      <motion.div
+      <MotionView
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
@@ -282,7 +282,7 @@ export default function ProfileView() {
           currentQuality={preferredQuality}
           onQualityChange={setPreferredQuality}
         />
-      </motion.div>
+      </MotionView>
 
       <CreatePetDialog 
         open={showCreateDialog}

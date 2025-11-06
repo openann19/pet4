@@ -18,6 +18,7 @@ import { useRef } from 'react'
 export interface ChatInputBarProps {
   inputValue: string
   setInputValue: (v: string) => void
+  inputRef?: React.RefObject<HTMLInputElement>
   showStickers: boolean
   setShowStickers: (v: boolean) => void
   showTemplates: boolean
@@ -39,6 +40,7 @@ export interface ChatInputBarProps {
 export function ChatInputBar({
   inputValue,
   setInputValue,
+  inputRef: externalInputRef,
   showStickers,
   setShowStickers,
   showTemplates,
@@ -51,7 +53,8 @@ export function ChatInputBar({
   onTemplate,
   onQuickReaction,
 }: ChatInputBarProps): JSX.Element {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const internalInputRef = useRef<HTMLInputElement>(null)
+  const inputRef = externalInputRef ?? internalInputRef
 
   return (
     <div className="glass-strong border-t border-white/20 p-4 shadow-2xl backdrop-blur-2xl space-y-3">
@@ -139,6 +142,7 @@ export function ChatInputBar({
           <>
             <div className="flex-1 relative">
               <Input
+                id="composer"
                 ref={inputRef}
                 value={inputValue}
                 onChange={(e) => {

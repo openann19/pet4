@@ -12,7 +12,7 @@ import {
   Prohibit,
   ShieldCheck
 } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useState } from 'react'
 
 interface AuditEntry {
@@ -82,9 +82,9 @@ export default function AuditLogView() {
 
       <ScrollArea className="flex-1 p-6">
         <div className="space-y-3">
-          <AnimatePresence mode="popLayout">
+          <Presence mode="popLayout">
             {filteredEntries.map((entry, index) => (
-              <motion.div
+              <MotionView
                 key={entry.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -129,9 +129,9 @@ export default function AuditLogView() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </MotionView>
             ))}
-          </AnimatePresence>
+          </Presence>
 
           {filteredEntries.length === 0 && (
             <Card className="p-12">

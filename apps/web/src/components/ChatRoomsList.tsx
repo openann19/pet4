@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { ChatCircle, Check, Checks } from '@phosphor-icons/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import type { ChatRoom } from '@/lib/chat-types'
@@ -14,40 +14,40 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
   if (rooms.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <motion.div
+        <MotionView
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
           className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
         >
-          <motion.div
+          <MotionView
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           >
             <ChatCircle size={48} className="text-primary" weight="fill" />
-          </motion.div>
-          <motion.div
+          </MotionView>
+          <MotionView
             className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-accent/20"
             animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           />
-        </motion.div>
-        <motion.h2
+        </MotionView>
+        <MotionView
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="text-2xl font-bold mb-2"
         >
           No Conversations Yet
-        </motion.h2>
-        <motion.p
+        </MotionView>
+        <MotionView
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="text-muted-foreground max-w-md"
         >
           Start chatting with your matches to plan playdates and get to know each other!
-        </motion.p>
+        </MotionView>
       </div>
     )
   }
@@ -63,13 +63,13 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
         const hasUnread = unreadValue > 0
         
         return (
-          <motion.div
+          <MotionView
             key={room.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: idx * 0.05, type: 'spring', stiffness: 300, damping: 30 }}
           >
-            <motion.button
+            <MotionView as="button"
               onClick={() => onSelectRoom(room)}
               className={`w-full text-left p-4 rounded-2xl transition-all relative overflow-hidden ${
                 selectedRoomId === room.id
@@ -80,7 +80,7 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
               whileTap={{ scale: 0.98 }}
             >
               {hasUnread && (
-                <motion.div
+                <MotionView
                   className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5"
                   animate={{ opacity: [0.5, 0.8, 0.5] }}
                   transition={{ duration: 2, repeat: Infinity }}
@@ -89,7 +89,7 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
               
               <div className="flex items-start gap-3 relative z-10">
                 <div className="relative shrink-0">
-                  <motion.div
+                  <MotionView
                     animate={hasUnread ? { scale: [1, 1.05, 1] } : {}}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
@@ -99,22 +99,22 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
                         {room.matchedPetName?.[0] || '?'}
                       </AvatarFallback>
                     </Avatar>
-                  </motion.div>
+                  </MotionView>
                   
                   {hasUnread && (
-                    <motion.div
+                    <MotionView
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       className="absolute -top-1 -right-1 min-w-[24px] h-6 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg px-2"
                     >
-                      <motion.span
+                      <MotionText
                         className="text-white text-xs font-bold"
                         animate={{ scale: [1, 1.1, 1] }}
                         transition={{ duration: 1, repeat: Infinity }}
                       >
                         {unreadValue > 99 ? '99+' : unreadValue}
-                      </motion.span>
-                    </motion.div>
+                      </MotionText>
+                    </MotionView>
                   )}
                 </div>
 
@@ -160,14 +160,14 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
                   </div>
 
                   {room.isTyping && (
-                    <motion.div
+                    <MotionView
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="flex items-center gap-1 mt-1"
                     >
                       <div className="flex gap-1">
                         {[0, 1, 2].map((i) => (
-                          <motion.div
+                          <MotionView
                             key={i}
                             className="w-2 h-2 rounded-full bg-primary"
                             animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
@@ -176,12 +176,12 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
                         ))}
                       </div>
                       <span className="text-xs text-primary">typing...</span>
-                    </motion.div>
+                    </MotionView>
                   )}
                 </div>
               </div>
-            </motion.button>
-          </motion.div>
+            </MotionView>
+          </MotionView>
         )
       })}
     </div>

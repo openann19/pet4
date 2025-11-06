@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import StoryRing from './StoryRing'
 import StoryViewer from './StoryViewer'
@@ -63,7 +63,7 @@ export default function StoriesBar({
   if (activeStories.length === 0 && ownStories.length === 0) {
     return (
       <>
-        <motion.div
+        <MotionView
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="glass-strong p-4 rounded-3xl backdrop-blur-2xl border border-white/20 mb-6"
@@ -82,7 +82,7 @@ export default function StoriesBar({
               +
             </button>
           </div>
-        </motion.div>
+        </MotionView>
 
 
         <CreateStoryDialog
@@ -108,7 +108,7 @@ export default function StoriesBar({
 
   return (
     <>
-      <motion.div
+      <MotionView
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className="glass-strong p-4 rounded-3xl backdrop-blur-2xl border border-white/20 mb-6"
@@ -147,7 +147,7 @@ export default function StoriesBar({
             })}
           </div>
         </ScrollArea>
-      </motion.div>
+      </MotionView>
 
 
       {viewingStories && (

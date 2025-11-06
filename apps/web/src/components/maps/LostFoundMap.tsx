@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from '@petspark/motion';
 import { MapPin, X, Plus, Clock, Funnel } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -148,7 +148,7 @@ export default function LostFoundMap({
       </div>
 
       {selectedAlert && (
-        <motion.div
+        <MotionView
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="p-4 border rounded-lg space-y-3 bg-background"
@@ -196,7 +196,7 @@ export default function LostFoundMap({
               {t.lostFound?.reportSighting || 'Report Sighting'}
             </Button>
           )}
-        </motion.div>
+        </MotionView>
       )}
     </div>
   );

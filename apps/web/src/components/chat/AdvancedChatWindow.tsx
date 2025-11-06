@@ -60,6 +60,7 @@ import { PresenceAvatar } from './PresenceAvatar'
 import { ConfettiBurst } from './ConfettiBurst'
 import { ReactionBurstParticles } from './ReactionBurstParticles'
 import { VoiceWaveform } from './VoiceWaveform'
+import { sendPing } from '@/effects/sound/SendPing'
 
 const logger = createLogger('AdvancedChatWindow')
 
@@ -524,6 +525,7 @@ export default function AdvancedChatWindow({
     if (!content.trim() && type === 'text' && !attachments?.length) return
 
     haptics.trigger('light')
+    sendPing() // Audio feedback for message send
 
     const newMessage: ChatMessage = {
       id: generateMessageId(),

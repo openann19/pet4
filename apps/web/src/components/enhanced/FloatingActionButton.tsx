@@ -178,7 +178,9 @@ export function FloatingActionButton({
         <AnimatedView
           style={shimmerStyle}
           className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 pointer-events-none"
-        />
+        >
+          {null}
+        </AnimatedView>
       )}
     </button>
   )

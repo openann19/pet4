@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { ShieldCheck, Certificate, Star } from '@phosphor-icons/react'
 import { Badge } from '@/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -66,7 +66,7 @@ export function VerificationBadge({
   const config = getLevelConfig()
 
   const badgeContent = (
-    <motion.div
+    <MotionView
       initial={{ scale: 0, rotate: -180 }}
       animate={{ scale: 1, rotate: 0 }}
       transition={{ 
@@ -88,7 +88,7 @@ export function VerificationBadge({
         {config.icon}
         <span className="ml-1.5">{config.label}</span>
       </Badge>
-    </motion.div>
+    </MotionView>
   )
 
   if (!showTooltip) {

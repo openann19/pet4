@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Shield, ShieldCheck, ShieldStar, Clock } from '@phosphor-icons/react'
 import { VERIFICATION_REQUIREMENTS, type VerificationLevel } from '@/lib/verification-types'
 import { cn } from '@/lib/utils'
@@ -27,7 +27,7 @@ export function VerificationLevelSelector({
           const isSelected = selectedLevel === level
 
           return (
-            <motion.button
+            <MotionView as="button"
               key={level}
               onClick={() => onSelectLevel(level)}
               whileHover={{ scale: 1.02, y: -2 }}
@@ -40,7 +40,7 @@ export function VerificationLevelSelector({
               )}
             >
               {isSelected && (
-                <motion.div
+                <MotionView
                   layoutId="selected-level"
                   className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -88,7 +88,7 @@ export function VerificationLevelSelector({
                   {requirements.benefits.length} benefits
                 </div>
               </div>
-            </motion.button>
+            </MotionView>
           )
         })}
       </div>

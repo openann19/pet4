@@ -1,4 +1,4 @@
-import type { Transition } from 'framer-motion'
+import type { Transition } from '@petspark/motion'
 
 export const springTransition: Transition = {
   type: 'spring',

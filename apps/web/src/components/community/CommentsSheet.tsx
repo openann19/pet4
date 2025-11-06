@@ -11,7 +11,7 @@ import { haptics } from '@/lib/haptics'
 import { createLogger } from '@/lib/logger'
 import { ArrowBendUpLeft, DotsThree, Heart, PaperPlaneRight, X } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -163,12 +163,12 @@ export function CommentsSheet({
                 </div>
               ))
             ) : comments.length === 0 ? (
-              <motion.div
+              <MotionView
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center py-16"
               >
-                <motion.div
+                <MotionView
                   animate={{
                     scale: [1, 1.1, 1],
                   }}
@@ -180,22 +180,22 @@ export function CommentsSheet({
                   className="text-6xl mb-4"
                 >
                   💬
-                </motion.div>
+                </MotionView>
                 <h3 className="text-lg font-semibold text-foreground mb-2">
                   {t.community?.noComments || 'No comments yet'}
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   {t.community?.beFirst || 'Be the first to share your thoughts!'}
                 </p>
-              </motion.div>
+              </MotionView>
             ) : (
-              <AnimatePresence>
+              <Presence>
                 {topLevelComments.map((comment, index) => {
                   const commentId = comment._id ?? comment.id
                   if (!commentId) return null
                   const replies = getReplies(commentId)
                   return (
-                    <motion.div
+                    <MotionView
                       key={commentId}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -223,18 +223,18 @@ export function CommentsSheet({
                           })}
                         </div>
                       )}
-                    </motion.div>
+                    </MotionView>
                   )
                 })}
-              </AnimatePresence>
+              </Presence>
             )}
           </div>
         </ScrollArea>
 
         <div className="shrink-0 border-t border-border bg-card/50 backdrop-blur-xl">
-          <AnimatePresence>
+          <Presence>
             {replyingTo && (
-              <motion.div
+              <MotionView
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -259,9 +259,9 @@ export function CommentsSheet({
                     {t.common?.cancel || 'Cancel'}
                   </Button>
                 </div>
-              </motion.div>
+              </MotionView>
             )}
-          </AnimatePresence>
+          </Presence>
 
           <div className="px-6 py-4">
             <div className="flex gap-3 items-end">
@@ -285,25 +285,25 @@ export function CommentsSheet({
                 className="h-11 w-11 shrink-0"
               >
                 {submitting ? (
-                  <motion.div
+                  <MotionView
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   >
                     <PaperPlaneRight size={20} weight="bold" />
-                  </motion.div>
+                  </MotionView>
                 ) : (
                   <PaperPlaneRight size={20} weight="bold" />
                 )}
               </Button>
             </div>
             {commentText.length > 0 && (
-              <motion.div
+              <MotionView
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-xs text-muted-foreground mt-2 text-right"
               >
                 {commentText.length}/500
-              </motion.div>
+              </MotionView>
             )}
           </div>
         </div>
@@ -374,7 +374,7 @@ function CommentItem({ comment, onReply, isReply = false, isAuthor = false }: Co
             onClick={handleLike}
             className="flex items-center gap-1 group/like"
           >
-            <motion.div whileTap={{ scale: 0.85 }}>
+            <MotionView whileTap={{ scale: 0.85 }}>
               <Heart
                 size={16}
                 weight={isLiked ? 'fill' : 'regular'}
@@ -382,7 +382,7 @@ function CommentItem({ comment, onReply, isReply = false, isAuthor = false }: Co
                   isLiked ? 'text-red-500' : 'text-muted-foreground group-hover/like:text-red-500'
                 }`}
               />
-            </motion.div>
+            </MotionView>
             {likesCount > 0 && (
               <span className="text-xs font-medium text-muted-foreground">
                 {likesCount}

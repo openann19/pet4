@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { db, type QueryOptions } from '@/lib/database'
 import { logger } from '@/lib/logger'
 import { ArrowsClockwise, CheckCircle, Database, Eye, Trash, User, XCircle } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -139,7 +139,7 @@ export default function BackendDemo() {
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <motion.div
+      <MotionView
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
@@ -150,7 +150,7 @@ export default function BackendDemo() {
         <p className="text-muted-foreground text-lg">
           Real database operations with Spark KV storage
         </p>
-      </motion.div>
+      </MotionView>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
@@ -306,7 +306,7 @@ export default function BackendDemo() {
           ) : (
             <div className="space-y-3">
               {records.map((record, index) => (
-                <motion.div
+                <MotionView
                   key={record.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -331,7 +331,7 @@ export default function BackendDemo() {
                       <Trash size={18} />
                     </Button>
                   </div>
-                </motion.div>
+                </MotionView>
               ))}
             </div>
           )}

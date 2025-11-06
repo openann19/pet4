@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import {
   MapPin,
   MagnifyingGlass,
@@ -171,7 +171,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
   )
 
   return (
-    <motion.div
+    <MotionView
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -211,12 +211,12 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
             />
             {isLoadingLocation && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                <motion.div
+                <MotionView
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 >
                   <NavigationArrow size={20} className="text-primary" />
-                </motion.div>
+                </MotionView>
               </div>
             )}
           </div>
@@ -241,9 +241,9 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                   <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wide">
                     Nearby Places
                   </h3>
-                  <AnimatePresence>
+                  <Presence>
                     {filteredPlaces.map((place, index) => (
-                      <motion.div
+                      <MotionView
                         key={place.id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -286,19 +286,19 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                               </div>
                             </div>
                             {selectedPlace?.id === place.id && (
-                              <motion.div
+                              <MotionView
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0"
                               >
                                 <MapPin size={14} weight="fill" className="text-white" />
-                              </motion.div>
+                              </MotionView>
                             )}
                           </div>
                         </Card>
-                      </motion.div>
+                      </MotionView>
                     ))}
-                  </AnimatePresence>
+                  </Presence>
                 </div>
 
                 <div className="mt-6 pt-6 border-t">
@@ -347,7 +347,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                   </p>
                   <div className="mt-6 flex flex-wrap justify-center gap-3">
                     {filteredPlaces.slice(0, 5).map((place, index) => (
-                      <motion.div
+                      <MotionView
                         key={place.id}
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -362,7 +362,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                           {getPlaceIcon(place.type)}
                           {place.name}
                         </Button>
-                      </motion.div>
+                      </MotionView>
                     ))}
                   </div>
                 </div>
@@ -372,7 +372,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
         </Tabs>
 
         {selectedPlace && (
-          <motion.div
+          <MotionView
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4"
@@ -391,9 +391,9 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                 Confirm Location
               </Button>
             </Card>
-          </motion.div>
+          </MotionView>
         )}
       </div>
-    </motion.div>
+    </MotionView>
   )
 }

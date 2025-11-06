@@ -13,7 +13,7 @@ import { useStorage } from '@/hooks/useStorage'
 import type { AdoptionListing } from '@/lib/adoption-marketplace-types'
 import { createLogger } from '@/lib/logger'
 import { ClipboardText, Heart, MagnifyingGlass, Plus } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -219,9 +219,9 @@ export default function AdoptionView() {
       </div>
 
       <ScrollArea className="h-[calc(100vh-320px)]">
-        <AnimatePresence mode="wait">
+        <Presence mode="wait">
           {filteredListings().length === 0 ? (
-            <motion.div
+            <MotionView
               key="empty"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -243,9 +243,9 @@ export default function AdoptionView() {
                   ? 'Try adjusting your search terms or filters.'
                   : 'Check back soon for new pets looking for their forever homes.'}
               </p>
-            </motion.div>
+            </MotionView>
           ) : (
-            <motion.div
+            <MotionView
               key="grid"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -253,7 +253,7 @@ export default function AdoptionView() {
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"
             >
               {filteredListings().map((listing, index) => (
-                <motion.div
+                <MotionView
                   key={listing.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -265,11 +265,11 @@ export default function AdoptionView() {
                     onFavorite={handleToggleFavorite}
                     isFavorited={Array.isArray(favorites) && favorites.includes(listing.id)}
                   />
-                </motion.div>
+                </MotionView>
               ))}
-            </motion.div>
+            </MotionView>
           )}
-        </AnimatePresence>
+        </Presence>
       </ScrollArea>
 
       <CreateAdoptionListingDialog

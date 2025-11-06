@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import {
   Dialog,
   DialogContent,
@@ -159,7 +159,7 @@ export function AdoptionListingDetailDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
         <div className="relative h-80 bg-muted">
-          <AnimatePresence mode="wait">
+          <Presence mode="wait">
             <motion.img
               key={currentPhotoIndex}
               src={photos[currentPhotoIndex]}
@@ -170,26 +170,26 @@ export function AdoptionListingDetailDialog({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             />
-          </AnimatePresence>
+          </Presence>
 
           {photos.length > 1 && (
             <>
-              <motion.button
+              <MotionView as="button"
                 whileHover={{ scale: 1.1, x: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={prevPhoto}
                 className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg z-10"
               >
                 <CaretLeft size={20} weight="bold" />
-              </motion.button>
-              <motion.button
+              </MotionView>
+              <MotionView as="button"
                 whileHover={{ scale: 1.1, x: 2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={nextPhoto}
                 className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg z-10"
               >
                 <CaretRight size={20} weight="bold" />
-              </motion.button>
+              </MotionView>
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                 {photos.map((_, index) => (
                   <button
@@ -316,7 +316,7 @@ export function AdoptionListingDetailDialog({
           )}
 
           {showApplicationForm && (
-            <motion.div
+            <MotionView
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="space-y-4 p-4 border rounded-lg bg-muted/50"
@@ -367,7 +367,7 @@ export function AdoptionListingDetailDialog({
                   {isSubmitting ? 'Submitting...' : 'Submit Application'}
                 </Button>
               </div>
-            </motion.div>
+            </MotionView>
           )}
         </div>
       </DialogContent>

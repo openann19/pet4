@@ -28,7 +28,7 @@ import {
   SpeakerSlash,
   X
 } from '@phosphor-icons/react'
-import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion'
+import { Presence, motion, useMotionValue, useTransform } from '@petspark/motion'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import SaveToHighlightDialog from './SaveToHighlightDialog'
@@ -309,7 +309,7 @@ export default function StoryViewer({
   if (!currentStory) return null
 
   return (
-    <motion.div
+    <MotionView
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -334,7 +334,7 @@ export default function StoryViewer({
                 aria-valuemax={100}
                 aria-label={`Story ${idx + 1} of ${stories.length}`}
               >
-                <motion.div
+                <MotionView
                   className="h-full bg-white"
                   initial={{ width: '0%' }}
                   animate={{
@@ -439,7 +439,7 @@ export default function StoryViewer({
         </div>
 
         {/* Media container with pinch-zoom support */}
-        <motion.div
+        <MotionView
           ref={mediaContainerRef}
           className="relative w-full h-full max-w-2xl mx-auto touch-none"
           style={{
@@ -477,24 +477,24 @@ export default function StoryViewer({
 
           {currentStory.caption && (
             <div className="absolute bottom-24 left-0 right-0 px-4">
-              <motion.div
+              <MotionView
                 className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={transitionConfig}
               >
                 <p className="text-white text-center">{currentStory.caption}</p>
-              </motion.div>
+              </MotionView>
             </div>
           )}
-        </motion.div>
+        </MotionView>
 
         {/* Interaction area */}
         {!isOwn && (
           <div className="absolute bottom-0 left-0 right-0 z-20 p-4 space-y-3">
-            <AnimatePresence>
+            <Presence>
               {showReactions && (
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
@@ -505,7 +505,7 @@ export default function StoryViewer({
                 >
                   <div className="flex justify-center gap-4">
                     {STORY_REACTION_EMOJIS.map((emoji) => (
-                      <motion.button
+                      <MotionView as="button"
                         key={emoji}
                         onClick={() => handleReaction(emoji)}
                         className="text-4xl focus:outline-none focus:ring-2 focus:ring-white rounded-lg p-2"
@@ -514,12 +514,12 @@ export default function StoryViewer({
                         aria-label={`React with ${emoji}`}
                       >
                         {emoji}
-                      </motion.button>
+                      </MotionView>
                     ))}
                   </div>
-                </motion.div>
+                </MotionView>
               )}
-            </AnimatePresence>
+            </Presence>
 
             <div className="flex items-center gap-2">
               <div className="flex-1 relative">
@@ -563,7 +563,7 @@ export default function StoryViewer({
         {/* Analytics for story owner */}
         {isOwn && (
           <div className="absolute bottom-4 left-4 right-4 z-20">
-            <motion.div
+            <MotionView
               className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -591,7 +591,7 @@ export default function StoryViewer({
                   View Insights
                 </Button>
               </div>
-            </motion.div>
+            </MotionView>
           </div>
         )}
       </div>
@@ -606,6 +606,6 @@ export default function StoryViewer({
           }}
         />
       )}
-    </motion.div>
+    </MotionView>
   )
 }

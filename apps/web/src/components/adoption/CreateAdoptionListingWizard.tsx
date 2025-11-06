@@ -12,7 +12,7 @@ import type { CreateAdoptionListingData } from '@/lib/adoption-marketplace-types
 import { createLogger } from '@/lib/logger'
 import { userService } from '@/lib/user-service'
 import { ArrowLeft, ArrowRight, Check, MapPin, Upload, X } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -202,8 +202,8 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
+        <Presence mode="wait">
+          <MotionView
             key={currentStep}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -700,8 +700,8 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                 )}
               </CardContent>
             </Card>
-          </motion.div>
-        </AnimatePresence>
+          </MotionView>
+        </Presence>
 
         <div className="flex items-center justify-between mt-6 sticky bottom-0 bg-background pt-4 pb-4 border-t border-border">
           <Button

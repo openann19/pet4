@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { MotionView, Presence } from '@petspark/motion'
 import { ArrowLeft, Translate } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { useApp } from '@/contexts/AppContext'
@@ -32,7 +32,7 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
   return (
     <div className="fixed inset-0 bg-background overflow-auto">
       <div className="min-h-screen flex flex-col">
-        <motion.div
+        <MotionView
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="p-4 flex items-center justify-between"
@@ -46,7 +46,7 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
           >
             <ArrowLeft size={24} />
           </Button>
-          <motion.div
+          <MotionView
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
@@ -65,12 +65,12 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
               <Translate size={20} weight="bold" aria-hidden />
               <span>{language === 'en' ? 'БГ' : 'EN'}</span>
             </Button>
-          </motion.div>
-        </motion.div>
+          </MotionView>
+        </MotionView>
 
         <div className="flex-1 flex items-center justify-center px-6 pb-12">
           <div className="w-full max-w-md">
-            <AnimatePresence mode="wait">
+            <Presence mode="wait">
               {mode === 'signin' ? (
                 <SignInForm
                   key="signin"
@@ -84,7 +84,7 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
                   onSwitchToSignIn={() => handleModeSwitch('signin')}
                 />
               )}
-            </AnimatePresence>
+            </Presence>
           </div>
         </div>
       </div>

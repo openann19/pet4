@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { motion, useReducedMotion, type Variants } from 'framer-motion'
+import { motion, useReducedMotion, type Variants } from '@petspark/motion'
 import { Heart, CheckCircle, Translate } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { useApp } from '@/contexts/AppContext'
@@ -94,14 +94,14 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-background flex items-center justify-center" role="status" aria-live="polite">
-        <motion.div
+        <MotionView
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center"
         >
           <Heart size={32} className="text-white" weight="fill" aria-hidden />
           <span className="sr-only">{t.common.loading}</span>
-        </motion.div>
+        </MotionView>
       </div>
     )
   }
@@ -109,7 +109,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
   return (
     <main className="fixed inset-0 bg-background overflow-auto">
       <div className="min-h-screen flex flex-col">
-        <motion.div
+        <MotionView
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
@@ -126,18 +126,18 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
             <Translate size={20} weight="bold" aria-hidden />
             <span>{language === 'en' ? 'БГ' : 'EN'}</span>
           </Button>
-        </motion.div>
+        </MotionView>
 
         <div className="flex-1 flex items-center justify-center px-6 py-12">
           <div className="w-full max-w-md">
-            <motion.div
+            <MotionView
               initial="hidden"
               animate="visible"
               variants={scaleVariant}
               transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
               className="flex flex-col items-center mb-12"
             >
-              <motion.div
+              <MotionView
                 className="w-20 h-20 rounded-full bg-gradient-to-br from-primary via-accent to-secondary flex items-center justify-center shadow-2xl mb-6"
                 animate={shouldReduceMotion ? {} : {
                   boxShadow: [
@@ -149,7 +149,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}
               >
                 <Heart size={40} className="text-white" weight="fill" aria-hidden />
-              </motion.div>
+              </MotionView>
 
               <h1 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-3">
                 {t.welcome.title}
@@ -158,9 +158,9 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
               <p className="text-lg text-muted-foreground text-center">
                 {t.welcome.subtitle}
               </p>
-            </motion.div>
+            </MotionView>
 
-            <motion.div
+            <MotionView
               initial="hidden"
               animate="visible"
               variants={fadeVariant}
@@ -168,7 +168,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
               className="space-y-3 mb-10"
             >
               {[t.welcome.proof1, t.welcome.proof2, t.welcome.proof3].map((text, idx) => (
-                <motion.div
+                <MotionView
                   key={idx}
                   initial="hidden"
                   animate="visible"
@@ -178,12 +178,12 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 >
                   <CheckCircle size={20} weight="fill" className="text-primary shrink-0" aria-hidden />
                   <span className="text-foreground/80 text-sm">{text}</span>
-                </motion.div>
+                </MotionView>
               ))}
-            </motion.div>
+            </MotionView>
 
             {deepLinkMessage && (
-              <motion.div
+              <MotionView
                 initial="hidden"
                 animate="visible"
                 variants={fadeVariant}
@@ -194,11 +194,11 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 <p className="text-sm text-foreground/70 text-center">
                   {deepLinkMessage}
                 </p>
-              </motion.div>
+              </MotionView>
             )}
 
             {!isOnline && (
-              <motion.div
+              <MotionView
                 initial="hidden"
                 animate="visible"
                 variants={fadeVariant}
@@ -210,10 +210,10 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 <p className="text-sm text-destructive text-center">
                   {t.welcome.offlineMessage}
                 </p>
-              </motion.div>
+              </MotionView>
             )}
 
-            <motion.div
+            <MotionView
               initial="hidden"
               animate="visible"
               variants={fadeVariant}
@@ -253,9 +253,9 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                   {t.welcome.explore}
                 </Button>
               </div>
-            </motion.div>
+            </MotionView>
 
-            <motion.div
+            <MotionView
               initial="hidden"
               animate="visible"
               variants={fadeVariant}
@@ -285,7 +285,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 </a>
                 .
               </p>
-            </motion.div>
+            </MotionView>
           </div>
         </div>
       </div>

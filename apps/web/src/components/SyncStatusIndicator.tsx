@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { CloudArrowUp, CloudSlash, CloudCheck, Warning } from '@phosphor-icons/react'
 import { subscribeToSyncStatus, type SyncStatus } from '@/lib/offline-sync'
 import { Button } from '@/components/ui/button'
@@ -73,7 +73,7 @@ export function SyncStatusIndicator() {
           size="sm"
           className="h-9 px-3 gap-2 hover:bg-primary/10 active:bg-primary/20 transition-colors"
         >
-          <motion.div
+          <MotionView
             animate={{
               scale: syncStatus.isSyncing ? [1, 1.1, 1] : 1,
               rotate: syncStatus.isSyncing ? [0, 10, -10, 0] : 0
@@ -85,7 +85,7 @@ export function SyncStatusIndicator() {
             }}
           >
             {getIcon()}
-          </motion.div>
+          </MotionView>
           <span className="text-xs font-medium">{getLabel()}</span>
         </Button>
       </PopoverTrigger>

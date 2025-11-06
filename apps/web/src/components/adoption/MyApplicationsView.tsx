@@ -20,7 +20,7 @@ import {
   Warning,
   XCircle
 } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 
 const logger = createLogger('MyApplicationsView')
@@ -112,13 +112,13 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <motion.div
+          <MotionView
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             className="inline-block"
           >
             <ClipboardText size={48} className="text-primary" weight="fill" />
-          </motion.div>
+          </MotionView>
           <p className="mt-4 text-muted-foreground">Loading your applications...</p>
         </div>
       </div>
@@ -154,7 +154,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
         <ScrollArea className="h-[calc(100vh-250px)]">
           <div className="space-y-4 pr-4">
             {applications.map((application, index) => (
-              <motion.div
+              <MotionView
                 key={application._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -282,7 +282,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </MotionView>
             ))}
           </div>
         </ScrollArea>

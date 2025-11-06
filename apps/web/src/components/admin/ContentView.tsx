@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import { MagnifyingGlass, Image as ImageIcon, CheckCircle, XCircle, Eye } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 import type { Pet } from '@/lib/types'
@@ -77,9 +77,9 @@ export default function ContentView() {
 
       <ScrollArea className="h-[600px]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          <AnimatePresence mode="popLayout">
+          <Presence mode="popLayout">
             {filteredPets.map((pet: Pet, index: number) => (
-              <motion.div
+              <MotionView
                 key={pet.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -122,9 +122,9 @@ export default function ContentView() {
                     </Button>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </MotionView>
             ))}
-          </AnimatePresence>
+          </Presence>
         </div>
       </ScrollArea>
 

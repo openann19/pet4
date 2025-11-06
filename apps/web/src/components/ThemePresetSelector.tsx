@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Check } from '@phosphor-icons/react'
 import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -36,7 +36,7 @@ export default function ThemePresetSelector({
           </Label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {lightPresets.map((preset) => (
-              <motion.button
+              <MotionView as="button"
                 key={preset.id}
                 onClick={() => handleSelectPreset(preset.id)}
                 className={`relative rounded-2xl overflow-hidden border-2 transition-all ${
@@ -67,13 +67,13 @@ export default function ThemePresetSelector({
                 </div>
 
                 {currentPreset === preset.id && (
-                  <motion.div
+                  <MotionView
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
                   >
                     <Check size={16} weight="bold" className="text-primary-foreground" />
-                  </motion.div>
+                  </MotionView>
                 )}
 
                 <div className="bg-card/90 backdrop-blur-sm p-2 border-t border-border">
@@ -82,7 +82,7 @@ export default function ThemePresetSelector({
                     {preset.description}
                   </p>
                 </div>
-              </motion.button>
+              </MotionView>
             ))}
           </div>
         </div>
@@ -93,7 +93,7 @@ export default function ThemePresetSelector({
           </Label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {darkPresets.map((preset) => (
-              <motion.button
+              <MotionView as="button"
                 key={preset.id}
                 onClick={() => handleSelectPreset(preset.id)}
                 className={`relative rounded-2xl overflow-hidden border-2 transition-all ${
@@ -124,13 +124,13 @@ export default function ThemePresetSelector({
                 </div>
 
                 {currentPreset === preset.id && (
-                  <motion.div
+                  <MotionView
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
                   >
                     <Check size={16} weight="bold" className="text-primary-foreground" />
-                  </motion.div>
+                  </MotionView>
                 )}
 
                 <div className="bg-card/90 backdrop-blur-sm p-2 border-t border-border">
@@ -139,7 +139,7 @@ export default function ThemePresetSelector({
                     {preset.description}
                   </p>
                 </div>
-              </motion.button>
+              </MotionView>
             ))}
           </div>
         </div>

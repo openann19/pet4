@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import { Sparkle, Eye, ArrowRight } from '@phosphor-icons/react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -59,7 +59,7 @@ export default function VisualAnalysisDemo() {
   return (
     <Card className="p-6 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5">
       <div className="flex items-start gap-4 mb-6">
-        <motion.div
+        <MotionView
           className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shrink-0"
           animate={{
             boxShadow: [
@@ -71,7 +71,7 @@ export default function VisualAnalysisDemo() {
           transition={{ duration: 2, repeat: Infinity }}
         >
           <Eye size={24} weight="fill" className="text-white" />
-        </motion.div>
+        </MotionView>
         <div className="flex-1">
           <h3 className="text-xl font-bold mb-1">AI Visual Analysis Demo</h3>
           <p className="text-sm text-muted-foreground">
@@ -82,7 +82,7 @@ export default function VisualAnalysisDemo() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <motion.div
+          <MotionView
             key={selectedIndex}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -94,15 +94,15 @@ export default function VisualAnalysisDemo() {
                 Sample {selectedIndex + 1}/{DEMO_PETS.length}
               </Badge>
             </div>
-          </motion.div>
+          </MotionView>
 
           <div className="flex gap-2">
             <Button onClick={runDemo} disabled={analyzing} className="flex-1 bg-gradient-to-r from-primary to-accent">
               {analyzing ? (
                 <>
-                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+                  <MotionView animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
                     <Sparkle size={18} weight="fill" />
-                  </motion.div>
+                  </MotionView>
                   <span className="ml-2">Analyzing...</span>
                 </>
               ) : (
@@ -119,9 +119,9 @@ export default function VisualAnalysisDemo() {
         </div>
 
         <div>
-          <AnimatePresence mode="wait">
+          <Presence mode="wait">
             {!showResult && !analyzing && (
-              <motion.div
+              <MotionView
                 key="prompt"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -132,11 +132,11 @@ export default function VisualAnalysisDemo() {
                   <Eye size={48} className="text-muted-foreground/30 mx-auto mb-4" weight="duotone" />
                   <p className="text-muted-foreground">Click "Analyze This Photo" to see AI in action</p>
                 </div>
-              </motion.div>
+              </MotionView>
             )}
 
             {analyzing && (
-              <motion.div
+              <MotionView
                 key="analyzing"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -145,9 +145,9 @@ export default function VisualAnalysisDemo() {
               >
                 <Card className="p-4 bg-background/50">
                   <div className="flex items-center gap-3 mb-4">
-                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
+                    <MotionView animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
                       <Sparkle size={24} weight="fill" className="text-primary" />
-                    </motion.div>
+                    </MotionView>
                     <div>
                       <h4 className="font-semibold">Analyzing photo...</h4>
                       <p className="text-xs text-muted-foreground">Processing visual features</p>
@@ -157,29 +157,29 @@ export default function VisualAnalysisDemo() {
                   <div className="space-y-2">
                     {['Detecting breed...', 'Estimating age...', 'Analyzing personality...', 'Calculating confidence...'].map(
                       (text, idx) => (
-                        <motion.div
+                        <MotionView
                           key={text}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: idx * 0.4 }}
                           className="flex items-center gap-2 text-sm"
                         >
-                          <motion.div
+                          <MotionView
                             className="w-1.5 h-1.5 rounded-full bg-primary"
                             animate={{ scale: [1, 1.5, 1] }}
                             transition={{ duration: 1, repeat: Infinity }}
                           />
                           {text}
-                        </motion.div>
+                        </MotionView>
                       )
                     )}
                   </div>
                 </Card>
-              </motion.div>
+              </MotionView>
             )}
 
             {showResult && (
-              <motion.div
+              <MotionView
                 key="result"
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -195,28 +195,28 @@ export default function VisualAnalysisDemo() {
                   </div>
 
                   <div className="space-y-4">
-                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
+                    <MotionView initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
                       <div className="text-xs text-muted-foreground mb-1">Breed</div>
                       <div className="font-semibold text-lg">{currentPet.breed}</div>
-                    </motion.div>
+                    </MotionView>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
+                      <MotionView initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
                         <div className="text-xs text-muted-foreground mb-1">Age</div>
                         <div className="font-semibold">{currentPet.age} years</div>
-                      </motion.div>
+                      </MotionView>
 
-                      <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
+                      <MotionView initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
                         <div className="text-xs text-muted-foreground mb-1">Size</div>
                         <div className="font-semibold capitalize">{currentPet.size.replace('-', ' ')}</div>
-                      </motion.div>
+                      </MotionView>
                     </div>
 
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                    <MotionView initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
                       <div className="text-xs text-muted-foreground mb-2">Personality Traits</div>
                       <div className="flex flex-wrap gap-2">
                         {currentPet.personality.map((trait, idx) => (
-                          <motion.div
+                          <MotionView
                             key={trait}
                             initial={{ opacity: 0, scale: 0 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -225,12 +225,12 @@ export default function VisualAnalysisDemo() {
                             <Badge className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800">
                               {trait}
                             </Badge>
-                          </motion.div>
+                          </MotionView>
                         ))}
                       </div>
-                    </motion.div>
+                    </MotionView>
 
-                    <motion.div
+                    <MotionView
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.4 }}
@@ -239,12 +239,12 @@ export default function VisualAnalysisDemo() {
                       <p className="text-xs text-muted-foreground">
                         💡 This information would be automatically filled in when creating a pet profile
                       </p>
-                    </motion.div>
+                    </MotionView>
                   </div>
                 </Card>
-              </motion.div>
+              </MotionView>
             )}
-          </AnimatePresence>
+          </Presence>
         </div>
       </div>
     </Card>

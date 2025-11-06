@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, Presence } from '@petspark/motion';
 import {
   MapPin,
   MagnifyingGlass,
@@ -226,7 +226,7 @@ export default function MapView() {
         {displayLocation && filteredPlaces.slice(0, 15).map((place, idx) => {
           const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
           return (
-            <motion.div
+            <MotionView
               key={place.id}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -253,7 +253,7 @@ export default function MapView() {
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
               </button>
-            </motion.div>
+            </MotionView>
           );
         })}
       </div>
@@ -261,7 +261,7 @@ export default function MapView() {
       {/* Top Controls */}
       <div className="absolute top-4 left-4 right-4 z-10 space-y-3">
         {/* Search Bar */}
-        <motion.div
+        <MotionView
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -319,11 +319,11 @@ export default function MapView() {
               </button>
             ))}
           </div>
-        </motion.div>
+        </MotionView>
 
         {/* Privacy Banner */}
         {locationPermission === 'granted' && !preciseSharingEnabled && (
-          <motion.div
+          <MotionView
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
@@ -348,11 +348,11 @@ export default function MapView() {
                 {t.map?.enable || 'Enable'}
               </Button>
             </div>
-          </motion.div>
+          </MotionView>
         )}
 
         {preciseSharingEnabled && preciseSharingUntil && (
-          <motion.div
+          <MotionView
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             className="backdrop-blur-xl bg-green-500/10 rounded-xl border border-green-500/20 p-3"
@@ -376,14 +376,14 @@ export default function MapView() {
                 {t.map?.disable || 'Disable'}
               </Button>
             </div>
-          </motion.div>
+          </MotionView>
         )}
       </div>
 
       {/* Places List Sidebar */}
-      <AnimatePresence>
+      <Presence>
         {showList && (
-          <motion.div
+          <MotionView
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -458,14 +458,14 @@ export default function MapView() {
                 );
               })}
             </div>
-          </motion.div>
+          </MotionView>
         )}
-      </AnimatePresence>
+      </Presence>
 
       {/* Selected Place Detail Sheet */}
-      <AnimatePresence>
+      <Presence>
         {selectedMarker && selectedMarker.type === 'place' && (
-          <motion.div
+          <MotionView
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -564,12 +564,12 @@ export default function MapView() {
                 </div>
               );
             })()}
-          </motion.div>
+          </MotionView>
         )}
-      </AnimatePresence>
+      </Presence>
 
       {/* Stats Footer */}
-      <motion.div
+      <MotionView
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
@@ -591,7 +591,7 @@ export default function MapView() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </MotionView>
     </div>
   );
 }

@@ -14,7 +14,7 @@ import {
   TrendUp,
   Users
 } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 
 interface Report {
@@ -181,7 +181,7 @@ export default function DashboardView() {
           const TrendIcon = stat.trend === 'up' ? TrendUp : stat.trend === 'down' ? TrendDown : Clock
 
           return (
-            <motion.div
+            <MotionView
               key={stat.title}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -204,7 +204,7 @@ export default function DashboardView() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </MotionView>
           )
         })}
       </div>

@@ -47,7 +47,7 @@ import {
   VideoCamera,
   X
 } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -319,7 +319,7 @@ export default function ChatWindow({
 
   return (
     <>
-      <AnimatePresence>
+      <Presence>
         {incomingCall && room.matchedPetName && (
           <IncomingCallNotification
             call={incomingCall}
@@ -329,9 +329,9 @@ export default function ChatWindow({
             onDecline={declineCall}
           />
         )}
-      </AnimatePresence>
+      </Presence>
 
-      <AnimatePresence>
+      <Presence>
         {activeCall && (
           <CallInterface
             session={activeCall}
@@ -340,10 +340,10 @@ export default function ChatWindow({
             onToggleVideo={toggleVideo}
           />
         )}
-      </AnimatePresence>
+      </Presence>
 
       <div className="flex flex-col h-full">
-        <motion.div 
+        <MotionView 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="glass-strong border-b border-white/20 p-4 shadow-xl backdrop-blur-2xl"
@@ -370,30 +370,30 @@ export default function ChatWindow({
             <div className="flex-1">
               <h2 className="font-bold text-foreground">{room.matchedPetName || 'Unknown'}</h2>
               {typingUsers.length > 0 && (
-                <motion.p
+                <MotionView
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="text-xs text-primary flex items-center gap-1"
                 >
-                  <motion.span
+                  <MotionText
                     animate={{ opacity: [0.3, 1, 0.3] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   >
                     {typingUsers.length === 1
                       ? `${typingUsers[0]?.userName ?? 'Someone'} is typing`
                       : `${typingUsers.length} people are typing`}
-                  </motion.span>
-                  <motion.span
+                  </MotionText>
+                  <MotionText
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 0.6, repeat: Infinity }}
                   >
                     ...
-                  </motion.span>
-                </motion.p>
+                  </MotionText>
+                </MotionView>
               )}
             </div>
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <MotionView whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -403,9 +403,9 @@ export default function ChatWindow({
               >
                 <VideoCamera size={24} weight="regular" />
               </Button>
-            </motion.div>
+            </MotionView>
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <MotionView whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -415,13 +415,13 @@ export default function ChatWindow({
               >
                 <Phone size={24} weight="regular" />
               </Button>
-            </motion.div>
+            </MotionView>
 
             <Button variant="ghost" size="icon" className="shrink-0">
               <DotsThree size={24} weight="bold" />
             </Button>
           </div>
-        </motion.div>
+        </MotionView>
 
         <div 
           ref={scrollRef}
@@ -429,7 +429,7 @@ export default function ChatWindow({
         >
           {messageGroups.map((group, groupIdx) => (
             <div key={group.date} className="space-y-4">
-              <motion.div
+              <MotionView
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: groupIdx * 0.1 }}
@@ -438,13 +438,13 @@ export default function ChatWindow({
                 <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
                   {group.date}
                 </div>
-              </motion.div>
+              </MotionView>
 
               {group.messages.map((message, msgIdx) => {
                 const isCurrentUser = message.senderId === currentUserId
                 
                 return (
-                  <motion.div
+                  <MotionView
                     key={message.id}
                     initial={{ opacity: 0, y: 20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -466,7 +466,7 @@ export default function ChatWindow({
                     )}
 
                     <div className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
-                      <motion.div
+                      <MotionView
                         whileHover={{ scale: 1.02 }}
                         className={`relative group ${
                           message.type === 'sticker' ? 'p-0' : 'p-3'
@@ -487,13 +487,13 @@ export default function ChatWindow({
                         )}
 
                         {message.type === 'voice' && voiceMessages && voiceMessages[message.id] && (
-                          <motion.button
+                          <MotionView as="button"
                             onClick={() => toggleVoicePlayback(message.id)}
                             className="flex items-center gap-2 min-w-[200px]"
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                           >
-                            <motion.div 
+                            <MotionView 
                               className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"
                               whileHover={{ scale: 1.1 }}
                             >
@@ -502,10 +502,10 @@ export default function ChatWindow({
                               ) : (
                                 <Play size={16} weight="fill" />
                               )}
-                            </motion.div>
+                            </MotionView>
                             <div className="flex-1 h-8 flex items-center gap-0.5">
                               {voiceMessages[message.id]?.waveform.slice(0, 30).map((value, i) => (
-                                <motion.div
+                                <MotionView
                                   key={i}
                                   className="w-1 bg-white/60 rounded-full"
                                   style={{ height: `${Math.max(value * 24, 4)}px` }}
@@ -525,23 +525,23 @@ export default function ChatWindow({
                                 return `${Math.floor(voiceMsg.duration / 60)}:${(voiceMsg.duration % 60).toString().padStart(2, '0')}`
                               })()}
                             </span>
-                          </motion.button>
+                          </MotionView>
                         )}
 
                         <Popover open={showReactions === message.id} onOpenChange={(open) => setShowReactions(open ? message.id : null)}>
                           <PopoverTrigger asChild>
-                            <motion.button
+                            <MotionView as="button"
                               className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                               whileHover={{ scale: 1.2 }}
                               whileTap={{ scale: 0.9 }}
                             >
                               <Heart size={14} weight="fill" className="text-red-500" />
-                            </motion.button>
+                            </MotionView>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-2 glass-strong backdrop-blur-2xl border-white/30" side="top">
                             <div className="flex gap-1">
                               {REACTION_EMOJIS.slice(0, 6).map((emoji) => (
-                                <motion.button
+                                <MotionView as="button"
                                   key={emoji}
                                   onClick={() => handleReaction(message.id, emoji)}
                                   className="text-2xl p-2 rounded-lg hover:bg-white/20 transition-colors"
@@ -549,32 +549,32 @@ export default function ChatWindow({
                                   whileTap={{ scale: 0.9 }}
                                 >
                                   {emoji}
-                                </motion.button>
+                                </MotionView>
                               ))}
                             </div>
                           </PopoverContent>
                         </Popover>
-                      </motion.div>
+                      </MotionView>
 
                       {(() => {
                         const reactionsArray = getReactionsArray(message.reactions)
                         return reactionsArray.length > 0 && (
-                          <motion.div
+                          <MotionView
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             className="flex gap-1 mt-1 px-2"
                           >
                             {reactionsArray.map((reaction: MessageReaction, idx: number) => (
-                            <motion.div
+                            <MotionView
                               key={idx}
                               whileHover={{ scale: 1.2 }}
                               className="text-lg bg-white/80 rounded-full px-2 py-0.5 shadow-sm"
                               title={reaction.userName}
                             >
                               {reaction.emoji}
-                            </motion.div>
+                            </MotionView>
                           ))}
-                        </motion.div>
+                        </MotionView>
                         )
                       })()}
 
@@ -593,14 +593,14 @@ export default function ChatWindow({
                         )}
                       </div>
                     </div>
-                  </motion.div>
+                  </MotionView>
                 )
               })}
             </div>
           ))}
 
           {typingUsers.length > 0 && (
-            <motion.div
+            <MotionView
               key="typing-indicators"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -618,17 +618,17 @@ export default function ChatWindow({
               >
                 <div />
               </WebBubbleWrapper>
-            </motion.div>
+            </MotionView>
           )}
         </div>
 
-        <motion.div 
+        <MotionView 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="glass-strong border-t border-white/20 p-4 shadow-2xl backdrop-blur-2xl"
         >
           {showTemplates && (
-            <motion.div
+            <MotionView
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -646,7 +646,7 @@ export default function ChatWindow({
                 </div>
                 <div className="grid grid-cols-1 gap-2">
                   {MESSAGE_TEMPLATES.slice(0, 4).map((template) => (
-                    <motion.button
+                    <MotionView as="button"
                       key={template.id}
                       onClick={() => handleUseTemplate(template.text)}
                       className="text-left p-2 rounded-lg glass-effect hover:glass-strong transition-all text-sm"
@@ -655,11 +655,11 @@ export default function ChatWindow({
                     >
                       <span className="mr-2">{template.icon}</span>
                       {template.title}
-                    </motion.button>
+                    </MotionView>
                   ))}
                 </div>
               </div>
-            </motion.div>
+            </MotionView>
           )}
 
           {isRecording ? (
@@ -701,7 +701,7 @@ export default function ChatWindow({
                     <TabsContent value="stickers" className="mt-3">
                       <div className="grid grid-cols-6 gap-2">
                         {CHAT_STICKERS.map((sticker) => (
-                          <motion.button
+                          <MotionView as="button"
                             key={sticker.id}
                             onClick={() => handleSendMessage(sticker.emoji, 'sticker')}
                             className="text-3xl p-2 rounded-xl hover:bg-white/20 transition-colors"
@@ -710,21 +710,21 @@ export default function ChatWindow({
                             title={sticker.label}
                           >
                             {sticker.emoji}
-                          </motion.button>
+                          </MotionView>
                         ))}
                       </div>
                     </TabsContent>
                     <TabsContent value="emojis" className="mt-3">
                       <div className="grid grid-cols-6 gap-2">
                         {REACTION_EMOJIS.map((emoji) => (
-                          <motion.div
+                          <MotionView
                             key={emoji}
                             className="text-2xl p-2 rounded-xl hover:bg-white/20 transition-colors text-center cursor-pointer"
                             whileHover={{ scale: 1.2 }}
                             whileTap={{ scale: 0.9 }}
                           >
                             {emoji}
-                          </motion.div>
+                          </MotionView>
                         ))}
                       </div>
                     </TabsContent>
@@ -766,16 +766,16 @@ export default function ChatWindow({
                 size="icon"
                 className="shrink-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all disabled:opacity-50"
               >
-                <motion.div
+                <MotionView
                   whileHover={{ x: 5 }}
                   whileTap={{ scale: 0.9 }}
                 >
                   <PaperPlaneRight size={20} weight="fill" />
-                </motion.div>
+                </MotionView>
               </Button>
             </div>
           )}
-        </motion.div>
+        </MotionView>
       </div>
     </>
   )

@@ -13,7 +13,7 @@ import { haptics } from '@/lib/haptics'
 import { calculateCompatibility, getCompatibilityFactors } from '@/lib/matching'
 import type { Match, Pet } from '@/lib/types'
 import { Calendar, ChartBar, ChatCircle, Heart, MapPin, Sparkle, VideoCamera } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useState } from 'react'
 
 interface MatchesViewProps {
@@ -56,40 +56,40 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
   if (matchedPets.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <motion.div
+        <MotionView
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
           className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
         >
-          <motion.div
+          <MotionView
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           >
             <Heart size={48} className="text-primary" />
-          </motion.div>
-          <motion.div
+          </MotionView>
+          <MotionView
             className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-accent/20"
             animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           />
-        </motion.div>
-        <motion.h2
+        </MotionView>
+        <MotionView
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="text-2xl font-bold mb-2"
         >
           {t.matches.noMatches}
-        </motion.h2>
-        <motion.p
+        </MotionView>
+        <MotionView
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="text-muted-foreground mb-6 max-w-md"
         >
           {t.matches.noMatchesDesc}
-        </motion.p>
+        </MotionView>
       </div>
     )
   }
@@ -104,7 +104,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
           </p>
         </div>
         {onNavigateToChat && matchedPets.length > 0 && (
-          <motion.div
+          <MotionView
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
@@ -120,13 +120,13 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
               <ChatCircle size={20} weight="fill" className="mr-2" />
               {t.matches.startChat}
             </Button>
-          </motion.div>
+          </MotionView>
         )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {matchedPets.map((pet, idx) => (
-          <motion.div
+          <MotionView
             key={pet.id}
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -136,7 +136,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
             <div 
               className="overflow-hidden rounded-3xl glass-strong premium-shadow backdrop-blur-2xl cursor-pointer group relative border border-white/20"
             >
-              <motion.div
+              <MotionView
                 className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
               />
               <div 
@@ -154,10 +154,10 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                   whileHover={{ scale: 1.12 }}
                   transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
                 />
-                <motion.div
+                <MotionView
                   className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"
                 />
-                <motion.div 
+                <MotionView 
                   className="absolute top-3 right-3 glass-strong px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl border border-white/30 backdrop-blur-xl"
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
@@ -167,8 +167,8 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                   <span className="bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent">
                     {pet.match.compatibilityScore}%
                   </span>
-                </motion.div>
-                <motion.button
+                </MotionView>
+                <MotionView as="button"
                   onClick={(e) => {
                     e.stopPropagation()
                     haptics.trigger('selection')
@@ -179,7 +179,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                   whileTap={{ scale: 0.9 }}
                 >
                   <ChartBar size={20} className="text-white drop-shadow-lg" weight="bold" />
-                </motion.button>
+                </MotionView>
               </div>
 
               <div className="p-5 bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-md">
@@ -192,7 +192,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                     </p>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <motion.button
+                    <MotionView as="button"
                       onClick={(e) => {
                         e.stopPropagation()
                         haptics.trigger('selection')
@@ -204,8 +204,8 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                       title="Schedule playdate"
                     >
                       <Calendar size={18} weight="fill" className="text-white" />
-                    </motion.button>
-                    <motion.button
+                    </MotionView>
+                    <MotionView as="button"
                       onClick={(e) => {
                         e.stopPropagation()
                         haptics.trigger('medium')
@@ -217,9 +217,9 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                       title="Start video call"
                     >
                       <VideoCamera size={18} weight="fill" className="text-white" />
-                    </motion.button>
+                    </MotionView>
                     {onNavigateToChat && (
-                      <motion.button
+                      <MotionView as="button"
                         onClick={(e) => {
                           e.stopPropagation()
                           haptics.trigger('medium')
@@ -231,7 +231,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                         title="Start chat"
                       >
                         <ChatCircle size={18} weight="fill" className="text-white" />
-                      </motion.button>
+                      </MotionView>
                     )}
                   </div>
                 </div>
@@ -253,11 +253,11 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                 )}
               </div>
             </div>
-          </motion.div>
+          </MotionView>
         ))}
       </div>
 
-      <AnimatePresence>
+      <Presence>
         {selectedPet && selectedMatch && (
           <EnhancedPetDetailView
             pet={selectedPet}
@@ -268,7 +268,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
             showActions={false}
           />
         )}
-      </AnimatePresence>
+      </Presence>
 
       <Dialog open={!!breakdownPet} onOpenChange={(open) => !open && setBreakdownPet(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -318,7 +318,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
         />
       )}
 
-      <AnimatePresence>
+      <Presence>
         {activeCall && (
           <CallInterface
             session={activeCall}
@@ -327,7 +327,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
             onToggleVideo={toggleVideo}
           />
         )}
-      </AnimatePresence>
+      </Presence>
     </div>
   )
 }

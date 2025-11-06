@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useStorage } from '@/hooks/useStorage'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
@@ -148,7 +148,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
           <SheetHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-br from-background via-primary/5 to-accent/5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <motion.div
+                <MotionView
                   animate={{
                     rotate: [0, -10, 10, -10, 0],
                     scale: [1, 1.1, 1]
@@ -159,7 +159,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                   }}
                 >
                   <BellRinging size={28} weight="fill" className="text-primary" />
-                </motion.div>
+                </MotionView>
                 <div>
                   <SheetTitle className="text-xl">Notifications</SheetTitle>
                   {unreadCount > 0 && (
@@ -258,15 +258,15 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
 
           <ScrollArea className="flex-1">
             <div className="p-4">
-              <AnimatePresence mode="popLayout">
+              <Presence mode="popLayout">
                 {filteredNotifications.length === 0 ? (
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     className="flex flex-col items-center justify-center py-16 px-4"
                   >
-                    <motion.div
+                    <MotionView
                       animate={{
                         rotate: [0, -10, 10, -10, 0],
                         scale: [1, 1.05, 1]
@@ -278,18 +278,18 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                       }}
                     >
                       <Bell size={64} weight="thin" className="text-muted-foreground/40" />
-                    </motion.div>
+                    </MotionView>
                     <p className="text-muted-foreground mt-4 text-center">
                       {filter === 'unread' ? 'No unread notifications' : 'No notifications yet'}
                     </p>
                     <p className="text-sm text-muted-foreground/60 mt-1 text-center">
                       We'll notify you when something important happens
                     </p>
-                  </motion.div>
+                  </MotionView>
                 ) : (
                   <div className="space-y-2">
                     {filteredNotifications.map((notification, index) => (
-                      <motion.div
+                      <MotionView
                         key={notification.id}
                         layout
                         initial={{ opacity: 0, x: 20 }}
@@ -307,11 +307,11 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                           getIcon={getNotificationIcon}
                           getPriorityStyles={getPriorityStyles}
                         />
-                      </motion.div>
+                      </MotionView>
                     ))}
                   </div>
                 )}
-              </AnimatePresence>
+              </Presence>
             </div>
           </ScrollArea>
         </div>
@@ -338,7 +338,7 @@ function NotificationItem({
   const [isHovered, setIsHovered] = useState(false)
 
   return (
-    <motion.div
+    <MotionView
       className={cn(
         'relative rounded-xl overflow-hidden transition-all',
         !notification.read && 'bg-primary/5',
@@ -350,7 +350,7 @@ function NotificationItem({
     >
       <div className="p-4">
         <div className="flex items-start gap-3">
-          <motion.div
+          <MotionView
             className={cn(
               'shrink-0 w-12 h-12 rounded-xl flex items-center justify-center',
               notification.priority === 'urgent' && 'bg-destructive/10',
@@ -369,7 +369,7 @@ function NotificationItem({
             }}
           >
             {getIcon(notification.type, notification.priority)}
-          </motion.div>
+          </MotionView>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
@@ -391,7 +391,7 @@ function NotificationItem({
               </div>
 
               {!notification.read && (
-                <motion.div
+                <MotionView
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1"
@@ -420,11 +420,11 @@ function NotificationItem({
               </span>
 
               <div className="flex items-center gap-1">
-                <AnimatePresence>
+                <Presence>
                   {isHovered && (
                     <>
                       {!notification.read && (
-                        <motion.div
+                        <MotionView
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           exit={{ scale: 0, opacity: 0 }}
@@ -437,9 +437,9 @@ function NotificationItem({
                           >
                             <Check size={16} />
                           </Button>
-                        </motion.div>
+                        </MotionView>
                       )}
-                      <motion.div
+                      <MotionView
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
@@ -453,10 +453,10 @@ function NotificationItem({
                         >
                           <Trash size={16} />
                         </Button>
-                      </motion.div>
+                      </MotionView>
                     </>
                   )}
-                </AnimatePresence>
+                </Presence>
 
                 {notification.actionLabel && (
                   <Button
@@ -475,7 +475,7 @@ function NotificationItem({
       </div>
 
       {notification.priority === 'urgent' && !notification.read && (
-        <motion.div
+        <MotionView
           className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-destructive via-accent to-destructive"
           animate={{
             opacity: [0.5, 1, 0.5]
@@ -486,6 +486,6 @@ function NotificationItem({
           }}
         />
       )}
-    </motion.div>
+    </MotionView>
   )
 }

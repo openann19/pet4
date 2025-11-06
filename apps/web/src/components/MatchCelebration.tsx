@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import { Heart, Sparkle } from '@phosphor-icons/react'
 
 interface MatchCelebrationProps {
@@ -23,15 +23,15 @@ export default function MatchCelebration({ show, petName1, petName2, onComplete 
   const particles = Array.from({ length: 20 }, (_, i) => i)
 
   return (
-    <AnimatePresence>
+    <Presence>
       {show && (
-        <motion.div
+        <MotionView
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
         >
-          <motion.div
+          <MotionView
             className="absolute inset-0 glass-strong backdrop-blur-2xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -45,7 +45,7 @@ export default function MatchCelebration({ show, petName1, petName2, onComplete 
             const y = Math.sin(angle) * distance
             
             return (
-              <motion.div
+              <MotionView
                 key={i}
                 className="absolute"
                 initial={{ x: 0, y: 0, scale: 0, opacity: 1, rotate: 0 }}
@@ -67,18 +67,18 @@ export default function MatchCelebration({ show, petName1, petName2, onComplete 
                 ) : (
                   <Sparkle size={20} weight="fill" className="text-accent drop-shadow-2xl" />
                 )}
-              </motion.div>
+              </MotionView>
             )
           })}
 
-          <motion.div
+          <MotionView
             className="relative z-10 rounded-3xl glass-strong premium-shadow border-2 border-white/40 p-10 max-w-md mx-4 backdrop-blur-2xl overflow-hidden"
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             exit={{ scale: 0, rotate: 180 }}
             transition={{ type: 'spring', stiffness: 200, damping: 20 }}
           >
-            <motion.div
+            <MotionView
               className="absolute inset-0 bg-gradient-to-br from-primary/30 via-accent/30 to-secondary/30"
               animate={{
                 opacity: [0.5, 0.8, 0.5],
@@ -86,7 +86,7 @@ export default function MatchCelebration({ show, petName1, petName2, onComplete 
               transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse' }}
             />
             
-            <motion.div
+            <MotionView
               animate={{ scale: [1, 1.3, 1], rotate: [0, 5, -5, 0] }}
               transition={{ duration: 0.6, repeat: Infinity, repeatType: 'reverse' }}
               className="text-center mb-6 relative z-10"
@@ -94,49 +94,49 @@ export default function MatchCelebration({ show, petName1, petName2, onComplete 
               <div className="inline-block p-4 rounded-full glass-strong border-2 border-white/50 shadow-2xl">
                 <Heart size={72} weight="fill" className="text-white drop-shadow-2xl" />
               </div>
-            </motion.div>
+            </MotionView>
 
-            <motion.h2
+            <MotionView
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="text-4xl font-bold text-white text-center mb-3 drop-shadow-2xl relative z-10"
             >
               It's a Match! 🎉
-            </motion.h2>
+            </MotionView>
 
-            <motion.p
+            <MotionView
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className="text-white/95 text-center text-xl font-medium drop-shadow-lg relative z-10"
             >
               {petName1} and {petName2} are now connected!
-            </motion.p>
+            </MotionView>
 
-            <motion.div
+            <MotionView
               className="mt-8 flex items-center justify-center gap-5 relative z-10"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <motion.div
+              <MotionView
                 animate={{ rotate: 360 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
               >
                 <Sparkle size={32} weight="fill" className="text-white drop-shadow-2xl" />
-              </motion.div>
+              </MotionView>
               <div className="text-white font-bold text-lg drop-shadow-lg">Perfect Companions!</div>
-              <motion.div
+              <MotionView
                 animate={{ rotate: -360 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
               >
                 <Sparkle size={32} weight="fill" className="text-white drop-shadow-2xl" />
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </motion.div>
+              </MotionView>
+            </MotionView>
+          </MotionView>
+        </MotionView>
       )}
-    </AnimatePresence>
+    </Presence>
   )
 }

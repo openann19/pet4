@@ -1,11 +1,19 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, waitFor, cleanup } from '@testing-library/react'
+import { render, cleanup } from '@testing-library/react'
 import { ReactionBurstParticles } from '../ReactionBurstParticles'
 
 // Force reduced motion path (fast onComplete)
 vi.mock('@/effects/chat/core/reduced-motion', () => ({
   useReducedMotion: () => true,
   getReducedMotionDuration: (base: number) => Math.min(120, base),
+}))
+
+// Mock seeded RNG
+vi.mock('@/effects/chat/core/seeded-rng', () => ({
+  createSeededRNG: () => ({
+    range: (min: number, max: number) => (min + max) / 2,
+    rangeInt: (min: number, max: number) => Math.floor((min + max) / 2),
+  }),
 }))
 
 describe('ReactionBurstParticles', () => {

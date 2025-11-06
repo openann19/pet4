@@ -14,6 +14,9 @@ export { usePageTransitions, Presence } from './transitions/presence';
 export { motion } from './tokens';
 
 // Reduced motion utilities
+export { usePerfBudget } from './usePerfBudget'
+export type { PerfBudget } from './usePerfBudget'
+
 export {
   useReducedMotion,
   useReducedMotionSV,

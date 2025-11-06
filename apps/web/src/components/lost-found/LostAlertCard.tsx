@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -28,7 +28,7 @@ export function LostAlertCard({
   const lastSeenTime = formatDistanceToNow(new Date(alert.lastSeen.whenISO), { addSuffix: true })
 
   return (
-    <motion.div
+    <MotionView
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -183,7 +183,7 @@ export function LostAlertCard({
           </div>
         </div>
       </Card>
-    </motion.div>
+    </MotionView>
   )
 }
 

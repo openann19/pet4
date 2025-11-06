@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { MapPin, NavigationArrow, Calendar, Clock, X, List, MapTrifold } from '@phosphor-icons/react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -63,7 +63,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
   }
 
   return (
-    <motion.div
+    <MotionView
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -122,7 +122,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                     {playdatesWithLocation.slice(0, 6).map((playdate, index) => {
                       const distance = getDistanceFromUser(playdate)
                       return (
-                        <motion.div
+                        <MotionView
                           key={playdate.id}
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
@@ -160,7 +160,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                               )}
                             </div>
                           </Card>
-                        </motion.div>
+                        </MotionView>
                       )
                     })}
                   </div>
@@ -168,7 +168,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
               </div>
 
               {userLocation && (
-                <motion.div
+                <MotionView
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="absolute top-4 right-4 bg-card/95 backdrop-blur-sm p-3 rounded-lg shadow-lg border"
@@ -177,7 +177,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                     <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
                     <span className="text-sm font-medium">Your Location</span>
                   </div>
-                </motion.div>
+                </MotionView>
               )}
             </div>
           </Card>
@@ -186,7 +186,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
             {playdatesWithLocation.map((playdate, index) => {
               const distance = getDistanceFromUser(playdate)
               return (
-                <motion.div
+                <MotionView
                   key={playdate.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -236,7 +236,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                       </div>
                     </div>
                   </Card>
-                </motion.div>
+                </MotionView>
               )
             })}
             {playdatesWithLocation.length === 0 && (
@@ -251,7 +251,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
         )}
 
         {selectedPlaydate && (
-          <motion.div
+          <MotionView
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-md px-4"
@@ -278,9 +278,9 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                 Get Directions
               </Button>
             </Card>
-          </motion.div>
+          </MotionView>
         )}
       </div>
-    </motion.div>
+    </MotionView>
   )
 }

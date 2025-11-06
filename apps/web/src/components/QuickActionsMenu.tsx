@@ -129,7 +129,7 @@ export default function QuickActionsMenu({
                   delay: index * 0.05
                 }}
               >
-                <motion.button
+                <MotionView as="button"
                   whileHover={{ scale: 1.1, x: -5 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
@@ -144,14 +144,14 @@ export default function QuickActionsMenu({
                     {action.icon}
                   </div>
                   <span className="font-medium text-sm pr-2">{action.label}</span>
-                </motion.button>
-              </motion.div>
+                </MotionView>
+              </MotionView>
             ))}
-          </motion.div>
+          </MotionView>
         )}
       </AnimatePresence>
 
-      <motion.button
+      <MotionView as="button"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleToggle}
@@ -170,7 +170,7 @@ export default function QuickActionsMenu({
               transition={{ duration: 0.2 }}
             >
               <X size={24} weight="bold" />
-            </motion.div>
+            </MotionView>
           ) : (
             <motion.div
               key="open"
@@ -180,10 +180,10 @@ export default function QuickActionsMenu({
               transition={{ duration: 0.2 }}
             >
               <Plus size={24} weight="bold" />
-            </motion.div>
+            </MotionView>
           )}
         </AnimatePresence>
-      </motion.button>
+      </MotionView>
 
       {isOpen && (
         <motion.div

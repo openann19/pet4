@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Heart, MapPin, Check, CurrencyDollar, PawPrint } from '@phosphor-icons/react'
 import type { AdoptionListing } from '@/lib/adoption-marketplace-types'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'
 
@@ -25,7 +25,7 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
   }
 
   return (
-    <motion.div
+    <MotionView
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
     >
@@ -50,7 +50,7 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
 
           {/* Favorite Button */}
           {onFavorite && (
-            <motion.button
+            <MotionView as="button"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={(e) => {
@@ -65,7 +65,7 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
                 weight={isFavorited ? 'fill' : 'regular'}
                 className={isFavorited ? 'text-destructive' : 'text-foreground'}
               />
-            </motion.button>
+            </MotionView>
           )}
 
           {/* Fee Badge */}
@@ -162,7 +162,7 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
           </Button>
         </CardContent>
       </Card>
-    </motion.div>
+    </MotionView>
   )
 }
 

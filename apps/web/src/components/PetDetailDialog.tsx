@@ -8,7 +8,7 @@ import { usePhotoCarousel } from '@/hooks/usePhotoCarousel'
 import { haptics } from '@/lib/haptics'
 import type { Pet } from '@/lib/types'
 import { Calendar, CaretLeft, CaretRight, ChatCircle, GenderFemale, GenderMale, Heart, MapPin, PawPrint, Ruler, ShieldCheck, Star, X } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 
 interface PetDetailDialogProps {
   pet: Pet | null
@@ -40,14 +40,14 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0 border-0 bg-transparent">
-        <motion.div
+        <MotionView
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
           className="relative bg-card rounded-3xl overflow-hidden shadow-2xl"
         >
-          <motion.button
+          <MotionView as="button"
             onClick={() => {
               haptics.trigger('light')
               onOpenChange(false)
@@ -57,10 +57,10 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
             whileTap={{ scale: 0.9 }}
           >
             <X size={20} className="text-white drop-shadow-lg" weight="bold" />
-          </motion.button>
+          </MotionView>
 
           <div className="relative h-[400px] bg-gradient-to-br from-muted/50 to-muted overflow-hidden group">
-            <AnimatePresence mode="wait">
+            <Presence mode="wait">
               <motion.img
                 key={currentIndex}
                 src={currentPhoto}
@@ -71,9 +71,9 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
               />
-            </AnimatePresence>
+            </Presence>
             
-            <motion.div
+            <MotionView
               className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -82,30 +82,30 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
 
             {hasMultiplePhotos && (
               <>
-                <motion.button
+                <MotionView as="button"
                   onClick={prevPhoto}
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 glass-strong rounded-full flex items-center justify-center shadow-2xl border border-white/30 backdrop-blur-xl opacity-0 group-hover:opacity-100 transition-opacity z-30"
                   whileHover={{ scale: 1.15, x: -4 }}
                   whileTap={{ scale: 0.9 }}
                 >
                   <CaretLeft size={24} weight="bold" className="text-white drop-shadow-lg" />
-                </motion.button>
-                <motion.button
+                </MotionView>
+                <MotionView as="button"
                   onClick={nextPhoto}
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 glass-strong rounded-full flex items-center justify-center shadow-2xl border border-white/30 backdrop-blur-xl opacity-0 group-hover:opacity-100 transition-opacity z-30"
                   whileHover={{ scale: 1.15, x: 4 }}
                   whileTap={{ scale: 0.9 }}
                 >
                   <CaretRight size={24} weight="bold" className="text-white drop-shadow-lg" />
-                </motion.button>
-                <motion.div
+                </MotionView>
+                <MotionView
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                   className="absolute top-20 left-1/2 -translate-x-1/2 flex gap-2 z-20"
                 >
                   {photos.map((_, idx) => (
-                    <motion.button
+                    <MotionView as="button"
                       key={idx}
                       onClick={() => goToPhoto(idx)}
                       className={`h-2 rounded-full transition-all shadow-lg ${
@@ -117,11 +117,11 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                       whileTap={{ scale: 0.9 }}
                     />
                   ))}
-                </motion.div>
+                </MotionView>
               </>
             )}
 
-            <motion.div
+            <MotionView
               className="absolute bottom-6 left-6 text-white z-20"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -130,13 +130,13 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
               <div className="flex items-center gap-3 mb-2">
                 <h2 className="text-4xl sm:text-5xl font-bold drop-shadow-2xl">{pet.name}</h2>
                 {pet.verified && (
-                  <motion.div
+                  <MotionView
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{ delay: 0.5, type: 'spring' }}
                   >
                     <ShieldCheck size={32} weight="fill" className="text-accent drop-shadow-lg" />
-                  </motion.div>
+                  </MotionView>
                 )}
               </div>
               <div className="flex items-center gap-4 text-white/90">
@@ -152,22 +152,22 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                 <span className="text-lg">{pet.breed}</span>
               </div>
               {hasMultiplePhotos && (
-                <motion.p
+                <MotionView
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                   className="text-sm text-white/70 mt-2"
                 >
                   Photo {currentIndex + 1} of {totalPhotos}
-                </motion.p>
+                </MotionView>
               )}
-            </motion.div>
+            </MotionView>
           </div>
 
           <div className="max-h-[calc(90vh-400px)] overflow-y-auto">
             <div className="p-6 sm:p-8 space-y-6">
               {pet.trustProfile && (
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
@@ -176,11 +176,11 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     trustProfile={pet.trustProfile} 
                     {...(pet.ratings !== undefined ? { ratings: pet.ratings } : {})}
                   />
-                </motion.div>
+                </MotionView>
               )}
 
               {pet.bio && (
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.45 }}
@@ -191,12 +191,12 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     About {pet.name}
                   </h3>
                   <p className="text-foreground leading-relaxed">{pet.bio}</p>
-                </motion.div>
+                </MotionView>
               )}
 
               <Separator />
 
-              <motion.div
+              <MotionView
                 className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -208,7 +208,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     Details
                   </h3>
                   <div className="space-y-3">
-                    <motion.div
+                    <MotionView
                       className="flex items-center justify-between p-3 rounded-xl bg-muted/50"
                       whileHover={{ scale: 1.02, backgroundColor: 'oklch(from var(--muted) l c h / 0.7)' }}
                     >
@@ -217,8 +217,8 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                         Age
                       </span>
                       <span className="font-semibold">{pet.age} years old</span>
-                    </motion.div>
-                    <motion.div
+                    </MotionView>
+                    <MotionView
                       className="flex items-center justify-between p-3 rounded-xl bg-muted/50"
                       whileHover={{ scale: 1.02, backgroundColor: 'oklch(from var(--muted) l c h / 0.7)' }}
                     >
@@ -231,8 +231,8 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                         Gender
                       </span>
                       <span className="font-semibold capitalize">{pet.gender}</span>
-                    </motion.div>
-                    <motion.div
+                    </MotionView>
+                    <MotionView
                       className="flex items-center justify-between p-3 rounded-xl bg-muted/50"
                       whileHover={{ scale: 1.02, backgroundColor: 'oklch(from var(--muted) l c h / 0.7)' }}
                     >
@@ -241,8 +241,8 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                         Size
                       </span>
                       <span className="font-semibold">{sizeMap[pet.size] || pet.size}</span>
-                    </motion.div>
-                    <motion.div
+                    </MotionView>
+                    <MotionView
                       className="flex items-center justify-between p-3 rounded-xl bg-muted/50"
                       whileHover={{ scale: 1.02, backgroundColor: 'oklch(from var(--muted) l c h / 0.7)' }}
                     >
@@ -251,7 +251,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                         Location
                       </span>
                       <span className="font-semibold">{pet.location}</span>
-                    </motion.div>
+                    </MotionView>
                   </div>
                 </div>
 
@@ -260,7 +260,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     <Heart size={16} weight="fill" className="text-primary" />
                     Owner
                   </h3>
-                  <motion.div
+                  <MotionView
                     className="p-4 rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 border border-border"
                     whileHover={{ scale: 1.02, borderColor: 'oklch(from var(--primary) l c h / 0.3)' }}
                   >
@@ -300,14 +300,14 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                         )}
                       </div>
                     )}
-                  </motion.div>
+                  </MotionView>
                 </div>
-              </motion.div>
+              </MotionView>
 
               {pet.personality && Array.isArray(pet.personality) && pet.personality.length > 0 && (
                 <>
                   <Separator />
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.55 }}
@@ -318,7 +318,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {pet.personality.map((trait, idx) => (
-                        <motion.div
+                        <MotionView
                           key={idx}
                           initial={{ opacity: 0, scale: 0 }}
                           animate={{ opacity: 1, scale: 1 }}
@@ -331,17 +331,17 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                           >
                             {trait}
                           </Badge>
-                        </motion.div>
+                        </MotionView>
                       ))}
                     </div>
-                  </motion.div>
+                  </MotionView>
                 </>
               )}
 
               {pet.interests && Array.isArray(pet.interests) && pet.interests.length > 0 && (
                 <>
                   <Separator />
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
@@ -352,7 +352,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {pet.interests.map((interest, idx) => (
-                        <motion.div
+                        <MotionView
                           key={idx}
                           initial={{ opacity: 0, scale: 0 }}
                           animate={{ opacity: 1, scale: 1 }}
@@ -365,17 +365,17 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                           >
                             {interest}
                           </Badge>
-                        </motion.div>
+                        </MotionView>
                       ))}
                     </div>
-                  </motion.div>
+                  </MotionView>
                 </>
               )}
 
               {pet.lookingFor && Array.isArray(pet.lookingFor) && pet.lookingFor.length > 0 && (
                 <>
                   <Separator />
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.65 }}
@@ -386,7 +386,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     </h3>
                     <div className="flex flex-wrap gap-2">
                       {pet.lookingFor.map((item, idx) => (
-                        <motion.div
+                        <MotionView
                           key={idx}
                           initial={{ opacity: 0, scale: 0 }}
                           animate={{ opacity: 1, scale: 1 }}
@@ -398,17 +398,17 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                           >
                             {item}
                           </Badge>
-                        </motion.div>
+                        </MotionView>
                       ))}
                     </div>
-                  </motion.div>
+                  </MotionView>
                 </>
               )}
 
               {pet.trustProfile && pet.trustProfile.badges && Array.isArray(pet.trustProfile.badges) && pet.trustProfile.badges.length > 0 && (
                 <>
                   <Separator />
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
@@ -419,12 +419,12 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                       Trust & Verification
                     </h3>
                     <TrustBadges badges={pet.trustProfile.badges} showLabels />
-                  </motion.div>
+                  </MotionView>
                 </>
               )}
             </div>
           </div>
-        </motion.div>
+        </MotionView>
       </DialogContent>
     </Dialog>
   )

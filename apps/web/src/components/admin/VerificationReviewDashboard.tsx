@@ -22,7 +22,7 @@ import {
   Warning,
   XCircle
 } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -265,14 +265,14 @@ export function VerificationReviewDashboard() {
 
         <TabsContent value={selectedTab} className="mt-6">
           <ScrollArea className="h-[500px] sm:h-[600px] pr-2 sm:pr-4">
-            <AnimatePresence mode="popLayout">
+            <Presence mode="popLayout">
               {initialLoading ? (
                 <div className="text-center py-16">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
                   <p className="mt-4 text-muted-foreground">Loading verification requests...</p>
                 </div>
               ) : filteredRequests.length === 0 ? (
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
@@ -281,12 +281,12 @@ export function VerificationReviewDashboard() {
                   <ShieldCheck size={64} className="mx-auto text-muted-foreground mb-4 opacity-50" />
                   <p className="text-muted-foreground text-lg font-medium">No requests in this category</p>
                   <p className="text-sm text-muted-foreground mt-2">Check back later for new submissions</p>
-                </motion.div>
+                </MotionView>
               ) : (
                 <div className="space-y-4">
                   {filteredRequests.map((request, index) => {
                     return (
-                      <motion.div
+                      <MotionView
                         key={request.id}
                         layout
                         initial={{ opacity: 0, y: 20 }}
@@ -368,12 +368,12 @@ export function VerificationReviewDashboard() {
                             <ArrowRight size={20} className="text-muted-foreground shrink-0 mt-4" />
                           </div>
                         </Card>
-                      </motion.div>
+                      </MotionView>
                     )
                   })}
                 </div>
               )}
-            </AnimatePresence>
+            </Presence>
           </ScrollArea>
         </TabsContent>
       </Tabs>
@@ -446,7 +446,7 @@ export function VerificationReviewDashboard() {
                   </h4>
                   <div className="space-y-3">
                     {selectedRequest.documents.map((doc, index) => (
-                      <motion.div
+                      <MotionView
                         key={doc.id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -480,7 +480,7 @@ export function VerificationReviewDashboard() {
                         }}>
                           <Download size={16} />
                         </Button>
-                      </motion.div>
+                      </MotionView>
                     ))}
                   </div>
                 </Card>

@@ -1,41 +1,41 @@
 /**
- * Seeded RNG for deterministic particle effects
- * 
- * Ensures consistent visual output across renders when seed is set
+ * Seeded Random Number Generator
+ * Provides deterministic random numbers based on a seed value
  */
 
-let seed = Date.now()
-
-export function setSeed(newSeed: number): void {
-  seed = newSeed
+export interface SeededRNG {
+  range(min: number, max: number): number
+  rangeInt(min: number, max: number): number
 }
 
-export function getSeed(): number {
-  return seed
+/**
+ * Create a seeded random number generator
+ */
+export function createSeededRNG(seed: number | string): SeededRNG {
+  let currentSeed = typeof seed === 'string' ? hashString(seed) : seed
+
+  function next(): number {
+    currentSeed = (currentSeed * 9301 + 49297) % 233280
+    return currentSeed / 233280
+  }
+
+  return {
+    range(min: number, max: number): number {
+      return min + next() * (max - min)
+    },
+    rangeInt(min: number, max: number): number {
+      return Math.floor(min + next() * (max - min + 1))
+    },
+  }
 }
 
-export function random(): number {
-  seed = (seed * 9301 + 49297) % 233280
-  return seed / 233280
+function hashString(str: string): number {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = (hash << 5) - hash + char
+    hash = hash & hash // Convert to 32-bit integer
+  }
+  return Math.abs(hash)
 }
 
-export function randomInt(min: number, max: number): number {
-  return Math.floor(random() * (max - min + 1)) + min
-}
-
-export function randomFloat(min: number, max: number): number {
-  return random() * (max - min) + min
-}
-
-export function randomChoice<T>(array: T[]): T {
-  return array[randomInt(0, array.length - 1)]
-}
-
-export function randomGaussian(mean: number, stdDev: number): number {
-  let u = 0
-  let v = 0
-  while (u === 0) u = random()
-  while (v === 0) v = random()
-  const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v)
-  return z * stdDev + mean
-}

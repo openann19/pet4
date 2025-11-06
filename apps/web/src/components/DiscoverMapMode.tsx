@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, Presence } from '@petspark/motion';
 import { MapPin, X, Heart, Info } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -119,9 +119,9 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
         clusterMarkers={true}
       />
 
-      <AnimatePresence>
+      <Presence>
         {selectedPet && (
-          <motion.div
+          <MotionView
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
@@ -208,9 +208,9 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </MotionView>
         )}
-      </AnimatePresence>
+      </Presence>
 
       {selectedPet && (
         <PetDetailDialog

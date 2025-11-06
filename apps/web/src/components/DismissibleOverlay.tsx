@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useEffect, useCallback, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import { X } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -122,10 +122,10 @@ export function DismissibleOverlay({
   }, [isOpen, closeOnEscape, closeOnOutsideClick, closeOnAndroidBack, trapFocus, handleEscape, handleOutsideClick, handleAndroidBack])
 
   return (
-    <AnimatePresence>
+    <Presence>
       {isOpen && (
         <div className={cn('fixed inset-0 z-50 flex items-center justify-center', className)}>
-          <motion.div
+          <MotionView
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -137,7 +137,7 @@ export function DismissibleOverlay({
             aria-hidden="true"
           />
           
-          <motion.div
+          <MotionView
             ref={contentRef}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -175,9 +175,9 @@ export function DismissibleOverlay({
             <div className="overflow-y-auto max-h-[calc(90vh-5rem)]">
               {children}
             </div>
-          </motion.div>
+          </MotionView>
         </div>
       )}
-    </AnimatePresence>
+    </Presence>
   )
 }

@@ -8,7 +8,7 @@ import {
   X, Eye, ChatCircle, PaperPlaneTilt, VideoCamera,
   MicrophoneSlash, Microphone, Phone, CameraRotate
 } from '@phosphor-icons/react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import { toast } from 'sonner'
 import { liveStreamingAPI } from '@/api/live-streaming-api'
 import type { LiveStream, LiveStreamChatMessage } from '@/lib/live-streaming-types'
@@ -227,9 +227,9 @@ export function LiveStreamRoom({ streamId, isHost, onClose }: LiveStreamRoomProp
         )}
 
         <div className="absolute inset-0 pointer-events-none">
-          <AnimatePresence>
+          <Presence>
             {floatingReactions.map(reaction => (
-              <motion.div
+              <MotionView
                 key={reaction.id}
                 initial={{ y: 0, opacity: 1, scale: 0 }}
                 animate={{ y: -300, opacity: 0, scale: 1.5 }}
@@ -239,9 +239,9 @@ export function LiveStreamRoom({ streamId, isHost, onClose }: LiveStreamRoomProp
                 style={{ left: `${reaction.x}%` }}
               >
                 {reaction.emoji}
-              </motion.div>
+              </MotionView>
             ))}
-          </AnimatePresence>
+          </Presence>
         </div>
       </div>
 
@@ -276,9 +276,9 @@ export function LiveStreamRoom({ streamId, isHost, onClose }: LiveStreamRoomProp
         </div>
       )}
 
-      <AnimatePresence>
+      <Presence>
         {showChat && stream.allowChat && (
-          <motion.div
+          <MotionView
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -342,9 +342,9 @@ export function LiveStreamRoom({ streamId, isHost, onClose }: LiveStreamRoomProp
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </MotionView>
         )}
-      </AnimatePresence>
+      </Presence>
 
       {!showChat && stream.allowChat && (
         <Button
@@ -359,14 +359,14 @@ export function LiveStreamRoom({ streamId, isHost, onClose }: LiveStreamRoomProp
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
         {REACTION_EMOJIS.map(emoji => (
-          <motion.button
+          <MotionView as="button"
             key={emoji}
             onClick={() => handleReaction(emoji)}
             whileTap={{ scale: 1.3 }}
             className="w-12 h-12 rounded-full bg-black/60 backdrop-blur-md text-2xl hover:bg-black/80 transition-all hover:scale-110"
           >
             {emoji}
-          </motion.button>
+          </MotionView>
         ))}
       </div>
     </div>

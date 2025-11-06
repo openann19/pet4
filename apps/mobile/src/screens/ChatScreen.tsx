@@ -10,6 +10,7 @@
  * Location: apps/mobile/src/screens/ChatScreen.tsx
  */
 import { ChatList, type Message } from '@mobile/components/chat'
+import HoloBackgroundNative from '@mobile/components/chrome/HoloBackground.native'
 import { colors } from '@mobile/theme/colors'
 import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
@@ -20,6 +21,7 @@ export function ChatScreen(): React.ReactElement {
 
   return (
     <SafeAreaView style={styles.container}>
+      <HoloBackgroundNative intensity={0.6} />
       <View style={styles.chatContainer}>
         <ChatList messages={messages} currentUserId="current-user" />
       </View>

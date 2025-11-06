@@ -1,5 +1,4 @@
 import { useState, useRef, useMemo } from 'react'
-import { useSharedValue, withSpring, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import { AnimatedView } from '@/effects/reanimated/animated-view'
 import { Presence } from '@petspark/motion'
 import { MagnifyingGlass, X, Clock, TrendUp, Sparkle } from '@phosphor-icons/react'
@@ -136,7 +135,7 @@ export function SmartSearch<T extends Record<string, any>>({
     )
   }
 
-  const showDropdown = isFocused && (query.trim() || showHistory || showTrending)
+  const showDropdown = Boolean(isFocused && (query.trim() || showHistory || showTrending))
 
   return (
     <div className={cn('relative', className)}>

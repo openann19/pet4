@@ -24,7 +24,7 @@ export function EnhancedCard({ children, className = '', delay = 0 }: EnhancedCa
       className={className}
     >
       {children}
-    </motion.div>
+    </MotionView>
   )
 }
 
@@ -37,7 +37,7 @@ interface FloatingActionButtonProps {
 
 export function FloatingActionButton({ onClick, icon, label, className = '' }: FloatingActionButtonProps) {
   return (
-    <motion.button
+    <MotionView as="button"
       onClick={onClick}
       className={`fixed bottom-24 right-6 z-50 h-14 flex items-center gap-3 bg-gradient-to-r from-primary to-accent text-white px-6 rounded-full shadow-2xl hover:shadow-primary/50 transition-all duration-300 ${className}`}
       whileHover={{ scale: 1.05, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3)' }}
@@ -53,7 +53,7 @@ export function FloatingActionButton({ onClick, icon, label, className = '' }: F
     >
       <span className="text-xl">{icon}</span>
       {label && <span className="font-semibold text-sm">{label}</span>}
-    </motion.button>
+    </MotionView>
   )
 }
 
@@ -172,7 +172,7 @@ export function CounterBadge({ count, max = 99, variant = 'primary' }: CounterBa
       className={`absolute -top-1 -right-1 h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center text-xs font-bold shadow-lg ${variantClasses[variant]}`}
     >
       {displayCount}
-    </motion.div>
+    </MotionView>
   )
 }
 

@@ -3,7 +3,7 @@ import { useStorage } from '@/hooks/useStorage'
 import { haptics } from '@/lib/haptics'
 import type { StoryHighlight } from '@/lib/stories-types'
 import { PushPin, PushPinSlash, Trash, X } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import StoryViewer from './StoryViewer'
@@ -72,14 +72,14 @@ export default function HighlightViewer({
   }
 
   return (
-    <motion.div
+    <MotionView
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={onClose}
     >
-      <motion.div
+      <MotionView
         initial={{ y: '100%', opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0 }}
@@ -136,7 +136,7 @@ export default function HighlightViewer({
         <div className="flex-1 overflow-y-auto p-6">
           <div className="grid grid-cols-3 gap-3">
             {highlight.stories.map((story, index) => (
-              <motion.button
+              <MotionView as="button"
                 key={story.id}
                 onClick={() => handleStoryClick(index)}
                 className="aspect-[9/16] rounded-2xl overflow-hidden relative group"
@@ -167,11 +167,11 @@ export default function HighlightViewer({
                     <span className="text-white text-xs">▶</span>
                   </div>
                 )}
-              </motion.button>
+              </MotionView>
             ))}
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </MotionView>
+    </MotionView>
   )
 }

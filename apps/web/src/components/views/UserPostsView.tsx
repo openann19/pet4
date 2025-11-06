@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import type { Post } from '@/lib/community-types'
 import { createLogger } from '@/lib/logger'
 import { ArrowLeft, User } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -159,7 +159,7 @@ export default function UserPostsView({
               ))}
             </div>
           ) : posts.length === 0 ? (
-            <motion.div
+            <MotionView
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center py-16 text-center"
@@ -171,10 +171,10 @@ export default function UserPostsView({
               <p className="text-sm text-muted-foreground max-w-sm">
                 {authorName} hasn't shared any posts yet
               </p>
-            </motion.div>
+            </MotionView>
           ) : (
             posts.map((post, index) => (
-              <motion.div
+              <MotionView
                 key={post.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -189,7 +189,7 @@ export default function UserPostsView({
                     {...(onAuthorClick && { onAuthorClick })}
                   />
                 </div>
-              </motion.div>
+              </MotionView>
             ))
           )}
           <div ref={observerTarget} className="h-4" />

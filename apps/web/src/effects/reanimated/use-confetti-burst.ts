@@ -5,6 +5,7 @@
 
 import { useSharedValue, useAnimatedStyle, withTiming, withSequence, interpolate, Easing } from 'react-native-reanimated';
 import { useCallback, useState } from 'react';
+import { makeRng } from '@petspark/shared';
 
 export interface ConfettiParticle {
   id: number;
@@ -37,19 +38,23 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}) {
   const burst = useCallback(
     (centerX: number = window.innerWidth / 2, centerY: number = window.innerHeight / 2) => {
       const newParticles: ConfettiParticle[] = [];
+      
+      // Create seeded RNG for deterministic confetti generation
+      const seed = Date.now() + centerX + centerY
+      const rng = makeRng(seed)
 
       for (let i = 0; i < particleCount; i++) {
         const angle = (Math.PI * 2 * i) / particleCount;
-        const velocity = Math.random() * spread + spread * 0.5;
-        const color = colors[Math.floor(Math.random() * colors.length)] ?? colors[0] ?? '#ff6b6b';
+        const velocity = rng() * spread + spread * 0.5;
+        const color = colors[Math.floor(rng() * colors.length)] ?? colors[0] ?? '#ff6b6b';
 
         newParticles.push({
           id: Date.now() + i,
           x: centerX,
           y: centerY,
           color,
-          size: Math.random() * 8 + 4,
-          rotation: Math.random() * 360,
+          size: rng() * 8 + 4,
+          rotation: rng() * 360,
           velocity: {
             x: Math.cos(angle) * velocity,
             y: Math.sin(angle) * velocity - 100,

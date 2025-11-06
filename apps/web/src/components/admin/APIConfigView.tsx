@@ -23,15 +23,19 @@ import {
   ShieldCheck,
   TestTube,
   VideoCamera,
-  Warning
+  Warning,
+  Radio
 } from '@phosphor-icons/react'
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
 import { AnimatedView } from '@/effects/reanimated/animated-view'
 import { triggerHaptic } from '@/lib/haptics'
 import { createLogger } from '@/lib/logger'
+import { configBroadcastService } from '@/core/services/config-broadcast-service'
+import { adminApi } from '@/api/admin-api'
+import { useStorage as useUserStorage } from '@/hooks/useStorage'
+import type { User } from '@/lib/user-service'
 import type { UseBounceOnTapReturn } from '@/effects/reanimated/use-bounce-on-tap'
-import type { UseHoverLiftReturn } from '@/effects/reanimated/use-hover-lift'
 
 const logger = createLogger('APIConfigView')
 
@@ -209,6 +213,8 @@ export default function APIConfigView() {
   const [config, setConfig] = useStorage<APIConfig>('admin-api-config', DEFAULT_CONFIG)
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({})
   const [testingService, setTestingService] = useState<string | null>(null)
+  const [broadcasting, setBroadcasting] = useState(false)
+  const [currentUser] = useUserStorage<User | null>('current-user', null)
 
   const toggleSecret = useCallback((key: string): void => {
     try {
@@ -287,11 +293,44 @@ export default function APIConfigView() {
     }
   }, [setConfig])
 
-  const buttonBounce = useBounceOnTap({ intensity: 0.95, duration: 150 })
-  const testButtonBounce = useBounceOnTap({ intensity: 0.92, duration: 180 })
-  const resetButtonBounce = useBounceOnTap({ intensity: 0.93, duration: 160 })
-  const iconButtonBounce = useBounceOnTap({ intensity: 0.9, duration: 120 })
-  const cardHover = useHoverLift({ intensity: 1.02 })
+  const handleBroadcast = useCallback(async (): Promise<void> => {
+    if (!config || !currentUser) {
+      toast.error('User not authenticated')
+      return
+    }
+
+    try {
+      setBroadcasting(true)
+      triggerHaptic('light')
+      
+      await configBroadcastService.broadcastConfig(
+        'api',
+        config as unknown as Record<string, unknown>,
+        currentUser.id || 'admin'
+      )
+      
+      toast.success('API configuration broadcasted successfully')
+      
+      await adminApi.createAuditLog({
+        adminId: currentUser.id || 'admin',
+        action: 'config_broadcast',
+        targetType: 'api_config',
+        targetId: 'api-config',
+        details: JSON.stringify({ configType: 'api' })
+      })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to broadcast API config', err)
+      toast.error('Failed to broadcast API configuration')
+    } finally {
+      setBroadcasting(false)
+    }
+  }, [config, currentUser])
+
+  const testButtonBounce = useBounceOnTap({ scale: 0.92, duration: 180 })
+  const resetButtonBounce = useBounceOnTap({ scale: 0.93, duration: 160 })
+  const iconButtonBounce = useBounceOnTap({ scale: 0.9, duration: 120 })
+  const cardHover = useHoverLift({ scale: 1.02 })
 
   return (
     <div className="flex-1 flex flex-col">
@@ -303,10 +342,20 @@ export default function APIConfigView() {
               Configure external service integrations and API keys
             </p>
           </div>
-          <Badge variant="outline" className="gap-2">
-            <Key size={16} />
-            Secure Storage
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="gap-2">
+              <Key size={16} />
+              Secure Storage
+            </Badge>
+            <Button
+              onClick={handleBroadcast}
+              disabled={broadcasting}
+              variant="default"
+            >
+              <Radio size={16} className="mr-2" />
+              {broadcasting ? 'Broadcasting...' : 'Broadcast Config'}
+            </Button>
+          </div>
         </div>
       </div>
 

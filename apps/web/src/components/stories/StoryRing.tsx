@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Plus } from '@phosphor-icons/react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { filterActiveStories } from '@petspark/shared'
@@ -25,7 +25,7 @@ export default function StoryRing({
   const hasActiveStories = activeStories.length > 0
 
   return (
-    <motion.button
+    <MotionView as="button"
       onClick={onClick}
       className="flex flex-col items-center gap-2 shrink-0"
       whileHover={{ scale: 1.05 }}
@@ -65,6 +65,6 @@ export default function StoryRing({
       <span className="text-xs font-medium truncate w-16 text-center">
         {isOwn ? 'Your Story' : petName}
       </span>
-    </motion.button>
+    </MotionView>
   )
 }

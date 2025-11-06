@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import { Check, MagnifyingGlass } from '@phosphor-icons/react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
@@ -65,9 +65,9 @@ export default function StoryTemplateSelector({
 
       <ScrollArea className="h-[320px]">
         <div className="grid grid-cols-3 gap-3 pr-4">
-          <AnimatePresence mode="popLayout">
+          <Presence mode="popLayout">
             {filteredTemplates.map((template, index) => (
-              <motion.button
+              <MotionView as="button"
                 key={template.id}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -112,13 +112,13 @@ export default function StoryTemplateSelector({
                 )}
 
                 {selectedTemplate.id === template.id && (
-                  <motion.div
+                  <MotionView
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-lg"
                   >
                     <Check size={12} weight="bold" className="text-white" />
-                  </motion.div>
+                  </MotionView>
                 )}
 
                 {template.animationStyle && (
@@ -131,9 +131,9 @@ export default function StoryTemplateSelector({
                     </Badge>
                   </div>
                 )}
-              </motion.button>
+              </MotionView>
             ))}
-          </AnimatePresence>
+          </Presence>
         </div>
         
         {filteredTemplates.length === 0 && (

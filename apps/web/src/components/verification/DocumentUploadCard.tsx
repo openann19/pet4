@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -87,7 +87,7 @@ export function DocumentUploadCard({
   }
 
   return (
-    <motion.div
+    <MotionView
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
@@ -130,7 +130,7 @@ export function DocumentUploadCard({
         </div>
 
         {existingDocument ? (
-          <motion.div
+          <MotionView
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border"
@@ -146,7 +146,7 @@ export function DocumentUploadCard({
             </div>
             <div className="flex items-center gap-2">
               {existingDocument.status && (
-                <motion.div
+                <MotionView
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
@@ -161,7 +161,7 @@ export function DocumentUploadCard({
                       />
                     )
                   })()}
-                </motion.div>
+                </MotionView>
               )}
               {!disabled && (
                 <Button
@@ -174,7 +174,7 @@ export function DocumentUploadCard({
                 </Button>
               )}
             </div>
-          </motion.div>
+          </MotionView>
         ) : (
           <div className="mt-3">
             <Button
@@ -193,6 +193,6 @@ export function DocumentUploadCard({
           </div>
         )}
       </div>
-    </motion.div>
+    </MotionView>
   )
 }

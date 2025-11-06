@@ -22,13 +22,14 @@ import {
   CheckCircle,
   Envelope,
   Eye,
+  Key,
   MagnifyingGlass,
   Prohibit,
   User,
   Warning
 } from '@phosphor-icons/react'
 import type { VariantProps } from 'class-variance-authority'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, MotionView } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -53,6 +54,10 @@ export default function UsersView() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false)
+  const [resetPasswordMode, setResetPasswordMode] = useState<'email' | 'manual'>('email')
+  const [newPassword, setNewPassword] = useState('')
+  const [resettingPassword, setResettingPassword] = useState(false)
   const [users, setUsers] = useState<UserData[]>([])
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'suspended' | 'banned'>('all')
 
@@ -148,6 +153,47 @@ export default function UsersView() {
     await adminApi.createAuditLog(auditEntry)
   }
 
+  const handleResetPassword = async () => {
+    if (!selectedUser) return
+
+    try {
+      setResettingPassword(true)
+      
+      const result = await adminApi.resetUserPassword(selectedUser.id, {
+        sendEmail: resetPasswordMode === 'email',
+        ...(resetPasswordMode === 'manual' && newPassword ? { newPassword } : {})
+      })
+
+      if (result.success) {
+        toast.success(result.message || 'Password reset successful')
+        
+        const auditEntry = {
+          adminId: 'admin-current',
+          action: 'reset_user_password',
+          targetType: 'user',
+          targetId: selectedUser.id,
+          details: JSON.stringify({ mode: resetPasswordMode })
+        }
+        await adminApi.createAuditLog(auditEntry)
+
+        setResetPasswordDialogOpen(false)
+        setNewPassword('')
+        setResetPasswordMode('email')
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      toast.error('Failed to reset password: ' + err.message)
+    } finally {
+      setResettingPassword(false)
+    }
+  }
+
+  const openResetPasswordDialog = () => {
+    setResetPasswordDialogOpen(true)
+    setResetPasswordMode('email')
+    setNewPassword('')
+  }
+
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase())
@@ -209,9 +255,9 @@ export default function UsersView() {
 
       <ScrollArea className="flex-1 px-6 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AnimatePresence mode="popLayout">
+          <Presence visible={filteredUsers.length > 0}>
             {filteredUsers.map((user, index) => (
-              <motion.div
+              <MotionView
                 key={user.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -265,9 +311,9 @@ export default function UsersView() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </MotionView>
             ))}
-          </AnimatePresence>
+          </Presence>
         </div>
 
         {filteredUsers.length === 0 && (
@@ -378,8 +424,88 @@ export default function UsersView() {
                 Reactivate User
               </Button>
             )}
+            <Button
+              variant="outline"
+              onClick={openResetPasswordDialog}
+            >
+              <Key size={16} className="mr-2" />
+              Reset Password
+            </Button>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Reset password for {selectedUser?.name || selectedUser?.email}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <Button
+                variant={resetPasswordMode === 'email' ? 'default' : 'outline'}
+                onClick={() => setResetPasswordMode('email')}
+                className="flex-1"
+              >
+                Send Reset Email
+              </Button>
+              <Button
+                variant={resetPasswordMode === 'manual' ? 'default' : 'outline'}
+                onClick={() => setResetPasswordMode('manual')}
+                className="flex-1"
+              >
+                Set New Password
+              </Button>
+            </div>
+
+            {resetPasswordMode === 'manual' && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">New Password</label>
+                <Input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  minLength={8}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Password must be at least 8 characters long
+                </p>
+              </div>
+            )}
+
+            {resetPasswordMode === 'email' && (
+              <div className="p-4 bg-muted rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  A password reset email will be sent to {selectedUser?.email}. 
+                  The user will receive a secure link to reset their password.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setResetPasswordDialogOpen(false)
+                setNewPassword('')
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleResetPassword}
+              disabled={resettingPassword || (resetPasswordMode === 'manual' && newPassword.length < 8)}
+            >
+              {resettingPassword ? 'Resetting...' : 'Reset Password'}
             </Button>
           </DialogFooter>
         </DialogContent>

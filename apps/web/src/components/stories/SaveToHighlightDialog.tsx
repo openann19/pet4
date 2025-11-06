@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useStorage } from '@/hooks/useStorage'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Plus, Check, BookmarkSimple } from '@phosphor-icons/react'
 import {
   Dialog,
@@ -140,7 +140,7 @@ export default function SaveToHighlightDialog({
 
         <div className="flex-1 overflow-hidden">
           {showNewHighlight ? (
-            <motion.div
+            <MotionView
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-4 py-4"
@@ -167,7 +167,7 @@ export default function SaveToHighlightDialog({
                   className="w-full h-full object-cover"
                 />
               </div>
-            </motion.div>
+            </MotionView>
           ) : (
             <ScrollArea className="h-[400px] pr-4">
               <div className="space-y-3 py-4">
@@ -187,7 +187,7 @@ export default function SaveToHighlightDialog({
                     const isSelected = selectedHighlightId === highlight.id
 
                     return (
-                      <motion.button
+                      <MotionView as="button"
                         key={highlight.id}
                         onClick={() => !alreadyInHighlight && handleSelectHighlight(highlight.id)}
                         disabled={alreadyInHighlight}
@@ -231,7 +231,7 @@ export default function SaveToHighlightDialog({
                             📌
                           </div>
                         )}
-                      </motion.button>
+                      </MotionView>
                     )
                   })
                 )}

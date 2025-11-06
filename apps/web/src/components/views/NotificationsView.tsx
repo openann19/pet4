@@ -12,7 +12,7 @@ import { haptics } from '@/lib/haptics'
 import { createLogger } from '@/lib/logger'
 import { ArrowLeft, At, Bell, ChatCircle, Check, CheckCircle, Heart, UserPlus } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -208,7 +208,7 @@ export default function NotificationsView({
               ))}
             </div>
           ) : filteredNotifications.length === 0 ? (
-            <motion.div
+            <MotionView
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center py-16 text-center"
@@ -224,14 +224,14 @@ export default function NotificationsView({
                   ? 'You\'re all caught up!'
                   : 'When you get notifications, they\'ll appear here'}
               </p>
-            </motion.div>
+            </MotionView>
           ) : (
             filteredNotifications.map((notification, index) => {
               const Icon = getNotificationIcon(notification.type)
               const message = getNotificationMessage(notification)
               
               return (
-                <motion.div
+                <MotionView
                   key={notification.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -266,7 +266,7 @@ export default function NotificationsView({
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </MotionView>
               )
             })
           )}

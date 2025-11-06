@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Check, Sparkle, CheckCircle } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogPortal, DialogOverlay } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
@@ -73,7 +73,7 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
     const isSelected = selectedTemplate?.id === template.id
     
     return (
-      <motion.button
+      <MotionView as="button"
         key={template.id}
         type="button"
         onClick={() => handleSelectTemplate(template)}
@@ -91,7 +91,7 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
         style={{ minHeight: '44px' }}
       >
         {isSelected && (
-          <motion.div
+          <MotionView
             layoutId="selected-ring"
             className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary via-accent to-primary opacity-40 blur-sm"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -110,13 +110,13 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
                 {template.name}
               </h4>
               {isSelected && (
-                <motion.div
+                <MotionView
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
                   className="bg-primary text-primary-foreground rounded-full p-1.5 shrink-0 shadow-lg"
                 >
                   <Check size={16} weight="bold" />
-                </motion.div>
+                </MotionView>
               )}
             </div>
             <p className="text-sm text-foreground/70 mb-3 line-clamp-2 leading-relaxed">
@@ -177,7 +177,7 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
         </div>
 
         {isSelected && (
-          <motion.div
+          <MotionView
             className="absolute bottom-2 right-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/20 backdrop-blur-sm"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -185,9 +185,9 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
           >
             <CheckCircle size={14} weight="fill" className="text-primary" />
             <span className="text-xs font-medium text-primary">Selected</span>
-          </motion.div>
+          </MotionView>
         )}
-      </motion.button>
+      </MotionView>
     )
   }
 
@@ -205,13 +205,13 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
           <DialogHeader className="px-8 pt-8 pb-5 border-b border-border/40">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <motion.div
+                <MotionView
                   initial={{ rotate: 0, scale: 1 }}
                   animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
                   <Sparkle size={28} weight="fill" className="text-primary" />
-                </motion.div>
+                </MotionView>
                 <div>
                   <DialogTitle className="text-2xl font-bold text-foreground">
                     Pet Profile Templates
@@ -228,7 +228,7 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
               </div>
               
               <div className="h-2 w-32 bg-muted/50 rounded-full overflow-hidden">
-                <motion.div
+                <MotionView
                   className="h-full bg-gradient-to-r from-primary to-accent"
                   initial={{ width: 0 }}
                   animate={{ width: `${(CURRENT_STEP / TOTAL_STEPS) * 100}%` }}

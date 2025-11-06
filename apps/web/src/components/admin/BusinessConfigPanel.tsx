@@ -4,8 +4,10 @@
  * Admin panel for managing prices, limits, and experiments.
  */
 
+import { configBroadcastService } from '@/core/services/config-broadcast-service'
+import { adminApi } from '@/api/admin-api'
 import { useState, useEffect } from 'react'
-import { CheckCircle, CurrencyDollar, Flask, Gear } from '@phosphor-icons/react'
+import { CheckCircle, CurrencyDollar, Flask, Gear, Radio } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -24,6 +26,7 @@ export default function BusinessConfigPanel() {
   const [config, setConfig] = useState<BusinessConfig | null>(null)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [broadcasting, setBroadcasting] = useState(false)
   const [currentUser] = useStorage<User | null>('current-user', null)
 
   useEffect(() => {
@@ -80,6 +83,42 @@ export default function BusinessConfigPanel() {
       toast.error('Failed to save config')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleSaveAndBroadcast = async () => {
+    if (!config || !currentUser) return
+
+    setSaving(true)
+    setBroadcasting(true)
+    try {
+      // First save the config
+      await updateBusinessConfig(config, currentUser.id || 'admin')
+      
+      // Then broadcast it
+      await configBroadcastService.broadcastConfig(
+        'business',
+        config as Record<string, unknown>,
+        currentUser.id || 'admin'
+      )
+      
+      toast.success('Business config saved and broadcasted successfully')
+      
+      // Log audit entry
+      await adminApi.createAuditLog({
+        adminId: currentUser.id || 'admin',
+        action: 'config_broadcast',
+        targetType: 'business_config',
+        targetId: config.id || 'default',
+        details: JSON.stringify({ configType: 'business' })
+      })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Save and broadcast config error', err, { action: 'saveAndBroadcastConfig' })
+      toast.error('Failed to save and broadcast config')
+    } finally {
+      setSaving(false)
+      setBroadcasting(false)
     }
   }
 
@@ -140,10 +179,16 @@ export default function BusinessConfigPanel() {
           <h2 className="text-2xl font-bold">Business Configuration</h2>
           <p className="text-muted-foreground">Manage prices, limits, and experiments</p>
         </div>
-        <Button onClick={handleSave} disabled={saving}>
-          <CheckCircle size={20} className="mr-2" />
-          {saving ? 'Saving...' : 'Save Changes'}
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleSave} disabled={saving || broadcasting} variant="outline">
+            <CheckCircle size={20} className="mr-2" />
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
+          <Button onClick={handleSaveAndBroadcast} disabled={saving || broadcasting}>
+            <Radio size={20} className="mr-2" />
+            {broadcasting ? 'Broadcasting...' : 'Save & Broadcast'}
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue="prices" className="space-y-4">

@@ -251,7 +251,7 @@ function NotificationItem({
           <X size={14} />
         </Button>
       </div>
-    </AnimatedView>
+    </MotionView>
   )
 }
 

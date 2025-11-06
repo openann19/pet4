@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import { Check, MagnifyingGlass, Sliders } from '@phosphor-icons/react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
@@ -151,9 +151,9 @@ export default function StoryFilterSelector({
 
       <ScrollArea className="h-[280px]">
         <div className="grid grid-cols-3 gap-3 pr-4">
-          <AnimatePresence mode="popLayout">
+          <Presence mode="popLayout">
             {filteredFilters.map((filter, index) => (
-              <motion.button
+              <MotionView as="button"
                 key={filter.id}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -202,17 +202,17 @@ export default function StoryFilterSelector({
                 </div>
 
                 {selectedFilter.id === filter.id && (
-                  <motion.div
+                  <MotionView
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-lg"
                   >
                     <Check size={12} weight="bold" className="text-white" />
-                  </motion.div>
+                  </MotionView>
                 )}
-              </motion.button>
+              </MotionView>
             ))}
-          </AnimatePresence>
+          </Presence>
         </div>
 
         {filteredFilters.length === 0 && (

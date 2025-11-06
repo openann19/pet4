@@ -24,7 +24,7 @@ import {
   XCircle
 } from '@phosphor-icons/react'
 import { formatDistanceToNow } from 'date-fns'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -385,14 +385,14 @@ export function ContentModerationQueue() {
 
           <ScrollArea className="h-[600px]">
             <div className="space-y-4">
-              <AnimatePresence mode="popLayout">
+              <Presence mode="popLayout">
                 {loading && filteredItems.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
                     <p className="text-muted-foreground">Loading...</p>
                   </div>
                 ) : filteredItems.length === 0 ? (
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -400,10 +400,10 @@ export function ContentModerationQueue() {
                   >
                     <CheckCircle size={48} className="mx-auto text-muted-foreground mb-4" />
                     <p className="text-muted-foreground">No items in this queue</p>
-                  </motion.div>
+                  </MotionView>
                 ) : (
                   filteredItems.map((item) => (
-                    <motion.div
+                    <MotionView
                       key={item.id}
                       layout
                       initial={{ opacity: 0, y: 20 }}
@@ -428,10 +428,10 @@ export function ContentModerationQueue() {
                           </div>
                         </div>
                       </Card>
-                    </motion.div>
+                    </MotionView>
                   ))
                 )}
-              </AnimatePresence>
+              </Presence>
             </div>
           </ScrollArea>
         </div>

@@ -1,20 +1,20 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { Overlays } from '../window/Overlays'
+import { Overlays } from '../Overlays'
 
 // Mock the burst components
-vi.mock('../ReactionBurstParticles', () => ({
-  ReactionBurstParticles: ({ seed, enabled, className }: { seed: string; enabled: boolean; className: string }) => (
-    <div data-testid="reaction-burst" data-seed={seed} data-enabled={enabled} className={className}>
-      ReactionBurst
+vi.mock('../../ConfettiBurst', () => ({
+  ConfettiBurst: ({ seed, enabled, className }: { seed: string; enabled: boolean; className: string }) => (
+    <div data-testid="confetti-burst" data-seed={seed} data-enabled={enabled} className={className}>
+      ConfettiBurst
     </div>
   ),
 }))
 
-vi.mock('../ConfettiBurst', () => ({
-  ConfettiBurst: ({ seed, enabled, className }: { seed: string; enabled: boolean; className: string }) => (
-    <div data-testid="confetti-burst" data-seed={seed} data-enabled={enabled} className={className}>
-      ConfettiBurst
+vi.mock('../../ReactionBurstParticles', () => ({
+  ReactionBurstParticles: ({ seed, enabled, className }: { seed: string; enabled: boolean; className: string }) => (
+    <div data-testid="reaction-burst" data-seed={seed} data-enabled={enabled} className={className}>
+      ReactionBurst
     </div>
   ),
 }))

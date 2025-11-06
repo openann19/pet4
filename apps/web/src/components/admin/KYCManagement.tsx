@@ -19,7 +19,7 @@ import {
   Warning,
   XCircle
 } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -186,9 +186,9 @@ export function KYCManagement() {
         <TabsContent value={selectedTab} className="mt-4">
           <ScrollArea className="h-[600px]">
             <div className="space-y-4">
-              <AnimatePresence mode="popLayout">
+              <Presence mode="popLayout">
                 {filteredSessions.length === 0 ? (
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -196,10 +196,10 @@ export function KYCManagement() {
                   >
                     <ShieldCheck size={48} className="mx-auto text-muted-foreground mb-4" />
                     <p className="text-muted-foreground">No sessions in this category</p>
-                  </motion.div>
+                  </MotionView>
                 ) : (
                   filteredSessions.map((session) => (
-                    <motion.div
+                    <MotionView
                       key={session.id}
                       layout
                       initial={{ opacity: 0, y: 20 }}
@@ -256,10 +256,10 @@ export function KYCManagement() {
                           <ArrowRight size={20} className="text-muted-foreground shrink-0" />
                         </div>
                       </Card>
-                    </motion.div>
+                    </MotionView>
                   ))
                 )}
-              </AnimatePresence>
+              </Presence>
             </div>
           </ScrollArea>
         </TabsContent>

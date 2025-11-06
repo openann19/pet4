@@ -3,7 +3,7 @@
 import type { ComponentProps} from "react";
 import { useMemo } from "react"
 import * as SliderPrimitive from "@radix-ui/react-slider"
-import { motion } from "framer-motion"
+import { motion } from '@petspark/motion'
 
 import { cn } from "@/lib/utils"
 
@@ -66,7 +66,7 @@ function Slider({
             "relative overflow-hidden"
           )}
         >
-          <motion.div
+          <MotionView
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
             animate={{
               x: ['-100%', '200%'],
@@ -98,7 +98,7 @@ function Slider({
             "cursor-grab active:cursor-grabbing"
           )}
         >
-          <motion.div
+          <MotionView
             className="absolute inset-0 bg-primary/10 rounded-full"
             animate={{
               scale: [1, 1.5, 1],

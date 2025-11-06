@@ -20,7 +20,7 @@ import type { ReportReason } from '@/lib/community-types'
 import { haptics } from '@/lib/haptics'
 import { usePrefersReducedMotion } from '@/utils/reduced-motion'
 import { Warning } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -135,7 +135,7 @@ export function ReportDialog({
               aria-label="Select report reason"
             >
               {REPORT_REASONS.map((reason) => (
-                <motion.div
+                <MotionView
                   key={reason.value}
                   className="flex items-start space-x-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors"
                   whileHover={prefersReducedMotion ? {} : { scale: 1.01 }}
@@ -149,13 +149,13 @@ export function ReportDialog({
                     <div className="font-medium">{reason.label}</div>
                     <div className="text-sm text-muted-foreground">{reason.description}</div>
                   </Label>
-                </motion.div>
+                </MotionView>
               ))}
             </RadioGroup>
           </div>
 
           {selectedReason && (
-            <motion.div
+            <MotionView
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -174,7 +174,7 @@ export function ReportDialog({
                 className="resize-none"
                 aria-label="Additional details for report"
               />
-            </motion.div>
+            </MotionView>
           )}
         </div>
 

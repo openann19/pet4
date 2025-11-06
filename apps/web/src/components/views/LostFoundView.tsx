@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 import { MagnifyingGlass, Plus, MapPin } from '@phosphor-icons/react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import type { LostAlert } from '@/lib/lost-found-types'
 import { LostAlertCard } from '@/components/lost-found/LostAlertCard'
 import { CreateLostAlertDialog } from '@/components/lost-found/CreateLostAlertDialog'
@@ -223,9 +223,9 @@ export default function LostFoundView() {
           </div>
 
           <ScrollArea className="h-[calc(100vh-320px)]">
-            <AnimatePresence mode="wait">
+            <Presence mode="wait">
               {filteredAlerts().length === 0 ? (
-                <motion.div
+                <MotionView
                   key="empty"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -247,9 +247,9 @@ export default function LostFoundView() {
                       ? 'Try adjusting your search terms.'
                       : 'Check back soon for lost pet alerts in your area.'}
                   </p>
-                </motion.div>
+                </MotionView>
               ) : (
-                <motion.div
+                <MotionView
                   key="grid"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -257,7 +257,7 @@ export default function LostFoundView() {
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"
                 >
                   {filteredAlerts().map((alert, index) => (
-                    <motion.div
+                    <MotionView
                       key={alert.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -270,11 +270,11 @@ export default function LostFoundView() {
                         isFavorited={Array.isArray(favorites) && favorites.includes(alert.id)}
                         onToggleFavorite={handleToggleFavorite}
                       />
-                    </motion.div>
+                    </MotionView>
                   ))}
-                </motion.div>
+                </MotionView>
               )}
-            </AnimatePresence>
+            </Presence>
           </ScrollArea>
         </>
       )}
@@ -283,7 +283,7 @@ export default function LostFoundView() {
         <ScrollArea className="h-[calc(100vh-320px)]">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
             {alerts.map((alert, index) => (
-              <motion.div
+              <MotionView
                 key={alert.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -296,7 +296,7 @@ export default function LostFoundView() {
                   isFavorited={Array.isArray(favorites) && favorites.includes(alert.id)}
                   onToggleFavorite={handleToggleFavorite}
                 />
-              </motion.div>
+              </MotionView>
             ))}
           </div>
         </ScrollArea>

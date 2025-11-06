@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from '@petspark/motion';
 import { MapPin, NavigationArrow, X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,7 +49,7 @@ export function LocationBubble({
 
   return (
     <>
-      <motion.div
+      <MotionView
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={handleTap}
@@ -78,7 +78,7 @@ export function LocationBubble({
             </div>
           </div>
         </div>
-      </motion.div>
+      </MotionView>
 
       <Sheet open={showFullMap} onOpenChange={setShowFullMap}>
         <SheetContent side="bottom" className="h-[90vh] flex flex-col p-0">

@@ -69,7 +69,7 @@ export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeleton
                 <Skeleton className="h-6 w-20" />
               </div>
             </Card>
-          </motion.div>
+          </MotionView>
         ))}
         <span className="sr-only">Loading feed content...</span>
       </div>
@@ -95,7 +95,7 @@ export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeleton
                 <Skeleton className="h-4 w-3/4" />
               </div>
             </div>
-          </motion.div>
+          </MotionView>
         ))}
         <span className="sr-only">Loading comments...</span>
       </div>
@@ -120,7 +120,7 @@ export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeleton
             </div>
             <Skeleton className="h-9 w-20 rounded" />
           </div>
-        </motion.div>
+        </MotionView>
       ))}
       <span className="sr-only">Loading users...</span>
     </div>

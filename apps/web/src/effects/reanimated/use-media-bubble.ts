@@ -12,6 +12,7 @@ import {
 } from 'react-native-reanimated'
 import { useCallback, useEffect } from 'react'
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
+import { makeRng } from '@petspark/shared'
 
 export type MediaType = 'image' | 'video' | 'voice'
 
@@ -67,10 +68,14 @@ export function useMediaBubble(
 
   useEffect(() => {
     if (type === 'voice') {
+      // Create seeded RNG for deterministic waveform variation
+      const seed = Date.now() + waveformScales.length
+      const rng = makeRng(seed)
+      
       waveformScales.forEach((scale, index) => {
         if (isPlaying) {
           const baseValue = waveform[index] ?? 0.3
-          const variation = Math.random() * 0.3
+          const variation = rng() * 0.3
           scale.value = withSequence(
             withTiming(baseValue + variation, { duration: 200 }),
             withTiming(Math.max(0.2, baseValue - variation), { duration: 200 }),

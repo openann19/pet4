@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useStorage } from '@/hooks/useStorage'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Plus, Check } from '@phosphor-icons/react'
 import {
   Dialog,
@@ -176,7 +176,7 @@ export default function CreateHighlightDialog({
                     const isCover = coverImageUrl === (story.thumbnailUrl || story.mediaUrl)
 
                     return (
-                      <motion.div
+                      <MotionView
                         key={story.id}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -200,13 +200,13 @@ export default function CreateHighlightDialog({
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
 
                           {isSelected && (
-                            <motion.div
+                            <MotionView
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg"
                             >
                               <Check size={16} weight="bold" className="text-white" />
-                            </motion.div>
+                            </MotionView>
                           )}
 
                           {isCover && (
@@ -230,7 +230,7 @@ export default function CreateHighlightDialog({
                             Set as Cover
                           </Button>
                         )}
-                      </motion.div>
+                      </MotionView>
                     )
                   })}
                 </div>

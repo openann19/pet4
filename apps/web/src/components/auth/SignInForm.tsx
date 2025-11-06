@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { EnvelopeSimple, LockKey, Eye, EyeSlash } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -96,7 +96,7 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
   }
 
   return (
-    <motion.div
+    <MotionView
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -238,6 +238,6 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
           </p>
         </div>
       </form>
-    </motion.div>
+    </MotionView>
   )
 }

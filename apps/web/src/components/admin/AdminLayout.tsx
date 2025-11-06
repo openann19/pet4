@@ -26,7 +26,8 @@ import {
   Heart,
   UsersThree,
   ClipboardText,
-  ArrowLeft
+  ArrowLeft,
+  Headset
 } from '@phosphor-icons/react'
 import { AnimatedView } from '@/effects/reanimated/animated-view'
 import { useSidebarAnimation } from '@/effects/reanimated/use-sidebar-animation'
@@ -35,7 +36,7 @@ import { createLogger } from '@/lib/logger'
 
 const logger = createLogger('AdminLayout')
 
-type AdminView = 'dashboard' | 'reports' | 'users' | 'content' | 'verification' | 'settings' | 'map-settings' | 'audit' | 'performance' | 'system-map' | 'moderation' | 'content-moderation' | 'kyc' | 'api-config' | 'subscriptions' | 'community' | 'adoption' | 'adoption-applications' | 'adoption-listings' | 'lost-found' | 'live-streams' | 'business-config' | 'chat-moderation'
+type AdminView = 'dashboard' | 'reports' | 'users' | 'content' | 'verification' | 'settings' | 'map-settings' | 'audit' | 'performance' | 'system-map' | 'moderation' | 'content-moderation' | 'kyc' | 'api-config' | 'subscriptions' | 'community' | 'adoption' | 'adoption-applications' | 'adoption-listings' | 'lost-found' | 'live-streams' | 'business-config' | 'chat-moderation' | 'support-chat'
 
 interface AdminUser {
   name: string
@@ -100,6 +101,7 @@ export default function AdminLayout({ children, currentView, onViewChange, onExi
     { id: 'moderation' as AdminView, label: 'Photo Moderation', icon: Eye },
     { id: 'content-moderation' as AdminView, label: 'Content Moderation', icon: ShieldCheck },
     { id: 'chat-moderation' as AdminView, label: 'Chat Moderation', icon: ChatCircle },
+    { id: 'support-chat' as AdminView, label: 'Support Tickets', icon: Headset },
     { id: 'kyc' as AdminView, label: 'KYC Verification', icon: IdentificationCard },
     { id: 'verification' as AdminView, label: 'Verification', icon: ShieldCheck },
     { id: 'performance' as AdminView, label: 'Performance', icon: ChartLine },

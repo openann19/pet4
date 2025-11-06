@@ -185,6 +185,27 @@ export default tseslint.config(
           ],
         },
       ],
+      'import/no-restricted-paths': [
+        'error',
+        {
+          zones: [
+            {
+              target: './apps/web/src/components/chat/window',
+              from: './apps/web/src/components/chat/presentational',
+            },
+            {
+              target: './apps/web/src/components/chat/presentational',
+              from: './apps/web/src/components/chat/window',
+              except: ['../presentational/**'],
+            },
+            {
+              target: './packages/**',
+              from: './apps/**',
+              message: 'Packages must not import apps',
+            },
+          ],
+        },
+      ],
     },
   },
   // Motion-specific overrides

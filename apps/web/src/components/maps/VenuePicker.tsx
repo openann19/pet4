@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from '@petspark/motion';
 import { X, MagnifyingGlass, NavigationArrow, Star } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -188,7 +188,7 @@ export default function VenuePicker({
           </div>
 
           {selectedVenue && (
-            <motion.div
+            <MotionView
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               className="absolute bottom-0 left-0 right-0 bg-background border-t p-4 space-y-3 shadow-lg"
@@ -237,7 +237,7 @@ export default function VenuePicker({
                   {t.map?.selectLocation || 'Select'}
                 </Button>
               </div>
-            </motion.div>
+            </MotionView>
           )}
         </div>
       </SheetContent>

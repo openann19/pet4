@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import type { CompatibilityFactors } from '@/lib/types'
 import { useEffect, useState } from 'react'
 
@@ -51,19 +51,19 @@ export default function CompatibilityBreakdown({ factors, className }: Compatibi
   return (
     <div className={`rounded-3xl glass-strong premium-shadow backdrop-blur-2xl border border-white/20 ${className}`}>
       <div className="p-6 bg-gradient-to-br from-white/20 to-white/10">
-        <motion.h3 
+        <MotionView 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-lg font-bold mb-4 flex items-center gap-2 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent"
         >
-          <motion.span
+          <MotionText
             animate={{ rotate: [0, 10, -10, 0] }}
             transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse' }}
           >
             📊
-          </motion.span>
+          </MotionText>
           Compatibility Breakdown
-        </motion.h3>
+        </MotionView>
         <div className="space-y-4">
           {Object.entries(factors).map(([key, _value], idx) => {
             const animatedPercentage = Math.round((animatedValues[key] || 0) * 100)
@@ -72,7 +72,7 @@ export default function CompatibilityBreakdown({ factors, className }: Compatibi
             const colorClass = factorColors[key as keyof typeof factorColors]
             
             return (
-              <motion.div
+              <MotionView
                 key={key}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -81,32 +81,32 @@ export default function CompatibilityBreakdown({ factors, className }: Compatibi
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium flex items-center gap-2">
-                    <motion.span
+                    <MotionText
                       whileHover={{ scale: 1.3, rotate: 360 }}
                       transition={{ duration: 0.5 }}
                     >
                       {icon}
-                    </motion.span>
+                    </MotionText>
                     {label}
                   </span>
-                  <motion.span 
+                  <MotionText 
                     className="text-sm font-bold text-muted-foreground tabular-nums"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: idx * 0.1 + 0.3 }}
                   >
                     {animatedPercentage}%
-                  </motion.span>
+                  </MotionText>
                 </div>
                 <div className="relative">
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <motion.div
+                    <MotionView
                       className={`h-full bg-gradient-to-r ${colorClass} rounded-full relative overflow-hidden`}
                       initial={{ width: 0 }}
                       animate={{ width: `${animatedPercentage}%` }}
                       transition={{ delay: idx * 0.1 + 0.2, duration: 0.8, ease: 'easeOut' }}
                     >
-                      <motion.div
+                      <MotionView
                         className="absolute inset-0 bg-white/30"
                         animate={{ 
                           x: ['-100%', '100%'],
@@ -119,10 +119,10 @@ export default function CompatibilityBreakdown({ factors, className }: Compatibi
                         }}
                         style={{ width: '50%' }}
                       />
-                    </motion.div>
+                    </MotionView>
                   </div>
                 </div>
-              </motion.div>
+              </MotionView>
             )
           })}
         </div>

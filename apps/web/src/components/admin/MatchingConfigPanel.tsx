@@ -13,6 +13,11 @@ import type { UpdateMatchingConfigData } from '@/api/types'
 import { toast } from 'sonner'
 import { FloppyDisk, ArrowsClockwise } from '@phosphor-icons/react'
 import { createLogger } from '@/lib/logger'
+import { configBroadcastService } from '@/core/services/config-broadcast-service'
+import { adminApi } from '@/api/admin-api'
+import { useStorage } from '@/hooks/useStorage'
+import type { User } from '@/lib/user-service'
+import { Radio } from '@phosphor-icons/react'
 
 const logger = createLogger('MatchingConfigPanel')
 
@@ -20,6 +25,8 @@ export function MatchingConfigPanel() {
   const [config, setConfig] = useState<MatchingConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [broadcasting, setBroadcasting] = useState(false)
+  const [currentUser] = useStorage<User | null>('current-user', null)
 
   useEffect(() => {
     loadConfig()
@@ -76,6 +83,48 @@ export function MatchingConfigPanel() {
       logger.error('Failed to save configuration', error instanceof Error ? error : new Error(String(error)))
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleSaveAndBroadcast = async () => {
+    if (!config || !currentUser) return
+
+    try {
+      setSaving(true)
+      setBroadcasting(true)
+      
+      const updateData: UpdateMatchingConfigData = {
+        weights: config.weights,
+        hardGates: config.hardGates,
+        featureFlags: config.featureFlags
+      }
+      
+      const updatedConfig = await matchingAPI.updateConfig(updateData)
+      setConfig(updatedConfig)
+      
+      // Broadcast the config
+      await configBroadcastService.broadcastConfig(
+        'matching',
+        updatedConfig as Record<string, unknown>,
+        currentUser.id || 'admin'
+      )
+      
+      toast.success('Configuration saved and broadcasted successfully')
+      
+      // Log audit entry
+      await adminApi.createAuditLog({
+        adminId: currentUser.id || 'admin',
+        action: 'config_broadcast',
+        targetType: 'matching_config',
+        targetId: updatedConfig.id || 'default',
+        details: JSON.stringify({ configType: 'matching' })
+      })
+    } catch (error) {
+      toast.error('Failed to save and broadcast configuration')
+      logger.error('Failed to save and broadcast configuration', error instanceof Error ? error : new Error(String(error)))
+    } finally {
+      setSaving(false)
+      setBroadcasting(false)
     }
   }
 
@@ -338,8 +387,9 @@ export function MatchingConfigPanel() {
       <div className="flex gap-4">
         <Button
           onClick={handleSave}
-          disabled={!isWeightValid || saving}
+          disabled={!isWeightValid || saving || broadcasting}
           className="flex items-center gap-2"
+          variant="outline"
         >
           {saving ? (
             <>
@@ -355,9 +405,27 @@ export function MatchingConfigPanel() {
         </Button>
 
         <Button
+          onClick={handleSaveAndBroadcast}
+          disabled={!isWeightValid || saving || broadcasting}
+          className="flex items-center gap-2"
+        >
+          {broadcasting ? (
+            <>
+              <ArrowsClockwise className="animate-spin" size={18} />
+              Broadcasting...
+            </>
+          ) : (
+            <>
+              <Radio size={18} />
+              Save & Broadcast
+            </>
+          )}
+        </Button>
+
+        <Button
           variant="outline"
           onClick={loadConfig}
-          disabled={saving}
+          disabled={saving || broadcasting}
         >
           Reset to Current
         </Button>

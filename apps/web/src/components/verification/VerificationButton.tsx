@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ShieldCheck, CheckCircle, Clock, XCircle } from '@phosphor-icons/react'
@@ -66,7 +66,7 @@ export function VerificationButton({
   if (variant === 'card') {
     return (
       <>
-        <motion.button
+        <MotionView as="button"
           onClick={() => setShowDialog(true)}
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
@@ -106,7 +106,7 @@ export function VerificationButton({
               {config.label}
             </Badge>
           </div>
-        </motion.button>
+        </MotionView>
 
         <VerificationDialog
           open={showDialog}

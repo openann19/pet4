@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, Presence } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -85,14 +85,14 @@ export default function AgeGateModal({ open, onVerified, onClose }: AgeGateModal
   if (!open) return null
 
   return (
-    <AnimatePresence>
-      <motion.div
+    <Presence>
+      <MotionView
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/95 backdrop-blur-sm"
       >
-        <motion.div
+        <MotionView
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
@@ -141,13 +141,13 @@ export default function AgeGateModal({ open, onVerified, onClose }: AgeGateModal
             </div>
 
             {error && (
-              <motion.p
+              <MotionView
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-destructive text-sm"
               >
                 {error}
-              </motion.p>
+              </MotionView>
             )}
 
             <div className="flex gap-3 pt-2">
@@ -174,9 +174,9 @@ export default function AgeGateModal({ open, onVerified, onClose }: AgeGateModal
               </Button>
             </div>
           </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </MotionView>
+      </MotionView>
+    </Presence>
   )
 }
 

@@ -1,4 +1,4 @@
-import { motion, useSpring, useTransform, useMotionValue } from 'framer-motion'
+import { motion, useSpring, useTransform, useMotionValue } from '@petspark/motion'
 import { useEffect } from 'react'
 import { Heart, Eye, Sparkle } from '@phosphor-icons/react'
 import { useApp } from '@/contexts/AppContext'
@@ -18,7 +18,7 @@ function AnimatedNumber({ value }: { value: number }) {
     motionValue.set(value)
   }, [value, motionValue])
 
-  return <motion.span>{display}</motion.span>
+  return <MotionText>{display}</MotionText>
 }
 
 export default function StatsCard({ totalMatches, totalSwipes, successRate }: StatsCardProps) {
@@ -26,7 +26,7 @@ export default function StatsCard({ totalMatches, totalSwipes, successRate }: St
   
   return (
     <div className="p-6 mb-6 overflow-hidden relative rounded-3xl glass-strong premium-shadow backdrop-blur-2xl border border-white/20">
-      <motion.div
+      <MotionView
         className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10"
         animate={{
           opacity: [0.3, 0.7, 0.3],
@@ -35,65 +35,65 @@ export default function StatsCard({ totalMatches, totalSwipes, successRate }: St
       />
       <h3 className="text-lg font-bold mb-6 relative bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">{t.profile.stats}</h3>
       <div className="grid grid-cols-3 gap-4 relative">
-        <motion.div
+        <MotionView
           initial={{ opacity: 0, y: 20, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 0.1, type: 'spring', stiffness: 300, damping: 20 }}
           whileHover={{ scale: 1.08, y: -8 }}
           className="text-center glass-effect p-4 rounded-2xl backdrop-blur-md border border-white/20"
         >
-          <motion.div 
+          <MotionView 
             className="w-14 h-14 rounded-full bg-gradient-to-br from-primary via-primary/80 to-primary/60 flex items-center justify-center mx-auto mb-3 shadow-xl"
             whileHover={{ rotate: [0, -15, 15, -15, 0], scale: 1.1 }}
             transition={{ duration: 0.5 }}
           >
             <Heart size={28} className="text-white drop-shadow-lg" weight="fill" />
-          </motion.div>
+          </MotionView>
           <div className="text-3xl font-bold bg-gradient-to-br from-primary to-accent bg-clip-text text-transparent">
             <AnimatedNumber value={totalMatches} />
           </div>
           <div className="text-xs text-foreground/70 font-semibold mt-1">{t.profile.totalMatches}</div>
-        </motion.div>
+        </MotionView>
         
-        <motion.div
+        <MotionView
           initial={{ opacity: 0, y: 20, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 20 }}
           whileHover={{ scale: 1.08, y: -8 }}
           className="text-center glass-effect p-4 rounded-2xl backdrop-blur-md border border-white/20"
         >
-          <motion.div 
+          <MotionView 
             className="w-14 h-14 rounded-full bg-gradient-to-br from-secondary via-secondary/80 to-secondary/60 flex items-center justify-center mx-auto mb-3 shadow-xl"
             whileHover={{ scale: 1.25 }}
             transition={{ type: 'tween', duration: 0.3 }}
           >
             <Eye size={28} className="text-white drop-shadow-lg" weight="fill" />
-          </motion.div>
+          </MotionView>
           <div className="text-3xl font-bold bg-gradient-to-br from-secondary to-primary bg-clip-text text-transparent">
             <AnimatedNumber value={totalSwipes} />
           </div>
           <div className="text-xs text-foreground/70 font-semibold mt-1">{t.profile.totalSwipes}</div>
-        </motion.div>
+        </MotionView>
         
-        <motion.div
+        <MotionView
           initial={{ opacity: 0, y: 20, scale: 0.8 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 0.3, type: 'spring', stiffness: 300, damping: 20 }}
           whileHover={{ scale: 1.08, y: -8 }}
           className="text-center glass-effect p-4 rounded-2xl backdrop-blur-md border border-white/20"
         >
-          <motion.div 
+          <MotionView 
             className="w-14 h-14 rounded-full bg-gradient-to-br from-accent via-accent/80 to-accent/60 flex items-center justify-center mx-auto mb-3 shadow-xl"
             animate={{ rotate: [0, 15, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, repeatType: 'reverse' }}
           >
             <Sparkle size={28} className="text-white drop-shadow-lg" weight="fill" />
-          </motion.div>
+          </MotionView>
           <div className="text-3xl font-bold bg-gradient-to-br from-accent to-secondary bg-clip-text text-transparent">
             <AnimatedNumber value={successRate} />%
           </div>
           <div className="text-xs text-foreground/70 font-semibold mt-1">{t.profile.successRate}</div>
-        </motion.div>
+        </MotionView>
       </div>
     </div>
   )

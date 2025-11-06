@@ -13,7 +13,7 @@ import type { AdoptionListing, AdoptionListingFilters } from '@/lib/adoption-mar
 import { haptics } from '@/lib/haptics'
 import { logger } from '@/lib/logger'
 import { Check, Funnel, Heart, MagnifyingGlass, Plus, X } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -242,7 +242,7 @@ export default function AdoptionMarketplaceView() {
               ))}
             </div>
           ) : filteredListings.length === 0 ? (
-            <motion.div
+            <MotionView
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-center justify-center py-16"
@@ -256,12 +256,12 @@ export default function AdoptionMarketplaceView() {
                   ? 'Try adjusting your search or filters'
                   : 'Check back soon for new pets looking for their forever homes'}
               </p>
-            </motion.div>
+            </MotionView>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence mode="popLayout">
+              <Presence mode="popLayout">
                 {filteredListings.map((listing, index) => (
-                  <motion.div
+                  <MotionView
                     key={listing.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -272,9 +272,9 @@ export default function AdoptionMarketplaceView() {
                       listing={listing}
                       onSelect={() => handleSelectListing(listing)}
                     />
-                  </motion.div>
+                  </MotionView>
                 ))}
-              </AnimatePresence>
+              </Presence>
             </div>
           )}
 

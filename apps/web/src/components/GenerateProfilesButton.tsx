@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useStorage } from '@/hooks/useStorage'
 import { Button } from '@/components/ui/button'
 import { Sparkle, Plus } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { toast } from 'sonner'
 import { generateSamplePets } from '@/lib/seedData'
 import type { Pet } from '@/lib/types'
@@ -50,7 +50,7 @@ export default function GenerateProfilesButton({
   }
 
   return (
-    <motion.div
+    <MotionView
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={showLabel ? 'w-full' : ''}
@@ -66,7 +66,7 @@ export default function GenerateProfilesButton({
         }
       >
         {showLabel && (
-          <motion.div
+          <MotionView
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
             animate={{
               x: isGenerating ? ['-100%', '200%'] : '-100%',
@@ -78,7 +78,7 @@ export default function GenerateProfilesButton({
             }}
           />
         )}
-        <motion.div
+        <MotionView
           animate={isGenerating ? { rotate: 360 } : {}}
           transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
           className={showLabel ? "mr-2" : ""}
@@ -88,13 +88,13 @@ export default function GenerateProfilesButton({
           ) : (
             <Plus size={20} weight="bold" />
           )}
-        </motion.div>
+        </MotionView>
         {showLabel && (
           <span className="relative z-10 font-semibold">
             {isGenerating ? 'Generating Profiles...' : 'Generate More Profiles'}
           </span>
         )}
       </Button>
-    </motion.div>
+    </MotionView>
   )
 }

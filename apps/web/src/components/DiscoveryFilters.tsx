@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useStorage } from '@/hooks/useStorage'
 import { Funnel, X, CheckCircle, Lightning, Camera, VideoCamera, Sparkle, Clock, ChatCircle } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Label } from '@/components/ui/label'
@@ -206,29 +206,29 @@ export default function DiscoveryFilters() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <MotionView whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           <Button variant="outline" size="sm" className="gap-2 relative">
             <Funnel size={16} weight={hasActiveFilters ? 'fill' : 'regular'} />
             Filters
             {hasActiveFilters && (
-              <motion.span
+              <MotionText
                 className="w-2 h-2 bg-primary rounded-full absolute -top-0.5 -right-0.5"
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
               />
             )}
           </Button>
-        </motion.div>
+        </MotionView>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-md overflow-hidden flex flex-col">
         <SheetHeader className="shrink-0">
           <SheetTitle className="text-2xl flex items-center gap-2">
-            <motion.span
+            <MotionText
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
               🎯
-            </motion.span>
+            </MotionText>
             Discovery Preferences
           </SheetTitle>
         </SheetHeader>
@@ -424,7 +424,7 @@ export default function DiscoveryFilters() {
                         { value: 'portrait', label: 'Portrait (3:4)', icon: '📱' },
                         { value: 'landscape', label: 'Landscape (4:3)', icon: '🖼️' }
                       ].map(({ value, label, icon }) => (
-                        <motion.button
+                        <MotionView as="button"
                           key={value}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
@@ -437,7 +437,7 @@ export default function DiscoveryFilters() {
                         >
                           <div className="text-2xl mb-1">{icon}</div>
                           <div className="text-sm font-medium">{label}</div>
-                        </motion.button>
+                        </MotionView>
                       ))}
                     </div>
                   </div>
@@ -456,7 +456,7 @@ export default function DiscoveryFilters() {
                         { value: 'high', label: 'High Quality', desc: 'Clear, well-lit photos only' },
                         { value: 'verified', label: 'Verified Photos', desc: 'Authenticated by moderators' }
                       ].map(({ value, label, desc }) => (
-                        <motion.button
+                        <MotionView as="button"
                           key={value}
                           whileHover={{ scale: 1.01 }}
                           whileTap={{ scale: 0.99 }}
@@ -472,7 +472,7 @@ export default function DiscoveryFilters() {
                             {label}
                           </div>
                           <div className="text-xs text-muted-foreground mt-1">{desc}</div>
-                        </motion.button>
+                        </MotionView>
                       ))}
                     </div>
                   </div>

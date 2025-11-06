@@ -106,13 +106,23 @@ vi.mock('react-native-reanimated', () => {
     }),
     withSpring: vi.fn((toValue: number) => toValue),
     withTiming: vi.fn((toValue: number) => toValue),
-    withDelay: vi.fn((delay: number, animation: number) => animation),
+    withDelay: vi.fn((_delay: number, animation: number) => animation),
     withSequence: vi.fn((...animations: number[]) => animations[animations.length - 1]),
     withRepeat: vi.fn((animation: number) => animation),
     interpolate: vi.fn((value: number, inputRange: number[], outputRange: number[]) => {
-      if (value <= inputRange[0]) return outputRange[0]
-      if (value >= inputRange[inputRange.length - 1]) return outputRange[outputRange.length - 1]
-      return outputRange[0]
+      if (!inputRange || inputRange.length === 0 || !outputRange || outputRange.length === 0) {
+        return outputRange?.[0] ?? 0
+      }
+      const firstInput = inputRange[0]
+      const lastInput = inputRange[inputRange.length - 1]
+      const firstOutput = outputRange[0]
+      const lastOutput = outputRange[outputRange.length - 1]
+      if (firstInput === undefined || lastInput === undefined || firstOutput === undefined || lastOutput === undefined) {
+        return 0
+      }
+      if (value <= firstInput) return firstOutput
+      if (value >= lastInput) return lastOutput
+      return firstOutput
     }),
     Extrapolation: {
       CLAMP: 'clamp',

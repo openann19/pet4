@@ -6,7 +6,7 @@ import { llmService } from '@/lib/llm-service'
 import { parseLLMError } from '@/lib/llm-utils'
 import { createLogger } from '@/lib/logger'
 import { Camera, Check, Image as ImageIcon, Sparkle, Upload, X } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -136,14 +136,14 @@ Return ONLY valid JSON with this exact structure, nothing else:
 
   return (
     <div className="space-y-4">
-      <motion.div
+      <MotionView
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative"
       >
         <Card className="p-6 bg-linear-to-br from-primary/5 via-accent/5 to-secondary/5 border-2 border-dashed border-primary/20">
           <div className="flex items-start gap-4">
-            <motion.div
+            <MotionView
               className="w-12 h-12 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center shrink-0"
               animate={{ 
                 boxShadow: [
@@ -155,7 +155,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
               transition={{ duration: 2, repeat: Infinity }}
             >
               <Sparkle size={24} weight="fill" className="text-white" />
-            </motion.div>
+            </MotionView>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
                 AI Photo Analysis
@@ -166,7 +166,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
               </p>
               
               <div className="flex gap-2 mb-3">
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <MotionView whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     type="button"
                     size="sm"
@@ -180,8 +180,8 @@ Return ONLY valid JSON with this exact structure, nothing else:
                     <Camera size={16} weight="fill" />
                     <span>Camera</span>
                   </Button>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                </MotionView>
+                <MotionView whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     type="button"
                     size="sm"
@@ -195,8 +195,8 @@ Return ONLY valid JSON with this exact structure, nothing else:
                     <ImageIcon size={16} weight="fill" />
                     <span>Upload</span>
                   </Button>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                </MotionView>
+                <MotionView whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     type="button"
                     size="sm"
@@ -207,7 +207,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                     <Upload size={16} weight="fill" />
                     <span>URL</span>
                   </Button>
-                </motion.div>
+                </MotionView>
               </div>
 
               <input
@@ -234,7 +234,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
               />
               
               {uploadMode === 'url' && (
-                <motion.div 
+                <MotionView 
                   className="flex gap-2"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -255,12 +255,12 @@ Return ONLY valid JSON with this exact structure, nothing else:
                   >
                     {analyzing ? (
                       <>
-                        <motion.div
+                        <MotionView
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                         >
                           <Sparkle size={18} weight="fill" />
-                        </motion.div>
+                        </MotionView>
                         <span className="ml-2">Analyzing...</span>
                       </>
                     ) : (
@@ -270,11 +270,11 @@ Return ONLY valid JSON with this exact structure, nothing else:
                       </>
                     )}
                   </Button>
-                </motion.div>
+                </MotionView>
               )}
 
               {(uploadMode === 'file' || uploadMode === 'camera') && photo && (
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex gap-2"
@@ -290,12 +290,12 @@ Return ONLY valid JSON with this exact structure, nothing else:
                   >
                     {analyzing ? (
                       <>
-                        <motion.div
+                        <MotionView
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                         >
                           <Sparkle size={18} weight="fill" />
-                        </motion.div>
+                        </MotionView>
                         <span className="ml-2">Analyzing...</span>
                       </>
                     ) : (
@@ -305,41 +305,41 @@ Return ONLY valid JSON with this exact structure, nothing else:
                       </>
                     )}
                   </Button>
-                </motion.div>
+                </MotionView>
               )}
             </div>
           </div>
         </Card>
-      </motion.div>
+      </MotionView>
 
-      <AnimatePresence>
+      <Presence>
         {photo && !analyzing && (
-          <motion.div
+          <MotionView
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             className="relative h-64 rounded-lg overflow-hidden bg-muted"
           >
             <img src={photo} alt="Pet preview" className="w-full h-full object-cover" />
-          </motion.div>
+          </MotionView>
         )}
-      </AnimatePresence>
+      </Presence>
 
-      <AnimatePresence>
+      <Presence>
         {analyzing && (
-          <motion.div
+          <MotionView
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
             <Card className="p-6 bg-linear-to-br from-background to-muted/30">
               <div className="flex items-center gap-3 mb-4">
-                <motion.div
+                <MotionView
                   animate={{ rotate: 360 }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                 >
                   <Sparkle size={24} weight="fill" className="text-primary" />
-                </motion.div>
+                </MotionView>
                 <div>
                   <h4 className="font-semibold">Analyzing photo...</h4>
                   <p className="text-sm text-muted-foreground">This may take a few seconds</p>
@@ -348,44 +348,44 @@ Return ONLY valid JSON with this exact structure, nothing else:
               
               <div className="space-y-3">
                 {['Detecting breed...', 'Estimating age...', 'Analyzing personality...', 'Calculating confidence...'].map((text, idx) => (
-                  <motion.div
+                  <MotionView
                     key={text}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.3 }}
                     className="flex items-center gap-2 text-sm"
                   >
-                    <motion.div
+                    <MotionView
                       className="w-1.5 h-1.5 rounded-full bg-primary"
                       animate={{ scale: [1, 1.5, 1] }}
                       transition={{ duration: 1, repeat: Infinity }}
                     />
                     {text}
-                  </motion.div>
+                  </MotionView>
                 ))}
               </div>
             </Card>
-          </motion.div>
+          </MotionView>
         )}
-      </AnimatePresence>
+      </Presence>
 
-      <AnimatePresence>
+      <Presence>
         {showResult && result && (
-          <motion.div
+          <MotionView
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
           >
             <Card className="p-6 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800">
               <div className="flex items-start gap-4 mb-4">
-                <motion.div
+                <MotionView
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 15 }}
                   className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center shrink-0"
                 >
                   <Check size={24} weight="bold" className="text-white" />
-                </motion.div>
+                </MotionView>
                 <div className="flex-1">
                   <h4 className="font-semibold text-lg mb-1">Analysis Complete!</h4>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -398,44 +398,44 @@ Return ONLY valid JSON with this exact structure, nothing else:
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-4">
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
                 >
                   <div className="text-xs text-muted-foreground mb-1">Breed</div>
                   <div className="font-semibold">{result.breed}</div>
-                </motion.div>
+                </MotionView>
 
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.15 }}
                 >
                   <div className="text-xs text-muted-foreground mb-1">Age</div>
                   <div className="font-semibold">{result.age} years</div>
-                </motion.div>
+                </MotionView>
 
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
                 >
                   <div className="text-xs text-muted-foreground mb-1">Size</div>
                   <div className="font-semibold capitalize">{result.size.replace('-', ' ')}</div>
-                </motion.div>
+                </MotionView>
 
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.25 }}
                 >
                   <div className="text-xs text-muted-foreground mb-1">Traits</div>
                   <div className="font-semibold">{result.personality && Array.isArray(result.personality) ? result.personality.length : 0} detected</div>
-                </motion.div>
+                </MotionView>
               </div>
 
-              <motion.div
+              <MotionView
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
@@ -443,7 +443,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                 <div className="text-xs text-muted-foreground mb-2">Personality Traits</div>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {result.personality.map((trait, idx) => (
-                    <motion.div
+                    <MotionView
                       key={trait}
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -452,13 +452,13 @@ Return ONLY valid JSON with this exact structure, nothing else:
                       <Badge className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800">
                         {trait}
                       </Badge>
-                    </motion.div>
+                    </MotionView>
                   ))}
                 </div>
-              </motion.div>
+              </MotionView>
 
               <div className="flex gap-2 pt-2">
-                <motion.div
+                <MotionView
                   className="flex-1"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -474,8 +474,8 @@ Return ONLY valid JSON with this exact structure, nothing else:
                     <X size={18} weight="bold" />
                     <span className="ml-2">Discard</span>
                   </Button>
-                </motion.div>
-                <motion.div
+                </MotionView>
+                <MotionView
                   className="flex-1"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -487,12 +487,12 @@ Return ONLY valid JSON with this exact structure, nothing else:
                     <Check size={18} weight="bold" />
                     <span className="ml-2">Apply to Profile</span>
                   </Button>
-                </motion.div>
+                </MotionView>
               </div>
             </Card>
-          </motion.div>
+          </MotionView>
         )}
-      </AnimatePresence>
+      </Presence>
     </div>
   )
 }

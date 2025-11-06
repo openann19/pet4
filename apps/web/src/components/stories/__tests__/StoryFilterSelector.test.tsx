@@ -234,6 +234,9 @@ describe('StoryFilterSelector', () => {
 
     it('should sync local intensity with prop changes', () => {
       const warmFilter = STORY_FILTERS.find((f) => f.id !== 'filter-none')
+      if (!warmFilter) {
+        throw new Error('warmFilter not found')
+      }
       const { rerender } = render(
         <StoryFilterSelector
           {...defaultProps}

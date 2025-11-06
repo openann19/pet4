@@ -1,10 +1,10 @@
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { PawPrint, Heart } from '@phosphor-icons/react'
 
 export default function LoadingState() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 px-4">
-      <motion.div
+      <MotionView
         className="relative w-28 h-28"
         animate={{
           scale: [1, 1.05, 1],
@@ -16,7 +16,7 @@ export default function LoadingState() {
         }}
       >
         {/* Outer glow ring */}
-        <motion.div
+        <MotionView
           className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 via-accent/20 to-secondary/30"
           animate={{
             scale: [1, 1.8, 1],
@@ -31,7 +31,7 @@ export default function LoadingState() {
         />
         
         {/* Middle glow ring */}
-        <motion.div
+        <MotionView
           className="absolute inset-2 rounded-full bg-gradient-to-tr from-accent/30 to-primary/30"
           animate={{
             scale: [1, 1.4, 1],
@@ -47,7 +47,7 @@ export default function LoadingState() {
         />
         
         {/* Center icon container */}
-        <motion.div
+        <MotionView
           className="absolute inset-4 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 backdrop-blur-sm flex items-center justify-center border border-primary/20"
           animate={{
             rotate: [0, 360],
@@ -58,7 +58,7 @@ export default function LoadingState() {
             ease: "linear"
           }}
         >
-          <motion.div
+          <MotionView
             animate={{
               rotate: [0, -360],
             }}
@@ -69,12 +69,12 @@ export default function LoadingState() {
             }}
           >
             <PawPrint size={40} weight="fill" className="text-primary drop-shadow-lg" />
-          </motion.div>
-        </motion.div>
+          </MotionView>
+        </MotionView>
 
         {/* Floating hearts */}
         {[0, 1, 2].map((i) => (
-          <motion.div
+          <MotionView
             key={i}
             className="absolute"
             style={{
@@ -94,34 +94,34 @@ export default function LoadingState() {
             }}
           >
             <Heart size={16} weight="fill" className="text-accent" />
-          </motion.div>
+          </MotionView>
         ))}
-      </motion.div>
+      </MotionView>
       
-      <motion.div
+      <MotionView
         className="flex flex-col items-center gap-3 max-w-sm text-center"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
-        <motion.h3 
+        <MotionView 
           className="text-xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent"
         >
           Loading your experience...
-        </motion.h3>
+        </MotionView>
         <p className="text-sm text-muted-foreground">
           Preparing amazing connections
         </p>
-      </motion.div>
+      </MotionView>
       
-      <motion.div 
+      <MotionView 
         className="flex gap-2.5"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
         {[0, 1, 2, 3].map((i) => (
-          <motion.div
+          <MotionView
             key={i}
             className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-primary to-accent"
             animate={{
@@ -136,7 +136,7 @@ export default function LoadingState() {
             }}
           />
         ))}
-      </motion.div>
+      </MotionView>
     </div>
   )
 }

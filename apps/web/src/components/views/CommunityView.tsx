@@ -68,6 +68,9 @@ export default function CommunityView(): JSX.Element {
   const [trendingTags, setTrendingTags] = useState<string[]>([])
   const loadingRef = useRef(false)
   const observerTarget = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const startY = useRef<number>(0)
+  const isPulling = useRef<boolean>(false)
   
   const [isRefreshing, setIsRefreshing] = useState(false)
   const pullDistance = useSharedValue(0)
@@ -119,8 +122,8 @@ export default function CommunityView(): JSX.Element {
   const mainTabsTranslateY = useSharedValue(20)
   
   useEffect(() => {
-    mainTabsOpacity.value = withTiming(1, { ...timingConfigs.smooth, delay: 100 })
-    mainTabsTranslateY.value = withTiming(0, { ...timingConfigs.smooth, delay: 100 })
+    mainTabsOpacity.value = withTiming(1, timingConfigs.smooth)
+    mainTabsTranslateY.value = withTiming(0, timingConfigs.smooth)
   }, [mainTabsOpacity, mainTabsTranslateY])
   
   const mainTabsStyle = useAnimatedStyle(() => {
@@ -161,6 +164,166 @@ export default function CommunityView(): JSX.Element {
   useEffect(() => {
     void loadLostFoundAlerts();
   }, [loadLostFoundAlerts]);
+
+  const loadFeed = useCallback(async (loadMore = false) => {
+    if (loadingRef.current) return
+    
+    try {
+      loadingRef.current = true
+      setLoading(true)
+      
+      const { userService } = await import('@/lib/user-service')
+      const user = await userService.user()
+      const filters: PostFilters & { limit?: number; cursor?: string } = {
+        limit: 20,
+        ...(loadMore && cursor ? { cursor } : {})
+      }
+
+      const response = await communityAPI.queryFeed(filters, user?.id)
+      
+      // Filter posts by follow relationships if "following" tab is selected
+      let filteredPosts = response.posts
+      if (feedTab === 'following') {
+        if (user) {
+          filteredPosts = await filterPostsByFollows<Post>(response.posts, user.id)
+        }
+      }
+      
+      if (loadMore) {
+        setPosts((currentPosts) => [...(Array.isArray(currentPosts) ? currentPosts : []), ...filteredPosts])
+      } else {
+        setPosts(filteredPosts)
+      }
+      
+      setHasMore(!!response.nextCursor)
+      setCursor(response.nextCursor)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to load feed', err, { action: 'loadFeed', feedTab })
+    } finally {
+      setLoading(false)
+      loadingRef.current = false
+    }
+  }, [feedTab, cursor])
+
+  const loadAdoptionProfiles = useCallback(async (loadMore = false) => {
+    if (adoptionLoadingRef.current) return
+    
+    try {
+      adoptionLoadingRef.current = true
+      setAdoptionLoading(true)
+      
+      const response = await adoptionApi.getAdoptionProfiles({ limit: 12 })
+      
+      if (loadMore) {
+        setAdoptionProfiles((currentProfiles) => [...(Array.isArray(currentProfiles) ? currentProfiles : []), ...(Array.isArray(response.profiles) ? response.profiles.map((l: AdoptionProfile): AdoptionProfile => ({
+          _id: l._id,
+          petId: l.petId,
+          petName: l.petName,
+          petPhoto: l.petPhoto,
+          breed: l.breed,
+          age: l.age,
+          gender: l.gender,
+          size: l.size,
+          location: l.location,
+          shelterId: l.shelterId,
+          shelterName: l.shelterName,
+          status: l.status,
+          description: l.description,
+          healthStatus: l.healthStatus,
+          vaccinated: l.vaccinated,
+          spayedNeutered: l.spayedNeutered,
+          goodWithKids: l.goodWithKids,
+          goodWithPets: l.goodWithPets,
+          energyLevel: l.energyLevel,
+          ...(l.specialNeeds && { specialNeeds: l.specialNeeds }),
+          adoptionFee: l.adoptionFee,
+          postedDate: l.postedDate,
+          personality: l.personality,
+          photos: l.photos,
+          ...(l.videoUrl && { videoUrl: l.videoUrl }),
+          contactEmail: l.contactEmail,
+          ...(l.contactPhone && { contactPhone: l.contactPhone }),
+          ...(l.applicationUrl && { applicationUrl: l.applicationUrl })
+        })) : [])])
+      } else {
+        setAdoptionProfiles(Array.isArray(response.profiles) ? response.profiles.map((l: AdoptionProfile): AdoptionProfile => ({
+          _id: l._id,
+          petId: l.petId,
+          petName: l.petName,
+          petPhoto: l.petPhoto,
+          breed: l.breed,
+          age: l.age,
+          gender: l.gender,
+          size: l.size,
+          location: l.location,
+          shelterId: l.shelterId,
+          shelterName: l.shelterName,
+          status: l.status,
+          description: l.description,
+          healthStatus: l.healthStatus,
+          vaccinated: l.vaccinated,
+          spayedNeutered: l.spayedNeutered,
+          goodWithKids: l.goodWithKids,
+          goodWithPets: l.goodWithPets,
+          energyLevel: l.energyLevel,
+          ...(l.specialNeeds && { specialNeeds: l.specialNeeds }),
+          adoptionFee: l.adoptionFee,
+          postedDate: l.postedDate,
+          personality: l.personality,
+          photos: l.photos,
+          ...(l.videoUrl && { videoUrl: l.videoUrl }),
+          contactEmail: l.contactEmail,
+          ...(l.contactPhone && { contactPhone: l.contactPhone }),
+          ...(l.applicationUrl && { applicationUrl: l.applicationUrl })
+        })) : [])
+      }
+      
+      setAdoptionHasMore(!!response.nextCursor)
+      setAdoptionCursor(response.nextCursor)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to load adoption profiles', err, { action: 'loadAdoptionProfiles' })
+    } finally {
+      setAdoptionLoading(false)
+      adoptionLoadingRef.current = false
+    }
+  }, [])
+
+  const loadTrendingTags = useCallback(async () => {
+    try {
+      const { userService } = await import('@/lib/user-service')
+      const user = await userService.user()
+      const response = await communityAPI.queryFeed({ limit: 100 }, user?.id)
+      const allTags: string[] = []
+      
+      if (Array.isArray(response.posts)) {
+        response.posts.forEach((post: Post) => {
+          if (post.tags && Array.isArray(post.tags)) {
+            allTags.push(...post.tags)
+          }
+        })
+      }
+      
+      // Count tag frequency
+      const tagCounts = allTags.reduce((acc, tag) => {
+        acc[tag] = (acc[tag] ?? 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+      
+      // Sort by frequency and take top 10
+      const sortedTags = Object.entries(tagCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([tag]) => tag)
+      
+      setTrendingTags(sortedTags)
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to load trending tags', err, { action: 'loadTrendingTags' })                                                                         
+      setTrendingTags([])
+    }
+  }, [])
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
     const container = containerRef.current
@@ -256,7 +419,7 @@ export default function CommunityView(): JSX.Element {
     }
 
     return () => observer.disconnect()
-  }, [hasMore, loading, activeTab])
+  }, [hasMore, loading, activeTab, loadFeed])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -274,165 +437,7 @@ export default function CommunityView(): JSX.Element {
     }
 
     return () => observer.disconnect()
-  }, [adoptionHasMore, adoptionLoading, activeTab])
-
-  const loadFeed = async (loadMore = false) => {
-    if (loadingRef.current) return
-    
-    try {
-      loadingRef.current = true
-      setLoading(true)
-      
-      const { userService } = await import('@/lib/user-service')
-      const user = await userService.user()
-      const filters: PostFilters & { limit?: number; cursor?: string } = {
-        limit: 20,
-        ...(loadMore && cursor ? { cursor } : {})
-      }
-
-      const response = await communityAPI.queryFeed(filters, user?.id)
-      
-      // Filter posts by follow relationships if "following" tab is selected
-      let filteredPosts = response.posts
-      if (feedTab === 'following') {
-        if (user) {
-          filteredPosts = await filterPostsByFollows<Post>(response.posts, user.id)
-        }
-      }
-      
-      if (loadMore) {
-        setPosts((currentPosts) => [...(Array.isArray(currentPosts) ? currentPosts : []), ...filteredPosts])
-      } else {
-        setPosts(filteredPosts)
-      }
-      
-      setHasMore(!!response.nextCursor)
-      setCursor(response.nextCursor)
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load feed', err, { action: 'loadFeed', feedTab })
-    } finally {
-      setLoading(false)
-      loadingRef.current = false
-    }
-  }
-
-  const loadAdoptionProfiles = async (loadMore = false) => {
-    if (adoptionLoadingRef.current) return
-    
-    try {
-      adoptionLoadingRef.current = true
-      setAdoptionLoading(true)
-      
-      const response = await adoptionApi.getAdoptionProfiles({ limit: 12 })
-      
-      if (loadMore) {
-        setAdoptionProfiles((currentProfiles) => [...(Array.isArray(currentProfiles) ? currentProfiles : []), ...(Array.isArray(response.profiles) ? response.profiles.map((l: AdoptionProfile): AdoptionProfile => ({
-          _id: l._id,
-          petId: l.petId,
-          petName: l.petName,
-          petPhoto: l.petPhoto,
-          breed: l.breed,
-          age: l.age,
-          gender: l.gender,
-          size: l.size,
-          location: l.location,
-          shelterId: l.shelterId,
-          shelterName: l.shelterName,
-          status: l.status,
-          description: l.description,
-          healthStatus: l.healthStatus,
-          vaccinated: l.vaccinated,
-          spayedNeutered: l.spayedNeutered,
-          goodWithKids: l.goodWithKids,
-          goodWithPets: l.goodWithPets,
-          energyLevel: l.energyLevel,
-          ...(l.specialNeeds && { specialNeeds: l.specialNeeds }),
-          adoptionFee: l.adoptionFee,
-          postedDate: l.postedDate,
-          personality: l.personality,
-          photos: l.photos,
-          ...(l.videoUrl && { videoUrl: l.videoUrl }),
-          contactEmail: l.contactEmail,
-          ...(l.contactPhone && { contactPhone: l.contactPhone }),
-          ...(l.applicationUrl && { applicationUrl: l.applicationUrl })
-        })) : [])])
-      } else {
-        setAdoptionProfiles(Array.isArray(response.profiles) ? response.profiles.map((l: AdoptionProfile): AdoptionProfile => ({
-          _id: l._id,
-          petId: l.petId,
-          petName: l.petName,
-          petPhoto: l.petPhoto,
-          breed: l.breed,
-          age: l.age,
-          gender: l.gender,
-          size: l.size,
-          location: l.location,
-          shelterId: l.shelterId,
-          shelterName: l.shelterName,
-          status: l.status,
-          description: l.description,
-          healthStatus: l.healthStatus,
-          vaccinated: l.vaccinated,
-          spayedNeutered: l.spayedNeutered,
-          goodWithKids: l.goodWithKids,
-          goodWithPets: l.goodWithPets,
-          energyLevel: l.energyLevel,
-          ...(l.specialNeeds && { specialNeeds: l.specialNeeds }),
-          adoptionFee: l.adoptionFee,
-          postedDate: l.postedDate,
-          personality: l.personality,
-          photos: l.photos,
-          ...(l.videoUrl && { videoUrl: l.videoUrl }),
-          contactEmail: l.contactEmail,
-          ...(l.contactPhone && { contactPhone: l.contactPhone }),
-          ...(l.applicationUrl && { applicationUrl: l.applicationUrl })
-        })) : [])
-      }
-      
-      setAdoptionHasMore(!!response.nextCursor)
-      setAdoptionCursor(response.nextCursor)
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load adoption profiles', err, { action: 'loadAdoptionProfiles' })
-    } finally {
-      setAdoptionLoading(false)
-      adoptionLoadingRef.current = false
-    }
-  }
-
-  const loadTrendingTags = useCallback(async () => {
-    try {
-      const response = await communityAPI.getFeed({ mode: feedTab, limit: 100 })
-      const allTags: string[] = []
-      
-      if (Array.isArray(response.posts)) {
-        response.posts.forEach(post => {
-          if (post.tags && Array.isArray(post.tags)) {
-            allTags.push(...post.tags)
-          }
-        })
-      }
-      
-      // Count tag frequency
-      const tagCounts = allTags.reduce((acc, tag) => {
-        acc[tag] = (acc[tag] ?? 0) + 1
-        return acc
-      }, {} as Record<string, number>)
-      
-      // Sort by frequency and take top 10
-      const sortedTags = Object.entries(tagCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
-        .map(([tag]) => tag)
-      
-      setTrendingTags(sortedTags)
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load trending tags', err, { action: 'loadTrendingTags' })                                                                         
-      setTrendingTags([])
-    }
-  }, [feedTab])
+  }, [adoptionHasMore, adoptionLoading, activeTab, loadAdoptionProfiles])
 
   const handleAuthorClick = (authorId: string): void => {
     logger.info('View author profile', { action: 'viewAuthorProfile', authorId })
@@ -441,7 +446,7 @@ export default function CommunityView(): JSX.Element {
   const handlePostCreated = useCallback(() => {
     void loadFeed()
     void loadTrendingTags()
-  }, [feedTab])
+  }, [loadFeed, loadTrendingTags])
 
   const handleMainTabChange = (value: string) => {
     setActiveTab(value as 'feed' | 'adoption')
@@ -519,6 +524,10 @@ export default function CommunityView(): JSX.Element {
       loadingRotation.value = 0
     }
   }, [loading, adoptionLoading, loadingRotation])
+  
+  const loadingSpinnerStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${loadingRotation.value}deg` }],
+  })) as AnimatedStyle
   
   const emptyStateStyle = useAnimatedStyle(() => ({
     transform: [

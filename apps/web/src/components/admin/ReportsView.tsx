@@ -11,7 +11,7 @@ import { useStorage } from '@/hooks/useStorage'
 import { generateULID } from '@/lib/utils'
 import type { Icon } from '@phosphor-icons/react'
 import { CheckCircle, Clock, Eye, Flag, Warning, XCircle } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -188,9 +188,9 @@ export default function ReportsView() {
           </Tabs>
 
           <div className="space-y-4">
-            <AnimatePresence mode="popLayout">
+            <Presence mode="popLayout">
               {filteredReports.map((report, index) => (
-                <motion.div
+                <MotionView
                   key={report.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -245,9 +245,9 @@ export default function ReportsView() {
                       )}
                     </CardContent>
                   </Card>
-                </motion.div>
+                </MotionView>
               ))}
-            </AnimatePresence>
+            </Presence>
 
             {filteredReports.length === 0 && (
               <Card className="p-12">

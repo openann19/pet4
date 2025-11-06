@@ -16,7 +16,7 @@ import type { Pet } from '@/lib/types'
 import { VideoCompressor, type CompressionProgress, type VideoMetadata } from '@/lib/video-compression'
 import type { Icon } from '@phosphor-icons/react'
 import { Camera, CheckCircle, FilmSlate, Globe, Lock, Pause, Play, Sparkle, Tag, Users, VideoCamera, WarningCircle, X } from '@phosphor-icons/react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -378,9 +378,9 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
           </div>
 
           {/* Image Preview */}
-          <AnimatePresence>
+          <Presence>
             {images.length > 0 && (
-              <motion.div
+              <MotionView
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
@@ -392,7 +392,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {images.map((img, index) => (
-                    <motion.div
+                    <MotionView
                       key={index}
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
@@ -410,17 +410,17 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                       >
                         <X size={16} />
                       </button>
-                    </motion.div>
+                    </MotionView>
                   ))}
                 </div>
-              </motion.div>
+              </MotionView>
             )}
-          </AnimatePresence>
+          </Presence>
 
           {/* Video Preview */}
-          <AnimatePresence>
+          <Presence>
             {videoState.previewUrl && (
-              <motion.div
+              <MotionView
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
@@ -451,7 +451,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                 </div>
 
                 {videoState.isCompressing && videoState.compressionProgress && (
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2"
@@ -468,11 +468,11 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                     <div className="text-xs text-muted-foreground">
                       Stage: {videoState.compressionProgress.stage}
                     </div>
-                  </motion.div>
+                  </MotionView>
                 )}
 
                 {videoState.error && (
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 flex items-start gap-2"
@@ -481,7 +481,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                     <div className="text-sm text-destructive">
                       {videoState.error}
                     </div>
-                  </motion.div>
+                  </MotionView>
                 )}
 
                 <div className="relative aspect-video rounded-lg overflow-hidden bg-black group">
@@ -500,7 +500,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                     className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
                     disabled={videoState.isCompressing}
                   >
-                    <motion.div
+                    <MotionView
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className="bg-white/90 hover:bg-white rounded-full p-4 shadow-2xl"
@@ -510,7 +510,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                       ) : (
                         <Play size={32} weight="fill" className="text-black" />
                       )}
-                    </motion.div>
+                    </MotionView>
                   </button>
 
                   <button
@@ -530,14 +530,14 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </MotionView>
             )}
-          </AnimatePresence>
+          </Presence>
 
           {/* Media Options Popup */}
-          <AnimatePresence>
+          <Presence>
             {showMediaOptions && (
-              <motion.div
+              <MotionView
                 initial={{ opacity: 0, scale: 0.95, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
@@ -577,7 +577,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                           { value: 'portrait', label: 'Portrait', icon: '📱', desc: '3:4' },
                           { value: 'landscape', label: 'Landscape', icon: '🖼️', desc: '4:3' }
                         ].map(({ value, label, icon, desc }) => (
-                          <motion.button
+                          <MotionView as="button"
                             key={value}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -591,7 +591,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                             <div className="text-xl mb-0.5">{icon}</div>
                             <div className="text-xs font-medium">{label}</div>
                             {desc && <div className="text-xs text-muted-foreground">{desc}</div>}
-                          </motion.button>
+                          </MotionView>
                         ))}
                       </div>
                     </div>
@@ -639,9 +639,9 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                     </Button>
                   </TabsContent>
                 </Tabs>
-              </motion.div>
+              </MotionView>
             )}
-          </AnimatePresence>
+          </Presence>
 
           {/* Tag pets */}
           {userPets && userPets.length > 0 && (

@@ -45,6 +45,6 @@ export default function GlassCard({
       <div className="relative overflow-hidden rounded-3xl">
         {children}
       </div>
-    </motion.div>
+    </MotionView>
   )
 }

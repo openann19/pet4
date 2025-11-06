@@ -47,14 +47,36 @@ const REPLACEMENTS = [
     description: 'motion import',
   },
   {
+    from: /import\s*{\s*motion\s*,\s*([^}]+)\s*}\s*from\s*['"]@petspark\/motion['"]/g,
+    to: (match) => {
+      // Replace 'motion' with 'MotionView' in imports from @petspark/motion
+      return match.replace(/\bmotion\b/, 'MotionView');
+    },
+    isFunction: true,
+    replaceFn: (match) => {
+      return match.replace(/\bmotion\b/, 'MotionView');
+    },
+    description: 'motion → MotionView in @petspark/motion imports',
+  },
+  {
     from: /<motion\.div/g,
     to: '<MotionView',
     description: 'motion.div → MotionView',
   },
   {
+    from: /<\/motion\.div>/g,
+    to: '</MotionView>',
+    description: '</motion.div> → </MotionView>',
+  },
+  {
     from: /<motion\.span/g,
     to: '<MotionText',
     description: 'motion.span → MotionText',
+  },
+  {
+    from: /<\/motion\.span>/g,
+    to: '</MotionText>',
+    description: '</motion.span> → </MotionText>',
   },
   {
     from: /<motion\.(button|a|section|article|header|footer|nav|main|aside)/g,

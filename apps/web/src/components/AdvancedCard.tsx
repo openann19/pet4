@@ -89,6 +89,6 @@ export default function AdvancedCard({
       )}
       
       {children}
-    </motion.div>
+    </MotionView>
   )
 }

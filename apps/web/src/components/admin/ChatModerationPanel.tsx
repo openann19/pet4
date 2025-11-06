@@ -15,7 +15,7 @@ import type { MessageReport } from '@/lib/chat-types'
 import { createLogger } from '@/lib/logger'
 import type { User } from '@/lib/user-service'
 import { Check, Eye, Flag, X } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -237,7 +237,7 @@ export default function ChatModerationPanel() {
       </Tabs>
 
       {selectedReport && (
-        <motion.div
+        <MotionView
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/95 backdrop-blur-sm"
@@ -297,7 +297,7 @@ export default function ChatModerationPanel() {
               </div>
             </div>
           </Card>
-        </motion.div>
+        </MotionView>
       )}
     </div>
   )

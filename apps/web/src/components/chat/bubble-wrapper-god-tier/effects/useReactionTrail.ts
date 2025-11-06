@@ -10,6 +10,7 @@ import {
   type SharedValue
 } from 'react-native-reanimated'
 import { useCallback, useState, useEffect } from 'react'
+import { makeRng } from '@petspark/shared'
 
 export interface ReactionTrailParticle {
   id: string
@@ -59,16 +60,20 @@ export function useReactionTrail(
 
       const particlesToCreate: ReactionTrailParticle[] = []
       const emojiToUse = trailEmoji ?? emoji
+      
+      // Create seeded RNG for deterministic particle generation
+      const seed = Date.now() + fromX + fromY + toX + toY
+      const rng = makeRng(seed)
 
       for (let i = 0; i < trailLength; i++) {
         const progress = i / (trailLength - 1)
         const x = fromX + (toX - fromX) * progress
         const y = fromY + (toY - fromY) * progress
-        const offsetX = (Math.random() - 0.5) * 30
-        const offsetY = (Math.random() - 0.5) * 30
+        const offsetX = (rng() - 0.5) * 30
+        const offsetY = (rng() - 0.5) * 30
 
         const particle: ReactionTrailParticle = {
-          id: `${Date.now()}-${i}-${Math.random()}`,
+          id: `${Date.now()}-${i}-${rng()}`,
           x: useSharedValue(x + offsetX),
           y: useSharedValue(y + offsetY),
           scale: useSharedValue(0),
@@ -119,14 +124,14 @@ export function useReactionTrail(
 
         particle.rotation.value = withDelay(
           delay,
-          withTiming(Math.random() * 360, {
+          withTiming(rng() * 360, {
             duration: particleDuration,
             easing: Easing.linear
           })
         )
 
-        const finalX = toX + (Math.random() - 0.5) * 20
-        const finalY = toY + (Math.random() - 0.5) * 20
+        const finalX = toX + (rng() - 0.5) * 20
+        const finalY = toY + (rng() - 0.5) * 20
 
         particle.x.value = withDelay(
           delay,

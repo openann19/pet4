@@ -4,6 +4,7 @@ export * from './motion'
 export * from './rng'
 export * from './types/stories-types'
 export * from './types/pet-types'
+export * from './types/admin'
 export * from './utils/stories-utils'
 export * from './storage/StorageAdapter'
 

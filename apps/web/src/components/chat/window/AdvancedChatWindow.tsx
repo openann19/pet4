@@ -22,11 +22,17 @@ import { useStorage } from '@/hooks/useStorage'
 import { useScrollFabMagnetic } from '@/effects/chat/ui/use-scroll-fab-magnetic'
 import { Button } from '@/components/ui/button'
 import { PaperPlaneRight } from '@phosphor-icons/react'
+import { chatApi } from '@/api/chat-api'
 
 import { ChatHeader } from './ChatHeader'
 import { MessageList } from './MessageList'
+import { VirtualMessageList } from './VirtualMessageList'
 import { ChatInputBar } from './ChatInputBar'
 import { Overlays } from './Overlays'
+import { ChatErrorBoundary } from './ChatErrorBoundary'
+import { AnnounceNewMessage, AnnounceTyping } from './LiveRegions'
+import { useOutbox } from '@petspark/chat-core'
+import { flags } from '@petspark/config'
 import { AnimatedView } from '@/effects/reanimated/animated-view'
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
 import { LiquidDots } from '../LiquidDots'
@@ -59,8 +65,20 @@ export default function AdvancedChatWindow({
   const [previousBadgeCount, setPreviousBadgeCount] = useState(0)
   const [burstSeed, setBurstSeed] = useState(0)
   const [confettiSeed, setConfettiSeed] = useState(0)
+  const [lastIncomingText, setLastIncomingText] = useState<string | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  const { enqueue } = useOutbox({
+    sendFn: async (payload: unknown) => {
+      const p = payload as { messageId: string; roomId: string; content: string; senderId: string; type: string; timestamp: string }
+      await chatApi.sendMessage(p.roomId, {
+        type: p.type as ChatMessage['type'],
+        content: p.content,
+      })
+    },
+  })
 
   const { typingUsers, handleInputChange: typingChange, handleMessageSend: typingSend } =
     useTypingManager({
@@ -69,6 +87,13 @@ export default function AdvancedChatWindow({
       currentUserName,
       realtimeClient: realtime,
     })
+
+  useEffect(() => {
+    const lastMsg = messages?.[messages.length - 1]
+    if (lastMsg && lastMsg.senderId !== currentUserId && lastMsg.content) {
+      setLastIncomingText(lastMsg.content)
+    }
+  }, [messages, currentUserId])
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -142,6 +167,17 @@ export default function AdvancedChatWindow({
     setShowStickers(false)
     setShowTemplates(false)
     typingSend()
+
+    enqueue(msg.id, {
+      messageId: msg.id,
+      roomId: room.id,
+      content: msg.content,
+      senderId: currentUserId,
+      type: msg.type,
+      timestamp: msg.timestamp,
+    })
+
+    inputRef.current?.focus()
 
     toast.success('Message sent!', { duration: 1500, position: 'top-center' })
 
@@ -235,9 +271,15 @@ export default function AdvancedChatWindow({
     previousBadgeCount,
   })
 
+  const useVirtualization = flags().chat.virtualization
+
   return (
     <div className="flex flex-col h-full relative">
-      <ChatHeader
+      <a href="#composer" className="sr-only focus:not-sr-only focus:absolute focus:p-2 focus:z-50 focus:bg-primary focus:text-primary-foreground focus:rounded">
+        Skip to composer
+      </a>
+      <ChatErrorBoundary>
+        <ChatHeader
         room={room}
         {...(onBack ? { onBack } : {})}
         awayMode={awayMode}
@@ -247,18 +289,36 @@ export default function AdvancedChatWindow({
             <TypingIndicator typingUsers={typingUsers} />
           ) : null
         }
-      />
+        />
+      </ChatErrorBoundary>
 
-      <MessageList
-        messages={messages || []}
-        currentUserId={currentUserId}
-        typingUsers={typingUsers}
-        onReaction={onReaction}
-        onTranslate={onTranslate}
-        scrollRef={scrollRef}
-      />
+      <ChatErrorBoundary>
+        {useVirtualization ? (
+          <VirtualMessageList
+            messages={messages || []}
+            currentUserId={currentUserId}
+            typingUsers={typingUsers}
+            onReaction={onReaction}
+            onTranslate={onTranslate}
+          />
+        ) : (
+          <MessageList
+            messages={messages || []}
+            currentUserId={currentUserId}
+            typingUsers={typingUsers}
+            onReaction={onReaction}
+            onTranslate={onTranslate}
+            scrollRef={scrollRef}
+          />
+        )}
+      </ChatErrorBoundary>
 
-      <Overlays burstSeed={burstSeed} confettiSeed={confettiSeed} roomId={room.id} />
+      <AnnounceNewMessage lastText={lastIncomingText} />
+      <AnnounceTyping userName={typingUsers[0]?.userName ?? null} />
+
+      <ChatErrorBoundary>
+        <Overlays burstSeed={burstSeed} confettiSeed={confettiSeed} roomId={room.id} />
+      </ChatErrorBoundary>
 
       {scrollFabVisible && (
         <div className="fixed bottom-24 right-6 z-40">
@@ -277,12 +337,14 @@ export default function AdvancedChatWindow({
         </div>
       )}
 
-      <ChatInputBar
-        inputValue={inputValue}
-        setInputValue={(v) => {
-          setInputValue(v)
-          typingChange(v)
-        }}
+      <ChatErrorBoundary>
+        <ChatInputBar
+          inputValue={inputValue}
+          setInputValue={(v) => {
+            setInputValue(v)
+            typingChange(v)
+          }}
+          inputRef={inputRef}
         showStickers={showStickers}
         setShowStickers={setShowStickers}
         showTemplates={showTemplates}
@@ -329,8 +391,9 @@ export default function AdvancedChatWindow({
           if (lastMessage && lastMessage.senderId !== currentUserId) {
             onReaction(lastMessage.id, emoji)
           }
-        }}
-      />
+          }}
+        />
+      </ChatErrorBoundary>
     </div>
   )
 }

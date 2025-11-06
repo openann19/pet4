@@ -15,10 +15,22 @@ export type { MessageItemProps } from './MessageItem'
 
 export { MessageList } from './MessageList'
 export type { MessageListProps } from './MessageList'
+export { VirtualMessageList } from './VirtualMessageList'
+export type { VirtualMessageListProps } from './VirtualMessageList'
+export { ChatErrorBoundary } from './ChatErrorBoundary'
+export type { ChatErrorBoundaryProps } from './ChatErrorBoundary'
+export { AnnounceNewMessage, AnnounceTyping } from './LiveRegions'
+export type { AnnounceNewMessageProps, AnnounceTypingProps } from './LiveRegions'
 
 export { Overlays } from './Overlays'
 export type { OverlaysProps } from './Overlays'
 
 export { ChatInputBar } from './ChatInputBar'
 export type { ChatInputBarProps } from './ChatInputBar'
+
+export { ChatErrorBoundary } from './ChatErrorBoundary'
+export type { ChatErrorBoundaryProps } from './ChatErrorBoundary'
+
+export { AnnounceNewMessage, AnnounceTyping } from './LiveRegions'
+export type { AnnounceNewMessageProps, AnnounceTypingProps } from './LiveRegions'
 

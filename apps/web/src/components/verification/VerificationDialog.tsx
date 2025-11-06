@@ -31,7 +31,7 @@ import {
   UploadSimple,
   XCircle
 } from '@phosphor-icons/react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { DocumentUploadCard } from './DocumentUploadCard'
@@ -232,14 +232,14 @@ export function VerificationDialog({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <motion.div
+              <MotionView
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15 }}
                 className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20"
               >
                 <ShieldCheck size={24} weight="fill" className="text-primary" />
-              </motion.div>
+              </MotionView>
               <div>
                 <DialogTitle className="text-2xl">Pet Owner Verification</DialogTitle>
                 <DialogDescription>
@@ -254,7 +254,7 @@ export function VerificationDialog({
         <ScrollArea className="flex-1 pr-4">
           <div className="space-y-6 py-4">
             {!activeRequest && (
-              <motion.div
+              <MotionView
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
@@ -293,11 +293,11 @@ export function VerificationDialog({
                   <Certificate size={20} weight="bold" className="mr-2" />
                   Start Verification Process
                 </Button>
-              </motion.div>
+              </MotionView>
             )}
 
             {activeRequest && (
-              <motion.div
+              <MotionView
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="space-y-6"
@@ -317,7 +317,7 @@ export function VerificationDialog({
                 </div>
 
                 {activeRequest.status === 'verified' && activeRequest.trustScore && (
-                  <motion.div
+                  <MotionView
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     className="p-6 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30"
@@ -338,11 +338,11 @@ export function VerificationDialog({
                         </p>
                       )}
                     </div>
-                  </motion.div>
+                  </MotionView>
                 )}
 
                 {activeRequest.status === 'rejected' && (
-                  <motion.div
+                  <MotionView
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     className="p-4 rounded-xl bg-destructive/10 border border-destructive/30"
@@ -356,7 +356,7 @@ export function VerificationDialog({
                         </p>
                       </div>
                     </div>
-                  </motion.div>
+                  </MotionView>
                 )}
 
                 <div className="space-y-3">
@@ -443,7 +443,7 @@ export function VerificationDialog({
                     </Button>
                   </div>
                 )}
-              </motion.div>
+              </MotionView>
             )}
           </div>
         </ScrollArea>

@@ -29,6 +29,8 @@ import { haptics } from '@/lib/haptics'
 import type { Playdate } from '@/lib/playdate-types'
 import '@/lib/profile-generator-helper'; // Expose generateProfiles to window
 import type { Match, Pet, SwipeAction } from '@/lib/types'
+import HoloBackground from '@/components/chrome/HoloBackground'
+import GlowTrail from '@/effects/cursor/GlowTrail'
 import { ChatCircle, Heart, MapPin, Moon, Palette, ShieldCheck, Sparkle, Sun, Translate, User, Users } from '@phosphor-icons/react'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
@@ -230,6 +232,8 @@ function App() {
                     {appState === 'main' && (
     <div className="min-h-screen pb-20 sm:pb-24 bg-background text-foreground relative overflow-hidden">                                                        
       {/* Ultra-premium ambient background with layered animated gradients */}
+      <HoloBackground intensity={0.6} />
+      <GlowTrail />
       
       <SeedDataInitializer />
       

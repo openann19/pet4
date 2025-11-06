@@ -25,21 +25,19 @@ import { formatDistance, getDistanceBetweenLocations, parseLocation } from '@/li
 import { haptics } from '@/lib/haptics'
 import { createLogger } from '@/lib/logger'
 import { generateMatchReasoning } from '@/lib/matching'
-import type { Story } from '@/lib/stories-types'
+import type { Story } from '@petspark/shared'
+import type { Story as LocalStory } from '@/lib/stories-types'
 import type { Match, Pet, SwipeAction } from '@/lib/types'
 import type { VerificationRequest } from '@/lib/verification-types'
 import { BookmarkSimple, ChartBar, Heart, Info, MapPin, NavigationArrow, PawPrint, Sparkle, SquaresFour, X } from '@phosphor-icons/react'
-import { useEffect, useState, useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence, withDelay, interpolate, Extrapolation } from 'react-native-reanimated'
+import { useEffect, useState } from 'react'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence, withDelay } from 'react-native-reanimated'
 import { AnimatedView } from '@/effects/reanimated/animated-view'
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 import { Presence } from '@petspark/motion'
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import { usePageTransition } from '@/effects/reanimated/use-page-transition'
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
 import { toast } from 'sonner'
-import { AnimatedBadge } from '@/components/enhanced/AnimatedBadge'
 
 const logger = createLogger('DiscoverView')
 
@@ -90,8 +88,6 @@ export default function DiscoverView() {
     animatedStyle: swipeAnimatedStyle,
     likeOpacityStyle,
     passOpacityStyle,
-    isDragging,
-    direction,
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
@@ -394,6 +390,11 @@ export default function DiscoverView() {
     transform: [{ scale: noMorePulseScale.value }]
   })) as AnimatedStyle
 
+  const noMoreRingStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: noMorePulseScale.value * 1.2 }],
+    opacity: noMorePulseScale.value * 0.5
+  })) as AnimatedStyle
+
   // Animation hooks for swipe hint
   const swipeHintOpacity = useSharedValue(0)
   const swipeHintY = useSharedValue(0)
@@ -446,56 +447,6 @@ export default function DiscoverView() {
 
   const swipeHintRightStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: swipeHintRightX.value }]
-  })) as AnimatedStyle
-
-  // Animation hooks for swipe hint
-  const swipeHintOpacity = useSharedValue(0)
-  const swipeHintY = useSharedValue(0)
-  const swipeHintLeftX = useSharedValue(0)
-  const swipeHintRightX = useSharedValue(0)
-
-  useEffect(() => {
-    if (showSwipeHint && currentIndex === 0) {
-      swipeHintOpacity.value = withTiming(1, timingConfigs.smooth)
-      swipeHintY.value = withRepeat(
-        withSequence(
-          withTiming(10, { duration: 750 }),
-          withTiming(0, { duration: 750 })
-        ),
-        -1,
-        true
-      )
-      swipeHintLeftX.value = withRepeat(
-        withSequence(
-          withTiming(-10, { duration: 750 }),
-          withTiming(0, { duration: 750 })
-        ),
-        -1,
-        true
-      )
-      swipeHintRightX.value = withRepeat(
-        withSequence(
-          withTiming(10, { duration: 750 }),
-          withTiming(0, { duration: 750 })
-        ),
-        -1,
-        true
-      )
-    } else {
-      swipeHintOpacity.value = withTiming(0, timingConfigs.smooth)
-    }
-  }, [showSwipeHint, currentIndex, swipeHintOpacity, swipeHintY, swipeHintLeftX, swipeHintRightX])
-
-  const swipeHintContainerStyle = useAnimatedStyle(() => ({
-    opacity: swipeHintOpacity.value
-  })) as AnimatedStyle
-
-  const swipeHintYStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: swipeHintY.value }]
-  })) as AnimatedStyle
-
-  const swipeHintLeftStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: swipeHintLeftX.value }]
   })) as AnimatedStyle
 
   // Animation hooks for pass button icon rotation
@@ -636,8 +587,10 @@ export default function DiscoverView() {
           </AnimatedView>
           <AnimatedView
             style={emptyStatePulseStyle}
-            className="absolute inset-0 rounded-full bg-linear-to-br from-primary/20 to-accent/20"                                                              
-          />
+            className="absolute inset-0 rounded-full bg-linear-to-br from-primary/20 to-accent/20"
+          >
+            {null}
+          </AnimatedView>
         </AnimatedView>
         <AnimatedView
           style={emptyStateTitleStyle}
@@ -669,8 +622,10 @@ export default function DiscoverView() {
           </AnimatedView>
           <AnimatedView
             style={noMoreRingStyle}
-            className="absolute inset-0 rounded-full bg-linear-to-br from-primary/20 to-accent/20"                                                              
-          />
+            className="absolute inset-0 rounded-full bg-linear-to-br from-primary/20 to-accent/20"
+          >
+            {null}
+          </AnimatedView>
         </AnimatedView>
         <AnimatedView
           style={emptyStateTitleStyle}
@@ -693,11 +648,11 @@ export default function DiscoverView() {
   }
 
   const handleStoryCreated = (story: Story) => {
-    addStory(story)
+    addStory(story as LocalStory)
   }
 
   const handleStoryUpdate = (updatedStory: Story) => {
-    updateStory(updatedStory.id, updatedStory)
+    updateStory(updatedStory.id, updatedStory as Partial<LocalStory>)
   }
 
   return (
@@ -873,7 +828,9 @@ export default function DiscoverView() {
                       className="absolute inset-0 bg-linear-to-br from-primary/25 via-accent/15 to-secondary/20 z-10 pointer-events-none"                       
                       style={useAnimatedStyle(() => ({ opacity: 0 })) as AnimatedStyle}
                       onMouseEnter={() => {}}
-                    />
+                    >
+                      {null}
+                    </AnimatedView>
                     <img
                       src={currentPet.photo}
                       alt={currentPet.name}
@@ -900,7 +857,9 @@ export default function DiscoverView() {
                       <AnimatedView
                         className="absolute inset-0 rounded-full"
                         style={compatibilityGlowStyle}
-                      />
+                      >
+                        {null}
+                      </AnimatedView>
                     </AnimatedView>
                     <AnimatedView
                       className="absolute top-4 left-4 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl cursor-pointer transition-transform hover:scale-110 active:scale-90"
@@ -1041,7 +1000,9 @@ export default function DiscoverView() {
                         <AnimatedView
                           className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent"                                              
                           style={likeButtonShimmerStyle}
-                        />
+                        >
+                          {null}
+                        </AnimatedView>
                         <AnimatedView style={likeButtonHeartStyle}>
                           <Heart size={28} weight="fill" className="relative z-10 drop-shadow-2xl" />                                                           
                         </AnimatedView>

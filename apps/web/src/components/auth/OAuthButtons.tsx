@@ -4,7 +4,7 @@
  * Provides Google and Apple sign-in buttons with proper styling and accessibility.
  */
 
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 // Using inline SVGs for Google and Apple logos
 import { Button } from '@/components/ui/button'
 import { useApp } from '@/contexts/AppContext'
@@ -105,7 +105,7 @@ export default function OAuthButtons({
 
   return (
     <div className="space-y-3">
-      <motion.div
+      <MotionView
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -122,9 +122,9 @@ export default function OAuthButtons({
             {'Continue with Google'}
           </span>
         </Button>
-      </motion.div>
+      </MotionView>
 
-      <motion.div
+      <MotionView
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -140,7 +140,7 @@ export default function OAuthButtons({
             {t.auth?.signInWithApple || 'Continue with Apple'}
           </span>
         </Button>
-      </motion.div>
+      </MotionView>
     </div>
   )
 }

@@ -18,6 +18,7 @@ import { ModerationQueue } from '@/components/admin/ModerationQueue'
 import PerformanceMonitoring from '@/components/admin/PerformanceMonitoring'
 import ReportsView from '@/components/admin/ReportsView'
 import SettingsView from '@/components/admin/SettingsView'
+import SupportChatPanel from '@/components/admin/SupportChatPanel'
 import SystemMap from '@/components/admin/SystemMap'
 import UsersView from '@/components/admin/UsersView'
 import { VerificationReviewDashboard } from '@/components/admin/VerificationReviewDashboard'
@@ -25,7 +26,7 @@ import { SubscriptionAdminPanel } from '@/components/payments/SubscriptionAdminP
 import { Toaster } from '@/components/ui/sonner'
 import { useState } from 'react'
 
-type AdminView = 'dashboard' | 'reports' | 'users' | 'content' | 'verification' | 'settings' | 'map-settings' | 'audit' | 'performance' | 'system-map' | 'moderation' | 'content-moderation' | 'kyc' | 'api-config' | 'subscriptions' | 'community' | 'adoption' | 'adoption-applications' | 'adoption-listings' | 'lost-found' | 'live-streams' | 'business-config' | 'chat-moderation'
+type AdminView = 'dashboard' | 'reports' | 'users' | 'content' | 'verification' | 'settings' | 'map-settings' | 'audit' | 'performance' | 'system-map' | 'moderation' | 'content-moderation' | 'kyc' | 'api-config' | 'subscriptions' | 'community' | 'adoption' | 'adoption-applications' | 'adoption-listings' | 'lost-found' | 'live-streams' | 'business-config' | 'chat-moderation' | 'support-chat'
 
 interface AdminConsoleProps {
   onClose?: () => void
@@ -56,6 +57,7 @@ export default function AdminConsole({ onClose }: AdminConsoleProps) {
         {currentView === 'moderation' && <ModerationQueue />}
         {currentView === 'content-moderation' && <ContentModerationQueue />}
         {currentView === 'chat-moderation' && <ChatModerationPanel />}
+        {currentView === 'support-chat' && <SupportChatPanel />}
         {currentView === 'kyc' && <KYCManagement />}
         {currentView === 'audit' && <AuditLogView />}
         {currentView === 'settings' && <SettingsView />}

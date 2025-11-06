@@ -7,6 +7,14 @@ vi.mock('@/effects/chat/core/reduced-motion', () => ({
   getReducedMotionDuration: (base: number) => Math.min(120, base),
 }))
 
+// Mock seeded RNG
+vi.mock('@/effects/chat/core/seeded-rng', () => ({
+  createSeededRNG: () => ({
+    range: (min: number, max: number) => (min + max) / 2,
+    rangeInt: (min: number, max: number) => Math.floor((min + max) / 2),
+  }),
+}))
+
 describe('ConfettiBurst', () => {
   it('renders particles in reduced-motion mode', () => {
     const onComplete = vi.fn()

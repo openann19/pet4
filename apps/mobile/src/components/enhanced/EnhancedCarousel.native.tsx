@@ -6,6 +6,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import {
   View,
+  Text,
   StyleSheet,
   Dimensions,
   type ViewStyle,
@@ -24,11 +25,19 @@ import {
   Gesture,
 } from 'react-native-gesture-handler'
 import * as Haptics from 'expo-haptics'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
 
 const AnimatedView = Animated.createAnimatedComponent(View)
+
+const SPRING_CONFIG = {
+  damping: 18,
+  mass: 1,
+  stiffness: 220,
+}
+
+const FADE_CONFIG = {
+  duration: 150,
+}
 
 export interface EnhancedCarouselProps extends ViewProps {
   items: React.ReactNode[]
@@ -63,9 +72,9 @@ export function EnhancedCarousel({
     (index: number) => {
       if (index === currentIndex || index < 0 || index >= itemCount) return
 
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined)
       setCurrentIndex(index)
-      translateX.value = withSpring(-index * SCREEN_WIDTH, springConfigs.smooth)
+      translateX.value = withSpring(-index * SCREEN_WIDTH, SPRING_CONFIG)
       onSlideChange?.(index)
     },
     [currentIndex, itemCount, onSlideChange, translateX]
@@ -103,13 +112,13 @@ export function EnhancedCarousel({
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
-      opacity.value = withTiming(0.8, timingConfigs.fast)
+      opacity.value = withTiming(0.85, FADE_CONFIG)
     })
     .onUpdate((event) => {
       translateX.value = -currentIndex * SCREEN_WIDTH + event.translationX
     })
     .onEnd((event) => {
-      opacity.value = withTiming(1, timingConfigs.fast)
+      opacity.value = withTiming(1, FADE_CONFIG)
 
       const threshold = SCREEN_WIDTH * 0.25
       if (event.translationX > threshold && currentIndex > 0) {
@@ -117,7 +126,7 @@ export function EnhancedCarousel({
       } else if (event.translationX < -threshold && currentIndex < itemCount - 1) {
         runOnJS(goToNext)()
       } else {
-        translateX.value = withSpring(-currentIndex * SCREEN_WIDTH, springConfigs.smooth)
+        translateX.value = withSpring(-currentIndex * SCREEN_WIDTH, SPRING_CONFIG)
       }
     })
 
@@ -127,11 +136,15 @@ export function EnhancedCarousel({
   }))
 
   useEffect(() => {
-    translateX.value = withSpring(-currentIndex * SCREEN_WIDTH, springConfigs.smooth)
+    translateX.value = withSpring(-currentIndex * SCREEN_WIDTH, SPRING_CONFIG)
   }, [currentIndex, translateX])
 
   if (itemCount === 0) {
-    return null
+    return (
+      <View style={[styles.emptyContainer, style]} {...props}>
+        <Text style={styles.emptyText}>No carousel items</Text>
+      </View>
+    )
   }
 
   return (
@@ -185,6 +198,21 @@ const styles = StyleSheet.create({
   slide: {
     width: SCREEN_WIDTH,
     height: '100%',
+  },
+  emptyContainer: {
+    width: '100%',
+    height: 240,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8fafc',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  emptyText: {
+    color: '#64748b',
+    fontSize: 14,
+    fontWeight: '500',
   },
   indicators: {
     position: 'absolute',

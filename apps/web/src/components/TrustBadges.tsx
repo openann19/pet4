@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { 
   ShieldCheck, 
   Syringe, 
@@ -65,7 +65,7 @@ export function TrustBadges({ badges, compact = false, showLabels = false }: Tru
             return (
               <Tooltip key={badge.id}>
                 <TooltipTrigger asChild>
-                  <motion.div
+                  <MotionView
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.05 }}
@@ -80,7 +80,7 @@ export function TrustBadges({ badges, compact = false, showLabels = false }: Tru
                       <Icon size={14} weight="bold" />
                       <span className="text-xs font-medium">{badge.label}</span>
                     </Badge>
-                  </motion.div>
+                  </MotionView>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-xs">
                   <p className="text-sm">{badge.description}</p>
@@ -92,7 +92,7 @@ export function TrustBadges({ badges, compact = false, showLabels = false }: Tru
           return (
             <Tooltip key={badge.id}>
               <TooltipTrigger asChild>
-                <motion.div
+                <MotionView
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.05 }}
@@ -107,7 +107,7 @@ export function TrustBadges({ badges, compact = false, showLabels = false }: Tru
                   >
                     <Icon size={compact ? 14 : 16} weight="bold" />
                   </Badge>
-                </motion.div>
+                </MotionView>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs">
                 <div className="space-y-1">

@@ -51,6 +51,6 @@ export default function EnhancedCard({
           {children}
         </div>
       </Card>
-    </motion.div>
+    </MotionView>
   )
 }

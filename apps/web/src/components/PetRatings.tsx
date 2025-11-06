@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { Star, ThumbsUp, User } from '@phosphor-icons/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -30,7 +30,7 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
 
   if (compact) {
     return (
-      <motion.div
+      <MotionView
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-2"
@@ -49,7 +49,7 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
             Highly Trusted
           </Badge>
         )}
-      </motion.div>
+      </MotionView>
     )
   }
 
@@ -134,7 +134,7 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
             <div className="space-y-4">
               <h3 className="font-semibold text-foreground">Recent Reviews</h3>
               {displayedReviews.map((rating, index) => (
-                <motion.div
+                <MotionView
                   key={rating.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -193,7 +193,7 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
                       </Button>
                     </div>
                   )}
-                </motion.div>
+                </MotionView>
               ))}
               {ratings.length > 3 && !showAllReviews && (
                 <Button

@@ -1,5 +1,5 @@
 import { makeRng } from '@petspark/shared'
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { useEffect, useState } from 'react'
 
 interface Particle {
@@ -70,7 +70,7 @@ export function ParticleEffect({
   return (
     <div className={`pointer-events-none fixed inset-0 z-50 flex items-center justify-center overflow-hidden ${className}`}>
       {particles.map((particle) => (
-        <motion.div
+        <MotionView
           key={particle.id}
           className="absolute rounded-full"
           style={{

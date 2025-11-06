@@ -33,7 +33,7 @@ import {
   X
 } from '@phosphor-icons/react'
 import { differenceInDays, format, isPast } from 'date-fns'
-import { AnimatePresence, motion } from 'framer-motion'
+import { Presence, motion } from '@petspark/motion'
 import { lazy, Suspense, useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { useKV } from '@/hooks/useStorage'
@@ -210,7 +210,7 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
   }, [setPlaydates])
 
   return (
-    <motion.div
+    <MotionView
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -288,9 +288,9 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[500px]">
-                  <AnimatePresence>
+                  <Presence>
                     {showCreateForm && (
-                      <motion.div
+                      <MotionView
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
@@ -430,7 +430,7 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
                             </Button>
                           </div>
                         </div>
-                      </motion.div>
+                      </MotionView>
                     )}
 
                     {matchPlaydates.filter(p => p.status !== 'completed' && p.status !== 'cancelled').length === 0 ? (
@@ -451,7 +451,7 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
                             const isPastDate = isPast(new Date(playdate.date))
 
                             return (
-                              <motion.div
+                              <MotionView
                                 key={playdate.id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -547,12 +547,12 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
                                     </Button>
                                   </div>
                                 </div>
-                              </motion.div>
+                              </MotionView>
                             )
                           })}
                       </div>
                     )}
-                  </AnimatePresence>
+                  </Presence>
                 </ScrollArea>
               </CardContent>
             </Card>
@@ -578,7 +578,7 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
                         .filter(p => p.status === 'completed' || p.status === 'cancelled')
                         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                         .map((playdate, index) => (
-                          <motion.div
+                          <MotionView
                             key={playdate.id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -606,7 +606,7 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
                               <MapPin size={14} />
                               {playdate.location.name}
                             </div>
-                          </motion.div>
+                          </MotionView>
                         ))}
                     </div>
                   )}
@@ -633,7 +633,7 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
           <Suspense fallback={
             <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">                             
               <div className="text-center">
-                <motion.div
+                <MotionView
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"                                                      
@@ -650,6 +650,6 @@ export default function PlaydateScheduler({ match, userPet, onClose, onStartVide
           </Suspense>
         </ErrorBoundary>
       )}
-    </motion.div>
+    </MotionView>
   )
 }

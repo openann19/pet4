@@ -100,9 +100,18 @@ export const ENDPOINTS = {
     DASHBOARD: '/admin/dashboard',
     USERS: '/admin/users',
     USER: (id: string) => `/admin/users/${id}`,
+    RESET_PASSWORD: (userId: string) => `/admin/users/${userId}/reset-password`,
     MODERATION_QUEUE: '/admin/moderation',
     ANALYTICS: '/admin/analytics',
-    SETTINGS: '/admin/settings'
+    SETTINGS: '/admin/settings',
+    CONFIG_BROADCAST: '/admin/config/broadcast',
+    CONFIG_HISTORY: '/admin/config/history',
+    SUPPORT_TICKETS: '/admin/support/tickets',
+    SUPPORT_TICKET: (id: string) => `/admin/support/tickets/${id}`,
+    SUPPORT_TICKET_MESSAGES: (id: string) => `/admin/support/tickets/${id}/messages`,
+    SUPPORT_TICKET_STATUS: (id: string) => `/admin/support/tickets/${id}/status`,
+    SUPPORT_TICKET_ASSIGN: (id: string) => `/admin/support/tickets/${id}/assign`,
+    SUPPORT_STATS: '/admin/support/stats'
   },
 
   // KYC

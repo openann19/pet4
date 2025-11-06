@@ -45,17 +45,17 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
     timer.current = window.setTimeout(async function tick() {
       timer.current = null
       const now = Date.now()
-      const ready = (queue || []).filter((q) => q.nextAt <= now)
+      const ready = (queue || []).filter((q: OutboxItem) => q.nextAt <= now)
 
       for (const item of ready) {
         try {
           await sendFnRef.current(item.payload)
-          setQueue((cur) => (cur || []).filter((x) => x.clientId !== item.clientId))
+          setQueue((cur: OutboxItem[] | undefined) => (cur || []).filter((x: OutboxItem) => x.clientId !== item.clientId))
         } catch {
           const nextAttempt = Math.min(item.attempt + 1, maxAttempts)
           const delay = Math.min(2 ** nextAttempt * retryDelay, maxDelay)
-          setQueue((cur) =>
-            (cur || []).map((x) =>
+          setQueue((cur: OutboxItem[] | undefined) =>
+            (cur || []).map((x: OutboxItem) =>
               x.clientId === item.clientId
                 ? { ...x, attempt: nextAttempt, nextAt: Date.now() + delay }
                 : x
@@ -69,7 +69,7 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
   }
 
   const enqueue = (clientId: string, payload: unknown): void => {
-    setQueue((cur) => [
+    setQueue((cur: OutboxItem[] | undefined) => [
       ...(cur || []),
       { clientId, payload, attempt: 0, nextAt: Date.now() },
     ])

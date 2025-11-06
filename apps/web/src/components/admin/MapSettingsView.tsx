@@ -1,3 +1,8 @@
+import { configBroadcastService } from '@/core/services/config-broadcast-service'
+import { adminApi } from '@/api/admin-api'
+import { useStorage } from '@/hooks/useStorage'
+import type { User } from '@/lib/user-service'
+import { Radio } from '@phosphor-icons/react'
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { useStorage } from '@/hooks/useStorage';
 import { useMapProviderConfig } from '@/lib/maps/provider-config';
 import type { PlaceCategory } from '@/lib/maps/types';
 import { MapPin, Pencil, Plus, Trash } from '@phosphor-icons/react';
@@ -83,6 +87,8 @@ export default function MapSettingsView() {
 
   const [editingCategory, setEditingCategory] = useState<PlaceCategory | null>(null)
   const [isAddingCategory, setIsAddingCategory] = useState(false)
+  const [broadcasting, setBroadcasting] = useState(false)
+  const [currentUser] = useStorage<User | null>('current-user', null)
   const [newCategory, setNewCategory] = useState<Partial<PlaceCategory>>({
     id: '',
     name: '',
@@ -167,6 +173,45 @@ export default function MapSettingsView() {
     toast.success('Settings reset to defaults')
   }
 
+  const handleBroadcastSettings = async () => {
+    if (!currentUser) {
+      toast.error('User not authenticated')
+      return
+    }
+
+    try {
+      setBroadcasting(true)
+      
+      const allSettings = {
+        mapSettings,
+        providerConfig,
+        categorySettings
+      }
+      
+      await configBroadcastService.broadcastConfig(
+        'map',
+        allSettings as Record<string, unknown>,
+        currentUser.id || 'admin'
+      )
+      
+      toast.success('Map settings broadcasted successfully')
+      
+      await adminApi.createAuditLog({
+        adminId: currentUser.id || 'admin',
+        action: 'config_broadcast',
+        targetType: 'map_config',
+        targetId: 'map-settings',
+        details: JSON.stringify({ configType: 'map' })
+      })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      toast.error('Failed to broadcast map settings')
+      console.error('Broadcast error:', err)
+    } finally {
+      setBroadcasting(false)
+    }
+  }
+
   return (
     <div className="flex-1 flex flex-col">
       <div className="border-b border-border p-6">
@@ -180,9 +225,15 @@ export default function MapSettingsView() {
               Configure map features, privacy settings, and place categories
             </p>
           </div>
-          <Button variant="outline" onClick={handleResetToDefaults}>
-            Reset to Defaults
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleResetToDefaults}>
+              Reset to Defaults
+            </Button>
+            <Button onClick={handleBroadcastSettings} disabled={broadcasting}>
+              <Radio size={16} className="mr-2" />
+              {broadcasting ? 'Broadcasting...' : 'Broadcast Settings'}
+            </Button>
+          </div>
         </div>
       </div>
 
