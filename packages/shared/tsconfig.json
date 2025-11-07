@@ -23,7 +23,7 @@
       "@petspark/shared": ["./src/index.ts"]
     }
   },
-  "include": ["src/**/*", "../motion/src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "../motion/src/**/*.ts", "../motion/src/**/*.tsx"],
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx", "**/__tests__/**", "**/__stories__/**", "../motion/**/*.test.ts", "../motion/**/*.test.tsx", "../motion/**/__tests__/**"]
 }
 

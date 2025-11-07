@@ -60,7 +60,9 @@ export const timings = {
   // Long duration for complex animations
   complex: {
     duration: 600,
-    easing: (t: number) => Easing.bezier(0.16, 1, 0.3, 1)(t),
+    // Note: Easing.bezier returns a factory object in Reanimated 3.10.1
+    // Cast to function type for compatibility
+    easing: ((Easing.bezier(0.16, 1, 0.3, 1) as unknown) as (t: number) => number),
   } as TimingConfig,
 }
 

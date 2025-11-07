@@ -118,7 +118,9 @@ export function useMediaBubble(
         zoomModalOpacity.value = withSpring(1, springConfigs.smooth)
         zoomModalScale.value = withSpring(1, springConfigs.bouncy)
       }
-      onZoom()
+      if (onZoom) {
+        onZoom()
+      }
     }
   }, [onZoom, zoomModalOpacity, zoomModalScale, isReducedMotion])
 

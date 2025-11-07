@@ -142,7 +142,7 @@ export function useBubbleTheme(
     // Return platform-agnostic style (platform adapters will convert)
     return {
       primaryColor: `rgba(${String(primaryR ?? '')}, ${String(primaryG ?? '')}, ${String(primaryB ?? '')}, ${String(intensity ?? '')})`,
-      secondaryColor: `rgba(${String(secondaryR ?? '')}, ${String(secondaryG ?? '')}, ${String(secondaryB ?? '')}, ${String(intensity * 0.8 ?? '')})`,
+      secondaryColor: `rgba(${String(secondaryR ?? '')}, ${String(secondaryG ?? '')}, ${String(secondaryB ?? '')}, ${String(intensity * 0.8)})`,
       shadowColor: themeColor.shadow,
       shadowBlur,
       shadowOpacity,

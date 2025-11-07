@@ -95,7 +95,7 @@ export function useReactionSparkles(
       // Platform-specific particle spawning will be handled in adapters
     }
 
-    if (isTruthy(onReaction)) {
+    if (onReaction) {
       onReaction(emoji)
     }
   }, [hapticFeedback, enableParticles, onReaction, emojiScale, emojiOpacity, isReducedMotion])
