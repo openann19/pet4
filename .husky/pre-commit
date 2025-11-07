@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd apps/mobile
+pnpm -s typecheck || exit 1
+pnpm -s lint || exit 1
+pnpm -s verify:ultra || exit 1

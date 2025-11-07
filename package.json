@@ -1,0 +1,57 @@
+{
+  "name": "petspark-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install:all": "pnpm install",
+    "typecheck": "pnpm --filter ./packages/shared typecheck",
+    "lint": "pnpm --filter ./packages/shared lint",
+    "test": "pnpm --filter ./packages/shared test:run",
+    "dev:single": "pnpm --filter ./packages/shared dev",
+    "test:single": "pnpm --filter ./packages/shared test:run",
+    "web-dev": "pnpm --filter spark-template dev",
+    "mobile-start": "pnpm --filter petspark-mobile start",
+    "mobile-android": "pnpm --filter petspark-mobile android",
+    "mobile-ios": "pnpm --filter petspark-mobile ios",
+    "check:parity": "tsx scripts/check-mobile-parity.ts",
+    "typecheck:motion": "pnpm --filter ./packages/motion typecheck && pnpm --filter ./apps/web typecheck && pnpm --filter ./apps/mobile typecheck",
+    "lint:motion": "eslint packages/motion apps/web/src/effects apps/mobile/src/effects apps/web/src/components apps/mobile/src/components --ext .ts,.tsx",
+    "test:motion": "pnpm --filter ./packages/motion test:run",
+    "migrate:motion": "node scripts/motion-migrate.mjs",
+    "e2e:smoke": "pnpm --filter ./apps/web e2e:smoke"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.4.1",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.14.0",
+    "@next/eslint-plugin-next": "^15.0.3",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "eslint": "^9.14.0",
+    "eslint-config-next": "^15.0.3",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-native": "^4.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.11.0",
+    "globby": "^14.0.0",
+    "ts-morph": "^23.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.13.0"
+  },
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  }
+}

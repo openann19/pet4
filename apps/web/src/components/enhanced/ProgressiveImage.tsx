@@ -1,0 +1,212 @@
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { AnimatePresence } from '@/effects/reanimated/animate-presence'
+import { cn } from '@/lib/utils'
+import { supportsWebP, supportsAVIF } from '@/lib/image-loader'
+import { isTruthy, isDefined } from '@/core/guards';
+
+interface ProgressiveImageProps {
+  src: string
+  alt: string
+  placeholderSrc?: string
+  className?: string
+  containerClassName?: string
+  blurAmount?: number
+  aspectRatio?: string
+  priority?: boolean
+  sizes?: string
+  width?: number
+  height?: number
+  quality?: number
+  format?: 'webp' | 'avif' | 'auto'
+  onLoad?: () => void
+  onError?: (error: Error) => void
+}
+
+export function ProgressiveImage({
+  src,
+  alt,
+  placeholderSrc,
+  className,
+  containerClassName,
+  blurAmount = 20,
+  aspectRatio,
+  priority = false,
+  sizes,
+  width,
+  height,
+  quality = 85,
+  format = 'auto',
+  onLoad,
+  onError
+}: ProgressiveImageProps) {
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [currentSrc, setCurrentSrc] = useState(placeholderSrc || src)
+  const [error, setError] = useState(false)
+  const [bestFormat, setBestFormat] = useState<'webp' | 'avif' | 'original'>('original')
+  const imgRef = useRef<HTMLImageElement>(null)
+
+  // Detect best format support
+  useEffect(() => {
+    if (format === 'auto') {
+      supportsAVIF().then((avifSupported) => {
+        if (isTruthy(avifSupported)) {
+          setBestFormat('avif')
+        } else if (supportsWebP()) {
+          setBestFormat('webp')
+        } else {
+          setBestFormat('original')
+        }
+      })
+    } else {
+      setBestFormat(format)
+    }
+  }, [format])
+
+  const getOptimizedSrc = useCallback((originalSrc: string): string => {
+    if (bestFormat === 'original') return originalSrc
+    
+    try {
+      const url = new URL(originalSrc, window.location.origin)
+      const params = new URLSearchParams(url.search)
+      
+      if (isTruthy(width)) params.set('w', width.toString())
+      if (isTruthy(height)) params.set('h', height.toString())
+      if (isTruthy(quality)) params.set('q', quality.toString())
+      params.set('fm', bestFormat)
+      
+      return `${String(url.pathname ?? '')}?${String(params.toString() ?? '')}`
+    } catch {
+      return originalSrc
+    }
+  }, [bestFormat, width, height, quality])
+
+  const loadImage = useCallback(() => {
+    const img = new Image()
+    const optimizedSrc = getOptimizedSrc(src)
+    
+    img.onload = () => {
+      setCurrentSrc(optimizedSrc)
+      setIsLoaded(true)
+      onLoad?.()
+    }
+    
+    img.onerror = () => {
+      // Fallback to original if optimized fails
+      if (optimizedSrc !== src) {
+        const fallbackImg = new Image()
+        fallbackImg.onload = () => {
+          setCurrentSrc(src)
+          setIsLoaded(true)
+          onLoad?.()
+        }
+        fallbackImg.onerror = () => {
+          const err = new Error(`Failed to load image: ${String(src ?? '')}`)
+          setError(true)
+          onError?.(err)
+        }
+        fallbackImg.src = src
+      } else {
+        const err = new Error(`Failed to load image: ${String(src ?? '')}`)
+        setError(true)
+        onError?.(err)
+      }
+    }
+    
+    img.src = optimizedSrc
+  }, [src, getOptimizedSrc, onLoad, onError])
+
+  useEffect(() => {
+    if (isTruthy(priority)) {
+      loadImage()
+      return
+    }
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (isTruthy(entry.isIntersecting)) {
+            loadImage()
+            observer.disconnect()
+          }
+        })
+      },
+      { rootMargin: '50px' }
+    )
+
+    if (isTruthy(imgRef.current)) {
+      observer.observe(imgRef.current)
+    }
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [src, priority, loadImage])
+
+  const placeholderOpacity = useSharedValue(1)
+  const imageOpacity = useSharedValue(0)
+
+  useEffect(() => {
+    if (isTruthy(isLoaded)) {
+      placeholderOpacity.value = withTiming(0, { duration: 300 })
+      imageOpacity.value = withTiming(1, { duration: 300 })
+    }
+  }, [isLoaded, placeholderOpacity, imageOpacity])
+
+  const placeholderStyle = useAnimatedStyle(() => ({
+    opacity: placeholderOpacity.value,
+  }))
+
+  const imageStyle = useAnimatedStyle(() => ({
+    opacity: imageOpacity.value,
+  }))
+
+  return (
+    <div
+      className={cn('relative overflow-hidden', containerClassName)}
+      style={{ aspectRatio }}
+    >
+      <AnimatePresence>
+        {!isLoaded && placeholderSrc && (
+          <AnimatedView
+            key="placeholder"
+            style={placeholderStyle}
+            className={cn('absolute inset-0 w-full h-full', className)}
+          >
+            <img
+              ref={imgRef}
+              src={placeholderSrc}
+              alt={alt}
+              className={cn('w-full h-full object-cover', className)}
+              style={{ filter: `blur(${String(blurAmount ?? '')}px)` }}
+            />
+          </AnimatedView>
+        )}
+      </AnimatePresence>
+
+      <AnimatedView style={imageStyle} className={cn('w-full h-full', className)}>
+        <img
+          src={currentSrc}
+          alt={alt}
+          className={cn('w-full h-full object-cover', className)}
+          sizes={sizes}
+          width={width}
+          height={height}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+      </AnimatedView>
+
+      {!isLoaded && !placeholderSrc && (
+        <div className="absolute inset-0 bg-muted animate-pulse" />
+      )}
+
+      {error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted text-muted-foreground text-sm">
+          Failed to load image
+        </div>
+      )}
+    </div>
+  )
+}

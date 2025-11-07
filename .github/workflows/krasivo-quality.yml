@@ -1,0 +1,181 @@
+# KRASIVO CI Pipeline - Zero Tolerance Quality Gates
+# 
+# Enforces premium standards: 0 warnings, 60fps, mobile parity required
+
+name: KRASIVO Quality Gates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # Type Safety & Lint - Zero tolerance
+  quality-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: TypeScript Check - Zero Errors
+        run: |
+          pnpm typecheck:web
+          pnpm typecheck:mobile
+      
+      - name: ESLint - Zero Warnings
+        run: |
+          pnpm lint:web
+          pnpm lint:mobile
+      
+      - name: Remove all console.* calls
+        run: |
+          if grep -r "console\." apps/ packages/ --include="*.ts" --include="*.tsx" --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.stories.*"; then
+            echo "❌ Found console calls in production code"
+            exit 1
+          fi
+          echo "✅ No console calls found"
+
+  # Mobile Parity - API Compatibility Required
+  mobile-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Mobile Parity Check
+        run: pnpm check:parity
+  
+  # Performance Smoke - 60fps Required
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Performance Smoke Test
+        run: ./scripts/performance-smoke.sh
+      
+      - name: Bundle Size Check
+        run: |
+          pnpm build:web
+          # Fail if bundle exceeds 2MB
+          find apps/web/dist -name "*.js" -exec wc -c {} + | tail -1 | awk '{if ($1 > 2000000) exit 1}'
+
+  # Motion Package Tests
+  motion-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Motion Package Build
+        run: pnpm --filter @petspark/motion build
+      
+      - name: Verify No Console Calls in Motion
+        run: |
+          if find packages/motion/dist -name "*.js" -exec grep -l "console\." {} \; | head -1; then
+            echo "❌ Found console calls in motion package"
+            exit 1
+          fi
+          echo "✅ Motion package is clean"
+
+  # Data Layer Tests - React Query Migration
+  data-layer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Verify KV Migration Complete  
+        run: |
+          # Should find no localStorage or KV references in new code
+          if grep -r "localStorage\|\.kv\." apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx" --exclude="*.test.*" | grep -v "storage-adapter" | grep -v "query-client"; then
+            echo "❌ Found remaining KV/localStorage usage"
+            exit 1
+          fi
+          echo "✅ KV migration complete"
+      
+      - name: Test Query Client Setup
+        run: |
+          pnpm test:unit
+
+  # Integration Tests
+  integration:
+    runs-on: ubuntu-latest
+    needs: [quality-gates, mobile-parity, performance, motion-tests, data-layer]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Build All Packages
+        run: pnpm build
+      
+      - name: Integration Tests
+        run: pnpm test:integration
+      
+      - name: KRASIVO Quality Summary
+        run: |
+          echo "🎉 KRASIVO Quality Gates Passed!"
+          echo "✅ Zero TypeScript errors"
+          echo "✅ Zero ESLint warnings" 
+          echo "✅ Zero console.* calls"
+          echo "✅ Mobile parity maintained"
+          echo "✅ 60fps performance validated"
+          echo "✅ Motion system optimized"
+          echo "✅ Data layer migrated"
+          echo "💎 Premium experience guaranteed"

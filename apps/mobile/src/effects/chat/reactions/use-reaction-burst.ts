@@ -1,0 +1,256 @@
+/**
+ * Reactions "Burst + Settle" Effect Hook
+ * 
+ * Creates a premium reaction animation with:
+ * - Tap-and-hold pops reaction ring (8 particles, 280ms, ease-out)
+ * - Emoji lifts with spring to badge on bubble corner
+ * - Shadow 2→8dp
+ * - Haptics: Impact.Light on attach, Success on long-press menu confirm
+ * 
+ * Location: apps/mobile/src/effects/chat/reactions/use-reaction-burst.ts
+ */
+
+import { useCallback, useMemo } from 'react'
+import {
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withSequence,
+    withSpring,
+    withTiming,
+    type SharedValue,
+} from 'react-native-reanimated'
+import { triggerHaptic } from '../core/haptic-manager'
+import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion'
+import { logEffectEnd, logEffectStart } from '../core/telemetry'
+import { isTruthy, isDefined } from '@/core/guards';
+
+/**
+ * Spring configuration for emoji lift
+ */
+const EMOJI_LIFT_SPRING = {
+  stiffness: 350,
+  damping: 25,
+  mass: 0.8,
+}
+
+/**
+ * Reaction burst effect options
+ */
+export interface UseReactionBurstOptions {
+  enabled?: boolean
+  onComplete?: () => void
+  onLongPressConfirm?: () => void
+}
+
+/**
+ * Reaction burst effect return type
+ */
+export interface UseReactionBurstReturn {
+  particles: Array<{
+    x: SharedValue<number>
+    y: SharedValue<number>
+    opacity: SharedValue<number>
+    scale: SharedValue<number>
+  }>
+  emojiScale: SharedValue<number>
+  emojiTranslateY: SharedValue<number>
+  shadowRadius: SharedValue<number>
+  animatedStyle: ReturnType<typeof useAnimatedStyle>
+  trigger: () => void
+  triggerLongPress: () => void
+}
+
+const DEFAULT_ENABLED = true
+const PARTICLE_COUNT = 8
+const BURST_DURATION = 280 // ms
+const EMOJI_LIFT_DURATION = 300 // ms
+
+export function useReactionBurst(
+  options: UseReactionBurstOptions = {}
+): UseReactionBurstReturn {
+  const { enabled = DEFAULT_ENABLED, onComplete, onLongPressConfirm } = options
+
+  const reducedMotion = useReducedMotionSV()
+
+  // Initialize all particle SharedValues at top level (hooks must be called unconditionally)
+  // Store SharedValues directly, create particle objects in useMemo
+  const particle0X = useSharedValue(0)
+  const particle0Y = useSharedValue(0)
+  const particle0Opacity = useSharedValue(0)
+  const particle0Scale = useSharedValue(0)
+  
+  const particle1X = useSharedValue(0)
+  const particle1Y = useSharedValue(0)
+  const particle1Opacity = useSharedValue(0)
+  const particle1Scale = useSharedValue(0)
+  
+  const particle2X = useSharedValue(0)
+  const particle2Y = useSharedValue(0)
+  const particle2Opacity = useSharedValue(0)
+  const particle2Scale = useSharedValue(0)
+  
+  const particle3X = useSharedValue(0)
+  const particle3Y = useSharedValue(0)
+  const particle3Opacity = useSharedValue(0)
+  const particle3Scale = useSharedValue(0)
+  
+  const particle4X = useSharedValue(0)
+  const particle4Y = useSharedValue(0)
+  const particle4Opacity = useSharedValue(0)
+  const particle4Scale = useSharedValue(0)
+  
+  const particle5X = useSharedValue(0)
+  const particle5Y = useSharedValue(0)
+  const particle5Opacity = useSharedValue(0)
+  const particle5Scale = useSharedValue(0)
+  
+  const particle6X = useSharedValue(0)
+  const particle6Y = useSharedValue(0)
+  const particle6Opacity = useSharedValue(0)
+  const particle6Scale = useSharedValue(0)
+  
+  const particle7X = useSharedValue(0)
+  const particle7Y = useSharedValue(0)
+  const particle7Opacity = useSharedValue(0)
+  const particle7Scale = useSharedValue(0)
+
+  // Particles array - memoized with stable SharedValue references
+  const particles = useMemo(
+    () => [
+      { x: particle0X, y: particle0Y, opacity: particle0Opacity, scale: particle0Scale },
+      { x: particle1X, y: particle1Y, opacity: particle1Opacity, scale: particle1Scale },
+      { x: particle2X, y: particle2Y, opacity: particle2Opacity, scale: particle2Scale },
+      { x: particle3X, y: particle3Y, opacity: particle3Opacity, scale: particle3Scale },
+      { x: particle4X, y: particle4Y, opacity: particle4Opacity, scale: particle4Scale },
+      { x: particle5X, y: particle5Y, opacity: particle5Opacity, scale: particle5Scale },
+      { x: particle6X, y: particle6Y, opacity: particle6Opacity, scale: particle6Scale },
+      { x: particle7X, y: particle7Y, opacity: particle7Opacity, scale: particle7Scale },
+    ],
+    [
+      particle0X, particle0Y, particle0Opacity, particle0Scale,
+      particle1X, particle1Y, particle1Opacity, particle1Scale,
+      particle2X, particle2Y, particle2Opacity, particle2Scale,
+      particle3X, particle3Y, particle3Opacity, particle3Scale,
+      particle4X, particle4Y, particle4Opacity, particle4Scale,
+      particle5X, particle5Y, particle5Opacity, particle5Scale,
+      particle6X, particle6Y, particle6Opacity, particle6Scale,
+      particle7X, particle7Y, particle7Opacity, particle7Scale,
+    ]
+  )
+
+  // Emoji animation
+  const emojiScale = useSharedValue(1)
+  const emojiTranslateY = useSharedValue(0)
+  const shadowRadius = useSharedValue(2)
+
+  const trigger = useCallback(() => {
+    if (!enabled) {
+      return
+    }
+
+    const isReducedMotion = reducedMotion.value
+    const burstDuration = getReducedMotionDuration(BURST_DURATION, isReducedMotion)
+
+    // Log effect start
+    const effectId = logEffectStart('reaction-burst', {
+      reducedMotion: isReducedMotion,
+    })
+
+    // Trigger haptic: Impact.Light on attach
+    triggerHaptic('light')
+
+    // Animate particles in ring pattern
+    if (!isReducedMotion) {
+      particles.forEach((particle, index) => {
+        const angle = (index / PARTICLE_COUNT) * Math.PI * 2
+        const radius = 30 // pixels
+        const targetX = Math.cos(angle) * radius
+        const targetY = Math.sin(angle) * radius
+
+        const xValue = particle.x
+        const yValue = particle.y
+        const opacityValue = particle.opacity
+        const scaleValue = particle.scale
+
+        xValue.value = withTiming(targetX, {
+          duration: burstDuration,
+          easing: Easing.out(Easing.ease),
+        })
+        yValue.value = withTiming(targetY, {
+          duration: burstDuration,
+          easing: Easing.out(Easing.ease),
+        })
+        opacityValue.value = withSequence(
+          withTiming(1, { duration: burstDuration * 0.3 }),
+          withTiming(0, { duration: burstDuration * 0.7 })
+        )
+        scaleValue.value = withSequence(
+          withTiming(1.2, { duration: burstDuration * 0.2 }),
+          withTiming(0.8, { duration: burstDuration * 0.8 })
+        )
+      })
+    }
+
+    // Emoji lift animation
+    emojiScale.value = withSpring(1.2, EMOJI_LIFT_SPRING)
+    emojiTranslateY.value = withSpring(-15, EMOJI_LIFT_SPRING)
+
+    // Shadow animation (2→8dp)
+    shadowRadius.value = withTiming(8, {
+      duration: EMOJI_LIFT_DURATION,
+      easing: Easing.out(Easing.ease),
+    })
+
+    // Call onComplete
+    if (isTruthy(onComplete)) {
+      setTimeout(() => {
+        onComplete()
+      }, burstDuration)
+    }
+
+    // Log effect end
+    setTimeout(() => {
+      logEffectEnd(effectId, {
+        durationMs: burstDuration,
+        success: true,
+      })
+    }, burstDuration)
+  }, [
+    enabled,
+    reducedMotion,
+    particles,
+    emojiScale,
+    emojiTranslateY,
+    shadowRadius,
+    onComplete,
+  ])
+
+  const triggerLongPress = useCallback(() => {
+    // Haptic: Success on long-press menu confirm
+    triggerHaptic('success')
+    onLongPressConfirm?.()
+  }, [onLongPressConfirm])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: emojiScale.value },
+        { translateY: emojiTranslateY.value },
+      ],
+      shadowRadius: shadowRadius.value,
+      elevation: shadowRadius.value, // Android shadow
+    }
+  })
+
+  return {
+    particles,
+    emojiScale,
+    emojiTranslateY,
+    shadowRadius,
+    animatedStyle,
+    trigger,
+    triggerLongPress,
+  }
+}
+

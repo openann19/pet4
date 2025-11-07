@@ -1,0 +1,35 @@
+# Expo
+.expo/
+dist/
+web-build/
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build
+*.ipa
+*.aab
+*.apk
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/

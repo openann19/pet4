@@ -1,0 +1,81 @@
+import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
+import { useEffect } from 'react'
+import type { AnimatedStyle } from './animated-view'
+
+export interface UseLogoAnimationReturn {
+  scale: ReturnType<typeof useSharedValue<number>>
+  animatedStyle: AnimatedStyle
+}
+
+export function useLogoAnimation(): UseLogoAnimationReturn {
+  const scale = useSharedValue(1)
+
+  useEffect(() => {
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 1250 }),
+        withTiming(1.12, { duration: 1250 }),
+        withTiming(1, { duration: 1250 })
+      ),
+      -1,
+      true
+    )
+  }, [scale])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }]
+    }
+  }) as AnimatedStyle
+
+  return {
+    scale,
+    animatedStyle
+  }
+}
+
+export interface UseLogoGlowReturn {
+  scale: ReturnType<typeof useSharedValue<number>>
+  opacity: ReturnType<typeof useSharedValue<number>>
+  animatedStyle: AnimatedStyle
+}
+
+export function useLogoGlow(): UseLogoGlowReturn {
+  const scale = useSharedValue(1)
+  const opacity = useSharedValue(0.7)
+
+  useEffect(() => {
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 1000 }),
+        withTiming(1.5, { duration: 1000 }),
+        withTiming(1, { duration: 1000 })
+      ),
+      -1,
+      false
+    )
+
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.7, { duration: 1000 }),
+        withTiming(1, { duration: 1000 }),
+        withTiming(0.7, { duration: 1000 })
+      ),
+      -1,
+      false
+    )
+  }, [scale, opacity])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value
+    }
+  }) as AnimatedStyle
+
+  return {
+    scale,
+    opacity,
+    animatedStyle
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "gradients": {
+    "primary": {
+      "start": "primary.500",
+      "end": "primary.700",
+      "angle": 135,
+      "stops": [0.0, 1.0]
+    },
+    "match": {
+      "start": "accent.match.500",
+      "end": "accent.match.700",
+      "angle": 135,
+      "stops": [0.0, 1.0]
+    },
+    "like": {
+      "start": "accent.like.500",
+      "end": "accent.like.700",
+      "angle": 135,
+      "stops": [0.0, 1.0]
+    },
+    "glass": {
+      "top": {
+        "color": "glass.card",
+        "stop": 0.0
+      },
+      "middle": {
+        "color": "glass.backdrop",
+        "stop": 0.5
+      },
+      "bottom": {
+        "color": "surface.background",
+        "stop": 1.0
+      },
+      "angle": 180
+    },
+    "scrim": {
+      "image": {
+        "start": "transparent",
+        "end": "surface.background",
+        "stop": 0.7,
+        "angle": 180,
+        "opacity": 0.8
+      },
+      "card": {
+        "start": "transparent",
+        "end": "surface.card",
+        "stop": 0.8,
+        "angle": 180,
+        "opacity": 0.9
+      }
+    },
+    "glow": {
+      "accent": {
+        "color": "accent.match.500",
+        "radius": 16,
+        "spread": 8,
+        "opacity": 0.3
+      },
+      "primary": {
+        "color": "primary.500",
+        "radius": 12,
+        "spread": 6,
+        "opacity": 0.25
+      }
+    },
+    "usage": {
+      "bubble": "glass",
+      "button": "primary",
+      "match": "match",
+      "like": "like",
+      "imageOverlay": "scrim.image",
+      "cardOverlay": "scrim.card"
+    }
+  }
+}
+

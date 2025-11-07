@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run TypeScript type checking
+echo "🔍 Running TypeScript type check..."
+pnpm typecheck || {
+  echo "❌ TypeScript errors found. Please fix before committing."
+  exit 1
+}
+
+# Run ESLint
+echo "🔍 Running ESLint..."
+pnpm lint || {
+  echo "❌ ESLint errors found. Please fix before committing."
+  exit 1
+}
+
+# Run Prettier check
+echo "🔍 Running Prettier check..."
+pnpm prettier --check . || {
+  echo "❌ Prettier formatting issues found. Run 'pnpm prettier --write .' to fix."
+  exit 1
+}
+
+echo "✅ All pre-commit checks passed!"
+

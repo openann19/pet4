@@ -1,0 +1,47 @@
+{
+  "blur": {
+    "backdrop": {
+      "glass": {
+        "radius": 20,
+        "saturation": 1.5
+      },
+      "overlay": {
+        "radius": 16,
+        "saturation": 1.2
+      },
+      "card": {
+        "radius": 12,
+        "saturation": 1.3
+      }
+    },
+    "component": {
+      "modal": {
+        "backdrop": 20,
+        "note": "Backdrop blur for modal overlays"
+      },
+      "sheet": {
+        "backdrop": 16,
+        "note": "Backdrop blur for bottom sheets"
+      },
+      "glassCard": {
+        "radius": 12,
+        "saturation": 1.3,
+        "opacity": 0.85
+      },
+      "navigation": {
+        "radius": 8,
+        "saturation": 1.2
+      }
+    },
+    "performance": {
+      "maxRadius": 24,
+      "enableOnLowEnd": false,
+      "note": "Backdrop blur may be disabled on low-end devices"
+    },
+    "readability": {
+      "minContrast": "AA",
+      "note": "Blur must never reduce text contrast below WCAG AA"
+    }
+  }
+}
+

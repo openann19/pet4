@@ -1,0 +1,50 @@
+{
+  "cli": {
+    "version": ">= 12.5.0"
+  },
+  "build": {
+    "production": {
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle",
+        "credentialsSource": "local",
+        "env": {
+          "ANDROID_KEYSTORE_BASE64": "placeholder",
+          "ANDROID_KEYSTORE_PASSWORD": "placeholder",
+          "ANDROID_KEY_ALIAS": "placeholder",
+          "ANDROID_KEY_PASSWORD": "placeholder"
+        }
+      },
+      "ios": {
+        "buildType": "release",
+        "credentialsSource": "local"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": false
+      }
+    },
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./service-account.json",
+        "track": "internal"
+      },
+      "ios": {
+        "appleId": "CHANGE_ME",
+        "ascAppId": "CHANGE_ME",
+        "appleTeamId": "CHANGE_ME"
+      }
+    }
+  }
+}

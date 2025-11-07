@@ -1,0 +1,180 @@
+{
+  "typography": {
+    "fontFamilies": {
+      "primary": {
+        "name": "Inter",
+        "fallbacks": ["Noto Sans", "Roboto", "sans-serif"],
+        "supports": ["Latin", "Cyrillic"]
+      },
+      "mono": {
+        "name": "JetBrains Mono",
+        "fallbacks": ["Roboto Mono", "monospace"]
+      }
+    },
+    "scale": {
+      "fluid": true,
+      "minScale": 0.875,
+      "maxScale": 1.25,
+      "baseSize": 16,
+      "viewportMin": 360,
+      "viewportMax": 1440
+    },
+    "tiers": {
+      "display": {
+        "fontSize": {
+          "min": 32,
+          "preferred": "clamp(32sp, 5vw, 48sp)",
+          "max": 48
+        },
+        "lineHeight": 1.2,
+        "letterSpacing": -0.5,
+        "fontWeight": 700,
+        "maxLines": 2
+      },
+      "h1": {
+        "fontSize": {
+          "min": 28,
+          "preferred": "clamp(28sp, 4vw, 40sp)",
+          "max": 40
+        },
+        "lineHeight": 1.25,
+        "letterSpacing": -0.25,
+        "fontWeight": 700,
+        "maxLines": 2
+      },
+      "h2": {
+        "fontSize": {
+          "min": 24,
+          "preferred": "clamp(24sp, 3.5vw, 32sp)",
+          "max": 32
+        },
+        "lineHeight": 1.3,
+        "letterSpacing": 0,
+        "fontWeight": 600,
+        "maxLines": 3
+      },
+      "h3": {
+        "fontSize": {
+          "min": 20,
+          "preferred": "clamp(20sp, 3vw, 24sp)",
+          "max": 24
+        },
+        "lineHeight": 1.35,
+        "letterSpacing": 0,
+        "fontWeight": 600,
+        "maxLines": 3
+      },
+      "h4": {
+        "fontSize": {
+          "min": 18,
+          "preferred": "clamp(18sp, 2.5vw, 20sp)",
+          "max": 20
+        },
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "fontWeight": 600,
+        "maxLines": 4
+      },
+      "body": {
+        "fontSize": {
+          "min": 16,
+          "preferred": "clamp(16sp, 2vw, 18sp)",
+          "max": 18
+        },
+        "lineHeight": 1.5,
+        "letterSpacing": 0,
+        "fontWeight": 400,
+        "maxLines": null
+      },
+      "bodySmall": {
+        "fontSize": {
+          "min": 14,
+          "preferred": "clamp(14sp, 1.75vw, 16sp)",
+          "max": 16
+        },
+        "lineHeight": 1.5,
+        "letterSpacing": 0,
+        "fontWeight": 400,
+        "maxLines": null
+      },
+      "caption": {
+        "fontSize": {
+          "min": 12,
+          "preferred": "clamp(12sp, 1.5vw, 14sp)",
+          "max": 14
+        },
+        "lineHeight": 1.4,
+        "letterSpacing": 0.25,
+        "fontWeight": 400,
+        "maxLines": 2
+      },
+      "label": {
+        "fontSize": {
+          "min": 14,
+          "preferred": "clamp(14sp, 1.75vw, 16sp)",
+          "max": 16
+        },
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "fontWeight": 500,
+        "maxLines": 1
+      },
+      "button": {
+        "fontSize": {
+          "min": 14,
+          "preferred": "clamp(14sp, 1.75vw, 16sp)",
+          "max": 16
+        },
+        "lineHeight": 1.2,
+        "letterSpacing": 0.5,
+        "fontWeight": 600,
+        "maxLines": 1
+      }
+    },
+    "localization": {
+      "bulgarian": {
+        "hyphenation": true,
+        "wordBreak": "normal",
+        "lineBreak": "strict",
+        "expansionFactor": 1.4
+      },
+      "english": {
+        "hyphenation": false,
+        "wordBreak": "normal",
+        "lineBreak": "normal",
+        "expansionFactor": 1.0
+      }
+    },
+    "truncation": {
+      "policy": {
+        "headings": {
+          "maxLines": 2,
+          "ellipsis": true,
+          "overflow": "ellipsis"
+        },
+        "subtitles": {
+          "maxLines": 3,
+          "ellipsis": true,
+          "overflow": "ellipsis"
+        },
+        "body": {
+          "maxLines": null,
+          "ellipsis": false,
+          "overflow": "visible"
+        },
+        "captions": {
+          "maxLines": 2,
+          "ellipsis": true,
+          "overflow": "ellipsis"
+        }
+      }
+    }
+  },
+  "units": {
+    "fontSize": "sp (scale-independent pixels)",
+    "lineHeight": "unitless multiplier",
+    "letterSpacing": "sp",
+    "note": "All text values use sp for proper scaling with system font size"
+  }
+}
+

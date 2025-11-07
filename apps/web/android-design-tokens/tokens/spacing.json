@@ -1,0 +1,72 @@
+{
+  "spacing": {
+    "base": 4,
+    "scale": [0, 2, 4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, 96],
+    "tokens": {
+      "xs": 2,
+      "sm": 4,
+      "md": 8,
+      "lg": 12,
+      "xl": 16,
+      "2xl": 20,
+      "3xl": 24,
+      "4xl": 32,
+      "5xl": 40,
+      "6xl": 48,
+      "7xl": 56,
+      "8xl": 64,
+      "9xl": 80,
+      "10xl": 96
+    },
+    "component": {
+      "touchTarget": 48,
+      "buttonPadding": {
+        "sm": { "horizontal": 12, "vertical": 8 },
+        "md": { "horizontal": 16, "vertical": 12 },
+        "lg": { "horizontal": 20, "vertical": 16 }
+      },
+      "cardPadding": {
+        "inner": { "horizontal": 16, "vertical": 12 },
+        "outer": { "horizontal": 20, "vertical": 16 }
+      },
+      "sectionSpacing": {
+        "vertical": 24,
+        "horizontal": 20
+      },
+      "pageGutter": 20,
+      "sheetPadding": {
+        "horizontal": 20,
+        "vertical": 24
+      },
+      "listItemPadding": {
+        "horizontal": 20,
+        "vertical": 16
+      },
+      "iconSpacing": {
+        "sm": 8,
+        "md": 12,
+        "lg": 16
+      },
+      "textFieldPadding": {
+        "horizontal": 16,
+        "vertical": 12
+      }
+    },
+    "layout": {
+      "gridGutter": 16,
+      "gridMargin": 20,
+      "baselineAlignment": 4,
+      "verticalRhythm": {
+        "section": 24,
+        "card": 16,
+        "element": 12
+      }
+    }
+  },
+  "units": {
+    "dp": "Device-independent pixels for layout",
+    "sp": "Scale-independent pixels for text",
+    "note": "All spacing values are in dp unless specified otherwise"
+  }
+}
+

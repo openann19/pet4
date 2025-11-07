@@ -1,0 +1,931 @@
+import CallInterface from '@/components/call/CallInterface'
+import IncomingCallNotification from '@/components/call/IncomingCallNotification'
+import VoiceRecorder from '@/components/chat/VoiceRecorder'
+import { WebBubbleWrapper } from '@/components/chat/WebBubbleWrapper'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs'
+import { useTypingManager } from '@/hooks/use-typing-manager'
+import { useCall } from '@/hooks/useCall'
+import { useChatMessages } from '@/hooks/useChatMessages'
+import { useVoiceMessages } from '@/hooks/api/use-chat'
+import { useFeatureFlag } from '@/lib/feature-flags'
+import { VirtualMessageList } from '@/components/chat/window/VirtualMessageList'
+import { 
+  AnnounceNewMessage, 
+  AnnounceTyping, 
+  SkipToComposer 
+} from '@/components/chat/window/LiveRegions'
+import type { ChatMessage, ChatRoom, MessageReaction, ReactionType } from '@/lib/chat-types'
+import { MESSAGE_TEMPLATES, REACTION_EMOJIS } from '@/lib/chat-types'
+import {
+  CHAT_STICKERS,
+  formatChatTime,
+  generateMessageId,
+  getReactionsArray,
+} from '@/lib/chat-utils'
+import { haptics } from '@/lib/haptics'
+import { realtime } from '@/lib/realtime'
+import {
+  ArrowLeft,
+  ChatCentered,
+  Check,
+  Checks,
+  DotsThree,
+  Heart,
+  Microphone,
+  PaperPlaneRight,
+  Pause,
+  Phone,
+  Play,
+  Smiley,
+  Sparkle,
+  VideoCamera,
+  X
+} from '@phosphor-icons/react'
+import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
+import { AnimatedView } from '@/effects/reanimated/animated-view'
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence'
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence } from 'react-native-reanimated'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { isTruthy, isDefined } from '@/core/guards';
+
+interface ChatWindowProps {
+  room: ChatRoom
+  currentUserId: string
+  currentUserName: string
+  currentUserAvatar?: string
+  onBack?: () => void
+}
+
+export default function ChatWindow({ 
+  room, 
+  currentUserId,
+  currentUserName,
+  currentUserAvatar,
+  onBack 
+}: ChatWindowProps) {
+  const useVirtualizedList = useFeatureFlag('chat.virtualization')
+  const { messages, messageGroups: chatMessageGroups, sendMessage: sendChatMessage, addReaction: addChatReaction, markAsRead: markChatAsRead, setMessages } = useChatMessages({
+    roomId: room.id,
+    currentUserId,
+    currentUserName,
+    ...(currentUserAvatar !== undefined ? { currentUserAvatar } : {}),
+  })
+  const { voiceMessages, setVoiceMessage } = useVoiceMessages(room.id)
+  const [inputValue, setInputValue] = useState('')
+  const [showStickers, setShowStickers] = useState(false)
+  const [showTemplates, setShowTemplates] = useState(false)
+  const [showReactions, setShowReactions] = useState<string | null>(null)
+  const [isRecording, setIsRecording] = useState(false)
+  const [playingVoice, setPlayingVoice] = useState<string | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  // Animation values for header
+  const headerY = useSharedValue(-20)
+  const headerOpacity = useSharedValue(0)
+  
+  // Animation values for typing indicator
+  const typingOpacity = useSharedValue(0)
+  const typingTextOpacity = useSharedValue(0.3)
+  const typingDotsScale = useSharedValue(1)
+
+  // Hover/tap animations for buttons
+  const videoButtonHover = useHoverLift()
+
+  const {
+    typingUsers,
+    handleInputChange: handleTypingInputChange,
+    handleMessageSend: handleTypingMessageSend
+  } = useTypingManager({
+    roomId: room.id,
+    currentUserId,
+    currentUserName,
+    realtimeClient: realtime
+  })
+
+  // Initialize header animation
+  useEffect(() => {
+    headerY.value = withSpring(0, { damping: 20, stiffness: 300 })
+    headerOpacity.value = withSpring(1, { damping: 20, stiffness: 300 })
+  }, [])
+
+  // Typing indicator animation
+  useEffect(() => {
+    if (typingUsers.length > 0) {
+      typingOpacity.value = withSpring(1, { damping: 20, stiffness: 300 })
+      typingTextOpacity.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 750 }),
+          withTiming(0.3, { duration: 750 })
+        ),
+        -1,
+        true
+      )
+      typingDotsScale.value = withRepeat(
+        withSequence(
+          withTiming(1.2, { duration: 300 }),
+          withTiming(1, { duration: 300 })
+        ),
+        -1,
+        true
+      )
+    } else {
+      typingOpacity.value = withSpring(0, { damping: 20, stiffness: 300 })
+    }
+  }, [typingUsers.length])
+
+  const headerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: headerY.value }],
+    opacity: headerOpacity.value
+  })) as AnimatedStyle
+
+  const typingContainerStyle = useAnimatedStyle(() => ({
+    opacity: typingOpacity.value
+  })) as AnimatedStyle
+
+  const typingTextStyle = useAnimatedStyle(() => ({
+    opacity: typingTextOpacity.value
+  })) as AnimatedStyle
+
+  const typingDotsStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: typingDotsScale.value }]
+  })) as AnimatedStyle
+
+  // Message bubble hover animation
+  const messageBubbleHover = useHoverLift()
+  const voiceButtonHover = useHoverLift()
+  const voiceButtonTap = useBounceOnTap()
+  const reactionButtonHover = useHoverLift()
+  const reactionButtonTap = useBounceOnTap()
+  const templateButtonHover = useHoverLift()
+  const templateButtonTap = useBounceOnTap()
+  const stickerButtonHover = useHoverLift()
+  const stickerButtonTap = useBounceOnTap()
+  const emojiButtonHover = useHoverLift()
+  const emojiButtonTap = useBounceOnTap()
+  const sendButtonHover = useHoverLift()
+  const sendButtonTap = useBounceOnTap()
+
+  // Templates panel animation
+  const templatesOpacity = useSharedValue(0)
+  const templatesHeight = useSharedValue(0)
+
+  useEffect(() => {
+    if (isTruthy(showTemplates)) {
+      templatesOpacity.value = withSpring(1, { damping: 20, stiffness: 300 })
+      templatesHeight.value = withSpring(1, { damping: 20, stiffness: 300 })
+    } else {
+      templatesOpacity.value = withSpring(0, { damping: 20, stiffness: 300 })
+      templatesHeight.value = withSpring(0, { damping: 20, stiffness: 300 })
+    }
+  }, [showTemplates])
+
+  const templatesStyle = useAnimatedStyle(() => ({
+    opacity: templatesOpacity.value,
+    height: templatesHeight.value * 300,
+  })) as AnimatedStyle
+
+  const {
+    activeCall,
+    incomingCall,
+    initiateCall,
+    answerCall,
+    declineCall,
+    endCall,
+    toggleMute,
+    toggleVideo
+  } = useCall(room.id, currentUserId, currentUserName, currentUserAvatar)
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  useEffect(() => {
+    markMessagesAsRead()
+  }, [room.id])
+
+  // Keyboard handling: Escape closes modals/popovers
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') {
+        if (isTruthy(showStickers)) {
+          setShowStickers(false)
+          e.preventDefault()
+        } else if (isTruthy(showTemplates)) {
+          setShowTemplates(false)
+          e.preventDefault()
+        } else if (isTruthy(showReactions)) {
+          setShowReactions(null)
+          e.preventDefault()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => {
+      window.removeEventListener('keydown', handleEscape)
+    }
+  }, [showStickers, showTemplates, showReactions])
+
+  useEffect(() => {
+    if (typingUsers.length > 0) {
+      scrollToBottom()
+    }
+  }, [typingUsers])
+
+  const scrollToBottom = () => {
+    if (isTruthy(scrollRef.current)) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }
+
+  const handleSendMessage = (content: string, type: 'text' | 'sticker' | 'voice' = 'text') => {                                                                 
+    if (!content.trim() && type === 'text') return
+
+    haptics.trigger('light')
+
+    const newMessage = sendChatMessage(content, type)
+    if (!newMessage) return
+
+    setInputValue('')
+    setShowStickers(false)
+    handleTypingMessageSend()
+    
+    if (type === 'text') {
+      toast.success('Message sent!', {
+        duration: 1500,
+        position: 'top-center'
+      })
+    }
+  }
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value)
+    handleTypingInputChange(value)
+  }
+
+  const handleReaction = (messageId: string, emoji: string) => {
+    haptics.trigger('selection')
+    addChatReaction(messageId, emoji as ReactionType)
+    setShowReactions(null)
+  }
+
+  const handleUseTemplate = (template: string) => {
+    setInputValue(template)
+    setShowTemplates(false)
+    inputRef.current?.focus()
+  }
+
+  const handleVoiceRecorded = async (audioBlob: Blob, duration: number, waveform: number[]) => {                                                                
+    const messageId = generateMessageId()
+    
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const base64Audio = reader.result as string
+      
+      setVoiceMessage(messageId, { blob: base64Audio, duration, waveform })
+
+      const newMessage: ChatMessage = {
+        id: messageId,
+        roomId: room.id,
+        senderId: currentUserId,
+        senderName: currentUserName,
+        content: `Voice message (${String(Math.floor(duration / 60) ?? '')}:${String((duration % 60).toString().padStart(2, '0') ?? '')})`,
+        type: 'voice',
+        timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        status: 'sent',
+        reactions: []
+      }
+      if (currentUserAvatar !== undefined) {
+        newMessage.senderAvatar = currentUserAvatar
+      }
+
+      setMessages((current: ChatMessage[]) => [...(current || []), newMessage])
+      setIsRecording(false)
+      
+      toast.success('Voice message sent!', {
+        duration: 1500,
+        position: 'top-center'
+      })
+    }
+    
+    reader.readAsDataURL(audioBlob)
+  }
+
+  const handleVoiceCancel = () => {
+    setIsRecording(false)
+    toast.info('Recording cancelled', {
+      duration: 1000,
+      position: 'top-center'
+    })
+  }
+
+  const toggleVoicePlayback = (messageId: string) => {
+    if (!voiceMessages) return
+    
+    const voiceData = voiceMessages[messageId]
+    if (!voiceData) return
+
+    if (playingVoice === messageId) {
+      if (isTruthy(audioRef.current)) {
+        audioRef.current.pause()
+        audioRef.current = null
+      }
+      setPlayingVoice(null)
+      return
+    }
+
+    if (isTruthy(audioRef.current)) {
+      audioRef.current.pause()
+      audioRef.current = null
+    }
+
+    const audio = new Audio(voiceData.blob)
+    audio.onended = () => {
+      setPlayingVoice(null)
+      audioRef.current = null
+    }
+    audio.play()
+    audioRef.current = audio
+    setPlayingVoice(messageId)
+  }
+
+  const markMessagesAsRead = () => {
+    markChatAsRead()
+  }
+
+  const messageGroups = chatMessageGroups
+
+  // Get last message for announcements (only announce messages from other users)
+  const lastMessage = messages && messages.length > 0 ? messages[messages.length - 1] : null
+  const lastMessageText = lastMessage && lastMessage.senderId !== currentUserId 
+    ? lastMessage.content 
+    : null
+  const lastMessageSender = lastMessage && lastMessage.senderId !== currentUserId
+    ? lastMessage.senderName
+    : null
+  
+  // Get typing user for announcements (only announce typing from other users)
+  const typingUser = typingUsers.length > 0 && typingUsers[0]?.userId !== currentUserId
+    ? typingUsers[0]?.userName ?? null
+    : null
+  const multipleTypingUsers = typingUsers.filter(u => u.userId !== currentUserId).length > 1
+
+  const handleVoiceCall = () => {
+    haptics.trigger('heavy')
+    const petId = room.matchedPetId
+    const petName = room.matchedPetName
+    if (petId && petName) {
+      initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'voice')
+      toast.info('Starting voice call...')
+    }
+  }
+
+  const handleVideoCall = () => {
+    haptics.trigger('heavy')
+    const petId = room.matchedPetId
+    const petName = room.matchedPetName
+    if (petId && petName) {
+      initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'video')
+      toast.info('Starting video call...')
+    }
+  }
+
+  const incomingCallPresence = useAnimatePresence({ isVisible: !!(incomingCall && room.matchedPetName) })
+  const activeCallPresence = useAnimatePresence({ isVisible: !!activeCall })
+
+  return (
+    <>
+      <SkipToComposer inputRef={inputRef} />
+      <AnnounceNewMessage 
+        lastText={lastMessageText} 
+        senderName={lastMessageSender} 
+      />
+      <AnnounceTyping 
+        userName={typingUser} 
+        multipleUsers={multipleTypingUsers} 
+      />
+      
+      {incomingCallPresence.shouldRender && incomingCall && room.matchedPetName && (
+        <AnimatedView style={incomingCallPresence.animatedStyle}>
+          <IncomingCallNotification
+            call={incomingCall}
+            callerName={room.matchedPetName ?? ''}
+            {...(room.matchedPetPhoto ? { callerAvatar: room.matchedPetPhoto } : {})}
+            onAccept={answerCall}
+            onDecline={declineCall}
+          />
+        </AnimatedView>
+      )}
+
+      {activeCallPresence.shouldRender && activeCall && (
+        <AnimatedView style={activeCallPresence.animatedStyle}>
+          <CallInterface
+            session={activeCall}
+            onEndCall={endCall}
+            onToggleMute={toggleMute}
+            onToggleVideo={toggleVideo}
+          />
+        </AnimatedView>
+      )}
+
+      <div className="flex flex-col h-full">
+        <AnimatedView 
+          style={headerStyle}
+          className="glass-strong border-b border-white/20 p-4 shadow-xl backdrop-blur-2xl"
+        >
+          <div className="flex items-center gap-3">
+            {onBack && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBack}
+                className="md:hidden"
+              >
+                <ArrowLeft size={20} />
+              </Button>
+            )}
+            
+            <Avatar className="w-10 h-10 ring-2 ring-white/30">
+              <AvatarImage src={room.matchedPetPhoto || undefined} alt={room.matchedPetName || undefined} />
+              <AvatarFallback className="bg-linear-to-br from-primary to-accent text-white font-bold">
+                {room.matchedPetName?.[0] || '?'}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex-1">
+              <h2 className="font-bold text-foreground">{room.matchedPetName || 'Unknown'}</h2>
+              {typingUsers.length > 0 && (
+                <AnimatedView
+                  style={typingContainerStyle}
+                  className="text-xs text-primary flex items-center gap-1"
+                >
+                  <AnimatedView style={typingTextStyle}>
+                    {typingUsers.length === 1
+                      ? `${typingUsers[0]?.userName ?? 'Someone'} is typing`
+                      : `${String(typingUsers.length ?? '')} people are typing`}
+                  </AnimatedView>
+                  <AnimatedView style={typingDotsStyle}>
+                    ...
+                  </AnimatedView>
+                </AnimatedView>
+              )}
+            </div>
+
+            <AnimatedView style={videoButtonHover.animatedStyle}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="shrink-0"
+                onClick={handleVideoCall}
+                onMouseEnter={videoButtonHover.handleEnter}
+                onMouseLeave={videoButtonHover.handleLeave}
+                title="Start video call"
+                aria-label="Start video call"
+              >
+                <VideoCamera size={24} weight="regular" />
+              </Button>
+            </AnimatedView>
+
+            <AnimatedView style={voiceButtonHover.animatedStyle}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="shrink-0"
+                onClick={handleVoiceCall}
+                onMouseEnter={voiceButtonHover.handleEnter}
+                onMouseLeave={voiceButtonHover.handleLeave}
+                title="Start voice call"
+                aria-label="Start voice call"
+              >
+                <Phone size={24} weight="regular" />
+              </Button>
+            </AnimatedView>
+
+            <Button variant="ghost" size="icon" className="shrink-0" aria-label="Chat options menu">
+              <DotsThree size={24} weight="bold" />
+            </Button>
+          </div>
+        </AnimatedView>
+
+        {useVirtualizedList ? (
+          <VirtualMessageList
+            messages={messages as ChatMessage[] || []}
+            currentUserId={currentUserId}
+            typingUsers={typingUsers}
+            onReaction={handleReaction}
+            onTranslate={() => {}}
+          />
+        ) : (
+          <>
+            <div 
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto p-4 space-y-6"
+            >
+              {messageGroups.map((group: { date: string; messages: ChatMessage[] }) => (
+                <div key={group.date} className="space-y-4">
+                  <AnimatedView
+                    className="flex justify-center"
+                    style={useAnimatedStyle(() => ({
+                      opacity: 1,
+                      transform: [{ scale: 1 }]
+                    })) as AnimatedStyle}
+                  >
+                    <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
+                      {group.date}
+                    </div>
+                  </AnimatedView>
+
+                  {group.messages.map((message: ChatMessage) => {
+                    const isCurrentUser = message.senderId === currentUserId
+                    
+                    return (
+                  <AnimatedView
+                    key={message.id}
+                    className={`flex items-end gap-2 ${String(isCurrentUser ? 'flex-row-reverse' : 'flex-row' ?? '')}`}
+                    style={useAnimatedStyle(() => ({
+                      opacity: 1,
+                      transform: [{ translateY: 0 }, { scale: 1 }]
+                    })) as AnimatedStyle}
+                  >
+                    {!isCurrentUser && (
+                      <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
+                        <AvatarImage src={message.senderAvatar || undefined} alt={message.senderName || undefined} />
+                        <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
+                          {message.senderName?.[0] || '?'}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+
+                    <div className={`flex flex-col max-w-[75%] ${String(isCurrentUser ? 'items-end' : 'items-start' ?? '')}`}>
+                      <AnimatedView
+                        style={messageBubbleHover.animatedStyle}
+                        onMouseEnter={messageBubbleHover.handleEnter}
+                        onMouseLeave={messageBubbleHover.handleLeave}
+                        className={`relative group ${
+                          String(message.type === 'sticker' ? 'p-0' : 'p-3' ?? '')
+                        } rounded-2xl shadow-lg ${
+                          String(isCurrentUser
+                                                        ? 'bg-linear-to-br from-primary to-accent text-white'
+                                                        : 'glass-strong backdrop-blur-xl border border-white/20' ?? '')
+                        }`}
+                      >
+                        {message.type === 'text' && (
+                          <p className="text-sm wrap-break-word">{message.content}</p>
+                        )}
+                        
+                        {message.type === 'sticker' && (
+                          <div className="text-5xl p-2">
+                            {message.content}
+                          </div>
+                        )}
+
+                        {message.type === 'voice' && voiceMessages && voiceMessages[message.id] && (
+                          <AnimatedView
+                            style={voiceButtonTap.animatedStyle}
+                            onClick={() => { toggleVoicePlayback(message.id); }}
+                            className="flex items-center gap-2 min-w-[200px] cursor-pointer"
+                            onMouseEnter={voiceButtonHover.handleEnter}
+                            onMouseLeave={voiceButtonHover.handleLeave}
+                          >
+                            <AnimatedView 
+                              style={voiceButtonHover.animatedStyle}
+                              className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"
+                            >
+                              {playingVoice === message.id ? (
+                                <Pause size={16} weight="fill" />
+                              ) : (
+                                <Play size={16} weight="fill" />
+                              )}
+                            </AnimatedView>
+                            <div className="flex-1 h-8 flex items-center gap-0.5">
+                              {voiceMessages[message.id]?.waveform.slice(0, 30).map((value, i) => (
+                                <div
+                                  key={i}
+                                  className="w-1 bg-white/60 rounded-full transition-opacity"
+                                  style={{ height: `${String(Math.max(value * 24, 4) ?? '')}px` }}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-xs opacity-80">
+                              {(() => {
+                                const voiceMsg = voiceMessages[message.id]
+                                if (!voiceMsg) return null
+                                return `${String(Math.floor(voiceMsg.duration / 60) ?? '')}:${String((voiceMsg.duration % 60).toString().padStart(2, '0') ?? '')}`
+                              })()}
+                            </span>
+                          </AnimatedView>
+                        )}
+
+                        <Popover open={showReactions === message.id} onOpenChange={(open) => { setShowReactions(open ? message.id : null); }}>
+                          <PopoverTrigger asChild>
+                            <AnimatedView
+                              style={reactionButtonTap.animatedStyle}
+                              onClick={() => {}}
+                              className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                              onMouseEnter={reactionButtonHover.handleEnter}
+                              onMouseLeave={reactionButtonHover.handleLeave}
+                            >
+                              <Heart size={14} weight="fill" className="text-red-500" />
+                            </AnimatedView>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-2 glass-strong backdrop-blur-2xl border-white/30" side="top">
+                            <div className="flex gap-1">
+                              {REACTION_EMOJIS.slice(0, 6).map((emoji) => (
+                                <AnimatedView
+                                  key={emoji}
+                                  style={reactionButtonTap.animatedStyle}
+                                  onClick={() => { handleReaction(message.id, emoji); }}
+                                  className="text-2xl p-2 rounded-lg hover:bg-white/20 transition-colors cursor-pointer"
+                                  onMouseEnter={reactionButtonHover.handleEnter}
+                                  onMouseLeave={reactionButtonHover.handleLeave}
+                                >
+                                  {emoji}
+                                </AnimatedView>
+                              ))}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </AnimatedView>
+
+                      {(() => {
+                        const reactionsArray = getReactionsArray(message.reactions)
+                        return reactionsArray.length > 0 && (
+                          <AnimatedView
+                            className="flex gap-1 mt-1 px-2"
+                            style={useAnimatedStyle(() => ({
+                              transform: [{ scale: 1 }]
+                            })) as AnimatedStyle}
+                          >
+                            {reactionsArray.map((reaction: MessageReaction, idx: number) => (
+                              <AnimatedView
+                                key={idx}
+                                style={reactionButtonHover.animatedStyle}
+                                onMouseEnter={reactionButtonHover.handleEnter}
+                                onMouseLeave={reactionButtonHover.handleLeave}
+                                className="text-lg bg-white/80 rounded-full px-2 py-0.5 shadow-sm cursor-pointer"
+                                title={reaction.userName}
+                              >
+                                {reaction.emoji}
+                              </AnimatedView>
+                            ))}
+                          </AnimatedView>
+                        )
+                      })()}
+
+                      <div className="flex items-center gap-1 mt-1 px-1">
+                        <span className="text-xs text-muted-foreground">
+                          {formatChatTime(message.timestamp)}
+                        </span>
+                        {isCurrentUser && (
+                          <span className="text-muted-foreground">
+                            {message.status === 'read' ? (
+                              <Checks size={14} weight="bold" className="text-primary" />
+                            ) : (
+                              <Check size={14} weight="bold" />
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </AnimatedView>
+                    )
+                  })}
+                </div>
+              ))}
+            </div>
+            
+            {typingUsers.length > 0 && (
+              <AnimatedView
+                key="typing-indicators"
+                className="flex items-end gap-2 flex-row p-4"
+                style={useAnimatedStyle(() => ({
+                  opacity: 1,
+                  transform: [{ translateY: 0 }]
+                })) as AnimatedStyle}
+              >
+                <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
+                  <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
+                    {typingUsers[0]?.userName?.[0] || '?'}
+                  </AvatarFallback>
+                </Avatar>
+                <WebBubbleWrapper
+                  showTyping
+                  isIncoming
+                >
+                  <div />
+                </WebBubbleWrapper>
+              </AnimatedView>
+            )}
+          </>
+        )}
+
+        <AnimatedView
+          className="glass-strong border-t border-white/20 p-4 shadow-2xl backdrop-blur-2xl"
+          style={useAnimatedStyle(() => ({
+            opacity: 1,
+            transform: [{ translateY: 0 }]
+          })) as AnimatedStyle}
+        >
+          {showTemplates && (
+            <AnimatedView
+              style={templatesStyle}
+              className="mb-3 overflow-hidden"
+            >
+              <div className="glass-effect rounded-2xl p-3 space-y-2">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-semibold flex items-center gap-2">
+                    <Sparkle size={16} weight="fill" className="text-primary" />
+                    Quick Templates
+                  </h4>
+                  <Button variant="ghost" size="sm" onClick={() => { setShowTemplates(false); }}>
+                    <X size={16} />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {MESSAGE_TEMPLATES.slice(0, 4).map((template) => (
+                    <AnimatedView
+                      key={template.id}
+                      style={[
+                        templateButtonHover.animatedStyle,
+                        templateButtonTap.animatedStyle
+                      ]}
+                      onClick={() => { handleUseTemplate(template.text); }}
+                      onMouseEnter={templateButtonHover.handleEnter}
+                      onMouseLeave={templateButtonHover.handleLeave}
+                      onMouseDown={templateButtonTap.handlePress}
+                      className="text-left p-2 rounded-lg glass-effect hover:glass-strong transition-all text-sm cursor-pointer"
+                    >
+                      <span className="mr-2">{template.icon}</span>
+                      {template.title}
+                    </AnimatedView>
+                  ))}
+                </div>
+              </div>
+            </AnimatedView>
+          )}
+
+          {isRecording ? (
+            <VoiceRecorder
+              onRecorded={handleVoiceRecorded}
+              onCancel={handleVoiceCancel}
+              maxDuration={120}
+            />
+          ) : (
+            <div className="flex items-end gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => { setShowTemplates(!showTemplates); }}
+                className="shrink-0"
+                aria-label={showTemplates ? 'Close message templates' : 'Open message templates'}
+                aria-expanded={showTemplates}
+              >
+                <ChatCentered size={24} weight={showTemplates ? 'fill' : 'regular'} />
+              </Button>
+
+              <Popover open={showStickers} onOpenChange={setShowStickers}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0"
+                    aria-label={showStickers ? 'Close stickers and emojis' : 'Open stickers and emojis'}
+                    aria-expanded={showStickers}
+                  >
+                    <Smiley size={24} weight={showStickers ? 'fill' : 'regular'} />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent 
+                  className="w-80 glass-strong backdrop-blur-2xl border-white/30"
+                  side="top"
+                >
+                  <Tabs defaultValue="stickers" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="stickers">Stickers</TabsTrigger>
+                      <TabsTrigger value="emojis">Reactions</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="stickers" className="mt-3">
+                      <div className="grid grid-cols-6 gap-2">
+                        {CHAT_STICKERS.map((sticker) => (
+                          <AnimatedView
+                            key={sticker.id}
+                            style={[stickerButtonTap.animatedStyle, stickerButtonHover.animatedStyle]}
+                            onClick={() => { handleSendMessage(sticker.emoji, 'sticker'); }}
+                            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault()
+                                handleSendMessage(sticker.emoji, 'sticker')
+                              }
+                            }}
+                            className="text-3xl p-2 rounded-xl hover:bg-white/20 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            onMouseEnter={stickerButtonHover.handleEnter}
+                            onMouseLeave={stickerButtonHover.handleLeave}
+                            title={sticker.label}
+                            role="button"
+                            aria-label={`Send ${String(sticker.label ?? '')} sticker`}
+                            tabIndex={0}
+                          >
+                            {sticker.emoji}
+                          </AnimatedView>
+                        ))}
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="emojis" className="mt-3">
+                      <div className="grid grid-cols-6 gap-2">
+                        {REACTION_EMOJIS.map((emoji) => (
+                          <AnimatedView
+                            key={emoji}
+                            style={[emojiButtonTap.animatedStyle, emojiButtonHover.animatedStyle]}
+                            onClick={() => { handleSendMessage(emoji, 'text'); }}
+                            onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault()
+                                handleSendMessage(emoji, 'text')
+                              }
+                            }}
+                            className="text-2xl p-2 rounded-xl hover:bg-white/20 transition-colors text-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            onMouseEnter={emojiButtonHover.handleEnter}
+                            onMouseLeave={emojiButtonHover.handleLeave}
+                            role="button"
+                            aria-label={`Send ${String(emoji ?? '')} emoji`}
+                            tabIndex={0}
+                          >
+                            {emoji}
+                          </AnimatedView>
+                        ))}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </PopoverContent>
+              </Popover>
+
+              <div className="flex-1 relative">
+                <Input
+                  id="chat-input"
+                  ref={inputRef}
+                  value={inputValue}
+                  onChange={(e) => { handleInputChange(e.target.value); }}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      handleSendMessage(inputValue, 'text')
+                    }
+                  }}
+                  placeholder="Type a message..."
+                  className="pr-12 glass-effect border-white/30 focus:border-primary/50 backdrop-blur-xl"
+                  aria-label="Message input"
+                />
+              </div>
+
+              <Button
+                onClick={() => {
+                  haptics.trigger('medium')
+                  setIsRecording(true)
+                }}
+                size="icon"
+                variant="ghost"
+                className="shrink-0"
+                aria-label="Record voice message"
+              >
+                <Microphone size={20} weight="regular" />
+              </Button>
+
+              <AnimatedView style={[sendButtonHover.animatedStyle, sendButtonTap.animatedStyle]}>
+                <Button
+                  onClick={() => { handleSendMessage(inputValue, 'text'); }}
+                  disabled={!inputValue.trim()}
+                  size="icon"
+                  className="shrink-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all disabled:opacity-50"
+                  onMouseEnter={sendButtonHover.handleEnter}
+                  onMouseLeave={sendButtonHover.handleLeave}
+                  aria-label="Send message"
+                >
+                  <PaperPlaneRight size={20} weight="fill" />
+                </Button>
+              </AnimatedView>
+            </div>
+          )}
+        </AnimatedView>
+      </div>
+    </>
+  )
+}

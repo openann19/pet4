@@ -1,0 +1,79 @@
+'use client'
+
+import { useCallback } from 'react'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing
+} from 'react-native-reanimated'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { useUIConfig } from '@/hooks/useUIConfig'
+
+export interface UseParticleBurstOnDeleteOptions {
+  enabled?: boolean
+}
+
+export interface UseParticleBurstOnDeleteReturn {
+  trigger: (x: number, y: number) => void
+  animatedStyle: AnimatedStyle
+}
+
+/**
+ * Particle burst effect on delete
+ * 
+ * Creates particle explosion when message is deleted
+ * 
+ * @example
+ * ```tsx
+ * const { trigger } = useParticleBurstOnDelete()
+ * const handleDelete = () => {
+ *   trigger(100, 100)
+ * }
+ * ```
+ */
+export function useParticleBurstOnDelete(
+  options: UseParticleBurstOnDeleteOptions = {}
+): UseParticleBurstOnDeleteReturn {
+  const { enabled = true } = options
+  const { animation } = useUIConfig()
+
+  const particles = useSharedValue(0)
+
+  const trigger = useCallback(
+    (_x: number, _y: number): void => {
+      if (!enabled || !animation.showParticles) {
+        return
+      }
+
+      particles.value = withTiming(1, {
+        duration: 100,
+        easing: Easing.out(Easing.ease)
+      })
+
+      setTimeout(() => {
+        particles.value = withTiming(0, {
+          duration: 200,
+          easing: Easing.in(Easing.ease)
+        })
+      }, 100)
+    },
+    [enabled, animation.showParticles, particles]
+  )
+
+  const animatedStyle = useAnimatedStyle(() => {
+    if (!enabled || !animation.showParticles) {
+      return {}
+    }
+
+    return {
+      opacity: particles.value
+    }
+  }) as AnimatedStyle
+
+  return {
+    trigger,
+    animatedStyle
+  }
+}
+

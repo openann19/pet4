@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="retry">Опитайте отново</string>
+    <string name="cancel">Отказ</string>
+    <string name="close">Затвори</string>
+    <string name="ok">Добре</string>
+    <string name="done">Готово</string>
+    
+    <!-- Discover Screen -->
+    <string name="discover.empty.title">Няма животни за откриване</string>
+    <string name="discover.empty.message">Започнете да свайпвате, за да намерите идеалния си мач!</string>
+    <string name="discover.error.title">Не може да се заредят животни</string>
+    <string name="discover.error.message">Моля, проверете връзката си и опитайте отново.</string>
+    <string name="discover.offline.title">Офлайн сте</string>
+    <string name="discover.offline.message">Проверете връзката си, за да видите повече животни.</string>
+    
+    <!-- Matches Screen -->
+    <string name="matches.empty.title">Все още няма мачове</string>
+    <string name="matches.empty.message">Продължете да свайпвате, за да намерите идеалния си мач!</string>
+    <string name="matches.error.title">Не може да се заредят мачове</string>
+    <string name="matches.error.message">Моля, проверете връзката си и опитайте отново.</string>
+    <string name="matches.offline.title">Офлайн сте</string>
+    <string name="matches.offline.message">Проверете връзката си, за да видите вашите мачове.</string>
+    
+    <!-- Chat Screen -->
+    <string name="chat.empty.title">Няма разговори</string>
+    <string name="chat.empty.message">Започнете чат с вашите мачове!</string>
+    <string name="chat.error.title">Не може да се заредят разговори</string>
+    <string name="chat.error.message">Моля, проверете връзката си и опитайте отново.</string>
+    <string name="chat.offline.title">Офлайн сте</string>
+    <string name="chat.offline.message">Проверете връзката си, за да изпращате съобщения.</string>
+    
+    <!-- Profile Screen -->
+    <string name="profile.empty.title">Попълнете профила си</string>
+    <string name="profile.empty.message">Добавете снимки и информация, за да започнете!</string>
+    <string name="profile.error.title">Не може да се зареди профил</string>
+    <string name="profile.error.message">Моля, проверете връзката си и опитайте отново.</string>
+    <string name="profile.offline.title">Офлайн сте</string>
+    <string name="profile.offline.message">Проверете връзката си, за да актуализирате профила си.</string>
+    
+    <!-- AI Analysis -->
+    <string name="ai.empty.title">Качете снимка</string>
+    <string name="ai.empty.message">Получете анализ на породата с AI!</string>
+    <string name="ai.error.title">Анализът не бе успешен</string>
+    <string name="ai.error.message">Моля, опитайте отново или качете друга снимка.</string>
+    <string name="ai.analyzing.title">Анализиране...</string>
+    <string name="ai.analyzing.message">Моля, изчакайте, докато анализираме снимката на вашето домашно животно.</string>
+    <string name="ai.offline.title">Офлайн сте</string>
+    <string name="ai.offline.message">Проверете връзката си, за да анализирате снимки.</string>
+    
+    <!-- Maps Screen -->
+    <string name="maps.empty.title">Активирайте местоположението</string>
+    <string name="maps.empty.message">Вижте животни близо до вас на картата!</string>
+    <string name="maps.error.title">Не може да се зареди карта</string>
+    <string name="maps.error.message">Моля, проверете връзката си и опитайте отново.</string>
+    <string name="maps.offline.title">Офлайн сте</string>
+    <string name="maps.offline.message">Проверете връзката си, за да видите картата.</string>
+    
+    <!-- Offline Banner -->
+    <string name="offline.title">Офлайн сте</string>
+    <string name="offline.check_connection">Проверете връзката</string>
+    
+    <!-- Actions -->
+    <string name="action.like">Харесай</string>
+    <string name="action.pass">Пропусни</string>
+    <string name="action.match">Мач!</string>
+    <string name="action.analyze">Анализирай снимка</string>
+    <string name="action.start_chat">Започни чат</string>
+    <string name="action.edit_profile">Редактирай профил</string>
+    
+    <!-- Accessibility -->
+    <string name="a11y.like_button">Харесай това животно</string>
+    <string name="a11y.pass_button">Пропусни това животно</string>
+    <string name="a11y.match_button">Вие съвпаднахте!</string>
+    <string name="a11y.pet_card">Профил на животно: %1$s</string>
+    <string name="a11y.pet_image">Снимка на %1$s, %2$s</string>
+</resources>

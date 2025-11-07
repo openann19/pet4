@@ -1,0 +1,140 @@
+/**
+ * Button Color Tokens CSS Variables
+ * 
+ * Replaces opacity/blend hacks with solid, AA-compliant colors
+ * Automatically switches based on theme (dark/light) and locale (en/bg)
+ */
+
+@layer theme {
+  :root {
+    /* Default (Light theme, English) */
+    --btn-primary-bg: #2563EB;
+    --btn-primary-fg: #FFFFFF;
+    --btn-primary-hover-bg: #1D4ED8;
+    --btn-primary-hover-fg: #FFFFFF;
+    --btn-primary-press-bg: #1E40AF;
+    --btn-primary-press-fg: #FFFFFF;
+    --btn-primary-disabled-bg: #F1F5F9;
+    --btn-primary-disabled-fg: #94A3B8;
+    --btn-primary-focus-ring: #3B82F6;
+
+    --btn-secondary-bg: #64748B;
+    --btn-secondary-fg: #FFFFFF;
+    --btn-secondary-hover-bg: #475569;
+    --btn-secondary-hover-fg: #FFFFFF;
+    --btn-secondary-press-bg: #334155;
+    --btn-secondary-press-fg: #FFFFFF;
+    --btn-secondary-disabled-bg: #F1F5F9;
+    --btn-secondary-disabled-fg: #94A3B8;
+    --btn-secondary-focus-ring: #475569;
+
+    --btn-destructive-bg: #DC2626;
+    --btn-destructive-fg: #FFFFFF;
+    --btn-destructive-hover-bg: #B91C1C;
+    --btn-destructive-hover-fg: #FFFFFF;
+    --btn-destructive-press-bg: #991B1B;
+    --btn-destructive-press-fg: #FFFFFF;
+    --btn-destructive-disabled-bg: #F1F5F9;
+    --btn-destructive-disabled-fg: #94A3B8;
+    --btn-destructive-focus-ring: #EF4444;
+
+    --btn-outline-border: #CBD5E1;
+    --btn-outline-bg: transparent;
+    --btn-outline-fg: #0F172A;
+    --btn-outline-hover-border: #94A3B8;
+    --btn-outline-hover-bg: #F8FAFC;
+    --btn-outline-hover-fg: #020617;
+    --btn-outline-press-border: #94A3B8;
+    --btn-outline-press-bg: #F1F5F9;
+    --btn-outline-press-fg: #020617;
+    --btn-outline-disabled-border: #E2E8F0;
+    --btn-outline-disabled-bg: transparent;
+    --btn-outline-disabled-fg: #94A3B8;
+    --btn-outline-focus-ring: #64748B;
+
+    --btn-ghost-bg: transparent;
+    --btn-ghost-fg: #0F172A;
+    --btn-ghost-hover-bg: #F8FAFC;
+    --btn-ghost-hover-fg: #020617;
+    --btn-ghost-press-bg: #F1F5F9;
+    --btn-ghost-press-fg: #020617;
+    --btn-ghost-disabled-bg: transparent;
+    --btn-ghost-disabled-fg: #94A3B8;
+    --btn-ghost-focus-ring: #64748B;
+
+    --btn-link-fg: #2563EB;
+    --btn-link-hover-fg: #1D4ED8;
+    --btn-link-disabled-fg: #94A3B8;
+    --btn-link-focus-ring: #3B82F6;
+
+    /* Minimum touch target size */
+    --btn-min-size: 44px;
+  }
+
+  .dark-theme {
+    /* Dark theme, English (same as Bulgarian) */
+    --btn-primary-bg: #3B82F6;
+    --btn-primary-fg: #FFFFFF;
+    --btn-primary-hover-bg: #2563EB;
+    --btn-primary-hover-fg: #FFFFFF;
+    --btn-primary-press-bg: #1D4ED8;
+    --btn-primary-press-fg: #FFFFFF;
+    --btn-primary-disabled-bg: #1E293B;
+    --btn-primary-disabled-fg: #475569;
+    --btn-primary-focus-ring: #60A5FA;
+
+    --btn-secondary-bg: #475569;
+    --btn-secondary-fg: #FFFFFF;
+    --btn-secondary-hover-bg: #334155;
+    --btn-secondary-hover-fg: #FFFFFF;
+    --btn-secondary-press-bg: #1E293B;
+    --btn-secondary-press-fg: #FFFFFF;
+    --btn-secondary-disabled-bg: #1E293B;
+    --btn-secondary-disabled-fg: #475569;
+    --btn-secondary-focus-ring: #64748B;
+
+    --btn-destructive-bg: #EF4444;
+    --btn-destructive-fg: #FFFFFF;
+    --btn-destructive-hover-bg: #DC2626;
+    --btn-destructive-hover-fg: #FFFFFF;
+    --btn-destructive-press-bg: #B91C1C;
+    --btn-destructive-press-fg: #FFFFFF;
+    --btn-destructive-disabled-bg: #1E293B;
+    --btn-destructive-disabled-fg: #475569;
+    --btn-destructive-focus-ring: #F87171;
+
+    --btn-outline-border: #475569;
+    --btn-outline-bg: transparent;
+    --btn-outline-fg: #F1F5F9;
+    --btn-outline-hover-border: #64748B;
+    --btn-outline-hover-bg: #1E293B;
+    --btn-outline-hover-fg: #FFFFFF;
+    --btn-outline-press-border: #64748B;
+    --btn-outline-press-bg: #0F172A;
+    --btn-outline-press-fg: #FFFFFF;
+    --btn-outline-disabled-border: #334155;
+    --btn-outline-disabled-bg: transparent;
+    --btn-outline-disabled-fg: #475569;
+    --btn-outline-focus-ring: #64748B;
+
+    --btn-ghost-bg: transparent;
+    --btn-ghost-fg: #F1F5F9;
+    --btn-ghost-hover-bg: #1E293B;
+    --btn-ghost-hover-fg: #FFFFFF;
+    --btn-ghost-press-bg: #0F172A;
+    --btn-ghost-press-fg: #FFFFFF;
+    --btn-ghost-disabled-bg: transparent;
+    --btn-ghost-disabled-fg: #475569;
+    --btn-ghost-focus-ring: #64748B;
+
+    --btn-link-fg: #3B82F6;
+    --btn-link-hover-fg: #60A5FA;
+    --btn-link-disabled-fg: #475569;
+    --btn-link-focus-ring: #60A5FA;
+  }
+
+  /* Locale-specific overrides can be added here if needed */
+  [data-locale="bg"] {
+    /* Bulgarian locale uses same colors as English for now */
+  }
+}

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common -->
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="ok">OK</string>
+    <string name="done">Done</string>
+    
+    <!-- Discover Screen -->
+    <string name="discover.empty.title">No pets to discover</string>
+    <string name="discover.empty.message">Start swiping to find your perfect match!</string>
+    <string name="discover.error.title">Unable to load pets</string>
+    <string name="discover.error.message">Please check your connection and try again.</string>
+    <string name="discover.offline.title">You\'re offline</string>
+    <string name="discover.offline.message">Check your connection to see more pets.</string>
+    
+    <!-- Matches Screen -->
+    <string name="matches.empty.title">No matches yet</string>
+    <string name="matches.empty.message">Keep swiping to find your perfect match!</string>
+    <string name="matches.error.title">Unable to load matches</string>
+    <string name="matches.error.message">Please check your connection and try again.</string>
+    <string name="matches.offline.title">You\'re offline</string>
+    <string name="matches.offline.message">Check your connection to see your matches.</string>
+    
+    <!-- Chat Screen -->
+    <string name="chat.empty.title">No conversations</string>
+    <string name="chat.empty.message">Start chatting with your matches!</string>
+    <string name="chat.error.title">Unable to load conversations</string>
+    <string name="chat.error.message">Please check your connection and try again.</string>
+    <string name="chat.offline.title">You\'re offline</string>
+    <string name="chat.offline.message">Check your connection to send messages.</string>
+    
+    <!-- Profile Screen -->
+    <string name="profile.empty.title">Complete your profile</string>
+    <string name="profile.empty.message">Add photos and information to get started!</string>
+    <string name="profile.error.title">Unable to load profile</string>
+    <string name="profile.error.message">Please check your connection and try again.</string>
+    <string name="profile.offline.title">You\'re offline</string>
+    <string name="profile.offline.message">Check your connection to update your profile.</string>
+    
+    <!-- AI Analysis -->
+    <string name="ai.empty.title">Upload a photo</string>
+    <string name="ai.empty.message">Get AI-powered breed analysis!</string>
+    <string name="ai.error.title">Analysis failed</string>
+    <string name="ai.error.message">Please try again or upload a different photo.</string>
+    <string name="ai.analyzing.title">Analyzing...</string>
+    <string name="ai.analyzing.message">Please wait while we analyze your pet\'s photo.</string>
+    <string name="ai.offline.title">You\'re offline</string>
+    <string name="ai.offline.message">Check your connection to analyze photos.</string>
+    
+    <!-- Maps Screen -->
+    <string name="maps.empty.title">Enable location</string>
+    <string name="maps.empty.message">See pets near you on the map!</string>
+    <string name="maps.error.title">Unable to load map</string>
+    <string name="maps.error.message">Please check your connection and try again.</string>
+    <string name="maps.offline.title">You\'re offline</string>
+    <string name="maps.offline.message">Check your connection to see the map.</string>
+    
+    <!-- Offline Banner -->
+    <string name="offline.title">You\'re offline</string>
+    <string name="offline.check_connection">Check Connection</string>
+    
+    <!-- Actions -->
+    <string name="action.like">Like</string>
+    <string name="action.pass">Pass</string>
+    <string name="action.match">Match!</string>
+    <string name="action.analyze">Analyze Photo</string>
+    <string name="action.start_chat">Start Chat</string>
+    <string name="action.edit_profile">Edit Profile</string>
+    
+    <!-- Accessibility -->
+    <string name="a11y.like_button">Like this pet</string>
+    <string name="a11y.pass_button">Pass this pet</string>
+    <string name="a11y.match_button">You matched!</string>
+    <string name="a11y.pet_card">Pet profile: %1$s</string>
+    <string name="a11y.pet_image">Photo of %1$s, %2$s</string>
+</resources>

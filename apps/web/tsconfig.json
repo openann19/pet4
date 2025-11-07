@@ -1,0 +1,35 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@design-system/*": ["./design-system/*"],
+      "@petspark/chat-core": ["../../packages/chat-core/src/index.ts"],
+      "@petspark/config": ["../../packages/config/src/index.ts"]
+    }
+  },
+  "include": [
+    "src",
+    "src/test/vitest.d.ts",
+    "src/types/**/*.d.ts",
+    "*.d.ts",
+    "*.ts",
+    "vite.config.ts",
+    "design-system/**/*.ts",
+    "design-system/**/*.tsx",
+    "scripts/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    ".next",
+    "coverage",
+    "storybook-static",
+    "src/lib/kyc-native.ts",
+    "src/components/ChatWindowNew.tsx",
+    "**/*.stories.tsx"
+  ]
+}

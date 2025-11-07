@@ -1,0 +1,29 @@
+{
+  "zIndex": {
+    "scale": [0, 1, 10, 100, 1000, 10000],
+    "layers": {
+      "base": 0,
+      "content": 1,
+      "sticky": 10,
+      "overlay": 100,
+      "modal": 1000,
+      "tooltip": 10000
+    },
+    "component": {
+      "appBar": 100,
+      "bottomNav": 100,
+      "floatingActionButton": 100,
+      "sheet": 1000,
+      "dialog": 1000,
+      "modal": 1000,
+      "tooltip": 10000,
+      "toast": 10000,
+      "dropdown": 1000,
+      "overlay": 100
+    },
+    "stacking": {
+      "note": "Use elevation (dp) for Material 3 surfaces, zIndex for overlay stacking only"
+    }
+  }
+}
+

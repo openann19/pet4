@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": true
+  },
+  "include": [
+    "src/core/**/*.{ts,tsx}",
+    "src/api/**/*.{ts,tsx}",
+    "design-system/**/*.{ts,tsx}"
+  ]
+}
+

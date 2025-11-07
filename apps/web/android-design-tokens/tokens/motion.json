@@ -1,0 +1,154 @@
+{
+  "motion": {
+    "durations": {
+      "instant": 0,
+      "fast": 150,
+      "normal": 240,
+      "smooth": 320,
+      "slow": 400,
+      "slower": 600
+    },
+    "easing": {
+      "standard": {
+        "type": "cubic-bezier",
+        "values": [0.2, 0, 0, 1],
+        "usage": "Standard entry/exit"
+      },
+      "decelerate": {
+        "type": "cubic-bezier",
+        "values": [0, 0, 0.2, 1],
+        "usage": "Decelerating (ease-out)"
+      },
+      "accelerate": {
+        "type": "cubic-bezier",
+        "values": [0.4, 0, 1, 1],
+        "usage": "Accelerating (ease-in)"
+      },
+      "emphasized": {
+        "type": "cubic-bezier",
+        "values": [0.2, 0, 0, 1],
+        "usage": "Emphasized (Material 3)"
+      },
+      "spring": {
+        "type": "spring",
+        "damping": 15,
+        "stiffness": 250,
+        "mass": 0.9,
+        "usage": "Natural spring physics"
+      }
+    },
+    "transitions": {
+      "fade": {
+        "duration": 240,
+        "easing": "standard"
+      },
+      "slide": {
+        "duration": 320,
+        "easing": "emphasized"
+      },
+      "scale": {
+        "duration": 240,
+        "easing": "decelerate"
+      },
+      "slideUp": {
+        "duration": 320,
+        "easing": "emphasized"
+      },
+      "slideDown": {
+        "duration": 240,
+        "easing": "accelerate"
+      }
+    },
+    "components": {
+      "button": {
+        "press": {
+          "duration": 150,
+          "easing": "spring",
+          "scale": 0.95
+        },
+        "hover": {
+          "duration": 240,
+          "easing": "standard"
+        }
+      },
+      "card": {
+        "entry": {
+          "duration": 320,
+          "easing": "emphasized"
+        },
+        "exit": {
+          "duration": 240,
+          "easing": "accelerate"
+        },
+        "drag": {
+          "duration": 0,
+          "easing": "none",
+          "note": "No animation during drag gestures"
+        }
+      },
+      "sheet": {
+        "open": {
+          "duration": 320,
+          "easing": "emphasized"
+        },
+        "close": {
+          "duration": 240,
+          "easing": "accelerate"
+        },
+        "swipeDown": {
+          "duration": 240,
+          "easing": "accelerate"
+        }
+      },
+      "modal": {
+        "open": {
+          "duration": 320,
+          "easing": "emphasized"
+        },
+        "close": {
+          "duration": 240,
+          "easing": "accelerate"
+        },
+        "backdrop": {
+          "duration": 240,
+          "easing": "standard"
+        }
+      },
+      "toast": {
+        "show": {
+          "duration": 240,
+          "easing": "decelerate"
+        },
+        "hide": {
+          "duration": 150,
+          "easing": "accelerate"
+        }
+      },
+      "badge": {
+        "scale": {
+          "duration": 150,
+          "easing": "spring",
+          "scale": 1.2
+        },
+        "fade": {
+          "duration": 240,
+          "easing": "standard"
+        }
+      }
+    },
+    "reduceMotion": {
+      "enabled": true,
+      "disableAnimations": ["parallax", "decorative"],
+      "keepAnimations": ["state", "feedback", "focus"],
+      "durationMultiplier": 0.0,
+      "note": "Respect system Reduce Motion preference"
+    },
+    "performance": {
+      "animateOnly": ["transform", "opacity"],
+      "avoidAnimate": ["width", "height", "layout"],
+      "maxConcurrent": 8,
+      "note": "Animate transform/opacity only during gestures for performance"
+    }
+  }
+}
+
