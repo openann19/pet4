@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React from 'react'
 import { useColorScheme } from 'react-native'
 import { linking } from './linking'
-import { SignInForm } from '@ui-mobile'
+import { SignInForm, SignUpForm } from '@ui-mobile'
 import { PostComposer } from '@ui-mobile';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
@@ -37,13 +37,16 @@ function SignInScreen({ navigation }: SignInScreenProps): React.JSX.Element {
 }
 
 function SignUpScreen({ navigation }: SignUpScreenProps): React.JSX.Element {
-  // TODO: Create SignUpForm component
-  // For now, navigate back to SignIn
-  React.useEffect(() => {
-    navigation.navigate('SignIn')
-  }, [navigation])
-  
-  return <React.Fragment />
+  return (
+    <SignUpForm
+      onSuccess={() => {
+        navigation.replace('MainTabs')
+      }}
+      onSwitchToSignIn={() => {
+        navigation.navigate('SignIn')
+      }}
+    />
+  )
 }
 
 function PostComposerScreen({ navigation, route }: PostComposerScreenProps): React.JSX.Element {

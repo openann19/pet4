@@ -1,11 +1,12 @@
-# Production Readiness Status – 2025-11-07
+# Production Readiness Status – 2025-11-07 (updated)
 
 This canonical report supersedes prior status documents. Update this file for all future readiness changes so teams and auditors have a single source of truth.
 
 ## Executive Summary
 - **Overall status:** 🔴 Critical gaps prevent production launch across web and mobile clients.
-- **Primary blockers:** Mocked data layer, missing backend contracts, and unstable quality gates (lint/type/tests/security).
-- **Next checkpoint:** Re-run all baseline commands after backend wiring and lockfile restoration.
+- **Recent progress:** Web/mobile environment scaffolding restored, admin moderation now hits production APIs, and native background uploads flush pending media through the authenticated queue.
+- **Primary blockers:** Mocked backend contracts across core features and unstable quality gates (lint/type/tests/security).
+- **Next checkpoint:** Re-run all baseline commands after backend wiring, lockfile restoration, and first integrated end-to-end flow smoke test.
 
 ## KPI Dashboard (Last run: 2025-11-07)
 | Area | Status | Metric (last observed) | Command | Supporting Log |
@@ -21,7 +22,7 @@ This canonical report supersedes prior status documents. Update this file for al
 1. **Backend integration absent:** All API modules fall back to `spark.kv` mocks—no production data access.
 2. **Persistence layer missing:** No PostgreSQL connectivity, migrations, or transaction handling implemented.
 3. **Authentication incomplete:** Token lifecycle, session wiring, and auth contexts are not connected to real services.
-4. **Environment configuration gap:** `.env` scaffolding and runtime secrets are undefined; deployments cannot target real infrastructure.
+4. **Environment configuration gap:** ✅ `.env` scaffolding for web and mobile is restored with production-safe defaults; vault-backed secret injection still required before release.
 5. **Quality gates failing:** Lint, type-check, unit tests, and security audit all fail, preventing CI/CD promotion.
 
 ## Platform Readiness Overview (Traffic-Light as of 2025-11-07)

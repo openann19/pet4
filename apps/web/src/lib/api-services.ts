@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { messageReportSchema } from '@petspark/shared'
 import { validatedAPI } from './validated-api-client'
 import {
   petSchema,
@@ -298,6 +299,35 @@ export const kycAPI = {
 }
 
 export const adminAPI = {
+  async getChatReports(filters?: { status?: 'pending' | 'reviewed' | 'resolved' | 'dismissed'; limit?: number; cursor?: string }) {
+    const params = new URLSearchParams()
+    if (filters?.status) params.set('status', filters.status)
+    if (filters?.limit) params.set('limit', String(filters.limit))
+    if (filters?.cursor) params.set('cursor', filters.cursor)
+
+    const query = params.toString()
+
+    return validatedAPI.get(
+      `/api/v1/admin/chat/reports${query ? `?${query}` : ''}`,
+      z.object({
+        items: z.array(messageReportSchema),
+        total: z.number(),
+        nextCursor: z.string().optional(),
+      })
+    )
+  },
+
+  async reviewChatReport(reportId: string, payload: { action: 'warning' | 'mute' | 'suspend' | 'no_action'; reviewerId: string; notes?: string }) {
+    return validatedAPI.post(
+      `/api/v1/admin/chat/reports/${String(reportId ?? '')}/review`,
+      z.object({
+        report: messageReportSchema,
+        success: z.boolean(),
+      }),
+      payload
+    )
+  },
+
   async getModerationQueue() {
     return validatedAPI.get(
       '/api/v1/admin/moderation/queue',

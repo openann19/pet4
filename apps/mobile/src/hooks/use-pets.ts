@@ -11,66 +11,41 @@ import { queryKeys, mutationKeys } from '../lib/query-client'
 import type { ApiResponse, PaginatedResponse } from '../types/api'
 import type { Match, PetProfile } from '../types/pet'
 import { isTruthy, isDefined } from '@petspark/shared';
-
-const API_BASE_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'https://api.petspark.app'
+import { matchingApi, apiClient } from '../utils/api-client'
 
 /**
  * Fetch pets for matching
  */
 async function fetchPets(cursor?: string): Promise<PaginatedResponse<PetProfile>> {
-  const url = cursor
-    ? `${String(API_BASE_URL ?? '')}/api/pets?cursor=${String(cursor ?? '')}`
-    : `${String(API_BASE_URL ?? '')}/api/pets`
-  
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch pets: ${String(response.statusText ?? '')}`)
+  const response = await matchingApi.getAvailablePets({ cursor })
+  return {
+    items: response.pets,
+    cursor: response.nextCursor,
+    hasMore: Boolean(response.nextCursor),
+    total: response.total,
   }
-
-  const data = await response.json()
-  return data as PaginatedResponse<PetProfile>
 }
 
 /**
  * Like a pet (swipe right)
  */
 async function likePet(petId: string): Promise<ApiResponse<Match | null>> {
-  const response = await fetch(`${String(API_BASE_URL ?? '')}/api/pets/${String(petId ?? '')}/like`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to like pet: ${String(response.statusText ?? '')}`)
-  }
-
-  return response.json()
+  return apiClient.post<ApiResponse<Match | null>>(
+    `/pets/${String(petId ?? '')}/like`,
+    {},
+    { skipCache: true }
+  )
 }
 
 /**
  * Dislike a pet (swipe left)
  */
 async function dislikePet(petId: string): Promise<ApiResponse<null>> {
-  const response = await fetch(`${String(API_BASE_URL ?? '')}/api/pets/${String(petId ?? '')}/dislike`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to dislike pet: ${String(response.statusText ?? '')}`)
-  }
-
-  return response.json()
+  return apiClient.post<ApiResponse<null>>(
+    `/pets/${String(petId ?? '')}/dislike`,
+    {},
+    { skipCache: true }
+  )
 }
 
 /**

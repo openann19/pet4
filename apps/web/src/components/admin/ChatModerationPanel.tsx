@@ -10,7 +10,6 @@ import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useStorage } from '@/hooks/useStorage'
 import type { MessageReport } from '@/lib/chat-types'
 import { createLogger } from '@/lib/logger'
 import type { User } from '@/lib/user-service'
@@ -20,6 +19,8 @@ import { toast } from 'sonner'
 import { isTruthy } from '@petspark/shared'
 import { AnimatedView } from '@/effects/reanimated/animated-view'
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
+import { useStorage } from '@/hooks/useStorage'
+import { adminAPI } from '@/lib/api-services'
 
 const logger = createLogger('ChatModerationPanel')
 
@@ -37,10 +38,9 @@ export default function ChatModerationPanel() {
   const loadReports = async () => {
     setLoading(true)
     try {
-      // Load reported messages from storage
-      const { storage } = await import('@/lib/storage')
-      const allReports = await storage.get<MessageReport[]>('message-reports') ?? []
-      setReports(allReports.sort((a, b) => 
+      const response = await adminAPI.getChatReports()
+      const allReports = response.items ?? []
+      setReports(allReports.sort((a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       ))
     } catch (error) {
@@ -55,40 +55,18 @@ export default function ChatModerationPanel() {
     if (!selectedReport || !currentUser) return
 
     try {
-      // Update report status
-      const updatedReports = reports.map(r => 
-        r.id === selectedReport.id
-          ? {
-              ...r,
-              status: 'reviewed' as const,
-              reviewedBy: currentUser.id || 'admin',
-              reviewedAt: new Date().toISOString(),
-              action,
-            }
-          : r
-      )
+      const response = await adminAPI.reviewChatReport(selectedReport.id, {
+        action,
+        reviewerId: currentUser.id || 'admin',
+      })
 
-      const { storage } = await import('@/lib/storage')
-      await storage.set('message-reports', updatedReports)
-      setReports(updatedReports)
-
-      // Take action based on decision
-      if (action === 'suspend' || action === 'mute') {
-        // Update user status
-        const userKey = `users:${String(selectedReport.reportedUserId ?? '')}`
-        const user = await storage.get<Record<string, unknown>>(userKey)
-        if (isTruthy(user)) {
-          const updatedUser: Record<string, unknown> = {
-            ...user,
-            ['moderationStatus']: action === 'suspend' ? 'suspended' : 'muted'
-          }
-          await storage.set(userKey, updatedUser)
-        }
-      }
+      const updatedReport = response.report
+      setReports(prev => prev.map(r => (r.id === updatedReport.id ? updatedReport : r)))
 
       toast.success(`Action taken: ${String(action ?? '')}`)
       setSelectedReport(null)
       setAction('no_action')
+      void loadReports()
     } catch (error) {
       logger.error('Review error', error instanceof Error ? error : new Error(String(error)))
       toast.error('Failed to review report')

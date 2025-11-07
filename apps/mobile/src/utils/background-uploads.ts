@@ -1,19 +1,19 @@
-import NetInfo from "@react-native-community/netinfo";
-import { Platform } from "react-native";
-export const BG_UPLOAD_TASK = "bg-upload-task"
+import NetInfo from '@react-native-community/netinfo'
+import { Platform } from 'react-native'
+import { flushPendingUploads } from '../lib/upload-queue'
+import { createLogger } from './logger'
 
-async function flushPendingUploads(): Promise<boolean> {
+export const BG_UPLOAD_TASK = 'bg-upload-task'
+
+const logger = createLogger('background-uploads')
+
+async function flushQueue(): Promise<boolean> {
   try {
-    // Dynamic import with type assertion for optional module
-    // @ts-expect-error - Optional module that may not exist
-    const mod = await import('../lib/upload-queue').catch(() => null) as {
-      flushPendingUploads?: () => Promise<boolean>
-    } | null
-    if (mod && typeof mod.flushPendingUploads === 'function') {
-      return await mod.flushPendingUploads()
-    }
-    return false
-  } catch {
+    const processed = await flushPendingUploads()
+    logger.debug('Background flush completed', { processed })
+    return processed
+  } catch (error) {
+    logger.error('Background flush failed', error)
     return false
   }
 }
@@ -27,7 +27,7 @@ async function flushPendingUploads(): Promise<boolean> {
       void (async () => {
         const net = await NetInfo.fetch()
         if (!net.isConnected) return
-        await flushPendingUploads()
+        await flushQueue()
       })()
     })
   } catch {
@@ -42,8 +42,9 @@ export async function initBackgroundUploads(): Promise<void> {
     await BackgroundFetch.registerTaskAsync(BG_UPLOAD_TASK, {
       minimumInterval: 15 * 60,
       stopOnTerminate: false,
-      startOnBoot: true
+      startOnBoot: true,
     })
+    logger.info('Background upload task registered')
   } catch {
     // Task registration failed or module unavailable; ignore on unsupported platforms
   }

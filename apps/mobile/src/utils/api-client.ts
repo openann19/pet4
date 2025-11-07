@@ -26,18 +26,25 @@ const logger = createLogger('api-client')
 
 // Get API base URL from environment or use default
 const getApiBaseUrl = (): string => {
-  // Use environment variable if available (Expo/React Native)
-  if (typeof process !== 'undefined' && process.env?.['EXPO_PUBLIC_API_URL']) {
-    const url = process.env['EXPO_PUBLIC_API_URL']
-    // Enforce TLS in production
-    const isDev = typeof __DEV__ !== 'undefined' && __DEV__
-    if (!isDev && url.startsWith('http://')) {
-      throw new Error('API URL must use HTTPS in production')
+  const isDev = typeof __DEV__ !== 'undefined' && __DEV__
+  const envUrl = typeof process !== 'undefined' ? process.env?.['EXPO_PUBLIC_API_URL'] : undefined
+
+  if (envUrl && envUrl.trim().length > 0) {
+    const normalizedUrl = envUrl.trim()
+    if (!isDev && normalizedUrl.startsWith('http://')) {
+      throw new Error('API URL must use HTTPS in production builds')
     }
-    return url
+    return normalizedUrl
   }
-  // Default to localhost for development
-  return 'http://localhost:3000/api'
+
+  if (isDev) {
+    logger.warn('EXPO_PUBLIC_API_URL not set, falling back to local development API')
+    return 'http://localhost:3000/api'
+  }
+
+  const fallback = 'https://api.petspark.app/api'
+  logger.warn('EXPO_PUBLIC_API_URL not set, using production fallback', { fallback })
+  return fallback
 }
 
 const API_BASE_URL = getApiBaseUrl()
@@ -537,6 +544,10 @@ class APIClient {
 
   delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' })
+  }
+
+  getBaseUrl(): string {
+    return this.baseUrl
   }
 
   // Reset circuit breaker (useful for testing or manual recovery)
