@@ -1,14 +1,15 @@
-'use client'
-
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import type { AnimatedStyle } from './animated-view'
 import { useCallback } from 'react'
 import { useAnimatedStyle, useSharedValue, withSpring, type SharedValue } from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
+import { springConfigs } from './transitions'
 
 export interface UseHoverLiftOptions {
   scale?: number
   translateY?: number
   damping?: number
   stiffness?: number
+  hapticFeedback?: boolean
 }
 
 export interface UseHoverLiftReturn {
@@ -17,6 +18,8 @@ export interface UseHoverLiftReturn {
   animatedStyle: AnimatedStyle
   handleEnter: () => void
   handleLeave: () => void
+  handlePressIn: () => void
+  handlePressOut: () => void
 }
 
 const DEFAULT_SCALE = 1.05
@@ -28,8 +31,9 @@ export function useHoverLift(options: UseHoverLiftOptions = {}): UseHoverLiftRet
   const {
     scale: scaleValue = DEFAULT_SCALE,
     translateY: translateYValue = DEFAULT_TRANSLATE_Y,
-    damping = DEFAULT_DAMPING,
-    stiffness = DEFAULT_STIFFNESS
+    damping = springConfigs.smooth.damping ?? DEFAULT_DAMPING,
+    stiffness = springConfigs.smooth.stiffness ?? DEFAULT_STIFFNESS,
+    hapticFeedback = false
   } = options
 
   const scale = useSharedValue(1)
@@ -54,12 +58,27 @@ export function useHoverLift(options: UseHoverLiftOptions = {}): UseHoverLiftRet
     translateY.value = withSpring(0, { damping, stiffness })
   }, [scale, translateY, damping, stiffness])
 
+  const handlePressIn = useCallback(() => {
+    if (hapticFeedback) {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    }
+    scale.value = withSpring(scaleValue, { damping, stiffness })
+    translateY.value = withSpring(translateYValue, { damping, stiffness })
+  }, [scale, translateY, scaleValue, translateYValue, damping, stiffness, hapticFeedback])
+
+  const handlePressOut = useCallback(() => {
+    scale.value = withSpring(1, { damping, stiffness })
+    translateY.value = withSpring(0, { damping, stiffness })
+  }, [scale, translateY, damping, stiffness])
+
   return {
     scale,
     translateY,
     animatedStyle,
     handleEnter,
-    handleLeave
+    handleLeave,
+    handlePressIn,
+    handlePressOut
   }
 }
 

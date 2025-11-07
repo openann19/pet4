@@ -1,20 +1,10 @@
 import React, { memo, useCallback, useEffect } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withDelay,
-  withSequence,
-} from 'react-native-reanimated'
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, withSequence } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { usePressAnimation } from '@mobile/hooks/use-press-animation'
+import { useNavBarAnimation, useNavButtonAnimation } from '@mobile/effects/reanimated'
 import { colors } from '@mobile/theme/colors'
 import * as Haptics from 'expo-haptics'
-
-const SPRING_CONFIG = { damping: 15, stiffness: 400 }
-const BOUNCY_SPRING = { damping: 12, stiffness: 500 }
 
 export type TabKey = 'community' | 'chat' | 'feed' | 'adopt' | 'matches' | 'profile'
 
@@ -36,20 +26,7 @@ export function BottomNavBar({
   items,
   onChange,
 }: BottomNavBarProps): React.ReactElement {
-  const barOpacity = useSharedValue(0)
-  const barY = useSharedValue(50)
-
-  useEffect(() => {
-    barOpacity.value = withDelay(200, withTiming(1, { duration: 400 }))
-    barY.value = withDelay(200, withSpring(0, SPRING_CONFIG))
-  }, [barOpacity, barY])
-
-  const barStyle = useAnimatedStyle(() => {
-    return {
-      opacity: barOpacity.value,
-      transform: [{ translateY: barY.value }],
-    }
-  })
+  const navBarAnimation = useNavBarAnimation({ delay: 200 })
 
   const handlePress = useCallback(
     (key: TabKey): void => {
@@ -63,7 +40,7 @@ export function BottomNavBar({
 
   return (
     <SafeAreaView edges={['bottom']} style={styles.safe} accessibilityRole="tablist">
-      <Animated.View style={[styles.container, barStyle]}>
+      <Animated.View style={[styles.container, navBarAnimation.navStyle]}>
         {/* Glow background effect */}
         <View style={styles.glowBackground} />
         
@@ -198,93 +175,49 @@ const styles = StyleSheet.create({
 interface TabItemProps {
   item: BottomItem
   selected: boolean
-  index: number
+  index?: number
   onPress: () => void
 }
 
-function TabItem({ item, selected, index, onPress }: TabItemProps): React.ReactElement {
-  const iconScale = useSharedValue(selected ? 1.15 : 1)
-  const iconY = useSharedValue(selected ? -2 : 0)
-  const iconOpacity = useSharedValue(selected ? 1 : 0.7)
+function TabItem({ item, selected, onPress }: TabItemProps): React.ReactElement {
+  const animation = useNavButtonAnimation({
+    isActive: selected,
+    enablePulse: selected,
+    pulseScale: 1.2,
+    enableRotation: false,
+    hapticFeedback: true
+  })
+
   const glowOpacity = useSharedValue(selected ? 1 : 0)
-  const indicatorOpacity = useSharedValue(selected ? 1 : 0)
-  const indicatorScale = useSharedValue(selected ? 1 : 0)
-  const pulseScale = useSharedValue(1)
-
-  const { animatedStyle, handlePressIn, handlePressOut } = usePressAnimation({
-    scaleAmount: 0.9,
-    hapticFeedback: false,
-    enableBounce: true,
-  })
-
-  useEffect(() => {
-    const delay = index * 30
-    
-    if (selected) {
-      iconScale.value = withDelay(delay, withSpring(1.15, BOUNCY_SPRING))
-      iconY.value = withDelay(delay, withSpring(-2, SPRING_CONFIG))
-      iconOpacity.value = withDelay(delay, withTiming(1, { duration: 300 }))
-      glowOpacity.value = withDelay(delay, withSpring(1, SPRING_CONFIG))
-      indicatorOpacity.value = withDelay(delay, withTiming(1, { duration: 300 }))
-      indicatorScale.value = withDelay(delay, withSpring(1, BOUNCY_SPRING))
-      
-      // Pulse animation for active item
-      pulseScale.value = withDelay(
-        delay + 200,
-        withSequence(
-          withSpring(1.2, BOUNCY_SPRING),
-          withSpring(1, SPRING_CONFIG)
-        )
-      )
-    } else {
-      iconScale.value = withSpring(1, SPRING_CONFIG)
-      iconY.value = withSpring(0, SPRING_CONFIG)
-      iconOpacity.value = withTiming(0.7, { duration: 200 })
-      glowOpacity.value = withTiming(0, { duration: 200 })
-      indicatorOpacity.value = withTiming(0, { duration: 200 })
-      indicatorScale.value = withSpring(0, SPRING_CONFIG)
-    }
-  }, [selected, index, iconScale, iconY, iconOpacity, glowOpacity, indicatorOpacity, indicatorScale, pulseScale])
-
-  const iconAnimatedStyle = useAnimatedStyle(() => {
-    const combinedScale = iconScale.value * pulseScale.value
-    return {
-      transform: [
-        { scale: combinedScale },
-        { translateY: iconY.value }
-      ],
-      opacity: iconOpacity.value,
-    }
-  })
-
-  const glowAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: glowOpacity.value * 0.3,
-      transform: [{ scale: iconScale.value }],
-    }
-  })
-
-  const indicatorAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: indicatorOpacity.value,
-      transform: [{ scale: indicatorScale.value }],
-    }
-  })
-
   const badgeScale = useSharedValue(1)
   const badgeOpacity = useSharedValue(item.badge && item.badge > 0 ? 1 : 0)
+
+  useEffect(() => {
+    if (selected) {
+      glowOpacity.value = withSpring(1, { damping: 20, stiffness: 400 })
+    } else {
+      glowOpacity.value = withTiming(0, { duration: 200 })
+    }
+  }, [selected, glowOpacity])
 
   useEffect(() => {
     if (item.badge && item.badge > 0) {
       badgeOpacity.value = withTiming(1, { duration: 200 })
       badgeScale.value = withSequence(
-        withSpring(1.3, BOUNCY_SPRING),
-        withSpring(1, SPRING_CONFIG)
+        withSpring(1.3, { damping: 12, stiffness: 500 }),
+        withSpring(1, { damping: 15, stiffness: 400 })
       )
     } else {
       badgeOpacity.value = withTiming(0, { duration: 200 })
     }
   }, [item.badge, badgeOpacity, badgeScale])
+
+  const glowAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: glowOpacity.value * 0.3,
+      transform: [{ scale: animation.iconScale.value }],
+    }
+  })
 
   const badgeAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -294,11 +227,14 @@ function TabItem({ item, selected, index, onPress }: TabItemProps): React.ReactE
   })
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View style={animation.buttonStyle}>
       <Pressable
-        onPress={onPress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
+        onPress={() => {
+          animation.handlePress()
+          onPress()
+        }}
+        onPressIn={animation.handlePressIn}
+        onPressOut={animation.handlePressOut}
         style={[styles.item, selected && styles.itemActive]}
         accessibilityRole="tab"
         accessibilityState={{ selected }}
@@ -311,7 +247,7 @@ function TabItem({ item, selected, index, onPress }: TabItemProps): React.ReactE
 
         {/* Icon */}
         {item.icon && (
-          <Animated.Text style={[{ fontSize: 24 }, iconAnimatedStyle]}>
+          <Animated.Text style={[{ fontSize: 24 }, animation.iconStyle, { opacity: selected ? 1 : 0.7 }]}>
             {item.icon}
           </Animated.Text>
         )}
@@ -325,7 +261,7 @@ function TabItem({ item, selected, index, onPress }: TabItemProps): React.ReactE
         </Text>
 
         {/* Active indicator */}
-        <Animated.View style={[styles.activeIndicator, indicatorAnimatedStyle]} />
+        <Animated.View style={[styles.activeIndicator, animation.indicatorStyle]} />
 
         {/* Badge */}
         {item.badge && item.badge > 0 && (

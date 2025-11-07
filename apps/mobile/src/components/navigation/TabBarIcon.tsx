@@ -5,7 +5,8 @@
 
 import React from 'react'
 import { Text } from 'react-native'
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated'
+import Animated from 'react-native-reanimated'
+import { useNavButtonAnimation } from '@mobile/effects/reanimated'
 
 const AnimatedText = Animated.createAnimatedComponent(Text)
 
@@ -16,35 +17,28 @@ export interface TabBarIconProps {
   icon: string
 }
 
-const springConfig = {
-  damping: 15,
-  stiffness: 250,
-  mass: 0.9,
-}
-
 export function TabBarIcon({ 
   focused, 
   color, 
   size, 
   icon 
 }: TabBarIconProps): React.JSX.Element {
-  const scale = useSharedValue(focused ? 1.1 : 1)
-  const opacity = useSharedValue(focused ? 1 : 0.6)
-
-  React.useEffect(() => {
-    scale.value = withSpring(focused ? 1.1 : 1, springConfig)
-    opacity.value = withSpring(focused ? 1 : 0.6, springConfig)
-  }, [focused, scale, opacity])
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-      opacity: opacity.value,
-    }
+  const animation = useNavButtonAnimation({
+    isActive: focused,
+    enablePulse: focused,
+    pulseScale: 1.15,
+    enableRotation: false,
+    hapticFeedback: false
   })
 
+  const iconStyle = React.useMemo(() => [
+    { color, fontSize: size },
+    animation.iconStyle,
+    { opacity: focused ? 1 : 0.6 }
+  ], [color, size, animation.iconStyle, focused])
+
   return (
-    <AnimatedText style={[{ color, fontSize: size }, animatedStyle]}>
+    <AnimatedText style={iconStyle}>
       {icon}
     </AnimatedText>
   )
