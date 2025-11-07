@@ -10,6 +10,7 @@
  * - react-native-mmkv
  */
 
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createLogger } from './logger'
 import { secureStorage } from './secure-storage'
 import { isTruthy, isDefined } from '@petspark/shared';
@@ -17,6 +18,7 @@ import { isTruthy, isDefined } from '@petspark/shared';
 const logger = createLogger('offline-cache')
 
 const ENCRYPTION_KEY_STORAGE_KEY = 'petspark_mmkv_encryption_key'
+const ASYNC_STORAGE_PREFIX = '@petspark/offline-cache:'
 
 // Lazy load MMKV (optional dependency)
 let MMKV: (new (config: { id: string; encryptionKey: string }) => {
@@ -35,6 +37,7 @@ let kv: {
   contains: (key: string) => boolean
   getAllKeys: () => string[]
 } | null = null
+let useAsyncStorageFallback = false
 
 async function getOrCreateEncryptionKey(): Promise<string> {
   try {
@@ -94,6 +97,22 @@ async function initMMKV(): Promise<boolean> {
   }
 }
 
+async function ensureStorage(): Promise<'mmkv' | 'async'> {
+  if (useAsyncStorageFallback) {
+    return 'async'
+  }
+
+  const mmkvAvailable = await initMMKV()
+  if (mmkvAvailable && kv) {
+    return 'mmkv'
+  }
+
+  useAsyncStorageFallback = true
+  return 'async'
+}
+
+const toAsyncStorageKey = (key: string): string => `${ASYNC_STORAGE_PREFIX}${key}`
+
 /**
  * Set cached value
  * 
@@ -102,14 +121,14 @@ async function initMMKV(): Promise<boolean> {
  */
 export async function cacheSet(key: string, value: unknown): Promise<void> {
   try {
-    const initialized = await initMMKV()
-    if (!initialized || !kv) {
-      logger.warn('MMKV not available, cache set skipped')
-      return
-    }
-
+    const storage = await ensureStorage()
     const json = JSON.stringify(value)
-    kv.set(key, json)
+
+    if (storage === 'mmkv' && kv) {
+      kv.set(key, json)
+    } else {
+      await AsyncStorage.setItem(toAsyncStorageKey(key), json)
+    }
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
     logger.error('Failed to cache value', err, { key })
@@ -124,12 +143,15 @@ export async function cacheSet(key: string, value: unknown): Promise<void> {
  */
 export async function cacheGet<T>(key: string): Promise<T | null> {
   try {
-    const initialized = await initMMKV()
-    if (!initialized || !kv) {
-      return null
+    const storage = await ensureStorage()
+
+    if (storage === 'mmkv' && kv) {
+      const json = kv.getString(key)
+      if (!json) return null
+      return JSON.parse(json) as T
     }
 
-    const json = kv.getString(key)
+    const json = await AsyncStorage.getItem(toAsyncStorageKey(key))
     if (!json) return null
     return JSON.parse(json) as T
   } catch (error) {
@@ -146,12 +168,12 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
  */
 export async function cacheDelete(key: string): Promise<void> {
   try {
-    const initialized = await initMMKV()
-    if (!initialized || !kv) {
-      return
+    const storage = await ensureStorage()
+    if (storage === 'mmkv' && kv) {
+      kv.delete(key)
+    } else {
+      await AsyncStorage.removeItem(toAsyncStorageKey(key))
     }
-
-    kv.delete(key)
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
     logger.error('Failed to delete cached value', err, { key })
@@ -163,12 +185,16 @@ export async function cacheDelete(key: string): Promise<void> {
  */
 export async function cacheClear(): Promise<void> {
   try {
-    const initialized = await initMMKV()
-    if (!initialized || !kv) {
-      return
+    const storage = await ensureStorage()
+    if (storage === 'mmkv' && kv) {
+      kv.clearAll()
+    } else {
+      const keys = await AsyncStorage.getAllKeys()
+      const cacheKeys = keys.filter(key => key.startsWith(ASYNC_STORAGE_PREFIX))
+      if (cacheKeys.length > 0) {
+        await AsyncStorage.multiRemove(cacheKeys)
+      }
     }
-
-    kv.clearAll()
     logger.info('Cache cleared')
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
@@ -184,12 +210,13 @@ export async function cacheClear(): Promise<void> {
  */
 export async function cacheHas(key: string): Promise<boolean> {
   try {
-    const initialized = await initMMKV()
-    if (!initialized || !kv) {
-      return false
+    const storage = await ensureStorage()
+    if (storage === 'mmkv' && kv) {
+      return kv.contains(key)
     }
 
-    return kv.contains(key)
+    const existing = await AsyncStorage.getItem(toAsyncStorageKey(key))
+    return existing !== null
   } catch {
     return false
   }
@@ -202,12 +229,15 @@ export async function cacheHas(key: string): Promise<boolean> {
  */
 export async function cacheKeys(): Promise<string[]> {
   try {
-    const initialized = await initMMKV()
-    if (!initialized || !kv) {
-      return []
+    const storage = await ensureStorage()
+    if (storage === 'mmkv' && kv) {
+      return kv.getAllKeys()
     }
 
-    return kv.getAllKeys()
+    const keys = await AsyncStorage.getAllKeys()
+    return keys
+      .filter(key => key.startsWith(ASYNC_STORAGE_PREFIX))
+      .map(key => key.replace(ASYNC_STORAGE_PREFIX, ''))
   } catch {
     return []
   }

@@ -7,11 +7,6 @@ const envSchema = z.object({
   VITE_WS_URL: z.string().url('Invalid WebSocket URL'),
   VITE_API_TIMEOUT: z.coerce.number().positive().default(30000),
 
-  // Authentication
-  VITE_JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 characters'),
-  VITE_JWT_EXPIRY: z.string().default('7d'),
-  VITE_REFRESH_TOKEN_EXPIRY: z.string().default('30d'),
-
   // Mock Control (CRITICAL)
   VITE_USE_MOCKS: z.enum(['true', 'false']).default('false'),
 
@@ -20,9 +15,15 @@ const envSchema = z.object({
   VITE_ENABLE_PAYMENTS: z.coerce.boolean().default(true),
   VITE_ENABLE_LIVE_STREAMING: z.coerce.boolean().default(true),
 
-  // External Services
-  VITE_MAPBOX_TOKEN: z.string().startsWith('pk.', 'Invalid Mapbox token'),
-  VITE_STRIPE_PUBLIC_KEY: z.string().startsWith('pk_', 'Invalid Stripe public key'),
+  // External Services (public tokens only)
+  VITE_MAPBOX_TOKEN: z
+    .string()
+    .startsWith('pk.', 'Invalid Mapbox token')
+    .optional(),
+  VITE_STRIPE_PUBLIC_KEY: z
+    .string()
+    .startsWith('pk_', 'Invalid Stripe public key')
+    .optional(),
   VITE_SENTRY_DSN: z.preprocess(
     (val) => {
       const str = String(val || '').trim();
@@ -36,9 +37,11 @@ const envSchema = z.object({
   VITE_CORS_ORIGIN: z.string().optional(),
   VITE_CSP_ENABLED: z.coerce.boolean().default(true),
 
-  // Optional
+  // Optional metadata
   VITE_APP_VERSION: z.string().default('1.0.0'),
-  VITE_ENVIRONMENT: z.enum(['development', 'staging', 'production']).default('development')
+  VITE_ENVIRONMENT: z
+    .enum(['development', 'staging', 'production'])
+    .default('development')
 })
 
 // Parse and validate environment
@@ -73,14 +76,22 @@ if (ENV.VITE_ENVIRONMENT === 'production') {
   }
 
   // Validate required production services
-  const requiredInProd = [
-    ENV.VITE_MAPBOX_TOKEN,
-    ENV.VITE_STRIPE_PUBLIC_KEY,
-    ENV.VITE_SENTRY_DSN
-  ]
+  const missing: string[] = []
 
-  if (requiredInProd.some(val => !val)) {
-    throw new Error('❌ PRODUCTION BLOCKER: Missing required service credentials')
+  if (!ENV.VITE_MAPBOX_TOKEN) {
+    missing.push('VITE_MAPBOX_TOKEN')
+  }
+  if (!ENV.VITE_STRIPE_PUBLIC_KEY) {
+    missing.push('VITE_STRIPE_PUBLIC_KEY')
+  }
+  if (!ENV.VITE_SENTRY_DSN) {
+    missing.push('VITE_SENTRY_DSN')
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `❌ PRODUCTION BLOCKER: Missing required public service credentials: ${missing.join(', ')}`
+    )
   }
 }
 

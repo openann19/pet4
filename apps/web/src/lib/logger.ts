@@ -24,24 +24,102 @@ export interface LogEntry {
 
 type LogHandler = (entry: LogEntry) => void | Promise<void>
 
+type ImportMetaWithEnv = ImportMeta & {
+  env?: Record<string, string | undefined>
+}
+
+const parseLogLevel = (level?: string | null): LogLevel | undefined => {
+  if (!level) return undefined
+  const normalized = level.toString().trim().toUpperCase()
+  if (!normalized) return undefined
+  const value = (LogLevel as unknown as Record<string, LogLevel>)[normalized]
+  return typeof value === 'number' ? value : undefined
+}
+
+const resolveDefaultLevel = (): LogLevel => {
+  let envLevel: string | undefined
+
+  if (typeof import.meta !== 'undefined') {
+    const metaEnv = (import.meta as ImportMetaWithEnv).env
+    envLevel = metaEnv?.VITE_LOG_LEVEL ?? metaEnv?.LOG_LEVEL
+    const parsed = parseLogLevel(envLevel)
+    if (isDefined(parsed)) {
+      return parsed
+    }
+
+    const mode = metaEnv?.MODE
+    if (mode && mode !== 'production') {
+      return LogLevel.DEBUG
+    }
+    if (mode === 'production') {
+      return LogLevel.INFO
+    }
+  }
+
+  if (typeof process !== 'undefined' && isTruthy(process.env)) {
+    envLevel = process.env.LOG_LEVEL ?? process.env.VITE_LOG_LEVEL ?? undefined
+    const parsed = parseLogLevel(envLevel)
+    if (isDefined(parsed)) {
+      return parsed
+    }
+  }
+
+  return LogLevel.INFO
+}
+
+const globalHandlers = new Set<LogHandler>()
+
+const consoleHandler: LogHandler = (entry) => {
+  const { level, message, context, data, error, timestamp } = entry
+  const prefixParts = [timestamp]
+  if (context) {
+    prefixParts.push(context)
+  }
+  const prefix = prefixParts.length > 0 ? `[${prefixParts.join(' ')}]` : ''
+  const extras: unknown[] = []
+  if (data !== undefined) extras.push(data)
+  if (error) extras.push(error)
+
+  switch (level) {
+    case LogLevel.DEBUG:
+      console.debug(prefix, message, ...extras)
+      break
+    case LogLevel.INFO:
+      console.info(prefix, message, ...extras)
+      break
+    case LogLevel.WARN:
+      console.warn(prefix, message, ...extras)
+      break
+    case LogLevel.ERROR:
+      console.error(prefix, message, ...extras)
+      break
+    default:
+      console.log(prefix, message, ...extras)
+  }
+}
+
+globalHandlers.add(consoleHandler)
+
+export function registerGlobalLogHandler(handler: LogHandler): void {
+  globalHandlers.add(handler)
+}
+
 class Logger {
-  private level: LogLevel = LogLevel.NONE
-  private handlers: LogHandler[] = []
+  private level: LogLevel
+  private handlers: Set<LogHandler> = new Set()
   private context: string = ''
 
   constructor(context?: string) {
     this.context = context || ''
-    
-    // Set log level from environment or default to NONE (silent)
+    this.level = resolveDefaultLevel()
+
     if (typeof window !== 'undefined') {
-      const envLevel = (window as Window & { __LOG_LEVEL__?: string }).__LOG_LEVEL__
-      if (isTruthy(envLevel)) {
-        this.level = LogLevel[envLevel.toUpperCase() as keyof typeof LogLevel] ?? LogLevel.NONE
+      const runtimeLevel = (window as Window & { __LOG_LEVEL__?: string }).__LOG_LEVEL__
+      const parsed = parseLogLevel(runtimeLevel ?? null)
+      if (isDefined(parsed)) {
+        this.level = parsed
       }
     }
-    
-    // Default mode is silent (no-op logger) to preserve deterministic builds
-    // Handlers can be added via addHandler() for routing to file, CI pipeline, etc.
   }
 
   setLevel(level: LogLevel): void {
@@ -49,11 +127,11 @@ class Logger {
   }
 
   addHandler(handler: LogHandler): void {
-    this.handlers.push(handler)
+    this.handlers.add(handler)
   }
 
   private shouldLog(level: LogLevel): boolean {
-    return level >= this.level
+    return level >= this.level && this.level !== LogLevel.NONE
   }
 
   private async log(level: LogLevel, message: string, data?: unknown, error?: Error): Promise<void> {
@@ -68,16 +146,19 @@ class Logger {
       ...(error ? { error } : {}),
     }
 
-    // Execute handlers in parallel
-    await Promise.all(this.handlers.map(handler => {
-      try {
-        return handler(entry)
-      } catch {
-        // Silently ignore handler failures to preserve deterministic builds
-        // Handler implementations should handle their own errors internally
-        return Promise.resolve()
-      }
-    }))
+    const handlers = new Set<LogHandler>([...globalHandlers, ...this.handlers])
+
+    await Promise.all(
+      Array.from(handlers).map(handler => {
+        try {
+          return handler(entry)
+        } catch (handlerError) {
+          const err = handlerError instanceof Error ? handlerError : new Error(String(handlerError))
+          console.error('[logger] handler failure', err)
+          return Promise.resolve()
+        }
+      })
+    )
   }
 
   debug(message: string, data?: unknown): void {
@@ -99,7 +180,7 @@ class Logger {
 }
 
 // Create default logger instance
-export const logger = new Logger()
+export const logger = new Logger('app')
 
 // Factory function to create contextual loggers
 export function createLogger(context: string): Logger {
