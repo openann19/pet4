@@ -72,16 +72,16 @@ function useReducedMotion(): boolean {
         return
       }
 
-      const handleChange = (event: Event): void => {
+      const handleChange = (event: unknown): void => {
         const mediaEvent = event as MediaQueryListEvent
         setReduced(mediaEvent.matches)
       }
 
       if (typeof mediaQuery.addEventListener === 'function') {
-        mediaQuery.addEventListener('change', handleChange)
+        mediaQuery.addEventListener('change', handleChange as EventListener)
         return () => {
           if (mediaQuery && typeof mediaQuery.removeEventListener === 'function') {
-            mediaQuery.removeEventListener('change', handleChange)
+            mediaQuery.removeEventListener('change', handleChange as EventListener)
           }
         }
       }
@@ -228,13 +228,13 @@ export function Slider({
     if (!state.isDragging) return
     if (typeof document === 'undefined') return
 
-    const handleMouseMove = (event: Event): void => {
+    const handleMouseMove = (event: unknown): void => {
       const mouseEvent = event as MouseEvent
       mouseEvent.preventDefault()
       handleMove(mouseEvent.clientX)
     }
 
-    const handleTouchMove = (event: Event): void => {
+    const handleTouchMove = (event: unknown): void => {
       const touchEvent = event as TouchEvent
       touchEvent.preventDefault()
       const touch = touchEvent.touches[0]
@@ -251,19 +251,21 @@ export function Slider({
       handleEnd()
     }
 
-    document.addEventListener('mousemove', handleMouseMove, { passive: false })
-    document.addEventListener('touchmove', handleTouchMove, { passive: false })
-    document.addEventListener('mouseup', handleMouseUp)
-    document.addEventListener('touchend', handleTouchEnd)
-    document.addEventListener('touchcancel', handleTouchEnd)
+    if (typeof document !== 'undefined') {
+      document.addEventListener?.('mousemove', handleMouseMove as EventListener, { passive: false })
+      document.addEventListener?.('touchmove', handleTouchMove as EventListener, { passive: false })
+      document.addEventListener?.('mouseup', handleMouseUp as EventListener)
+      document.addEventListener?.('touchend', handleTouchEnd as EventListener)
+      document.addEventListener?.('touchcancel', handleTouchEnd as EventListener)
+    }
 
     return () => {
       if (typeof document !== 'undefined') {
-        document.removeEventListener('mousemove', handleMouseMove)
-        document.removeEventListener('touchmove', handleTouchMove)
-        document.removeEventListener('mouseup', handleMouseUp)
-        document.removeEventListener('touchend', handleTouchEnd)
-        document.removeEventListener('touchcancel', handleTouchEnd)
+        document.removeEventListener?.('mousemove', handleMouseMove as EventListener)
+        document.removeEventListener?.('touchmove', handleTouchMove as EventListener)
+        document.removeEventListener?.('mouseup', handleMouseUp as EventListener)
+        document.removeEventListener?.('touchend', handleTouchEnd as EventListener)
+        document.removeEventListener?.('touchcancel', handleTouchEnd as EventListener)
       }
     }
   }, [state.isDragging, handleMove, handleEnd])

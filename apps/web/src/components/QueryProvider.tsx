@@ -93,7 +93,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
       }}
     >
       {children}
-      {showDevtools && <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />}
+      {showDevtools && <ReactQueryDevtools initialIsOpen={false} />}
     </PersistQueryClientProvider>
   );
 }

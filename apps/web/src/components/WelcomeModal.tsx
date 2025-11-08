@@ -29,7 +29,7 @@ export default function WelcomeModal(): JSX.Element | null {
   const iconPulse = useSharedValue(1);
   const iconGlowScale = useSharedValue(1);
   const iconGlowOpacity = useSharedValue(0.5);
-  const closeButtonHover = useHoverTap({ hoverScale: 1.1, hoverRotate: 90, tapScale: 0.9 });
+  const closeButtonHover = useHoverTap({ hoverScale: 1.1, tapScale: 0.9 });
   const buttonHover = useHoverTap({ hoverScale: 1.05, tapScale: 0.95 });
   const arrowX = useSharedValue(0);
 

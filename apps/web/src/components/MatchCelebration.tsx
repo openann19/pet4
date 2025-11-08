@@ -9,8 +9,6 @@ import {
   withRepeat,
   withSequence,
   withDelay,
-  interpolate,
-  Extrapolation,
 } from 'react-native-reanimated';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { Heart, Sparkle } from '@phosphor-icons/react';

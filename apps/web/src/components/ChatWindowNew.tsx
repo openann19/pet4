@@ -259,7 +259,7 @@ export default function ChatWindow({
 
     haptics.trigger('light');
 
-    const newMessage = sendChatMessage(content, type);
+    const newMessage = sendChatMessage(content);
     if (!newMessage) return;
 
     setInputValue('');
@@ -367,7 +367,10 @@ export default function ChatWindow({
   };
 
   const markMessagesAsRead = () => {
-    markChatAsRead();
+    const lastMsg = messages && messages.length > 0 ? messages[messages.length - 1] : null;
+    if (lastMsg?.id) {
+      markChatAsRead(lastMsg.id);
+    }
   };
 
   const messageGroups = chatMessageGroups;

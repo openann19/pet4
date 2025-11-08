@@ -31,7 +31,7 @@ class NativePlatformHaptics implements PlatformHaptics {
   private vibrate(pattern: number | number[]): void {
     if (!this.isSupported) return
     try {
-      navigator.vibrate(pattern)
+      navigator.vibrate?.(pattern)
     } catch (error) {
       logger.warn(
         'Haptic feedback failed',

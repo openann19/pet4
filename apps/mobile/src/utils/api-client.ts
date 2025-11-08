@@ -321,7 +321,9 @@ class APIClient {
         })
       } else if (Array.isArray(fetchOptions.headers)) {
         fetchOptions.headers.forEach(([key, value]) => {
-          headers[key] = String(value)
+          if (key !== undefined) {
+            headers[key] = String(value)
+          }
         })
       } else {
         Object.assign(headers, fetchOptions.headers)

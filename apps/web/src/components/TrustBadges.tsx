@@ -21,10 +21,7 @@ interface TrustBadgesProps {
   showLabels?: boolean;
 }
 
-const badgeIcons: Record<
-  TrustBadge['type'],
-  React.ComponentType<{ size?: number | string; className?: string; weight?: string }>
-> = {
+const badgeIcons: Record<TrustBadge['type'], React.ComponentType<any>> = {
   verified_owner: ShieldCheck,
   vaccinated: Syringe,
   health_certified: Certificate,

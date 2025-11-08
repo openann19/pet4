@@ -1,4 +1,4 @@
-import { BottomNavBar, type TabKey } from '../components/BottomNavBar'
+import { BottomNavBar, type TabKey } from '../../components/BottomNavBar'
 import { fireEvent, render } from '@testing-library/react-native'
 import * as Haptics from 'expo-haptics'
 import { describe, expect, it, vi } from 'vitest'

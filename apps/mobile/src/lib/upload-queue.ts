@@ -118,7 +118,6 @@ export async function flushPendingUploads(): Promise<boolean> {
     try {
       const body = new FormData()
       // Expo/React Native: File from URI
-      // @ts-expect-error React Native FormData type
       body.append('file', {
         uri: job.uri,
         name: 'upload',

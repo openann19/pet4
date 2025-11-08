@@ -23,7 +23,7 @@ class HapticFeedback {
     if (!this.isSupported) return
     if (typeof navigator === 'undefined') return
     try {
-      navigator.vibrate(pattern)
+      navigator.vibrate?.(pattern)
     } catch (error) {
       logger.warn(
         'Haptic feedback failed',

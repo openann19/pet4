@@ -214,7 +214,6 @@ export function usePullToRefresh(
           animateTo(0)
         }
       })
-      .runOnJS(true) // allow runOnJS calls above
   }, [
     animateTo,
     haptics,
