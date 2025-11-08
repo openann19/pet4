@@ -431,6 +431,16 @@ curl https://api.pawfectmatch.com/health
 
 ---
 
-**Last Updated**: 2025-11-03  
-**Next Review**: 2025-12-03  
+**Last Updated**: 2025-11-08  
+**Next Review**: 2025-12-08  
 **Document Owner**: Engineering Team
+
+---
+
+## Important References
+
+For related operational documentation, see:
+- [Production Readiness Checklist](./docs/PRODUCTION_READINESS.md)
+- [Mobile Runbook](../mobile/RUNBOOK.md)
+- [Verification Report](../../FINAL_MD_VERIFICATION_REPORT.md)
+- [Documentation Audit](../../DOCUMENTATION_AUDIT_REPORT.md)

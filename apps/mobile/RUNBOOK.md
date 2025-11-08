@@ -353,5 +353,29 @@ pnpm test:run
 
 ## Changelog
 
+- **2025-11-08**: Updated with current status and cross-references
 - **2024-01-XX**: Initial runbook created
 - Update this section with each release
+
+---
+
+## Important References
+
+For related operational documentation, see:
+- [Mobile Production Readiness Checklist](./PRODUCTION_READINESS.md)
+- [Web Admin Runbook](../web/RUNBOOK_admin.md)
+- [Web Production Readiness](../web/docs/PRODUCTION_READINESS.md)
+- [Verification Report](../FINAL_MD_VERIFICATION_REPORT.md)
+- [Documentation Audit](../DOCUMENTATION_AUDIT_REPORT.md)
+
+---
+
+## Notes on Current Status
+
+**As of 2025-11-08**: 
+- Pre-release checklist items need to be completed before production deployment
+- TypeScript and ESLint issues identified in verification report must be resolved
+- Contact information placeholders must be filled in
+- Refer to `FINAL_MD_VERIFICATION_REPORT.md` for list of issues to fix
+
+**Target Production Date**: TBD (after P0 issues resolved)
