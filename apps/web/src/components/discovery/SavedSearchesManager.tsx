@@ -68,7 +68,7 @@ function SearchItem({
 }: SearchItemProps): JSX.Element {
   const itemAnimation = useStaggeredItem({ index, totalItems });
   const itemBounce = useBounceOnTap({ intensity: 0.98, duration: 150 });
-  const itemHover = useHoverLift({ intensity: 1.01 });
+  const itemHover = useHoverLift({ scale: 1.01 });
   const applyBounce = useBounceOnTap({ intensity: 0.95, duration: 150 });
   const pinBounce = useBounceOnTap({ intensity: 0.9, duration: 120 });
   const editBounce = useBounceOnTap({ intensity: 0.9, duration: 120 });
@@ -209,7 +209,7 @@ export default function SavedSearchesManager({
   const modalAnimation = useModalAnimation({ isVisible: true, duration: 300 });
   const saveFormExpand = useExpandCollapse({ isExpanded: showSaveForm, duration: 300 });
   const saveButtonBounce = useBounceOnTap({ intensity: 0.95, duration: 150 });
-  const cardHover = useHoverLift({ intensity: 1.02 });
+  const cardHover = useHoverLift({ scale: 1.02 });
 
   const handleSaveCurrentSearch = useCallback((): void => {
     try {

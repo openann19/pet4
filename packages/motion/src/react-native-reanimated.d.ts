@@ -1,6 +1,14 @@
 declare module 'react-native-reanimated' {
+  import type { ComponentType } from 'react';
+
   // Minimal ambient declarations to satisfy tsc in non-native environments.
-  const Animated: any;
+  interface AnimatedComponents {
+    readonly SharedValue: any;
+    readonly View: ComponentType<any>;
+    readonly Text: ComponentType<any>;
+    readonly ScrollView: ComponentType<any>;
+  }
+  const Animated: AnimatedComponents;
   export default Animated;
 
   export function useSharedValue<T>(value: T): SharedValue<T>;
@@ -21,11 +29,42 @@ declare module 'react-native-reanimated' {
   export function runOnJS<T extends (...args: any[]) => any>(fn: T): T;
   export function runOnUI(...args: any[]): any;
 
-  export const Easing: any;
+  export const Easing: {
+    readonly linear: (value: number) => number;
+    readonly ease: (value: number) => number;
+    readonly quad: (value: number) => number;
+    readonly cubic: (value: number) => number;
+    readonly sin: (value: number) => number;
+    readonly circle: (value: number) => number;
+    readonly exp: (value: number) => number;
+    readonly elastic: (bounciness?: number) => (value: number) => number;
+    readonly back: (overshoot?: number) => (value: number) => number;
+    readonly bounce: (value: number) => number;
+    readonly bezier: (x1: number, y1: number, x2: number, y2: number) => (value: number) => number;
+    readonly poly: (exponent: number) => (value: number) => number;
+    readonly in: (easing: (value: number) => number) => (value: number) => number;
+    readonly out: (easing: (value: number) => number) => (value: number) => number;
+    readonly inOut: (easing: (value: number) => number) => (value: number) => number;
+  };
   export function interpolate(...args: any[]): any;
   export const Extrapolation: any;
 
   export type SharedValue<T> = { value: T };
   export type AnimatedStyle<T> = any;
   export type AnimatedProps<T> = any;
+}
+
+declare module 'react-native' {
+  export interface LayoutRectangle {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }
+
+  export interface LayoutChangeEvent {
+    nativeEvent: {
+      layout: LayoutRectangle;
+    };
+  }
 }

@@ -115,7 +115,7 @@ export function MatchingConfigPanel() {
       // Broadcast the config
       await configBroadcastService.broadcastConfig(
         'matching',
-        updatedConfig as Record<string, unknown>,
+        updatedConfig as unknown as Record<string, unknown>,
         currentUser.id || 'admin'
       );
 

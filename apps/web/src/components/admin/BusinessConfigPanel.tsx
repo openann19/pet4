@@ -98,7 +98,7 @@ export default function BusinessConfigPanel() {
       // Then broadcast it
       await configBroadcastService.broadcastConfig(
         'business',
-        config as Record<string, unknown>,
+        config as unknown as Record<string, unknown>,
         currentUser.id || 'admin'
       );
 
