@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import type { ComponentProps } from 'react';
 import * as SliderPrimitive from '@radix-ui/react-slider';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 
 import { cn } from '../utils';
 

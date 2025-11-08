@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, Presence } from '@petspark/motion';
+import { motion, Presence, MotionView } from '@petspark/motion';
 import {
   MapPin,
   MagnifyingGlass,

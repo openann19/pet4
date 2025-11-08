@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { Plus } from '@phosphor-icons/react';
 import { useStorage } from '@/hooks/use-storage';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

@@ -38,7 +38,7 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { differenceInDays, format, isPast } from 'date-fns';
-import { Presence, motion } from '@petspark/motion';
+import { Presence, motion, MotionView } from '@petspark/motion';
 import { lazy, Suspense, useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useKV } from '@/hooks/use-storage';

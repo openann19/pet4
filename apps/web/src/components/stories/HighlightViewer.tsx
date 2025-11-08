@@ -3,7 +3,7 @@ import { useStorage } from '@/hooks/use-storage';
 import { haptics } from '@/lib/haptics';
 import type { StoryHighlight } from '@/lib/stories-types';
 import { PushPin, PushPinSlash, Trash, X } from '@phosphor-icons/react';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import StoryViewer from './StoryViewer';

@@ -21,7 +21,7 @@ import {
   UserPlus,
 } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 

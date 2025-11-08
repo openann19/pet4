@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UploadSimple, CheckCircle, XCircle, File, Trash, Clock } from '@phosphor-icons/react';

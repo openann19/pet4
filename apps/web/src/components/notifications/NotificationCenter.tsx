@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStorage } from '@/hooks/use-storage';
-import { motion, Presence } from '@petspark/motion';
+import { motion, Presence, MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';

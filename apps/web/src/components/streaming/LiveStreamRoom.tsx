@@ -15,7 +15,7 @@ import {
   Phone,
   CameraRotate,
 } from '@phosphor-icons/react';
-import { motion, Presence } from '@petspark/motion';
+import { motion, Presence, MotionView } from '@petspark/motion';
 import { toast } from 'sonner';
 import { liveStreamingAPI } from '@/api/live-streaming-api';
 import type { LiveStream, LiveStreamChatMessage } from '@/lib/live-streaming-types';

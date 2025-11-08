@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import StoryRing from './StoryRing';
 import StoryViewer from './StoryViewer';

@@ -31,7 +31,7 @@ import {
   UploadSimple,
   XCircle,
 } from '@phosphor-icons/react';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { DocumentUploadCard } from './DocumentUploadCard';

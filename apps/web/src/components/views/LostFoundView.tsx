@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { MagnifyingGlass, Plus, MapPin } from '@phosphor-icons/react';
-import { motion, Presence } from '@petspark/motion';
+import { motion, Presence, MotionView } from '@petspark/motion';
 import type { LostAlert } from '@/lib/lost-found-types';
 import { LostAlertCard } from '@/components/lost-found/LostAlertCard';
 import { CreateLostAlertDialog } from '@/components/lost-found/CreateLostAlertDialog';

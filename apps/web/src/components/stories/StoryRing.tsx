@@ -1,4 +1,4 @@
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { Plus } from '@phosphor-icons/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { filterActiveStories } from '@petspark/shared';

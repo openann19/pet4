@@ -17,7 +17,7 @@ import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { ArrowBendUpLeft, DotsThree, Heart, PaperPlaneRight, X } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
-import { Presence, motion } from '@petspark/motion';
+import { Presence, motion, MotionView } from '@petspark/motion';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 

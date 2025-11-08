@@ -1,5 +1,5 @@
 import { makeRng } from '@petspark/shared';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 
 interface Particle {

@@ -13,7 +13,7 @@ import type { AdoptionListing, AdoptionListingFilters } from '@/lib/adoption-mar
 import { haptics } from '@/lib/haptics';
 import { logger } from '@/lib/logger';
 import { Check, Funnel, Heart, MagnifyingGlass, Plus, X } from '@phosphor-icons/react';
-import { Presence, motion } from '@petspark/motion';
+import { Presence, motion, MotionView } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 

@@ -20,7 +20,7 @@ import type { ReportReason } from '@/lib/community-types';
 import { haptics } from '@/lib/haptics';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { Warning } from '@phosphor-icons/react';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { useState } from 'react';
 import { toast } from 'sonner';
 

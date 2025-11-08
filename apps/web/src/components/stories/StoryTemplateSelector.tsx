@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, Presence } from '@petspark/motion';
+import { motion, Presence, MotionView } from '@petspark/motion';
 import { Check, MagnifyingGlass } from '@phosphor-icons/react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';

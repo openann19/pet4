@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStorage } from '@/hooks/use-storage';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { Plus, Check, BookmarkSimple } from '@phosphor-icons/react';
 import {
   Dialog,

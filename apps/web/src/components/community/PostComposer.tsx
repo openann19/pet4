@@ -34,7 +34,7 @@ import {
   WarningCircle,
   X,
 } from '@phosphor-icons/react';
-import { Presence, motion } from '@petspark/motion';
+import { Presence, motion, MotionView } from '@petspark/motion';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
