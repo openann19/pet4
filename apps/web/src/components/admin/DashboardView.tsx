@@ -14,6 +14,7 @@ import {
   TrendDown,
   TrendUp,
   Users,
+  type Icon,
 } from '@phosphor-icons/react';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEffect, useState } from 'react';
@@ -271,7 +272,7 @@ export default function DashboardView() {
 }
 
 interface ActivityItemProps {
-  icon: React.ComponentType<{ size?: number | string; className?: string; weight?: string }>;
+  icon: Icon;
   title: string;
   description: string;
   time: string;

@@ -18,7 +18,7 @@ export const MotionView: ForwardRefExoticComponent<MotionViewProps & RefAttribut
   MotionViewProps
 >(({ style, animatedStyle, ...rest }, ref) => {
   // Combine styles properly
-  const styleFinal = animatedStyle ? [style, animatedStyle] : (style ?? {});
+  const styleFinal = animatedStyle ? [style, animatedStyle] : (style ?? ({} as ViewStyle));
 
   // Web performance hints (only apply on web, and only if animated)
   const webStyle =

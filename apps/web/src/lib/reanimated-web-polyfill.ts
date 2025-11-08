@@ -87,15 +87,31 @@ export function useSharedValue<T>(initialValue: T): SharedValue<T> {
 }
 
 // Animation functions
-export function withSpring(toValue: number, _config?: WithSpringConfig): number {
+export function withSpring(
+  toValue: number,
+  _config?: WithSpringConfig,
+  _callback?: (finished?: boolean) => void
+): number {
   // In web polyfill, we return the target value
   // The actual animation is handled by CSS transitions
+  // Callback is executed immediately in web polyfill
+  if (_callback) {
+    setTimeout(() => _callback(true), 0);
+  }
   return toValue;
 }
 
-export function withTiming(toValue: number, _config?: WithTimingConfig): number {
+export function withTiming(
+  toValue: number,
+  _config?: WithTimingConfig,
+  _callback?: (finished?: boolean) => void
+): number {
   // In web polyfill, we return the target value
   // The actual animation is handled by CSS transitions
+  // Callback is executed immediately in web polyfill
+  if (_callback) {
+    setTimeout(() => _callback(true), 0);
+  }
   return toValue;
 }
 

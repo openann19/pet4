@@ -105,9 +105,9 @@ export default function SettingsView() {
     [setSystemSettings]
   );
 
-  const featureFlagsCardHover = useHoverLift({ intensity: 1.02 });
-  const systemSettingsCardHover = useHoverLift({ intensity: 1.02 });
-  const systemInfoCardHover = useHoverLift({ intensity: 1.02 });
+  const featureFlagsCardHover = useHoverLift({ scale: 1.02 });
+  const systemSettingsCardHover = useHoverLift({ scale: 1.02 });
+  const systemInfoCardHover = useHoverLift({ scale: 1.02 });
 
   return (
     <div className="flex-1 flex flex-col">

@@ -102,7 +102,7 @@ export default function CommunityManagement() {
   const loadPosts = useCallback(async () => {
     try {
       setIsLoading(true);
-      const feedResponse = await communityService.getFeed({ limit: 1000 });
+      const feedResponse = await communityService.getFeed({ mode: 'for-you', limit: 1000 });
       setPosts(feedResponse.posts);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
