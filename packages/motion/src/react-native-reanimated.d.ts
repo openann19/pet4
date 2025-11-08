@@ -19,8 +19,8 @@ declare module 'react-native-reanimated' {
   export function useAnimatedGestureHandler(...args: any[]): any;
   export function useAnimatedRef<T = any>(): any;
 
-  export function withSpring(...args: any[]): any;
-  export function withTiming(...args: any[]): any;
+  export function withSpring(toValue: number, config?: any, callback?: (finished?: boolean) => void): any;
+  export function withTiming(toValue: number, config?: any, callback?: (finished?: boolean) => void): any;
   export function withRepeat(...args: any[]): any;
   export function withSequence(...args: any[]): any;
   export function withDelay(...args: any[]): any;
@@ -55,6 +55,8 @@ declare module 'react-native-reanimated' {
 }
 
 declare module 'react-native' {
+  import type { CSSProperties, ComponentPropsWithoutRef } from 'react';
+
   export interface LayoutRectangle {
     x: number;
     y: number;
@@ -67,4 +69,24 @@ declare module 'react-native' {
       layout: LayoutRectangle;
     };
   }
+
+  // Style types
+  export type ViewStyle = CSSProperties & Record<string, unknown>;
+  export type TextStyle = CSSProperties & Record<string, unknown>;
+  export type ImageStyle = CSSProperties & Record<string, unknown>;
+
+  // Component props
+  export interface ViewProps extends ComponentPropsWithoutRef<'div'> {
+    style?: ViewStyle | ViewStyle[];
+  }
+
+  export interface TextProps extends ComponentPropsWithoutRef<'span'> {
+    style?: TextStyle | TextStyle[];
+  }
+
+  // Platform API
+  export const Platform: {
+    OS: 'ios' | 'android' | 'web' | 'windows' | 'macos';
+    select: <T>(specifics: { ios?: T; android?: T; native?: T; default?: T; web?: T }) => T | undefined;
+  };
 }

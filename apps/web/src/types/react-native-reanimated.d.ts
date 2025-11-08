@@ -52,9 +52,17 @@ declare module 'react-native-reanimated' {
     clamp?: [number, number];
   }
 
-  export function withSpring<T>(toValue: T, config?: SpringConfig): T;
+  export function withSpring<T>(
+    toValue: T,
+    config?: SpringConfig,
+    callback?: (finished?: boolean) => void
+  ): T;
 
-  export function withTiming<T>(toValue: T, config?: TimingConfig): T;
+  export function withTiming<T>(
+    toValue: T,
+    config?: TimingConfig,
+    callback?: (finished?: boolean) => void
+  ): T;
 
   export function withRepeat<T>(animation: T, repeatCount?: number, reverse?: boolean): T;
 
@@ -106,6 +114,7 @@ declare module 'react-native-reanimated' {
     readonly back: (overshootClamping?: number) => (value: number) => number;
     readonly bounce: (value: number) => number;
     readonly bezier: (x1: number, y1: number, x2: number, y2: number) => (value: number) => number;
+    readonly poly: (exponent: number) => (value: number) => number;
     readonly in: (easing: (value: number) => number) => (value: number) => number;
     readonly out: (easing: (value: number) => number) => (value: number) => number;
     readonly inOut: (easing: (value: number) => number) => (value: number) => number;
