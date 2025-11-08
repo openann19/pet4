@@ -2,28 +2,29 @@
 
 ## Complete Feature Inventory
 
-| Feature | Priority | Library | RN Coverage | Gaps | Decision | Implementation Path |
-|---------|----------|---------|-------------|------|----------|-------------------|
-| **Push Notifications** | Critical | `expo-notifications` | ✅ Full | None | **RN-only** | Install + configure APNs |
-| **Deep Links** | Critical | `expo-linking` | ✅ Full | None | **RN-only** | Install + Universal Links setup |
-| **Maps** | Critical | `react-native-maps` (Apple Maps) | ✅ Full | None | **RN-only** | Install + MapKit integration |
-| **In-App Purchases** | High | `react-native-iap` | ✅ Full | Server validation | **RN-only** | Install + App Store validation |
-| **Live Streaming** | High | `react-native-webrtc` + `@livekit/react-native` | ✅ Full | None | **RN-only** | Install + LiveKit server config |
-| **Chat** | Critical | Socket.io (existing) | ✅ Full | None | **RN-only** | No changes needed |
-| **KYC Verification** | Medium | `@onfido/react-native-sdk` or `react-native-persona` | ⚠️ Partial | May need bridge | **Check RN first** | Try RN wrapper → Swift bridge if needed |
-| **Background Tasks** | Low | `expo-task-manager` + `expo-background-fetch` | ✅ 90% | Advanced modes | **RN-only** | Use RN unless proven insufficient |
-| **Face ID / Touch ID** | High | `expo-local-authentication` | ✅ Full | None | **RN-only** | Install + auth flow |
-| **Geolocation** | Critical | `expo-location` | ✅ Full | None | **RN-only** | Install + permissions |
-| **Camera/Media** | High | `expo-camera` + `expo-image-picker` | ✅ Full | None | **RN-only** | Install + permissions |
-| **File Uploads** | High | `expo-file-system` | ✅ Full | None | **RN-only** | Install + upload logic |
-| **Secure Storage** | High | `expo-secure-store` | ✅ Full | None | **RN-only** | Install + token storage (Keychain) |
-| **Permissions** | Critical | `expo-permissions` | ✅ Full | None | **RN-only** | Install + runtime handling |
-| **Haptics** | Medium | `expo-haptics` | ✅ Full | None | **RN-only** | Install + feedback triggers |
-| **Sharing** | Low | `expo-sharing` | ✅ Full | None | **RN-only** | Install + share sheet |
+| Feature                | Priority | Library                                              | RN Coverage | Gaps              | Decision           | Implementation Path                     |
+| ---------------------- | -------- | ---------------------------------------------------- | ----------- | ----------------- | ------------------ | --------------------------------------- |
+| **Push Notifications** | Critical | `expo-notifications`                                 | ✅ Full     | None              | **RN-only**        | Install + configure APNs                |
+| **Deep Links**         | Critical | `expo-linking`                                       | ✅ Full     | None              | **RN-only**        | Install + Universal Links setup         |
+| **Maps**               | Critical | `react-native-maps` (Apple Maps)                     | ✅ Full     | None              | **RN-only**        | Install + MapKit integration            |
+| **In-App Purchases**   | High     | `react-native-iap`                                   | ✅ Full     | Server validation | **RN-only**        | Install + App Store validation          |
+| **Live Streaming**     | High     | `react-native-webrtc` + `@livekit/react-native`      | ✅ Full     | None              | **RN-only**        | Install + LiveKit server config         |
+| **Chat**               | Critical | Socket.io (existing)                                 | ✅ Full     | None              | **RN-only**        | No changes needed                       |
+| **KYC Verification**   | Medium   | `@onfido/react-native-sdk` or `react-native-persona` | ⚠️ Partial  | May need bridge   | **Check RN first** | Try RN wrapper → Swift bridge if needed |
+| **Background Tasks**   | Low      | `expo-task-manager` + `expo-background-fetch`        | ✅ 90%      | Advanced modes    | **RN-only**        | Use RN unless proven insufficient       |
+| **Face ID / Touch ID** | High     | `expo-local-authentication`                          | ✅ Full     | None              | **RN-only**        | Install + auth flow                     |
+| **Geolocation**        | Critical | `expo-location`                                      | ✅ Full     | None              | **RN-only**        | Install + permissions                   |
+| **Camera/Media**       | High     | `expo-camera` + `expo-image-picker`                  | ✅ Full     | None              | **RN-only**        | Install + permissions                   |
+| **File Uploads**       | High     | `expo-file-system`                                   | ✅ Full     | None              | **RN-only**        | Install + upload logic                  |
+| **Secure Storage**     | High     | `expo-secure-store`                                  | ✅ Full     | None              | **RN-only**        | Install + token storage (Keychain)      |
+| **Permissions**        | Critical | `expo-permissions`                                   | ✅ Full     | None              | **RN-only**        | Install + runtime handling              |
+| **Haptics**            | Medium   | `expo-haptics`                                       | ✅ Full     | None              | **RN-only**        | Install + feedback triggers             |
+| **Sharing**            | Low      | `expo-sharing`                                       | ✅ Full     | None              | **RN-only**        | Install + share sheet                   |
 
 ## iOS-Specific Features
 
 ### Biometric Authentication
+
 - **Library**: `expo-local-authentication`
 - **Coverage**: 100%
 - **Features**: Face ID, Touch ID, Passcode fallback
@@ -31,6 +32,7 @@
 - **Implementation**: `expo install expo-local-authentication`
 
 ### Universal Links
+
 - **Library**: `expo-linking`
 - **Coverage**: 100%
 - **Features**: Associated Domains, App Site Association
@@ -38,6 +40,7 @@
 - **Implementation**: Configure `associatedDomains` in `app.json`
 
 ### Privacy Manifest (iOS 17+)
+
 - **Library**: Expo handles automatically
 - **Coverage**: 100%
 - **Features**: Required Reason APIs, Privacy Nutrition Labels
@@ -45,6 +48,7 @@
 - **Implementation**: Auto-generated via `expo prebuild`
 
 ### App Store Connect Integration
+
 - **Library**: `react-native-iap`
 - **Coverage**: 100%
 - **Features**: Receipt validation, subscriptions, Family Sharing
@@ -56,6 +60,7 @@
 ### ✅ **RN-Only Features (No Swift)**
 
 #### 1. Push Notifications
+
 - **Library**: `expo-notifications`
 - **Coverage**: 100%
 - **Features**: APNs integration, badges, foreground handling, categories
@@ -63,6 +68,7 @@
 - **Implementation**: `expo install expo-notifications` + APNs setup
 
 #### 2. Deep Links
+
 - **Library**: `expo-linking`
 - **Coverage**: 100%
 - **Features**: Universal Links, custom URL schemes
@@ -70,6 +76,7 @@
 - **Implementation**: `expo install expo-linking` + configure entitlements
 
 #### 3. Maps
+
 - **Library**: `react-native-maps`
 - **Coverage**: 100%
 - **Features**: Apple Maps (native), MapKit integration, markers, clustering
@@ -77,6 +84,7 @@
 - **Implementation**: `npm install react-native-maps` + configure
 
 #### 4. In-App Purchases
+
 - **Library**: `react-native-iap`
 - **Coverage**: 100% (with server validation)
 - **Features**: App Store Connect, subscriptions, receipt validation
@@ -84,6 +92,7 @@
 - **Implementation**: `npm install react-native-iap` + server receipt validation
 
 #### 5. WebRTC / Live Streaming
+
 - **Library**: `react-native-webrtc` + `@livekit/react-native`
 - **Coverage**: 100%
 - **Features**: Peer connections, media streams, live streaming
@@ -91,6 +100,7 @@
 - **Implementation**: `npm install react-native-webrtc @livekit/react-native`
 
 #### 6. Chat
+
 - **Library**: Socket.io (existing implementation)
 - **Coverage**: 100%
 - **Features**: WebSocket connections, message queuing, offline support
@@ -98,6 +108,7 @@
 - **Implementation**: No changes needed
 
 #### 7. Face ID / Touch ID
+
 - **Library**: `expo-local-authentication`
 - **Coverage**: 100%
 - **Features**: Biometric authentication, passcode fallback
@@ -105,6 +116,7 @@
 - **Implementation**: `expo install expo-local-authentication`
 
 #### 8. Background Tasks
+
 - **Library**: `expo-task-manager` + `expo-background-fetch`
 - **Coverage**: 90% (background fetch, periodic tasks)
 - **Features**: Background processing, location updates
@@ -114,6 +126,7 @@
 ### ⚠️ **Potentially Swift Needed**
 
 #### 1. KYC Verification (Priority: Medium)
+
 - **Libraries to Try**:
   - `@onfido/react-native-sdk` (check if maintained)
   - `react-native-persona` (check if available)
@@ -127,6 +140,7 @@
   3. If fails → Create minimal Swift bridge (see below)
 
 #### 2. Advanced Background Modes (Priority: Low)
+
 - **Library**: `expo-task-manager` (may be insufficient)
 - **RN Coverage**: 90% (periodic tasks only)
 - **Gaps**: Foreground services for long uploads
@@ -145,15 +159,15 @@ import React
 
 @objc(KycModule)
 class KycModule: RCTEventEmitter {
-    
+
     override static func requiresMainQueueSetup() -> Bool {
         return false
     }
-    
+
     override func supportedEvents() -> [String]! {
         return ["KycProgress", "KycResult"]
     }
-    
+
     @objc
     func startKycSession(_ config: NSDictionary, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard let userId = config["userId"] as? String,
@@ -161,45 +175,45 @@ class KycModule: RCTEventEmitter {
             reject("INVALID_CONFIG", "userId and token are required", nil)
             return
         }
-        
+
         // TODO: Bridge to KYC SDK (e.g., Onfido/Persona native SDK)
         let result: [String: Any] = [
             "sessionId": "kyc_session_\(Date().timeIntervalSince1970)",
             "status": "started",
             "userId": userId
         ]
-        
+
         resolve(result)
-        
+
         sendEvent(withName: "KycProgress", body: [
             "progress": 0,
             "stage": "initialized"
         ])
     }
-    
+
     @objc
     func getKycStatus(_ userId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard !userId.isEmpty else {
             reject("INVALID_INPUT", "userId cannot be empty", nil)
             return
         }
-        
+
         let status: [String: Any] = [
             "status": "pending",
             "verificationId": "verify_\(userId)",
             "lastUpdated": Date().timeIntervalSince1970
         ]
-        
+
         resolve(status)
     }
-    
+
     @objc
     func cancelKycSession(_ sessionId: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         guard !sessionId.isEmpty else {
             reject("INVALID_INPUT", "sessionId cannot be empty", nil)
             return
         }
-        
+
         resolve(true)
     }
 }
@@ -250,10 +264,7 @@ RCT_EXTERN_METHOD(cancelKycSession:(NSString *)sessionId
         "NSFaceIDUsageDescription": "PawfectMatch uses Face ID for secure authentication.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "associatedDomains": [
-        "applinks:pawfectmatch.com",
-        "applinks:*.pawfectmatch.com"
-      ],
+      "associatedDomains": ["applinks:pawfectmatch.com", "applinks:*.pawfectmatch.com"],
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -276,6 +287,7 @@ RCT_EXTERN_METHOD(cancelKycSession:(NSString *)sessionId
 ## Implementation Checklist
 
 ### Phase 1: RN-Only Core (Week 1-2)
+
 - [ ] Install Expo modules: `expo-notifications`, `expo-linking`, `expo-location`, `expo-camera`, `expo-image-picker`, `expo-local-authentication`
 - [ ] Install RN modules: `react-native-maps`, `react-native-iap`, `react-native-webrtc`, `@livekit/react-native`
 - [ ] Configure APNs (push notifications)
@@ -286,11 +298,13 @@ RCT_EXTERN_METHOD(cancelKycSession:(NSString *)sessionId
 - [ ] Test Face ID/Touch ID
 
 ### Phase 2: KYC Evaluation (Week 2-3)
+
 - [ ] Test `@onfido/react-native-sdk` or `react-native-persona`
 - [ ] If RN wrapper works → Use RN-only ✅
 - [ ] If no RN wrapper → Create Swift bridge (see above)
 
 ### Phase 3: iOS Polish (Week 3-4)
+
 - [ ] Configure notification permissions (EN/BG)
 - [ ] Setup Universal Links (AASA file)
 - [ ] Configure Face ID/Touch ID
@@ -299,6 +313,7 @@ RCT_EXTERN_METHOD(cancelKycSession:(NSString *)sessionId
 - [ ] App Store metadata
 
 ### Phase 4: App Store Prep (Week 4-5)
+
 - [ ] App Store Connect setup
 - [ ] Privacy Nutrition Labels
 - [ ] App preview/screenshots
@@ -311,6 +326,7 @@ RCT_EXTERN_METHOD(cancelKycSession:(NSString *)sessionId
 **Start RN-only. Add Swift only if KYC requires it.**
 
 ### Why RN-Only?
+
 - ✅ 95%+ feature coverage
 - ✅ Faster development
 - ✅ Easier maintenance
@@ -318,6 +334,7 @@ RCT_EXTERN_METHOD(cancelKycSession:(NSString *)sessionId
 - ✅ Well-maintained modules
 
 ### When to Add Swift?
+
 - ⚠️ KYC SDK has no RN wrapper → Minimal bridge (50-100 lines)
 - ⚠️ Advanced background modes → Background tasks wrapper (if RN insufficient)
 - ⚠️ Custom native UI → Unlikely for this app
@@ -348,32 +365,31 @@ RCT_EXTERN_METHOD(cancelKycSession:(NSString *)sessionId
 
 ## Summary Table
 
-| Feature | RN Coverage | Swift Needed? | Status |
-|---------|-------------|--------------|--------|
-| Push Notifications | ✅ 100% | ❌ No | RN-only |
-| Deep Links | ✅ 100% | ❌ No | RN-only |
-| Maps | ✅ 100% | ❌ No | RN-only |
-| IAP | ✅ 100% | ❌ No | RN-only |
-| WebRTC/Live | ✅ 100% | ❌ No | RN-only |
-| Chat | ✅ 100% | ❌ No | RN-only |
-| Face ID/Touch ID | ✅ 100% | ❌ No | RN-only |
-| KYC | ⚠️ 80% | ⚠️ Maybe | Check RN wrappers first |
-| Background Tasks | ✅ 90% | ⚠️ Only for advanced | RN-first |
+| Feature            | RN Coverage | Swift Needed?        | Status                  |
+| ------------------ | ----------- | -------------------- | ----------------------- |
+| Push Notifications | ✅ 100%     | ❌ No                | RN-only                 |
+| Deep Links         | ✅ 100%     | ❌ No                | RN-only                 |
+| Maps               | ✅ 100%     | ❌ No                | RN-only                 |
+| IAP                | ✅ 100%     | ❌ No                | RN-only                 |
+| WebRTC/Live        | ✅ 100%     | ❌ No                | RN-only                 |
+| Chat               | ✅ 100%     | ❌ No                | RN-only                 |
+| Face ID/Touch ID   | ✅ 100%     | ❌ No                | RN-only                 |
+| KYC                | ⚠️ 80%      | ⚠️ Maybe             | Check RN wrappers first |
+| Background Tasks   | ✅ 90%      | ⚠️ Only for advanced | RN-first                |
 
 **Verdict: Start RN-only. Add Swift only if KYC requires it.**
 
 ## iOS vs Android Code Reuse
 
-| Component | iOS | Android | Shared Code |
-|-----------|-----|---------|-------------|
-| Push Notifications | expo-notifications | expo-notifications | ✅ 100% |
-| Deep Links | expo-linking | expo-linking | ✅ 100% |
-| Maps | react-native-maps | react-native-maps | ✅ 100% |
-| IAP | react-native-iap | react-native-iap | ✅ 100% |
-| WebRTC | react-native-webrtc | react-native-webrtc | ✅ 100% |
-| Chat | Socket.io | Socket.io | ✅ 100% |
-| KYC | kyc-native.ts | kyc-native.ts | ✅ 100% |
-| Biometrics | expo-local-authentication | expo-local-authentication | ✅ 100% |
+| Component          | iOS                       | Android                   | Shared Code |
+| ------------------ | ------------------------- | ------------------------- | ----------- |
+| Push Notifications | expo-notifications        | expo-notifications        | ✅ 100%     |
+| Deep Links         | expo-linking              | expo-linking              | ✅ 100%     |
+| Maps               | react-native-maps         | react-native-maps         | ✅ 100%     |
+| IAP                | react-native-iap          | react-native-iap          | ✅ 100%     |
+| WebRTC             | react-native-webrtc       | react-native-webrtc       | ✅ 100%     |
+| Chat               | Socket.io                 | Socket.io                 | ✅ 100%     |
+| KYC                | kyc-native.ts             | kyc-native.ts             | ✅ 100%     |
+| Biometrics         | expo-local-authentication | expo-local-authentication | ✅ 100%     |
 
 **Result: 95%+ code reuse between iOS and Android!**
-

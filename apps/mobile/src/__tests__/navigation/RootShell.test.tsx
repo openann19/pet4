@@ -48,4 +48,3 @@ describe('RootShell', () => {
     expect(result).toBeTruthy()
   })
 })
-

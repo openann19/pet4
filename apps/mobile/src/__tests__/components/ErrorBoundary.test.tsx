@@ -5,7 +5,7 @@
 
 import { fireEvent, render } from '@testing-library/react-native'
 import React from 'react'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { ErrorBoundary } from '../../components/ErrorBoundary'
 
 // Component that throws an error
@@ -17,15 +17,13 @@ const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }): React.JSX.Elemen
 }
 
 describe('ErrorBoundary', () => {
-  // Suppress console.error for these tests
-  const originalError = console.error
+  // Suppress console.error for these tests using vitest's spy
   beforeAll(() => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    console.error = () => {}
+    vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   afterAll(() => {
-    console.error = originalError
+    vi.restoreAllMocks()
   })
 
   it('should render children when there is no error', () => {
@@ -81,4 +79,3 @@ describe('ErrorBoundary', () => {
     expect(getByText('No error')).toBeTruthy()
   })
 })
-

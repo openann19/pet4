@@ -1,40 +1,40 @@
-'use client'
+'use client';
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { MapPin, Microphone, Smiley, Sparkle } from '@phosphor-icons/react'
-import { AnimatePresence } from '@/effects/reanimated/animate-presence'
-import { TemplatePanel } from './TemplatePanel'
-import { StickerButton, ReactionButton, SendButtonIcon } from './Buttons'
-import type { ChatMessage, MessageTemplate, SmartSuggestion } from '@/lib/chat-types'
-import { CHAT_STICKERS, generateMessageId } from '@/lib/chat-utils'
-import { REACTION_EMOJIS } from '@/lib/chat-types'
-import { toast } from 'sonner'
-import VoiceRecorder from '../VoiceRecorder'
-import { useRef } from 'react'
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MapPin, Microphone, Smiley, Sparkle } from '@phosphor-icons/react';
+import { AnimatePresence } from '@/effects/reanimated/animate-presence';
+import { TemplatePanel } from './TemplatePanel';
+import { StickerButton, ReactionButton, SendButtonIcon } from './Buttons';
+import type { ChatMessage, MessageTemplate, SmartSuggestion } from '@/lib/chat-types';
+import { CHAT_STICKERS, generateMessageId } from '@/lib/chat-utils';
+import { REACTION_EMOJIS } from '@/lib/chat-types';
+import { toast } from 'sonner';
+import VoiceRecorder from '../VoiceRecorder';
+import { useRef } from 'react';
 
 export interface ChatInputBarProps {
-  inputValue: string
-  setInputValue: (v: string) => void
-  inputRef?: React.RefObject<HTMLInputElement>
-  showStickers: boolean
-  setShowStickers: (v: boolean) => void
-  showTemplates: boolean
-  setShowTemplates: (v: boolean) => void
-  isRecordingVoice: boolean
-  setIsRecordingVoice: (v: boolean) => void
+  inputValue: string;
+  setInputValue: (v: string) => void;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  showStickers: boolean;
+  setShowStickers: (v: boolean) => void;
+  showTemplates: boolean;
+  setShowTemplates: (v: boolean) => void;
+  isRecordingVoice: boolean;
+  setIsRecordingVoice: (v: boolean) => void;
   onSend: (
     content: string,
     type?: ChatMessage['type'],
     attachments?: ChatMessage['attachments'],
     metadata?: ChatMessage['metadata']
-  ) => void
-  onSuggestion: (s: SmartSuggestion) => void
-  onShareLocation: () => void
-  onTemplate: (t: MessageTemplate) => void
-  onQuickReaction?: (emoji: string) => void
+  ) => void;
+  onSuggestion: (s: SmartSuggestion) => void;
+  onShareLocation: () => void;
+  onTemplate: (t: MessageTemplate) => void;
+  onQuickReaction?: (emoji: string) => void;
 }
 
 export function ChatInputBar({
@@ -53,8 +53,8 @@ export function ChatInputBar({
   onTemplate,
   onQuickReaction,
 }: ChatInputBarProps): JSX.Element {
-  const internalInputRef = useRef<HTMLInputElement>(null)
-  const inputRef = externalInputRef ?? internalInputRef
+  const internalInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = externalInputRef ?? internalInputRef;
 
   return (
     <div className="glass-strong border-t border-white/20 p-4 shadow-2xl backdrop-blur-2xl space-y-3">
@@ -63,7 +63,7 @@ export function ChatInputBar({
           variant="ghost"
           size="sm"
           onClick={() => {
-            setShowTemplates(!showTemplates)
+            setShowTemplates(!showTemplates);
           }}
           className="shrink-0"
         >
@@ -81,11 +81,11 @@ export function ChatInputBar({
           <TemplatePanel
             key="templates"
             onClose={() => {
-              setShowTemplates(false)
+              setShowTemplates(false);
             }}
             onSelect={(t) => {
-              onTemplate(t)
-              setShowTemplates(false)
+              onTemplate(t);
+              setShowTemplates(false);
             }}
           />
         </AnimatePresence>
@@ -114,7 +114,7 @@ export function ChatInputBar({
                       key={sticker.id}
                       sticker={sticker}
                       onSelect={(emoji) => {
-                        onSend(emoji, 'sticker')
+                        onSend(emoji, 'sticker');
                       }}
                     />
                   ))}
@@ -127,8 +127,8 @@ export function ChatInputBar({
                       key={emoji}
                       emoji={emoji}
                       onClick={() => {
-                        onQuickReaction?.(emoji)
-                        setShowStickers(false)
+                        onQuickReaction?.(emoji);
+                        setShowStickers(false);
                       }}
                     />
                   ))}
@@ -146,13 +146,13 @@ export function ChatInputBar({
                 ref={inputRef}
                 value={inputValue}
                 onChange={(e) => {
-                  setInputValue(e.target.value)
+                  setInputValue(e.target.value);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    onSend(inputValue, 'text')
-                    setInputValue('')
+                    e.preventDefault();
+                    onSend(inputValue, 'text');
+                    setInputValue('');
                   }
                 }}
                 placeholder="Type a message..."
@@ -162,7 +162,7 @@ export function ChatInputBar({
 
             <Button
               onMouseDown={() => {
-                setIsRecordingVoice(true)
+                setIsRecordingVoice(true);
               }}
               size="icon"
               variant="ghost"
@@ -173,8 +173,8 @@ export function ChatInputBar({
 
             <Button
               onClick={() => {
-                onSend(inputValue, 'text')
-                setInputValue('')
+                onSend(inputValue, 'text');
+                setInputValue('');
               }}
               disabled={!inputValue.trim()}
               size="icon"
@@ -186,7 +186,7 @@ export function ChatInputBar({
         ) : (
           <VoiceRecorder
             onRecorded={(audioBlob, duration, waveform) => {
-              const voiceUrl = URL.createObjectURL(audioBlob)
+              const voiceUrl = URL.createObjectURL(audioBlob);
               onSend(
                 'Voice message',
                 'voice',
@@ -200,17 +200,16 @@ export function ChatInputBar({
                   },
                 ],
                 { voiceNote: { duration, waveform } }
-              )
-              toast.success('Voice recorded')
-              setIsRecordingVoice(false)
+              );
+              toast.success('Voice recorded');
+              setIsRecordingVoice(false);
             }}
             onCancel={() => {
-              setIsRecordingVoice(false)
+              setIsRecordingVoice(false);
             }}
           />
         )}
       </div>
     </div>
-  )
+  );
 }
-

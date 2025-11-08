@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 export function ProfileScreen(): React.JSX.Element {
   const handleRefresh = useCallback(async (): Promise<void> => {
     // Simulate network delay for better UX
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise(resolve => setTimeout(resolve, 500))
   }, [])
 
   return (
@@ -27,7 +27,7 @@ export function ProfileScreen(): React.JSX.Element {
             description="Snapshot of mobile-ready records pulled directly from the shared domain schema."
           />
 
-          {samplePets.map((pet) => (
+          {samplePets.map(pet => (
             <FeatureCard
               key={pet.id}
               title={pet.name}
@@ -36,7 +36,9 @@ export function ProfileScreen(): React.JSX.Element {
               <InfoRow label="Life stage" value={pet.lifeStage} />
               <InfoRow
                 label="Intents"
-                value={Array.isArray(pet.intents) && pet.intents.length ? pet.intents.join(', ') : '—'}
+                value={
+                  Array.isArray(pet.intents) && pet.intents.length ? pet.intents.join(', ') : '—'
+                }
               />
               <InfoRow
                 label="KYC"
@@ -58,26 +60,20 @@ export function ProfileScreen(): React.JSX.Element {
 
 type Tone = 'default' | 'success' | 'warning'
 
-const InfoRow = memo(({
-  label,
-  value,
-  tone = 'default',
-}: {
-  label: string
-  value: string
-  tone?: Tone
-}) => {
-  const valueStyle =
-    tone === 'success' ? styles.success : tone === 'warning' ? styles.warning : styles.value
-  return (
-    <View style={styles.row} accessible accessibilityRole="summary">
-      <Text style={styles.label}>{label}</Text>
-      <Text style={valueStyle} numberOfLines={1} ellipsizeMode="tail">
-        {value}
-      </Text>
-    </View>
-  )
-})
+const InfoRow = memo(
+  ({ label, value, tone = 'default' }: { label: string; value: string; tone?: Tone }) => {
+    const valueStyle =
+      tone === 'success' ? styles.success : tone === 'warning' ? styles.warning : styles.value
+    return (
+      <View style={styles.row} accessible accessibilityRole="summary">
+        <Text style={styles.label}>{label}</Text>
+        <Text style={valueStyle} numberOfLines={1} ellipsizeMode="tail">
+          {value}
+        </Text>
+      </View>
+    )
+  }
+)
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.background },

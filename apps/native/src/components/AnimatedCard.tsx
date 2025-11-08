@@ -1,5 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import type { ViewStyle, StyleProp } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -11,17 +12,13 @@ import { SpringConfig } from '../animations/springConfigs';
 interface AnimatedCardProps {
   children: React.ReactNode;
   onPress?: () => void;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   delay?: number;
 }
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-export const AnimatedCard: React.FC<AnimatedCardProps> = ({
-  children,
-  onPress,
-  style,
-}) => {
+export const AnimatedCard: React.FC<AnimatedCardProps> = ({ children, onPress, style }) => {
   const scale = useSharedValue(1);
   const elevation = useSharedValue(2);
 

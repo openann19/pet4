@@ -32,9 +32,7 @@ describe('LocationSharing', () => {
 
     it('calls onTap when provided', () => {
       const handleTap = vi.fn();
-      const { container } = render(
-        <LocationBubble location={mockLocation} onTap={handleTap} />
-      );
+      const { container } = render(<LocationBubble location={mockLocation} onTap={handleTap} />);
       const bubble = container.querySelector('.cursor-pointer');
       if (bubble) {
         (bubble as HTMLElement).click();
@@ -45,14 +43,8 @@ describe('LocationSharing', () => {
 
   describe('LocationPicker', () => {
     it('renders location picker', () => {
-      render(
-        <LocationPicker
-          onSelectLocation={vi.fn()}
-          onClose={vi.fn()}
-        />
-      );
+      render(<LocationPicker onSelectLocation={vi.fn()} onClose={vi.fn()} />);
       expect(screen.getByText(/share location/i)).toBeInTheDocument();
     });
   });
 });
-

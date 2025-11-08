@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import { PremiumButton } from '../PremiumButton'
-import { AlertCircle, RefreshCw } from 'lucide-react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import { PremiumButton } from '../PremiumButton';
+import { AlertCircle, RefreshCw } from 'lucide-react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface PremiumErrorStateProps {
-  title?: string
-  message?: string
-  error?: Error | string
-  onRetry?: () => void
-  retryLabel?: string
-  variant?: 'default' | 'minimal' | 'detailed'
-  showDetails?: boolean
-  className?: string
+  title?: string;
+  message?: string;
+  error?: Error | string;
+  onRetry?: () => void;
+  retryLabel?: string;
+  variant?: 'default' | 'minimal' | 'detailed';
+  showDetails?: boolean;
+  className?: string;
 }
 
 export function PremiumErrorState({
@@ -31,46 +31,46 @@ export function PremiumErrorState({
   showDetails = false,
   className,
 }: PremiumErrorStateProps): React.JSX.Element {
-  const scale = useSharedValue(0.9)
-  const opacity = useSharedValue(0)
-  const shake = useSharedValue(0)
+  const scale = useSharedValue(0.9);
+  const opacity = useSharedValue(0);
+  const shake = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
-    scale.value = withSpring(1, springConfigs.smooth)
-    opacity.value = withSpring(1, springConfigs.smooth)
+    scale.value = withSpring(1, springConfigs.smooth);
+    opacity.value = withSpring(1, springConfigs.smooth);
     return {
-      transform: [
-        { scale: scale.value },
-        { translateX: shake.value },
-      ],
+      transform: [{ scale: scale.value }, { translateX: shake.value }],
       opacity: opacity.value,
-    }
-  }) as AnimatedStyle
+    };
+  }) as AnimatedStyle;
 
   const handleRetry = useCallback(() => {
-    shake.value = withSpring(10, springConfigs.bouncy)
+    shake.value = withSpring(10, springConfigs.bouncy);
     setTimeout(() => {
-      shake.value = withSpring(-10, springConfigs.bouncy)
+      shake.value = withSpring(-10, springConfigs.bouncy);
       setTimeout(() => {
-        shake.value = withSpring(0, springConfigs.smooth)
-      }, 100)
-    }, 100)
+        shake.value = withSpring(0, springConfigs.smooth);
+      }, 100);
+    }, 100);
 
-    haptics.impact('medium')
-    onRetry?.()
-  }, [onRetry, shake])
+    haptics.impact('medium');
+    onRetry?.();
+  }, [onRetry, shake]);
 
-  const errorMessage = typeof error === 'string' ? error : error?.message || message
-  const errorDetails = typeof error === 'object' && error?.stack ? error.stack : undefined
+  const errorMessage = typeof error === 'string' ? error : error?.message || message;
+  const errorDetails = typeof error === 'object' && error?.stack ? error.stack : undefined;
 
   const variants = {
     default: 'text-center py-12 px-4',
     minimal: 'text-center py-8 px-4',
     detailed: 'text-center py-12 px-4',
-  }
+  };
 
   return (
-    <AnimatedView style={animatedStyle} className={cn('flex flex-col items-center', variants[variant], className)}>
+    <AnimatedView
+      style={animatedStyle}
+      className={cn('flex flex-col items-center', variants[variant], className)}
+    >
       <div className="mb-4 text-destructive">
         <AlertCircle size={48} />
       </div>
@@ -85,10 +85,15 @@ export function PremiumErrorState({
         </details>
       )}
       {onRetry && (
-        <PremiumButton onClick={handleRetry} variant="primary" size="md" icon={<RefreshCw size={16} />}>
+        <PremiumButton
+          onClick={handleRetry}
+          variant="primary"
+          size="md"
+          icon={<RefreshCw size={16} />}
+        >
           {retryLabel}
         </PremiumButton>
       )}
     </AnimatedView>
-  )
+  );
 }

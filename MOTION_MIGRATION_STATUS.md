@@ -5,6 +5,7 @@
 The migration script has successfully migrated **86 files** that had simple framer-motion usage (imports and basic component replacements).
 
 ### Files Successfully Migrated:
+
 - ✅ `AuthScreen.tsx` - Fixed imports and closing tags
 - ✅ Many other components with simple motion.div/motion.span replacements
 
@@ -13,6 +14,7 @@ The migration script has successfully migrated **86 files** that had simple fram
 **14 files** were skipped because they contain CSS animation/transition issues or complex framer-motion patterns that need manual conversion:
 
 ### Files with CSS Issues:
+
 1. `AdvancedCard.tsx` - Uses framer-motion `transition` prop (needs Reanimated conversion)
 2. `EnhancedCard.tsx` - Uses framer-motion `transition` prop
 3. `EnhancedVisuals.tsx` - Complex animations
@@ -24,6 +26,7 @@ The migration script has successfully migrated **86 files** that had simple fram
 9. `pwa/InstallPrompt.tsx` - CSS transitions
 
 ### Files with Complex Animation Patterns:
+
 10. `effects/animations/interactions.ts` - Animation utilities
 11. `effects/animations/loops.ts` - Animation loops
 12. `effects/animations/variants.ts` - Animation variants
@@ -35,9 +38,10 @@ The migration script has successfully migrated **86 files** that had simple fram
 Files that use framer-motion's declarative API need to be converted to Reanimated hooks:
 
 ### Pattern to Replace:
+
 ```tsx
 // ❌ Old (framer-motion)
-<motion.div
+;<motion.div
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.3 }}
@@ -46,27 +50,29 @@ Files that use framer-motion's declarative API need to be converted to Reanimate
 </motion.div>
 
 // ✅ New (@petspark/motion)
-import { MotionView, useAnimatedStyle, withTiming, useSharedValue, useEffect } from '@petspark/motion'
+import {
+  MotionView,
+  useAnimatedStyle,
+  withTiming,
+  useSharedValue,
+  useEffect,
+} from '@petspark/motion'
 
 function MyComponent() {
   const opacity = useSharedValue(0)
   const y = useSharedValue(20)
-  
+
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 300 })
     y.value = withTiming(0, { duration: 300 })
   }, [])
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     transform: [{ translateY: y.value }],
   }))
-  
-  return (
-    <MotionView animatedStyle={animatedStyle}>
-      Content
-    </MotionView>
-  )
+
+  return <MotionView animatedStyle={animatedStyle}>Content</MotionView>
 }
 ```
 
@@ -90,7 +96,6 @@ function MyComponent() {
   - Import replacements
   - Simple component replacements (`motion.div` → `MotionView`)
   - `AnimatePresence` → `Presence`
-  
 - The migration script cannot handle:
   - Declarative animation props (`initial`, `animate`, `transition`)
   - Complex animation sequences

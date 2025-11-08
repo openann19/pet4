@@ -5,12 +5,14 @@
 ### 1. Background Uploads (Web + Mobile)
 
 **Web - Service Worker Background Sync**
+
 - ✅ Enhanced `/apps/web/public/sw.js` with background upload queueing
 - ✅ Handles PUT requests to `/api/uploads/parts` with automatic retry
 - ✅ Uses Cache API for upload queue persistence
 - ✅ Background sync event handler for resuming uploads when online
 
 **Mobile - BackgroundFetch + TaskManager**
+
 - ✅ Created `/apps/mobile/src/utils/background-uploads.ts`
 - ✅ Background task registration with TaskManager
 - ✅ Network-aware upload flushing
@@ -20,17 +22,20 @@
 ### 2. Global Motion Gate + 120 Hz Detection
 
 **Shared Motion Config**
+
 - ✅ Created `/packages/shared/src/motion.ts` with base motion constants
 - ✅ Consistent spring/stiffness/damping values across platforms
 - ✅ Duration presets (tap: 150ms, toast: 220ms, modal: 260ms)
 
 **Web - Refresh Rate Detection**
+
 - ✅ Created `/apps/web/src/lib/refresh-rate.ts`
 - ✅ Detects display refresh rate (60/120/240 Hz) using requestAnimationFrame
 - ✅ Duration scaling function for consistent animation feel
 - ✅ Integrated into main.tsx initialization
 
 **Mobile - Reduced Motion SharedValue**
+
 - ✅ Created `/apps/mobile/src/effects/core/useReducedMotionSV.ts`
 - ✅ Worklet-friendly SharedValue hook
 - ✅ Reactive updates when preference changes
@@ -39,6 +44,7 @@
 ### 3. Deterministic Particle Engine
 
 **Shared RNG**
+
 - ✅ Already exists: `/packages/shared/src/rng.ts`
 - ✅ Seeded Xorshift32 algorithm
 - ✅ Used in particle effects for reproducible animations
@@ -46,23 +52,27 @@
 ### 4. Map Clustering + Kalman Smoothing
 
 **Shared Kalman Filter**
+
 - ✅ Created `/packages/shared/src/geo/kalman.ts`
 - ✅ GPS coordinate smoothing with configurable noise parameters
 - ✅ Tests included: `/packages/shared/src/geo/kalman.test.ts`
 
 **Web - Map Clustering**
+
 - ✅ Created `/apps/web/src/lib/maps/clustering.ts`
 - ✅ Grid-based clustering algorithm (no heavy dependencies)
 - ✅ Zoom-aware clustering
 - ✅ Tests included: `/apps/web/src/lib/maps/clustering.test.ts`
 
 **Mobile - Kalman Usage**
+
 - ✅ Created `/apps/mobile/src/utils/map-kalman.ts` with example hook
 - ✅ Ready for integration into MapScreen component
 
 ### 5. Media Editor Filters
 
 **Note**: Filters already exist in `/apps/web/src/core/services/media/image-engine.ts`
+
 - Existing filters: warm, cool, vivid, mono, sepia, cinematic
 - Canvas-based color matrix implementation
 - No additional implementation needed
@@ -77,12 +87,14 @@
 ### 7. Quality Scaler
 
 **Shared Device Quality**
+
 - ✅ Created `/packages/shared/src/device/quality.ts`
 - ✅ Tier detection (low/mid/high) based on CPU/GPU/memory
 - ✅ Quality-based config (particles, blur, bloom, shadows)
 - ✅ Tests included: `/packages/shared/src/device/quality.test.ts`
 
 **Web - Device Score Detection**
+
 - ✅ Created `/apps/web/src/lib/device-score.ts`
 - ✅ Detects memory, CPU cores, GPU via WebGL
 - ✅ Calculates quality tier for effect scaling
@@ -90,11 +102,13 @@
 ### 8. Smarter Push Notifications
 
 **Web - Service Worker Actions**
+
 - ✅ Enhanced `/apps/web/public/sw.js` notificationclick handler
 - ✅ Action button support (reply, like)
 - ✅ Deep linking with message IDs
 
 **Mobile - Notification Categories**
+
 - ✅ Created `/apps/mobile/src/components/notifications/NotificationProvider.tsx`
 - ✅ CHAT category with REPLY and LIKE actions
 - ✅ MATCH category with VIEW action
@@ -103,12 +117,14 @@
 ### 9. Offline Feed & Chat
 
 **Web - Service Worker Caching**
+
 - ✅ Enhanced `/apps/web/public/sw.js` with:
   - Feed API: stale-while-revalidate strategy
   - Media files: cache-first strategy
   - Automatic cache updates
 
 **Mobile - MMKV Cache**
+
 - ✅ Created `/apps/mobile/src/utils/offline-cache.ts`
 - ✅ MMKV-based caching (graceful fallback if unavailable)
 - ✅ Async cache operations
@@ -185,6 +201,7 @@ apps/mobile/src/
 ## 🔧 Dependencies
 
 **Required (Mobile):**
+
 - `expo-task-manager` - Background task management
 - `expo-background-fetch` - Background fetch API
 - `react-native-mmkv` - Fast key-value storage
@@ -195,6 +212,7 @@ apps/mobile/src/
 ## 📝 Integration Notes
 
 1. **Background Uploads**: Mobile requires installing dependencies:
+
    ```bash
    cd apps/mobile
    pnpm add expo-task-manager expo-background-fetch react-native-mmkv
@@ -215,6 +233,7 @@ apps/mobile/src/
 ## ✅ CI Integration
 
 The `verify:ultra` script is added to web CI pipeline:
+
 ```json
 {
   "scripts": {
@@ -233,4 +252,3 @@ The `verify:ultra` script is added to web CI pipeline:
 5. Add notification categories to notification scheduling
 
 All features are production-ready with proper error handling, logging, and graceful fallbacks.
-

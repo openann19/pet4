@@ -1,43 +1,47 @@
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
-import { Switch } from '@/components/ui/switch'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Separator } from '@/components/ui/separator'
-import type { MatchingConfig } from '@/core/domain/matching-config'
-import { DEFAULT_MATCHING_WEIGHTS, WEIGHT_SAFE_RANGES, DEFAULT_HARD_GATES } from '@/core/domain/matching-config'
-import { matchingAPI } from '@/api/matching-api'
-import type { UpdateMatchingConfigData } from '@/api/types'
-import { toast } from 'sonner'
-import { FloppyDisk, ArrowsClockwise } from '@phosphor-icons/react'
-import { createLogger } from '@/lib/logger'
-import { configBroadcastService } from '@/core/services/config-broadcast-service'
-import { adminApi } from '@/api/admin-api'
-import { useStorage } from '@/hooks/useStorage'
-import type { User } from '@/lib/user-service'
-import { Radio } from '@phosphor-icons/react'
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import type { MatchingConfig } from '@/core/domain/matching-config';
+import {
+  DEFAULT_MATCHING_WEIGHTS,
+  WEIGHT_SAFE_RANGES,
+  DEFAULT_HARD_GATES,
+} from '@/core/domain/matching-config';
+import { matchingAPI } from '@/api/matching-api';
+import type { UpdateMatchingConfigData } from '@/api/types';
+import { toast } from 'sonner';
+import { FloppyDisk, ArrowsClockwise } from '@phosphor-icons/react';
+import { createLogger } from '@/lib/logger';
+import { configBroadcastService } from '@/core/services/config-broadcast-service';
+import { adminApi } from '@/api/admin-api';
+import { useStorage } from '@/hooks/use-storage';
+import type { User } from '@/lib/user-service';
+import { Radio } from '@phosphor-icons/react';
 
-const logger = createLogger('MatchingConfigPanel')
+const logger = createLogger('MatchingConfigPanel');
 
 export function MatchingConfigPanel() {
-  const [config, setConfig] = useState<MatchingConfig | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [broadcasting, setBroadcasting] = useState(false)
-  const [currentUser] = useStorage<User | null>('current-user', null)
+  const [config, setConfig] = useState<MatchingConfig | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [currentUser] = useStorage<User | null>('current-user', null);
 
   useEffect(() => {
-    loadConfig()
-  }, [])
+    loadConfig();
+  }, []);
 
   const loadConfig = async () => {
     try {
-      setLoading(true)
-      const currentConfig = await matchingAPI.getConfig()
+      setLoading(true);
+      const currentConfig = await matchingAPI.getConfig();
       if (currentConfig) {
-        setConfig(currentConfig)
+        setConfig(currentConfig);
       } else {
         const defaultConfig: MatchingConfig = {
           id: 'default',
@@ -48,123 +52,132 @@ export function MatchingConfigPanel() {
             MATCH_REQUIRE_VACCINATION: true,
             MATCH_DISTANCE_MAX_KM: 50,
             MATCH_AB_TEST_KEYS: [],
-            MATCH_AI_HINTS_ENABLED: true
+            MATCH_AI_HINTS_ENABLED: true,
           },
           updatedAt: new Date().toISOString(),
-          updatedBy: 'admin'
-        }
-        setConfig(defaultConfig)
+          updatedBy: 'admin',
+        };
+        setConfig(defaultConfig);
       }
     } catch (error) {
-      toast.error('Failed to load configuration')
-      logger.error('Failed to load configuration', error instanceof Error ? error : new Error(String(error)))
+      toast.error('Failed to load configuration');
+      logger.error(
+        'Failed to load configuration',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSave = async () => {
-    if (!config) return
+    if (!config) return;
 
     try {
-      setSaving(true)
-      
+      setSaving(true);
+
       const updateData: UpdateMatchingConfigData = {
         weights: config.weights,
         hardGates: config.hardGates,
-        featureFlags: config.featureFlags
-      }
-      
-      const updatedConfig = await matchingAPI.updateConfig(updateData)
-      setConfig(updatedConfig)
-      toast.success('Configuration saved successfully')
+        featureFlags: config.featureFlags,
+      };
+
+      const updatedConfig = await matchingAPI.updateConfig(updateData);
+      setConfig(updatedConfig);
+      toast.success('Configuration saved successfully');
     } catch (error) {
-      toast.error('Failed to save configuration')
-      logger.error('Failed to save configuration', error instanceof Error ? error : new Error(String(error)))
+      toast.error('Failed to save configuration');
+      logger.error(
+        'Failed to save configuration',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleSaveAndBroadcast = async () => {
-    if (!config || !currentUser) return
+    if (!config || !currentUser) return;
 
     try {
-      setSaving(true)
-      setBroadcasting(true)
-      
+      setSaving(true);
+      setBroadcasting(true);
+
       const updateData: UpdateMatchingConfigData = {
         weights: config.weights,
         hardGates: config.hardGates,
-        featureFlags: config.featureFlags
-      }
-      
-      const updatedConfig = await matchingAPI.updateConfig(updateData)
-      setConfig(updatedConfig)
-      
+        featureFlags: config.featureFlags,
+      };
+
+      const updatedConfig = await matchingAPI.updateConfig(updateData);
+      setConfig(updatedConfig);
+
       // Broadcast the config
       await configBroadcastService.broadcastConfig(
         'matching',
         updatedConfig as Record<string, unknown>,
         currentUser.id || 'admin'
-      )
-      
-      toast.success('Configuration saved and broadcasted successfully')
-      
+      );
+
+      toast.success('Configuration saved and broadcasted successfully');
+
       // Log audit entry
       await adminApi.createAuditLog({
         adminId: currentUser.id || 'admin',
         action: 'config_broadcast',
         targetType: 'matching_config',
         targetId: updatedConfig.id || 'default',
-        details: JSON.stringify({ configType: 'matching' })
-      })
+        details: JSON.stringify({ configType: 'matching' }),
+      });
     } catch (error) {
-      toast.error('Failed to save and broadcast configuration')
-      logger.error('Failed to save and broadcast configuration', error instanceof Error ? error : new Error(String(error)))
+      toast.error('Failed to save and broadcast configuration');
+      logger.error(
+        'Failed to save and broadcast configuration',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
-      setSaving(false)
-      setBroadcasting(false)
+      setSaving(false);
+      setBroadcasting(false);
     }
-  }
+  };
 
   const handleWeightChange = (key: keyof typeof DEFAULT_MATCHING_WEIGHTS, value: number) => {
-    if (!config) return
+    if (!config) return;
     setConfig({
       ...config,
       weights: {
         ...config.weights,
-        [key]: value
-      }
-    })
-  }
+        [key]: value,
+      },
+    });
+  };
 
   const handleHardGateChange = (key: keyof typeof DEFAULT_HARD_GATES, value: boolean | number) => {
-    if (!config) return
+    if (!config) return;
     setConfig({
       ...config,
       hardGates: {
         ...config.hardGates,
-        [key]: value
-      }
-    })
-  }
+        [key]: value,
+      },
+    });
+  };
 
   const handleFeatureFlagChange = (key: string, value: boolean | number) => {
-    if (!config) return
+    if (!config) return;
     setConfig({
       ...config,
       featureFlags: {
         ...config.featureFlags,
-        [key]: value
-      }
-    })
-  }
+        [key]: value,
+      },
+    });
+  };
 
   const getTotalWeight = () => {
-    if (!config) return 0
-    return Object.values(config.weights).reduce((sum, val) => sum + val, 0)
-  }
+    if (!config) return 0;
+    return Object.values(config.weights).reduce((sum, val) => sum + val, 0);
+  };
 
   if (loading) {
     return (
@@ -176,15 +189,15 @@ export function MatchingConfigPanel() {
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (!config) {
-    return null
+    return null;
   }
 
-  const totalWeight = getTotalWeight()
-  const isWeightValid = totalWeight === 100
+  const totalWeight = getTotalWeight();
+  const isWeightValid = totalWeight === 100;
 
   return (
     <div className="space-y-6">
@@ -195,12 +208,13 @@ export function MatchingConfigPanel() {
             Adjust the scoring weights for different compatibility factors. Total must equal 100%.
           </CardDescription>
           <div className="text-sm font-medium mt-2">
-            Total: {totalWeight}% {!isWeightValid && <span className="text-destructive">(Must be 100%)</span>}
+            Total: {totalWeight}%{' '}
+            {!isWeightValid && <span className="text-destructive">(Must be 100%)</span>}
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {Object.entries(config.weights).map(([key, value]) => {
-            const range = WEIGHT_SAFE_RANGES[key as keyof typeof config.weights]
+            const range = WEIGHT_SAFE_RANGES[key as keyof typeof config.weights];
             return (
               <div key={key} className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -217,13 +231,13 @@ export function MatchingConfigPanel() {
                   value={[value]}
                   onValueChange={([val]) => {
                     if (val !== undefined && typeof val === 'number') {
-                      handleWeightChange(key as keyof typeof config.weights, val)
+                      handleWeightChange(key as keyof typeof config.weights, val);
                     }
                   }}
                   className="w-full"
                 />
               </div>
-            )
+            );
           })}
         </CardContent>
       </Card>
@@ -253,7 +267,9 @@ export function MatchingConfigPanel() {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="requireVaccinations">Require Up-to-Date Vaccinations</Label>
-              <p className="text-sm text-muted-foreground">Block matches without current vaccinations</p>
+              <p className="text-sm text-muted-foreground">
+                Block matches without current vaccinations
+              </p>
             </div>
             <Switch
               id="requireVaccinations"
@@ -314,7 +330,9 @@ export function MatchingConfigPanel() {
               min="1"
               max="1000"
               value={config.hardGates.maxDistanceKm}
-              onChange={(e) => handleHardGateChange('maxDistanceKm', parseInt(e.target.value, 10) || 50)}
+              onChange={(e) =>
+                handleHardGateChange('maxDistanceKm', parseInt(e.target.value, 10) || 50)
+              }
             />
           </div>
         </CardContent>
@@ -323,9 +341,7 @@ export function MatchingConfigPanel() {
       <Card>
         <CardHeader>
           <CardTitle>Feature Flags</CardTitle>
-          <CardDescription>
-            Toggle experimental features and system-wide settings.
-          </CardDescription>
+          <CardDescription>Toggle experimental features and system-wide settings.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -378,7 +394,9 @@ export function MatchingConfigPanel() {
               min="1"
               max="1000"
               value={config.featureFlags.MATCH_DISTANCE_MAX_KM}
-              onChange={(e) => handleFeatureFlagChange('MATCH_DISTANCE_MAX_KM', parseInt(e.target.value, 10) || 50)}
+              onChange={(e) =>
+                handleFeatureFlagChange('MATCH_DISTANCE_MAX_KM', parseInt(e.target.value, 10) || 50)
+              }
             />
           </div>
         </CardContent>
@@ -422,11 +440,7 @@ export function MatchingConfigPanel() {
           )}
         </Button>
 
-        <Button
-          variant="outline"
-          onClick={loadConfig}
-          disabled={saving || broadcasting}
-        >
+        <Button variant="outline" onClick={loadConfig} disabled={saving || broadcasting}>
           Reset to Current
         </Button>
       </div>
@@ -437,5 +451,5 @@ export function MatchingConfigPanel() {
         </p>
       )}
     </div>
-  )
+  );
 }

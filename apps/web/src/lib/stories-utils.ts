@@ -1,5 +1,11 @@
-import { generateULID } from './utils'
-import type { Story, StoryHighlight, CollaborativeStory, StoryAnalytics, StoryView } from './stories-types'
+import { generateULID } from './utils';
+import type {
+  Story,
+  StoryHighlight,
+  CollaborativeStory,
+  StoryAnalytics,
+  StoryView,
+} from './stories-types';
 
 export function createStory(
   userId: string,
@@ -12,8 +18,8 @@ export function createStory(
   visibility: Story['visibility'],
   userAvatar?: string
 ): Story {
-  const now = new Date()
-  const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000)
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
   return {
     id: generateULID(),
@@ -31,8 +37,8 @@ export function createStory(
     visibility,
     viewCount: 0,
     views: [],
-    reactions: []
-  }
+    reactions: [],
+  };
 }
 
 export function createStoryHighlight(
@@ -51,8 +57,8 @@ export function createStoryHighlight(
     stories,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    isPinned: false
-  }
+    isPinned: false,
+  };
 }
 
 export function createCollaborativeStory(
@@ -60,10 +66,10 @@ export function createCollaborativeStory(
   creatorName: string,
   title: string,
   description: string,
-  maxParticipants: number = 5
+  maxParticipants = 5
 ): CollaborativeStory {
-  const now = new Date()
-  const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
   return {
     id: generateULID(),
@@ -76,53 +82,53 @@ export function createCollaborativeStory(
     status: 'active',
     maxParticipants,
     createdAt: now.toISOString(),
-    expiresAt: expiresAt.toISOString()
-  }
+    expiresAt: expiresAt.toISOString(),
+  };
 }
 
 export function isStoryExpired(story: Story): boolean {
-  return new Date(story.expiresAt) < new Date()
+  return new Date(story.expiresAt) < new Date();
 }
 
 export function filterActiveStories(stories: Story[]): Story[] {
-  if (!Array.isArray(stories)) return []
-  return stories.filter(s => !isStoryExpired(s))
+  if (!Array.isArray(stories)) return [];
+  return stories.filter((s) => !isStoryExpired(s));
 }
 
 export function groupStoriesByUser(stories: Story[]): Map<string, Story[]> {
-  const grouped = new Map<string, Story[]>()
-  
-  if (!Array.isArray(stories)) return grouped
-  
-  stories.forEach(story => {
-    const userStories = grouped.get(story.userId) || []
-    userStories.push(story)
-    grouped.set(story.userId, userStories)
-  })
-  
-  return grouped
+  const grouped = new Map<string, Story[]>();
+
+  if (!Array.isArray(stories)) return grouped;
+
+  stories.forEach((story) => {
+    const userStories = grouped.get(story.userId) ?? [];
+    userStories.push(story);
+    grouped.set(story.userId, userStories);
+  });
+
+  return grouped;
 }
 
 export function calculateStoryAnalytics(story: Story): StoryAnalytics {
-  const totalViews = story.views.length
-  const uniqueViews = new Set(story.views.map(v => v.userId)).size
-  const completedViews = story.views.filter(v => v.completedView).length
-  const completionRate = totalViews > 0 ? (completedViews / totalViews) * 100 : 0
-  
-  const totalWatchTime = story.views.reduce((sum, v) => sum + v.viewDuration, 0)
-  const averageWatchTime = totalViews > 0 ? totalWatchTime / totalViews : 0
-  
-  const reactionCounts: { [emoji: string]: number } = {}
-  story.reactions.forEach(reaction => {
-    reactionCounts[reaction.emoji] = (reactionCounts[reaction.emoji] || 0) + 1
-  })
-  
-  const viewsByHour = calculateViewsByHour(story.views)
-  const geographicReach = calculateGeographicReach(story.views)
-  
-  const interactions = story.reactions.length + story.views.filter(v => v.completedView).length
-  const engagementRate = totalViews > 0 ? (interactions / totalViews) * 100 : 0
-  
+  const totalViews = story.views.length;
+  const uniqueViews = new Set(story.views.map((v) => v.userId)).size;
+  const completedViews = story.views.filter((v) => v.completedView).length;
+  const completionRate = totalViews > 0 ? (completedViews / totalViews) * 100 : 0;
+
+  const totalWatchTime = story.views.reduce((sum, v) => sum + v.viewDuration, 0);
+  const averageWatchTime = totalViews > 0 ? totalWatchTime / totalViews : 0;
+
+  const reactionCounts: Record<string, number> = {};
+  story.reactions.forEach((reaction) => {
+    reactionCounts[reaction.emoji] = (reactionCounts[reaction.emoji] ?? 0) + 1;
+  });
+
+  const viewsByHour = calculateViewsByHour(story.views);
+  const geographicReach = calculateGeographicReach(story.views);
+
+  const interactions = story.reactions.length + story.views.filter((v) => v.completedView).length;
+  const engagementRate = totalViews > 0 ? (interactions / totalViews) * 100 : 0;
+
   return {
     storyId: story.id,
     totalViews,
@@ -133,61 +139,65 @@ export function calculateStoryAnalytics(story: Story): StoryAnalytics {
     viewsByHour,
     geographicReach,
     engagementRate,
-    shareCount: 0
-  }
+    shareCount: 0,
+  };
 }
 
 function calculateViewsByHour(views: StoryView[]): { hour: number; views: number }[] {
-  const hourCounts: { [hour: number]: number } = {}
-  
-  views.forEach(view => {
-    const hour = new Date(view.viewedAt).getHours()
-    hourCounts[hour] = (hourCounts[hour] || 0) + 1
-  })
-  
+  const hourCounts: Record<number, number> = {};
+
+  views.forEach((view) => {
+    const hour = new Date(view.viewedAt).getHours();
+    hourCounts[hour] = (hourCounts[hour] ?? 0) + 1;
+  });
+
   return Array.from({ length: 24 }, (_, i) => ({
     hour: i,
-    views: hourCounts[i] || 0
-  }))
+    views: hourCounts[i] ?? 0,
+  }));
 }
 
-function calculateGeographicReach(views: StoryView[]): { country: string; city?: string; viewCount: number }[] {
-  return [{
-    country: 'Unknown',
-    viewCount: views.length
-  }]
+function calculateGeographicReach(
+  views: StoryView[]
+): { country: string; city?: string; viewCount: number }[] {
+  return [
+    {
+      country: 'Unknown',
+      viewCount: views.length,
+    },
+  ];
 }
 
 export function formatStoryTime(timestamp: string): string {
-  const now = new Date()
-  const time = new Date(timestamp)
-  const diffMs = now.getTime() - time.getTime()
-  const diffMins = Math.floor(diffMs / 60000)
-  const diffHours = Math.floor(diffMins / 60)
-  const diffDays = Math.floor(diffHours / 24)
-  
-  if (diffMins < 1) return 'just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  return `${diffDays}d ago`
+  const now = new Date();
+  const time = new Date(timestamp);
+  const diffMs = now.getTime() - time.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMins < 1) return 'just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  return `${diffDays}d ago`;
 }
 
 export function getStoryProgress(currentIndex: number, totalStories: number): number {
-  return ((currentIndex + 1) / totalStories) * 100
+  return ((currentIndex + 1) / totalStories) * 100;
 }
 
 export function canViewStory(story: Story, currentUserId: string, isMatch: boolean): boolean {
-  if (story.userId === currentUserId) return true
-  
+  if (story.userId === currentUserId) return true;
+
   switch (story.visibility) {
     case 'everyone':
-      return true
+      return true;
     case 'matches-only':
-      return isMatch
+      return isMatch;
     case 'close-friends':
-      return false
+      return false;
     default:
-      return false
+      return false;
   }
 }
 
@@ -199,32 +209,32 @@ export function addStoryView(
   completedView: boolean,
   userAvatar?: string
 ): Story {
-  const existingViewIndex = story.views.findIndex(v => v.userId === userId)
-  
+  const existingViewIndex = story.views.findIndex((v) => v.userId === userId);
+
   const newView: StoryView = {
     userId,
     userName,
     ...(userAvatar ? { userAvatar } : {}),
     viewedAt: new Date().toISOString(),
     viewDuration,
-    completedView
-  }
-  
+    completedView,
+  };
+
   if (existingViewIndex >= 0) {
-    const updatedViews = [...story.views]
-    updatedViews[existingViewIndex] = newView
+    const updatedViews = [...story.views];
+    updatedViews[existingViewIndex] = newView;
     return {
       ...story,
       views: updatedViews,
-      viewCount: story.views.length
-    }
+      viewCount: story.views.length,
+    };
   }
-  
+
   return {
     ...story,
     views: [...story.views, newView],
-    viewCount: story.views.length + 1
-  }
+    viewCount: story.views.length + 1,
+  };
 }
 
 export const STORY_FONTS = [
@@ -232,10 +242,18 @@ export const STORY_FONTS = [
   { id: 'modern', name: 'Modern', fontFamily: 'system-ui' },
   { id: 'neon', name: 'Neon', fontFamily: 'cursive' },
   { id: 'typewriter', name: 'Typewriter', fontFamily: 'monospace' },
-  { id: 'bold', name: 'Bold', fontFamily: 'Inter', fontWeight: 'bold' }
-]
+  { id: 'bold', name: 'Bold', fontFamily: 'Inter', fontWeight: 'bold' },
+];
 
 export const STORY_COLORS = [
-  '#FFFFFF', '#000000', '#FF6B6B', '#4ECDC4', '#FFD93D',
-  '#6BCF7F', '#B721FF', '#21D4FD', '#FF9CEE', '#FFA07A'
-]
+  '#FFFFFF',
+  '#000000',
+  '#FF6B6B',
+  '#4ECDC4',
+  '#FFD93D',
+  '#6BCF7F',
+  '#B721FF',
+  '#21D4FD',
+  '#FF9CEE',
+  '#FFA07A',
+];

@@ -1,13 +1,13 @@
 /**
  * Swipe-to-Reply "Elastic Rail" Effect Hook
- * 
+ *
  * Creates a premium swipe-to-reply gesture with:
  * - BG track stretches with rubber-band beyond 24px, max 56px
  * - Trigger threshold 40px
  * - Haptic Light on crossing threshold
  * - Snap-back spring 280/18
  * - Skia ribbon shader follows finger if dragged
- * 
+ *
  * Location: apps/mobile/src/effects/chat/gestures/use-swipe-reply-elastic.ts
  */
 
@@ -74,13 +74,19 @@ const TRIGGER_THRESHOLD = 40 // px
 export function useSwipeReplyElastic(
   options: UseSwipeReplyElasticOptions = {}
 ): UseSwipeReplyElasticReturn {
-  const { enabled = DEFAULT_ENABLED, onThresholdCross, onReply, bubbleWidth = 200, bubbleHeight = 60 } = options
+  const {
+    enabled = DEFAULT_ENABLED,
+    onThresholdCross,
+    onReply,
+    bubbleWidth = 200,
+    bubbleHeight = 60,
+  } = options
 
   const reducedMotion = useReducedMotionSV()
   const translateX = useSharedValue(0)
   const railStretch = useSharedValue(0)
   const ribbonPath = useSharedValue<string | null>(null)
-  
+
   // RibbonFX shared values
   const ribbonP0 = useSharedValue({ x: 0, y: 0 })
   const ribbonP1 = useSharedValue({ x: 0, y: 0 })
@@ -130,14 +136,14 @@ export function useSwipeReplyElastic(
       const centerY = bubbleHeight / 2
       ribbonP0.value = { x: 0, y: centerY } // Start at left edge, center
       ribbonP1.value = { x: Math.min(dragX, bubbleWidth), y: centerY } // Follow drag, clamped to bubble width
-      
+
       // Progress based on drag distance (0 to 1)
       const maxDrag = 100 // max drag distance for full progress
       ribbonProgress.value = Math.min(1, dragX / maxDrag)
-      
+
       // Alpha fades in as user drags
       ribbonAlpha.value = Math.min(1, dragX / 40) // Full alpha at 40px
-      
+
       // Track gesture points for ribbon
       gesturePointsRef.current.push({
         x: event.absoluteX,
@@ -202,4 +208,3 @@ export function useSwipeReplyElastic(
     gesture,
   }
 }
-

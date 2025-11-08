@@ -1,8 +1,8 @@
-import { defineConfig } from 'vitest/config';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vitest/config'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   test: {
@@ -19,12 +19,7 @@ export default defineConfig({
         functions: 95,
         lines: 95,
       },
-      exclude: [
-        '**/*.test.ts',
-        '**/*.test.tsx',
-        '**/node_modules/**',
-        '**/test/**',
-      ],
+      exclude: ['**/*.test.ts', '**/*.test.tsx', '**/node_modules/**', '**/test/**'],
     },
   },
   resolve: {
@@ -32,4 +27,4 @@ export default defineConfig({
       '@petspark/motion': path.resolve(__dirname, './src'),
     },
   },
-});
+})

@@ -1,10 +1,9 @@
 /**
  * Premium Button - KRASIVO Edition (Web)
- * 
+ *
  * Showcases the complete motion system: press bounce, hover lift, magnetic
  * Feels more expensive than any competitor app
  */
-
 
 import { MotionView, usePressBounce, useHoverLift, useMagnetic } from '@petspark/motion';
 
@@ -18,9 +17,9 @@ interface PremiumButtonProps {
   onPress: () => void;
 }
 
-export function PremiumButton({ 
-  label, 
-  variant = 'primary', 
+export function PremiumButton({
+  label,
+  variant = 'primary',
   size = 'md',
   magnetic = false,
   disabled = false,
@@ -40,8 +39,9 @@ export function PremiumButton({
   ].filter(Boolean);
 
   // Base classes for styling
-  const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-xl border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
-  
+  const baseClasses =
+    'inline-flex items-center justify-center font-semibold rounded-xl border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+
   const sizeClasses = {
     sm: 'px-4 py-2 text-sm',
     md: 'px-5 py-3 text-base',
@@ -78,7 +78,7 @@ export function PremiumButton({
       disabled={disabled}
       type="button"
     >
-      <MotionView 
+      <MotionView
         animatedStyle={combinedAnimatedStyles}
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >

@@ -1,75 +1,79 @@
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Sparkle, Crown, Lightning, CreditCard } from '@phosphor-icons/react'
-import { PaymentsService } from '@/lib/payments-service'
-import type { Subscription, UserEntitlements } from '@/lib/payments-types'
-import { getPlanById } from '@/lib/payments-catalog'
-import { PricingModal } from './PricingModal'
-import { toast } from 'sonner'
-import { logger } from '@/lib/logger'
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Sparkle, Crown, Lightning, CreditCard } from '@phosphor-icons/react';
+import { PaymentsService } from '@/lib/payments-service';
+import type { Subscription, UserEntitlements } from '@/lib/payments-types';
+import { getPlanById } from '@/lib/payments-catalog';
+import { PricingModal } from './PricingModal';
+import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export function SubscriptionStatusCard() {
-  const [subscription, setSubscription] = useState<Subscription | null>(null)
-  const [entitlements, setEntitlements] = useState<UserEntitlements | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [pricingModalOpen, setPricingModalOpen] = useState(false)
-  const [canceling, setCanceling] = useState(false)
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [entitlements, setEntitlements] = useState<UserEntitlements | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [pricingModalOpen, setPricingModalOpen] = useState(false);
+  const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
-    loadSubscriptionData()
-  }, [])
+    loadSubscriptionData();
+  }, []);
 
   const loadSubscriptionData = async () => {
     try {
-      const user = await spark.user()
+      const user = await spark.user();
       const [sub, ent] = await Promise.all([
         PaymentsService.getUserSubscription(user.id),
         PaymentsService.getUserEntitlements(user.id),
-      ])
-      setSubscription(sub)
-      setEntitlements(ent)
+      ]);
+      setSubscription(sub);
+      setEntitlements(ent);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load subscription', err, { action: 'loadSubscriptionData' })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load subscription', err, { action: 'loadSubscriptionData' });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCancelSubscription = async () => {
-    if (!subscription) return
+    if (!subscription) return;
 
-    if (!confirm('Are you sure you want to cancel your subscription? You will keep your benefits until the end of the current period.')) {
-      return
+    if (
+      !confirm(
+        'Are you sure you want to cancel your subscription? You will keep your benefits until the end of the current period.'
+      )
+    ) {
+      return;
     }
 
-    setCanceling(true)
+    setCanceling(true);
     try {
-      await PaymentsService.cancelSubscription(subscription.id, false)
+      await PaymentsService.cancelSubscription(subscription.id, false);
       toast.success('Subscription canceled', {
-        description: 'Your benefits will remain active until the end of your billing period.'
-      })
-      await loadSubscriptionData()
+        description: 'Your benefits will remain active until the end of your billing period.',
+      });
+      await loadSubscriptionData();
     } catch {
-      toast.error('Failed to cancel subscription')
+      toast.error('Failed to cancel subscription');
     } finally {
-      setCanceling(false)
+      setCanceling(false);
     }
-  }
+  };
 
   const getPlanIcon = (tier: string) => {
     switch (tier) {
       case 'premium':
-        return <Sparkle size={32} weight="fill" className="text-primary" />
+        return <Sparkle size={32} weight="fill" className="text-primary" />;
       case 'elite':
-        return <Crown size={32} weight="fill" className="text-accent" />
+        return <Crown size={32} weight="fill" className="text-accent" />;
       default:
-        return <Lightning size={32} weight="regular" className="text-muted-foreground" />
+        return <Lightning size={32} weight="regular" className="text-muted-foreground" />;
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -78,28 +82,28 @@ export function SubscriptionStatusCard() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  const plan = subscription ? getPlanById(subscription.planId) : null
-  const isFreeTier = !subscription || entitlements?.planTier === 'free'
+  const plan = subscription ? getPlanById(subscription.planId) : null;
+  const isFreeTier = !subscription || entitlements?.planTier === 'free';
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    })
-  }
+    });
+  };
 
   const calculateProgress = () => {
-    if (!subscription) return 0
-    const start = new Date(subscription.currentPeriodStart).getTime()
-    const end = new Date(subscription.currentPeriodEnd).getTime()
-    const now = Date.now()
-    const progress = ((now - start) / (end - start)) * 100
-    return Math.min(100, Math.max(0, progress))
-  }
+    if (!subscription) return 0;
+    const start = new Date(subscription.currentPeriodStart).getTime();
+    const end = new Date(subscription.currentPeriodEnd).getTime();
+    const now = Date.now();
+    const progress = ((now - start) / (end - start)) * 100;
+    return Math.min(100, Math.max(0, progress));
+  };
 
   return (
     <>
@@ -110,9 +114,7 @@ export function SubscriptionStatusCard() {
               {getPlanIcon(entitlements?.planTier || 'free')}
               <div>
                 <CardTitle className="text-2xl">{plan?.name || 'Free'} Plan</CardTitle>
-                <CardDescription>
-                  {plan?.description || 'Basic matching features'}
-                </CardDescription>
+                <CardDescription>{plan?.description || 'Basic matching features'}</CardDescription>
               </div>
             </div>
             {subscription && (
@@ -131,9 +133,7 @@ export function SubscriptionStatusCard() {
                     🎁 Complimentary Subscription
                   </p>
                   {subscription.compReason && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {subscription.compReason}
-                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">{subscription.compReason}</p>
                   )}
                 </div>
               )}
@@ -169,11 +169,10 @@ export function SubscriptionStatusCard() {
 
               {subscription.cancelAtPeriodEnd && (
                 <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-                  <p className="text-sm font-medium text-destructive">
-                    Subscription Canceled
-                  </p>
+                  <p className="text-sm font-medium text-destructive">Subscription Canceled</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Your benefits will remain active until {formatDate(subscription.currentPeriodEnd)}
+                    Your benefits will remain active until{' '}
+                    {formatDate(subscription.currentPeriodEnd)}
                   </p>
                 </div>
               )}
@@ -224,11 +223,7 @@ export function SubscriptionStatusCard() {
                 </div>
               </div>
 
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={() => setPricingModalOpen(true)}
-              >
+              <Button className="w-full" size="lg" onClick={() => setPricingModalOpen(true)}>
                 <Sparkle className="h-5 w-5 mr-2" weight="fill" />
                 Upgrade to Premium
               </Button>
@@ -252,25 +247,26 @@ export function SubscriptionStatusCard() {
             </div>
           )}
 
-          {entitlements && (entitlements.consumables.boosts > 0 || entitlements.consumables.super_likes > 0) && (
-            <div className="pt-4 border-t">
-              <p className="text-sm font-medium mb-2">Consumables</p>
-              <div className="flex gap-4 text-sm">
-                {entitlements.consumables.boosts > 0 && (
-                  <div className="flex items-center gap-2">
-                    <Lightning weight="fill" className="h-4 w-4 text-accent" />
-                    <span>{entitlements.consumables.boosts} Boosts</span>
-                  </div>
-                )}
-                {entitlements.consumables.super_likes > 0 && (
-                  <div className="flex items-center gap-2">
-                    <Sparkle weight="fill" className="h-4 w-4 text-primary" />
-                    <span>{entitlements.consumables.super_likes} Super Likes</span>
-                  </div>
-                )}
+          {entitlements &&
+            (entitlements.consumables.boosts > 0 || entitlements.consumables.super_likes > 0) && (
+              <div className="pt-4 border-t">
+                <p className="text-sm font-medium mb-2">Consumables</p>
+                <div className="flex gap-4 text-sm">
+                  {entitlements.consumables.boosts > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Lightning weight="fill" className="h-4 w-4 text-accent" />
+                      <span>{entitlements.consumables.boosts} Boosts</span>
+                    </div>
+                  )}
+                  {entitlements.consumables.super_likes > 0 && (
+                    <div className="flex items-center gap-2">
+                      <Sparkle weight="fill" className="h-4 w-4 text-primary" />
+                      <span>{entitlements.consumables.super_likes} Super Likes</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
         </CardContent>
       </Card>
 
@@ -280,5 +276,5 @@ export function SubscriptionStatusCard() {
         onSuccess={loadSubscriptionData}
       />
     </>
-  )
+  );
 }

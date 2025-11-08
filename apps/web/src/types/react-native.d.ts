@@ -5,66 +5,62 @@
  */
 
 declare module 'react-native' {
-  import type { ComponentType } from 'react'
+  import type { ComponentType, ReactNode } from 'react';
 
-  export interface ViewProps {
-    style?: unknown
-    children?: React.ReactNode
-    [key: string]: unknown
-  }
+  export type ViewProps = {
+    style?: unknown;
+    children?: ReactNode;
+  } & Record<string, unknown>;
 
-  export interface TextProps {
-    style?: unknown
-    children?: React.ReactNode
-    [key: string]: unknown
-  }
+  export type TextProps = {
+    style?: unknown;
+    children?: ReactNode;
+  } & Record<string, unknown>;
 
-  export interface ImageProps {
-    source: { uri: string } | number
-    style?: unknown
-    resizeMode?: 'contain' | 'cover' | 'stretch' | 'center'
-    [key: string]: unknown
-  }
+  export type ImageProps = {
+    source: { uri: string } | number;
+    style?: unknown;
+    resizeMode?: 'contain' | 'cover' | 'stretch' | 'center';
+  } & Record<string, unknown>;
 
   export interface StyleSheet {
-    create<T extends Record<string, unknown>>(styles: T): T
+    create<T extends Record<string, unknown>>(styles: T): T;
   }
 
-  export const View: ComponentType<ViewProps>
-  export const Text: ComponentType<TextProps>
-  export const Image: ComponentType<ImageProps>
-  export const StyleSheet: StyleSheet
+  export const View: ComponentType<ViewProps>;
+  export const Text: ComponentType<TextProps>;
+  export const Image: ComponentType<ImageProps>;
+  export const StyleSheet: StyleSheet;
   export const Platform: {
-    OS: 'web' | 'ios' | 'android'
-    select<T>(spec: { [key: string]: T }): T
-  }
+    OS: 'web' | 'ios' | 'android';
+    select<T>(spec: Record<string, T>): T;
+  };
 
   export const Dimensions: {
-    get(dimension: 'window' | 'screen'): { width: number; height: number }
+    get(dimension: 'window' | 'screen'): { width: number; height: number };
     addEventListener(
       type: 'change',
-      handler: (dimensions: { window: { width: number; height: number }; screen: { width: number; height: number } }) => void
-    ): void
+      handler: (dimensions: {
+        window: { width: number; height: number };
+        screen: { width: number; height: number };
+      }) => void
+    ): void;
     removeEventListener(
       type: 'change',
-      handler: (dimensions: { window: { width: number; height: number }; screen: { width: number; height: number } }) => void
-    ): void
-  }
+      handler: (dimensions: {
+        window: { width: number; height: number };
+        screen: { width: number; height: number };
+      }) => void
+    ): void;
+  };
 
-  export function findNodeHandle(componentOrHandle: unknown): number | null
+  export function findNodeHandle(componentOrHandle: unknown): number | null;
 
-  export type ImageSource = { uri: string } | number
+  export type ImageSource = { uri: string } | number;
 
-  export interface ViewStyle {
-    [key: string]: unknown
-  }
+  export type ViewStyle = Record<string, unknown>;
 
-  export interface TextStyle {
-    [key: string]: unknown
-  }
+  export type TextStyle = Record<string, unknown>;
 
-  export interface ImageStyle {
-    [key: string]: unknown
-  }
+  export type ImageStyle = Record<string, unknown>;
 }
-

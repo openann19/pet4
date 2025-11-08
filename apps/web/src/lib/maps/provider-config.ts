@@ -1,4 +1,4 @@
-import { useStorage } from '@/hooks/useStorage';
+import { useStorage } from '@/hooks/use-storage';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('MapProviderConfig');
@@ -20,28 +20,31 @@ const DEFAULT_PROVIDER_CONFIG: MapProviderConfig = {
 };
 
 function getEnvConfig(): MapProviderConfig {
-  const env = import.meta.env['MODE'] || 'development';
-  
+  const env = import.meta.env.MODE || 'development';
+
   const configs: Record<string, Partial<MapProviderConfig>> = {
     development: {
       MAP_STYLE_URL: import.meta.env['VITE_MAP_STYLE_URL'] || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
       MAP_TILES_API_KEY: import.meta.env['VITE_MAP_TILES_API_KEY'] || '',
       GEOCODING_API_KEY: import.meta.env['VITE_GEOCODING_API_KEY'] || '',
-      GEOCODING_ENDPOINT: import.meta.env['VITE_GEOCODING_ENDPOINT'] || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+      GEOCODING_ENDPOINT:
+        import.meta.env['VITE_GEOCODING_ENDPOINT'] || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
       PROVIDER: (import.meta.env['VITE_MAP_PROVIDER'] || 'maplibre') as 'maplibre' | 'mapbox',
     },
     staging: {
       MAP_STYLE_URL: import.meta.env['VITE_MAP_STYLE_URL'] || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
       MAP_TILES_API_KEY: import.meta.env['VITE_MAP_TILES_API_KEY'] || '',
       GEOCODING_API_KEY: import.meta.env['VITE_GEOCODING_API_KEY'] || '',
-      GEOCODING_ENDPOINT: import.meta.env['VITE_GEOCODING_ENDPOINT'] || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+      GEOCODING_ENDPOINT:
+        import.meta.env['VITE_GEOCODING_ENDPOINT'] || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
       PROVIDER: (import.meta.env['VITE_MAP_PROVIDER'] || 'maplibre') as 'maplibre' | 'mapbox',
     },
     production: {
       MAP_STYLE_URL: import.meta.env['VITE_MAP_STYLE_URL'] || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
       MAP_TILES_API_KEY: import.meta.env['VITE_MAP_TILES_API_KEY'] || '',
       GEOCODING_API_KEY: import.meta.env['VITE_GEOCODING_API_KEY'] || '',
-      GEOCODING_ENDPOINT: import.meta.env['VITE_GEOCODING_ENDPOINT'] || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+      GEOCODING_ENDPOINT:
+        import.meta.env['VITE_GEOCODING_ENDPOINT'] || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
       PROVIDER: (import.meta.env['VITE_MAP_PROVIDER'] || 'maplibre') as 'maplibre' | 'mapbox',
     },
   };
@@ -72,7 +75,7 @@ export function getAdminMapProviderConfig(): MapProviderConfig {
 export function setAdminMapProviderConfig(config: Partial<MapProviderConfig>): void {
   const current = getAdminMapProviderConfig();
   const updated = { ...current, ...config };
-  
+
   try {
     localStorage.setItem('admin-map-provider-config', JSON.stringify(updated));
     cachedAdminConfig = updated;
@@ -130,4 +133,3 @@ export function getGeocodingUrl(): string {
 export function getGeocodingApiKey(): string {
   return getAdminMapProviderConfig().GEOCODING_API_KEY;
 }
-

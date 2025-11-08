@@ -1,27 +1,27 @@
-'use client'
+'use client';
 
-import { communityAPI } from '@/api/community-api'
-import { PostCard } from '@/components/community/PostCard'
-import { PostDetailView } from '@/components/community/PostDetailView'
-import { Avatar } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Skeleton } from '@/components/ui/skeleton'
-import type { Post } from '@/lib/community-types'
-import { createLogger } from '@/lib/logger'
-import { ArrowLeft, User } from '@phosphor-icons/react'
-import { motion } from '@petspark/motion'
-import { useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
+import { communityAPI } from '@/api/community-api';
+import { PostCard } from '@/components/community/PostCard';
+import { PostDetailView } from '@/components/community/PostDetailView';
+import { Avatar } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { Post } from '@/lib/community-types';
+import { createLogger } from '@/lib/logger';
+import { ArrowLeft, User } from '@phosphor-icons/react';
+import { motion } from '@petspark/motion';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('UserPostsView')
+const logger = createLogger('UserPostsView');
 
 interface UserPostsViewProps {
-  userId: string
-  userName?: string
-  userAvatar?: string
-  onBack?: () => void
-  onAuthorClick?: (authorId: string) => void
+  userId: string;
+  userName?: string;
+  userAvatar?: string;
+  onBack?: () => void;
+  onAuthorClick?: (authorId: string) => void;
 }
 
 export default function UserPostsView({
@@ -29,111 +29,103 @@ export default function UserPostsView({
   userName,
   userAvatar,
   onBack,
-  onAuthorClick
+  onAuthorClick,
 }: UserPostsViewProps) {
-  const [posts, setPosts] = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
-  const [hasMore, setHasMore] = useState(true)
-  const [cursor, setCursor] = useState<string | undefined>()
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
-  const [authorName, setAuthorName] = useState(userName || 'User')
-  const [authorAvatar, setAuthorAvatar] = useState(userAvatar)
-  const observerTarget = useRef<HTMLDivElement>(null)
-  const loadingRef = useRef(false)
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [cursor, setCursor] = useState<string | undefined>();
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [authorName, setAuthorName] = useState(userName || 'User');
+  const [authorAvatar, setAuthorAvatar] = useState(userAvatar);
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const loadingRef = useRef(false);
 
   useEffect(() => {
-    loadPosts()
-  }, [userId])
+    loadPosts();
+  }, [userId]);
 
   useEffect(() => {
-    if (!hasMore || loading || loadingRef.current) return
+    if (!hasMore || loading || loadingRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
-          loadPosts(true)
+          loadPosts(true);
         }
       },
       { threshold: 0.1 }
-    )
+    );
 
     if (observerTarget.current) {
-      observer.observe(observerTarget.current)
+      observer.observe(observerTarget.current);
     }
 
-    return () => observer.disconnect()
-  }, [hasMore, loading])
+    return () => observer.disconnect();
+  }, [hasMore, loading]);
 
   const loadPosts = async (loadMore = false) => {
-    if (loadingRef.current) return
-    
+    if (loadingRef.current) return;
+
     try {
-      loadingRef.current = true
-      setLoading(true)
+      loadingRef.current = true;
+      setLoading(true);
 
       const feedFilters: Parameters<typeof communityAPI.queryFeed>[0] = {
         authorId: userId,
         limit: 20,
-      }
+      };
       if (loadMore && cursor) {
-        feedFilters.cursor = cursor
+        feedFilters.cursor = cursor;
       }
-      const response = await communityAPI.queryFeed(feedFilters)
+      const response = await communityAPI.queryFeed(feedFilters);
 
       // Extract author info from first post if available
       if (response.posts.length > 0 && !userName) {
-        const firstPost = response.posts[0]
+        const firstPost = response.posts[0];
         if (firstPost) {
           if (firstPost.authorName) {
-            setAuthorName(firstPost.authorName)
+            setAuthorName(firstPost.authorName);
           }
           if (firstPost.authorAvatar) {
-            setAuthorAvatar(firstPost.authorAvatar)
+            setAuthorAvatar(firstPost.authorAvatar);
           }
         }
       }
 
       if (loadMore) {
-        setPosts((currentPosts) => [...currentPosts, ...response.posts])
+        setPosts((currentPosts) => [...currentPosts, ...response.posts]);
       } else {
-        setPosts(response.posts)
+        setPosts(response.posts);
       }
 
-      setHasMore(!!response.nextCursor)
-      setCursor(response.nextCursor)
+      setHasMore(!!response.nextCursor);
+      setCursor(response.nextCursor);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load user posts', err, { userId })
-      toast.error('Failed to load posts')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load user posts', err, { userId });
+      toast.error('Failed to load posts');
     } finally {
-      setLoading(false)
-      loadingRef.current = false
+      setLoading(false);
+      loadingRef.current = false;
     }
-  }
+  };
 
   const handlePostClick = (postId: string) => {
-    setSelectedPostId(postId)
-  }
+    setSelectedPostId(postId);
+  };
 
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
       <div className="flex items-center gap-4 p-4 border-b bg-card">
         {onBack && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="rounded-full"
-          >
+          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
             <ArrowLeft size={20} />
           </Button>
         )}
         <div className="flex items-center gap-3 flex-1">
-          <Avatar
-            {...(authorAvatar && { src: authorAvatar })}
-            className="w-10 h-10"
-          >
+          <Avatar {...(authorAvatar && { src: authorAvatar })} className="w-10 h-10">
             <User size={20} />
           </Avatar>
           <div>
@@ -150,7 +142,7 @@ export default function UserPostsView({
         <div className="p-4 space-y-4">
           {loading && posts.length === 0 ? (
             <div className="space-y-4">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="space-y-3">
                   <Skeleton className="h-64 w-full rounded-xl" />
                   <Skeleton className="h-4 w-3/4" />
@@ -180,14 +172,8 @@ export default function UserPostsView({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <div
-                  onClick={() => handlePostClick(post.id)}
-                  className="cursor-pointer"
-                >
-                  <PostCard
-                    post={post}
-                    {...(onAuthorClick && { onAuthorClick })}
-                  />
+                <div onClick={() => handlePostClick(post.id)} className="cursor-pointer">
+                  <PostCard post={post} {...(onAuthorClick && { onAuthorClick })} />
                 </div>
               </MotionView>
             ))
@@ -206,12 +192,12 @@ export default function UserPostsView({
         <PostDetailView
           open={!!selectedPostId}
           onOpenChange={(open) => {
-            if (!open) setSelectedPostId(null)
+            if (!open) setSelectedPostId(null);
           }}
           postId={selectedPostId}
           {...(onAuthorClick ? { onAuthorClick } : {})}
         />
       )}
     </div>
-  )
+  );
 }

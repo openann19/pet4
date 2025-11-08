@@ -5,24 +5,24 @@
 
 ## Summary by Category
 
-| Category | Count | P0 | P1 | P2 | Est. Hours |
-|----------|-------|----|----|----|------------|
-| Admin Panels | 11 | 0 | 11 | 0 | 33 |
-| Adoption | 5 | 0 | 5 | 0 | 16 |
-| Auth | 5 | 0 | 4 | 1 | 13 |
-| Chat Components | 5 | 0 | 0 | 5 | 15 |
-| Community | 6 | 0 | 2 | 4 | 16 |
-| Core Components | 8 | 5 | 3 | 0 | 27 |
-| Enhanced Components | 17 | 7 | 5 | 5 | 53 |
-| Lost & Found | 1 | 0 | 0 | 1 | 3 |
-| Maps | 3 | 0 | 0 | 3 | 9 |
-| Notifications | 1 | 1 | 0 | 0 | 3 |
-| Other Components | 25 | 1 | 2 | 22 | 74 |
-| Playdate | 3 | 0 | 0 | 3 | 8 |
-| Stories | 10 | 0 | 6 | 4 | 29 |
-| Streaming | 1 | 0 | 0 | 1 | 3 |
-| Verification | 4 | 0 | 0 | 4 | 10 |
-| Views | 10 | 5 | 3 | 2 | 31 |
+| Category            | Count | P0  | P1  | P2  | Est. Hours |
+| ------------------- | ----- | --- | --- | --- | ---------- |
+| Admin Panels        | 11    | 0   | 11  | 0   | 33         |
+| Adoption            | 5     | 0   | 5   | 0   | 16         |
+| Auth                | 5     | 0   | 4   | 1   | 13         |
+| Chat Components     | 5     | 0   | 0   | 5   | 15         |
+| Community           | 6     | 0   | 2   | 4   | 16         |
+| Core Components     | 8     | 5   | 3   | 0   | 27         |
+| Enhanced Components | 17    | 7   | 5   | 5   | 53         |
+| Lost & Found        | 1     | 0   | 0   | 1   | 3          |
+| Maps                | 3     | 0   | 0   | 3   | 9          |
+| Notifications       | 1     | 1   | 0   | 0   | 3          |
+| Other Components    | 25    | 1   | 2   | 22  | 74         |
+| Playdate            | 3     | 0   | 0   | 3   | 8          |
+| Stories             | 10    | 0   | 6   | 4   | 29         |
+| Streaming           | 1     | 0   | 0   | 1   | 3          |
+| Verification        | 4     | 0   | 0   | 4   | 10         |
+| Views               | 10    | 5   | 3   | 2   | 31         |
 
 ## Files by Category
 
@@ -429,4 +429,3 @@
 - `apps/web/src/components/views/DiscoverView.tsx` (Views, Medium, 3h)
 - `apps/web/src/components/VisualAnalysisDemo.tsx` (Other Components, Medium, 3h)
 - `apps/web/src/components/web-only/Slider.tsx` (Other Components, Medium, 3h)
-

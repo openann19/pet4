@@ -1,34 +1,34 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { PremiumNotificationBell } from '../PremiumNotificationBell'
-import type { PremiumNotification } from '../PremiumNotificationCenter'
-import { useStorage } from '@/hooks/useStorage'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { PremiumNotificationBell } from '../PremiumNotificationBell';
+import type { PremiumNotification } from '../PremiumNotificationCenter';
+import { useStorage } from '@/hooks/use-storage';
 
-vi.mock('@/hooks/useStorage')
+vi.mock('@/hooks/useStorage');
 vi.mock('@/lib/haptics', () => ({
   haptics: {
     medium: vi.fn(),
-    trigger: vi.fn()
-  }
-}))
+    trigger: vi.fn(),
+  },
+}));
 vi.mock('@/lib/logger', () => ({
   createLogger: () => ({
     info: vi.fn(),
     error: vi.fn(),
     warn: vi.fn(),
-    debug: vi.fn()
-  })
-}))
+    debug: vi.fn(),
+  }),
+}));
 vi.mock('../PremiumNotificationCenter', () => ({
   PremiumNotificationCenter: ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
     <div data-testid="notification-center" data-open={isOpen}>
       <button onClick={onClose}>Close</button>
     </div>
-  )
-}))
+  ),
+}));
 
-const mockUseStorage = vi.mocked(useStorage)
+const mockUseStorage = vi.mocked(useStorage);
 
 const mockNotifications: PremiumNotification[] = [
   {
@@ -39,7 +39,7 @@ const mockNotifications: PremiumNotification[] = [
     timestamp: Date.now() - 1000,
     read: false,
     archived: false,
-    priority: 'normal'
+    priority: 'normal',
   },
   {
     id: '2',
@@ -49,87 +49,87 @@ const mockNotifications: PremiumNotification[] = [
     timestamp: Date.now() - 2000,
     read: false,
     archived: false,
-    priority: 'urgent'
-  }
-]
+    priority: 'urgent',
+  },
+];
 
 describe('PremiumNotificationBell', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.useFakeTimers()
+    vi.clearAllMocks();
+    vi.useFakeTimers();
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn()
-      const clear = vi.fn()
+      const setter = vi.fn();
+      const clear = vi.fn();
       if (key === 'premium-notifications') {
-        return [mockNotifications, setter, clear]
+        return [mockNotifications, setter, clear];
       }
       if (key === 'last-notification-check') {
-        return [Date.now() - 5000, setter, clear]
+        return [Date.now() - 5000, setter, clear];
       }
-      return [defaultValue, setter, clear]
-    })
-  })
+      return [defaultValue, setter, clear];
+    });
+  });
 
   afterEach(() => {
-    vi.useRealTimers()
-  })
+    vi.useRealTimers();
+  });
 
   it('should render notification bell', () => {
-    render(<PremiumNotificationBell />)
-    const button = screen.getByRole('button', { name: /notifications/i })
-    expect(button).toBeInTheDocument()
-  })
+    render(<PremiumNotificationBell />);
+    const button = screen.getByRole('button', { name: /notifications/i });
+    expect(button).toBeInTheDocument();
+  });
 
   it('should display unread count in aria-label', () => {
-    render(<PremiumNotificationBell />)
-    const button = screen.getByRole('button')
-    expect(button).toHaveAttribute('aria-label', expect.stringContaining('2 unread'))
-  })
+    render(<PremiumNotificationBell />);
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-label', expect.stringContaining('2 unread'));
+  });
 
   it('should display urgent count in aria-label', () => {
-    render(<PremiumNotificationBell />)
-    const button = screen.getByRole('button')
-    expect(button).toHaveAttribute('aria-label', expect.stringContaining('1 urgent'))
-  })
+    render(<PremiumNotificationBell />);
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-label', expect.stringContaining('1 urgent'));
+  });
 
   it('should open notification center on click', async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    render(<PremiumNotificationBell />)
-    
-    const button = screen.getByRole('button')
-    await user.click(button)
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<PremiumNotificationBell />);
+
+    const button = screen.getByRole('button');
+    await user.click(button);
 
     await waitFor(() => {
-      const center = screen.getByTestId('notification-center')
-      expect(center).toHaveAttribute('data-open', 'true')
-    })
-  })
+      const center = screen.getByTestId('notification-center');
+      expect(center).toHaveAttribute('data-open', 'true');
+    });
+  });
 
   it('should close notification center', async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    render(<PremiumNotificationBell />)
-    
-    const button = screen.getByRole('button')
-    await user.click(button)
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<PremiumNotificationBell />);
+
+    const button = screen.getByRole('button');
+    await user.click(button);
 
     await waitFor(() => {
-      expect(screen.getByTestId('notification-center')).toHaveAttribute('data-open', 'true')
-    })
+      expect(screen.getByTestId('notification-center')).toHaveAttribute('data-open', 'true');
+    });
 
-    const closeButton = screen.getByText('Close')
-    await user.click(closeButton)
+    const closeButton = screen.getByText('Close');
+    await user.click(closeButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('notification-center')).toHaveAttribute('data-open', 'false')
-    })
-  })
+      expect(screen.getByTestId('notification-center')).toHaveAttribute('data-open', 'false');
+    });
+  });
 
   it('should show badge when there are unread notifications', () => {
-    render(<PremiumNotificationBell />)
-    const badge = screen.getByLabelText(/unread notification/i)
-    expect(badge).toBeInTheDocument()
-    expect(badge).toHaveTextContent('2')
-  })
+    render(<PremiumNotificationBell />);
+    const badge = screen.getByLabelText(/unread notification/i);
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent('2');
+  });
 
   it('should show 99+ for counts over 99', () => {
     const manyNotifications: PremiumNotification[] = Array.from({ length: 100 }, (_, i) => ({
@@ -140,31 +140,31 @@ describe('PremiumNotificationBell', () => {
       timestamp: Date.now() - i * 1000,
       read: false,
       archived: false,
-      priority: 'normal'
-    }))
+      priority: 'normal',
+    }));
 
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn()
-      const clear = vi.fn()
+      const setter = vi.fn();
+      const clear = vi.fn();
       if (key === 'premium-notifications') {
-        return [manyNotifications, setter, clear]
+        return [manyNotifications, setter, clear];
       }
       if (key === 'last-notification-check') {
-        return [Date.now() - 5000, setter, clear]
+        return [Date.now() - 5000, setter, clear];
       }
-      return [defaultValue, setter, clear]
-    })
+      return [defaultValue, setter, clear];
+    });
 
-    render(<PremiumNotificationBell />)
-    const badge = screen.getByLabelText(/unread notification/i)
-    expect(badge).toHaveTextContent('99+')
-  })
+    render(<PremiumNotificationBell />);
+    const badge = screen.getByLabelText(/unread notification/i);
+    expect(badge).toHaveTextContent('99+');
+  });
 
   it('should show urgent badge variant for urgent notifications', () => {
-    render(<PremiumNotificationBell />)
-    const badge = screen.getByLabelText(/unread notification/i)
-    expect(badge).toHaveClass('bg-destructive')
-  })
+    render(<PremiumNotificationBell />);
+    const badge = screen.getByLabelText(/unread notification/i);
+    expect(badge).toHaveClass('bg-destructive');
+  });
 
   it('should show default badge variant for non-urgent notifications', () => {
     const normalNotifications: PremiumNotification[] = [
@@ -176,26 +176,26 @@ describe('PremiumNotificationBell', () => {
         timestamp: Date.now() - 1000,
         read: false,
         archived: false,
-        priority: 'normal'
-      }
-    ]
+        priority: 'normal',
+      },
+    ];
 
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn()
-      const clear = vi.fn()
+      const setter = vi.fn();
+      const clear = vi.fn();
       if (key === 'premium-notifications') {
-        return [normalNotifications, setter, clear]
+        return [normalNotifications, setter, clear];
       }
       if (key === 'last-notification-check') {
-        return [Date.now() - 5000, setter, clear]
+        return [Date.now() - 5000, setter, clear];
       }
-      return [defaultValue, setter, clear]
-    })
+      return [defaultValue, setter, clear];
+    });
 
-    render(<PremiumNotificationBell />)
-    const badge = screen.getByLabelText(/unread notification/i)
-    expect(badge).not.toHaveClass('bg-destructive')
-  })
+    render(<PremiumNotificationBell />);
+    const badge = screen.getByLabelText(/unread notification/i);
+    expect(badge).not.toHaveClass('bg-destructive');
+  });
 
   it('should not show badge when all notifications are read', () => {
     const readNotifications: PremiumNotification[] = [
@@ -207,26 +207,26 @@ describe('PremiumNotificationBell', () => {
         timestamp: Date.now() - 1000,
         read: true,
         archived: false,
-        priority: 'normal'
-      }
-    ]
+        priority: 'normal',
+      },
+    ];
 
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn()
-      const clear = vi.fn()
+      const setter = vi.fn();
+      const clear = vi.fn();
       if (key === 'premium-notifications') {
-        return [readNotifications, setter, clear]
+        return [readNotifications, setter, clear];
       }
       if (key === 'last-notification-check') {
-        return [Date.now() - 5000, setter, clear]
+        return [Date.now() - 5000, setter, clear];
       }
-      return [defaultValue, setter, clear]
-    })
+      return [defaultValue, setter, clear];
+    });
 
-    render(<PremiumNotificationBell />)
-    const badge = screen.queryByLabelText(/unread notification/i)
-    expect(badge).not.toBeInTheDocument()
-  })
+    render(<PremiumNotificationBell />);
+    const badge = screen.queryByLabelText(/unread notification/i);
+    expect(badge).not.toBeInTheDocument();
+  });
 
   it('should not show badge when all notifications are archived', () => {
     const archivedNotifications: PremiumNotification[] = [
@@ -238,114 +238,114 @@ describe('PremiumNotificationBell', () => {
         timestamp: Date.now() - 1000,
         read: false,
         archived: true,
-        priority: 'normal'
-      }
-    ]
+        priority: 'normal',
+      },
+    ];
 
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn()
-      const clear = vi.fn()
+      const setter = vi.fn();
+      const clear = vi.fn();
       if (key === 'premium-notifications') {
-        return [archivedNotifications, setter, clear]
+        return [archivedNotifications, setter, clear];
       }
       if (key === 'last-notification-check') {
-        return [Date.now() - 5000, setter, clear]
+        return [Date.now() - 5000, setter, clear];
       }
-      return [defaultValue, setter, clear]
-    })
+      return [defaultValue, setter, clear];
+    });
 
-    render(<PremiumNotificationBell />)
-    const badge = screen.queryByLabelText(/unread notification/i)
-    expect(badge).not.toBeInTheDocument()
-  })
+    render(<PremiumNotificationBell />);
+    const badge = screen.queryByLabelText(/unread notification/i);
+    expect(badge).not.toBeInTheDocument();
+  });
 
   it('should have proper accessibility attributes', () => {
-    render(<PremiumNotificationBell />)
-    const button = screen.getByRole('button')
-    expect(button).toHaveAttribute('aria-label')
-    expect(button).toHaveAttribute('aria-expanded', 'false')
-    expect(button).toHaveAttribute('aria-haspopup', 'dialog')
-  })
+    render(<PremiumNotificationBell />);
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-label');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    expect(button).toHaveAttribute('aria-haspopup', 'dialog');
+  });
 
   it('should update aria-expanded when opened', async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    render(<PremiumNotificationBell />)
-    
-    const button = screen.getByRole('button')
-    expect(button).toHaveAttribute('aria-expanded', 'false')
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<PremiumNotificationBell />);
 
-    await user.click(button)
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(button);
 
     await waitFor(() => {
-      expect(button).toHaveAttribute('aria-expanded', 'true')
-    })
-  })
+      expect(button).toHaveAttribute('aria-expanded', 'true');
+    });
+  });
 
   it('should handle empty notifications array', () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn()
-      const clear = vi.fn()
+      const setter = vi.fn();
+      const clear = vi.fn();
       if (key === 'premium-notifications') {
-        return [[], setter, clear]
+        return [[], setter, clear];
       }
       if (key === 'last-notification-check') {
-        return [Date.now() - 5000, setter, clear]
+        return [Date.now() - 5000, setter, clear];
       }
-      return [defaultValue, setter, clear]
-    })
+      return [defaultValue, setter, clear];
+    });
 
-    render(<PremiumNotificationBell />)
-    const button = screen.getByRole('button')
-    expect(button).toHaveAttribute('aria-label', 'Notifications')
-  })
+    render(<PremiumNotificationBell />);
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-label', 'Notifications');
+  });
 
   it('should handle null notifications', () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn()
-      const clear = vi.fn()
+      const setter = vi.fn();
+      const clear = vi.fn();
       if (key === 'premium-notifications') {
-        return [null, setter, clear]
+        return [null, setter, clear];
       }
       if (key === 'last-notification-check') {
-        return [Date.now() - 5000, setter, clear]
+        return [Date.now() - 5000, setter, clear];
       }
-      return [defaultValue, setter, clear]
-    })
+      return [defaultValue, setter, clear];
+    });
 
-    render(<PremiumNotificationBell />)
-    const button = screen.getByRole('button')
-    expect(button).toBeInTheDocument()
-  })
+    render(<PremiumNotificationBell />);
+    const button = screen.getByRole('button');
+    expect(button).toBeInTheDocument();
+  });
 
   it('should trigger haptic feedback on click', async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    const { haptics } = await import('@/lib/haptics')
-    render(<PremiumNotificationBell />)
-    
-    const button = screen.getByRole('button')
-    await user.click(button)
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const { haptics } = await import('@/lib/haptics');
+    render(<PremiumNotificationBell />);
 
-    expect(haptics.medium).toHaveBeenCalled()
-  })
+    const button = screen.getByRole('button');
+    await user.click(button);
+
+    expect(haptics.medium).toHaveBeenCalled();
+  });
 
   it('should show bell icon when no new notifications', () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn()
-      const clear = vi.fn()
+      const setter = vi.fn();
+      const clear = vi.fn();
       if (key === 'premium-notifications') {
-        return [mockNotifications, setter, clear]
+        return [mockNotifications, setter, clear];
       }
       if (key === 'last-notification-check') {
-        return [Date.now(), setter, clear]
+        return [Date.now(), setter, clear];
       }
-      return [defaultValue, setter, clear]
-    })
+      return [defaultValue, setter, clear];
+    });
 
-    render(<PremiumNotificationBell />)
-    const button = screen.getByRole('button')
-    const bellIcon = button.querySelector('svg')
-    expect(bellIcon).toBeInTheDocument()
-  })
+    render(<PremiumNotificationBell />);
+    const button = screen.getByRole('button');
+    const bellIcon = button.querySelector('svg');
+    expect(bellIcon).toBeInTheDocument();
+  });
 
   it('should count critical priority as urgent', () => {
     const criticalNotifications: PremiumNotification[] = [
@@ -357,38 +357,37 @@ describe('PremiumNotificationBell', () => {
         timestamp: Date.now() - 1000,
         read: false,
         archived: false,
-        priority: 'critical'
-      }
-    ]
+        priority: 'critical',
+      },
+    ];
 
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn()
-      const clear = vi.fn()
+      const setter = vi.fn();
+      const clear = vi.fn();
       if (key === 'premium-notifications') {
-        return [criticalNotifications, setter, clear]
+        return [criticalNotifications, setter, clear];
       }
       if (key === 'last-notification-check') {
-        return [Date.now() - 5000, setter, clear]
+        return [Date.now() - 5000, setter, clear];
       }
-      return [defaultValue, setter, clear]
-    })
+      return [defaultValue, setter, clear];
+    });
 
-    render(<PremiumNotificationBell />)
-    const button = screen.getByRole('button')
-    expect(button).toHaveAttribute('aria-label', expect.stringContaining('1 urgent'))
-  })
+    render(<PremiumNotificationBell />);
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-label', expect.stringContaining('1 urgent'));
+  });
 
   it('should handle multiple clicks', async () => {
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-    render(<PremiumNotificationBell />)
-    
-    const button = screen.getByRole('button')
-    await user.click(button)
-    await user.click(button)
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<PremiumNotificationBell />);
+
+    const button = screen.getByRole('button');
+    await user.click(button);
+    await user.click(button);
 
     await waitFor(() => {
-      expect(screen.getByTestId('notification-center')).toHaveAttribute('data-open', 'true')
-    })
-  })
-})
-
+      expect(screen.getByTestId('notification-center')).toHaveAttribute('data-open', 'true');
+    });
+  });
+});

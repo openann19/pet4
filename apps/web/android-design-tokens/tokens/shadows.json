@@ -33,7 +33,7 @@
       "elevation3": {
         "shadowColor": "#000000",
         "shadowOffset": { "x": 0, "y": 4 },
-        "shadowOpacity": 0.10,
+        "shadowOpacity": 0.1,
         "shadowRadius": 8,
         "elevation": 3
       },
@@ -61,7 +61,7 @@
       "elevation12": {
         "shadowColor": "#000000",
         "shadowOffset": { "x": 0, "y": 16 },
-        "shadowOpacity": 0.20,
+        "shadowOpacity": 0.2,
         "shadowRadius": 32,
         "elevation": 12
       }
@@ -105,4 +105,3 @@
     }
   }
 }
-

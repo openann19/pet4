@@ -1,16 +1,22 @@
-import { configBroadcastService } from '@/core/services/config-broadcast-service'                                                                               
-import { adminApi } from '@/api/admin-api'
-import { useStorage } from '@/hooks/useStorage'
-import type { User } from '@/lib/user-service'
-import { createLogger } from '@/lib/logger'
-import { Radio } from '@phosphor-icons/react'
+import { configBroadcastService } from '@/core/services/config-broadcast-service';
+import { adminApi } from '@/api/admin-api';
+import { useStorage } from '@/hooks/use-storage';
+import type { User } from '@/lib/user-service';
+import { createLogger } from '@/lib/logger';
+import { Radio } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -21,33 +27,37 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 interface MapSettings {
-  PRIVACY_GRID_METERS: number
-  DEFAULT_RADIUS_KM: number
-  MAX_RADIUS_KM: number
-  MIN_RADIUS_KM: number
-  UNITS: 'metric' | 'imperial'
-  COUNTRY_BIAS: string
-  ENABLE_PRECISE_LOCATION: boolean
-  PRECISE_LOCATION_TIMEOUT_MINUTES: number
-  ENABLE_GEOFENCING: boolean
-  ENABLE_LOST_PET_ALERTS: boolean
-  ENABLE_PLAYDATE_PLANNING: boolean
-  ENABLE_PLACE_DISCOVERY: boolean
-  AUTO_CENTER_ON_LOCATION: boolean
-  SHOW_DISTANCE_LABELS: boolean
-  CLUSTER_MARKERS: boolean
-  MAX_MARKERS_VISIBLE: number
+  PRIVACY_GRID_METERS: number;
+  DEFAULT_RADIUS_KM: number;
+  MAX_RADIUS_KM: number;
+  MIN_RADIUS_KM: number;
+  UNITS: 'metric' | 'imperial';
+  COUNTRY_BIAS: string;
+  ENABLE_PRECISE_LOCATION: boolean;
+  PRECISE_LOCATION_TIMEOUT_MINUTES: number;
+  ENABLE_GEOFENCING: boolean;
+  ENABLE_LOST_PET_ALERTS: boolean;
+  ENABLE_PLAYDATE_PLANNING: boolean;
+  ENABLE_PLACE_DISCOVERY: boolean;
+  AUTO_CENTER_ON_LOCATION: boolean;
+  SHOW_DISTANCE_LABELS: boolean;
+  CLUSTER_MARKERS: boolean;
+  MAX_MARKERS_VISIBLE: number;
 }
 
 interface PlaceCategorySettings {
-  categories: PlaceCategory[]
-  defaultCategory: string
-  enableUserSubmittedPlaces: boolean
-  requireModeration: boolean
+  categories: PlaceCategory[];
+  defaultCategory: string;
+  enableUserSubmittedPlaces: boolean;
+  requireModeration: boolean;
 }
 
 export default function MapSettingsView() {
-  const { config: providerConfig, updateConfig: updateProviderConfig, resetToDefaults: resetProviderDefaults } = useMapProviderConfig();
+  const {
+    config: providerConfig,
+    updateConfig: updateProviderConfig,
+    resetToDefaults: resetProviderDefaults,
+  } = useMapProviderConfig();
   const [mapSettings, setMapSettings] = useStorage<MapSettings>('admin-map-settings', {
     PRIVACY_GRID_METERS: 1000,
     DEFAULT_RADIUS_KM: 10,
@@ -65,7 +75,7 @@ export default function MapSettingsView() {
     SHOW_DISTANCE_LABELS: true,
     CLUSTER_MARKERS: true,
     MAX_MARKERS_VISIBLE: 50,
-  })
+  });
 
   const [categorySettings, setCategorySettings] = useStorage<PlaceCategorySettings>(
     'admin-map-categories',
@@ -84,54 +94,54 @@ export default function MapSettingsView() {
       enableUserSubmittedPlaces: true,
       requireModeration: true,
     }
-  )
+  );
 
-  const [editingCategory, setEditingCategory] = useState<PlaceCategory | null>(null)
-  const [isAddingCategory, setIsAddingCategory] = useState(false)
-  const [broadcasting, setBroadcasting] = useState(false)
-  const [currentUser] = useStorage<User | null>('current-user', null)
+  const [editingCategory, setEditingCategory] = useState<PlaceCategory | null>(null);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [currentUser] = useStorage<User | null>('current-user', null);
   const [newCategory, setNewCategory] = useState<Partial<PlaceCategory>>({
     id: '',
     name: '',
     icon: '',
     color: '#000000',
-  })
+  });
 
   const handleSettingChange = <K extends keyof MapSettings>(
     key: K,
     value: MapSettings[K]
   ): void => {
-    if (value === undefined) return
+    if (value === undefined) return;
     setMapSettings((current) => ({
       ...current,
       [key]: value,
-    }))
-    toast.success('Map setting updated')
-  }
+    }));
+    toast.success('Map setting updated');
+  };
 
   const handleAddCategory = () => {
     if (!newCategory.id || !newCategory.name || !newCategory.icon || !newCategory.color) {
-      toast.error('Please fill in all category fields')
-      return
+      toast.error('Please fill in all category fields');
+      return;
     }
 
     setCategorySettings((current) => ({
       ...current,
       categories: [...current.categories, newCategory as PlaceCategory],
-    }))
+    }));
 
-    setNewCategory({ id: '', name: '', icon: '', color: '#000000' })
-    setIsAddingCategory(false)
-    toast.success('Category added successfully')
-  }
+    setNewCategory({ id: '', name: '', icon: '', color: '#000000' });
+    setIsAddingCategory(false);
+    toast.success('Category added successfully');
+  };
 
   const handleDeleteCategory = (categoryId: string) => {
     setCategorySettings((current) => ({
       ...current,
       categories: current.categories.filter((cat) => cat.id !== categoryId),
-    }))
-    toast.success('Category deleted')
-  }
+    }));
+    toast.success('Category deleted');
+  };
 
   const handleUpdateCategory = (updatedCategory: PlaceCategory) => {
     setCategorySettings((current) => ({
@@ -139,18 +149,18 @@ export default function MapSettingsView() {
       categories: current.categories.map((cat) =>
         cat.id === updatedCategory.id ? updatedCategory : cat
       ),
-    }))
-    setEditingCategory(null)
-    toast.success('Category updated')
-  }
+    }));
+    setEditingCategory(null);
+    toast.success('Category updated');
+  };
 
   // Category visibility toggle handler - reserved for future use
-   
+
   const _handleToggleCategoryVisibility = (_categoryId: string): void => {
-    void _categoryId
-    toast.info('Category visibility toggled')
-  }
-  void _handleToggleCategoryVisibility
+    void _categoryId;
+    toast.info('Category visibility toggled');
+  };
+  void _handleToggleCategoryVisibility;
 
   const handleResetToDefaults = () => {
     setMapSettings({
@@ -170,49 +180,49 @@ export default function MapSettingsView() {
       SHOW_DISTANCE_LABELS: true,
       CLUSTER_MARKERS: true,
       MAX_MARKERS_VISIBLE: 50,
-    })
-    toast.success('Settings reset to defaults')
-  }
+    });
+    toast.success('Settings reset to defaults');
+  };
 
   const handleBroadcastSettings = async () => {
     if (!currentUser) {
-      toast.error('User not authenticated')
-      return
+      toast.error('User not authenticated');
+      return;
     }
 
     try {
-      setBroadcasting(true)
-      
+      setBroadcasting(true);
+
       const allSettings = {
         mapSettings,
         providerConfig,
-        categorySettings
-      }
-      
+        categorySettings,
+      };
+
       await configBroadcastService.broadcastConfig(
         'map',
         allSettings as Record<string, unknown>,
         currentUser.id || 'admin'
-      )
-      
-      toast.success('Map settings broadcasted successfully')
-      
+      );
+
+      toast.success('Map settings broadcasted successfully');
+
       await adminApi.createAuditLog({
         adminId: currentUser.id || 'admin',
         action: 'config_broadcast',
         targetType: 'map_config',
         targetId: 'map-settings',
-        details: JSON.stringify({ configType: 'map' })
-      })
+        details: JSON.stringify({ configType: 'map' }),
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      toast.error('Failed to broadcast map settings')
-      const logger = createLogger('MapSettingsView')
-      logger.error('Broadcast error', err, { configType: 'map' })
+      const err = error instanceof Error ? error : new Error(String(error));
+      toast.error('Failed to broadcast map settings');
+      const logger = createLogger('MapSettingsView');
+      logger.error('Broadcast error', err, { configType: 'map' });
     } finally {
-      setBroadcasting(false)
+      setBroadcasting(false);
     }
-  }
+  };
 
   return (
     <div className="flex-1 flex flex-col">
@@ -256,7 +266,7 @@ export default function MapSettingsView() {
                     value={[mapSettings?.PRIVACY_GRID_METERS ?? 1000]}
                     onValueChange={([value]) => {
                       if (value !== undefined) {
-                        handleSettingChange('PRIVACY_GRID_METERS', value)
+                        handleSettingChange('PRIVACY_GRID_METERS', value);
                       }
                     }}
                     min={100}
@@ -279,7 +289,9 @@ export default function MapSettingsView() {
                 label="Enable Precise Location"
                 description="Allow users to temporarily share their exact location"
                 checked={mapSettings?.ENABLE_PRECISE_LOCATION ?? true}
-                onCheckedChange={(checked: boolean) => handleSettingChange('ENABLE_PRECISE_LOCATION', checked)}
+                onCheckedChange={(checked: boolean) =>
+                  handleSettingChange('ENABLE_PRECISE_LOCATION', checked)
+                }
               />
 
               <Separator />
@@ -291,7 +303,7 @@ export default function MapSettingsView() {
                     value={[mapSettings?.PRECISE_LOCATION_TIMEOUT_MINUTES ?? 60]}
                     onValueChange={([value]) => {
                       if (value !== undefined) {
-                        handleSettingChange('PRECISE_LOCATION_TIMEOUT_MINUTES', value)
+                        handleSettingChange('PRECISE_LOCATION_TIMEOUT_MINUTES', value);
                       }
                     }}
                     min={5}
@@ -330,9 +342,7 @@ export default function MapSettingsView() {
                     min={1}
                     max={500}
                     value={mapSettings?.MAX_RADIUS_KM ?? 100}
-                    onChange={(e) =>
-                      handleSettingChange('MAX_RADIUS_KM', parseInt(e.target.value))
-                    }
+                    onChange={(e) => handleSettingChange('MAX_RADIUS_KM', parseInt(e.target.value))}
                   />
                 </div>
               </div>
@@ -345,8 +355,8 @@ export default function MapSettingsView() {
                   value={mapSettings?.UNITS ?? 'metric'}
                   onValueChange={(value: string) => {
                     if (value === 'metric' || value === 'imperial') {
-                      const unitValue: 'metric' | 'imperial' = value
-                      handleSettingChange('UNITS', unitValue)
+                      const unitValue: 'metric' | 'imperial' = value;
+                      handleSettingChange('UNITS', unitValue);
                     }
                   }}
                 >
@@ -367,7 +377,9 @@ export default function MapSettingsView() {
                 <Input
                   placeholder="US, GB, DE, etc."
                   value={mapSettings?.COUNTRY_BIAS ?? 'US'}
-                  onChange={(e) => handleSettingChange('COUNTRY_BIAS', e.target.value.toUpperCase())}
+                  onChange={(e) =>
+                    handleSettingChange('COUNTRY_BIAS', e.target.value.toUpperCase())
+                  }
                   maxLength={2}
                 />
                 <p className="text-sm text-muted-foreground">
@@ -387,7 +399,9 @@ export default function MapSettingsView() {
                 label="Geofencing"
                 description="Enable location-based alerts and notifications"
                 checked={mapSettings?.ENABLE_GEOFENCING ?? true}
-                onCheckedChange={(checked: boolean) => handleSettingChange('ENABLE_GEOFENCING', checked)}
+                onCheckedChange={(checked: boolean) =>
+                  handleSettingChange('ENABLE_GEOFENCING', checked)
+                }
               />
 
               <Separator />
@@ -396,7 +410,9 @@ export default function MapSettingsView() {
                 label="Lost Pet Alerts"
                 description="Allow users to create and view lost pet alerts on the map"
                 checked={mapSettings?.ENABLE_LOST_PET_ALERTS ?? true}
-                onCheckedChange={(checked: boolean) => handleSettingChange('ENABLE_LOST_PET_ALERTS', checked)}
+                onCheckedChange={(checked: boolean) =>
+                  handleSettingChange('ENABLE_LOST_PET_ALERTS', checked)
+                }
               />
 
               <Separator />
@@ -416,7 +432,9 @@ export default function MapSettingsView() {
                 label="Place Discovery"
                 description="Show pet-friendly places and businesses on the map"
                 checked={mapSettings?.ENABLE_PLACE_DISCOVERY ?? true}
-                onCheckedChange={(checked: boolean) => handleSettingChange('ENABLE_PLACE_DISCOVERY', checked)}
+                onCheckedChange={(checked: boolean) =>
+                  handleSettingChange('ENABLE_PLACE_DISCOVERY', checked)
+                }
               />
 
               <Separator />
@@ -436,7 +454,9 @@ export default function MapSettingsView() {
                 label="Show Distance Labels"
                 description="Display distance information on map markers"
                 checked={mapSettings?.SHOW_DISTANCE_LABELS ?? true}
-                onCheckedChange={(checked: boolean) => handleSettingChange('SHOW_DISTANCE_LABELS', checked)}
+                onCheckedChange={(checked: boolean) =>
+                  handleSettingChange('SHOW_DISTANCE_LABELS', checked)
+                }
               />
 
               <Separator />
@@ -445,7 +465,9 @@ export default function MapSettingsView() {
                 label="Cluster Markers"
                 description="Group nearby markers together to reduce clutter"
                 checked={mapSettings?.CLUSTER_MARKERS ?? true}
-                onCheckedChange={(checked: boolean) => handleSettingChange('CLUSTER_MARKERS', checked)}
+                onCheckedChange={(checked: boolean) =>
+                  handleSettingChange('CLUSTER_MARKERS', checked)
+                }
               />
 
               <Separator />
@@ -457,7 +479,7 @@ export default function MapSettingsView() {
                     value={[mapSettings?.MAX_MARKERS_VISIBLE ?? 50]}
                     onValueChange={([value]) => {
                       if (value !== undefined) {
-                        handleSettingChange('MAX_MARKERS_VISIBLE', value)
+                        handleSettingChange('MAX_MARKERS_VISIBLE', value);
                       }
                     }}
                     min={10}
@@ -481,15 +503,9 @@ export default function MapSettingsView() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle>Place Categories</CardTitle>
-                  <CardDescription>
-                    Manage the types of places users can discover
-                  </CardDescription>
+                  <CardDescription>Manage the types of places users can discover</CardDescription>
                 </div>
-                <Button
-                  onClick={() => setIsAddingCategory(true)}
-                  size="sm"
-                  className="gap-2"
-                >
+                <Button onClick={() => setIsAddingCategory(true)} size="sm" className="gap-2">
                   <Plus size={16} />
                   Add Category
                 </Button>
@@ -712,7 +728,9 @@ export default function MapSettingsView() {
                 <Label htmlFor="map-provider">Map Provider</Label>
                 <Select
                   value={providerConfig.PROVIDER}
-                  onValueChange={(value) => updateProviderConfig({ PROVIDER: value as 'maplibre' | 'mapbox' })}
+                  onValueChange={(value) =>
+                    updateProviderConfig({ PROVIDER: value as 'maplibre' | 'mapbox' })
+                  }
                 >
                   <SelectTrigger id="map-provider">
                     <SelectValue />
@@ -801,10 +819,14 @@ export default function MapSettingsView() {
                 <p className="text-sm font-medium">Current Configuration Status</p>
                 <div className="flex items-center gap-2">
                   <Badge variant={providerConfig.MAP_TILES_API_KEY ? 'default' : 'destructive'}>
-                    {providerConfig.MAP_TILES_API_KEY ? 'Tiles API: Configured' : 'Tiles API: Missing'}
+                    {providerConfig.MAP_TILES_API_KEY
+                      ? 'Tiles API: Configured'
+                      : 'Tiles API: Missing'}
                   </Badge>
                   <Badge variant={providerConfig.GEOCODING_API_KEY ? 'default' : 'destructive'}>
-                    {providerConfig.GEOCODING_API_KEY ? 'Geocoding API: Configured' : 'Geocoding API: Missing'}
+                    {providerConfig.GEOCODING_API_KEY
+                      ? 'Geocoding API: Configured'
+                      : 'Geocoding API: Missing'}
                   </Badge>
                 </div>
               </div>
@@ -813,17 +835,17 @@ export default function MapSettingsView() {
         </div>
       </ScrollArea>
     </div>
-  )
+  );
 }
 
 interface FeatureFlagItemProps {
-  label: string
-  description: string
-  checked: boolean
-  onCheckedChange: (checked: boolean) => void
+  label: string;
+  description: string;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
 }
 
-function FeatureFlagItem({ label, description, checked, onCheckedChange }: FeatureFlagItemProps) {                                                              
+function FeatureFlagItem({ label, description, checked, onCheckedChange }: FeatureFlagItemProps) {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="space-y-1 flex-1">
@@ -832,5 +854,5 @@ function FeatureFlagItem({ label, description, checked, onCheckedChange }: Featu
       </div>
       <Switch checked={checked} onCheckedChange={onCheckedChange} />
     </div>
-  )
+  );
 }

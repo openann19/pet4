@@ -1,159 +1,167 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useModalAnimation } from '@/effects/reanimated/use-modal-animation'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { timingConfigs } from '@/effects/reanimated/transitions'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { X, MapPin, Check, Crosshair } from '@phosphor-icons/react'
-import { createLogger } from '@/lib/logger'
+import { useState, useEffect, useCallback } from 'react';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { timingConfigs } from '@/effects/reanimated/transitions';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { X, MapPin, Check, Crosshair } from '@phosphor-icons/react';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('MapLocationPicker')
+const logger = createLogger('MapLocationPicker');
 
 export interface MapLocationPickerProps {
-  onSelect: (lat: number, lon: number) => void
-  onClose: () => void
-  initialLocation?: { lat: number; lon: number }
+  onSelect: (lat: number, lon: number) => void;
+  onClose: () => void;
+  initialLocation?: { lat: number; lon: number };
 }
 
-export function MapLocationPicker({ onSelect, onClose, initialLocation }: MapLocationPickerProps): JSX.Element {
-  const [selectedLat, setSelectedLat] = useState<number>(initialLocation?.lat ?? 37.7749)
-  const [selectedLon, setSelectedLon] = useState<number>(initialLocation?.lon ?? -122.4194)
-  const [address, setAddress] = useState<string>('Loading address...')
-  const [isLoadingAddress, setIsLoadingAddress] = useState<boolean>(false)
-  const [isVisible, setIsVisible] = useState<boolean>(true)
+export function MapLocationPicker({
+  onSelect,
+  onClose,
+  initialLocation,
+}: MapLocationPickerProps): JSX.Element {
+  const [selectedLat, setSelectedLat] = useState<number>(initialLocation?.lat ?? 37.7749);
+  const [selectedLon, setSelectedLon] = useState<number>(initialLocation?.lon ?? -122.4194);
+  const [address, setAddress] = useState<string>('Loading address...');
+  const [isLoadingAddress, setIsLoadingAddress] = useState<boolean>(false);
+  const [isVisible, setIsVisible] = useState<boolean>(true);
 
   const modalAnimation = useModalAnimation({
     isVisible,
-    duration: 300
-  })
+    duration: 300,
+  });
 
   const closeButtonAnimation = useBounceOnTap({
     onPress: handleClose,
-    hapticFeedback: true
-  })
+    hapticFeedback: true,
+  });
 
-  const pinScale = useSharedValue(1)
+  const pinScale = useSharedValue(1);
 
   useEffect(() => {
-    setIsVisible(true)
+    setIsVisible(true);
     return () => {
-      setIsVisible(false)
-    }
-  }, [])
+      setIsVisible(false);
+    };
+  }, []);
 
   useEffect(() => {
     pinScale.value = withRepeat(
-      withSequence(
-        withTiming(1.2, timingConfigs.smooth),
-        withTiming(1, timingConfigs.smooth)
-      ),
+      withSequence(withTiming(1.2, timingConfigs.smooth), withTiming(1, timingConfigs.smooth)),
       -1,
       false
-    )
-  }, [pinScale])
+    );
+  }, [pinScale]);
 
   function handleClose(): void {
-    setIsVisible(false)
+    setIsVisible(false);
     setTimeout(() => {
-      onClose()
-    }, 300)
+      onClose();
+    }, 300);
   }
 
   useEffect(() => {
     if (navigator.geolocation && !initialLocation) {
       navigator.geolocation.getCurrentPosition(
         (position): void => {
-          setSelectedLat(position.coords.latitude)
-          setSelectedLon(position.coords.longitude)
+          setSelectedLat(position.coords.latitude);
+          setSelectedLon(position.coords.longitude);
         },
         (error): void => {
-          const err = error instanceof Error ? error : new Error(String(error))
-          logger.error('Geolocation error', err)
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('Geolocation error', err);
         }
-      )
+      );
     }
-  }, [initialLocation])
+  }, [initialLocation]);
 
   const fetchAddress = useCallback(async (lat: number, lon: number): Promise<void> => {
     try {
-      setIsLoadingAddress(true)
+      setIsLoadingAddress(true);
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
-      )
-      
+      );
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json()
-      setAddress(data.display_name ?? 'Address not found')
+      const data = await response.json();
+      setAddress(data.display_name ?? 'Address not found');
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to fetch address', err, { lat, lon })
-      setAddress('Unable to fetch address')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to fetch address', err, { lat, lon });
+      setAddress('Unable to fetch address');
     } finally {
-      setIsLoadingAddress(false)
+      setIsLoadingAddress(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    void fetchAddress(selectedLat, selectedLon)
-  }, [selectedLat, selectedLon, fetchAddress])
+    void fetchAddress(selectedLat, selectedLon);
+  }, [selectedLat, selectedLon, fetchAddress]);
 
   const handleUseCurrentLocation = useCallback((): void => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position): void => {
-          setSelectedLat(position.coords.latitude)
-          setSelectedLon(position.coords.longitude)
+          setSelectedLat(position.coords.latitude);
+          setSelectedLon(position.coords.longitude);
         },
         (error): void => {
-          const err = error instanceof Error ? error : new Error(String(error))
-          logger.error('Geolocation error', err)
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('Geolocation error', err);
         }
-      )
+      );
     }
-  }, [])
+  }, []);
 
   const handleConfirm = useCallback((): void => {
-    onSelect(selectedLat, selectedLon)
-  }, [selectedLat, selectedLon, onSelect])
+    onSelect(selectedLat, selectedLon);
+  }, [selectedLat, selectedLon, onSelect]);
 
   const pinStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: pinScale.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: pinScale.value }],
+    };
+  }) as AnimatedStyle;
 
-  const backdropOpacity = useSharedValue(0)
+  const backdropOpacity = useSharedValue(0);
 
   useEffect(() => {
-    backdropOpacity.value = withTiming(1, timingConfigs.smooth)
-  }, [backdropOpacity])
+    backdropOpacity.value = withTiming(1, timingConfigs.smooth);
+  }, [backdropOpacity]);
 
   const backdropStyle = useAnimatedStyle(() => {
     return {
-      opacity: backdropOpacity.value
-    }
-  }) as AnimatedStyle
+      opacity: backdropOpacity.value,
+    };
+  }) as AnimatedStyle;
 
   return (
     <AnimatedView
       style={backdropStyle}
       className="fixed inset-0 z-50 bg-background/95 backdrop-blur-lg"
     >
-      <AnimatedView style={modalAnimation.style} className="container max-w-6xl mx-auto p-4 h-full flex flex-col">
+      <AnimatedView
+        style={modalAnimation.style}
+        className="container max-w-6xl mx-auto p-4 h-full flex flex-col"
+      >
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-2xl font-bold">Pick Location on Map</h2>
-            <p className="text-sm text-muted-foreground">
-              Drag the map or use current location
-            </p>
+            <p className="text-sm text-muted-foreground">Drag the map or use current location</p>
           </div>
           <AnimatedView style={closeButtonAnimation.animatedStyle}>
             <Button variant="ghost" size="icon" onClick={closeButtonAnimation.handlePress}>
@@ -169,8 +177,8 @@ export function MapLocationPicker({ onSelect, onClose, initialLocation }: MapLoc
               <div>
                 <p className="text-lg font-semibold">Interactive Map</p>
                 <p className="text-sm text-muted-foreground max-w-md mx-auto mt-2">
-                  In production, this would show an interactive map (OpenStreetMap, Google Maps, or Mapbox)
-                  where users can drag to select a location.
+                  In production, this would show an interactive map (OpenStreetMap, Google Maps, or
+                  Mapbox) where users can drag to select a location.
                 </p>
               </div>
               <div className="bg-card/80 backdrop-blur-sm p-4 rounded-lg max-w-md mx-auto">
@@ -214,5 +222,5 @@ export function MapLocationPicker({ onSelect, onClose, initialLocation }: MapLoc
         </div>
       </AnimatedView>
     </AnimatedView>
-  )
+  );
 }

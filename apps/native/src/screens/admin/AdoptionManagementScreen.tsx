@@ -1,6 +1,6 @@
 /**
  * Adoption Management Screen (Mobile)
- * 
+ *
  * Mobile admin screen for managing adoption listings and applications.
  */
 
@@ -14,8 +14,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AnimatedCard } from '../components/AnimatedCard';
-import { FadeInView } from '../components/FadeInView';
+import { createLogger } from '../../utils/logger';
+import { AnimatedCard } from '../../components/AnimatedCard';
+import { FadeInView } from '../../components/FadeInView';
+
+const logger = createLogger('AdoptionManagementScreen');
 
 interface AdoptionListing {
   id: string;
@@ -28,7 +31,9 @@ interface AdoptionListing {
 export const AdoptionManagementScreen: React.FC = () => {
   const [listings, setListings] = useState<AdoptionListing[]>([]);
   const [loading, setLoading] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'available' | 'pending' | 'adopted' | 'flagged'>('all');
+  const [filter, setFilter] = useState<'all' | 'available' | 'pending' | 'adopted' | 'flagged'>(
+    'all'
+  );
 
   useEffect(() => {
     loadListings();
@@ -37,18 +42,18 @@ export const AdoptionManagementScreen: React.FC = () => {
   const loadListings = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const data = await adminApi.getAdoptionListings(filter);
-      // setListings(data);
+      // Note: Adoption listings API endpoint not yet available in admin-api
+      // When backend provides endpoint, update to: await mobileAdminApi.getAdoptionListings(filter);
       setListings([]);
     } catch (error) {
-      console.error('Failed to load listings:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load listings', err, { context: 'loadListings', filter });
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredListings = listings.filter(l => {
+  const filteredListings = listings.filter((l) => {
     if (filter === 'all') return true;
     return l.status === filter;
   });
@@ -117,12 +122,7 @@ export const AdoptionManagementScreen: React.FC = () => {
                       { backgroundColor: getStatusColor(listing.status) + '20' },
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.statusText,
-                        { color: getStatusColor(listing.status) },
-                      ]}
-                    >
+                    <Text style={[styles.statusText, { color: getStatusColor(listing.status) }]}>
                       {listing.status.toUpperCase()}
                     </Text>
                   </View>
@@ -235,4 +235,3 @@ const styles = StyleSheet.create({
     color: '#6b7280',
   },
 });
-

@@ -1,46 +1,46 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useStorage } from '@/hooks/useStorage'
-import { buildLLMPrompt } from '@/lib/llm-prompt'
-import { llmService } from '@/lib/llm-service'
-import { parseLLMError } from '@/lib/llm-utils'
-import { createLogger } from '@/lib/logger'
-import { Check, Sparkle, Warning } from '@phosphor-icons/react'
-import { useState } from 'react'
-import { toast } from 'sonner'
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useStorage } from '@/hooks/use-storage';
+import { buildLLMPrompt } from '@/lib/llm-prompt';
+import { llmService } from '@/lib/llm-service';
+import { parseLLMError } from '@/lib/llm-utils';
+import { createLogger } from '@/lib/logger';
+import { Check, Sparkle, Warning } from '@phosphor-icons/react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('PetProfileGenerator')
+const logger = createLogger('PetProfileGenerator');
 
 interface GeneratedPet {
-  id?: string
-  name: string
-  breed: string
-  age: number
-  gender: 'male' | 'female'
-  size: 'small' | 'medium' | 'large' | 'extra-large'
-  photo: string
-  bio: string
-  personality: string[]
-  interests: string[]
-  lookingFor: string[]
-  location: string
-  ownerName: string
-  verified: boolean
+  id?: string;
+  name: string;
+  breed: string;
+  age: number;
+  gender: 'male' | 'female';
+  size: 'small' | 'medium' | 'large' | 'extra-large';
+  photo: string;
+  bio: string;
+  personality: string[];
+  interests: string[];
+  lookingFor: string[];
+  location: string;
+  ownerName: string;
+  verified: boolean;
 }
 
 export function PetProfileGenerator() {
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedCount, setGeneratedCount] = useState(0)
-  const [pets, setPets] = useStorage<GeneratedPet[]>('all-pets', [])
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedCount, setGeneratedCount] = useState(0);
+  const [pets, setPets] = useStorage<GeneratedPet[]>('all-pets', []);
 
   const generatePets = async () => {
-    setIsGenerating(true)
-    setGeneratedCount(0)
+    setIsGenerating(true);
+    setGeneratedCount(0);
 
     try {
-      toast.info('AI is generating 15 diverse pet profiles...')
+      toast.info('AI is generating 15 diverse pet profiles...');
 
-  const prompt = buildLLMPrompt`Generate exactly 15 diverse and realistic pet profiles for a pet matching platform. Create a mix of dogs and cats with varied breeds, ages, personalities, and interests.
+      const prompt = buildLLMPrompt`Generate exactly 15 diverse and realistic pet profiles for a pet matching platform. Create a mix of dogs and cats with varied breeds, ages, personalities, and interests.
 
 Each pet should have:
 - Unique and realistic pet names
@@ -82,28 +82,28 @@ JSON format:
       "verified": boolean (randomly true/false)
     }
   ]
-}`
+}`;
 
-  const result = await llmService.llm(prompt, 'gpt-4o', true)
-      const data = JSON.parse(result)
+      const result = await llmService.llm(prompt, 'gpt-4o', true);
+      const data = JSON.parse(result);
 
       if (!data.pets || !Array.isArray(data.pets)) {
-        throw new Error('Invalid response format')
+        throw new Error('Invalid response format');
       }
 
-      setGeneratedCount(data.pets.length)
+      setGeneratedCount(data.pets.length);
 
-      const existingIds = new Set((pets || []).map((p: GeneratedPet) => p.id))
-      let newPetsAdded = 0
+      const existingIds = new Set((pets || []).map((p: GeneratedPet) => p.id));
+      let newPetsAdded = 0;
 
       const newPets = data.pets.map((pet: GeneratedPet) => {
-        let id: string
+        let id: string;
         do {
-          id = `pet-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
-        } while (existingIds.has(id))
-        
-        existingIds.add(id)
-        newPetsAdded++
+          id = `pet-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+        } while (existingIds.has(id));
+
+        existingIds.add(id);
+        newPetsAdded++;
 
         return {
           id,
@@ -123,34 +123,33 @@ JSON format:
           verified: pet.verified || false,
           liked: false,
           disliked: false,
-          createdAt: Date.now()
-        }
-      })
+          createdAt: Date.now(),
+        };
+      });
 
-      setPets((currentPets) => [...(currentPets || []), ...newPets])
+      setPets((currentPets) => [...(currentPets || []), ...newPets]);
 
       toast.success(`Successfully generated and added ${newPetsAdded} new pet profiles!`, {
         duration: 5000,
-      })
+      });
 
-      logger.info('Generated pets', { count: newPets.length, pets: newPets })
-
+      logger.info('Generated pets', { count: newPets.length, pets: newPets });
     } catch (error) {
-      const errorInfo = parseLLMError(error)
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to generate pet profiles', err, { 
+      const errorInfo = parseLLMError(error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to generate pet profiles', err, {
         technicalMessage: errorInfo.technicalMessage,
         userMessage: errorInfo.userMessage,
-        action: 'generatePets' 
-      })
+        action: 'generatePets',
+      });
       toast.error('Failed to generate pet profiles', {
         description: errorInfo.userMessage,
         duration: 6000,
-      })
+      });
     } finally {
-      setIsGenerating(false)
+      setIsGenerating(false);
     }
-  }
+  };
 
   return (
     <Card>
@@ -160,16 +159,13 @@ JSON format:
           AI Pet Profile Generator
         </CardTitle>
         <CardDescription>
-          Use AI to generate 15 diverse, realistic pet profiles with photos, personalities, and interests
+          Use AI to generate 15 diverse, realistic pet profiles with photos, personalities, and
+          interests
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
-          <Button
-            onClick={generatePets}
-            disabled={isGenerating}
-            className="w-full sm:w-auto"
-          >
+          <Button onClick={generatePets} disabled={isGenerating} className="w-full sm:w-auto">
             {isGenerating ? (
               <>
                 <Sparkle size={20} weight="fill" className="mr-2 animate-spin" />
@@ -186,7 +182,11 @@ JSON format:
 
         {generatedCount > 0 && (
           <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg flex items-start gap-3">
-            <Check size={20} weight="bold" className="text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+            <Check
+              size={20}
+              weight="bold"
+              className="text-green-600 dark:text-green-400 shrink-0 mt-0.5"
+            />
             <div>
               <p className="font-semibold text-green-900 dark:text-green-100">
                 Successfully Generated {generatedCount} Pets
@@ -199,7 +199,11 @@ JSON format:
         )}
 
         <div className="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-start gap-3">
-          <Warning size={20} weight="fill" className="text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+          <Warning
+            size={20}
+            weight="fill"
+            className="text-blue-600 dark:text-blue-400 shrink-0 mt-0.5"
+          />
           <div className="text-sm text-blue-900 dark:text-blue-100">
             <p className="font-semibold mb-1">How it works:</p>
             <ul className="list-disc list-inside space-y-1 text-blue-700 dark:text-blue-300">
@@ -212,5 +216,5 @@ JSON format:
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -2,31 +2,117 @@ import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import React from 'react';
+import { createMockMatchMedia } from './mocks/match-media';
+import { createMockIntersectionObserver } from './mocks/intersection-observer';
+import { createMockResizeObserver } from './mocks/resize-observer';
+import { setupStorageMocks } from './mocks/storage';
+import { setupWebRTCMocks } from './mocks/webrtc';
+
+type GlobalWithDevFlag = typeof globalThis & { __DEV__?: boolean };
 
 // React Native (web) minimal shims
-// @ts-expect-error - Global dev flag
-globalThis.__DEV__ = true;
+(globalThis as GlobalWithDevFlag).__DEV__ = true;
+
+interface HapticsShim {
+  trigger: (type: string) => void;
+  light: () => void;
+  medium: () => void;
+  heavy: () => void;
+  selection: () => void;
+  success: () => void;
+  warning: () => void;
+  error: () => void;
+}
+
+// Minimal haptics shim expected by UI components during tests
+const globalWithHaptics = globalThis as typeof globalThis & { haptics?: HapticsShim };
+const hapticsMock = vi.fn(() => undefined);
+const shim: HapticsShim = {
+  trigger: hapticsMock,
+  light: vi.fn(() => undefined),
+  medium: vi.fn(() => undefined),
+  heavy: vi.fn(() => undefined),
+  selection: vi.fn(() => undefined),
+  success: vi.fn(() => undefined),
+  warning: vi.fn(() => undefined),
+  error: vi.fn(() => undefined),
+};
+
+globalWithHaptics.haptics = shim;
+
+// Mock the haptics module to use the global shim
+vi.mock('@/lib/haptics', () => ({
+  haptics: {
+    trigger: vi.fn(),
+    light: vi.fn(),
+    medium: vi.fn(),
+    heavy: vi.fn(),
+    selection: vi.fn(),
+    success: vi.fn(),
+    warning: vi.fn(),
+    error: vi.fn(),
+    impact: vi.fn(),
+  },
+  triggerHaptic: vi.fn((type: string) => shim.trigger(type)),
+  HapticFeedbackType: {
+    light: 'light',
+    medium: 'medium',
+    heavy: 'heavy',
+    selection: 'selection',
+    success: 'success',
+    warning: 'warning',
+    error: 'error',
+  },
+}));
+
+// Logger mock - comprehensive mock matching actual logger implementation
+const mockLoggerInstance = {
+  warn: vi.fn(),
+  info: vi.fn(),
+  error: vi.fn(),
+  debug: vi.fn(),
+  setLevel: vi.fn(),
+  addHandler: vi.fn(),
+};
+
+vi.mock('@/lib/logger', () => ({
+  createLogger: vi.fn(() => mockLoggerInstance),
+  logger: mockLoggerInstance,
+  log: {
+    warn: vi.fn(),
+    info: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  },
+  LogLevel: {
+    DEBUG: 10,
+    INFO: 20,
+    WARN: 30,
+    ERROR: 40,
+    NONE: 100,
+  },
+}));
 
 vi.mock('@/config/env', () => ({
-  ENV: {
-    VITE_API_URL: 'http://localhost:8080',
-    VITE_WS_URL: 'ws://localhost:8080',
+  env: {
+    VITE_API_URL: 'https://api.dev-petspark.test',
+    VITE_WS_URL: 'wss://ws.dev-petspark.test',
     VITE_API_TIMEOUT: 5000,
-    VITE_JWT_SECRET: 'abcdefghijklmnopqrstuvwxyz012345',
-    VITE_JWT_EXPIRY: '7d',
-    VITE_REFRESH_TOKEN_EXPIRY: '30d',
     VITE_USE_MOCKS: 'false',
-    VITE_ENABLE_KYC: true,
-    VITE_ENABLE_PAYMENTS: true,
-    VITE_ENABLE_LIVE_STREAMING: true,
-    VITE_MAPBOX_TOKEN: 'pk.test-token',
-    VITE_STRIPE_PUBLIC_KEY: 'pk_test_1234567890',
-    VITE_SENTRY_DSN: 'http://example.com/123',
-    VITE_SENTRY_TRACES_SAMPLE_RATE: 0.1,
-    VITE_CORS_ORIGIN: 'http://localhost:3000',
-    VITE_CSP_ENABLED: true,
-    VITE_APP_VERSION: 'test',
-    VITE_ENVIRONMENT: 'development',
+    VITE_ENABLE_MAPS: false,
+    VITE_MAPBOX_TOKEN: undefined,
+  },
+  ENV: {
+    VITE_API_URL: 'https://api.dev-petspark.test',
+    VITE_WS_URL: 'wss://ws.dev-petspark.test',
+    VITE_API_TIMEOUT: 5000,
+    VITE_USE_MOCKS: 'false',
+    VITE_ENABLE_MAPS: false,
+    VITE_MAPBOX_TOKEN: undefined,
+  },
+  flags: {
+    mocks: false,
+    maps: false,
   },
 }));
 
@@ -66,42 +152,65 @@ vi.mock('react-native-gesture-handler', () => ({
 // Reanimated mock (stable across tests)
 vi.mock('react-native-reanimated', () => {
   const mockSharedValue = (initial: number) => {
-    const value = { value: initial }
-    return value
-  }
-  
-  const AnimatedComponent = ({ children, style, ...props }: { children?: React.ReactNode; style?: Record<string, unknown>; [key: string]: unknown }) => {
-    return React.createElement('div', { style, ...props }, children)
-  }
-  
-  const AnimatedA = ({ children, style, ...props }: { children?: React.ReactNode; style?: Record<string, unknown>; [key: string]: unknown }) => {
-    return React.createElement('a', { style, ...props }, children)
-  }
-  
+    const value = { value: initial };
+    return value;
+  };
+
+  const AnimatedComponent = ({
+    children,
+    style,
+    ...props
+  }: {
+    children?: React.ReactNode;
+    style?: Record<string, unknown>;
+    [key: string]: unknown;
+  }) => {
+    return React.createElement('div', { style, ...props }, children);
+  };
+
+  const AnimatedA = ({
+    children,
+    style,
+    ...props
+  }: {
+    children?: React.ReactNode;
+    style?: Record<string, unknown>;
+    [key: string]: unknown;
+  }) => {
+    return React.createElement('a', { style, ...props }, children);
+  };
+
   const AnimatedNamespace = {
     View: AnimatedComponent,
     div: AnimatedComponent,
     a: AnimatedA,
     Image: AnimatedComponent,
     Text: AnimatedComponent,
-  }
-  
+  };
+
   // Make default export work as both component and namespace
-  Object.assign(AnimatedComponent, AnimatedNamespace)
-  
+  Object.assign(AnimatedComponent, AnimatedNamespace);
+
   // Also make AnimatedComponent itself have div and a properties for direct access
-  AnimatedComponent.div = AnimatedComponent
-  AnimatedComponent.a = AnimatedA
-  
+  AnimatedComponent.div = AnimatedComponent;
+  AnimatedComponent.a = AnimatedA;
+
   return {
     default: AnimatedComponent,
     Animated: AnimatedNamespace,
     useSharedValue: vi.fn((initial: number) => mockSharedValue(initial)),
+    useDerivedValue: vi.fn((fn: () => number) => {
+      try {
+        return mockSharedValue(fn());
+      } catch {
+        return mockSharedValue(0);
+      }
+    }),
     useAnimatedStyle: vi.fn((fn: () => Record<string, unknown>) => {
       try {
-        return fn()
+        return fn();
       } catch {
-        return {}
+        return {};
       }
     }),
     withSpring: vi.fn((toValue: number) => toValue),
@@ -111,23 +220,28 @@ vi.mock('react-native-reanimated', () => {
     withRepeat: vi.fn((animation: number) => animation),
     interpolate: vi.fn((value: number, inputRange: number[], outputRange: number[]) => {
       if (!inputRange || inputRange.length === 0 || !outputRange || outputRange.length === 0) {
-        return outputRange?.[0] ?? 0
+        return outputRange?.[0] ?? 0;
       }
-      const firstInput = inputRange[0]
-      const lastInput = inputRange[inputRange.length - 1]
-      const firstOutput = outputRange[0]
-      const lastOutput = outputRange[outputRange.length - 1]
-      if (firstInput === undefined || lastInput === undefined || firstOutput === undefined || lastOutput === undefined) {
-        return 0
+      const firstInput = inputRange[0];
+      const lastInput = inputRange[inputRange.length - 1];
+      const firstOutput = outputRange[0];
+      const lastOutput = outputRange[outputRange.length - 1];
+      if (
+        firstInput === undefined ||
+        lastInput === undefined ||
+        firstOutput === undefined ||
+        lastOutput === undefined
+      ) {
+        return 0;
       }
-      if (value <= firstInput) return firstOutput
-      if (value >= lastInput) return lastOutput
-      return firstOutput
+      if (value <= firstInput) return firstOutput;
+      if (value >= lastInput) return lastOutput;
+      return firstOutput;
     }),
     Extrapolation: {
       CLAMP: 'clamp',
       EXTEND: 'extend',
-      IDENTITY: 'identity'
+      IDENTITY: 'identity',
     },
     Easing: {
       linear: (t: number) => t,
@@ -137,13 +251,28 @@ vi.mock('react-native-reanimated', () => {
       in: (easing: (t: number) => number) => easing,
       out: (easing: (t: number) => number) => easing,
       inOut: (easing: (t: number) => number) => easing,
-      elastic: () => (t: number) => t
+      elastic: () => (t: number) => t,
     },
     cancelAnimation: vi.fn(),
     withDecay: vi.fn((toValue: number) => toValue),
     runOnJS: vi.fn((fn: () => void) => fn),
-  }
-})
+    useAnimatedReaction: vi.fn(),
+    useAnimatedProps: vi.fn((fn: () => Record<string, unknown>) => {
+      try {
+        return fn();
+      } catch {
+        return {};
+      }
+    }),
+    useAnimatedGestureHandler: vi.fn(),
+    useAnimatedScrollHandler: vi.fn(),
+    useAnimatedRef: vi.fn(() => ({ current: null })),
+    createAnimatedComponent: vi.fn((component: unknown) => component),
+    withClamp: vi.fn((animation: number) => animation),
+    makeMutable: vi.fn((initial: number) => mockSharedValue(initial)),
+    makeRemote: vi.fn((initial: number) => mockSharedValue(initial)),
+  };
+});
 
 // Extend Vitest's expect with jest-dom matchers
 expect.extend(matchers);
@@ -156,49 +285,177 @@ afterEach(() => {
 // MatchMedia shim for reduced-motion tests
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: (query: string) => ({
-    media: query,
-    matches: false,
-    onchange: null,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    addEventListener: () => {},
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    removeEventListener: () => {},
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    addListener: () => {},    // deprecated
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    removeListener: () => {}, // deprecated
-    dispatchEvent: () => false,
-  }),
+  value: createMockMatchMedia,
 });
 
-// Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  root: Element | Document | null = null
-  rootMargin = ''
-  thresholds: readonly number[] = []
-  
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  disconnect() {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  observe() {}
-  takeRecords() {
-    return [];
-  }
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  unobserve() {}
-} as unknown as typeof IntersectionObserver;
+global.IntersectionObserver = createMockIntersectionObserver();
+global.ResizeObserver = createMockResizeObserver();
 
-// Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  disconnect() {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  observe() {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  unobserve() {}
-} as unknown as typeof ResizeObserver;
+// Setup storage mocks (IndexedDB, localStorage)
+setupStorageMocks();
+
+// Setup WebRTC mocks
+setupWebRTCMocks();
+
+// Mock MapLibre GL
+vi.mock('maplibre-gl', async () => {
+  const { mockMapLibre } = await import('./mocks/maps');
+  return {
+    default: mockMapLibre,
+    ...mockMapLibre,
+  };
+});
+
+// Mock Leaflet
+vi.mock('leaflet', async () => {
+  const { mockLeaflet } = await import('./mocks/maps');
+  return {
+    default: mockLeaflet,
+    ...mockLeaflet,
+  };
+});
+
+// Mock API Client - but allow tests to override with vi.unmock if needed
+// For integration tests that need real HTTP, use vi.unmock('@/lib/api-client') in the test file
+vi.mock('@/lib/api-client', async () => {
+  // Check if we should use the real implementation (for integration tests)
+  // Tests can set process.env.USE_REAL_API_CLIENT = 'true' to use real client
+  if (process.env.USE_REAL_API_CLIENT === 'true') {
+    return await vi.importActual('@/lib/api-client');
+  }
+
+  const { createMockAPIClient } = await import('./mocks/api-client');
+  const mockClient = createMockAPIClient();
+  return {
+    APIClient: mockClient,
+    APIClientError: class extends Error {
+      status: number;
+      code?: string;
+      details?: Record<string, unknown>;
+      constructor(
+        message: string,
+        init: { status: number; code?: string; details?: Record<string, unknown> }
+      ) {
+        super(message);
+        this.name = 'APIClientError';
+        this.status = init.status;
+        this.code = init.code;
+        this.details = init.details;
+      }
+    },
+  };
+});
+
+// Mock storage service - prevent real module evaluation to avoid logger.warn calls
+vi.mock('@/lib/storage', () => {
+  const mockStorage = {
+    get: vi.fn(),
+    set: vi.fn(),
+    remove: vi.fn(),
+    clear: vi.fn(),
+    getAll: vi.fn(),
+    initDB: vi.fn(() => Promise.resolve()),
+  };
+  return {
+    storage: mockStorage,
+  };
+});
+
+// Mock realtime service
+vi.mock('@/lib/realtime', () => ({
+  realtime: {
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    subscribe: vi.fn(),
+    unsubscribe: vi.fn(),
+    publish: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+  },
+}));
+
+// Mock websocket manager
+vi.mock('@/lib/websocket-manager', () => ({
+  WebSocketManager: vi.fn().mockImplementation(() => ({
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    send: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+    isConnected: vi.fn(() => false),
+  })),
+}));
+
+// Mock query client
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
+  return {
+    ...actual,
+    useQuery: vi.fn(),
+    useMutation: vi.fn(),
+    useQueryClient: vi.fn(() => ({
+      invalidateQueries: vi.fn(),
+      setQueryData: vi.fn(),
+      getQueryData: vi.fn(),
+      removeQueries: vi.fn(),
+    })),
+    QueryClient: vi.fn().mockImplementation(() => ({
+      invalidateQueries: vi.fn(),
+      setQueryData: vi.fn(),
+      getQueryData: vi.fn(),
+      removeQueries: vi.fn(),
+    })),
+    QueryClientProvider: ({ children }: { children: React.ReactNode }) => children,
+  };
+});
+
+// Mock @petspark/motion
+vi.mock('@petspark/motion', () => {
+  // Import mocked Reanimated functions
+  const mockSharedValue = (initial: number) => ({
+    value: initial,
+    get: () => initial,
+    set: vi.fn((value: number) => {
+      mockSharedValue.value = value;
+    }),
+  });
+
+  const mockUseAnimatedStyle = vi.fn((fn: () => Record<string, unknown>) => {
+    try {
+      return fn();
+    } catch {
+      return {};
+    }
+  });
+
+  return {
+    motion: {
+      div: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
+        React.createElement('div', props, children),
+      span: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
+        React.createElement('span', props, children),
+      button: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
+        React.createElement('button', props, children),
+    },
+    MotionView: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
+      React.createElement('div', props, children),
+    AnimatePresence: ({ children }: { children?: React.ReactNode }) => children,
+    Presence: ({ children }: { children?: React.ReactNode }) => children,
+    useMotionValue: vi.fn(() => ({ get: () => 0, set: vi.fn() })),
+    useSpring: vi.fn(() => ({ get: () => 0 })),
+    useTransform: vi.fn(() => ({ get: () => 0 })),
+    useAnimation: vi.fn(() => ({
+      start: vi.fn(),
+      stop: vi.fn(),
+      set: vi.fn(),
+    })),
+    useHoverLift: vi.fn((_px = 8, _scale = 1.03) => {
+      const mockStyle = { transform: [{ translateY: 0 }, { scale: 1 }] };
+      return {
+        onMouseEnter: vi.fn(),
+        onMouseLeave: vi.fn(),
+        animatedStyle: mockStyle,
+      };
+    }),
+  };
+});

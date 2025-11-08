@@ -9,6 +9,7 @@ PawfectMatch is a comprehensive pet companion matching platform with real-time c
 ## 1. System Components
 
 ### Client Applications
+
 - **Web Application** (React + TypeScript)
   - Progressive Web App (PWA) capabilities
   - Real-time WebSocket connections
@@ -29,6 +30,7 @@ PawfectMatch is a comprehensive pet companion matching platform with real-time c
   - Location: `/src/components/AdminConsole.tsx`
 
 ### Backend Services (Simulated via spark.kv and spark.llm)
+
 - **Authentication Service**
   - JWT-based auth (simulated)
   - Role-based access control (user, moderator, admin)
@@ -119,6 +121,7 @@ PawfectMatch is a comprehensive pet companion matching platform with real-time c
 ## 3. Data Flow Patterns
 
 ### 3.1 User Authentication Flow
+
 ```
 User → Auth Screen → spark.kv.set('is-authenticated', true)
                   → spark.kv.set('user-profile', userData)
@@ -127,6 +130,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 3.2 Swipe → Match → Chat Flow
+
 ```
 1. User swipes right on Pet B
    → spark.kv.get('swipe-actions-{userId}')
@@ -146,19 +150,20 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 3.3 Real-Time Chat Flow
+
 ```
 1. User sends message in Chat View
    → Generate message ID and correlation ID
    → Optimistic UI update (show message immediately)
    → spark.kv.set('chat-messages-{roomId}', [...messages, newMessage])
    → Emit socket event: message_send
-   
+
 2. Recipient receives message
    → Socket event: message_delivered
    → spark.kv.get('chat-messages-{roomId}')
    → Update UI with new message
    → Show notification if not in chat
-   
+
 3. Recipient reads message
    → Socket event: message_read
    → Update message status to 'read'
@@ -166,39 +171,41 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 3.4 Story Publishing Flow
+
 ```
 1. User creates story
    → Upload media (photo/video)
    → Add text, stickers, filters
    → spark.kv.set('stories-{userId}', [...stories, newStory])
-   
+
 2. Story distribution
    → Determine visibility (public/matches/close-friends)
    → Add to followers' feeds
    → Send notifications to close friends
-   
+
 3. Story viewing
    → Track viewers: spark.kv.set('story-views-{storyId}', [...viewers, newViewer])
    → Update view count
    → Notify author of views (from matches)
-   
+
 4. Story expiration (24 hours)
    → Background job marks stories as expired
    → Option to save to highlights
 ```
 
 ### 3.5 Admin Moderation Flow
+
 ```
 1. Report submitted
    → spark.kv.set('reports', [...reports, newReport])
    → Add to moderation queue
    → Notify moderators
-   
+
 2. Moderator reviews
    → Admin Console → Reports Queue
    → Review content and context
    → Decision: approve, warn, suspend, ban
-   
+
 3. Action execution
    → spark.kv.set('moderation-actions', [...actions, newAction])
    → spark.kv.set('audit-log', [...logs, auditEntry])
@@ -212,6 +219,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ## 4. Key Data Structures
 
 ### 4.1 User Profile
+
 ```typescript
 {
   id: string (ULID)
@@ -238,6 +246,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 4.2 Pet Profile
+
 ```typescript
 {
   id: string (ULID)
@@ -261,6 +270,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 4.3 Match
+
 ```typescript
 {
   id: string (ULID)
@@ -278,6 +288,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 4.4 Message
+
 ```typescript
 {
   id: string (ULID)
@@ -303,6 +314,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 4.5 Story
+
 ```typescript
 {
   id: string (ULID)
@@ -334,6 +346,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 4.6 Notification
+
 ```typescript
 {
   id: string (ULID)
@@ -354,6 +367,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 4.7 Report
+
 ```typescript
 {
   id: string (ULID)
@@ -377,6 +391,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ```
 
 ### 4.8 Audit Log
+
 ```typescript
 {
   id: string (ULID)
@@ -405,6 +420,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 ### Socket Namespaces
 
 #### `/chat`
+
 - `join_room` - User joins a chat room
 - `leave_room` - User leaves a chat room
 - `message_send` - New message sent
@@ -416,12 +432,14 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 - `reaction_remove` - Reaction removed from message
 
 #### `/presence`
+
 - `user_online` - User comes online
 - `user_offline` - User goes offline
 - `user_away` - User is idle
 - `status_update` - User status changes
 
 #### `/notifications`
+
 - `match_created` - New match notification
 - `like_received` - Someone liked your pet
 - `message_received` - New message notification
@@ -430,6 +448,7 @@ User → Auth Screen → spark.kv.set('is-authenticated', true)
 - `moderation_action` - Moderation decision notification
 
 ### Event Acknowledgment Pattern
+
 ```typescript
 // Client sends event with timeout
 socket.emit('message_send', messageData, (ack) => {
@@ -438,24 +457,25 @@ socket.emit('message_send', messageData, (ack) => {
   } else {
     // Handle error, show retry option
   }
-})
+});
 
 // Server acknowledges within 5 seconds or client retries
 ```
 
 ### Offline Queue
+
 ```typescript
 // Messages sent while offline are queued
-const offlineQueue = spark.kv.get('offline-queue-{userId}')
+const offlineQueue = spark.kv.get('offline-queue-{userId}');
 
 // On reconnect, flush queue
 socket.on('connect', async () => {
-  const queue = await spark.kv.get('offline-queue-{userId}')
+  const queue = await spark.kv.get('offline-queue-{userId}');
   for (const event of queue) {
-    socket.emit(event.type, event.data)
+    socket.emit(event.type, event.data);
   }
-  await spark.kv.set('offline-queue-{userId}', [])
-})
+  await spark.kv.set('offline-queue-{userId}', []);
+});
 ```
 
 ---
@@ -465,6 +485,7 @@ socket.on('connect', async () => {
 ### Client-Side State
 
 #### Persistent State (spark.kv via useKV)
+
 - User authentication status
 - User profile and preferences
 - Pet profiles owned by user
@@ -475,6 +496,7 @@ socket.on('connect', async () => {
 - Feature flag overrides
 
 #### Ephemeral State (React useState)
+
 - Current view/route
 - Form inputs (temporary)
 - UI toggles (drawer open/closed)
@@ -484,6 +506,7 @@ socket.on('connect', async () => {
 - Scroll positions
 
 #### Derived State (useMemo, computed)
+
 - Filtered/sorted lists
 - Compatibility scores
 - Unread message counts
@@ -494,20 +517,20 @@ socket.on('connect', async () => {
 
 ```typescript
 // Local-first with sync
-const [messages, setMessages, deleteMessages] = useKV('chat-messages-{roomId}', [])
+const [messages, setMessages, deleteMessages] = useKV('chat-messages-{roomId}', []);
 
 // Update local state immediately (optimistic)
-setMessages(current => [...current, newMessage])
+setMessages((current) => [...current, newMessage]);
 
 // Sync to server in background
-await api.sendMessage(newMessage)
+await api.sendMessage(newMessage);
 
 // Server confirms or corrects
 socket.on('message_confirmed', (confirmedMessage) => {
-  setMessages(current => 
-    current.map(m => m.id === confirmedMessage.id ? confirmedMessage : m)
-  )
-})
+  setMessages((current) =>
+    current.map((m) => (m.id === confirmedMessage.id ? confirmedMessage : m))
+  );
+});
 ```
 
 ---
@@ -548,18 +571,18 @@ socket.on('message_confirmed', (confirmedMessage) => {
 ```typescript
 // Rate limiting (simulated)
 const rateLimitCheck = async (userId: string, action: string) => {
-  const key = `rate-limit-${userId}-${action}`
-  const attempts = await spark.kv.get(key) || []
+  const key = `rate-limit-${userId}-${action}`;
+  const attempts = (await spark.kv.get(key)) || [];
   const recentAttempts = attempts.filter(
-    t => Date.now() - t < 60000 // Last minute
-  )
-  
+    (t) => Date.now() - t < 60000 // Last minute
+  );
+
   if (recentAttempts.length >= 10) {
-    throw new Error('Rate limit exceeded')
+    throw new Error('Rate limit exceeded');
   }
-  
-  await spark.kv.set(key, [...recentAttempts, Date.now()])
-}
+
+  await spark.kv.set(key, [...recentAttempts, Date.now()]);
+};
 
 // Input sanitization
 const sanitizeInput = (input: string): string => {
@@ -567,18 +590,18 @@ const sanitizeInput = (input: string): string => {
     .trim()
     .replace(/<script/gi, '')
     .replace(/javascript:/gi, '')
-    .slice(0, 1000) // Max length
-}
+    .slice(0, 1000); // Max length
+};
 
 // Content moderation (AI-powered)
 const moderateContent = async (content: string): Promise<boolean> => {
   const prompt = spark.llmPrompt`
     Analyze this content for inappropriate material: ${content}
     Return "safe" or "unsafe" with reason.
-  `
-  const result = await spark.llm(prompt)
-  return result.includes('safe')
-}
+  `;
+  const result = await spark.llm(prompt);
+  return result.includes('safe');
+};
 ```
 
 ---
@@ -587,36 +610,36 @@ const moderateContent = async (content: string): Promise<boolean> => {
 
 ```typescript
 interface FeatureFlag {
-  key: string
-  enabled: boolean
-  environments: ('dev' | 'staging' | 'prod')[]
-  userPercentage?: number // Gradual rollout
-  userIds?: string[] // Specific users
+  key: string;
+  enabled: boolean;
+  environments: ('dev' | 'staging' | 'prod')[];
+  userPercentage?: number; // Gradual rollout
+  userIds?: string[]; // Specific users
   metadata: {
-    description: string
-    owner: string
-    createdAt: timestamp
-  }
+    description: string;
+    owner: string;
+    createdAt: timestamp;
+  };
 }
 
 // Usage
 const isFeatureEnabled = async (flagKey: string, userId: string): Promise<boolean> => {
-  const flags = await spark.kv.get<FeatureFlag[]>('feature-flags')
-  const flag = flags?.find(f => f.key === flagKey)
-  
-  if (!flag || !flag.enabled) return false
-  
+  const flags = await spark.kv.get<FeatureFlag[]>('feature-flags');
+  const flag = flags?.find((f) => f.key === flagKey);
+
+  if (!flag || !flag.enabled) return false;
+
   // Check user-specific override
-  if (flag.userIds?.includes(userId)) return true
-  
+  if (flag.userIds?.includes(userId)) return true;
+
   // Check percentage rollout
   if (flag.userPercentage) {
-    const hash = hashUserId(userId)
-    return hash % 100 < flag.userPercentage
+    const hash = hashUserId(userId);
+    return hash % 100 < flag.userPercentage;
   }
-  
-  return true
-}
+
+  return true;
+};
 
 // Example flags
 const FLAGS = {
@@ -626,7 +649,7 @@ const FLAGS = {
   VIDEO_CHAT: 'video-chat',
   STORY_HIGHLIGHTS: 'story-highlights',
   ADVANCED_FILTERS: 'advanced-filters',
-}
+};
 ```
 
 ---
@@ -636,6 +659,7 @@ const FLAGS = {
 ### Key Metrics
 
 #### User Engagement
+
 - Daily Active Users (DAU)
 - Weekly Active Users (WAU)
 - Session duration
@@ -643,6 +667,7 @@ const FLAGS = {
 - Return rate (day 1, 7, 30)
 
 #### Matching Metrics
+
 - Swipes per session
 - Match rate (mutual likes / total swipes)
 - Message rate (messaged matches / total matches)
@@ -650,6 +675,7 @@ const FLAGS = {
 - Time to first message after match
 
 #### Content Metrics
+
 - Stories posted per day
 - Story views per post
 - Story completion rate
@@ -657,6 +683,7 @@ const FLAGS = {
 - Photo upload rate
 
 #### System Health
+
 - API response times (p50, p95, p99)
 - Error rates by endpoint
 - WebSocket connection stability
@@ -667,18 +694,18 @@ const FLAGS = {
 
 ```typescript
 // Generate correlation ID for every user action
-const correlationId = generateCorrelationId()
+const correlationId = generateCorrelationId();
 
 // Attach to all API calls
 const response = await fetch(url, {
   headers: {
     'X-Correlation-ID': correlationId,
     'X-User-ID': userId,
-  }
-})
+  },
+});
 
 // Log on client
-console.log('[CID:%s] Action: %s', correlationId, actionName)
+console.log('[CID:%s] Action: %s', correlationId, actionName);
 
 // Server logs with same CID
 // [CID:123-abc] Received message_send from user-456
@@ -695,26 +722,26 @@ console.log('[CID:%s] Action: %s', correlationId, actionName)
 
 ```typescript
 interface EnvironmentConfig {
-  name: 'dev' | 'staging' | 'prod'
+  name: 'dev' | 'staging' | 'prod';
   api: {
-    baseUrl: string
-    wsUrl: string
-    timeout: number
-  }
+    baseUrl: string;
+    wsUrl: string;
+    timeout: number;
+  };
   cdn: {
-    baseUrl: string
-    provider: 'cloudinary' | 's3' | 'local'
-  }
+    baseUrl: string;
+    provider: 'cloudinary' | 's3' | 'local';
+  };
   features: {
-    analytics: boolean
-    errorTracking: boolean
-    debugMode: boolean
-  }
+    analytics: boolean;
+    errorTracking: boolean;
+    debugMode: boolean;
+  };
   limits: {
-    maxUploadSize: number
-    maxMessageLength: number
-    rateLimit: number
-  }
+    maxUploadSize: number;
+    maxMessageLength: number;
+    rateLimit: number;
+  };
 }
 
 // Current implementation (single environment)
@@ -739,7 +766,7 @@ const config: EnvironmentConfig = {
     maxMessageLength: 1000,
     rateLimit: 100,
   },
-}
+};
 ```
 
 ### Bootstrap Command (Future)
@@ -761,18 +788,21 @@ npm run dev:all
 ## 11. Testing Strategy
 
 ### Unit Tests
+
 - Utility functions
 - State management hooks
 - Data transformations
 - Validation logic
 
 ### Integration Tests
+
 - API endpoint flows
 - WebSocket event handling
 - Authentication flows
 - Payment processing
 
 ### E2E Tests (Smoke Checklist)
+
 ```
 □ User Registration
   - Sign up with valid email
@@ -892,13 +922,13 @@ npm run dev:all
 
 ```typescript
 interface PrivacySettings {
-  profileVisibility: 'public' | 'matches-only' | 'private'
-  locationSharing: 'precise' | 'approximate' | 'off'
-  onlineStatus: 'visible' | 'hidden'
-  readReceipts: boolean
-  activityStatus: boolean
-  allowStorySharing: boolean
-  allowAnalytics: boolean
+  profileVisibility: 'public' | 'matches-only' | 'private';
+  locationSharing: 'precise' | 'approximate' | 'off';
+  onlineStatus: 'visible' | 'hidden';
+  readReceipts: boolean;
+  activityStatus: boolean;
+  allowStorySharing: boolean;
+  allowAnalytics: boolean;
 }
 ```
 
@@ -915,27 +945,29 @@ interface PrivacySettings {
 ## 14. Disaster Recovery
 
 ### Backup Strategy
+
 - **spark.kv data**: Automatic backups by platform
 - **Critical data**: Export capability for users
 - **Audit logs**: Immutable, separate storage
 
 ### Data Recovery
+
 ```typescript
 // User can export their data
 const exportUserData = async (userId: string) => {
-  const userData = await spark.kv.get(`user-profile-${userId}`)
-  const pets = await spark.kv.get(`user-pets-${userId}`)
-  const matches = await spark.kv.get(`matches-${userId}`)
-  const messages = await spark.kv.get(`user-messages-${userId}`)
-  
+  const userData = await spark.kv.get(`user-profile-${userId}`);
+  const pets = await spark.kv.get(`user-pets-${userId}`);
+  const matches = await spark.kv.get(`matches-${userId}`);
+  const messages = await spark.kv.get(`user-messages-${userId}`);
+
   return {
     profile: userData,
     pets,
     matches,
     messages,
     exportedAt: new Date().toISOString(),
-  }
-}
+  };
+};
 ```
 
 ---
@@ -943,6 +975,7 @@ const exportUserData = async (userId: string) => {
 ## 15. Future Enhancements
 
 ### Phase 2 (3-6 months)
+
 - Video chat for matched users
 - AI-powered conversation starters
 - Advanced matching algorithm with ML
@@ -950,6 +983,7 @@ const exportUserData = async (userId: string) => {
 - Gamification (achievements, leaderboards)
 
 ### Phase 3 (6-12 months)
+
 - Pet health records integration
 - Veterinarian recommendations
 - Pet-friendly location finder
@@ -957,6 +991,7 @@ const exportUserData = async (userId: string) => {
 - Pet product marketplace
 
 ### Phase 4 (12+ months)
+
 - International expansion
 - Multi-pet profiles per user
 - Breeder verification program
@@ -968,17 +1003,20 @@ const exportUserData = async (userId: string) => {
 ## 16. Documentation Index
 
 ### Technical Docs
+
 - [API Documentation](./API.md) - Future
 - [WebSocket Events](./WEBSOCKET.md) - Future
 - [Database Schema](./SCHEMA.md) - Future
 - [Component Library](./COMPONENTS.md) - See `/src/components`
 
 ### Business Docs
+
 - [Product Requirements](./PRD.md) - Exists
 - [User Flows](./USER_FLOWS.md) - This document
 - [Feature Specifications](./FEATURES.md) - Future
 
 ### Operations Docs
+
 - [Deployment Guide](./DEPLOY.md) - Future
 - [Monitoring Setup](./MONITORING.md) - Future
 - [Incident Response](./INCIDENTS.md) - Future

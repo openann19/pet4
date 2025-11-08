@@ -1,25 +1,25 @@
 /**
  * Voice Waveform Component
- * 
+ *
  * Renders animated voice message waveform
- * 
+ *
  * Location: apps/web/src/components/chat/VoiceWaveform.tsx
  */
 
-import { useEffect } from 'react'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useVoiceWaveform } from '@/effects/chat/media/use-voice-waveform'
-import { useAnimatedStyle } from 'react-native-reanimated'
+import { useEffect } from 'react';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useVoiceWaveform } from '@/effects/chat/media/use-voice-waveform';
+import { useAnimatedStyle } from 'react-native-reanimated';
 
 interface VoiceWaveformProps {
-  waveform?: number[]
-  duration?: number
-  currentTime?: number
-  isPlaying?: boolean
-  width?: number
-  height?: number
-  color?: string
-  className?: string
+  waveform?: number[];
+  duration?: number;
+  currentTime?: number;
+  isPlaying?: boolean;
+  width?: number;
+  height?: number;
+  color?: string;
+  className?: string;
 }
 
 export function VoiceWaveform({
@@ -41,11 +41,11 @@ export function VoiceWaveform({
     width,
     height,
     color,
-  })
+  });
 
   useEffect(() => {
-    drawWaveform()
-  }, [drawWaveform])
+    drawWaveform();
+  }, [drawWaveform]);
 
   const playheadStyle = useAnimatedStyle(() => {
     return {
@@ -56,26 +56,17 @@ export function VoiceWaveform({
       width: 2,
       backgroundColor: color,
       opacity: 0.8,
-    }
-  })
+    };
+  });
 
   return (
-    <AnimatedView
-      style={animatedStyle}
-      className={`relative ${className ?? ''}`}
-    >
-      <canvas
-        ref={canvasRef}
-        width={width}
-        height={height}
-        className="w-full h-full"
-      />
+    <AnimatedView style={animatedStyle} className={`relative ${className ?? ''}`}>
+      <canvas ref={canvasRef} width={width} height={height} className="w-full h-full" />
       {isPlaying && (
         <AnimatedView style={playheadStyle}>
           <div />
         </AnimatedView>
       )}
     </AnimatedView>
-  )
+  );
 }
-

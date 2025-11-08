@@ -32,21 +32,21 @@ src/effects/
 ### Animations
 
 ```typescript
-import { fadeInUp, springTransition } from '@/effects/animations'
-import { hoverLift } from '@/effects/animations/interactions'
+import { fadeInUp, springTransition } from '@/effects/animations';
+import { hoverLift } from '@/effects/animations/interactions';
 ```
 
 ### Micro Interactions
 
 ```typescript
-import { MicroInteractions } from '@/effects/micro-interactions'
-import { useRipple } from '@/effects/hooks'
+import { MicroInteractions } from '@/effects/micro-interactions';
+import { useRipple } from '@/effects/hooks';
 ```
 
 ### Visual Effects
 
 ```typescript
-import { ParticleEffect } from '@/effects/visual'
+import { ParticleEffect } from '@/effects/visual';
 ```
 
 ## Categories
@@ -55,4 +55,3 @@ import { ParticleEffect } from '@/effects/visual'
 - **Micro Interactions**: DOM-based interactions (ripples, shimmer, etc.)
 - **Visual**: React components for visual effects
 - **Hooks**: Reusable React hooks for effects
-

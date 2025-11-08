@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function WelcomeScreen(): React.JSX.Element {
@@ -16,10 +10,8 @@ export default function WelcomeScreen(): React.JSX.Element {
       <View style={styles.content}>
         <Text style={styles.logo}>🐾</Text>
         <Text style={styles.title}>Welcome to Pet3</Text>
-        <Text style={styles.subtitle}>
-          Connect with pets and their owners in your area
-        </Text>
-        
+        <Text style={styles.subtitle}>Connect with pets and their owners in your area</Text>
+
         <View style={styles.features}>
           <View style={styles.feature}>
             <Text style={styles.featureIcon}>❤️</Text>

@@ -361,9 +361,7 @@ describe('APIClient', () => {
       }
 
       // Next request should be blocked
-      await expect(apiClient.get('/test', { retries: 0 })).rejects.toThrow(
-        'circuit breaker open'
-      )
+      await expect(apiClient.get('/test', { retries: 0 })).rejects.toThrow('circuit breaker open')
     })
 
     it('should reset circuit breaker', () => {
@@ -382,11 +380,7 @@ describe('APIClient', () => {
         json: async () => ({ data: 'test' }),
       } as Response)
 
-      const promises = [
-        apiClient.get('/test'),
-        apiClient.get('/test'),
-        apiClient.get('/test'),
-      ]
+      const promises = [apiClient.get('/test'), apiClient.get('/test'), apiClient.get('/test')]
 
       const results = await Promise.all(promises)
 
@@ -577,4 +571,3 @@ describe('APIClient', () => {
     })
   })
 })
-

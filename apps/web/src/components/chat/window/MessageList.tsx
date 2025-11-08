@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
-import TypingIndicatorComponent from '../TypingIndicator'
-import { MessageItem } from './MessageItem'
-import type { ChatMessage, ChatRoom } from '@/lib/chat-types'
-import { groupMessagesByDate } from '@/lib/chat-utils'
-import { AnimatePresence } from '@/effects/reanimated/animate-presence'
-import type { RefObject } from 'react'
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
+import TypingIndicatorComponent from '../TypingIndicator';
+import { MessageItem } from './MessageItem';
+import type { ChatMessage, ChatRoom } from '@/lib/chat-types';
+import { groupMessagesByDate } from '@/lib/chat-utils';
+import { AnimatePresence } from '@/effects/reanimated/animate-presence';
+import type { RefObject } from 'react';
 
 export interface MessageListProps {
-  messages: ChatMessage[]
-  currentUserId: string
-  typingUsers: Array<{ userName?: string }>
-  onReaction: (messageId: string, emoji: string) => void
-  onTranslate: (messageId: string) => void
-  scrollRef: RefObject<HTMLDivElement>
+  messages: ChatMessage[];
+  currentUserId: string;
+  typingUsers: { userName?: string }[];
+  onReaction: (messageId: string, emoji: string) => void;
+  onTranslate: (messageId: string) => void;
+  scrollRef: RefObject<HTMLDivElement>;
 }
 
 export function MessageList({
@@ -26,7 +26,7 @@ export function MessageList({
   onTranslate,
   scrollRef,
 }: MessageListProps): JSX.Element {
-  const groups = groupMessagesByDate(messages || [])
+  const groups = groupMessagesByDate(messages || []);
 
   return (
     <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -52,16 +52,16 @@ export function MessageList({
         </AnimatePresence>
       )}
     </div>
-  )
+  );
 }
 
 interface DateGroupProps {
-  date: string
-  delay: number
+  date: string;
+  delay: number;
 }
 
 function DateGroup({ date, delay }: DateGroupProps): JSX.Element {
-  const anim = useEntryAnimation({ initialScale: 0.8, delay })
+  const anim = useEntryAnimation({ initialScale: 0.8, delay });
 
   return (
     <AnimatedView style={anim.animatedStyle} className="flex justify-center">
@@ -69,6 +69,5 @@ function DateGroup({ date, delay }: DateGroupProps): JSX.Element {
         {date}
       </div>
     </AnimatedView>
-  )
+  );
 }
-

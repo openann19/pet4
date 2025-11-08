@@ -3,21 +3,25 @@
 ## Running Tests
 
 ### Prerequisites
+
 - Android Studio
 - Android SDK (API 34)
 - Gradle configured
 
 ### Unit Tests
+
 ```bash
 ./gradlew test
 ```
 
 ### UI Tests
+
 ```bash
 ./gradlew connectedAndroidTest
 ```
 
 ### Specific Test Class
+
 ```bash
 ./gradlew test --tests "com.pawfectmatch.design.tests.DesignTokenTests"
 ```
@@ -25,6 +29,7 @@
 ## Test Coverage
 
 ### DesignTokenTests
+
 - ✅ String expansion (Bulgarian +40%)
 - ✅ Touch target minimums (48dp)
 - ✅ TalkBack semantics
@@ -35,6 +40,7 @@
 - ✅ Haptic feedback
 
 ### StringExpansionTests
+
 - ✅ Card stack long names
 - ✅ Card stack long locations
 - ✅ AI Analysis panel button
@@ -45,6 +51,7 @@
 - ✅ Empty state long messages
 
 ### TouchTargetTests
+
 - ✅ Button touch targets
 - ✅ Tab touch targets
 - ✅ Bottom nav touch targets
@@ -56,11 +63,13 @@
 ## Known Issues
 
 ### Test Implementation
+
 - Tests use simplified assertions (existence/display)
 - Custom assertions need SemanticsMatcher implementation
 - Some tests need actual component implementations
 
 ### Fixes Applied
+
 - ✅ Added missing imports
 - ✅ Simplified test assertions
 - ✅ Added placeholder components
@@ -87,4 +96,3 @@
    - Frame rate monitoring
    - Memory profiling
    - Animation performance
-

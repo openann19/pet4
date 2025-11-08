@@ -1,42 +1,39 @@
-'use client'
+'use client';
 
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
-import { useEffect } from 'react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import { useEffect } from 'react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface UseShimmerSweepOptions {
-  duration?: number
-  delay?: number
-  opacityRange?: [number, number]
+  duration?: number;
+  delay?: number;
+  opacityRange?: [number, number];
 }
 
 export interface UseShimmerSweepReturn {
-  x: ReturnType<typeof useSharedValue<number>>
-  opacity: ReturnType<typeof useSharedValue<number>>
-  style: AnimatedStyle
+  x: ReturnType<typeof useSharedValue<number>>;
+  opacity: ReturnType<typeof useSharedValue<number>>;
+  style: AnimatedStyle;
 }
 
-export function useShimmerSweep(
-  options: UseShimmerSweepOptions = {}
-): UseShimmerSweepReturn {
-  const {
-    duration = 3000,
-    delay = 0,
-    opacityRange = [0, 0.5]
-  } = options
+export function useShimmerSweep(options: UseShimmerSweepOptions = {}): UseShimmerSweepReturn {
+  const { duration = 3000, delay = 0, opacityRange = [0, 0.5] } = options;
 
-  const x = useSharedValue(-100)
-  const opacity = useSharedValue(0)
+  const x = useSharedValue(-100);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
     x.value = withRepeat(
-      withSequence(
-        withTiming(-100, { duration: 0 }),
-        withTiming(100, { duration })
-      ),
+      withSequence(withTiming(-100, { duration: 0 }), withTiming(100, { duration })),
       -1,
       false
-    )
+    );
 
     opacity.value = withRepeat(
       withSequence(
@@ -46,20 +43,19 @@ export function useShimmerSweep(
       ),
       -1,
       false
-    )
-  }, [duration, delay, opacityRange, x, opacity])
+    );
+  }, [duration, delay, opacityRange, x, opacity]);
 
   const style = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: `${x.value}%` }],
-      opacity: opacity.value
-    }
-  }) as AnimatedStyle
+      opacity: opacity.value,
+    };
+  }) as AnimatedStyle;
 
   return {
     x,
     opacity,
-    style
-  }
+    style,
+  };
 }
-

@@ -15,10 +15,7 @@ import { FadeInView } from '../components/FadeInView';
 import { useStorage } from '../hooks/useStorage';
 
 export default function SettingsScreen() {
-  const [notificationsEnabled, setNotificationsEnabled] = useStorage(
-    'notificationsEnabled',
-    true
-  );
+  const [notificationsEnabled, setNotificationsEnabled] = useStorage('notificationsEnabled', true);
   const [soundEnabled, setSoundEnabled] = useStorage('soundEnabled', true);
   const [vibrationEnabled, setVibrationEnabled] = useStorage('vibrationEnabled', true);
   const [locationSharing, setLocationSharing] = useStorage('locationSharing', false);
@@ -26,38 +23,30 @@ export default function SettingsScreen() {
   const [language, setLanguage] = useStorage('language', 'en');
 
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: () => {
-            // Handle logout logic here
-            Alert.alert('Success', 'You have been logged out');
-          },
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          // Handle logout logic here
+          Alert.alert('Success', 'You have been logged out');
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      'Delete Account',
-      'Are you sure? This action cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            Alert.alert('Account Deleted', 'Your account has been deleted');
-          },
+    Alert.alert('Delete Account', 'Are you sure? This action cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          Alert.alert('Account Deleted', 'Your account has been deleted');
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const SettingSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -184,19 +173,12 @@ export default function SettingsScreen() {
         </SettingSection>
 
         <SettingSection title="Appearance">
-          <SettingToggle
-            icon="🌙"
-            label="Dark Mode"
-            value={darkMode}
-            onValueChange={setDarkMode}
-          />
+          <SettingToggle icon="🌙" label="Dark Mode" value={darkMode} onValueChange={setDarkMode} />
           <SettingRow
             icon="🌍"
             label="Language"
             value={language === 'en' ? 'English' : 'Other'}
-            onPress={() =>
-              Alert.alert('Language', 'Language selector coming soon!')
-            }
+            onPress={() => Alert.alert('Language', 'Language selector coming soon!')}
           />
         </SettingSection>
 
@@ -230,12 +212,7 @@ export default function SettingsScreen() {
             label="Privacy Policy"
             onPress={() => Alert.alert('Privacy', 'Privacy Policy')}
           />
-          <SettingRow
-            icon="📱"
-            label="App Version"
-            value="1.0.0"
-            showChevron={false}
-          />
+          <SettingRow icon="📱" label="App Version" value="1.0.0" showChevron={false} />
         </SettingSection>
 
         <View style={styles.dangerSection}>
@@ -246,10 +223,7 @@ export default function SettingsScreen() {
           </FadeInView>
 
           <FadeInView delay={450}>
-            <AnimatedButton
-              onPress={handleDeleteAccount}
-              style={styles.deleteButton}
-            >
+            <AnimatedButton onPress={handleDeleteAccount} style={styles.deleteButton}>
               <Text style={styles.deleteButtonText}>🗑️ Delete Account</Text>
             </AnimatedButton>
           </FadeInView>

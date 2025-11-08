@@ -1,10 +1,10 @@
-import { MotionView, MotionText } from '@petspark/motion'
-import type { CompatibilityFactors } from '@/lib/types'
-import { useEffect, useState } from 'react'
+import { MotionView, MotionText } from '@petspark/motion';
+import type { CompatibilityFactors } from '@/lib/types';
+import { useEffect, useState } from 'react';
 
 interface CompatibilityBreakdownProps {
-  factors: CompatibilityFactors
-  className?: string
+  factors: CompatibilityFactors;
+  className?: string;
 }
 
 const factorLabels = {
@@ -13,7 +13,7 @@ const factorLabels = {
   sizeMatch: 'Size Compatibility',
   ageCompatibility: 'Age Match',
   locationProximity: 'Location',
-}
+};
 
 const factorIcons = {
   personalityMatch: '🎭',
@@ -21,7 +21,7 @@ const factorIcons = {
   sizeMatch: '📏',
   ageCompatibility: '🎂',
   locationProximity: '📍',
-}
+};
 
 const factorColors = {
   personalityMatch: 'from-primary to-primary/60',
@@ -29,10 +29,13 @@ const factorColors = {
   sizeMatch: 'from-secondary to-secondary/60',
   ageCompatibility: 'from-lavender to-lavender/60',
   locationProximity: 'from-primary to-accent',
-}
+};
 
-export default function CompatibilityBreakdown({ factors, className }: CompatibilityBreakdownProps) {
-  const [animatedValues, setAnimatedValues] = useState<Record<string, number>>({})
+export default function CompatibilityBreakdown({
+  factors,
+  className,
+}: CompatibilityBreakdownProps) {
+  const [animatedValues, setAnimatedValues] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -42,16 +45,18 @@ export default function CompatibilityBreakdown({ factors, className }: Compatibi
         sizeMatch: factors.sizeMatch,
         ageCompatibility: factors.ageCompatibility,
         locationProximity: factors.locationProximity,
-      }
-      setAnimatedValues(values)
-    }, 100)
-    return () => clearTimeout(timer)
-  }, [factors])
+      };
+      setAnimatedValues(values);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [factors]);
 
   return (
-    <div className={`rounded-3xl glass-strong premium-shadow backdrop-blur-2xl border border-white/20 ${className}`}>
+    <div
+      className={`rounded-3xl glass-strong premium-shadow backdrop-blur-2xl border border-white/20 ${className}`}
+    >
       <div className="p-6 bg-linear-to-br from-white/20 to-white/10">
-        <MotionView 
+        <MotionView
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-lg font-bold mb-4 flex items-center gap-2 bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-transparent"
@@ -66,11 +71,11 @@ export default function CompatibilityBreakdown({ factors, className }: Compatibi
         </MotionView>
         <div className="space-y-4">
           {Object.entries(factors).map(([key, _value], idx) => {
-            const animatedPercentage = Math.round((animatedValues[key] || 0) * 100)
-            const label = factorLabels[key as keyof typeof factorLabels]
-            const icon = factorIcons[key as keyof typeof factorIcons]
-            const colorClass = factorColors[key as keyof typeof factorColors]
-            
+            const animatedPercentage = Math.round((animatedValues[key] || 0) * 100);
+            const label = factorLabels[key as keyof typeof factorLabels];
+            const icon = factorIcons[key as keyof typeof factorIcons];
+            const colorClass = factorColors[key as keyof typeof factorColors];
+
             return (
               <MotionView
                 key={key}
@@ -89,7 +94,7 @@ export default function CompatibilityBreakdown({ factors, className }: Compatibi
                     </MotionText>
                     {label}
                   </span>
-                  <MotionText 
+                  <MotionText
                     className="text-sm font-bold text-muted-foreground tabular-nums"
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -108,14 +113,14 @@ export default function CompatibilityBreakdown({ factors, className }: Compatibi
                     >
                       <MotionView
                         className="absolute inset-0 bg-white/30"
-                        animate={{ 
+                        animate={{
                           x: ['-100%', '100%'],
                         }}
-                        transition={{ 
-                          duration: 1.5, 
-                          repeat: Infinity, 
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
                           ease: 'linear',
-                          delay: idx * 0.1 + 0.5
+                          delay: idx * 0.1 + 0.5,
                         }}
                         style={{ width: '50%' }}
                       />
@@ -123,10 +128,10 @@ export default function CompatibilityBreakdown({ factors, className }: Compatibi
                   </div>
                 </div>
               </MotionView>
-            )
+            );
           })}
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -13,7 +13,7 @@ export function CommunityScreen(): React.JSX.Element {
 
   const handleRefresh = useCallback(async (): Promise<void> => {
     // Simulate network delay for better UX
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise(resolve => setTimeout(resolve, 500))
   }, [])
 
   return (
@@ -30,7 +30,9 @@ export function CommunityScreen(): React.JSX.Element {
           />
 
           <FeatureCard title="Post moderation">
-            <BodyLine text={`Pending posts can be edited: ${community.canEditPendingPost ? 'Yes' : 'No'}`} />
+            <BodyLine
+              text={`Pending posts can be edited: ${community.canEditPendingPost ? 'Yes' : 'No'}`}
+            />
             <BodyLine
               text={`Comments allowed on active posts: ${
                 community.canReceiveCommentsOnActivePost ? 'Yes' : 'No'
@@ -39,14 +41,18 @@ export function CommunityScreen(): React.JSX.Element {
           </FeatureCard>
 
           <FeatureCard title="Post transitions">
-            {community.postTransitions.map((item) => (
+            {community.postTransitions.map(item => (
               <StatusRow key={`post:${item.status}`} label={item.status} allowed={item.allowed} />
             ))}
           </FeatureCard>
 
           <FeatureCard title="Comment transitions">
-            {community.commentTransitions.map((item) => (
-              <StatusRow key={`comment:${item.status}`} label={item.status} allowed={item.allowed} />
+            {community.commentTransitions.map(item => (
+              <StatusRow
+                key={`comment:${item.status}`}
+                label={item.status}
+                allowed={item.allowed}
+              />
             ))}
           </FeatureCard>
         </ScrollView>
@@ -61,13 +67,7 @@ const BodyLine = memo(({ text }: { text: string }) => (
   </Text>
 ))
 
-const StatusRow = memo(({
-  label,
-  allowed,
-}: {
-  label: string
-  allowed: boolean
-}) => {
+const StatusRow = memo(({ label, allowed }: { label: string; allowed: boolean }) => {
   return (
     <View style={styles.row} accessible accessibilityRole="summary">
       <Text style={styles.label}>{label}</Text>

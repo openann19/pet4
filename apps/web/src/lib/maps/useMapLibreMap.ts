@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 // Dynamic runtime import for maplibre-gl to avoid bundling into main chunk.
 // We keep type-only imports so TypeScript can validate without pulling runtime.
-import type {
-  Map as MapInstance,
-  Marker as MarkerInstance,
-  MapMouseEvent,
-} from 'maplibre-gl';
+import type { Map as MapInstance, Marker as MarkerInstance, MapMouseEvent } from 'maplibre-gl';
 import type { Location } from '@/lib/maps/types';
 import { getMapStyleUrl } from './provider-config';
 
@@ -38,10 +34,24 @@ function loadMapLibre(): Promise<typeof import('maplibre-gl')> {
       } catch {
         // CSS load failure should not break map usage
       }
-      return mod.default ? (mod.default as typeof import('maplibre-gl')) : mod;
+      return mod.default ? mod.default : mod;
     });
   }
   return mapLibreLoadPromise;
+}
+
+// Helper function to safely cancel idle callback or timeout
+function cancelIdleCallbackSafe(idleCallbackId: number | NodeJS.Timeout | null): void {
+  if (idleCallbackId === null) return;
+
+  if (typeof idleCallbackId === 'number') {
+    const cib = globalThis.cancelIdleCallback;
+    if (typeof cib === 'function') {
+      cib(idleCallbackId);
+    }
+  } else {
+    clearTimeout(idleCallbackId);
+  }
 }
 
 export function useMapLibreMap({
@@ -116,7 +126,7 @@ export function useMapLibreMap({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.loaded()) return;
+    if (!map?.loaded()) return;
 
     map.setCenter([center.lng, center.lat]);
     if (zoom !== undefined) {
@@ -214,7 +224,7 @@ export function useMapLibreMap({
   // Throttled region change handler with requestIdleCallback fallback
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !map.loaded()) return;
+    if (!map?.loaded()) return;
 
     let pendingRegion: { lat: number; lng: number; zoom: number } | null = null;
     let idleCallbackId: number | NodeJS.Timeout | null = null;
@@ -224,17 +234,10 @@ export function useMapLibreMap({
       const z = map.getZoom();
       pendingRegion = { lat: c.lat, lng: c.lng, zoom: z };
 
-      if (idleCallbackId !== null) {
-        if (typeof idleCallbackId === 'number') {
-          const cib = (globalThis as any).cancelIdleCallback as ((id: number) => void) | undefined;
-          if (typeof cib === 'function') cib(idleCallbackId as number);
-        } else {
-          clearTimeout(idleCallbackId as NodeJS.Timeout);
-        }
-      }
+      cancelIdleCallbackSafe(idleCallbackId);
 
       const scheduleUpdate = (cb: () => void): void => {
-        const ric = (globalThis as any).requestIdleCallback as ((cb: () => void, opts?: { timeout?: number }) => number) | undefined;
+        const ric = globalThis.requestIdleCallback;
         if (typeof ric === 'function') {
           idleCallbackId = ric(cb, { timeout: 120 });
         } else {
@@ -253,14 +256,7 @@ export function useMapLibreMap({
     map.on('moveend', handleMoveEnd);
     return () => {
       map.off('moveend', handleMoveEnd);
-      if (idleCallbackId !== null) {
-        if (typeof idleCallbackId === 'number') {
-          const cib = (globalThis as any).cancelIdleCallback as ((id: number) => void) | undefined;
-          if (typeof cib === 'function') cib(idleCallbackId as number);
-        } else {
-          clearTimeout(idleCallbackId as NodeJS.Timeout);
-        }
-      }
+      cancelIdleCallbackSafe(idleCallbackId);
     };
   }, []);
 
@@ -271,16 +267,16 @@ export function useMapLibreMap({
   };
 }
 
-function clusterMarkersByZoom(markers: MapMarker[]): Array<{
+function clusterMarkersByZoom(markers: MapMarker[]): {
   location: Location;
   count: number;
   markers: MapMarker[];
-}> {
-  const clusters: Array<{
+}[] {
+  const clusters: {
     location: Location;
     count: number;
     markers: MapMarker[];
-  }> = [];
+  }[] = [];
   const processed = new Set<string>();
   const clusterRadius = 0.01;
 
@@ -319,4 +315,3 @@ function clusterMarkersByZoom(markers: MapMarker[]): Array<{
 
   return clusters;
 }
-

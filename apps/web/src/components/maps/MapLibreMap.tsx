@@ -43,9 +43,7 @@ export default function MapLibreMap({
           <p className="text-destructive font-semibold">
             {t.map?.errorLoadingMap || 'Error loading map'}
           </p>
-          <p className="text-sm text-muted-foreground">
-            {error.message}
-          </p>
+          <p className="text-sm text-muted-foreground">{error.message}</p>
         </div>
       </div>
     );
@@ -57,9 +55,7 @@ export default function MapLibreMap({
         <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
           <div className="text-center space-y-2">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
-            <p className="text-sm text-muted-foreground">
-              {t.map?.loading || 'Loading map...'}
-            </p>
+            <p className="text-sm text-muted-foreground">{t.map?.loading || 'Loading map...'}</p>
           </div>
         </div>
       )}
@@ -71,4 +67,3 @@ export default function MapLibreMap({
     </div>
   );
 }
-

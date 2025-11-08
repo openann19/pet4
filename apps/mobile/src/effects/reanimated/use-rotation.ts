@@ -1,4 +1,4 @@
-import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, type SharedValue } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
@@ -9,7 +9,7 @@ export interface UseRotationOptions {
 }
 
 export interface UseRotationReturn {
-  rotation: SharedValue<number>
+  rotation: ReturnType<typeof useSharedValue<number>>
   rotationStyle: AnimatedStyle
 }
 
@@ -17,14 +17,8 @@ export interface UseRotationReturn {
  * Hook for continuous rotation animation
  * Uses React Reanimated for smooth 60fps animations on UI thread
  */
-export function useRotation(
-  options: UseRotationOptions = {}
-): UseRotationReturn {
-  const {
-    enabled = true,
-    duration = 1000,
-    repeat = true
-  } = options
+export function useRotation(options: UseRotationOptions = {}): UseRotationReturn {
+  const { enabled = true, duration = 1000, repeat = true } = options
 
   const rotation = useSharedValue(0)
 
@@ -43,12 +37,12 @@ export function useRotation(
 
   const rotationStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${rotation.value}deg` }]
+      transform: [{ rotate: `${rotation.value}deg` }],
     }
   }) as AnimatedStyle
 
   return {
     rotation,
-    rotationStyle
+    rotationStyle,
   }
 }

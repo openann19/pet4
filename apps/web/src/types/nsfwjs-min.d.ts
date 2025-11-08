@@ -4,14 +4,13 @@
  */
 declare module 'nsfwjs/dist/nsfwjs.min.js' {
   export interface NSFWJS {
-    load(): Promise<NSFWJS>
+    load(): Promise<NSFWJS>;
     classify(
       input: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | ImageData | OffscreenCanvas,
       topk?: number
-    ): Promise<Array<{ className: string; probability: number }>>
+    ): Promise<{ className: string; probability: number }[]>;
   }
 
-  export default NSFWJS
-  export { NSFWJS }
+  export default NSFWJS;
+  export { NSFWJS };
 }
-

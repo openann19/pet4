@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { motion, Presence } from '@petspark/motion'
+import { useState, useEffect } from 'react';
+import { motion, Presence } from '@petspark/motion';
 import {
   MapPin,
   MagnifyingGlass,
@@ -12,34 +12,34 @@ import {
   House,
   Path,
   Buildings,
-  X
-} from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import type { PlaydateLocation } from '@/lib/playdate-types'
-import type { Location } from '@/lib/maps/types'
-import { getCurrentLocation, calculateDistance, formatDistance } from '@/lib/maps/utils'
-import { toast } from 'sonner'
-import { haptics } from '@/lib/haptics'
+  X,
+} from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { PlaydateLocation } from '@/lib/playdate-types';
+import type { Location } from '@/lib/maps/types';
+import { getCurrentLocation, calculateDistance, formatDistance } from '@/lib/maps/utils';
+import { toast } from 'sonner';
+import { haptics } from '@/lib/haptics';
 
 interface LocationPickerProps {
-  value?: PlaydateLocation
-  onChange: (location: PlaydateLocation) => void
-  onClose?: () => void
+  value?: PlaydateLocation;
+  onChange: (location: PlaydateLocation) => void;
+  onClose?: () => void;
 }
 
 interface NearbyPlace {
-  id: string
-  name: string
-  address: string
-  type: 'park' | 'cafe' | 'beach' | 'trail' | 'other'
-  location: Location
-  distance?: number
-  rating?: number
+  id: string;
+  name: string;
+  address: string;
+  type: 'park' | 'cafe' | 'beach' | 'trail' | 'other';
+  location: Location;
+  distance?: number;
+  rating?: number;
 }
 
 const MOCK_NEARBY_PLACES: NearbyPlace[] = [
@@ -49,15 +49,15 @@ const MOCK_NEARBY_PLACES: NearbyPlace[] = [
     address: '123 Main St',
     type: 'park',
     location: { lat: 37.7749, lng: -122.4194 },
-    rating: 4.5
+    rating: 4.5,
   },
   {
     id: '2',
     name: 'Pawfect Paws Cafe',
     address: '456 Oak Ave',
     type: 'cafe',
-    location: { lat: 37.7750, lng: -122.4195 },
-    rating: 4.8
+    location: { lat: 37.775, lng: -122.4195 },
+    rating: 4.8,
   },
   {
     id: '3',
@@ -65,7 +65,7 @@ const MOCK_NEARBY_PLACES: NearbyPlace[] = [
     address: '789 Beach Rd',
     type: 'trail',
     location: { lat: 37.7751, lng: -122.4196 },
-    rating: 4.6
+    rating: 4.6,
   },
   {
     id: '4',
@@ -73,7 +73,7 @@ const MOCK_NEARBY_PLACES: NearbyPlace[] = [
     address: '321 River Dr',
     type: 'park',
     location: { lat: 37.7752, lng: -122.4197 },
-    rating: 4.7
+    rating: 4.7,
   },
   {
     id: '5',
@@ -81,94 +81,94 @@ const MOCK_NEARBY_PLACES: NearbyPlace[] = [
     address: '654 Green St',
     type: 'park',
     location: { lat: 37.7748, lng: -122.4193 },
-    rating: 4.9
-  }
-]
+    rating: 4.9,
+  },
+];
 
 export default function LocationPicker({ value, onChange, onClose }: LocationPickerProps) {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
-  const [_userLocation, setUserLocation] = useState<Location | null>(null)
-  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>(MOCK_NEARBY_PLACES)
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false)
-  const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [_userLocation, setUserLocation] = useState<Location | null>(null);
+  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>(MOCK_NEARBY_PLACES);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
   const [customLocation, setCustomLocation] = useState({
     name: value?.name || '',
-    address: value?.address || ''
-  })
+    address: value?.address || '',
+  });
 
   useEffect(() => {
-    loadUserLocation()
-  }, [])
+    loadUserLocation();
+  }, []);
 
   const loadUserLocation = async () => {
-    setIsLoadingLocation(true)
+    setIsLoadingLocation(true);
     try {
-      const location = await getCurrentLocation()
-      setUserLocation(location)
-      
-      const placesWithDistance = MOCK_NEARBY_PLACES.map(place => ({
+      const location = await getCurrentLocation();
+      setUserLocation(location);
+
+      const placesWithDistance = MOCK_NEARBY_PLACES.map((place) => ({
         ...place,
-        distance: calculateDistance(location, place.location)
-      })).sort((a, b) => (a.distance || 0) - (b.distance || 0))
-      
-      setNearbyPlaces(placesWithDistance)
-      toast.success('Location detected')
+        distance: calculateDistance(location, place.location),
+      })).sort((a, b) => (a.distance || 0) - (b.distance || 0));
+
+      setNearbyPlaces(placesWithDistance);
+      toast.success('Location detected');
     } catch (error) {
-      toast.error('Could not get your location')
+      toast.error('Could not get your location');
     } finally {
-      setIsLoadingLocation(false)
+      setIsLoadingLocation(false);
     }
-  }
+  };
 
   const getPlaceIcon = (type: string) => {
     switch (type) {
       case 'park':
-        return <Park size={20} weight="fill" className="text-green-600" />
+        return <Park size={20} weight="fill" className="text-green-600" />;
       case 'cafe':
-        return <Coffee size={20} weight="fill" className="text-orange-600" />
+        return <Coffee size={20} weight="fill" className="text-orange-600" />;
       case 'beach':
       case 'trail':
-        return <Path size={20} weight="bold" className="text-blue-600" />
+        return <Path size={20} weight="bold" className="text-blue-600" />;
       case 'home':
-        return <House size={20} weight="fill" className="text-purple-600" />
+        return <House size={20} weight="fill" className="text-purple-600" />;
       default:
-        return <Buildings size={20} className="text-gray-600" />
+        return <Buildings size={20} className="text-gray-600" />;
     }
-  }
+  };
 
   const handleSelectPlace = (place: NearbyPlace) => {
-    setSelectedPlace(place)
+    setSelectedPlace(place);
     onChange({
       name: place.name,
       address: place.address,
       lat: place.location.lat,
       lng: place.location.lng,
-      type: place.type
-    })
-    haptics.selection()
-  }
+      type: place.type,
+    });
+    haptics.selection();
+  };
 
   const handleCustomLocation = () => {
     if (!customLocation.name || !customLocation.address) {
-      toast.error('Please enter location name and address')
-      return
+      toast.error('Please enter location name and address');
+      return;
     }
-    
+
     onChange({
       name: customLocation.name,
       address: customLocation.address,
-      type: 'other'
-    })
-    haptics.success()
-    if (onClose) onClose()
-  }
+      type: 'other',
+    });
+    haptics.success();
+    if (onClose) onClose();
+  };
 
   const filteredPlaces = nearbyPlaces.filter(
-    place =>
+    (place) =>
       place.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       place.address.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
 
   return (
     <MotionView
@@ -205,7 +205,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
             />
             <Input
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search for parks, cafes, or places..."
               className="pl-10 pr-12 h-12 text-base"
             />
@@ -222,7 +222,11 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
           </div>
         </div>
 
-        <Tabs value={viewMode} onValueChange={v => setViewMode(v as 'list' | 'map')} className="mb-6">
+        <Tabs
+          value={viewMode}
+          onValueChange={(v) => setViewMode(v as 'list' | 'map')}
+          className="mb-6"
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="list" className="flex items-center gap-2">
               <ListBullets size={18} />
@@ -266,7 +270,10 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                               <div className="flex items-start justify-between gap-2 mb-1">
                                 <h4 className="font-semibold text-base">{place.name}</h4>
                                 {place.rating && (
-                                  <Badge variant="secondary" className="flex items-center gap-1 flex-shrink-0">
+                                  <Badge
+                                    variant="secondary"
+                                    className="flex items-center gap-1 flex-shrink-0"
+                                  >
                                     <Star size={12} weight="fill" className="text-yellow-500" />
                                     {place.rating}
                                   </Badge>
@@ -311,8 +318,8 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                         <Input
                           placeholder="Location name (e.g., My Favorite Park)"
                           value={customLocation.name}
-                          onChange={e =>
-                            setCustomLocation(prev => ({ ...prev, name: e.target.value }))
+                          onChange={(e) =>
+                            setCustomLocation((prev) => ({ ...prev, name: e.target.value }))
                           }
                         />
                       </div>
@@ -320,8 +327,8 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                         <Input
                           placeholder="Address"
                           value={customLocation.address}
-                          onChange={e =>
-                            setCustomLocation(prev => ({ ...prev, address: e.target.value }))
+                          onChange={(e) =>
+                            setCustomLocation((prev) => ({ ...prev, address: e.target.value }))
                           }
                         />
                       </div>
@@ -395,5 +402,5 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
         )}
       </div>
     </MotionView>
-  )
+  );
 }

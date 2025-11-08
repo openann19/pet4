@@ -5,44 +5,43 @@
 
 declare module 'ffmpeg-kit-react-native' {
   export interface FFmpegKitResult {
-    readonly returnCode: number
-    readonly output: string
-    readonly failureStackTrace: string | null
-    readonly cancel: () => void
+    readonly returnCode: number;
+    readonly output: string;
+    readonly failureStackTrace: string | null;
+    readonly cancel: () => void;
   }
 
   export interface FFprobeKitResult {
-    readonly returnCode: number
-    readonly output: string
-    readonly failureStackTrace: string | null
+    readonly returnCode: number;
+    readonly output: string;
+    readonly failureStackTrace: string | null;
   }
 
   export interface MediaInformation {
-    readonly path: string
-    readonly format: string
-    readonly streams: Array<{
-      readonly index: number
-      readonly codec: string
-      readonly width?: number
-      readonly height?: number
-      readonly duration?: number
-      readonly bitrate?: number
-    }>
+    readonly path: string;
+    readonly format: string;
+    readonly streams: {
+      readonly index: number;
+      readonly codec: string;
+      readonly width?: number;
+      readonly height?: number;
+      readonly duration?: number;
+      readonly bitrate?: number;
+    }[];
   }
 
-  export function execute(command: string): Promise<FFmpegKitResult>
+  export function execute(command: string): Promise<FFmpegKitResult>;
   export function executeAsync(
     command: string,
     executeCallback?: (result: FFmpegKitResult) => void
-  ): Promise<FFmpegKitResult>
+  ): Promise<FFmpegKitResult>;
 
-  export function getMediaInformation(path: string): Promise<MediaInformation>
+  export function getMediaInformation(path: string): Promise<MediaInformation>;
   export function getMediaInformationAsync(
     path: string,
     executeCallback?: (result: FFprobeKitResult) => void
-  ): Promise<MediaInformation>
+  ): Promise<MediaInformation>;
 
-  export function cancel(executionId: number): void
-  export function cancelAll(): void
+  export function cancel(executionId: number): void;
+  export function cancelAll(): void;
 }
-

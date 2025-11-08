@@ -14,7 +14,11 @@ import type { Message, Reaction, LocationData } from '../types';
 import { useStorage } from '../hooks/useStorage';
 import { MessageReactions, StickerPicker, VoiceRecorder, LocationShare } from '../components/chat';
 
-export default function ChatScreen({ route }: { route: { params: { matchId: string } } }): React.JSX.Element {
+export default function ChatScreen({
+  route,
+}: {
+  route: { params: { matchId: string } };
+}): React.JSX.Element {
   const { matchId } = route.params;
   const [messages, setMessages] = useStorage<Message[]>(`chat-${matchId}`, []);
   const [inputText, setInputText] = useState('');
@@ -94,15 +98,13 @@ export default function ChatScreen({ route }: { route: { params: { matchId: stri
       if (msg.id === messageId) {
         const reactions = msg.reactions || [];
         const existingReaction = reactions.find((r) => r.emoji === emoji);
-        
+
         if (existingReaction) {
           // Add user to existing reaction
           return {
             ...msg,
             reactions: reactions.map((r) =>
-              r.emoji === emoji
-                ? { ...r, users: [...r.users, currentUserId] }
-                : r
+              r.emoji === emoji ? { ...r, users: [...r.users, currentUserId] } : r
             ),
           };
         } else {
@@ -119,18 +121,19 @@ export default function ChatScreen({ route }: { route: { params: { matchId: stri
     await setMessages(updatedMessages);
   };
 
+  // Helper function to remove reaction from a single message
+  const removeReactionFromMessage = (message: Message, emoji: string, userId: string): Message => {
+    const reactions = (message.reactions || [])
+      .map((r) => (r.emoji === emoji ? { ...r, users: r.users.filter((u) => u !== userId) } : r))
+      .filter((r) => r.users.length > 0);
+
+    return { ...message, reactions };
+  };
+
   const removeReaction = async (messageId: string, emoji: string) => {
     const updatedMessages = messages.map((msg) => {
       if (msg.id === messageId) {
-        const reactions = (msg.reactions || [])
-          .map((r) =>
-            r.emoji === emoji
-              ? { ...r, users: r.users.filter((u) => u !== currentUserId) }
-              : r
-          )
-          .filter((r) => r.users.length > 0);
-        
-        return { ...msg, reactions };
+        return removeReactionFromMessage(msg, emoji, currentUserId);
       }
       return msg;
     });
@@ -140,7 +143,7 @@ export default function ChatScreen({ route }: { route: { params: { matchId: stri
 
   const renderMessage = ({ item }: { item: Message }) => {
     const isMyMessage = item.senderId === currentUserId;
-    
+
     const renderContent = () => {
       switch (item.type) {
         case 'sticker':
@@ -149,9 +152,7 @@ export default function ChatScreen({ route }: { route: { params: { matchId: stri
           return (
             <View style={styles.voiceMessage}>
               <Text style={styles.voiceIcon}>🎤</Text>
-              <Text style={styles.voiceText}>
-                Voice message ({item.voiceDuration}s)
-              </Text>
+              <Text style={styles.voiceText}>Voice message ({item.voiceDuration}s)</Text>
               <Pressable style={styles.playButton}>
                 <Text style={styles.playIcon}>▶️</Text>
               </Pressable>
@@ -174,12 +175,7 @@ export default function ChatScreen({ route }: { route: { params: { matchId: stri
 
     return (
       <View style={styles.messageContainer}>
-        <View
-          style={[
-            styles.messageBubble,
-            isMyMessage ? styles.myMessage : styles.theirMessage,
-          ]}
-        >
+        <View style={[styles.messageBubble, isMyMessage ? styles.myMessage : styles.theirMessage]}>
           {renderContent()}
           <Text style={styles.messageTime}>
             {new Date(item.timestamp).toLocaleTimeString([], {
@@ -188,7 +184,7 @@ export default function ChatScreen({ route }: { route: { params: { matchId: stri
             })}
           </Text>
         </View>
-        
+
         {/* Reactions */}
         <MessageReactions
           messageId={item.id}
@@ -226,22 +222,13 @@ export default function ChatScreen({ route }: { route: { params: { matchId: stri
         <View style={styles.inputContainer}>
           {/* Action Buttons */}
           <View style={styles.actionButtons}>
-            <Pressable
-              style={styles.actionButton}
-              onPress={() => setShowStickerPicker(true)}
-            >
+            <Pressable style={styles.actionButton} onPress={() => setShowStickerPicker(true)}>
               <Text style={styles.actionIcon}>😊</Text>
             </Pressable>
-            <Pressable
-              style={styles.actionButton}
-              onPress={() => setShowLocationShare(true)}
-            >
+            <Pressable style={styles.actionButton} onPress={() => setShowLocationShare(true)}>
               <Text style={styles.actionIcon}>📍</Text>
             </Pressable>
-            <Pressable
-              style={styles.actionButton}
-              onPress={() => setShowVoiceRecorder(true)}
-            >
+            <Pressable style={styles.actionButton} onPress={() => setShowVoiceRecorder(true)}>
               <Text style={styles.actionIcon}>🎤</Text>
             </Pressable>
           </View>

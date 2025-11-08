@@ -1,4 +1,17 @@
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, Easing, type SharedValue } from 'react-native-reanimated'
+/**
+ * Animated Glow Border for React Native
+ * Pulsating glow effect using shadow properties
+ */
+
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
@@ -11,8 +24,8 @@ export interface UseGlowBorderOptions {
 }
 
 export interface UseGlowBorderReturn {
-  progress: SharedValue<number>
   animatedStyle: AnimatedStyle
+  progress: ReturnType<typeof useSharedValue<number>>
 }
 
 export function useGlowBorder(options: UseGlowBorderOptions = {}): UseGlowBorderReturn {
@@ -21,7 +34,7 @@ export function useGlowBorder(options: UseGlowBorderOptions = {}): UseGlowBorder
     intensity = 20,
     speed = 2000,
     enabled = true,
-    pulseSize = 8,
+    pulseSize: _pulseSize = 8,
   } = options
 
   const progress = useSharedValue(0)
@@ -42,21 +55,20 @@ export function useGlowBorder(options: UseGlowBorderOptions = {}): UseGlowBorder
   }, [enabled, speed, progress])
 
   const animatedStyle = useAnimatedStyle(() => {
+    const glowIntensity = interpolate(progress.value, [0, 0.5, 1], [0, intensity, 0])
     const shadowOpacity = interpolate(progress.value, [0, 0.5, 1], [0.3, 0.8, 0.3])
-    const shadowRadius = interpolate(progress.value, [0, 0.5, 1], [pulseSize, pulseSize * 2, pulseSize])
-    const elevationValue = interpolate(progress.value, [0, 0.5, 1], [4, 8, 4])
 
     return {
       shadowColor: color,
       shadowOffset: { width: 0, height: 0 },
-      shadowOpacity,
-      shadowRadius,
-      elevation: elevationValue
+      shadowOpacity: shadowOpacity,
+      shadowRadius: glowIntensity,
+      elevation: glowIntensity,
     }
   }) as AnimatedStyle
 
   return {
-    progress,
     animatedStyle,
+    progress,
   }
 }

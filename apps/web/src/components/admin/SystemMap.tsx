@@ -1,19 +1,19 @@
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  Globe, 
-  Database, 
-  Cpu, 
-  Cloud, 
-  Lock, 
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Globe,
+  Database,
+  Cpu,
+  Cloud,
+  Lock,
   Pulse,
   Stack,
   Network,
   Shield,
-  Lightning
-} from '@phosphor-icons/react'
+  Lightning,
+} from '@phosphor-icons/react';
 
 export default function SystemMap() {
   return (
@@ -39,9 +39,7 @@ export default function SystemMap() {
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <Globe size={32} className="text-primary mb-4" />
               <h3 className="text-xl font-bold mb-2">Client Applications</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Multi-platform user interfaces
-              </p>
+              <p className="text-sm text-muted-foreground mb-4">Multi-platform user interfaces</p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Web App</span>
@@ -61,9 +59,7 @@ export default function SystemMap() {
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <Cpu size={32} className="text-accent mb-4" />
               <h3 className="text-xl font-bold mb-2">Business Logic</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Core service modules
-              </p>
+              <p className="text-sm text-muted-foreground mb-4">Core service modules</p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Matching Engine</span>
@@ -87,14 +83,12 @@ export default function SystemMap() {
             <Card className="p-6 hover:shadow-lg transition-shadow">
               <Database size={32} className="text-secondary mb-4" />
               <h3 className="text-xl font-bold mb-2">Data Layer</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Persistent storage system
-              </p>
+              <p className="text-sm text-muted-foreground mb-4">Persistent storage system</p>
               <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Backend API</span>
-                    <Badge variant="default">Active</Badge>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Backend API</span>
+                  <Badge variant="default">Active</Badge>
+                </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">User Profiles</span>
                   <Badge variant="outline">2.5K records</Badge>
@@ -120,22 +114,30 @@ export default function SystemMap() {
               <div className="p-4 border rounded-lg">
                 <div className="text-sm font-semibold mb-1">spark.llm (GPT)</div>
                 <div className="text-xs text-muted-foreground">AI/ML Processing</div>
-                <Badge variant="default" className="mt-2">Connected</Badge>
+                <Badge variant="default" className="mt-2">
+                  Connected
+                </Badge>
               </div>
               <div className="p-4 border rounded-lg">
                 <div className="text-sm font-semibold mb-1">spark.user()</div>
                 <div className="text-xs text-muted-foreground">User Context</div>
-                <Badge variant="default" className="mt-2">Connected</Badge>
+                <Badge variant="default" className="mt-2">
+                  Connected
+                </Badge>
               </div>
               <div className="p-4 border rounded-lg">
                 <div className="text-sm font-semibold mb-1">Media CDN</div>
                 <div className="text-xs text-muted-foreground">Asset Delivery</div>
-                <Badge variant="default" className="mt-2">Connected</Badge>
+                <Badge variant="default" className="mt-2">
+                  Connected
+                </Badge>
               </div>
               <div className="p-4 border rounded-lg">
                 <div className="text-sm font-semibold mb-1">Analytics</div>
                 <div className="text-xs text-muted-foreground">Usage Tracking</div>
-                <Badge variant="secondary" className="mt-2">Planned</Badge>
+                <Badge variant="secondary" className="mt-2">
+                  Planned
+                </Badge>
               </div>
             </div>
           </Card>
@@ -215,12 +217,12 @@ export default function SystemMap() {
                   </p>
                   <div className="space-y-2">
                     <div className="text-sm">
-                      <strong>Collections:</strong> Users, Pets, Matches, Messages, Stories, 
+                      <strong>Collections:</strong> Users, Pets, Matches, Messages, Stories,
                       Reports, Notifications, Audit Logs
                     </div>
                     <div className="text-sm">
-                      <strong>Access Pattern:</strong> RESTful API endpoints with 
-                      centralized data management
+                      <strong>Access Pattern:</strong> RESTful API endpoints with centralized data
+                      management
                     </div>
                   </div>
                 </div>
@@ -338,17 +340,17 @@ export default function SystemMap() {
                     </div>
                   </div>
                 </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                      <span className="text-sm font-bold">3</span>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-sm">Store in API</div>
-                      <div className="text-xs text-muted-foreground">
-                        Save to backend via REST API endpoint
-                      </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <span className="text-sm font-bold">3</span>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm">Store in API</div>
+                    <div className="text-xs text-muted-foreground">
+                      Save to backend via REST API endpoint
                     </div>
                   </div>
+                </div>
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
                     <span className="text-sm font-bold">4</span>
@@ -383,9 +385,7 @@ export default function SystemMap() {
                   </div>
                   <div>
                     <div className="font-semibold text-sm">Media Upload</div>
-                    <div className="text-xs text-muted-foreground">
-                      Photo/video uploaded to CDN
-                    </div>
+                    <div className="text-xs text-muted-foreground">Photo/video uploaded to CDN</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -444,9 +444,7 @@ export default function SystemMap() {
                   </div>
                   <div>
                     <div className="font-semibold text-sm">Queue Entry</div>
-                    <div className="text-xs text-muted-foreground">
-                      Added to moderation queue
-                    </div>
+                    <div className="text-xs text-muted-foreground">Added to moderation queue</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -597,29 +595,29 @@ export default function SystemMap() {
               <div className="p-4 border rounded-lg">
                 <h4 className="font-semibold mb-2">Authentication</h4>
                 <p className="text-sm text-muted-foreground">
-                  WebSocket connects with valid JWT access token. On 401, attempts 
-                  token refresh once before disconnecting.
+                  WebSocket connects with valid JWT access token. On 401, attempts token refresh
+                  once before disconnecting.
                 </p>
               </div>
               <div className="p-4 border rounded-lg">
                 <h4 className="font-semibold mb-2">Offline Queue</h4>
                 <p className="text-sm text-muted-foreground">
-                  Events sent while offline are queued locally and flushed on 
-                  reconnect with exponential backoff.
+                  Events sent while offline are queued locally and flushed on reconnect with
+                  exponential backoff.
                 </p>
               </div>
               <div className="p-4 border rounded-lg">
                 <h4 className="font-semibold mb-2">Event Acknowledgment</h4>
                 <p className="text-sm text-muted-foreground">
-                  All events expect acknowledgment within 5 seconds. Unacknowledged 
-                  events are retried with timeout.
+                  All events expect acknowledgment within 5 seconds. Unacknowledged events are
+                  retried with timeout.
                 </p>
               </div>
               <div className="p-4 border rounded-lg">
                 <h4 className="font-semibold mb-2">Heartbeat</h4>
                 <p className="text-sm text-muted-foreground">
-                  Client sends ping every 30 seconds. If no pong received in 10 
-                  seconds, connection is considered dead.
+                  Client sends ping every 30 seconds. If no pong received in 10 seconds, connection
+                  is considered dead.
                 </p>
               </div>
             </div>
@@ -726,20 +724,20 @@ export default function SystemMap() {
               <h3 className="text-xl font-bold mb-4">Data Protection</h3>
               <div className="space-y-3">
                 <div className="text-sm">
-                  <strong>Encryption:</strong> All data encrypted at rest and in transit 
-                  using industry-standard protocols
+                  <strong>Encryption:</strong> All data encrypted at rest and in transit using
+                  industry-standard protocols
                 </div>
                 <div className="text-sm">
-                  <strong>Retention:</strong> Messages retained 90 days for inactive 
-                  conversations, stories expire after 24 hours
+                  <strong>Retention:</strong> Messages retained 90 days for inactive conversations,
+                  stories expire after 24 hours
                 </div>
                 <div className="text-sm">
-                  <strong>Deletion:</strong> Users can permanently delete accounts with 
-                  30-day grace period
+                  <strong>Deletion:</strong> Users can permanently delete accounts with 30-day grace
+                  period
                 </div>
                 <div className="text-sm">
-                  <strong>Export:</strong> Users can export all their data in JSON format 
-                  at any time
+                  <strong>Export:</strong> Users can export all their data in JSON format at any
+                  time
                 </div>
               </div>
             </Card>
@@ -761,5 +759,5 @@ export default function SystemMap() {
         </div>
       </Card>
     </div>
-  )
+  );
 }

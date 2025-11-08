@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import type { ViewStyle, StyleProp } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -12,7 +13,7 @@ interface LoadingSkeletonProps {
   width?: number | string;
   height?: number;
   borderRadius?: number;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
@@ -42,7 +43,7 @@ export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
     <Animated.View
       style={[
         styles.skeleton,
-        { width, height, borderRadius },
+        { width, height, borderRadius } as unknown as ViewStyle,
         animatedStyle,
         style,
       ]}

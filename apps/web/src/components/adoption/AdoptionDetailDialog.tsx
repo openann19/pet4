@@ -1,14 +1,11 @@
-import { useState } from 'react'
-import { motion, Presence } from '@petspark/motion'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
+import { useState } from 'react';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
+import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import {
   MapPin,
   CheckCircle,
@@ -23,91 +20,115 @@ import {
   UsersThree,
   Lightning,
   CaretLeft,
-  CaretRight
-} from '@phosphor-icons/react'
-import type { AdoptionProfile } from '@/lib/adoption-types'
-import { useApp } from '@/contexts/AppContext'
-import { haptics } from '@/lib/haptics'
-import { AdoptionApplicationDialog } from './AdoptionApplicationDialog'
+  CaretRight,
+} from '@phosphor-icons/react';
+import type { AdoptionProfile } from '@/lib/adoption-types';
+import { useApp } from '@/contexts/AppContext';
+import { haptics } from '@/lib/haptics';
+import { AdoptionApplicationDialog } from './AdoptionApplicationDialog';
 
 interface AdoptionDetailDialogProps {
-  profile: AdoptionProfile | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  profile: AdoptionProfile | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDetailDialogProps) {
-  const { t } = useApp()
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
-  const [showApplicationDialog, setShowApplicationDialog] = useState(false)
+export function AdoptionDetailDialog({
+  profile,
+  open,
+  onOpenChange,
+}: AdoptionDetailDialogProps): JSX.Element | null {
+  const { t } = useApp();
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
 
-  if (!profile) return null
+  if (!profile) return null;
 
-  const photos = profile.photos && profile.photos.length > 0 ? profile.photos : [profile.petPhoto]
+  const photos = profile.photos && profile.photos.length > 0 ? profile.photos : [profile.petPhoto];
 
-  const nextPhoto = () => {
-    haptics.trigger('selection')
-    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length)
-  }
+  const photoPresence = useAnimatePresence({
+    isVisible: true,
+    enterTransition: 'fade',
+    exitTransition: 'fade',
+  });
 
-  const prevPhoto = () => {
-    haptics.trigger('selection')
-    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)
-  }
+  const prevButtonHover = useHoverTap({ hoverScale: 1.1, tapScale: 0.95 });
+  const nextButtonHover = useHoverTap({ hoverScale: 1.1, tapScale: 0.95 });
 
-  const handleApply = () => {
-    haptics.trigger('success')
-    setShowApplicationDialog(true)
-  }
+  const nextPhoto = (): void => {
+    haptics.trigger('selection');
+    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length);
+  };
+
+  const prevPhoto = (): void => {
+    haptics.trigger('selection');
+    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
+  };
+
+  const handleApply = (): void => {
+    haptics.trigger('success');
+    setShowApplicationDialog(true);
+  };
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
           <div className="relative h-80 bg-muted">
-            <Presence mode="wait">
-              <motion.img
-                key={currentPhotoIndex}
-                src={photos[currentPhotoIndex]}
-                alt={`${profile.petName} - Photo ${currentPhotoIndex + 1}`}
-                className="w-full h-full object-cover"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              />
-            </Presence>
+            {photoPresence.shouldRender && (
+              <AnimatedView key={currentPhotoIndex} style={photoPresence.animatedStyle}>
+                <img
+                  src={photos[currentPhotoIndex]}
+                  alt={`${profile.petName} - Photo ${currentPhotoIndex + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </AnimatedView>
+            )}
 
             {photos.length > 1 && (
               <>
-                <MotionView as="button"
-                  whileHover={{ scale: 1.1, x: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={prevPhoto}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg"
+                <AnimatedView
+                  style={prevButtonHover.animatedStyle}
+                  onMouseEnter={prevButtonHover.handleMouseEnter}
+                  onMouseLeave={prevButtonHover.handleMouseLeave}
+                  onClick={() => {
+                    prevButtonHover.handlePress();
+                    prevPhoto();
+                  }}
                 >
-                  <CaretLeft size={20} weight="bold" />
-                </MotionView>
-                <MotionView as="button"
-                  whileHover={{ scale: 1.1, x: 2 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={nextPhoto}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg"
+                  <button
+                    type="button"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg"
+                  >
+                    <CaretLeft size={20} weight="bold" />
+                  </button>
+                </AnimatedView>
+                <AnimatedView
+                  style={nextButtonHover.animatedStyle}
+                  onMouseEnter={nextButtonHover.handleMouseEnter}
+                  onMouseLeave={nextButtonHover.handleMouseLeave}
+                  onClick={() => {
+                    nextButtonHover.handlePress();
+                    nextPhoto();
+                  }}
                 >
-                  <CaretRight size={20} weight="bold" />
-                </MotionView>
+                  <button
+                    type="button"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg"
+                  >
+                    <CaretRight size={20} weight="bold" />
+                  </button>
+                </AnimatedView>
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                   {photos.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => {
-                        haptics.trigger('selection')
-                        setCurrentPhotoIndex(index)
+                        haptics.trigger('selection');
+                        setCurrentPhotoIndex(index);
                       }}
                       className={`w-2 h-2 rounded-full transition-all ${
-                        index === currentPhotoIndex
-                          ? 'bg-white w-6'
-                          : 'bg-white/50'
+                        index === currentPhotoIndex ? 'bg-white w-6' : 'bg-white/50'
                       }`}
                     />
                   ))}
@@ -122,18 +143,14 @@ export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDe
             <DialogHeader>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <DialogTitle className="text-3xl font-bold mb-2">
-                    {profile.petName}
-                  </DialogTitle>
+                  <DialogTitle className="text-3xl font-bold mb-2">{profile.petName}</DialogTitle>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <MapPin size={16} weight="fill" />
                     <span>{profile.location}</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-primary">
-                    ${profile.adoptionFee}
-                  </div>
+                  <div className="text-2xl font-bold text-primary">${profile.adoptionFee}</div>
                   <div className="text-sm text-muted-foreground">
                     {t.adoption?.adoptionFee || 'Adoption Fee'}
                   </div>
@@ -145,7 +162,10 @@ export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDe
               <div className="text-center p-3 rounded-lg bg-muted/50">
                 <Calendar size={24} className="mx-auto mb-1 text-primary" />
                 <div className="text-sm font-semibold">
-                  {profile.age} {profile.age === 1 ? t.common?.year_singular || 'year' : t.common?.years || 'years'}
+                  {profile.age}{' '}
+                  {profile.age === 1
+                    ? t.common?.year_singular || 'year'
+                    : t.common?.years || 'years'}
                 </div>
                 <div className="text-xs text-muted-foreground">{t.adoption?.age || 'Age'}</div>
               </div>
@@ -157,17 +177,23 @@ export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDe
               <div className="text-center p-3 rounded-lg bg-muted/50">
                 <Lightning size={24} className="mx-auto mb-1 text-secondary" />
                 <div className="text-sm font-semibold capitalize">{profile.energyLevel}</div>
-                <div className="text-xs text-muted-foreground">{t.adoption?.energy || 'Energy'}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t.adoption?.energy || 'Energy'}
+                </div>
               </div>
               <div className="text-center p-3 rounded-lg bg-muted/50">
                 <Heart size={24} className="mx-auto mb-1 text-destructive" weight="fill" />
                 <div className="text-sm font-semibold capitalize">{profile.gender}</div>
-                <div className="text-xs text-muted-foreground">{t.adoption?.gender || 'Gender'}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t.adoption?.gender || 'Gender'}
+                </div>
               </div>
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-3">{t.adoption?.about || 'About'} {profile.petName}</h3>
+              <h3 className="text-lg font-semibold mb-3">
+                {t.adoption?.about || 'About'} {profile.petName}
+              </h3>
               <p className="text-foreground leading-relaxed">{profile.description}</p>
             </div>
 
@@ -177,11 +203,17 @@ export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDe
               <h3 className="text-lg font-semibold mb-3">{t.adoption?.details || 'Details'}</h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    profile.vaccinated ? 'bg-green-500/10' : 'bg-gray-500/10'
-                  }`}>
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      profile.vaccinated ? 'bg-green-500/10' : 'bg-gray-500/10'
+                    }`}
+                  >
                     {profile.vaccinated ? (
-                      <CheckCircle size={20} className="text-green-600 dark:text-green-400" weight="fill" />
+                      <CheckCircle
+                        size={20}
+                        className="text-green-600 dark:text-green-400"
+                        weight="fill"
+                      />
                     ) : (
                       <XCircle size={20} className="text-gray-500" />
                     )}
@@ -195,17 +227,25 @@ export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDe
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    profile.spayedNeutered ? 'bg-green-500/10' : 'bg-gray-500/10'
-                  }`}>
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      profile.spayedNeutered ? 'bg-green-500/10' : 'bg-gray-500/10'
+                    }`}
+                  >
                     {profile.spayedNeutered ? (
-                      <CheckCircle size={20} className="text-green-600 dark:text-green-400" weight="fill" />
+                      <CheckCircle
+                        size={20}
+                        className="text-green-600 dark:text-green-400"
+                        weight="fill"
+                      />
                     ) : (
                       <XCircle size={20} className="text-gray-500" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <div className="font-medium">{t.adoption?.spayedNeutered || 'Spayed/Neutered'}</div>
+                    <div className="font-medium">
+                      {t.adoption?.spayedNeutered || 'Spayed/Neutered'}
+                    </div>
                     <div className="text-sm text-muted-foreground">
                       {profile.spayedNeutered ? t.adoption?.yes || 'Yes' : t.adoption?.no || 'No'}
                     </div>
@@ -213,13 +253,24 @@ export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDe
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    profile.goodWithKids ? 'bg-green-500/10' : 'bg-gray-500/10'
-                  }`}>
-                    <UsersThree size={20} className={profile.goodWithKids ? 'text-green-600 dark:text-green-400' : 'text-gray-500'} />
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      profile.goodWithKids ? 'bg-green-500/10' : 'bg-gray-500/10'
+                    }`}
+                  >
+                    <UsersThree
+                      size={20}
+                      className={
+                        profile.goodWithKids
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-gray-500'
+                      }
+                    />
                   </div>
                   <div className="flex-1">
-                    <div className="font-medium">{t.adoption?.goodWithKids || 'Good with Kids'}</div>
+                    <div className="font-medium">
+                      {t.adoption?.goodWithKids || 'Good with Kids'}
+                    </div>
                     <div className="text-sm text-muted-foreground">
                       {profile.goodWithKids ? t.adoption?.yes || 'Yes' : t.adoption?.no || 'No'}
                     </div>
@@ -227,13 +278,24 @@ export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDe
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    profile.goodWithPets ? 'bg-green-500/10' : 'bg-gray-500/10'
-                  }`}>
-                    <PawPrint size={20} className={profile.goodWithPets ? 'text-green-600 dark:text-green-400' : 'text-gray-500'} />
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      profile.goodWithPets ? 'bg-green-500/10' : 'bg-gray-500/10'
+                    }`}
+                  >
+                    <PawPrint
+                      size={20}
+                      className={
+                        profile.goodWithPets
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-gray-500'
+                      }
+                    />
                   </div>
                   <div className="flex-1">
-                    <div className="font-medium">{t.adoption?.goodWithPets || 'Good with Pets'}</div>
+                    <div className="font-medium">
+                      {t.adoption?.goodWithPets || 'Good with Pets'}
+                    </div>
                     <div className="text-sm text-muted-foreground">
                       {profile.goodWithPets ? t.adoption?.yes || 'Yes' : t.adoption?.no || 'No'}
                     </div>
@@ -242,21 +304,25 @@ export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDe
               </div>
             </div>
 
-            {profile.personality && Array.isArray(profile.personality) && profile.personality.length > 0 && (
-              <>
-                <Separator />
-                <div>
-                  <h3 className="text-lg font-semibold mb-3">{t.adoption?.personality || 'Personality'}</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {profile.personality.map((trait, index) => (
-                      <Badge key={index} variant="secondary" className="text-sm">
-                        {trait}
-                      </Badge>
-                    ))}
+            {profile.personality &&
+              Array.isArray(profile.personality) &&
+              profile.personality.length > 0 && (
+                <>
+                  <Separator />
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">
+                      {t.adoption?.personality || 'Personality'}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.personality.map((trait, index) => (
+                        <Badge key={index} variant="secondary" className="text-sm">
+                          {trait}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
 
             {profile.specialNeeds && (
               <>
@@ -329,10 +395,10 @@ export function AdoptionDetailDialog({ profile, open, onOpenChange }: AdoptionDe
         open={showApplicationDialog}
         onOpenChange={setShowApplicationDialog}
         onSubmitSuccess={() => {
-          setShowApplicationDialog(false)
-          onOpenChange(false)
+          setShowApplicationDialog(false);
+          onOpenChange(false);
         }}
       />
     </>
-  )
+  );
 }

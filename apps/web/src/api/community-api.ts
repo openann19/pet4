@@ -1,80 +1,80 @@
-import type { PostStatus } from '@/core/domain/community'
-import { canReceiveComments, isValidPostStatusTransition } from '@/core/domain/community'
-import { APIClient } from '@/lib/api-client'
+import type { PostStatus } from '@/core/domain/community';
+import { canReceiveComments, isValidPostStatusTransition } from '@/core/domain/community';
+import { APIClient } from '@/lib/api-client';
 import type {
-    Comment,
-    CreateCommentData,
-    CreatePostData,
-    Post,
-    PostFilters,
-    ReactionEmoji,
-    ReportData
-} from '@/lib/community-types'
-import type { Report } from '@/lib/contracts'
-import { ENDPOINTS } from '@/lib/endpoints'
-import { createLogger } from '@/lib/logger'
-import { enforceRateLimit } from '@/lib/rate-limiting'
+  Comment,
+  CreateCommentData,
+  CreatePostData,
+  Post,
+  PostFilters,
+  ReactionEmoji,
+  ReportData,
+} from '@/lib/community-types';
+import type { Report } from '@/lib/contracts';
+import { ENDPOINTS } from '@/lib/endpoints';
+import { createLogger } from '@/lib/logger';
+import { enforceRateLimit } from '@/lib/rate-limiting';
 
-const logger = createLogger('CommunityAPI')
+const logger = createLogger('CommunityAPI');
 
 export interface CreatePostRequest extends CreatePostData {
-  authorId: string
-  authorName: string
-  authorAvatar?: string
-  status?: PostStatus // Optional - defaults to pending_review on backend
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
+  status?: PostStatus; // Optional - defaults to pending_review on backend
 }
 
 export interface CreatePostResponse {
-  post: Post
+  post: Post;
 }
 
 export interface QueryFeedResponse {
-  posts: Post[]
-  nextCursor?: string
-  total: number
+  posts: Post[];
+  nextCursor?: string;
+  total: number;
 }
 
 export interface ToggleReactionRequest {
-  userId: string
-  userName: string
-  userAvatar?: string
-  emoji: ReactionEmoji
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  emoji: ReactionEmoji;
 }
 
 export interface ToggleReactionResponse {
-  added: boolean
-  reactionsCount: number
+  added: boolean;
+  reactionsCount: number;
 }
 
 export interface CreateCommentRequest extends CreateCommentData {
-  authorId: string
-  authorName: string
-  authorAvatar?: string
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
 }
 
 export interface CreateCommentResponse {
-  comment: Comment
+  comment: Comment;
 }
 
 export interface GetCommentsResponse {
-  comments: Comment[]
+  comments: Comment[];
 }
 
 export interface ReportContentRequest extends ReportData {
-  reporterId: string
+  reporterId: string;
 }
 
 export interface AppealModerationRequest {
-  resourceId: string
-  resourceType: 'post' | 'comment' | 'user'
-  userId: string
-  userName: string
-  appealText: string
-  reportId?: string
+  resourceId: string;
+  resourceType: 'post' | 'comment' | 'user';
+  userId: string;
+  userName: string;
+  appealText: string;
+  reportId?: string;
 }
 
 export interface GetReportsResponse {
-  reports: Report[]
+  reports: Report[];
 }
 
 /**
@@ -87,16 +87,15 @@ export interface GetReportsResponse {
  * POST /community/posts/:id/report
  */
 export class CommunityAPI {
-
   /**
    * POST /community/posts
    * Create a new post - all posts require manual admin approval
    */
   async createPost(
     data: CreatePostData & {
-      authorId: string
-      authorName: string
-      authorAvatar?: string
+      authorId: string;
+      authorName: string;
+      authorAvatar?: string;
     }
   ): Promise<Post> {
     try {
@@ -105,33 +104,33 @@ export class CommunityAPI {
         authorId: data.authorId,
         authorName: data.authorName,
         ...(data.authorAvatar ? { authorAvatar: data.authorAvatar } : {}),
-        status: 'pending_review' as PostStatus // All posts require manual approval
-      }
+        status: 'pending_review' as PostStatus, // All posts require manual approval
+      };
 
       const response = await APIClient.post<CreatePostResponse>(
         ENDPOINTS.COMMUNITY.CREATE_POST,
         request
-      )
+      );
 
-      const post = response.data.post
+      const post = response.data.post;
 
       // Ensure post is set to pending_review for manual approval
       if (post.status !== 'pending_review') {
-        logger.info('Post created, awaiting admin approval', { 
+        logger.info('Post created, awaiting admin approval', {
           postId: post.id,
-          currentStatus: post.status
-        })
+          currentStatus: post.status,
+        });
       } else {
-        logger.info('Post created and queued for admin approval', { 
-          postId: post.id
-        })
+        logger.info('Post created and queued for admin approval', {
+          postId: post.id,
+        });
       }
 
-      return post
+      return post;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to create post', err, { authorId: data.authorId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to create post', err, { authorId: data.authorId });
+      throw err;
     }
   }
 
@@ -144,63 +143,66 @@ export class CommunityAPI {
     userId?: string
   ): Promise<{ posts: Post[]; nextCursor?: string; total: number }> {
     try {
-      const queryParams: Record<string, unknown> = {}
-      
+      const queryParams: Record<string, unknown> = {};
+
       if (filters?.kind && filters.kind.length > 0) {
-        queryParams['kind'] = filters.kind
+        queryParams['kind'] = filters.kind;
       }
 
       if (filters?.authorId) {
-        queryParams['authorId'] = filters.authorId
+        queryParams['authorId'] = filters.authorId;
       }
 
       if (filters?.tags && filters.tags.length > 0) {
-        queryParams['tags'] = filters.tags
+        queryParams['tags'] = filters.tags;
       }
 
       if (filters?.location) {
-        queryParams['near'] = `${filters.location.lat},${filters.location.lon}`
-        queryParams['radius'] = filters.location.radiusKm
+        queryParams['near'] = `${filters.location.lat},${filters.location.lon}`;
+        queryParams['radius'] = filters.location.radiusKm;
       }
 
       if (filters?.visibility && filters.visibility.length > 0) {
-        queryParams['visibility'] = filters.visibility
+        queryParams['visibility'] = filters.visibility;
       } else if (userId) {
-        queryParams['visibility'] = ['public', 'matches']
+        queryParams['visibility'] = ['public', 'matches'];
       }
 
       if (filters?.featured) {
-        queryParams['featured'] = filters.featured
+        queryParams['featured'] = filters.featured;
       }
 
       if (filters?.sortBy) {
-        queryParams['sortBy'] = filters.sortBy
+        queryParams['sortBy'] = filters.sortBy;
       }
 
       if (filters?.cursor) {
-        queryParams['cursor'] = filters.cursor
+        queryParams['cursor'] = filters.cursor;
       }
 
       if (filters?.limit) {
-        queryParams['limit'] = filters.limit
+        queryParams['limit'] = filters.limit;
       }
 
       if (userId) {
-        queryParams['userId'] = userId
+        queryParams['userId'] = userId;
       }
 
-      const url = ENDPOINTS.COMMUNITY.POSTS + (Object.keys(queryParams).length > 0 
-        ? '?' + new URLSearchParams(
-            Object.entries(queryParams).map(([k, v]) => [k, String(v)])
-          ).toString()
-        : '')
+      const url =
+        ENDPOINTS.COMMUNITY.POSTS +
+        (Object.keys(queryParams).length > 0
+          ? '?' +
+            new URLSearchParams(
+              Object.entries(queryParams).map(([k, v]) => [k, String(v)])
+            ).toString()
+          : '');
 
-      const response = await APIClient.get<QueryFeedResponse>(url)
-      return response.data
+      const response = await APIClient.get<QueryFeedResponse>(url);
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to query feed', err, { filters })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to query feed', err, { filters });
+      throw err;
     }
   }
 
@@ -209,31 +211,29 @@ export class CommunityAPI {
    */
   async getPostById(id: string): Promise<Post | null> {
     try {
-      const response = await APIClient.get<{ post: Post }>(
-        ENDPOINTS.COMMUNITY.POST(id)
-      )
-      
-      const post = response.data.post
-      
+      const response = await APIClient.get<{ post: Post }>(ENDPOINTS.COMMUNITY.POST(id));
+
+      const post = response.data.post;
+
       // Increment view count (fire and forget)
       try {
-        await APIClient.post(`${ENDPOINTS.COMMUNITY.POST(id)}/view`)
+        await APIClient.post(`${ENDPOINTS.COMMUNITY.POST(id)}/view`);
       } catch (error) {
-        logger.warn('Failed to increment view count', { 
-          postId: id, 
-          error: error instanceof Error ? error : new Error(String(error)) 
-        })
+        logger.warn('Failed to increment view count', {
+          postId: id,
+          error: error instanceof Error ? error : new Error(String(error)),
+        });
       }
-      
-      return post
+
+      return post;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+      const err = error instanceof Error ? error : new Error(String(error));
       // If 404, return null instead of throwing
       if (err.message.includes('404') || err.message.includes('not found')) {
-        return null
+        return null;
       }
-      logger.error('Failed to get post by ID', err, { id })
-      throw err
+      logger.error('Failed to get post by ID', err, { id });
+      throw err;
     }
   }
 
@@ -242,12 +242,12 @@ export class CommunityAPI {
    */
   async getAllPosts(): Promise<Post[]> {
     try {
-      const response = await this.queryFeed({ limit: 1000 })
-      return response.posts
+      const response = await this.queryFeed({ limit: 1000 });
+      return response.posts;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get all posts', err)
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get all posts', err);
+      throw err;
     }
   }
 
@@ -258,12 +258,12 @@ export class CommunityAPI {
     try {
       const response = await APIClient.get<{ fingerprints: string[] }>(
         '/community/posts/fingerprints'
-      )
-      return response.data.fingerprints
+      );
+      return response.data.fingerprints;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get content fingerprints', err)
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get content fingerprints', err);
+      throw err;
     }
   }
 
@@ -283,19 +283,19 @@ export class CommunityAPI {
         userId,
         userName,
         ...(userAvatar !== undefined && { userAvatar }),
-        emoji
-      }
+        emoji,
+      };
 
       const response = await APIClient.post<ToggleReactionResponse>(
         ENDPOINTS.COMMUNITY.LIKE_POST(postId),
         request
-      )
+      );
 
-      return response.data
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to toggle reaction', err, { postId, userId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to toggle reaction', err, { postId, userId });
+      throw err;
     }
   }
 
@@ -305,45 +305,45 @@ export class CommunityAPI {
    */
   async createComment(
     data: CreateCommentData & {
-      authorId: string
-      authorName: string
-      authorAvatar?: string
+      authorId: string;
+      authorName: string;
+      authorAvatar?: string;
     }
   ): Promise<Comment> {
     try {
       // Verify post exists and can receive comments
-      const post = await this.getPostById(data.postId)
+      const post = await this.getPostById(data.postId);
       if (!post) {
-        throw new Error('Post not found')
+        throw new Error('Post not found');
       }
       if (!canReceiveComments(post.status)) {
-        throw new Error('Cannot comment on inactive post')
+        throw new Error('Cannot comment on inactive post');
       }
 
       // Rate limit check (max 50 comments per hour)
       await enforceRateLimit(data.authorId, {
         maxRequests: 50,
         windowMs: 60 * 60 * 1000, // 1 hour
-        action: 'comment'
-      })
+        action: 'comment',
+      });
 
       const request: CreateCommentRequest = {
         ...data,
         authorId: data.authorId,
         authorName: data.authorName,
-        ...(data.authorAvatar ? { authorAvatar: data.authorAvatar } : {})
-      }
+        ...(data.authorAvatar ? { authorAvatar: data.authorAvatar } : {}),
+      };
 
       const response = await APIClient.post<CreateCommentResponse>(
         ENDPOINTS.COMMUNITY.COMMENT(data.postId),
         request
-      )
+      );
 
-      return response.data.comment
+      return response.data.comment;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to create comment', err, { postId: data.postId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to create comment', err, { postId: data.postId });
+      throw err;
     }
   }
 
@@ -354,12 +354,12 @@ export class CommunityAPI {
     try {
       const response = await APIClient.get<GetCommentsResponse>(
         ENDPOINTS.COMMUNITY.COMMENT(postId)
-      )
-      return response.data.comments
+      );
+      return response.data.comments;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get post comments', err, { postId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get post comments', err, { postId });
+      throw err;
     }
   }
 
@@ -367,30 +367,25 @@ export class CommunityAPI {
    * POST /community/posts/:id/report
    * Report a post or comment
    */
-  async reportContent(
-    data: ReportData & { reporterId: string }
-  ): Promise<void> {
+  async reportContent(data: ReportData & { reporterId: string }): Promise<void> {
     try {
       const request: ReportContentRequest = {
         ...data,
-        reporterId: data.reporterId
-      }
+        reporterId: data.reporterId,
+      };
 
-      await APIClient.post(
-        `${ENDPOINTS.COMMUNITY.POST(data.resourceId)}/report`,
-        request
-      )
-      
+      await APIClient.post(`${ENDPOINTS.COMMUNITY.POST(data.resourceId)}/report`, request);
+
       logger.info('Content reported', {
         resourceType: data.resourceType,
         resourceId: data.resourceId,
         reason: data.reason,
-        reporterId: data.reporterId
-      })
+        reporterId: data.reporterId,
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to report content', err, { resourceId: data.resourceId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to report content', err, { resourceId: data.resourceId });
+      throw err;
     }
   }
 
@@ -413,61 +408,62 @@ export class CommunityAPI {
         userId,
         userName,
         appealText,
-        ...(reportId !== undefined && { reportId })
-      }
+        ...(reportId !== undefined && { reportId }),
+      };
 
-      await APIClient.post('/community/appeals', request)
+      await APIClient.post('/community/appeals', request);
 
       logger.info('Appeal submitted', {
         resourceType,
         resourceId,
         userId,
-        reportId
-      })
+        reportId,
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to submit appeal', err, { resourceId, userId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to submit appeal', err, { resourceId, userId });
+      throw err;
     }
   }
-  
+
   /**
    * Get reports for moderation queue
    */
-  async getReportsForModeration(
-    filters?: {
-      status?: Report['status'][]
-      entityType?: Report['reportedEntityType'][]
-      limit?: number
-    }
-  ): Promise<Report[]> {
+  async getReportsForModeration(filters?: {
+    status?: Report['status'][];
+    entityType?: Report['reportedEntityType'][];
+    limit?: number;
+  }): Promise<Report[]> {
     try {
-      const queryParams: Record<string, unknown> = {}
-      
+      const queryParams: Record<string, unknown> = {};
+
       if (filters?.status && filters.status.length > 0) {
-        queryParams['status'] = filters.status
+        queryParams['status'] = filters.status;
       }
-      
+
       if (filters?.entityType && filters.entityType.length > 0) {
-        queryParams['entityType'] = filters.entityType
+        queryParams['entityType'] = filters.entityType;
       }
 
       if (filters?.limit) {
-        queryParams['limit'] = filters.limit
+        queryParams['limit'] = filters.limit;
       }
 
-      const url = '/community/reports' + (Object.keys(queryParams).length > 0 
-        ? '?' + new URLSearchParams(
-            Object.entries(queryParams).map(([k, v]) => [k, String(v)])
-          ).toString()
-        : '')
+      const url =
+        '/community/reports' +
+        (Object.keys(queryParams).length > 0
+          ? '?' +
+            new URLSearchParams(
+              Object.entries(queryParams).map(([k, v]) => [k, String(v)])
+            ).toString()
+          : '');
 
-      const response = await APIClient.get<GetReportsResponse>(url)
-      return response.data.reports
+      const response = await APIClient.get<GetReportsResponse>(url);
+      return response.data.reports;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get reports for moderation', err, { filters })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get reports for moderation', err, { filters });
+      throw err;
     }
   }
 
@@ -476,16 +472,16 @@ export class CommunityAPI {
    */
   async getPendingPosts(): Promise<Post[]> {
     try {
-      const response = await this.queryFeed({ 
+      const response = await this.queryFeed({
         // Query with status filter (need to add status param)
-        limit: 1000 
-      })
+        limit: 1000,
+      });
       // Filter pending posts client-side if backend doesn't support status filter
-      return response.posts.filter(p => p.status === 'pending_review')
+      return response.posts.filter((p) => p.status === 'pending_review');
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get pending posts', err)
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get pending posts', err);
+      throw err;
     }
   }
 
@@ -500,51 +496,47 @@ export class CommunityAPI {
   ): Promise<Post> {
     try {
       // First get the post to validate transition
-      const currentPost = await this.getPostById(postId)
+      const currentPost = await this.getPostById(postId);
       if (!currentPost) {
-        throw new Error('Post not found')
+        throw new Error('Post not found');
       }
 
       // Validate status transition using domain logic
       if (!isValidPostStatusTransition(currentPost.status, status)) {
-        throw new Error(`Invalid status transition from ${currentPost.status} to ${status}`)
+        throw new Error(`Invalid status transition from ${currentPost.status} to ${status}`);
       }
 
-      const response = await APIClient.patch<{ post: Post }>(
-        ENDPOINTS.COMMUNITY.POST(postId),
-        {
-          status,
-          adminId,
-          reason
-        }
-      )
+      const response = await APIClient.patch<{ post: Post }>(ENDPOINTS.COMMUNITY.POST(postId), {
+        status,
+        adminId,
+        reason,
+      });
 
-      return response.data.post
+      return response.data.post;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to update post status', err, { postId, status, adminId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to update post status', err, { postId, status, adminId });
+      throw err;
     }
   }
 }
 
 // Singleton instance with HMR-friendly pattern
-let communityAPIInstance: CommunityAPI | null = null
+let communityAPIInstance: CommunityAPI | null = null;
 
 export function getCommunityAPI(): CommunityAPI {
   if (!communityAPIInstance) {
-    communityAPIInstance = new CommunityAPI()
+    communityAPIInstance = new CommunityAPI();
   }
-  return communityAPIInstance
+  return communityAPIInstance;
 }
 
 // Export instance for backward compatibility (HMR-safe)
-export const communityAPI = getCommunityAPI()
+export const communityAPI = getCommunityAPI();
 
 // HMR support: reset instance on hot module replacement
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
-    communityAPIInstance = null
-  })
+    communityAPIInstance = null;
+  });
 }
-

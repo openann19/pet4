@@ -1,23 +1,18 @@
 /**
  * ChatList Component
- * 
+ *
  * Premium chat list component with:
  * - Layout Animations for message insertions
  * - Scroll-to-bottom FAB with magnetic effect
  * - Typing indicator with liquid dots
  * - Optimized FlashList rendering
- * 
+ *
  * Location: apps/mobile/src/components/chat/ChatList.tsx
  */
 
 import { FlashList } from '@shopify/flash-list'
 import React, { useCallback, useRef, useState } from 'react'
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Animated, {
   FadeIn,
@@ -33,15 +28,17 @@ import { MessageBubble, type Message } from './MessageBubble'
 /**
  * Typing dot component
  */
-function TypingDot({ dot }: { dot: { yOffset: SharedValue<number>; opacity: SharedValue<number> } }): React.ReactElement {
+function TypingDot({
+  dot,
+}: {
+  dot: { yOffset: SharedValue<number>; opacity: SharedValue<number> }
+}): React.ReactElement {
   const dotStyle = useAnimatedStyle(() => ({
     width: 6,
     height: 6,
     borderRadius: 3,
     backgroundColor: '#666666',
-    transform: [
-      { translateY: dot.yOffset.value },
-    ],
+    transform: [{ translateY: dot.yOffset.value }],
     opacity: dot.opacity.value,
   }))
 
@@ -80,7 +77,13 @@ export function ChatList({
 
   // Handle scroll (for FAB visibility logic)
   const handleScroll = useCallback(
-    (event: { nativeEvent: { contentOffset: { y: number }; contentSize: { height: number }; layoutMeasurement: { height: number } } }) => {
+    (event: {
+      nativeEvent: {
+        contentOffset: { y: number }
+        contentSize: { height: number }
+        layoutMeasurement: { height: number }
+      }
+    }) => {
       const offsetY = event.nativeEvent.contentOffset.y
       const contentHeight = event.nativeEvent.contentSize.height
       const visibleHeight = event.nativeEvent.layoutMeasurement.height
@@ -208,11 +211,7 @@ export function ChatList({
           entering={FadeIn.duration(200)}
           exiting={FadeOut.duration(150)}
         >
-          <TouchableOpacity
-            style={styles.fab}
-            onPress={handleScrollToBottom}
-            activeOpacity={0.8}
-          >
+          <TouchableOpacity style={styles.fab} onPress={handleScrollToBottom} activeOpacity={0.8}>
             <Text style={styles.fabIcon}>↓</Text>
             {badgeCount > 0 && (
               <Animated.View style={[styles.badge, badgeAnimatedStyle]}>
@@ -300,4 +299,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 })
-

@@ -1,23 +1,23 @@
-import { APIClient } from '@/lib/api-client'
-import { ENDPOINTS } from '@/lib/endpoints'
-import { createLogger } from '@/lib/logger'
+import { APIClient } from '@/lib/api-client';
+import { ENDPOINTS } from '@/lib/endpoints';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('BlockService')
+const logger = createLogger('BlockService');
 
 export interface BlockRecord {
-  id: string
-  blockerPetId: string
-  blockedPetId: string
-  blockedUserId: string
-  reason?: 'inappropriate' | 'spam' | 'harassment' | 'safety' | 'other'
-  createdAt: string
-  expiresAt?: string
+  id: string;
+  blockerPetId: string;
+  blockedPetId: string;
+  blockedUserId: string;
+  reason?: 'inappropriate' | 'spam' | 'harassment' | 'safety' | 'other';
+  createdAt: string;
+  expiresAt?: string;
 }
 
 export interface BlockStatus {
-  isBlocked: boolean
-  blockRecord?: BlockRecord
-  canUnblock: boolean
+  isBlocked: boolean;
+  blockRecord?: BlockRecord;
+  canUnblock: boolean;
 }
 
 class BlockServiceImpl {
@@ -30,28 +30,25 @@ class BlockServiceImpl {
     reason?: BlockRecord['reason']
   ): Promise<BlockRecord> {
     try {
-      const response = await APIClient.post<BlockRecord>(
-        ENDPOINTS.BLOCKING.BLOCK,
-        {
-          blockerPetId,
-          blockedPetId,
-          reason
-        }
-      )
+      const response = await APIClient.post<BlockRecord>(ENDPOINTS.BLOCKING.BLOCK, {
+        blockerPetId,
+        blockedPetId,
+        reason,
+      });
 
       logger.info('Pet blocked successfully', {
         blockerPetId,
         blockedPetId,
-        reason
-      })
+        reason,
+      });
 
-      return response.data
+      return response.data;
     } catch (error) {
       logger.error('Failed to block pet', error, {
         blockerPetId,
-        blockedPetId
-      })
-      throw error
+        blockedPetId,
+      });
+      throw error;
     }
   }
 
@@ -64,104 +61,88 @@ class BlockServiceImpl {
     reason?: BlockRecord['reason']
   ): Promise<BlockRecord[]> {
     try {
-      const response = await APIClient.post<BlockRecord[]>(
-        ENDPOINTS.BLOCKING.BLOCK_USER,
-        {
-          blockerUserId,
-          blockedUserId,
-          reason
-        }
-      )
+      const response = await APIClient.post<BlockRecord[]>(ENDPOINTS.BLOCKING.BLOCK_USER, {
+        blockerUserId,
+        blockedUserId,
+        reason,
+      });
 
       logger.info('User blocked successfully', {
         blockerUserId,
         blockedUserId,
-        reason
-      })
+        reason,
+      });
 
-      return response.data
+      return response.data;
     } catch (error) {
       logger.error('Failed to block user', error, {
         blockerUserId,
-        blockedUserId
-      })
-      throw error
+        blockedUserId,
+      });
+      throw error;
     }
   }
 
   /**
    * Unblock a pet
    */
-  async unblockPet(
-    blockerPetId: string,
-    blockedPetId: string
-  ): Promise<void> {
+  async unblockPet(blockerPetId: string, blockedPetId: string): Promise<void> {
     try {
-      await APIClient.delete(
-        ENDPOINTS.BLOCKING.UNBLOCK(blockerPetId, blockedPetId)
-      )
+      await APIClient.delete(ENDPOINTS.BLOCKING.UNBLOCK(blockerPetId, blockedPetId));
 
       logger.info('Pet unblocked successfully', {
         blockerPetId,
-        blockedPetId
-      })
+        blockedPetId,
+      });
     } catch (error) {
       logger.error('Failed to unblock pet', error, {
         blockerPetId,
-        blockedPetId
-      })
-      throw error
+        blockedPetId,
+      });
+      throw error;
     }
   }
 
   /**
    * Unblock a user (unblocks all their pets)
    */
-  async unblockUser(
-    blockerUserId: string,
-    blockedUserId: string
-  ): Promise<void> {
+  async unblockUser(blockerUserId: string, blockedUserId: string): Promise<void> {
     try {
-      await APIClient.delete(
-        ENDPOINTS.BLOCKING.UNBLOCK_USER(blockerUserId, blockedUserId)
-      )
+      await APIClient.delete(ENDPOINTS.BLOCKING.UNBLOCK_USER(blockerUserId, blockedUserId));
 
       logger.info('User unblocked successfully', {
         blockerUserId,
-        blockedUserId
-      })
+        blockedUserId,
+      });
     } catch (error) {
       logger.error('Failed to unblock user', error, {
         blockerUserId,
-        blockedUserId
-      })
-      throw error
+        blockedUserId,
+      });
+      throw error;
     }
   }
 
   /**
    * Check if a pet is blocked by another pet
    */
-  async checkBlockStatus(
-    blockerPetId: string,
-    blockedPetId: string
-  ): Promise<BlockStatus> {
+  async checkBlockStatus(blockerPetId: string, blockedPetId: string): Promise<BlockStatus> {
     try {
       const response = await APIClient.get<BlockStatus>(
         ENDPOINTS.BLOCKING.STATUS(blockerPetId, blockedPetId)
-      )
+      );
 
-      return response.data
+      return response.data;
     } catch (error) {
       logger.error('Failed to check block status', error, {
         blockerPetId,
-        blockedPetId
-      })
+        blockedPetId,
+      });
       // Return unblocked status on error
       return {
         isBlocked: false,
-        canUnblock: false
-      }
+        canUnblock: false,
+      };
     }
   }
 
@@ -170,14 +151,12 @@ class BlockServiceImpl {
    */
   async getBlockedPets(petId: string): Promise<BlockRecord[]> {
     try {
-      const response = await APIClient.get<BlockRecord[]>(
-        ENDPOINTS.BLOCKING.BLOCKED_PETS(petId)
-      )
+      const response = await APIClient.get<BlockRecord[]>(ENDPOINTS.BLOCKING.BLOCKED_PETS(petId));
 
-      return response.data
+      return response.data;
     } catch (error) {
-      logger.error('Failed to get blocked pets', error, { petId })
-      return []
+      logger.error('Failed to get blocked pets', error, { petId });
+      return [];
     }
   }
 
@@ -186,14 +165,12 @@ class BlockServiceImpl {
    */
   async getBlockedUsers(userId: string): Promise<BlockRecord[]> {
     try {
-      const response = await APIClient.get<BlockRecord[]>(
-        ENDPOINTS.BLOCKING.BLOCKED_USERS(userId)
-      )
+      const response = await APIClient.get<BlockRecord[]>(ENDPOINTS.BLOCKING.BLOCKED_USERS(userId));
 
-      return response.data
+      return response.data;
     } catch (error) {
-      logger.error('Failed to get blocked users', error, { userId })
-      return []
+      logger.error('Failed to get blocked users', error, { userId });
+      return [];
     }
   }
 
@@ -201,10 +178,10 @@ class BlockServiceImpl {
    * Check if two pets can match (not blocked)
    */
   async canMatch(pet1Id: string, pet2Id: string): Promise<boolean> {
-    const status1 = await this.checkBlockStatus(pet1Id, pet2Id)
-    const status2 = await this.checkBlockStatus(pet2Id, pet1Id)
+    const status1 = await this.checkBlockStatus(pet1Id, pet2Id);
+    const status2 = await this.checkBlockStatus(pet2Id, pet1Id);
 
-    return !status1.isBlocked && !status2.isBlocked
+    return !status1.isBlocked && !status2.isBlocked;
   }
 
   /**
@@ -223,21 +200,20 @@ class BlockServiceImpl {
         reportedPetId,
         reason,
         description,
-        type: 'pet'
-      })
+        type: 'pet',
+      });
 
       // Then block
-      return this.blockPet(reporterPetId, reportedPetId, reason)
+      return this.blockPet(reporterPetId, reportedPetId, reason);
     } catch (error) {
       logger.error('Failed to report and block', error, {
         reporterPetId,
         reportedPetId,
-        reason
-      })
-      throw error
+        reason,
+      });
+      throw error;
     }
   }
 }
 
-export const blockService = new BlockServiceImpl()
-
+export const blockService = new BlockServiceImpl();

@@ -9,5 +9,5 @@ export const colors = {
   accent: '#F25C54',
   success: '#4CAF50',
   warning: '#FFB020',
-  danger: '#F44336'
+  danger: '#F44336',
 } as const

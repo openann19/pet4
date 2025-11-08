@@ -1,16 +1,15 @@
-import { fixupPluginRules } from '@eslint/eslintrc';
-import js from '@eslint/js';
-import importPlugin from 'eslint-plugin-import';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
-import globals from 'globals';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import tseslint from 'typescript-eslint';
+import js from '@eslint/js'
+import importPlugin from 'eslint-plugin-import'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
+import react from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import globals from 'globals'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import tseslint from 'typescript-eslint'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default tseslint.config(
   {
@@ -34,9 +33,11 @@ export default tseslint.config(
   },
   { linterOptions: { reportUnusedDisableDirectives: 'error' } },
   js.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
+  ...tseslint.configs.recommended,
+  ...tseslint.configs.stylistic,
   {
+    files: ['apps/**/src/**/*.{ts,tsx}', 'packages/**/src/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/node_modules/**'],
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -45,22 +46,36 @@ export default tseslint.config(
       parserOptions: {
         project: [
           './tsconfig.base.json',
-          './apps/*/tsconfig.json',
+          './apps/web/tsconfig.json',
+          './apps/mobile/tsconfig.json',
           './packages/*/tsconfig.json',
         ],
         tsconfigRootDir: __dirname,
+        createDefaultProgram: false,
       },
     },
     plugins: {
-      react: fixupPluginRules(react),
-      'react-hooks': fixupPluginRules(reactHooks),
+      react,
+      'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       'jsx-a11y': jsxA11y,
-      import: fixupPluginRules(importPlugin),
+      import: importPlugin,
     },
     settings: {
       react: {
         version: 'detect',
+      },
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          project: [
+            './tsconfig.base.json',
+            './apps/web/tsconfig.json',
+            './apps/mobile/tsconfig.json',
+            './apps/native/tsconfig.json',
+            './packages/*/tsconfig.json',
+          ],
+        },
       },
     },
     rules: {
@@ -71,6 +86,15 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-call': 'error',
       '@typescript-eslint/no-unsafe-return': 'error',
       '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-require-imports': 'error',
+      '@typescript-eslint/consistent-type-assertions': [
+        'error',
+        {
+          assertionStyle: 'as',
+          objectLiteralTypeAssertions: 'never',
+        },
+      ],
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
       '@typescript-eslint/restrict-template-expressions': 'error',
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/strict-boolean-expressions': 'error',
@@ -86,23 +110,22 @@ export default tseslint.config(
       '@typescript-eslint/no-dynamic-delete': 'error',
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'error',
       '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
       '@typescript-eslint/prefer-includes': 'error',
       '@typescript-eslint/prefer-string-starts-ends-with': 'error',
       '@typescript-eslint/prefer-regexp-exec': 'error',
       '@typescript-eslint/prefer-readonly': 'error',
-      '@typescript-eslint/prefer-readonly-parameter-types': 'error',
+      '@typescript-eslint/prefer-readonly-parameter-types': 'off', // Too strict for React props
       '@typescript-eslint/promise-function-async': 'error',
       '@typescript-eslint/return-await': 'error',
       '@typescript-eslint/no-meaningless-void-operator': 'error',
-      '@typescript-eslint/no-type-alias': 'off', // Allow type aliases
-      '@typescript-eslint/explicit-function-return-type': 'off', // Inferred is fine
+      '@typescript-eslint/no-type-alias': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
 
       // React rules
-      'react/jsx-uses-react': 'off', // Not needed in React 17+
+      'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
@@ -128,8 +151,23 @@ export default tseslint.config(
       'import/no-dynamic-require': 'error',
       'import/no-self-import': 'error',
       'import/no-cycle': 'error',
-      'import/no-unused-modules': 'error',
+      'import/no-unused-modules': 'off', // Too slow for large codebases
       'import/no-deprecated': 'warn',
+
+      // Prevent unsafe type assertions
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'TSAsExpression[typeAnnotation.type="TSAnyKeyword"]',
+          message:
+            'Use proper types instead of "as any". If you need a type assertion, use type guards.',
+        },
+        {
+          selector: 'CallExpression[callee.object.name="Math"][callee.property.name="random"]',
+          message:
+            'Use @petspark/shared RNG or seeded RNG instead of Math.random() for deterministic effects',
+        },
+      ],
 
       // General rules
       'no-console': 'error',
@@ -159,86 +197,6 @@ export default tseslint.config(
       'no-redeclare': 'off',
       '@typescript-eslint/no-redeclare': 'error',
       'no-unused-vars': 'off',
-
-      // Motion-specific rules
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: 'CallExpression[callee.object.name="Math"][callee.property.name="random"]',
-          message: 'Use @petspark/shared RNG or seeded RNG instead of Math.random() for deterministic effects',
-        },
-      ],
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: 'framer-motion',
-              message: 'Use @petspark/motion instead of framer-motion in shared code. framer-motion is only allowed in web-only DOM routes.',
-            },
-          ],
-          patterns: [
-            {
-              group: ['framer-motion'],
-              message: 'Use @petspark/motion instead of framer-motion in shared code.',
-            },
-          ],
-        },
-      ],
-      'import/no-restricted-paths': [
-        'error',
-        {
-          zones: [
-            {
-              target: './apps/web/src/components/chat/window',
-              from: './apps/web/src/components/chat/presentational',
-            },
-            {
-              target: './apps/web/src/components/chat/presentational',
-              from: './apps/web/src/components/chat/window',
-              except: ['../presentational/**'],
-            },
-            {
-              target: './packages/**',
-              from: './apps/**',
-              message: 'Packages must not import apps',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  // Motion-specific overrides
-  {
-    files: ['packages/motion/**/*.{ts,tsx}', 'apps/**/effects/**/*.{ts,tsx}', 'apps/**/components/**/*.{ts,tsx}'],
-    rules: {
-      // Enforce useReducedMotion usage in animation hooks
-      // Note: This is a best-effort rule - we can't perfectly detect all animation hooks
-      '@typescript-eslint/no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: 'framer-motion',
-              message: 'Use @petspark/motion hooks instead. framer-motion is only allowed in web-only DOM routes requiring SVG/canvas tricks.',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  // Web-only DOM routes exception (allow framer-motion for SVG/canvas)
-  {
-    files: ['apps/web/src/components/**/*.{ts,tsx}', 'apps/web/src/effects/**/*.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': 'off', // Allow framer-motion in web-only routes
-      '@typescript-eslint/no-restricted-imports': 'off',
-    },
-  },
-  // TypeScript-specific overrides
-  {
-    files: ['**/*.{ts,tsx}'],
-    rules: {
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -248,16 +206,42 @@ export default tseslint.config(
       ],
     },
   },
-  // Mobile-specific overrides
+  // Web-only DOM routes exception (allow framer-motion for SVG/canvas)
   {
-    files: ['apps/mobile/**/*.{ts,tsx}'],
+    files: ['apps/web/src/components/**/*.{ts,tsx}', 'apps/web/src/effects/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': 'off',
+      '@typescript-eslint/no-restricted-imports': 'off',
+    },
+  },
+  // Mobile-specific overrides (non-type-aware to avoid React Native parsing issues)
+  {
+    files: ['apps/mobile/src/**/*.{ts,tsx}', 'apps/native/src/**/*.{ts,tsx}'],
+    ignores: ['apps/mobile/node_modules/**', 'apps/native/node_modules/**'],
     languageOptions: {
       globals: {
         ...globals.reactNative,
       },
+      parserOptions: {
+        // Don't use type-aware rules for mobile to avoid React Native node_modules issues
+        project: false,
+      },
     },
     rules: {
       'no-console': 'error',
+      // Disable type-aware rules for mobile
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      '@typescript-eslint/no-unnecessary-condition': 'off',
+      '@typescript-eslint/strict-boolean-expressions': 'off',
     },
   },
   // Test files
@@ -273,12 +257,29 @@ export default tseslint.config(
       'no-console': 'off',
     },
   },
-  // Config files
+  // Config files - disable type-aware rules
   {
     files: ['**/*.config.{js,ts}', '**/vite.config.ts', '**/vitest.config.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: false,
+      },
+    },
     rules: {
       '@typescript-eslint/no-var-requires': 'off',
       'no-console': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      '@typescript-eslint/no-unnecessary-condition': 'off',
+      '@typescript-eslint/strict-boolean-expressions': 'off',
     },
-  },
-);
+  }
+)

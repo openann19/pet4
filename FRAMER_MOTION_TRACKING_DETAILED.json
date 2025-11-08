@@ -155,18 +155,14 @@
       "priority": "medium",
       "complexity": "low",
       "estimatedHours": 2,
-      "files": [
-        "apps/web/src/components/lost-found/LostAlertCard.tsx"
-      ]
+      "files": ["apps/web/src/components/lost-found/LostAlertCard.tsx"]
     },
     "streaming": {
       "count": 1,
       "priority": "low",
       "complexity": "high",
       "estimatedHours": 5,
-      "files": [
-        "apps/web/src/components/streaming/LiveStreamRoom.tsx"
-      ]
+      "files": ["apps/web/src/components/streaming/LiveStreamRoom.tsx"]
     },
     "views": {
       "count": 8,
@@ -189,9 +185,7 @@
       "priority": "medium",
       "complexity": "low-medium",
       "estimatedHours": 2,
-      "files": [
-        "apps/web/src/components/notifications/NotificationCenter.tsx"
-      ]
+      "files": ["apps/web/src/components/notifications/NotificationCenter.tsx"]
     },
     "ui": {
       "count": 2,
@@ -417,4 +411,3 @@
   },
   "totalEstimatedHours": 355
 }
-

@@ -1,11 +1,13 @@
 # DiscoverView Migration Guide
 
 ## Overview
+
 DiscoverView.tsx has ~20 framer-motion usages that need to be migrated to React Reanimated.
 
 ## Migration Patterns
 
 ### 1. AnimatePresence → Presence
+
 ```typescript
 // Before
 <AnimatePresence>
@@ -19,6 +21,7 @@ DiscoverView.tsx has ~20 framer-motion usages that need to be migrated to React 
 ```
 
 ### 2. motion.div with initial/animate → useMotionDiv + AnimatedView
+
 ```typescript
 // Before
 <motion.div
@@ -42,10 +45,11 @@ const badgeMotion = useMotionDiv({
 ```
 
 ### 3. motion.div with whileHover/whileTap → useInteractiveMotion
+
 ```typescript
 // Before
-<motion.div 
-  whileHover={{ scale: 1.05, y: -2 }} 
+<motion.div
+  whileHover={{ scale: 1.05, y: -2 }}
   whileTap={{ scale: 0.95 }}
 >
   Content
@@ -69,6 +73,7 @@ const interactive = useInteractiveMotion({
 ```
 
 ### 4. motion.div badges → AnimatedBadge
+
 ```typescript
 // Before
 <motion.div
@@ -86,6 +91,7 @@ const interactive = useInteractiveMotion({
 ```
 
 ### 5. motion.img with whileHover → useHoverLift
+
 ```typescript
 // Before
 <motion.img
@@ -106,6 +112,7 @@ const hoverLift = useHoverLift({ scale: 1.1 })
 ```
 
 ### 6. motion.div with repeating animations → useRepeatingAnimation
+
 ```typescript
 // Before
 <motion.div
@@ -130,24 +137,30 @@ const rotateAnim = useRepeatingAnimation({
 ## Specific Migrations Needed
 
 ### Line ~600: Badge animations
+
 - Replace motion.div badges with AnimatedBadge component ✅ (Already done)
 
 ### Line ~765-830: Card image and buttons
+
 - motion.img → img with useHoverLift
 - motion.div with initial/animate → useMotionDiv
 - motion.button → button with useInteractiveMotion
 
 ### Line ~850-860: Distance badge
+
 - motion.div → AnimatedBadge
 
 ### Line ~915-960: Action buttons
+
 - motion.div with whileHover/whileTap → useInteractiveMotion
 - motion.div with repeating animations → useRepeatingAnimation
 
 ### Line ~962: AnimatePresence
+
 - Replace with Presence component
 
 ### Line ~967: Dialog motion.div
+
 - motion.div → AnimatedView with useMotionDiv
 
 ## Implementation Steps
@@ -173,4 +186,3 @@ const rotateAnim = useRepeatingAnimation({
 - [ ] No console errors
 - [ ] 60fps maintained
 - [ ] Reduced motion respected
-

@@ -1,31 +1,31 @@
-'use client'
+'use client';
 
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation'
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
-import { useSendWarp } from '@/effects/chat/bubbles/use-send-warp'
-import { useReceiveAirCushion } from '@/effects/chat/bubbles/use-receive-air-cushion'
-import { useAnimatedStyle } from 'react-native-reanimated'
-import { MapPin, Translate as TranslateIcon } from '@phosphor-icons/react'
-import MessageReactions from '../MessageReactions'
-import MessageAttachments from '../MessageAttachments'
-import { WebBubbleWrapper } from '../WebBubbleWrapper'
-import { PresenceAvatar } from '../PresenceAvatar'
-import { VoiceWaveform } from '../VoiceWaveform'
-import { Button } from '@/components/ui/button'
-import { REACTION_EMOJIS } from '@/lib/chat-types'
-import type { ChatMessage } from '@/lib/chat-types'
-import { formatChatTime } from '@/lib/chat-utils'
-import { Badge } from '@/components/ui/badge'
-import { useEffect } from 'react'
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
+import { useSendWarp } from '@/effects/chat/bubbles/use-send-warp';
+import { useReceiveAirCushion } from '@/effects/chat/bubbles/use-receive-air-cushion';
+import { useAnimatedStyle } from 'react-native-reanimated';
+import { MapPin, Translate as TranslateIcon } from '@phosphor-icons/react';
+import MessageReactions from '../MessageReactions';
+import MessageAttachments from '../MessageAttachments';
+import { WebBubbleWrapper } from '../WebBubbleWrapper';
+import { PresenceAvatar } from '../PresenceAvatar';
+import { VoiceWaveform } from '../VoiceWaveform';
+import { Button } from '@/components/ui/button';
+import { REACTION_EMOJIS } from '@/lib/chat-types';
+import type { ChatMessage } from '@/lib/chat-types';
+import { formatChatTime } from '@/lib/chat-utils';
+import { Badge } from '@/components/ui/badge';
+import { useEffect } from 'react';
 
 export interface MessageItemProps {
-  message: ChatMessage
-  isCurrentUser: boolean
-  currentUserId: string
-  delay: number
-  onReaction: (messageId: string, emoji: string) => void
-  onTranslate: (messageId: string) => void
+  message: ChatMessage;
+  isCurrentUser: boolean;
+  currentUserId: string;
+  delay: number;
+  onReaction: (messageId: string, emoji: string) => void;
+  onTranslate: (messageId: string) => void;
 }
 
 export function MessageItem({
@@ -36,26 +36,26 @@ export function MessageItem({
   onReaction,
   onTranslate,
 }: MessageItemProps): JSX.Element {
-  const hover = useHoverAnimation({ scale: 1.02 })
-  const sendWarp = useSendWarp({ enabled: isCurrentUser && message.status === 'sent' })
+  const hover = useHoverAnimation({ scale: 1.02 });
+  const sendWarp = useSendWarp({ enabled: isCurrentUser && message.status === 'sent' });
   const receiveAir = useReceiveAirCushion({
     enabled: !isCurrentUser,
     isNew: delay < 100,
     isMention: false,
-  })
-  const entry = useEntryAnimation({ initialY: 20, initialScale: 0.95, delay })
+  });
+  const entry = useEntryAnimation({ initialY: 20, initialScale: 0.95, delay });
 
   useEffect(() => {
     if (isCurrentUser && message.status === 'sent') {
-      sendWarp.trigger()
+      sendWarp.trigger();
     }
-  }, [isCurrentUser, message.status, sendWarp])
+  }, [isCurrentUser, message.status, sendWarp]);
 
   const combined = useAnimatedStyle(() => {
-    const a = entry.animatedStyle
-    const b = isCurrentUser ? sendWarp.animatedStyle : receiveAir.animatedStyle
-    return { ...a, ...b }
-  })
+    const a = entry.animatedStyle;
+    const b = isCurrentUser ? sendWarp.animatedStyle : receiveAir.animatedStyle;
+    return { ...a, ...b };
+  });
 
   return (
     <AnimatedView
@@ -152,7 +152,7 @@ export function MessageItem({
               reactions={Array.isArray(message.reactions) ? message.reactions : []}
               availableReactions={REACTION_EMOJIS}
               onReact={(emoji) => {
-                onReaction(message.id, emoji)
+                onReaction(message.id, emoji);
               }}
               currentUserId={currentUserId}
             />
@@ -163,7 +163,7 @@ export function MessageItem({
                 variant="ghost"
                 className="absolute -bottom-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity text-xs"
                 onClick={() => {
-                  onTranslate(message.id)
+                  onTranslate(message.id);
                 }}
               >
                 <TranslateIcon size={14} />
@@ -182,6 +182,5 @@ export function MessageItem({
         </span>
       </div>
     </AnimatedView>
-  )
+  );
 }
-

@@ -1,13 +1,13 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
-import { useStorage } from '@/hooks/useStorage'
-import { adoptionService } from '@/lib/adoption-service'
-import type { AdoptionApplication, AdoptionProfile } from '@/lib/adoption-types'
-import { createLogger } from '@/lib/logger'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { useStorage } from '@/hooks/use-storage';
+import { adoptionService } from '@/lib/adoption-service';
+import type { AdoptionApplication, AdoptionProfile } from '@/lib/adoption-types';
+import { createLogger } from '@/lib/logger';
 import {
   ArrowLeft,
   CheckCircle,
@@ -18,38 +18,38 @@ import {
   PawPrint,
   Phone,
   Warning,
-  XCircle
-} from '@phosphor-icons/react'
-import { motion } from '@petspark/motion'
-import { useEffect, useState } from 'react'
+  XCircle,
+} from '@phosphor-icons/react';
+import { motion } from '@petspark/motion';
+import { useEffect, useState } from 'react';
 
-const logger = createLogger('MyApplicationsView')
+const logger = createLogger('MyApplicationsView');
 
 interface MyApplicationsViewProps {
-  onBack: () => void
+  onBack: () => void;
 }
 
 interface ApplicationWithProfile extends AdoptionApplication {
-  profile?: AdoptionProfile
+  profile?: AdoptionProfile;
 }
 
 export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
-  const [applications, setApplications] = useState<ApplicationWithProfile[]>([])
-  const [profiles] = useStorage<AdoptionProfile[]>('adoption-profiles', [])
-  const [isLoading, setIsLoading] = useState(true)
+  const [applications, setApplications] = useState<ApplicationWithProfile[]>([]);
+  const [profiles] = useStorage<AdoptionProfile[]>('adoption-profiles', []);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadApplications()
-  }, [])
+    loadApplications();
+  }, []);
 
   const loadApplications = async () => {
     try {
-      setIsLoading(true)
-      const user = await spark.user()
-      const userApps = await adoptionService.getUserApplications(user.id)
-      
-      const appsWithProfiles: ApplicationWithProfile[] = userApps.map(app => {
-        const profile = (profiles || []).find(p => p._id === app.adoptionProfileId);
+      setIsLoading(true);
+      const user = await spark.user();
+      const userApps = await adoptionService.getUserApplications(user.id);
+
+      const appsWithProfiles: ApplicationWithProfile[] = userApps.map((app) => {
+        const profile = (profiles || []).find((p) => p._id === app.adoptionProfileId);
         const result: ApplicationWithProfile = {
           ...app,
         };
@@ -57,56 +57,61 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
           result.profile = profile;
         }
         return result;
-      })
-      
-      setApplications(appsWithProfiles.sort((a, b) => 
-        new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
-      ))
+      });
+
+      setApplications(
+        appsWithProfiles.sort(
+          (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+        )
+      );
     } catch (error) {
-      logger.error('Failed to load applications', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        'Failed to load applications',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const getStatusColor = (status: AdoptionApplication['status']) => {
     switch (status) {
       case 'pending':
-        return 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+        return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
       case 'approved':
-        return 'bg-green-500/10 text-green-600 border-green-500/20'
+        return 'bg-green-500/10 text-green-600 border-green-500/20';
       case 'rejected':
-        return 'bg-red-500/10 text-red-600 border-red-500/20'
+        return 'bg-red-500/10 text-red-600 border-red-500/20';
       case 'withdrawn':
-        return 'bg-gray-500/10 text-gray-600 border-gray-500/20'
+        return 'bg-gray-500/10 text-gray-600 border-gray-500/20';
     }
-  }
+  };
 
   const getStatusIcon = (status: AdoptionApplication['status']) => {
     switch (status) {
       case 'pending':
-        return <Clock size={16} weight="fill" />
+        return <Clock size={16} weight="fill" />;
       case 'approved':
-        return <CheckCircle size={16} weight="fill" />
+        return <CheckCircle size={16} weight="fill" />;
       case 'rejected':
-        return <XCircle size={16} weight="fill" />
+        return <XCircle size={16} weight="fill" />;
       case 'withdrawn':
-        return <Warning size={16} weight="fill" />
+        return <Warning size={16} weight="fill" />;
     }
-  }
+  };
 
   const getStatusMessage = (status: AdoptionApplication['status']) => {
     switch (status) {
       case 'pending':
-        return 'Your application is being reviewed by the shelter. You should hear back soon.'
+        return 'Your application is being reviewed by the shelter. You should hear back soon.';
       case 'approved':
-        return 'Congratulations! Your application has been approved. The shelter will contact you to arrange the adoption.'
+        return 'Congratulations! Your application has been approved. The shelter will contact you to arrange the adoption.';
       case 'rejected':
-        return 'Unfortunately, your application was not approved at this time. Please consider applying for other pets.'
+        return 'Unfortunately, your application was not approved at this time. Please consider applying for other pets.';
       case 'withdrawn':
-        return 'This application has been withdrawn.'
+        return 'This application has been withdrawn.';
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -122,7 +127,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
           <p className="mt-4 text-muted-foreground">Loading your applications...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -143,7 +148,8 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
             <ClipboardText size={64} className="text-muted-foreground mb-4" weight="thin" />
             <h3 className="text-xl font-semibold mb-2">No Applications Yet</h3>
             <p className="text-muted-foreground text-center max-w-md">
-              You haven't submitted any adoption applications yet. Browse available pets and apply to adopt your perfect companion!
+              You haven't submitted any adoption applications yet. Browse available pets and apply
+              to adopt your perfect companion!
             </p>
             <Button onClick={onBack} className="mt-6">
               Browse Pets
@@ -160,24 +166,29 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className={`overflow-hidden ${
-                  application.status === 'approved' 
-                    ? 'border-green-500/30 shadow-lg shadow-green-500/5'
-                    : application.status === 'pending'
-                    ? 'border-amber-500/30 shadow-lg shadow-amber-500/5'
-                    : ''
-                }`}>
+                <Card
+                  className={`overflow-hidden ${
+                    application.status === 'approved'
+                      ? 'border-green-500/30 shadow-lg shadow-green-500/5'
+                      : application.status === 'pending'
+                        ? 'border-amber-500/30 shadow-lg shadow-amber-500/5'
+                        : ''
+                  }`}
+                >
                   <CardHeader>
                     <div className="flex items-start gap-4">
                       <Avatar className="h-20 w-20 border-2 border-primary/20">
                         {application.profile?.petPhoto ? (
-                          <AvatarImage src={application.profile.petPhoto} alt={application.profile.petName} />
+                          <AvatarImage
+                            src={application.profile.petPhoto}
+                            alt={application.profile.petName}
+                          />
                         ) : null}
                         <AvatarFallback>
                           <PawPrint size={32} weight="fill" />
                         </AvatarFallback>
                       </Avatar>
-                      
+
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-4 mb-2">
                           <div>
@@ -193,12 +204,13 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
                             <span className="ml-1 capitalize">{application.status}</span>
                           </Badge>
                         </div>
-                        
+
                         <p className="text-sm text-muted-foreground">
-                          Submitted on {new Date(application.submittedAt).toLocaleDateString('en-US', {
+                          Submitted on{' '}
+                          {new Date(application.submittedAt).toLocaleDateString('en-US', {
                             month: 'long',
                             day: 'numeric',
-                            year: 'numeric'
+                            year: 'numeric',
                           })}
                         </p>
                       </div>
@@ -206,15 +218,17 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
                   </CardHeader>
 
                   <CardContent className="space-y-4">
-                    <div className={`p-4 rounded-lg border ${
-                      application.status === 'approved' 
-                        ? 'bg-green-500/5 border-green-500/20'
-                        : application.status === 'pending'
-                        ? 'bg-amber-500/5 border-amber-500/20'
-                        : application.status === 'rejected'
-                        ? 'bg-red-500/5 border-red-500/20'
-                        : 'bg-muted/30 border-border'
-                    }`}>
+                    <div
+                      className={`p-4 rounded-lg border ${
+                        application.status === 'approved'
+                          ? 'bg-green-500/5 border-green-500/20'
+                          : application.status === 'pending'
+                            ? 'bg-amber-500/5 border-amber-500/20'
+                            : application.status === 'rejected'
+                              ? 'bg-red-500/5 border-red-500/20'
+                              : 'bg-muted/30 border-border'
+                      }`}
+                    >
                       <p className="text-sm font-medium mb-1">Status Update</p>
                       <p className="text-sm text-muted-foreground">
                         {getStatusMessage(application.status)}
@@ -241,12 +255,16 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
                         <div className="space-y-1 text-sm">
                           <div className="flex items-center gap-2">
                             <EnvelopeSimple size={14} className="text-muted-foreground" />
-                            <span className="text-muted-foreground">{application.applicantEmail}</span>
+                            <span className="text-muted-foreground">
+                              {application.applicantEmail}
+                            </span>
                           </div>
                           {application.applicantPhone && (
                             <div className="flex items-center gap-2">
                               <Phone size={14} className="text-muted-foreground" />
-                              <span className="text-muted-foreground">{application.applicantPhone}</span>
+                              <span className="text-muted-foreground">
+                                {application.applicantPhone}
+                              </span>
                             </div>
                           )}
                           <div className="flex items-center gap-2">
@@ -268,13 +286,17 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
                           {application.profile?.contactEmail && (
                             <div className="flex items-center gap-2">
                               <EnvelopeSimple size={14} className="text-muted-foreground" />
-                              <span className="text-muted-foreground">{application.profile.contactEmail}</span>
+                              <span className="text-muted-foreground">
+                                {application.profile.contactEmail}
+                              </span>
                             </div>
                           )}
                           {application.profile?.contactPhone && (
                             <div className="flex items-center gap-2">
                               <Phone size={14} className="text-muted-foreground" />
-                              <span className="text-muted-foreground">{application.profile.contactPhone}</span>
+                              <span className="text-muted-foreground">
+                                {application.profile.contactPhone}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -288,5 +310,5 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
         </ScrollArea>
       )}
     </div>
-  )
+  );
 }

@@ -1,31 +1,31 @@
-'use client'
+'use client';
 
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useUIConfig } from '@/hooks/useUIConfig'
-import { useEffect } from 'react'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from '@/hooks/useUIConfig';
+import { useEffect } from 'react';
 import {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
-  withTiming
-} from 'react-native-reanimated'
+  withTiming,
+} from 'react-native-reanimated';
 
 export interface UseDynamicBackgroundMeshOptions {
-  enabled?: boolean
-  speed?: number
+  enabled?: boolean;
+  speed?: number;
 }
 
 export interface UseDynamicBackgroundMeshReturn {
-  animatedStyle: AnimatedStyle
-  meshProgress: ReturnType<typeof useSharedValue<number>>
+  animatedStyle: AnimatedStyle;
+  meshProgress: ReturnType<typeof useSharedValue<number>>;
 }
 
 /**
  * Dynamic background mesh effect
- * 
+ *
  * Creates an animated mesh/particle background
- * 
+ *
  * @example
  * ```tsx
  * const { animatedStyle } = useDynamicBackgroundMesh({ speed: 0.5 })
@@ -35,43 +35,42 @@ export interface UseDynamicBackgroundMeshReturn {
 export function useDynamicBackgroundMesh(
   options: UseDynamicBackgroundMeshOptions = {}
 ): UseDynamicBackgroundMeshReturn {
-  const { enabled = true, speed = 1 } = options
-  const { theme } = useUIConfig()
+  const { enabled = true, speed = 1 } = options;
+  const { theme } = useUIConfig();
 
-  const meshProgress = useSharedValue(0)
+  const meshProgress = useSharedValue(0);
 
   useEffect(() => {
     if (!enabled || !theme.dynamicBackground) {
-      return
+      return;
     }
 
     meshProgress.value = withRepeat(
       withTiming(1, {
         duration: 10000 / speed,
-        easing: Easing.linear
+        easing: Easing.linear,
       }),
       -1,
       false
-    )
-  }, [enabled, theme.dynamicBackground, meshProgress, speed])
+    );
+  }, [enabled, theme.dynamicBackground, meshProgress, speed]);
 
   const animatedStyle = useAnimatedStyle(() => {
     if (!enabled || !theme.dynamicBackground) {
-      return {} as Record<string, unknown>
+      return {} as Record<string, unknown>;
     }
 
-    const angle = meshProgress.value * 360
+    const angle = meshProgress.value * 360;
 
     return {
-      background: `linear-gradient(${angle}deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))`,                                                             
+      background: `linear-gradient(${angle}deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1))`,
       backgroundSize: '200% 200%',
-      backgroundPosition: `${meshProgress.value * 100}% ${meshProgress.value * 100}%`                                                                           
-    }
-  }) as AnimatedStyle
+      backgroundPosition: `${meshProgress.value * 100}% ${meshProgress.value * 100}%`,
+    };
+  }) as AnimatedStyle;
 
   return {
     animatedStyle,
-    meshProgress
-  }
+    meshProgress,
+  };
 }
-

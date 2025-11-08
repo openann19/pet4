@@ -1,6 +1,7 @@
 # Typography & Mobile UX Hardening - Implementation Summary
 
 ## Objective
+
 Make all text layouts resilient across English + Bulgarian (Cyrillic) and give every overlay/sheet/toast a native mobile "feel": easy to dismiss, predictable, and accessible.
 
 ## Implementation Status
@@ -8,14 +9,28 @@ Make all text layouts resilient across English + Bulgarian (Cyrillic) and give e
 ### ✅ 1. Typography System
 
 #### Font Stack (Cyrillic-Safe)
+
 ```css
-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+font-family:
+  'Inter',
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  'Roboto',
+  'Helvetica Neue',
+  Arial,
+  sans-serif,
+  'Apple Color Emoji',
+  'Segoe UI Emoji',
+  'Segoe UI Symbol';
 ```
+
 - Inter supports full Latin + Cyrillic character sets
 - Fallback fonts all support Cyrillic
 - Same weights available across all scripts
 
 #### Typography Scale (Multi-Language Safe)
+
 - **Title**: `text-2xl sm:text-3xl` | Line height: `1.3` | No negative tracking
 - **Subtitle**: `text-lg sm:text-xl` | Line height: `1.35`
 - **Body**: `text-base` | Line height: `1.5`
@@ -24,6 +39,7 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', '
 - **Button**: `text-sm sm:text-base` | Line height: `1.4` | Max 2 lines
 
 #### Text Handling
+
 - `word-wrap: break-word` + `overflow-wrap: break-word` globally
 - `hyphens: auto` for long words
 - No fixed-height text containers
@@ -33,16 +49,19 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', '
 ### ✅ 2. Spacing & Alignment System
 
 #### Spacing Scale
+
 ```typescript
-xs: 4px   | sm: 8px   | md: 12px  
+xs: 4px   | sm: 8px   | md: 12px
 lg: 16px  | xl: 24px  | 2xl: 32px
 ```
 
 #### Hit Areas
+
 - All interactive elements: **minimum 44×44px**
 - Touch target enforcement via CSS:
   ```css
-  button, [role="button"] {
+  button,
+  [role='button'] {
     min-height: 44px;
     min-width: 44px;
     touch-action: manipulation;
@@ -50,15 +69,18 @@ lg: 16px  | xl: 24px  | 2xl: 32px
   ```
 
 #### Mobile Font Sizes
+
 - Inputs/textareas: minimum `16px` (prevents zoom on iOS)
 - Consistent icon/text gaps: 8px (small), 12px (regular)
 
 ### ✅ 3. Mobile-Native Dismiss & Back Behavior
 
 #### Created: `overlay-manager.ts`
+
 Provides hooks for proper overlay management:
 
 **`useOverlayManager(config)`**
+
 - ✅ Tap outside to dismiss (configurable)
 - ✅ ESC key dismissal
 - ✅ Focus trapping with Tab navigation
@@ -67,12 +89,15 @@ Provides hooks for proper overlay management:
 - ✅ Browser back button support (popstate)
 
 **`useBottomSheet(config)`**
+
 - ✅ Swipe-down to dismiss (configurable threshold)
 - ✅ Visual drag feedback during swipe
 - ✅ All `useOverlayManager` features
 
 #### Implementation Required
+
 Components that need overlay manager integration:
+
 - [ ] Dialog components (`src/components/ui/dialog.tsx`)
 - [ ] Sheet components (`src/components/ui/sheet.tsx`)
 - [ ] Dropdown menus
@@ -82,6 +107,7 @@ Components that need overlay manager integration:
 ### ✅ 4. Header & Navigation Updates
 
 #### Header (Navbar)
+
 - Fixed position with glass blur effect
 - Height: 64px (16 units) with safe-area support
 - Proper semantic HTML: `<header>` + `<nav>`
@@ -90,6 +116,7 @@ Components that need overlay manager integration:
 - Touch-optimized buttons (44×44px minimum)
 
 #### Bottom Navigation
+
 - Glassmorphic design with backdrop-blur
 - Safe-area padding for notched devices
 - Proper `aria-label` and `aria-current` attributes
@@ -99,6 +126,7 @@ Components that need overlay manager integration:
 ### ✅ 5. Accessibility & Internationalization
 
 #### A11y Features Implemented
+
 - Focus-visible rings on all interactive elements
 - Proper ARIA labels and roles
 - Semantic HTML structure
@@ -107,9 +135,12 @@ Components that need overlay manager integration:
 - Min contrast ratios maintained
 
 #### Reduced Motion Support
+
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -119,6 +150,7 @@ Components that need overlay manager integration:
 ```
 
 #### Multi-Language
+
 - Full EN/BG translations in `i18n.ts`
 - Typography tested with Bulgarian strings:
   - ✅ Съвместимост (Compatibility)
@@ -130,6 +162,7 @@ Components that need overlay manager integration:
 ### ✅ 6. CSS Global Improvements
 
 #### Text Rendering
+
 ```css
 text-rendering: optimizeLegibility;
 -webkit-font-smoothing: antialiased;
@@ -137,14 +170,18 @@ text-rendering: optimizeLegibility;
 ```
 
 #### Mobile-Friendly Inputs
+
 ```css
-input, textarea, select {
+input,
+textarea,
+select {
   min-height: 44px;
   font-size: 16px; /* Prevents iOS zoom */
 }
 ```
 
 #### Touch Optimization
+
 ```css
 -webkit-tap-highlight-color: transparent;
 user-select: none; /* For buttons */
@@ -154,9 +191,10 @@ touch-action: manipulation; /* Fast tap response */
 ## Remaining Work
 
 ### High Priority
+
 1. **Apply overlay manager to all modals/dialogs**
    - Dialog component integration
-   - Sheet component integration  
+   - Sheet component integration
    - CreatePetDialog, PetDetailDialog, etc.
 
 2. **Toast swipe-to-dismiss**
@@ -168,6 +206,7 @@ touch-action: manipulation; /* Fast tap response */
    - Or implement autosave
 
 ### Medium Priority
+
 4. **Component-by-component typography audit**
    - Ensure all components use typography scale
    - Remove any fixed heights on text
@@ -182,6 +221,7 @@ touch-action: manipulation; /* Fast tap response */
    - Ensure content reflows correctly
 
 ### Low Priority
+
 7. **Advanced swipe gestures**
    - Swipe navigation between tabs
    - Pull-to-refresh on lists
@@ -193,6 +233,7 @@ touch-action: manipulation; /* Fast tap response */
 ## Testing Checklist
 
 ### Typography Tests
+
 - [ ] Switch to Bulgarian language
 - [ ] Long titles don't clip (Съвместимост, Потребителско изживяване)
 - [ ] Button labels wrap to 2 lines if needed
@@ -202,6 +243,7 @@ touch-action: manipulation; /* Fast tap response */
 - [ ] Test with OS font scaling (Large Text)
 
 ### Interaction Tests
+
 - [ ] All buttons have 44×44px hit area
 - [ ] Tap outside dialog/sheet → closes
 - [ ] Press ESC → closes top overlay
@@ -212,6 +254,7 @@ touch-action: manipulation; /* Fast tap response */
 - [ ] Page doesn't scroll when modal open
 
 ### Accessibility Tests
+
 - [ ] Tab through entire app - logical order
 - [ ] All interactive elements have focus rings
 - [ ] Screen reader announces all labels correctly
@@ -220,6 +263,7 @@ touch-action: manipulation; /* Fast tap response */
 - [ ] Reduced motion works (animations disabled)
 
 ### Multi-Language Tests
+
 - [ ] EN → BG switch - no layout shift
 - [ ] BG → EN switch - no layout shift
 - [ ] All UI strings translated
@@ -227,9 +271,10 @@ touch-action: manipulation; /* Fast tap response */
 - [ ] Date/time formatting correct for locale
 
 ## Performance Targets
+
 - **Typography render**: No CLS (Cumulative Layout Shift)
 - **Modal open**: < 100ms
-- **Modal close**: < 100ms  
+- **Modal close**: < 100ms
 - **Language switch**: < 200ms
 - **Theme switch**: < 200ms
 - **Tab navigation**: < 50ms
@@ -237,12 +282,14 @@ touch-action: manipulation; /* Fast tap response */
 ## Files Modified
 
 ### Core Files
+
 - ✅ `src/index.css` - Global typography & a11y styles
 - ✅ `src/App.tsx` - Header & nav updates
 - ✅ `src/lib/typography.ts` - Typography scale definitions
 - ✅ `src/lib/overlay-manager.ts` - Modal/overlay utilities
 
 ### Files Needing Updates
+
 - `src/components/ui/dialog.tsx` - Add overlay manager
 - `src/components/ui/sheet.tsx` - Add bottom sheet manager
 - `src/components/ui/sonner.tsx` - Configure swipe dismiss
@@ -254,6 +301,7 @@ touch-action: manipulation; /* Fast tap response */
 ## Definition of Done
 
 This hardening pass is **DONE** when:
+
 1. ✅ Typography scale defined and documented
 2. ✅ Global CSS includes Cyrillic-safe fonts
 3. ✅ All interactive elements ≥44×44px
@@ -266,8 +314,9 @@ This hardening pass is **DONE** when:
 10. [ ] Video recording shows all tests passing
 
 ## Next Steps
+
 1. Integrate `useOverlayManager` into Dialog component
-2. Integrate `useBottomSheet` into Sheet component  
+2. Integrate `useBottomSheet` into Sheet component
 3. Update all modal components to use overlay manager
 4. Run full test suite (typography + interaction + a11y)
 5. Create test video showing EN/BG, light/dark, mobile/desktop

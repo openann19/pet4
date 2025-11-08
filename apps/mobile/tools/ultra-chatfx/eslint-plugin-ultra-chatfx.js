@@ -1,9 +1,9 @@
 /* eslint-env node */
-import { minimatch } from 'minimatch';
+import { minimatch } from 'minimatch'
 
 function fileMatches(context, globs) {
-  const name = context.getFilename();
-  return (globs || []).some((g) => minimatch(name, g, { dot: true }));
+  const name = context.getFilename()
+  return (globs || []).some(g => minimatch(name, g, { dot: true }))
 }
 
 export default {
@@ -24,17 +24,17 @@ export default {
           ImportDeclaration(node) {
             if (node.source.value === 'react-native') {
               const hasAnimated = node.specifiers.some(
-                (s) => s.imported && s.imported.name === 'Animated',
-              );
+                s => s.imported && s.imported.name === 'Animated'
+              )
               if (hasAnimated) {
                 ctx.report({
                   node,
                   messageId: 'banned',
-                });
+                })
               }
             }
           },
-        };
+        }
       },
     },
 
@@ -46,7 +46,8 @@ export default {
           description: 'Animations must respect Reduced Motion.',
         },
         messages: {
-          missing: 'Reanimated animation detected without a Reduced Motion guard (AccessibilityInfo or useReducedMotion* hook).',                               
+          missing:
+            'Reanimated animation detected without a Reduced Motion guard (AccessibilityInfo or useReducedMotion* hook).',
         },
         schema: [
           {
@@ -64,56 +65,52 @@ export default {
         ],
       },
       create(ctx) {
-        const options = ctx.options && ctx.options[0] || {};
-        const globs = options.globs || [];
+        const options = (ctx.options && ctx.options[0]) || {}
+        const globs = options.globs || []
 
         if (!fileMatches(ctx, globs)) {
-          return {};
+          return {}
         }
 
-        let usesReanimatedAPI = false;
-        let sawReducedMotion = false;
+        let usesReanimatedAPI = false
+        let sawReducedMotion = false
 
         return {
           ImportDeclaration(node) {
             if (node.source.value === 'react-native-reanimated') {
-              const names = node.specifiers
-                .map((s) => s.imported && s.imported.name)
-                .filter(Boolean);
+              const names = node.specifiers.map(s => s.imported && s.imported.name).filter(Boolean)
               if (
-                names.some((n) =>
-                  ['withTiming', 'withSpring', 'withDecay', 'Easing', 'useAnimatedStyle'].includes(n),
+                names.some(n =>
+                  ['withTiming', 'withSpring', 'withDecay', 'Easing', 'useAnimatedStyle'].includes(
+                    n
+                  )
                 )
               ) {
-                usesReanimatedAPI = true;
+                usesReanimatedAPI = true
               }
             }
             // Accept either our hook name OR native AccessibilityInfo presence
             if (node.source.value === 'react-native') {
               if (
-                node.specifiers.some(
-                  (s) => s.imported && s.imported.name === 'AccessibilityInfo',
-                )
+                node.specifiers.some(s => s.imported && s.imported.name === 'AccessibilityInfo')
               ) {
-                sawReducedMotion = true;
+                sawReducedMotion = true
               }
             }
+            if (
+              typeof node.source.value === 'string' &&
+              node.source.value.includes('effects/core')
+            ) {
               if (
-                typeof node.source.value === 'string' &&
-                node.source.value.includes('effects/core')
+                node.specifiers.some(s => s.imported && /useReducedMotion/i.test(s.imported.name))
               ) {
-              if (
-                node.specifiers.some(
-                  (s) => s.imported && /useReducedMotion/i.test(s.imported.name),
-                )
-              ) {
-                sawReducedMotion = true;
+                sawReducedMotion = true
               }
             }
           },
           Identifier(node) {
             if (/reducedMotion/i.test(node.name) || /useReducedMotion/i.test(node.name)) {
-              sawReducedMotion = true;
+              sawReducedMotion = true
             }
           },
           'Program:exit'() {
@@ -121,10 +118,10 @@ export default {
               ctx.report({
                 loc: { line: 1, column: 0 },
                 messageId: 'missing',
-              });
+              })
             }
           },
-        };
+        }
       },
     },
 
@@ -136,7 +133,7 @@ export default {
           description: 'Effects files must use Skia for GPU rendering.',
         },
         messages: {
-          missing: "Effect component (suffix 'FX') exported without Skia import.",                                                                              
+          missing: "Effect component (suffix 'FX') exported without Skia import.",
         },
         schema: [
           {
@@ -154,15 +151,15 @@ export default {
         ],
       },
       create(ctx) {
-        const options = ctx.options && ctx.options[0] || {};
-        const globs = options.globs || [];
+        const options = (ctx.options && ctx.options[0]) || {}
+        const globs = options.globs || []
 
         if (!fileMatches(ctx, globs)) {
-          return {};
+          return {}
         }
 
-        let sawSkia = false;
-        let sawEffectExport = false;
+        let sawSkia = false
+        let sawEffectExport = false
 
         return {
           ImportDeclaration(node) {
@@ -170,21 +167,17 @@ export default {
               typeof node.source.value === 'string' &&
               node.source.value.includes('@shopify/react-native-skia')
             ) {
-              sawSkia = true;
+              sawSkia = true
             }
           },
           ExportNamedDeclaration(node) {
-            if (
-              node.declaration &&
-              node.declaration.id &&
-              /FX$/.test(node.declaration.id.name)
-            ) {
-              sawEffectExport = true;
+            if (node.declaration && node.declaration.id && /FX$/.test(node.declaration.id.name)) {
+              sawEffectExport = true
             }
             if (node.declaration && node.declaration.declarations) {
               for (const decl of node.declaration.declarations) {
                 if (decl.id && decl.id.name && /FX$/.test(decl.id.name)) {
-                  sawEffectExport = true;
+                  sawEffectExport = true
                 }
               }
             }
@@ -194,19 +187,19 @@ export default {
               ctx.report({
                 loc: { line: 1, column: 0 },
                 messageId: 'missing',
-              });
+              })
             }
           },
-        };
+        }
       },
     },
 
-    // 4) Ban Math.random in effects/chat to enforce deterministic physics unless seeded                                                                        
+    // 4) Ban Math.random in effects/chat to enforce deterministic physics unless seeded
     'ban-math-random-in-effects': {
       meta: {
         type: 'problem',
         docs: {
-          description: 'Deterministic effects only. No Math.random in effects/chat.',                                                                           
+          description: 'Deterministic effects only. No Math.random in effects/chat.',
         },
         messages: {
           banned: 'Math.random is banned in effects/chat. Use a seeded RNG.',
@@ -227,11 +220,11 @@ export default {
         ],
       },
       create(ctx) {
-        const options = ctx.options && ctx.options[0] || {};
-        const globs = options.globs || [];
+        const options = (ctx.options && ctx.options[0]) || {}
+        const globs = options.globs || []
 
         if (!fileMatches(ctx, globs)) {
-          return {};
+          return {}
         }
 
         return {
@@ -245,12 +238,11 @@ export default {
               ctx.report({
                 node,
                 messageId: 'banned',
-              });
+              })
             }
           },
-        };
+        }
       },
     },
   },
-};
-
+}

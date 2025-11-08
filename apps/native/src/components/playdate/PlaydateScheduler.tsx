@@ -138,9 +138,7 @@ export const PlaydateScheduler: React.FC<PlaydateSchedulerProps> = ({
             <Text style={styles.label}>With</Text>
             <View style={styles.attendeeCard}>
               <View style={styles.attendeeAvatar}>
-                <Text style={styles.attendeeAvatarText}>
-                  {matchName.charAt(0).toUpperCase()}
-                </Text>
+                <Text style={styles.attendeeAvatarText}>{matchName.charAt(0).toUpperCase()}</Text>
               </View>
               <Text style={styles.attendeeName}>{matchName}</Text>
             </View>
@@ -162,18 +160,12 @@ export const PlaydateScheduler: React.FC<PlaydateSchedulerProps> = ({
           <View style={styles.section}>
             <Text style={styles.label}>Date & Time</Text>
             <View style={styles.row}>
-              <Pressable
-                style={styles.dateTimeButton}
-                onPress={() => setShowDatePicker(true)}
-              >
+              <Pressable style={styles.dateTimeButton} onPress={() => setShowDatePicker(true)}>
                 <Text style={styles.dateTimeIcon}>📅</Text>
                 <Text style={styles.dateTimeText}>{formatDate(date)}</Text>
               </Pressable>
 
-              <Pressable
-                style={styles.dateTimeButton}
-                onPress={() => setShowTimePicker(true)}
-              >
+              <Pressable style={styles.dateTimeButton} onPress={() => setShowTimePicker(true)}>
                 <Text style={styles.dateTimeIcon}>🕐</Text>
                 <Text style={styles.dateTimeText}>{formatTime(time)}</Text>
               </Pressable>
@@ -187,17 +179,11 @@ export const PlaydateScheduler: React.FC<PlaydateSchedulerProps> = ({
               {DURATIONS.map((dur) => (
                 <Pressable
                   key={dur}
-                  style={[
-                    styles.durationButton,
-                    duration === dur && styles.durationButtonActive,
-                  ]}
+                  style={[styles.durationButton, duration === dur && styles.durationButtonActive]}
                   onPress={() => setDuration(dur)}
                 >
                   <Text
-                    style={[
-                      styles.durationText,
-                      duration === dur && styles.durationTextActive,
-                    ]}
+                    style={[styles.durationText, duration === dur && styles.durationTextActive]}
                   >
                     {dur < 60 ? `${dur}m` : `${dur / 60}h`}
                   </Text>

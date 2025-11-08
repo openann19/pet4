@@ -5,11 +5,7 @@
 
 import { type ReactNode } from 'react';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
-import {
-  usePageTransition,
-  useParallaxScroll,
-  useBreathingAnimation,
-} from '@/effects/reanimated';
+import { usePageTransition, useParallaxScroll, useBreathingAnimation } from '@/effects/reanimated';
 
 export interface UltraEnhancedViewProps {
   children: ReactNode;

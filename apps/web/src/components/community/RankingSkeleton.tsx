@@ -3,18 +3,18 @@
  * Shows loading skeleton for feed ranking/post ordering
  */
 
-import { MotionView } from '@petspark/motion'
-import { useReducedMotion } from '@petspark/motion'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Card } from '@/components/ui/card'
+import { MotionView } from '@petspark/motion';
+import { useReducedMotion } from '@petspark/motion';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
 
 interface RankingSkeletonProps {
-  count?: number
-  variant?: 'post' | 'comment' | 'user'
+  count?: number;
+  variant?: 'post' | 'comment' | 'user';
 }
 
 export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeletonProps) {
-  const reducedMotion = useReducedMotion()
+  const reducedMotion = useReducedMotion();
 
   if (variant === 'post') {
     return (
@@ -27,7 +27,7 @@ export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeleton
             transition={{
               delay: reducedMotion ? 0 : i * 0.1,
               duration: reducedMotion ? 0 : 0.3,
-              easing: 'easeOut'
+              easing: 'easeOut',
             }}
           >
             <Card className="p-4 space-y-4">
@@ -60,7 +60,7 @@ export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeleton
         ))}
         <span className="sr-only">Loading feed content...</span>
       </div>
-    )
+    );
   }
 
   if (variant === 'comment') {
@@ -74,7 +74,7 @@ export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeleton
             transition={{
               delay: reducedMotion ? 0 : i * 0.1,
               duration: reducedMotion ? 0 : 0.3,
-              easing: 'easeOut'
+              easing: 'easeOut',
             }}
           >
             <div className="flex gap-3 p-3">
@@ -89,7 +89,7 @@ export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeleton
         ))}
         <span className="sr-only">Loading comments...</span>
       </div>
-    )
+    );
   }
 
   return (
@@ -102,7 +102,7 @@ export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeleton
           transition={{
             delay: reducedMotion ? 0 : i * 0.1,
             duration: reducedMotion ? 0 : 0.3,
-            easing: 'easeOut'
+            easing: 'easeOut',
           }}
         >
           <div className="flex items-center gap-3 p-3">
@@ -117,6 +117,5 @@ export function RankingSkeleton({ count = 3, variant = 'post' }: RankingSkeleton
       ))}
       <span className="sr-only">Loading users...</span>
     </div>
-  )
+  );
 }
-

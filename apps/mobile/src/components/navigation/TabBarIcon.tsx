@@ -17,30 +17,19 @@ export interface TabBarIconProps {
   icon: string
 }
 
-export function TabBarIcon({ 
-  focused, 
-  color, 
-  size, 
-  icon 
-}: TabBarIconProps): React.JSX.Element {
+export function TabBarIcon({ focused, color, size, icon }: TabBarIconProps): React.JSX.Element {
   const animation = useNavButtonAnimation({
     isActive: focused,
     enablePulse: focused,
     pulseScale: 1.15,
     enableRotation: false,
-    hapticFeedback: false
+    hapticFeedback: false,
   })
 
-  const iconStyle = React.useMemo(() => [
-    { color, fontSize: size },
-    animation.iconStyle,
-    { opacity: focused ? 1 : 0.6 }
-  ], [color, size, animation.iconStyle, focused])
-
-  return (
-    <AnimatedText style={iconStyle}>
-      {icon}
-    </AnimatedText>
+  const iconStyle = React.useMemo(
+    () => [{ color, fontSize: size }, animation.iconStyle, { opacity: focused ? 1 : 0.6 }],
+    [color, size, animation.iconStyle, focused]
   )
-}
 
+  return <AnimatedText style={iconStyle}>{icon}</AnimatedText>
+}

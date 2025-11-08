@@ -9,6 +9,7 @@ A simple, dependency-light bottom navigation system with no external navigation 
 **Location**: `src/navigation/RootShell.tsx`
 
 **Features**:
+
 - Zero new dependencies
 - Custom bottom nav bar
 - Haptic feedback
@@ -44,6 +45,7 @@ A full-featured navigation system using React Navigation.
 **Location**: `src/navigation/EnhancedTabNavigator.tsx`
 
 **Features**:
+
 - React Navigation integration
 - Deep linking support
 - Navigation state management
@@ -70,13 +72,14 @@ export default function App(): React.JSX.Element {
 ### To use RootShell:
 
 1. Update `src/App.tsx`:
+
    ```typescript
    // Change this:
    import { EnhancedTabNavigator as AppNavigator } from '@mobile/navigation/EnhancedTabNavigator'
-   
+
    // To this:
    import { RootShell } from '@mobile/navigation'
-   
+
    // And replace:
    <AppNavigator />
    // With:
@@ -136,4 +139,3 @@ All screens are available in `src/screens/`:
 - RootShell is lighter and has fewer dependencies
 - EnhancedTabNavigator provides more advanced navigation features
 - Choose based on your needs: simplicity vs. advanced features
-

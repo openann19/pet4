@@ -1,22 +1,21 @@
 export interface RippleOptions {
-  duration?: number
-  color?: string
-  opacity?: number
+  duration?: number;
+  color?: string;
+  opacity?: number;
 }
 
 export interface ParticleOptions {
-  colors?: string[]
-  size?: number
-  duration?: number
-  spread?: number
+  colors?: string[];
+  size?: number;
+  duration?: number;
+  spread?: number;
 }
 
 export interface ShimmerOptions {
-  duration?: number
+  duration?: number;
 }
 
 export interface GlowOptions {
-  color?: string
-  duration?: number
+  color?: string;
+  duration?: number;
 }
-

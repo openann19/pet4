@@ -1,4 +1,4 @@
-import { BottomNavBar, type TabKey } from '@mobile/components/BottomNavBar'
+import { BottomNavBar, type TabKey } from '../components/BottomNavBar'
 import { fireEvent, render } from '@testing-library/react-native'
 import * as Haptics from 'expo-haptics'
 import { describe, expect, it, vi } from 'vitest'
@@ -12,9 +12,7 @@ describe('BottomNavBar', () => {
 
   it('should render all items', () => {
     const onChange = vi.fn()
-    const { getByText } = render(
-      <BottomNavBar active="feed" items={items} onChange={onChange} />
-    )
+    const { getByText } = render(<BottomNavBar active="feed" items={items} onChange={onChange} />)
 
     expect(getByText('Feed')).toBeTruthy()
     expect(getByText('Community')).toBeTruthy()
@@ -23,9 +21,7 @@ describe('BottomNavBar', () => {
 
   it('should call onChange when item is pressed', () => {
     const onChange = vi.fn()
-    const { getByText } = render(
-      <BottomNavBar active="feed" items={items} onChange={onChange} />
-    )
+    const { getByText } = render(<BottomNavBar active="feed" items={items} onChange={onChange} />)
 
     fireEvent.press(getByText('Community'))
     expect(onChange).toHaveBeenCalledWith('community')
@@ -33,21 +29,15 @@ describe('BottomNavBar', () => {
 
   it('should trigger haptic feedback on press', async () => {
     const onChange = vi.fn()
-    const { getByText } = render(
-      <BottomNavBar active="feed" items={items} onChange={onChange} />
-    )
+    const { getByText } = render(<BottomNavBar active="feed" items={items} onChange={onChange} />)
 
     fireEvent.press(getByText('Community'))
-    expect(Haptics.impactAsync).toHaveBeenCalledWith(
-      Haptics.ImpactFeedbackStyle.Light
-    )
+    expect(Haptics.impactAsync).toHaveBeenCalledWith(Haptics.ImpactFeedbackStyle.Light)
   })
 
   it('should not call onChange when active item is pressed', () => {
     const onChange = vi.fn()
-    const { getByText } = render(
-      <BottomNavBar active="feed" items={items} onChange={onChange} />
-    )
+    const { getByText } = render(<BottomNavBar active="feed" items={items} onChange={onChange} />)
 
     fireEvent.press(getByText('Feed'))
     expect(onChange).not.toHaveBeenCalled()
@@ -84,9 +74,7 @@ describe('BottomNavBar', () => {
   })
 
   it('should display 9+ for badges greater than 9', () => {
-    const itemsWithBadge = [
-      { key: 'feed' as TabKey, label: 'Feed', badge: 15 },
-    ]
+    const itemsWithBadge = [{ key: 'feed' as TabKey, label: 'Feed', badge: 15 }]
 
     const onChange = vi.fn()
     const { getByText } = render(
@@ -98,9 +86,7 @@ describe('BottomNavBar', () => {
 
   it('should have proper accessibility attributes', () => {
     const onChange = vi.fn()
-    const { getByText } = render(
-      <BottomNavBar active="feed" items={items} onChange={onChange} />
-    )
+    const { getByText } = render(<BottomNavBar active="feed" items={items} onChange={onChange} />)
 
     const feedButton = getByText('Feed')
     expect(feedButton.props.accessibilityRole).toBe('tab')
@@ -111,4 +97,3 @@ describe('BottomNavBar', () => {
     expect(communityButton.props.accessibilityState?.selected).toBe(false)
   })
 })
-

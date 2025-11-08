@@ -2,8 +2,8 @@
 
 Baseline (from budget-check.mjs):
 
-* Largest JS chunk: ~1541 KB (index-*.js)
-* Total: ~3354 KB
+- Largest JS chunk: ~1541 KB (index-\*.js)
+- Total: ~3354 KB
 
 ## Phase 1 (Implemented Now)
 
@@ -34,15 +34,15 @@ Expected immediate impact: heavy modal/detail/effects logic deferred until inter
 
 ## Risk & Mitigation
 
-* Lazy loading can introduce waterfalls → Mitigate with strategic prefetch (link hover, idle time).
-* Suspense fallback currently `null` → Add lightweight skeletons if perceived delay > 120ms.
-* Dynamically loaded libs may shift error surfaces → Wrap imports in try/catch and surface user-friendly fallback.
+- Lazy loading can introduce waterfalls → Mitigate with strategic prefetch (link hover, idle time).
+- Suspense fallback currently `null` → Add lightweight skeletons if perceived delay > 120ms.
+- Dynamically loaded libs may shift error surfaces → Wrap imports in try/catch and surface user-friendly fallback.
 
 ## Success Criteria
 
-* Largest chunk < 800 KB (hard) then < 600 KB (stretch).
-* Total < 2000 KB (hard) then < 1600 KB (stretch).
-* No regression in TTI; no console warnings; lighthouse performance score improvement.
+- Largest chunk < 800 KB (hard) then < 600 KB (stretch).
+- Total < 2000 KB (hard) then < 1600 KB (stretch).
+- No regression in TTI; no console warnings; lighthouse performance score improvement.
 
 ## Follow-Up Tracking
 

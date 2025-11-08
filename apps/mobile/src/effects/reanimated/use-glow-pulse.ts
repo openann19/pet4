@@ -1,4 +1,11 @@
-import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, interpolate, Easing, type SharedValue } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  Easing,
+  interpolate,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
@@ -10,7 +17,6 @@ export interface UseGlowPulseOptions {
 }
 
 export interface UseGlowPulseReturn {
-  progress: SharedValue<number>
   animatedStyle: AnimatedStyle
   start: () => void
   stop: () => void
@@ -18,14 +24,13 @@ export interface UseGlowPulseReturn {
 
 const DEFAULT_DURATION = 2000
 const DEFAULT_INTENSITY = 1
-const DEFAULT_COLOR = 'rgba(99, 102, 241, 0.6)'
 
 export function useGlowPulse(options: UseGlowPulseOptions = {}): UseGlowPulseReturn {
   const {
     duration = DEFAULT_DURATION,
     intensity = DEFAULT_INTENSITY,
     enabled = true,
-    color = DEFAULT_COLOR
+    color = 'rgba(99, 102, 241, 0.6)',
   } = options
 
   const progress = useSharedValue(0)
@@ -37,39 +42,27 @@ export function useGlowPulse(options: UseGlowPulseOptions = {}): UseGlowPulseRet
       [0.3 * intensity, 0.6 * intensity, 0.3 * intensity]
     )
 
-    const shadowRadius = interpolate(
-      progress.value,
-      [0, 0.5, 1],
-      [10, 20, 10]
-    )
-
-    const elevation = interpolate(
-      progress.value,
-      [0, 0.5, 1],
-      [5, 10, 5]
-    )
-
     return {
       shadowColor: color,
       shadowOffset: { width: 0, height: 0 },
-      shadowOpacity,
-      shadowRadius,
-      elevation
+      shadowOpacity: shadowOpacity,
+      shadowRadius: interpolate(progress.value, [0, 0.5, 1], [10, 20, 10]),
+      elevation: interpolate(progress.value, [0, 0.5, 1], [5, 10, 5]),
     }
   }) as AnimatedStyle
 
-  const start = () => {
+  const start = (): void => {
     progress.value = withRepeat(
       withTiming(1, {
         duration,
-        easing: Easing.inOut(Easing.ease)
+        easing: Easing.inOut(Easing.ease),
       }),
       -1,
       true
     )
   }
 
-  const stop = () => {
+  const stop = (): void => {
     progress.value = 0
   }
 
@@ -79,12 +72,11 @@ export function useGlowPulse(options: UseGlowPulseOptions = {}): UseGlowPulseRet
     } else {
       stop()
     }
-  }, [enabled, duration])
+  }, [enabled])
 
   return {
-    progress,
     animatedStyle,
     start,
-    stop
+    stop,
   }
 }

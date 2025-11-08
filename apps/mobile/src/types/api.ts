@@ -48,4 +48,3 @@ export function isApiError(error: unknown): error is ApiError {
     typeof (error as ApiError).message === 'string'
   )
 }
-

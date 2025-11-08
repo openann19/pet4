@@ -1,56 +1,56 @@
-'use client'
+'use client';
 
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import React, { useEffect, useRef } from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, Text } from 'react-native';
 
-const isWeb = typeof window !== 'undefined'
+const isWeb = typeof window !== 'undefined';
 
 export interface DropZoneWebProps {
-  onDrop: (file: File) => void
+  onDrop: (file: File) => void;
 }
 
 export function DropZoneWeb({ onDrop }: DropZoneWebProps): React.ReactElement | null {
-  const ref = useRef<HTMLDivElement | null>(null)
+  const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!isWeb) {
-      return
+      return;
     }
 
-    const element = ref.current
+    const element = ref.current;
     if (!element) {
-      return
+      return;
     }
 
     const preventDefault = (e: DragEvent): void => {
-      e.preventDefault()
-      e.stopPropagation()
-    }
+      e.preventDefault();
+      e.stopPropagation();
+    };
 
     const handleDrop = (e: DragEvent): void => {
-      e.preventDefault()
-      e.stopPropagation()
+      e.preventDefault();
+      e.stopPropagation();
 
-      const file = e.dataTransfer?.files?.[0]
+      const file = e.dataTransfer?.files?.[0];
       if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
-        onDrop(file)
+        onDrop(file);
       }
-    }
+    };
 
-    element.addEventListener('dragover', preventDefault)
-    element.addEventListener('dragenter', preventDefault)
-    element.addEventListener('drop', handleDrop)
+    element.addEventListener('dragover', preventDefault);
+    element.addEventListener('dragenter', preventDefault);
+    element.addEventListener('drop', handleDrop);
 
     return () => {
-      element.removeEventListener('dragover', preventDefault)
-      element.removeEventListener('dragenter', preventDefault)
-      element.removeEventListener('drop', handleDrop)
-    }
-  }, [onDrop])
+      element.removeEventListener('dragover', preventDefault);
+      element.removeEventListener('dragenter', preventDefault);
+      element.removeEventListener('drop', handleDrop);
+    };
+  }, [onDrop]);
 
   if (!isWeb) {
-    return null
+    return null;
   }
 
   const dropZoneStyle: Record<string, unknown> = {
@@ -64,7 +64,7 @@ export function DropZoneWeb({ onDrop }: DropZoneWebProps): React.ReactElement | 
     justifyContent: 'center',
     marginBottom: 12,
     minHeight: 120,
-  }
+  };
 
   return (
     <AnimatedView
@@ -75,7 +75,7 @@ export function DropZoneWeb({ onDrop }: DropZoneWebProps): React.ReactElement | 
     >
       <Text style={styles.text}>Drag & drop photo or video</Text>
     </AnimatedView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -84,5 +84,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-})
-
+});

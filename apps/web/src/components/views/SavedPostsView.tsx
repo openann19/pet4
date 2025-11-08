@@ -1,67 +1,59 @@
-'use client'
+'use client';
 
-import { PostCard } from '@/components/community/PostCard'
-import { PostDetailView } from '@/components/community/PostDetailView'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Skeleton } from '@/components/ui/skeleton'
-import { communityService } from '@/lib/community-service'
-import type { Post } from '@/lib/community-types'
-import { createLogger } from '@/lib/logger'
-import { ArrowLeft, BookmarkSimple } from '@phosphor-icons/react'
-import { motion } from '@petspark/motion'
-import { useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
+import { PostCard } from '@/components/community/PostCard';
+import { PostDetailView } from '@/components/community/PostDetailView';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
+import { communityService } from '@/lib/community-service';
+import type { Post } from '@/lib/community-types';
+import { createLogger } from '@/lib/logger';
+import { ArrowLeft, BookmarkSimple } from '@phosphor-icons/react';
+import { motion } from '@petspark/motion';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('SavedPostsView')
+const logger = createLogger('SavedPostsView');
 
 interface SavedPostsViewProps {
-  onBack?: () => void
-  onAuthorClick?: (authorId: string) => void
+  onBack?: () => void;
+  onAuthorClick?: (authorId: string) => void;
 }
 
-export default function SavedPostsView({
-  onBack,
-  onAuthorClick
-}: SavedPostsViewProps) {
-  const [posts, setPosts] = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
-  const observerTarget = useRef<HTMLDivElement>(null)
+export default function SavedPostsView({ onBack, onAuthorClick }: SavedPostsViewProps) {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadSavedPosts()
-  }, [])
+    loadSavedPosts();
+  }, []);
 
   const loadSavedPosts = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const savedPosts = await communityService.getSavedPosts()
-      setPosts(savedPosts)
+      const savedPosts = await communityService.getSavedPosts();
+      setPosts(savedPosts);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load saved posts', err)
-      toast.error('Failed to load saved posts')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load saved posts', err);
+      toast.error('Failed to load saved posts');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handlePostClick = (postId: string) => {
-    setSelectedPostId(postId)
-  }
+    setSelectedPostId(postId);
+  };
 
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
       <div className="flex items-center gap-4 p-4 border-b bg-card">
         {onBack && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="rounded-full"
-          >
+          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
             <ArrowLeft size={20} />
           </Button>
         )}
@@ -83,7 +75,7 @@ export default function SavedPostsView({
         <div className="p-4 space-y-4">
           {loading ? (
             <div className="space-y-4">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="space-y-3">
                   <Skeleton className="h-64 w-full rounded-xl" />
                   <Skeleton className="h-4 w-3/4" />
@@ -113,14 +105,8 @@ export default function SavedPostsView({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <div
-                  onClick={() => handlePostClick(post.id)}
-                  className="cursor-pointer"
-                >
-                  <PostCard
-                    post={post}
-                    {...(onAuthorClick ? { onAuthorClick } : {})}
-                  />
+                <div onClick={() => handlePostClick(post.id)} className="cursor-pointer">
+                  <PostCard post={post} {...(onAuthorClick ? { onAuthorClick } : {})} />
                 </div>
               </MotionView>
             ))
@@ -134,12 +120,12 @@ export default function SavedPostsView({
         <PostDetailView
           open={!!selectedPostId}
           onOpenChange={(open) => {
-            if (!open) setSelectedPostId(null)
+            if (!open) setSelectedPostId(null);
           }}
           postId={selectedPostId}
           {...(onAuthorClick ? { onAuthorClick } : {})}
         />
       )}
     </div>
-  )
+  );
 }

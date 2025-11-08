@@ -2,22 +2,30 @@
  * Analytics API tests
  * Exercises HTTP flows against a contract server to ensure backend integration.
  */
-import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
-import { URL } from 'node:url'
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { URL } from 'node:url';
 
-import { analyticsApi } from '@/api/analytics-api'
-import type { AnalyticsEvent, UserSession, AnalyticsMetrics, UserBehaviorInsights } from '@/lib/advanced-analytics'
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { analyticsApi } from '@/api/analytics-api';
+import type {
+  AnalyticsEvent,
+  UserSession,
+  AnalyticsMetrics,
+  UserBehaviorInsights,
+} from '@/lib/advanced-analytics';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-let server: ReturnType<typeof createServer>
+// Use real API client for integration tests
+vi.unmock('@/lib/api-client');
+
+let server: ReturnType<typeof createServer>;
 
 async function readJson<T>(req: IncomingMessage): Promise<T> {
-  const chunks: Buffer[] = []
+  const chunks: Buffer[] = [];
   for await (const chunk of req) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk)
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
   }
-  const body = Buffer.concat(chunks).toString('utf8')
-  return body ? (JSON.parse(body) as T) : ({} as T)
+  const body = Buffer.concat(chunks).toString('utf8');
+  return body ? (JSON.parse(body) as T) : ({} as T);
 }
 
 const mockEvent: AnalyticsEvent = {
@@ -28,7 +36,7 @@ const mockEvent: AnalyticsEvent = {
   userId: 'user-1',
   properties: {},
   correlationId: 'corr-1',
-}
+};
 
 const mockMetrics: AnalyticsMetrics = {
   totalSessions: 100,
@@ -43,7 +51,7 @@ const mockMetrics: AnalyticsMetrics = {
     weekly: 500,
     monthly: 2000,
   },
-}
+};
 
 const mockInsights: UserBehaviorInsights = {
   mostViewedPets: [],
@@ -56,29 +64,29 @@ const mockInsights: UserBehaviorInsights = {
     viewRate: 0.5,
     creationRate: 0.1,
   },
-}
+};
 
 beforeAll(async () => {
   server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
     if (!req.url || !req.method) {
-      res.statusCode = 400
-      res.end()
-      return
+      res.statusCode = 400;
+      res.end();
+      return;
     }
 
-    const url = new URL(req.url, 'http://localhost:8080')
+    const url = new URL(req.url, 'http://localhost:8080');
 
     if (req.method === 'POST' && url.pathname === '/analytics/events') {
-      res.setHeader('Content-Type', 'application/json')
-      res.statusCode = 200
-      res.end(JSON.stringify({ data: { success: true } }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 200;
+      res.end(JSON.stringify({ data: { success: true } }));
+      return;
     }
 
     if (req.method === 'POST' && url.pathname === '/analytics/sessions') {
-      await readJson<{ session: Omit<UserSession, 'id'> }>(req)
-      res.setHeader('Content-Type', 'application/json')
-      res.statusCode = 201
+      await readJson<{ session: Omit<UserSession, 'id'> }>(req);
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 201;
       res.end(
         JSON.stringify({
           data: {
@@ -97,59 +105,59 @@ beforeAll(async () => {
             },
           },
         })
-      )
-      return
+      );
+      return;
     }
 
     if (req.method === 'GET' && url.pathname === '/analytics/metrics') {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { metrics: mockMetrics } }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { metrics: mockMetrics } }));
+      return;
     }
 
     if (req.method === 'GET' && url.pathname.startsWith('/analytics/insights/')) {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { insights: mockInsights } }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { insights: mockInsights } }));
+      return;
     }
 
-    res.statusCode = 404
-    res.end()
-  })
+    res.statusCode = 404;
+    res.end();
+  });
 
-  await new Promise<void>(resolve => {
+  await new Promise<void>((resolve) => {
     server.listen(0, () => {
-      const address = server.address()
+      const address = server.address();
       if (address && typeof address === 'object') {
-        process.env['TEST_API_PORT'] = String(address.port)
+        process.env['TEST_API_PORT'] = String(address.port);
       }
-      resolve()
-    })
-  })
-})
+      resolve();
+    });
+  });
+});
 
 afterAll(async () => {
-  await new Promise<void>(resolve => server.close(() => resolve()))
-})
+  await new Promise<void>((resolve) => server.close(() => resolve()));
+});
 
 afterEach(() => {
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});
 
 describe('AnalyticsAPI.trackEvent', () => {
   it('should track event successfully', async () => {
-    await expect(analyticsApi.trackEvent(mockEvent)).resolves.not.toThrow()
-  })
+    await expect(analyticsApi.trackEvent(mockEvent)).resolves.not.toThrow();
+  });
 
   it('should not throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
-    await expect(analyticsApi.trackEvent(mockEvent)).resolves.not.toThrow()
+    await expect(analyticsApi.trackEvent(mockEvent)).resolves.not.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('AnalyticsAPI.createSession', () => {
   it('should create session successfully', async () => {
@@ -164,17 +172,17 @@ describe('AnalyticsAPI.createSession', () => {
         screenSize: '1920x1080',
       },
       entryPoint: 'home',
-    })
+    });
 
     expect(session).toMatchObject({
       id: expect.any(String),
       userId: 'user-1',
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
     await expect(
       analyticsApi.createSession({
@@ -189,59 +197,58 @@ describe('AnalyticsAPI.createSession', () => {
         },
         entryPoint: 'home',
       })
-    ).rejects.toThrow()
+    ).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('AnalyticsAPI.getMetrics', () => {
   it('should return metrics', async () => {
-    const metrics = await analyticsApi.getMetrics()
+    const metrics = await analyticsApi.getMetrics();
 
     expect(metrics).toMatchObject({
       totalEvents: expect.any(Number),
       uniqueUsers: expect.any(Number),
-    })
-  })
+    });
+  });
 
   it('should accept date range', async () => {
-    const startDate = '2024-01-01'
-    const endDate = '2024-01-31'
-    const metrics = await analyticsApi.getMetrics(startDate, endDate)
+    const startDate = '2024-01-01';
+    const endDate = '2024-01-31';
+    const metrics = await analyticsApi.getMetrics(startDate, endDate);
 
     expect(metrics).toMatchObject({
       totalEvents: expect.any(Number),
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
-    await expect(analyticsApi.getMetrics()).rejects.toThrow()
+    await expect(analyticsApi.getMetrics()).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('AnalyticsAPI.getUserBehaviorInsights', () => {
   it('should return user behavior insights', async () => {
-    const insights = await analyticsApi.getUserBehaviorInsights('user-1')
+    const insights = await analyticsApi.getUserBehaviorInsights('user-1');
 
     expect(insights).toMatchObject({
       matchingSuccessRate: expect.any(Number),
       averageSwipesPerSession: expect.any(Number),
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
-    await expect(analyticsApi.getUserBehaviorInsights('user-1')).rejects.toThrow()
+    await expect(analyticsApi.getUserBehaviorInsights('user-1')).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
-
+    global.fetch = originalFetch;
+  });
+});

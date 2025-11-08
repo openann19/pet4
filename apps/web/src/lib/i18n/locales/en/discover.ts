@@ -5,7 +5,7 @@
 export default {
   title: 'Discover Perfect Matches',
   subtitle: 'Find compatible companions for',
-  createProfile: 'Create Your Pet\'s Profile',
+  createProfile: "Create Your Pet's Profile",
   createProfileDesc: 'Start matching by creating a profile for your pet in the Profile section',
   noMore: 'No More Pets to Discover',
   noMoreDesc: 'Check back later for more potential matches!',
@@ -19,8 +19,8 @@ export default {
   pass: 'Pass',
   match: 'Match',
   about: 'ABOUT',
-  whyMatch: 'WHY YOU\'LL MATCH',
+  whyMatch: "WHY YOU'LL MATCH",
   personality: 'PERSONALITY',
   swipeHintPass: 'Pass',
-  swipeHintLike: 'Like'
-} as const
+  swipeHintLike: 'Like',
+} as const;

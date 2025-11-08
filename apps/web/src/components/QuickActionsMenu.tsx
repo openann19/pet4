@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { MotionView, Presence } from '@petspark/motion'
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated'
-import React from 'react'
+import { useState } from 'react';
+import { MotionView, Presence } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
+import React from 'react';
 import {
   Plus,
   X,
@@ -11,18 +11,18 @@ import {
   BookmarkSimple,
   Sparkle,
   ChartBar,
-  MapTrifold
-} from '@phosphor-icons/react'
-import { haptics } from '@/lib/haptics'
+  MapTrifold,
+} from '@phosphor-icons/react';
+import { haptics } from '@/lib/haptics';
 
 interface QuickActionsMenuProps {
-  onCreatePet: () => void
-  onViewHealth: () => void
-  onSchedulePlaydate: () => void
-  onSavedSearches: () => void
-  onGenerateProfiles: () => void
-  onViewStats: () => void
-  onViewMap?: () => void
+  onCreatePet: () => void;
+  onViewHealth: () => void;
+  onSchedulePlaydate: () => void;
+  onSavedSearches: () => void;
+  onGenerateProfiles: () => void;
+  onViewStats: () => void;
+  onViewMap?: () => void;
 }
 
 export default function QuickActionsMenu({
@@ -32,80 +32,84 @@ export default function QuickActionsMenu({
   onSavedSearches,
   onGenerateProfiles,
   onViewStats,
-  onViewMap
+  onViewMap,
 }: QuickActionsMenuProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const actions = [
     {
       icon: <PawPrint size={20} weight="fill" />,
       label: 'Add Pet',
       onClick: () => {
-        onCreatePet()
-        setIsOpen(false)
+        onCreatePet();
+        setIsOpen(false);
       },
-      color: 'from-primary to-accent'
+      color: 'from-primary to-accent',
     },
     {
       icon: <Heart size={20} weight="fill" />,
       label: 'Health',
       onClick: () => {
-        onViewHealth()
-        setIsOpen(false)
+        onViewHealth();
+        setIsOpen(false);
       },
-      color: 'from-red-500 to-pink-500'
+      color: 'from-red-500 to-pink-500',
     },
     {
       icon: <Calendar size={20} weight="fill" />,
       label: 'Schedule',
       onClick: () => {
-        onSchedulePlaydate()
-        setIsOpen(false)
+        onSchedulePlaydate();
+        setIsOpen(false);
       },
-      color: 'from-blue-500 to-cyan-500'
+      color: 'from-blue-500 to-cyan-500',
     },
-    ...(onViewMap ? [{
-      icon: <MapTrifold size={20} weight="fill" />,
-      label: 'Map',
-      onClick: () => {
-        onViewMap()
-        setIsOpen(false)
-      },
-      color: 'from-teal-500 to-cyan-500'
-    }] : []),
+    ...(onViewMap
+      ? [
+          {
+            icon: <MapTrifold size={20} weight="fill" />,
+            label: 'Map',
+            onClick: () => {
+              onViewMap();
+              setIsOpen(false);
+            },
+            color: 'from-teal-500 to-cyan-500',
+          },
+        ]
+      : []),
     {
       icon: <BookmarkSimple size={20} weight="fill" />,
       label: 'Saved',
       onClick: () => {
-        onSavedSearches()
-        setIsOpen(false)
+        onSavedSearches();
+        setIsOpen(false);
       },
-      color: 'from-yellow-500 to-orange-500'
+      color: 'from-yellow-500 to-orange-500',
     },
     {
       icon: <Sparkle size={20} weight="fill" />,
       label: 'Generate',
       onClick: () => {
-        onGenerateProfiles()
-        setIsOpen(false)
+        onGenerateProfiles();
+        setIsOpen(false);
       },
-      color: 'from-purple-500 to-pink-500'
+      color: 'from-purple-500 to-pink-500',
     },
     {
       icon: <ChartBar size={20} weight="fill" />,
       label: 'Stats',
       onClick: () => {
-        onViewStats()
-        setIsOpen(false)
+        onViewStats();
+        setIsOpen(false);
       },
-      color: 'from-green-500 to-emerald-500'
-    }
-  ]
+      color: 'from-green-500 to-emerald-500',
+    },
+  ];
 
   const handleToggle = () => {
-    haptics.light()
-    setIsOpen(!isOpen)
-  }
+    haptics.light();
+    setIsOpen(!isOpen);
+  };
 
   return (
     <div className="fixed bottom-24 right-6 z-40">
@@ -147,8 +151,8 @@ export default function QuickActionsMenu({
               opacity: itemOpacity.value,
               transform: [
                 { translateX: itemX.value + hoverX.value },
-                { scale: itemScale.value * hoverScale.value }
-              ]
+                { scale: itemScale.value * hoverScale.value },
+              ],
             }));
 
             return (
@@ -158,8 +162,8 @@ export default function QuickActionsMenu({
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => {
-                  haptics.selection()
-                  action.onClick()
+                  haptics.selection();
+                  action.onClick();
                 }}
                 className="group flex items-center gap-3 bg-card/95 backdrop-blur-md border border-border rounded-full px-4 py-3 shadow-lg hover:shadow-xl transition-all"
               >
@@ -170,7 +174,7 @@ export default function QuickActionsMenu({
                 </div>
                 <span className="font-medium text-sm pr-2">{action.label}</span>
               </MotionView>
-            )
+            );
           })}
         </MotionView>
       </Presence>
@@ -216,5 +220,5 @@ export default function QuickActionsMenu({
         />
       </Presence>
     </div>
-  )
+  );
 }

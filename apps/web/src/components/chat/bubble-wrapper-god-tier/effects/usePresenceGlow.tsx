@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   useSharedValue,
@@ -6,32 +6,32 @@ import {
   withRepeat,
   withSequence,
   withTiming,
-  Easing
-} from 'react-native-reanimated'
-import { useEffect } from 'react'
-import { timingConfigs } from '@/effects/reanimated/transitions'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import type { ReactNode } from 'react'
+  Easing,
+} from 'react-native-reanimated';
+import { useEffect } from 'react';
+import { timingConfigs } from '@/effects/reanimated/transitions';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import type { ReactNode } from 'react';
 
 export interface PresenceGlowProps {
-  isActive: boolean
-  children: ReactNode
-  className?: string
-  intensity?: number
-  pulseDuration?: number
+  isActive: boolean;
+  children: ReactNode;
+  className?: string;
+  intensity?: number;
+  pulseDuration?: number;
 }
 
-const DEFAULT_INTENSITY = 0.6
-const DEFAULT_PULSE_DURATION = 2000
+const DEFAULT_INTENSITY = 0.6;
+const DEFAULT_PULSE_DURATION = 2000;
 
 export function PresenceGlow({
   isActive,
   children,
   className,
   intensity = DEFAULT_INTENSITY,
-  pulseDuration = DEFAULT_PULSE_DURATION
+  pulseDuration = DEFAULT_PULSE_DURATION,
 }: PresenceGlowProps): React.JSX.Element {
-  const glowOpacity = useSharedValue(0)
+  const glowOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (isActive) {
@@ -39,29 +39,29 @@ export function PresenceGlow({
         withSequence(
           withTiming(intensity, {
             duration: pulseDuration / 2,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           }),
           withTiming(intensity * 0.5, {
             duration: pulseDuration / 2,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           })
         ),
         -1,
         false
-      )
+      );
     } else {
-      glowOpacity.value = withTiming(0, timingConfigs.fast)
+      glowOpacity.value = withTiming(0, timingConfigs.fast);
     }
-  }, [isActive, intensity, pulseDuration, glowOpacity])
+  }, [isActive, intensity, pulseDuration, glowOpacity]);
 
   const glowStyle = useAnimatedStyle(() => {
     return {
       opacity: glowOpacity.value,
       boxShadow: isActive
         ? `0 0 ${10 + glowOpacity.value * 10}px rgba(59, 130, 246, ${glowOpacity.value * 0.8})`
-        : 'none'
-    }
-  })
+        : 'none',
+    };
+  });
 
   return (
     <div className={className} style={{ position: 'relative' }}>
@@ -75,6 +75,5 @@ export function PresenceGlow({
         </AnimatedView>
       )}
     </div>
-  )
+  );
 }
-

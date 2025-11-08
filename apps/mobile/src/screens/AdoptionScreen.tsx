@@ -15,7 +15,7 @@ export function AdoptionScreen(): React.JSX.Element {
   const handleRefresh = useCallback(async (): Promise<void> => {
     // Force re-render by updating key, which will re-run useDomainSnapshots
     // Simulate network delay for better UX
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise(resolve => setTimeout(resolve, 500))
   }, [])
 
   if (!primaryPet) {
@@ -32,45 +32,45 @@ export function AdoptionScreen(): React.JSX.Element {
     <SafeAreaView style={styles.safeArea}>
       <PullableContainer onRefresh={handleRefresh}>
         <ScrollView contentContainerStyle={styles.content}>
-        <SectionHeader
-          title="Adoption domain parity"
-          description="Shared rules ensure that marketplace moderation behaves consistently across platforms."                                                  
-        />
+          <SectionHeader
+            title="Adoption domain parity"
+            description="Shared rules ensure that marketplace moderation behaves consistently across platforms."
+          />
 
-        <FeatureCard
-          title={`Listing: ${primaryPet.name}`}
-          subtitle={`${primaryPet.location.city}, ${primaryPet.location.country}`}
-        >
-          <Text style={styles.bodyText}>Status: active</Text>
-          <Text style={styles.bodyText}>
-            Owner can edit: {adoption.canEditActiveListing ? 'Yes' : 'No'}
-          </Text>
-          <Text style={styles.bodyText}>
-            Applications accepted: {adoption.canReceiveApplications ? 'Yes' : 'No'}
-          </Text>
-        </FeatureCard>
+          <FeatureCard
+            title={`Listing: ${primaryPet.name}`}
+            subtitle={`${primaryPet.location.city}, ${primaryPet.location.country}`}
+          >
+            <Text style={styles.bodyText}>Status: active</Text>
+            <Text style={styles.bodyText}>
+              Owner can edit: {adoption.canEditActiveListing ? 'Yes' : 'No'}
+            </Text>
+            <Text style={styles.bodyText}>
+              Applications accepted: {adoption.canReceiveApplications ? 'Yes' : 'No'}
+            </Text>
+          </FeatureCard>
 
-        <FeatureCard title="Allowed listing transitions">
-          {adoption.statusTransitions.map(item => (
-            <View key={item.status} style={styles.row}>
-              <Text style={styles.label}>{item.status}</Text>
-              <Text style={[styles.value, item.allowed ? styles.success : styles.blocked]}>
-                {item.allowed ? 'permitted' : 'blocked'}
-              </Text>
-            </View>
-          ))}
-        </FeatureCard>
+          <FeatureCard title="Allowed listing transitions">
+            {adoption.statusTransitions.map(item => (
+              <View key={item.status} style={styles.row}>
+                <Text style={styles.label}>{item.status}</Text>
+                <Text style={[styles.value, item.allowed ? styles.success : styles.blocked]}>
+                  {item.allowed ? 'permitted' : 'blocked'}
+                </Text>
+              </View>
+            ))}
+          </FeatureCard>
 
-        <FeatureCard title="Application workflow">
-          {adoption.applicationTransitions.map(item => (
-            <View key={item.status} style={styles.row}>
-              <Text style={styles.label}>{item.status}</Text>
-              <Text style={[styles.value, item.allowed ? styles.success : styles.blocked]}>
-                {item.allowed ? 'permitted' : 'blocked'}
-              </Text>
-            </View>
-          ))}
-        </FeatureCard>
+          <FeatureCard title="Application workflow">
+            {adoption.applicationTransitions.map(item => (
+              <View key={item.status} style={styles.row}>
+                <Text style={styles.label}>{item.status}</Text>
+                <Text style={[styles.value, item.allowed ? styles.success : styles.blocked]}>
+                  {item.allowed ? 'permitted' : 'blocked'}
+                </Text>
+              </View>
+            ))}
+          </FeatureCard>
         </ScrollView>
       </PullableContainer>
     </SafeAreaView>
@@ -80,15 +80,15 @@ export function AdoptionScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background
+    backgroundColor: colors.background,
   },
   content: {
-    padding: 20
+    padding: 20,
   },
   bodyText: {
     color: colors.textSecondary,
     fontSize: 14,
-    lineHeight: 20
+    lineHeight: 20,
   },
   row: {
     flexDirection: 'row',
@@ -96,20 +96,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border
+    borderBottomColor: colors.border,
   },
   label: {
     color: colors.textPrimary,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   value: {
     textTransform: 'uppercase',
-    fontSize: 12
+    fontSize: 12,
   },
   success: {
-    color: colors.success
+    color: colors.success,
   },
   blocked: {
-    color: colors.danger
-  }
+    color: colors.danger,
+  },
 })

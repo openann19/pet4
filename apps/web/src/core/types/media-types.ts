@@ -3,19 +3,12 @@ import { z } from 'zod';
 /**
  * Media type discriminator
  */
-export type MediaType = 'image' | 'video'
+export type MediaType = 'image' | 'video';
 
 /**
  * Available filter presets
  */
-export type FilterName =
-  | 'none'
-  | 'mono'
-  | 'sepia'
-  | 'vivid'
-  | 'cool'
-  | 'warm'
-  | 'cinematic'
+export type FilterName = 'none' | 'mono' | 'sepia' | 'vivid' | 'cool' | 'warm' | 'cinematic';
 
 /**
  * Image operation types
@@ -26,23 +19,23 @@ export type ImageOperation =
   | { type: 'rotate'; degrees: 90 | 180 | 270 | number }
   | { type: 'flip'; axis: 'horizontal' | 'vertical' }
   | {
-      type: 'adjust'
-      brightness?: number
-      contrast?: number
-      saturation?: number
-      temperature?: number
-      exposure?: number
+      type: 'adjust';
+      brightness?: number;
+      contrast?: number;
+      saturation?: number;
+      temperature?: number;
+      exposure?: number;
     }
   | { type: 'blur'; radius: number }
   | { type: 'filter'; name: FilterName; intensity?: number }
   | {
-      type: 'watermark'
-      uri: string
-      x: number
-      y: number
-      scale?: number
-      opacity?: number
-    }
+      type: 'watermark';
+      uri: string;
+      x: number;
+      y: number;
+      scale?: number;
+      opacity?: number;
+    };
 
 /**
  * Video operation types
@@ -54,32 +47,32 @@ export type VideoOperation =
   | { type: 'flip'; axis: 'horizontal' | 'vertical' }
   | { type: 'speed'; rate: number }
   | {
-      type: 'adjust'
-      brightness?: number
-      contrast?: number
-      saturation?: number
-      temperature?: number
-      exposure?: number
+      type: 'adjust';
+      brightness?: number;
+      contrast?: number;
+      saturation?: number;
+      temperature?: number;
+      exposure?: number;
     }
   | { type: 'filter'; name: FilterName; intensity?: number }
   | {
-      type: 'watermark'
-      uri: string
-      x: number
-      y: number
-      scale?: number
-      opacity?: number
-    }
+      type: 'watermark';
+      uri: string;
+      x: number;
+      y: number;
+      scale?: number;
+      opacity?: number;
+    };
 
 /**
  * Media input descriptor
  */
 export interface MediaInput {
-  type: MediaType
-  uri: string
-  width?: number
-  height?: number
-  durationSec?: number
+  type: MediaType;
+  uri: string;
+  width?: number;
+  height?: number;
+  durationSec?: number;
 }
 
 /**
@@ -87,23 +80,23 @@ export interface MediaInput {
  */
 export interface EditOptions {
   /** Output format for images: 'jpeg' | 'png' (default jpeg) */
-  imageFormat?: 'jpeg' | 'png'
+  imageFormat?: 'jpeg' | 'png';
   /** Output quality 0..1 for JPEG/MP4 CRF mapping (default 0.9) */
-  quality?: number
+  quality?: number;
   /** If true, prefer GPU paths; fallback to CPU if needed */
-  preferGpu?: boolean
+  preferGpu?: boolean;
 }
 
 /**
  * Edited media result
  */
 export interface EditedMedia {
-  type: MediaType
-  uri: string
-  width?: number
-  height?: number
-  durationSec?: number
-  bytes?: number
+  type: MediaType;
+  uri: string;
+  width?: number;
+  height?: number;
+  durationSec?: number;
+  bytes?: number;
 }
 
 /**
@@ -145,15 +138,7 @@ export const ImageOpsSchema = z.array(
     }),
     z.object({
       type: z.literal('filter'),
-      name: z.enum([
-        'none',
-        'mono',
-        'sepia',
-        'vivid',
-        'cool',
-        'warm',
-        'cinematic',
-      ]),
+      name: z.enum(['none', 'mono', 'sepia', 'vivid', 'cool', 'warm', 'cinematic']),
       intensity: z.number().min(0).max(1).optional(),
     }),
     z.object({
@@ -165,7 +150,7 @@ export const ImageOpsSchema = z.array(
       opacity: z.number().min(0).max(1).optional(),
     }),
   ])
-)
+);
 
 /**
  * Zod schema for video operations validation
@@ -204,15 +189,7 @@ export const VideoOpsSchema = z.array(
     }),
     z.object({
       type: z.literal('filter'),
-      name: z.enum([
-        'none',
-        'mono',
-        'sepia',
-        'vivid',
-        'cool',
-        'warm',
-        'cinematic',
-      ]),
+      name: z.enum(['none', 'mono', 'sepia', 'vivid', 'cool', 'warm', 'cinematic']),
       intensity: z.number().min(0).max(1).optional(),
     }),
     z.object({
@@ -224,5 +201,4 @@ export const VideoOpsSchema = z.array(
       opacity: z.number().min(0).max(1).optional(),
     }),
   ])
-)
-
+);

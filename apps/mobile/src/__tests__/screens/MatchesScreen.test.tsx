@@ -18,4 +18,3 @@ describe('MatchesScreen', () => {
     expect(getByText('Your latest matches will show here.')).toBeTruthy()
   })
 })
-

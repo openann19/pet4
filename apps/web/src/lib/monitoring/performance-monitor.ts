@@ -1,29 +1,26 @@
-import { createLogger } from '@/lib/logger'
-import type {
-  LayoutShiftEntry,
-  PerformanceWithMemory
-} from '@/lib/types/performance-api'
-import { sentryConfig } from './sentry-config'
+import { createLogger } from '@/lib/logger';
+import type { LayoutShiftEntry, PerformanceWithMemory } from '@/lib/types/performance-api';
+import { sentryConfig } from './sentry-config';
 
-const logger = createLogger('PerformanceMonitor')
+const logger = createLogger('PerformanceMonitor');
 
 interface PerformanceMetric {
-  name: string
-  value: number
-  unit: 'ms' | 'bytes' | 'count' | 'percentage'
-  timestamp: number
-  tags?: Record<string, string>
+  name: string;
+  value: number;
+  unit: 'ms' | 'bytes' | 'count' | 'percentage';
+  timestamp: number;
+  tags?: Record<string, string>;
 }
 
 class PerformanceMonitorImpl {
-  private metrics: PerformanceMetric[] = []
-  private observers: PerformanceObserver[] = []
+  private metrics: PerformanceMetric[] = [];
+  private observers: PerformanceObserver[] = [];
 
   init(): void {
-    this.setupWebVitals()
-    this.setupResourceMonitoring()
-    this.setupUserTimingAPI()
-    this.setupMemoryMonitoring()
+    this.setupWebVitals();
+    this.setupResourceMonitoring();
+    this.setupUserTimingAPI();
+    this.setupMemoryMonitoring();
   }
 
   private setupWebVitals(): void {
@@ -31,72 +28,72 @@ class PerformanceMonitorImpl {
     if ('PerformanceObserver' in window) {
       // Largest Contentful Paint
       const lcpObserver = new PerformanceObserver((list) => {
-        const entries = list.getEntries()
-        const lastEntry = entries[entries.length - 1] as PerformanceEntry
-        
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1]!;
+
         this.recordMetric({
           name: 'web_vitals.lcp',
           value: lastEntry.startTime,
           unit: 'ms',
-          timestamp: Date.now()
-        })
-      })
+          timestamp: Date.now(),
+        });
+      });
 
       try {
-        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })
-        this.observers.push(lcpObserver)
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+        this.observers.push(lcpObserver);
       } catch (e) {
-        const err = e instanceof Error ? e : new Error(String(e))
-        logger.warn('LCP observer not supported', err)
+        const err = e instanceof Error ? e : new Error(String(e));
+        logger.warn('LCP observer not supported', err);
       }
 
       // First Input Delay
       const fidObserver = new PerformanceObserver((list) => {
-        const entries = list.getEntries()
+        const entries = list.getEntries();
         entries.forEach((entry) => {
-          const fidEntry = entry as PerformanceEntry & { processingStart: number }
+          const fidEntry = entry as PerformanceEntry & { processingStart: number };
           this.recordMetric({
             name: 'web_vitals.fid',
             value: fidEntry.processingStart - fidEntry.startTime,
             unit: 'ms',
-            timestamp: Date.now()
-          })
-        })
-      })
+            timestamp: Date.now(),
+          });
+        });
+      });
 
       try {
-        fidObserver.observe({ entryTypes: ['first-input'] })
-        this.observers.push(fidObserver)
+        fidObserver.observe({ entryTypes: ['first-input'] });
+        this.observers.push(fidObserver);
       } catch (e) {
-        const err = e instanceof Error ? e : new Error(String(e))
-        logger.warn('FID observer not supported', err)
+        const err = e instanceof Error ? e : new Error(String(e));
+        logger.warn('FID observer not supported', err);
       }
 
       // Cumulative Layout Shift
-      let clsValue = 0
+      let clsValue = 0;
       const clsObserver = new PerformanceObserver((list) => {
-        const entries = list.getEntries()
+        const entries = list.getEntries();
         entries.forEach((entry) => {
-          const clsEntry = entry as LayoutShiftEntry
+          const clsEntry = entry as LayoutShiftEntry;
           if (!clsEntry.hadRecentInput) {
-            clsValue += clsEntry.value
+            clsValue += clsEntry.value;
           }
-        })
-        
+        });
+
         this.recordMetric({
           name: 'web_vitals.cls',
           value: clsValue,
           unit: 'count',
-          timestamp: Date.now()
-        })
-      })
+          timestamp: Date.now(),
+        });
+      });
 
       try {
-        clsObserver.observe({ entryTypes: ['layout-shift'] })
-        this.observers.push(clsObserver)
+        clsObserver.observe({ entryTypes: ['layout-shift'] });
+        this.observers.push(clsObserver);
       } catch (e) {
-        const err = e instanceof Error ? e : new Error(String(e))
-        logger.warn('CLS observer not supported', err)
+        const err = e instanceof Error ? e : new Error(String(e));
+        logger.warn('CLS observer not supported', err);
       }
     }
   }
@@ -104,10 +101,10 @@ class PerformanceMonitorImpl {
   private setupResourceMonitoring(): void {
     if ('PerformanceObserver' in window) {
       const resourceObserver = new PerformanceObserver((list) => {
-        const entries = list.getEntries()
-        
+        const entries = list.getEntries();
+
         entries.forEach((entry) => {
-          const resourceEntry = entry as PerformanceResourceTiming
+          const resourceEntry = entry as PerformanceResourceTiming;
           // Monitor slow resources
           if (resourceEntry.duration > 1000) {
             this.recordMetric({
@@ -117,13 +114,14 @@ class PerformanceMonitorImpl {
               timestamp: Date.now(),
               tags: {
                 resource_type: resourceEntry.initiatorType,
-                resource_name: resourceEntry.name.split('/').pop() || 'unknown'
-              }
-            })
+                resource_name: resourceEntry.name.split('/').pop() || 'unknown',
+              },
+            });
           }
 
           // Monitor large resources
-          if (resourceEntry.transferSize > 1000000) { // 1MB
+          if (resourceEntry.transferSize > 1000000) {
+            // 1MB
             this.recordMetric({
               name: 'resource.large_size',
               value: resourceEntry.transferSize,
@@ -131,19 +129,19 @@ class PerformanceMonitorImpl {
               timestamp: Date.now(),
               tags: {
                 resource_type: resourceEntry.initiatorType,
-                resource_name: resourceEntry.name.split('/').pop() || 'unknown'
-              }
-            })
+                resource_name: resourceEntry.name.split('/').pop() || 'unknown',
+              },
+            });
           }
-        })
-      })
+        });
+      });
 
       try {
-        resourceObserver.observe({ entryTypes: ['resource'] })
-        this.observers.push(resourceObserver)
+        resourceObserver.observe({ entryTypes: ['resource'] });
+        this.observers.push(resourceObserver);
       } catch (e) {
-        const err = e instanceof Error ? e : new Error(String(e))
-        logger.warn('Resource observer not supported', err)
+        const err = e instanceof Error ? e : new Error(String(e));
+        logger.warn('Resource observer not supported', err);
       }
     }
   }
@@ -151,24 +149,24 @@ class PerformanceMonitorImpl {
   private setupUserTimingAPI(): void {
     if ('PerformanceObserver' in window) {
       const userTimingObserver = new PerformanceObserver((list) => {
-        const entries = list.getEntries()
-        
+        const entries = list.getEntries();
+
         entries.forEach((entry) => {
           this.recordMetric({
             name: `user_timing.${entry.name}`,
             value: entry.duration || entry.startTime,
             unit: 'ms',
-            timestamp: Date.now()
-          })
-        })
-      })
+            timestamp: Date.now(),
+          });
+        });
+      });
 
       try {
-        userTimingObserver.observe({ entryTypes: ['measure', 'mark'] })
-        this.observers.push(userTimingObserver)
+        userTimingObserver.observe({ entryTypes: ['measure', 'mark'] });
+        this.observers.push(userTimingObserver);
       } catch (e) {
-        const err = e instanceof Error ? e : new Error(String(e))
-        logger.warn('User timing observer not supported', err)
+        const err = e instanceof Error ? e : new Error(String(e));
+        logger.warn('User timing observer not supported', err);
       }
     }
   }
@@ -176,34 +174,29 @@ class PerformanceMonitorImpl {
   private setupMemoryMonitoring(): void {
     // Monitor memory usage
     setInterval(() => {
-      const performanceWithMemory = performance as PerformanceWithMemory
+      const performanceWithMemory = performance as PerformanceWithMemory;
       if (performanceWithMemory.memory) {
-        const memory = performanceWithMemory.memory
-        
+        const memory = performanceWithMemory.memory;
+
         this.recordMetric({
           name: 'memory.used_heap_size',
           value: memory.usedJSHeapSize,
           unit: 'bytes',
-          timestamp: Date.now()
-        })
+          timestamp: Date.now(),
+        });
 
         this.recordMetric({
           name: 'memory.heap_usage_percentage',
           value: (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100,
           unit: 'percentage',
-          timestamp: Date.now()
-        })
+          timestamp: Date.now(),
+        });
       }
-    }, 30000) // Every 30 seconds
+    }, 30000); // Every 30 seconds
   }
 
   // API Performance Tracking
-  trackAPICall(
-    method: string,
-    endpoint: string,
-    duration: number,
-    status: number
-  ): void {
+  trackAPICall(method: string, endpoint: string, duration: number, status: number): void {
     this.recordMetric({
       name: 'api.request_duration',
       value: duration,
@@ -213,9 +206,9 @@ class PerformanceMonitorImpl {
         method,
         endpoint: endpoint.split('?')[0] ?? endpoint, // Remove query params
         status: status.toString(),
-        status_class: `${Math.floor(status / 100)}xx`
-      }
-    })
+        status_class: `${Math.floor(status / 100)}xx`,
+      },
+    });
 
     // Track errors
     if (status >= 400) {
@@ -227,9 +220,9 @@ class PerformanceMonitorImpl {
         tags: {
           method,
           endpoint: endpoint.split('?')[0] ?? endpoint,
-          status: status.toString()
-        }
-      })
+          status: status.toString(),
+        },
+      });
     }
   }
 
@@ -241,15 +234,15 @@ class PerformanceMonitorImpl {
       unit: 'ms',
       timestamp: Date.now(),
       tags: {
-        route: route.replace(/\/\d+/g, '/:id') // Normalize dynamic routes
-      }
-    })
+        route: route.replace(/\/\d+/g, '/:id'), // Normalize dynamic routes
+      },
+    });
   }
 
   // Custom Performance Marks
   mark(name: string): void {
     if ('performance' in window && 'mark' in performance) {
-      performance.mark(name)
+      performance.mark(name);
     }
   }
 
@@ -257,13 +250,18 @@ class PerformanceMonitorImpl {
     if ('performance' in window && 'measure' in performance) {
       try {
         if (endMark !== undefined) {
-          performance.measure(name, startMark, endMark)
+          performance.measure(name, startMark, endMark);
         } else {
-          performance.measure(name, startMark)
+          performance.measure(name, startMark);
         }
       } catch (e) {
-        const err = e instanceof Error ? e : new Error(String(e))
-        logger.warn('Failed to create performance measure', { error: err, name, startMark, endMark })
+        const err = e instanceof Error ? e : new Error(String(e));
+        logger.warn('Failed to create performance measure', {
+          error: err,
+          name,
+          startMark,
+          endMark,
+        });
       }
     }
   }
@@ -275,8 +273,8 @@ class PerformanceMonitorImpl {
       value: duration || 1,
       unit: duration ? 'ms' : 'count',
       timestamp: Date.now(),
-      tags: { feature }
-    })
+      tags: { feature },
+    });
   }
 
   trackUserInteraction(interaction: string, duration: number): void {
@@ -285,12 +283,12 @@ class PerformanceMonitorImpl {
       value: duration,
       unit: 'ms',
       timestamp: Date.now(),
-      tags: { interaction }
-    })
+      tags: { interaction },
+    });
   }
 
   private recordMetric(metric: PerformanceMetric): void {
-    this.metrics.push(metric)
+    this.metrics.push(metric);
 
     // Send to Sentry
     sentryConfig.addBreadcrumb({
@@ -300,73 +298,75 @@ class PerformanceMonitorImpl {
       data: {
         value: metric.value,
         unit: metric.unit,
-        tags: metric.tags
-      }
-    })
+        tags: metric.tags,
+      },
+    });
 
     // Log to console in development
     if (import.meta.env.DEV) {
-      logger.debug('Performance metric recorded', metric)
+      logger.debug('Performance metric recorded', metric);
     }
 
     // Keep only last 1000 metrics in memory
     if (this.metrics.length > 1000) {
-      this.metrics = this.metrics.slice(-1000)
+      this.metrics = this.metrics.slice(-1000);
     }
   }
 
   // Get performance summary
   getSummary(): {
-    totalMetrics: number
-    averageValues: Record<string, number>
-    slowestOperations: PerformanceMetric[]
+    totalMetrics: number;
+    averageValues: Record<string, number>;
+    slowestOperations: PerformanceMetric[];
   } {
     const summary = {
       totalMetrics: this.metrics.length,
       averageValues: {} as Record<string, number>,
-      slowestOperations: [] as PerformanceMetric[]
-    }
+      slowestOperations: [] as PerformanceMetric[],
+    };
 
     // Calculate averages by metric name
-    const metricGroups = this.metrics.reduce((groups, metric) => {
-      if (!groups[metric.name]) {
-        groups[metric.name] = []
-      }
-      const group = groups[metric.name]
-      if (group) {
-        group.push(metric.value)
-      }
-      return groups
-    }, {} as Record<string, number[]>)
+    const metricGroups = this.metrics.reduce(
+      (groups, metric) => {
+        if (!groups[metric.name]) {
+          groups[metric.name] = [];
+        }
+        const group = groups[metric.name];
+        if (group) {
+          group.push(metric.value);
+        }
+        return groups;
+      },
+      {} as Record<string, number[]>
+    );
 
     Object.entries(metricGroups).forEach(([name, values]) => {
-      summary.averageValues[name] = values.reduce((sum, val) => sum + val, 0) / values.length
-    })
+      summary.averageValues[name] = values.reduce((sum, val) => sum + val, 0) / values.length;
+    });
 
     // Find slowest operations
     summary.slowestOperations = this.metrics
-      .filter(m => m.unit === 'ms' && m.value > 1000)
+      .filter((m) => m.unit === 'ms' && m.value > 1000)
       .sort((a, b) => b.value - a.value)
-      .slice(0, 10)
+      .slice(0, 10);
 
-    return summary
+    return summary;
   }
 
   cleanup(): void {
-    this.observers.forEach(observer => observer.disconnect())
-    this.observers = []
-    this.metrics = []
+    this.observers.forEach((observer) => observer.disconnect());
+    this.observers = [];
+    this.metrics = [];
   }
 }
 
-export const performanceMonitor = new PerformanceMonitorImpl()
+export const performanceMonitor = new PerformanceMonitorImpl();
 
 // Auto-initialize on load
 if (typeof window !== 'undefined') {
-  performanceMonitor.init()
-  
-  window.addEventListener('beforeunload', () => {
-    performanceMonitor.cleanup()
-  })
-}
+  performanceMonitor.init();
 
+  window.addEventListener('beforeunload', () => {
+    performanceMonitor.cleanup();
+  });
+}

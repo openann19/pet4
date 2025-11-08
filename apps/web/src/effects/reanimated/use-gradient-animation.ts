@@ -1,26 +1,32 @@
-'use client'
+'use client';
 
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
-import { useEffect } from 'react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import { useEffect } from 'react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface UseGradientAnimationOptions {
-  type?: 'scale' | 'rotate' | 'translate' | 'combined'
-  duration?: number
-  delay?: number
-  opacityRange?: [number, number]
-  scaleRange?: [number, number]
-  translateRange?: { x: [number, number]; y: [number, number] }
-  rotationRange?: [number, number]
+  type?: 'scale' | 'rotate' | 'translate' | 'combined';
+  duration?: number;
+  delay?: number;
+  opacityRange?: [number, number];
+  scaleRange?: [number, number];
+  translateRange?: { x: [number, number]; y: [number, number] };
+  rotationRange?: [number, number];
 }
 
 export interface UseGradientAnimationReturn {
-  scale: ReturnType<typeof useSharedValue<number>>
-  opacity: ReturnType<typeof useSharedValue<number>>
-  x: ReturnType<typeof useSharedValue<number>>
-  y: ReturnType<typeof useSharedValue<number>>
-  rotation: ReturnType<typeof useSharedValue<number>>
-  style: AnimatedStyle
+  scale: ReturnType<typeof useSharedValue<number>>;
+  opacity: ReturnType<typeof useSharedValue<number>>;
+  x: ReturnType<typeof useSharedValue<number>>;
+  y: ReturnType<typeof useSharedValue<number>>;
+  rotation: ReturnType<typeof useSharedValue<number>>;
+  style: AnimatedStyle;
 }
 
 export function useGradientAnimation(
@@ -33,14 +39,14 @@ export function useGradientAnimation(
     opacityRange = [0.4, 0.8],
     scaleRange = [1, 1.4],
     translateRange = { x: [0, 100], y: [0, 60] },
-    rotationRange = [0, 360]
-  } = options
+    rotationRange = [0, 360],
+  } = options;
 
-  const scale = useSharedValue(1)
-  const opacity = useSharedValue(opacityRange[0])
-  const x = useSharedValue(0)
-  const y = useSharedValue(0)
-  const rotation = useSharedValue(0)
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(opacityRange[0]);
+  const x = useSharedValue(0);
+  const y = useSharedValue(0);
+  const rotation = useSharedValue(0);
 
   useEffect(() => {
     if (type === 'scale' || type === 'combined') {
@@ -52,7 +58,7 @@ export function useGradientAnimation(
         ),
         -1,
         false
-      )
+      );
     }
 
     if (type === 'translate' || type === 'combined') {
@@ -64,7 +70,7 @@ export function useGradientAnimation(
         ),
         -1,
         false
-      )
+      );
 
       x.value = withRepeat(
         withSequence(
@@ -74,7 +80,7 @@ export function useGradientAnimation(
         ),
         -1,
         false
-      )
+      );
 
       y.value = withRepeat(
         withSequence(
@@ -84,7 +90,7 @@ export function useGradientAnimation(
         ),
         -1,
         false
-      )
+      );
     }
 
     if (type === 'rotate' || type === 'combined') {
@@ -92,31 +98,44 @@ export function useGradientAnimation(
         withTiming(rotationRange[1], { duration: duration * 1000 }),
         -1,
         false
-      )
+      );
     }
-  }, [type, duration, delay, opacityRange, scaleRange, translateRange, rotationRange, scale, opacity, x, y, rotation])
+  }, [
+    type,
+    duration,
+    delay,
+    opacityRange,
+    scaleRange,
+    translateRange,
+    rotationRange,
+    scale,
+    opacity,
+    x,
+    y,
+    rotation,
+  ]);
 
   const style = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number>> = []
+    const transforms: Record<string, number>[] = [];
 
     if (type === 'scale' || type === 'combined') {
-      transforms.push({ scale: scale.value })
+      transforms.push({ scale: scale.value });
     }
 
     if (type === 'translate' || type === 'combined') {
-      transforms.push({ translateX: x.value })
-      transforms.push({ translateY: y.value })
+      transforms.push({ translateX: x.value });
+      transforms.push({ translateY: y.value });
     }
 
     if (type === 'rotate' || type === 'combined') {
-      transforms.push({ rotate: rotation.value })
+      transforms.push({ rotate: rotation.value });
     }
 
     return {
       transform: transforms,
-      opacity: opacity.value
-    }
-  }) as AnimatedStyle
+      opacity: opacity.value,
+    };
+  }) as AnimatedStyle;
 
   return {
     scale,
@@ -124,7 +143,6 @@ export function useGradientAnimation(
     x,
     y,
     rotation,
-    style
-  }
+    style,
+  };
 }
-

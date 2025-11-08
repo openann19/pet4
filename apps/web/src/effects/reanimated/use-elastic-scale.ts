@@ -3,7 +3,12 @@
  * Bouncy, elastic scale effect with overshoot for delightful interactions
  */
 
-import { useSharedValue, useAnimatedStyle, withSpring, withSequence } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withSequence,
+} from 'react-native-reanimated';
 import { useCallback } from 'react';
 
 export interface UseElasticScaleOptions {
@@ -15,13 +20,7 @@ export interface UseElasticScaleOptions {
 }
 
 export function useElasticScale(options: UseElasticScaleOptions = {}) {
-  const {
-    scaleUp = 1.15,
-    scaleDown = 0.95,
-    damping = 12,
-    stiffness = 200,
-    mass = 0.8,
-  } = options;
+  const { scaleUp = 1.15, scaleDown = 0.95, damping = 12, stiffness = 200, mass = 0.8 } = options;
 
   const scale = useSharedValue(1);
 

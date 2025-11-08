@@ -1,4 +1,5 @@
 import React from 'react'
+import { View } from 'react-native'
 import Animated from 'react-native-reanimated'
 import type { ViewProps } from 'react-native'
 import type { AnimatedStyle as ReanimatedAnimatedStyle } from 'react-native-reanimated'
@@ -8,7 +9,7 @@ import type { AnimatedStyle as ReanimatedAnimatedStyle } from 'react-native-rean
  * Provides consistent animated View component across the app
  */
 export const AnimatedView = Animated.createAnimatedComponent(
-  React.forwardRef<any, ViewProps>((props, ref) => (
+  React.forwardRef((props: ViewProps, ref: React.Ref<View>) => (
     <Animated.View ref={ref} {...props} />
   ))
 )

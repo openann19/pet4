@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { type ReactNode } from 'react'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { type ReactNode } from 'react';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface NavButtonProps {
-  isActive: boolean
-  onClick: () => void
-  icon: ReactNode
-  label: string
-  className?: string
-  enablePulse?: boolean
-  enableIconAnimation?: boolean
+  isActive: boolean;
+  onClick: () => void;
+  icon: ReactNode;
+  label: string;
+  className?: string;
+  enablePulse?: boolean;
+  enableIconAnimation?: boolean;
 }
 
 export function NavButton({
@@ -30,32 +30,33 @@ export function NavButton({
     enablePulse,
     enableRotation: false,
     hapticFeedback: true,
-  })
+  });
 
   const bounceAnimation = useBounceOnTap({
     onPress: onClick,
     hapticFeedback: true,
-  })
+  });
 
   const handleMouseEnter = (): void => {
-    animation.handleHover()
-  }
+    animation.handleHover();
+  };
 
   const handleMouseLeave = (): void => {
-    animation.handleLeave()
-  }
+    animation.handleLeave();
+  };
 
   const activeClasses = isActive
     ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
-    : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+    : 'text-muted-foreground hover:text-foreground hover:bg-muted/60';
 
   const combinedStyle: AnimatedStyle = {
     ...(animation.buttonStyle as Record<string, unknown>),
     transform: [
-      ...((animation.buttonStyle as { transform?: Array<Record<string, unknown>> })?.transform || []),
-      ...((bounceAnimation.animatedStyle as { transform?: Array<Record<string, unknown>> })?.transform || []),
+      ...((animation.buttonStyle as { transform?: Record<string, unknown>[] })?.transform || []),
+      ...((bounceAnimation.animatedStyle as { transform?: Record<string, unknown>[] })?.transform ||
+        []),
     ],
-  }
+  };
 
   return (
     <AnimatedView
@@ -68,8 +69,8 @@ export function NavButton({
       tabIndex={0}
       onKeyDown={(e: React.KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          bounceAnimation.handlePress()
+          e.preventDefault();
+          bounceAnimation.handlePress();
         }
       }}
     >
@@ -89,5 +90,5 @@ export function NavButton({
         </AnimatedView>
       )}
     </AnimatedView>
-  )
+  );
 }

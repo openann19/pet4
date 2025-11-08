@@ -1,26 +1,59 @@
-import { useState, useEffect, lazy, Suspense } from 'react'
-import { useStorage } from '@/hooks/useStorage'
-import { X, Dog, Cat, Bird, Fish, Rabbit, PawPrint, ArrowLeft, ArrowRight, Check, Sparkle } from '@phosphor-icons/react'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence'
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence } from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { toast } from 'sonner'
-import type { Pet } from '@/lib/types'
-import { getTemplatesByType, type PetType, type PetProfileTemplate } from '@/lib/pet-profile-templates'
+import { useState, useEffect, lazy, Suspense } from 'react';
+import { useStorage } from '@/hooks/use-storage';
+import {
+  X,
+  Dog,
+  Cat,
+  Bird,
+  Fish,
+  Rabbit,
+  PawPrint,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Sparkle,
+} from '@phosphor-icons/react';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withRepeat,
+  withSequence,
+} from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
+import type { Pet } from '@/lib/types';
+import {
+  getTemplatesByType,
+  type PetType,
+  type PetProfileTemplate,
+} from '@/lib/pet-profile-templates';
 
 // Lazy load heavy components
-const PetPhotoAnalyzer = lazy(() => import('@/components/PetPhotoAnalyzer').then(module => ({ default: module.default })))
+const PetPhotoAnalyzer = lazy(() =>
+  import('@/components/PetPhotoAnalyzer').then((module) => ({ default: module.default }))
+);
 
-type Step = 'type' | 'template' | 'basics' | 'characteristics' | 'personality' | 'preferences' | 'photo' | 'complete'
+type Step =
+  | 'type'
+  | 'template'
+  | 'basics'
+  | 'characteristics'
+  | 'personality'
+  | 'preferences'
+  | 'photo'
+  | 'complete';
 
 const PET_TYPES = [
   { value: 'dog' as PetType, label: 'Dog', icon: Dog, emoji: '🐕' },
@@ -28,75 +61,246 @@ const PET_TYPES = [
   { value: 'bird' as PetType, label: 'Bird', icon: Bird, emoji: '🦜' },
   { value: 'rabbit' as PetType, label: 'Rabbit', icon: Rabbit, emoji: '🐰' },
   { value: 'fish' as PetType, label: 'Fish', icon: Fish, emoji: '🐠' },
-  { value: 'other' as PetType, label: 'Other', icon: PawPrint, emoji: '🐾' }
-]
+  { value: 'other' as PetType, label: 'Other', icon: PawPrint, emoji: '🐾' },
+];
 
 const PERSONALITY_TRAITS: Record<PetType, string[]> = {
-  dog: ['Playful', 'Calm', 'Energetic', 'Gentle', 'Social', 'Independent', 'Affectionate', 'Loyal', 'Friendly', 'Protective'],
-  cat: ['Independent', 'Playful', 'Calm', 'Affectionate', 'Curious', 'Gentle', 'Social', 'Vocal', 'Lap Cat', 'Adventurous'],
-  bird: ['Vocal', 'Social', 'Playful', 'Calm', 'Affectionate', 'Independent', 'Curious', 'Musical', 'Friendly', 'Interactive'],
-  rabbit: ['Calm', 'Playful', 'Gentle', 'Social', 'Curious', 'Affectionate', 'Independent', 'Active', 'Friendly', 'Cuddly'],
-  fish: ['Peaceful', 'Active', 'Social', 'Solitary', 'Hardy', 'Delicate', 'Colorful', 'Bottom-dweller', 'Surface-swimmer', 'Schooling'],
-  other: ['Playful', 'Calm', 'Energetic', 'Gentle', 'Social', 'Independent', 'Affectionate', 'Curious', 'Friendly', 'Active']
-}
+  dog: [
+    'Playful',
+    'Calm',
+    'Energetic',
+    'Gentle',
+    'Social',
+    'Independent',
+    'Affectionate',
+    'Loyal',
+    'Friendly',
+    'Protective',
+  ],
+  cat: [
+    'Independent',
+    'Playful',
+    'Calm',
+    'Affectionate',
+    'Curious',
+    'Gentle',
+    'Social',
+    'Vocal',
+    'Lap Cat',
+    'Adventurous',
+  ],
+  bird: [
+    'Vocal',
+    'Social',
+    'Playful',
+    'Calm',
+    'Affectionate',
+    'Independent',
+    'Curious',
+    'Musical',
+    'Friendly',
+    'Interactive',
+  ],
+  rabbit: [
+    'Calm',
+    'Playful',
+    'Gentle',
+    'Social',
+    'Curious',
+    'Affectionate',
+    'Independent',
+    'Active',
+    'Friendly',
+    'Cuddly',
+  ],
+  fish: [
+    'Peaceful',
+    'Active',
+    'Social',
+    'Solitary',
+    'Hardy',
+    'Delicate',
+    'Colorful',
+    'Bottom-dweller',
+    'Surface-swimmer',
+    'Schooling',
+  ],
+  other: [
+    'Playful',
+    'Calm',
+    'Energetic',
+    'Gentle',
+    'Social',
+    'Independent',
+    'Affectionate',
+    'Curious',
+    'Friendly',
+    'Active',
+  ],
+};
 
 const INTERESTS: Record<PetType, string[]> = {
-  dog: ['Fetch', 'Swimming', 'Hiking', 'Running', 'Cuddling', 'Treats', 'Toys', 'Parks', 'Beach', 'Car Rides', 'Training', 'Agility'],
-  cat: ['Toys', 'Laser Pointer', 'Catnip', 'Climbing', 'Hunting', 'Cuddling', 'Treats', 'Windows', 'Scratching', 'Exploring', 'Napping', 'Playing'],
-  bird: ['Singing', 'Talking', 'Flying', 'Toys', 'Treats', 'Perching', 'Foraging', 'Social Time', 'Music', 'Training', 'Exploring', 'Playing'],
-  rabbit: ['Hopping', 'Exploring', 'Digging', 'Chewing', 'Treats', 'Toys', 'Cuddling', 'Running', 'Hiding', 'Garden Time', 'Playing', 'Grooming'],
-  fish: ['Swimming', 'Exploring', 'Hiding', 'Feeding Time', 'Plants', 'Decorations', 'Schooling', 'Bubble Nests', 'Surface Activity', 'Bottom Foraging'],
-  other: ['Exploring', 'Treats', 'Toys', 'Cuddling', 'Playing', 'Exercise', 'Social Time', 'Training', 'Napping', 'Activities']
-}
+  dog: [
+    'Fetch',
+    'Swimming',
+    'Hiking',
+    'Running',
+    'Cuddling',
+    'Treats',
+    'Toys',
+    'Parks',
+    'Beach',
+    'Car Rides',
+    'Training',
+    'Agility',
+  ],
+  cat: [
+    'Toys',
+    'Laser Pointer',
+    'Catnip',
+    'Climbing',
+    'Hunting',
+    'Cuddling',
+    'Treats',
+    'Windows',
+    'Scratching',
+    'Exploring',
+    'Napping',
+    'Playing',
+  ],
+  bird: [
+    'Singing',
+    'Talking',
+    'Flying',
+    'Toys',
+    'Treats',
+    'Perching',
+    'Foraging',
+    'Social Time',
+    'Music',
+    'Training',
+    'Exploring',
+    'Playing',
+  ],
+  rabbit: [
+    'Hopping',
+    'Exploring',
+    'Digging',
+    'Chewing',
+    'Treats',
+    'Toys',
+    'Cuddling',
+    'Running',
+    'Hiding',
+    'Garden Time',
+    'Playing',
+    'Grooming',
+  ],
+  fish: [
+    'Swimming',
+    'Exploring',
+    'Hiding',
+    'Feeding Time',
+    'Plants',
+    'Decorations',
+    'Schooling',
+    'Bubble Nests',
+    'Surface Activity',
+    'Bottom Foraging',
+  ],
+  other: [
+    'Exploring',
+    'Treats',
+    'Toys',
+    'Cuddling',
+    'Playing',
+    'Exercise',
+    'Social Time',
+    'Training',
+    'Napping',
+    'Activities',
+  ],
+};
 
 const LOOKING_FOR: Record<PetType, string[]> = {
-  dog: ['Playdate', 'Walking Buddy', 'Best Friend', 'Training Partner', 'Adventure Buddy', 'Park Companion'],
-  cat: ['Playmate', 'Cuddle Buddy', 'Window Watching Friend', 'Nap Companion', 'Play Partner', 'Friend'],
-  bird: ['Cage Mate', 'Singing Partner', 'Play Companion', 'Social Buddy', 'Friend', 'Flock Member'],
-  rabbit: ['Bonded Pair', 'Play Companion', 'Cuddle Buddy', 'Exercise Partner', 'Friend', 'Warren Mate'],
-  fish: ['Tank Mate', 'School Member', 'Peaceful Companion', 'Breeding Partner', 'Community Member', 'Friend'],
-  other: ['Companion', 'Playmate', 'Friend', 'Social Buddy', 'Activity Partner', 'Best Friend']
-}
+  dog: [
+    'Playdate',
+    'Walking Buddy',
+    'Best Friend',
+    'Training Partner',
+    'Adventure Buddy',
+    'Park Companion',
+  ],
+  cat: [
+    'Playmate',
+    'Cuddle Buddy',
+    'Window Watching Friend',
+    'Nap Companion',
+    'Play Partner',
+    'Friend',
+  ],
+  bird: [
+    'Cage Mate',
+    'Singing Partner',
+    'Play Companion',
+    'Social Buddy',
+    'Friend',
+    'Flock Member',
+  ],
+  rabbit: [
+    'Bonded Pair',
+    'Play Companion',
+    'Cuddle Buddy',
+    'Exercise Partner',
+    'Friend',
+    'Warren Mate',
+  ],
+  fish: [
+    'Tank Mate',
+    'School Member',
+    'Peaceful Companion',
+    'Breeding Partner',
+    'Community Member',
+    'Friend',
+  ],
+  other: ['Companion', 'Playmate', 'Friend', 'Social Buddy', 'Activity Partner', 'Best Friend'],
+};
 
 interface CreatePetDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  editingPet?: Pet | null
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  editingPet?: Pet | null;
 }
 
 export default function CreatePetDialog({ open, onOpenChange, editingPet }: CreatePetDialogProps) {
-  const [_userPets, setUserPets] = useStorage<Pet[]>('user-pets', [])
-  const [_allPets, setAllPets] = useStorage<Pet[]>('all-pets', [])
+  const [_userPets, setUserPets] = useStorage<Pet[]>('user-pets', []);
+  const [_allPets, setAllPets] = useStorage<Pet[]>('all-pets', []);
 
-  const [currentStep, setCurrentStep] = useState<Step>('type')
-  const [petType, setPetType] = useState<PetType>('dog')
-  const [selectedTemplate, setSelectedTemplate] = useState<PetProfileTemplate | null>(null)
-  const [name, setName] = useState('')
-  const [breed, setBreed] = useState('')
-  const [age, setAge] = useState('')
-  const [gender, setGender] = useState<'male' | 'female'>('male')
-  const [size, setSize] = useState<'small' | 'medium' | 'large' | 'extra-large'>('medium')
-  const [photo, setPhoto] = useState('')
-  const [bio, setBio] = useState('')
-  const [location, setLocation] = useState('')
-  const [personality, setPersonality] = useState<string[]>([])
-  const [interests, setInterests] = useState<string[]>([])
-  const [lookingFor, setLookingFor] = useState<string[]>([])
+  const [currentStep, setCurrentStep] = useState<Step>('type');
+  const [petType, setPetType] = useState<PetType>('dog');
+  const [selectedTemplate, setSelectedTemplate] = useState<PetProfileTemplate | null>(null);
+  const [name, setName] = useState('');
+  const [breed, setBreed] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState<'male' | 'female'>('male');
+  const [size, setSize] = useState<'small' | 'medium' | 'large' | 'extra-large'>('medium');
+  const [photo, setPhoto] = useState('');
+  const [bio, setBio] = useState('');
+  const [location, setLocation] = useState('');
+  const [personality, setPersonality] = useState<string[]>([]);
+  const [interests, setInterests] = useState<string[]>([]);
+  const [lookingFor, setLookingFor] = useState<string[]>([]);
 
   // Animation hooks for step transitions
-  const stepOpacity = useSharedValue(1)
-  const stepX = useSharedValue(0)
-  
+  const stepOpacity = useSharedValue(1);
+  const stepX = useSharedValue(0);
+
   // Animation hooks for interactive elements
-  const petTypeButtonHover = useHoverLift()
-  const petTypeButtonTap = useBounceOnTap()
-  const templateButtonHover = useHoverLift()
-  const templateButtonTap = useBounceOnTap()
-  const actionButtonHover = useHoverLift()
-  const actionButtonTap = useBounceOnTap()
-  
+  const petTypeButtonHover = useHoverLift();
+  const petTypeButtonTap = useBounceOnTap();
+
   // Animation for emoji rotation
-  const emojiRotation = useSharedValue(0)
+  const emojiRotation = useSharedValue(0);
 
   useEffect(() => {
     emojiRotation.value = withRepeat(
@@ -107,150 +311,168 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
       ),
       -1,
       false
-    )
-  }, [emojiRotation])
+    );
+  }, [emojiRotation]);
 
   const emojiStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${emojiRotation.value}deg` }]
-  })) as AnimatedStyle
+    transform: [{ rotate: `${emojiRotation.value}deg` }],
+  })) as AnimatedStyle;
 
   // Presence hooks for conditional rendering
-  const photoPresence = useAnimatePresence({ isVisible: !!photo })
-  const completeStepPresence = useAnimatePresence({ isVisible: currentStep !== 'complete' })
+  const photoPresence = useAnimatePresence({ isVisible: !!photo });
+  const completeStepPresence = useAnimatePresence({ isVisible: currentStep !== 'complete' });
 
   useEffect(() => {
     // Animate step transitions
-    stepOpacity.value = withSpring(0, { damping: 20, stiffness: 300 })
-    stepX.value = withSpring(-20, { damping: 20, stiffness: 300 })
-    
+    stepOpacity.value = withSpring(0, { damping: 20, stiffness: 300 });
+    stepX.value = withSpring(-20, { damping: 20, stiffness: 300 });
+
     setTimeout(() => {
-      stepOpacity.value = withSpring(1, { damping: 20, stiffness: 300 })
-      stepX.value = withSpring(0, { damping: 20, stiffness: 300 })
-    }, 50)
-  }, [currentStep])
+      stepOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
+      stepX.value = withSpring(0, { damping: 20, stiffness: 300 });
+    }, 50);
+  }, [currentStep]);
 
   const stepStyle = useAnimatedStyle(() => ({
     opacity: stepOpacity.value,
-    transform: [{ translateX: stepX.value }]
-  })) as AnimatedStyle
+    transform: [{ translateX: stepX.value }],
+  })) as AnimatedStyle;
 
   // Progress bar animation
-  const progressWidth = useSharedValue(0)
-  
+  const progressWidth = useSharedValue(0);
+
   useEffect(() => {
-    progressWidth.value = withTiming(stepProgress(), { duration: 300 })
-  }, [currentStep, progressWidth])
+    progressWidth.value = withTiming(stepProgress(), { duration: 300 });
+  }, [currentStep, progressWidth]);
 
   const progressStyle = useAnimatedStyle(() => ({
-    width: `${progressWidth.value}%`
-  })) as AnimatedStyle
+    width: `${progressWidth.value}%`,
+  })) as AnimatedStyle;
 
   useEffect(() => {
     if (editingPet) {
-      setCurrentStep('basics')
-      setSelectedTemplate(null)
-      setName(editingPet.name)
-      setBreed(editingPet.breed)
-      setAge(editingPet.age.toString())
-      setGender(editingPet.gender)
-      setSize(editingPet.size)
-      setPhoto(editingPet.photo)
-      setBio(editingPet.bio)
-      setLocation(editingPet.location)
-      setPersonality(editingPet.personality)
-      setInterests(editingPet.interests)
-      setLookingFor(editingPet.lookingFor)
+      setCurrentStep('basics');
+      setSelectedTemplate(null);
+      setName(editingPet.name);
+      setBreed(editingPet.breed);
+      setAge(editingPet.age.toString());
+      setGender(editingPet.gender);
+      setSize(editingPet.size);
+      setPhoto(editingPet.photo);
+      setBio(editingPet.bio);
+      setLocation(editingPet.location);
+      setPersonality(editingPet.personality);
+      setInterests(editingPet.interests);
+      setLookingFor(editingPet.lookingFor);
     } else {
-      resetForm()
+      resetForm();
     }
-  }, [editingPet, open])
+  }, [editingPet, open]);
 
   const resetForm = () => {
-    setCurrentStep('type')
-    setPetType('dog')
-    setSelectedTemplate(null)
-    setName('')
-    setBreed('')
-    setAge('')
-    setGender('male')
-    setSize('medium')
-    setPhoto('')
-    setBio('')
-    setLocation('')
-    setPersonality([])
-    setInterests([])
-    setLookingFor([])
-  }
+    setCurrentStep('type');
+    setPetType('dog');
+    setSelectedTemplate(null);
+    setName('');
+    setBreed('');
+    setAge('');
+    setGender('male');
+    setSize('medium');
+    setPhoto('');
+    setBio('');
+    setLocation('');
+    setPersonality([]);
+    setInterests([]);
+    setLookingFor([]);
+  };
 
   const applyTemplate = (template: PetProfileTemplate) => {
-    setSelectedTemplate(template)
-    if (template.defaults.size) setSize(template.defaults.size)
-    if (template.defaults.breed) setBreed(template.defaults.breed)
-    if (template.defaults.bio) setBio(template.defaults.bio)
-    setPersonality(template.defaults.personality)
-    setInterests(template.defaults.interests)
-    setLookingFor(template.defaults.lookingFor)
-  }
+    setSelectedTemplate(template);
+    if (template.defaults.size) setSize(template.defaults.size);
+    if (template.defaults.breed) setBreed(template.defaults.breed);
+    if (template.defaults.bio) setBio(template.defaults.bio);
+    setPersonality(template.defaults.personality);
+    setInterests(template.defaults.interests);
+    setLookingFor(template.defaults.lookingFor);
+  };
 
   const toggleArrayItem = (arr: string[], item: string, setter: (arr: string[]) => void) => {
     if (arr.includes(item)) {
-      setter(arr.filter(i => i !== item))
+      setter(arr.filter((i) => i !== item));
     } else {
-      setter([...arr, item])
+      setter([...arr, item]);
     }
-  }
+  };
 
   const handleNext = () => {
-    const steps: Step[] = ['type', 'template', 'basics', 'characteristics', 'photo', 'personality', 'preferences', 'complete']
-    const currentIndex = steps.indexOf(currentStep)
+    const steps: Step[] = [
+      'type',
+      'template',
+      'basics',
+      'characteristics',
+      'photo',
+      'personality',
+      'preferences',
+      'complete',
+    ];
+    const currentIndex = steps.indexOf(currentStep);
     if (currentIndex >= 0 && currentIndex < steps.length - 1) {
-      const nextStep = steps[currentIndex + 1]
+      const nextStep = steps[currentIndex + 1];
       if (nextStep) {
-        setCurrentStep(nextStep)
+        setCurrentStep(nextStep);
       }
     }
-  }
+  };
 
   const handleBack = () => {
-    const steps: Step[] = ['type', 'template', 'basics', 'characteristics', 'photo', 'personality', 'preferences', 'complete']
-    const currentIndex = steps.indexOf(currentStep)
+    const steps: Step[] = [
+      'type',
+      'template',
+      'basics',
+      'characteristics',
+      'photo',
+      'personality',
+      'preferences',
+      'complete',
+    ];
+    const currentIndex = steps.indexOf(currentStep);
     if (currentIndex > 0) {
-      const prevStep = steps[currentIndex - 1]
+      const prevStep = steps[currentIndex - 1];
       if (prevStep) {
-        setCurrentStep(prevStep)
+        setCurrentStep(prevStep);
       }
     }
-  }
+  };
 
   const skipToBasics = () => {
-    setCurrentStep('basics')
-  }
+    setCurrentStep('basics');
+  };
 
   const canProceed = () => {
     switch (currentStep) {
       case 'type':
-        return !!petType
+        return !!petType;
       case 'template':
-        return true
+        return true;
       case 'basics':
-        return !!(name && breed && age)
+        return !!(name && breed && age);
       case 'characteristics':
-        return !!(gender && size && location)
+        return !!(gender && size && location);
       case 'photo':
-        return !!photo
+        return !!photo;
       case 'personality':
-        return personality.length > 0
+        return personality.length > 0;
       case 'preferences':
-        return interests.length > 0 && lookingFor.length > 0
+        return interests.length > 0 && lookingFor.length > 0;
       default:
-        return true
+        return true;
     }
-  }
+  };
 
   const handleSubmit = () => {
     if (!name || !breed || !age || !photo || !location) {
-      toast.error('Please complete all required fields')
-      return
+      toast.error('Please complete all required fields');
+      return;
     }
 
     const petData: Pet = {
@@ -271,60 +493,58 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
       ownerName: 'You',
       verified: false,
       createdAt: editingPet?.createdAt || new Date().toISOString(),
-    }
+    };
 
     if (editingPet) {
-      setUserPets((current) => (current || []).map(p => p.id === editingPet.id ? petData : p))
-      setAllPets((current) => (current || []).map(p => p.id === editingPet.id ? petData : p))
-      
+      setUserPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
+      setAllPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
+
       toast.success('Pet profile updated!', {
-        description: `${name}'s profile has been updated successfully.`
-      })
+        description: `${name}'s profile has been updated successfully.`,
+      });
     } else {
-      setUserPets((current) => [...(current || []), petData])
-      setAllPets((current) => [...(current || []), petData])
+      setUserPets((current) => [...(current || []), petData]);
+      setAllPets((current) => [...(current || []), petData]);
       toast.success('Pet profile created! 🎉', {
-        description: `${name} is ready to find perfect companions!`
-      })
+        description: `${name} is ready to find perfect companions!`,
+      });
     }
 
-    onOpenChange(false)
-    resetForm()
-  }
+    onOpenChange(false);
+    resetForm();
+  };
 
   const renderStepContent = () => {
     switch (currentStep) {
       case 'type':
         return (
-          <AnimatedView
-            key="type"
-            style={stepStyle}
-            className="space-y-6"
-          >
+          <AnimatedView key="type" style={stepStyle} className="space-y-6">
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold mb-2">What type of pet do you have?</h3>
-              <p className="text-muted-foreground">Choose the option that best describes your companion</p>
+              <p className="text-muted-foreground">
+                Choose the option that best describes your companion
+              </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {PET_TYPES.map((type) => {
-                const Icon = type.icon
+                const Icon = type.icon;
                 return (
                   <AnimatedView
                     key={type.value}
                     style={petTypeButtonTap.animatedStyle}
                     onClick={() => {
-                      setPetType(type.value)
-                      setTimeout(() => handleNext(), 400)
+                      setPetType(type.value);
+                      setTimeout(() => handleNext(), 400);
                     }}
                     className={`relative p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
                       petType === type.value
                         ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                         : 'border-border bg-card hover:border-primary/50 hover:bg-card/80'
                     }`}
-                    onMouseEnter={petTypeButtonHover.handleHover}
+                    onMouseEnter={petTypeButtonHover.handleEnter}
                     onMouseLeave={petTypeButtonHover.handleLeave}
                   >
-                    <AnimatedView style={petTypeButtonHover.buttonStyle}>
+                    <AnimatedView style={petTypeButtonHover.animatedStyle}>
                       <div className="flex flex-col items-center gap-3">
                         <span className="text-4xl">{type.emoji}</span>
                         <Icon size={32} weight="duotone" className="text-primary" />
@@ -333,32 +553,32 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
                     </AnimatedView>
                     {petType === type.value && (
                       <AnimatedView
-                        style={useAnimatedStyle(() => ({
-                          transform: [{ scale: 1 }]
-                        })) as AnimatedStyle}
+                        style={
+                          useAnimatedStyle(() => ({
+                            transform: [{ scale: 1 }],
+                          })) as AnimatedStyle
+                        }
                         className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1"
                       >
                         <Check size={16} weight="bold" />
                       </AnimatedView>
                     )}
                   </AnimatedView>
-                )
+                );
               })}
             </div>
           </AnimatedView>
-        )
+        );
 
       case 'template': {
-        const templates = getTemplatesByType(petType)
+        const templates = getTemplatesByType(petType);
         return (
-          <AnimatedView
-            key="template"
-            style={stepStyle}
-            className="space-y-6"
-          >
+          <AnimatedView key="template" style={stepStyle} className="space-y-6">
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold mb-2">Choose a profile template</h3>
-              <p className="text-muted-foreground">Pre-fill your pet's profile with common traits, or skip to customize everything</p>
+              <p className="text-muted-foreground">
+                Pre-fill your pet's profile with common traits, or skip to customize everything
+              </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-2">
               {templates.map((template) => (
@@ -366,8 +586,8 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
                   key={template.id}
                   type="button"
                   onClick={() => {
-                    applyTemplate(template)
-                    setTimeout(() => handleNext(), 300)
+                    applyTemplate(template);
+                    setTimeout(() => handleNext(), 300);
                   }}
                   className={`relative p-4 rounded-xl border-2 text-left transition-all duration-300 ${
                     selectedTemplate?.id === template.id
@@ -381,14 +601,14 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
                       <div className="flex items-center justify-between mb-1">
                         <h4 className="font-semibold text-base">{template.name}</h4>
                         {selectedTemplate?.id === template.id && (
-                          <AnimatedView
-                            className="bg-primary text-primary-foreground rounded-full p-1 shrink-0"
-                          >
+                          <AnimatedView className="bg-primary text-primary-foreground rounded-full p-1 shrink-0">
                             <Check size={14} weight="bold" />
                           </AnimatedView>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{template.description}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {template.description}
+                      </p>
                       <div className="mt-2 flex flex-wrap gap-1">
                         {template.defaults.personality.slice(0, 3).map((trait) => (
                           <Badge key={trait} variant="secondary" className="text-xs">
@@ -406,28 +626,23 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
                 </AnimatedView>
               ))}
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={skipToBasics}
-            >
+            <Button type="button" variant="outline" className="w-full" onClick={skipToBasics}>
               <Sparkle size={16} className="mr-2" />
               Skip & Customize From Scratch
             </Button>
           </AnimatedView>
-        )
+        );
       }
 
       case 'basics':
         return (
-          <AnimatedView
-            key="basics"
-            className="space-y-6"
-          >
+          <AnimatedView key="basics" className="space-y-6">
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold mb-2">Tell us the basics</h3>
-              <p className="text-muted-foreground">What's your {PET_TYPES.find(t => t.value === petType)?.label.toLowerCase()}'s name, breed, and age?</p>
+              <p className="text-muted-foreground">
+                What's your {PET_TYPES.find((t) => t.value === petType)?.label.toLowerCase()}'s
+                name, breed, and age?
+              </p>
             </div>
             <div className="space-y-4">
               <div>
@@ -466,17 +681,16 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
               </div>
             </div>
           </AnimatedView>
-        )
+        );
 
       case 'characteristics':
         return (
-          <AnimatedView
-            key="characteristics"
-            className="space-y-6"
-          >
+          <AnimatedView key="characteristics" className="space-y-6">
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold mb-2">Physical characteristics</h3>
-              <p className="text-muted-foreground">Help others know more about {name || 'your pet'}</p>
+              <p className="text-muted-foreground">
+                Help others know more about {name || 'your pet'}
+              </p>
             </div>
             <div className="space-y-6">
               <div>
@@ -505,14 +719,16 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
                 </div>
               </div>
               <div>
-                <Label htmlFor="size" className="mb-3 block">Size *</Label>
+                <Label htmlFor="size" className="mb-3 block">
+                  Size *
+                </Label>
                 <select
                   id="size"
                   value={size}
                   onChange={(e) => {
-                    const value = e.target.value as 'small' | 'medium' | 'large' | 'extra-large'
+                    const value = e.target.value as 'small' | 'medium' | 'large' | 'extra-large';
                     if (['small', 'medium', 'large', 'extra-large'].includes(value)) {
-                      setSize(value)
+                      setSize(value);
                     }
                   }}
                   className="w-full px-4 py-3 border border-input rounded-lg bg-background hover:border-ring transition-colors text-lg"
@@ -535,30 +751,31 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
               </div>
             </div>
           </AnimatedView>
-        )
+        );
 
       case 'photo':
         return (
-          <AnimatedView
-            key="photo"
-            className="space-y-6"
-          >
+          <AnimatedView key="photo" className="space-y-6">
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold mb-2">Add a photo of {name || 'your pet'}</h3>
-              <p className="text-muted-foreground">A great photo helps others connect with your companion</p>
+              <p className="text-muted-foreground">
+                A great photo helps others connect with your companion
+              </p>
             </div>
-            <Suspense fallback={
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            }>
-              <PetPhotoAnalyzer 
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              }
+            >
+              <PetPhotoAnalyzer
                 onAnalysisComplete={(result) => {
-                  setPhoto(result.photo)
-                  if (!breed) setBreed(result.breed)
-                  if (!age) setAge(result.age.toString())
-                  setSize(result.size)
-                  setPersonality(result.personality)
+                  setPhoto(result.photo);
+                  if (!breed) setBreed(result.breed);
+                  if (!age) setAge(result.age.toString());
+                  setSize(result.size);
+                  setPersonality(result.personality);
                 }}
               />
             </Suspense>
@@ -572,11 +789,11 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
                 className="mt-1"
               />
               {photoPresence.shouldRender && photo && (
-                <AnimatedView 
+                <AnimatedView
                   style={photoPresence.animatedStyle}
-                  className="mt-4 relative h-64 rounded-xl overflow-hidden bg-muted shadow-lg"                                                                
+                  className="mt-4 relative h-64 rounded-xl overflow-hidden bg-muted shadow-lg"
                 >
-                  <img src={photo} alt="Preview" className="w-full h-full object-cover" />                                                                    
+                  <img src={photo} alt="Preview" className="w-full h-full object-cover" />
                 </AnimatedView>
               )}
             </div>
@@ -592,48 +809,40 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
               />
             </div>
           </AnimatedView>
-        )
+        );
 
       case 'personality':
         return (
-          <AnimatedView
-            key="personality"
-            className="space-y-6"
-          >
+          <AnimatedView key="personality" className="space-y-6">
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold mb-2">What's {name || 'your pet'}'s personality?</h3>
+              <h3 className="text-2xl font-bold mb-2">
+                What's {name || 'your pet'}'s personality?
+              </h3>
               <p className="text-muted-foreground">Select all traits that apply</p>
             </div>
             <div className="flex flex-wrap gap-3 justify-center">
-              {PERSONALITY_TRAITS[petType].map((trait, idx) => (
-                <AnimatedView
+              {PERSONALITY_TRAITS[petType].map((trait) => (
+                <Badge
                   key={trait}
-                  
+                  variant={personality.includes(trait) ? 'default' : 'outline'}
+                  className="cursor-pointer px-4 py-2 text-base"
+                  onClick={() => toggleArrayItem(personality, trait, setPersonality)}
                 >
-                  <Badge
-                    variant={personality.includes(trait) ? 'default' : 'outline'}
-                    className="cursor-pointer px-4 py-2 text-base"
-                    onClick={() => toggleArrayItem(personality, trait, setPersonality)}
-                  >
-                    {trait}
-                    {personality.includes(trait) && (
-                      <span>
-                        <X size={14} className="ml-2" weight="bold" />
-                      </span>
-                    )}
-                  </Badge>
-                </AnimatedView>
+                  {trait}
+                  {personality.includes(trait) && (
+                    <span>
+                      <X size={14} className="ml-2" weight="bold" />
+                    </span>
+                  )}
+                </Badge>
               ))}
             </div>
           </AnimatedView>
-        )
+        );
 
       case 'preferences':
         return (
-          <AnimatedView
-            key="preferences"
-            className="space-y-8"
-          >
+          <AnimatedView key="preferences" className="space-y-8">
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold mb-2">What does {name || 'your pet'} enjoy?</h3>
               <p className="text-muted-foreground">This helps us find perfect companions</p>
@@ -642,63 +851,47 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
               <div>
                 <Label className="text-lg mb-3 block">Interests</Label>
                 <div className="flex flex-wrap gap-2">
-                  {INTERESTS[petType].map((interest, idx) => (
-                    <AnimatedView
+                  {INTERESTS[petType].map((interest) => (
+                    <Badge
                       key={interest}
-                      
+                      variant={interests.includes(interest) ? 'default' : 'outline'}
+                      className="cursor-pointer px-3 py-1.5"
+                      onClick={() => toggleArrayItem(interests, interest, setInterests)}
                     >
-                      <Badge
-                        variant={interests.includes(interest) ? 'default' : 'outline'}
-                        className="cursor-pointer px-3 py-1.5"
-                        onClick={() => toggleArrayItem(interests, interest, setInterests)}
-                      >
-                        {interest}
-                        {interests.includes(interest) && (
-                          <X size={12} className="ml-1.5" weight="bold" />
-                        )}
-                      </Badge>
-                    </AnimatedView>
+                      {interest}
+                      {interests.includes(interest) && (
+                        <X size={12} className="ml-1.5" weight="bold" />
+                      )}
+                    </Badge>
                   ))}
                 </div>
               </div>
               <div>
                 <Label className="text-lg mb-3 block">Looking For</Label>
                 <div className="flex flex-wrap gap-2">
-                  {LOOKING_FOR[petType].map((item, idx) => (
-                    <AnimatedView
+                  {LOOKING_FOR[petType].map((item) => (
+                    <Badge
                       key={item}
-                      
+                      variant={lookingFor.includes(item) ? 'default' : 'outline'}
+                      className="cursor-pointer px-3 py-1.5"
+                      onClick={() => toggleArrayItem(lookingFor, item, setLookingFor)}
                     >
-                      <Badge
-                        variant={lookingFor.includes(item) ? 'default' : 'outline'}
-                        className="cursor-pointer px-3 py-1.5"
-                        onClick={() => toggleArrayItem(lookingFor, item, setLookingFor)}
-                      >
-                        {item}
-                        {lookingFor.includes(item) && (
-                          <X size={12} className="ml-1.5" weight="bold" />
-                        )}
-                      </Badge>
-                    </AnimatedView>
+                      {item}
+                      {lookingFor.includes(item) && (
+                        <X size={12} className="ml-1.5" weight="bold" />
+                      )}
+                    </Badge>
                   ))}
                 </div>
               </div>
             </div>
           </AnimatedView>
-        )
+        );
 
       case 'complete':
         return (
-          <AnimatedView
-            key="complete"
-            className="space-y-6 text-center"
-          >
-            <AnimatedView
-              
-              className="text-8xl mb-4"
-            >
-              🎉
-            </AnimatedView>
+          <AnimatedView key="complete" className="space-y-6 text-center">
+            <AnimatedView className="text-8xl mb-4">🎉</AnimatedView>
             <h3 className="text-3xl font-bold">All set!</h3>
             <p className="text-lg text-muted-foreground">
               {name || 'Your pet'}'s profile is ready to go. Let's find some perfect companions!
@@ -718,7 +911,9 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Age:</span>
-                <span className="font-semibold">{age} {parseInt(age) === 1 ? 'year' : 'years'}</span>
+                <span className="font-semibold">
+                  {age} {parseInt(age) === 1 ? 'year' : 'years'}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Personality:</span>
@@ -726,26 +921,32 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
               </div>
             </div>
           </AnimatedView>
-        )
+        );
 
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const stepProgress = () => {
-    const steps: Step[] = ['type', 'basics', 'characteristics', 'photo', 'personality', 'preferences', 'complete']
-    return ((steps.indexOf(currentStep) + 1) / steps.length) * 100
-  }
+    const steps: Step[] = [
+      'type',
+      'basics',
+      'characteristics',
+      'photo',
+      'personality',
+      'preferences',
+      'complete',
+    ];
+    return ((steps.indexOf(currentStep) + 1) / steps.length) * 100;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
-            <AnimatedView style={emojiStyle}>
-              🐾
-            </AnimatedView>
+            <AnimatedView style={emojiStyle}>🐾</AnimatedView>
             {editingPet ? 'Edit Pet Profile' : 'Create Pet Profile'}
           </DialogTitle>
         </DialogHeader>
@@ -766,12 +967,7 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
         <div className="flex gap-3 pt-6 mt-6 border-t">
           {currentStep !== 'type' && currentStep !== 'complete' && (
             <AnimatedView>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleBack}
-                className="gap-2"
-              >
+              <Button type="button" variant="outline" onClick={handleBack} className="gap-2">
                 <ArrowLeft size={16} weight="bold" />
                 Back
               </Button>
@@ -805,5 +1001,5 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

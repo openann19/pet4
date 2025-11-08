@@ -87,11 +87,7 @@ export function LocationBubble({
               <SheetTitle className="text-xl font-bold">
                 {(t.map as { location?: string })?.location || 'Location'}
               </SheetTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowFullMap(false)}
-              >
+              <Button variant="ghost" size="icon" onClick={() => setShowFullMap(false)}>
                 <X size={20} />
               </Button>
             </div>
@@ -122,10 +118,7 @@ export function LocationBubble({
                 {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
               </p>
             </div>
-            <Button
-              className="w-full"
-              onClick={handleOpenInMaps}
-            >
+            <Button className="w-full" onClick={handleOpenInMaps}>
               <NavigationArrow size={18} className="mr-2" />
               {t.map?.openInMaps || 'Open in Maps'}
             </Button>
@@ -188,9 +181,7 @@ export function LocationPicker({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold">
-          {t.map?.shareLocation || 'Share location'}
-        </p>
+        <p className="text-sm font-semibold">{t.map?.shareLocation || 'Share location'}</p>
         <Badge
           variant={sharingPrecise ? 'default' : 'secondary'}
           className="cursor-pointer"
@@ -234,4 +225,3 @@ export function LocationPicker({
     </div>
   );
 }
-

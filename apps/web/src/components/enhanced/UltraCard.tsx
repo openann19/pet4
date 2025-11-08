@@ -70,12 +70,12 @@ export function UltraCard({
   });
 
   const handleTiltMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!enableTilt) return
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    tilt.handleMove(x, y, rect.width, rect.height)
-  }
+    if (!enableTilt) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    tilt.handleMove(x, y, rect.width, rect.height);
+  };
 
   const combinedStyle = {
     ...reveal.animatedStyle,
@@ -96,7 +96,9 @@ export function UltraCard({
           onMouseLeave={enableTilt ? tilt.handleLeave : undefined}
           className="relative"
         >
-          <AnimatedView style={enableHoverLift ? hoverLift.animatedStyle : (enableTilt ? tilt.animatedStyle : {})}>
+          <AnimatedView
+            style={enableHoverLift ? hoverLift.animatedStyle : enableTilt ? tilt.animatedStyle : {}}
+          >
             <div
               className={cn(
                 'bg-card border border-border rounded-xl shadow-lg transition-shadow duration-300',

@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, FlatList, Image, StyleSheet, Alert } from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import type { Story, StoryHighlight, Pet } from '@/lib/stories-types';
 import { createStoryHighlight } from '@/lib/stories-utils';
 import { useKV } from '@github/spark/hooks';
@@ -11,17 +21,22 @@ interface SaveToHighlightDialogProps {
   onSaved?: () => void;
 }
 
-export default function SaveToHighlightDialog({ visible, onClose, story, onSaved }: SaveToHighlightDialogProps) {
+export default function SaveToHighlightDialog({
+  visible,
+  onClose,
+  story,
+  onSaved,
+}: SaveToHighlightDialogProps) {
   const [highlights, setHighlights] = useKV<StoryHighlight[]>('story-highlights', []);
   const [userPets] = useKV<Pet[]>('user-pets', []);
   const [showNewHighlight, setShowNewHighlight] = useState(false);
   const [newHighlightTitle, setNewHighlightTitle] = useState('');
   const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
 
-  const userHighlights = (highlights || []).filter(h => h.userId === story.userId);
+  const userHighlights = (highlights || []).filter((h) => h.userId === story.userId);
   const storyAlreadyInHighlight = (highlightId: string) => {
-    const highlight = userHighlights.find(h => h.id === highlightId);
-    return highlight?.stories.some(s => s.id === story.id) || false;
+    const highlight = userHighlights.find((h) => h.id === highlightId);
+    return highlight?.stories.some((s) => s.id === story.id) || false;
   };
 
   const handleSelectHighlight = (highlightId: string) => {
@@ -89,10 +104,7 @@ export default function SaveToHighlightDialog({ visible, onClose, story, onSaved
               maxLength={30}
               autoFocus
             />
-            <Image
-              source={{ uri: story.thumbnailUrl || story.mediaUrl }}
-              style={styles.preview}
-            />
+            <Image source={{ uri: story.thumbnailUrl || story.mediaUrl }} style={styles.preview} />
             <View style={styles.buttonRow}>
               <TouchableOpacity style={styles.button} onPress={() => setShowNewHighlight(false)}>
                 <Text>Back</Text>
@@ -109,7 +121,7 @@ export default function SaveToHighlightDialog({ visible, onClose, story, onSaved
         ) : (
           <FlatList
             data={userHighlights}
-            keyExtractor={item => item.id}
+            keyExtractor={(item) => item.id}
             style={styles.list}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
@@ -121,14 +133,20 @@ export default function SaveToHighlightDialog({ visible, onClose, story, onSaved
               const isSelected = selectedHighlightId === item.id;
               return (
                 <TouchableOpacity
-                  style={[styles.highlightItem, alreadyInHighlight && styles.disabledHighlight, isSelected && styles.selectedHighlight]}
+                  style={[
+                    styles.highlightItem,
+                    alreadyInHighlight && styles.disabledHighlight,
+                    isSelected && styles.selectedHighlight,
+                  ]}
                   onPress={() => !alreadyInHighlight && handleSelectHighlight(item.id)}
                   disabled={alreadyInHighlight}
                 >
                   <Image source={{ uri: item.coverImage }} style={styles.avatar} />
                   <View style={styles.highlightInfo}>
                     <Text style={styles.highlightTitle}>{item.title}</Text>
-                    <Text style={styles.highlightCount}>{item.stories.length} {item.stories.length === 1 ? 'story' : 'stories'}</Text>
+                    <Text style={styles.highlightCount}>
+                      {item.stories.length} {item.stories.length === 1 ? 'story' : 'stories'}
+                    </Text>
                     {alreadyInHighlight && <Text style={styles.alreadyAdded}>Already added</Text>}
                   </View>
                   {isSelected && !alreadyInHighlight && <Text style={styles.check}>✔️</Text>}
@@ -163,14 +181,28 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
   title: { fontSize: 22, fontWeight: 'bold', marginBottom: 16 },
   newHighlightContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 10, width: '80%', marginBottom: 16 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    width: '80%',
+    marginBottom: 16,
+  },
   preview: { width: 120, height: 180, borderRadius: 12, marginBottom: 16 },
   buttonRow: { flexDirection: 'row', justifyContent: 'space-between', width: '80%', marginTop: 16 },
   button: { padding: 12, backgroundColor: '#eee', borderRadius: 8, marginHorizontal: 8 },
   buttonDisabled: { backgroundColor: '#ddd' },
   list: { flex: 1 },
   emptyContainer: { alignItems: 'center', marginTop: 40 },
-  highlightItem: { flexDirection: 'row', alignItems: 'center', padding: 12, borderRadius: 10, marginBottom: 8, backgroundColor: '#f9f9f9' },
+  highlightItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 8,
+    backgroundColor: '#f9f9f9',
+  },
   disabledHighlight: { opacity: 0.5 },
   selectedHighlight: { backgroundColor: '#cce5ff' },
   avatar: { width: 48, height: 48, borderRadius: 24, marginRight: 12 },

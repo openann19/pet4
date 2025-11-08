@@ -1,44 +1,44 @@
 /**
  * Business Config Panel
- * 
+ *
  * Admin panel for managing prices, limits, and experiments.
  */
 
-import { configBroadcastService } from '@/core/services/config-broadcast-service'
-import { adminApi } from '@/api/admin-api'
-import { useState, useEffect } from 'react'
-import { CheckCircle, CurrencyDollar, Flask, Gear, Radio } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useApp } from '@/contexts/AppContext'
-import { getBusinessConfig, updateBusinessConfig } from '@/lib/purchase-service'
-import type { BusinessConfig } from '@/lib/business-types'
-import { toast } from 'sonner'
-import { useStorage } from '@/hooks/useStorage'
-import { logger } from '@/lib/logger'
-import type { User } from '@/lib/user-service'
+import { configBroadcastService } from '@/core/services/config-broadcast-service';
+import { adminApi } from '@/api/admin-api';
+import { useState, useEffect } from 'react';
+import { CheckCircle, CurrencyDollar, Flask, Gear, Radio } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useApp } from '@/contexts/AppContext';
+import { getBusinessConfig, updateBusinessConfig } from '@/lib/purchase-service';
+import type { BusinessConfig } from '@/lib/business-types';
+import { toast } from 'sonner';
+import { useStorage } from '@/hooks/use-storage';
+import { logger } from '@/lib/logger';
+import type { User } from '@/lib/user-service';
 
 export default function BusinessConfigPanel() {
-  const { t: _t } = useApp()
-  const [config, setConfig] = useState<BusinessConfig | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [broadcasting, setBroadcasting] = useState(false)
-  const [currentUser] = useStorage<User | null>('current-user', null)
+  const { t: _t } = useApp();
+  const [config, setConfig] = useState<BusinessConfig | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [currentUser] = useStorage<User | null>('current-user', null);
 
   useEffect(() => {
-    loadConfig()
-  }, [])
+    loadConfig();
+  }, []);
 
   const loadConfig = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const cfg = await getBusinessConfig()
+      const cfg = await getBusinessConfig();
       if (cfg) {
-        setConfig(cfg)
+        setConfig(cfg);
       } else {
         // Create default config
         const defaultConfig: BusinessConfig = {
@@ -58,118 +58,118 @@ export default function BusinessConfigPanel() {
           experiments: {},
           updatedAt: new Date().toISOString(),
           updatedBy: currentUser?.id || 'admin',
-        }
-        setConfig(defaultConfig)
+        };
+        setConfig(defaultConfig);
       }
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Load config error', err, { action: 'loadConfig' })
-      toast.error('Failed to load config')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Load config error', err, { action: 'loadConfig' });
+      toast.error('Failed to load config');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSave = async () => {
-    if (!config || !currentUser) return
+    if (!config || !currentUser) return;
 
-    setSaving(true)
+    setSaving(true);
     try {
-      await updateBusinessConfig(config, currentUser.id || 'admin')
-      toast.success('Business config updated successfully')
+      await updateBusinessConfig(config, currentUser.id || 'admin');
+      toast.success('Business config updated successfully');
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Save config error', err, { action: 'saveConfig' })
-      toast.error('Failed to save config')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Save config error', err, { action: 'saveConfig' });
+      toast.error('Failed to save config');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleSaveAndBroadcast = async () => {
-    if (!config || !currentUser) return
+    if (!config || !currentUser) return;
 
-    setSaving(true)
-    setBroadcasting(true)
+    setSaving(true);
+    setBroadcasting(true);
     try {
       // First save the config
-      await updateBusinessConfig(config, currentUser.id || 'admin')
-      
+      await updateBusinessConfig(config, currentUser.id || 'admin');
+
       // Then broadcast it
       await configBroadcastService.broadcastConfig(
         'business',
         config as Record<string, unknown>,
         currentUser.id || 'admin'
-      )
-      
-      toast.success('Business config saved and broadcasted successfully')
-      
+      );
+
+      toast.success('Business config saved and broadcasted successfully');
+
       // Log audit entry
       await adminApi.createAuditLog({
         adminId: currentUser.id || 'admin',
         action: 'config_broadcast',
         targetType: 'business_config',
         targetId: config.id || 'default',
-        details: JSON.stringify({ configType: 'business' })
-      })
+        details: JSON.stringify({ configType: 'business' }),
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Save and broadcast config error', err, { action: 'saveAndBroadcastConfig' })
-      toast.error('Failed to save and broadcast config')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Save and broadcast config error', err, { action: 'saveAndBroadcastConfig' });
+      toast.error('Failed to save and broadcast config');
     } finally {
-      setSaving(false)
-      setBroadcasting(false)
+      setSaving(false);
+      setBroadcasting(false);
     }
-  }
+  };
 
   const updatePrice = (path: string[], value: number): void => {
-    if (!config) return
-    const newConfig = { ...config }
-    let current: Record<string, unknown> = newConfig as Record<string, unknown>
+    if (!config) return;
+    const newConfig = { ...config };
+    let current: Record<string, unknown> = newConfig as Record<string, unknown>;
     for (let i = 0; i < path.length - 1; i++) {
-      const key = path[i]
-      if (key === undefined) return
-      const next = current[key]
+      const key = path[i];
+      if (key === undefined) return;
+      const next = current[key];
       if (typeof next === 'object' && next !== null && !Array.isArray(next)) {
-        current = next as Record<string, unknown>
+        current = next as Record<string, unknown>;
       } else {
-        return
+        return;
       }
     }
-    const lastKey = path[path.length - 1]
+    const lastKey = path[path.length - 1];
     if (lastKey !== undefined) {
-      current[lastKey] = value
+      current[lastKey] = value;
     }
-    setConfig(newConfig as BusinessConfig)
-  }
+    setConfig(newConfig as BusinessConfig);
+  };
 
   const updateLimit = (path: string[], value: number): void => {
-    if (!config) return
-    const newConfig = { ...config }
-    let current: Record<string, unknown> = newConfig as Record<string, unknown>
+    if (!config) return;
+    const newConfig = { ...config };
+    let current: Record<string, unknown> = newConfig as Record<string, unknown>;
     for (let i = 0; i < path.length - 1; i++) {
-      const key = path[i]
-      if (key === undefined) return
-      const next = current[key]
+      const key = path[i];
+      if (key === undefined) return;
+      const next = current[key];
       if (typeof next === 'object' && next !== null && !Array.isArray(next)) {
-        current = next as Record<string, unknown>
+        current = next as Record<string, unknown>;
       } else {
-        return
+        return;
       }
     }
-    const lastKey = path[path.length - 1]
+    const lastKey = path[path.length - 1];
     if (lastKey !== undefined) {
-      current[lastKey] = value
+      current[lastKey] = value;
     }
-    setConfig(newConfig as BusinessConfig)
-  }
+    setConfig(newConfig as BusinessConfig);
+  };
 
   if (loading || !config) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-muted-foreground">Loading config...</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -217,7 +217,9 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.premium.monthly}
-                  onChange={(e) => updatePrice(['prices', 'premium', 'monthly'], parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'premium', 'monthly'], parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -226,7 +228,9 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.premium.yearly}
-                  onChange={(e) => updatePrice(['prices', 'premium', 'yearly'], parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'premium', 'yearly'], parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
             </div>
@@ -241,7 +245,9 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.elite.monthly}
-                  onChange={(e) => updatePrice(['prices', 'elite', 'monthly'], parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'elite', 'monthly'], parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -250,7 +256,9 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.elite.yearly}
-                  onChange={(e) => updatePrice(['prices', 'elite', 'yearly'], parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'elite', 'yearly'], parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
             </div>
@@ -265,7 +273,9 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.boost.price}
-                  onChange={(e) => updatePrice(['prices', 'boost', 'price'], parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'boost', 'price'], parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -274,7 +284,9 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.superLike.price}
-                  onChange={(e) => updatePrice(['prices', 'superLike', 'price'], parseFloat(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'superLike', 'price'], parseFloat(e.target.value) || 0)
+                  }
                 />
               </div>
             </div>
@@ -290,7 +302,9 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.free.swipeDailyCap}
-                  onChange={(e) => updateLimit(['limits', 'free', 'swipeDailyCap'], parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updateLimit(['limits', 'free', 'swipeDailyCap'], parseInt(e.target.value) || 0)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -298,7 +312,12 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.free.adoptionListingLimit}
-                  onChange={(e) => updateLimit(['limits', 'free', 'adoptionListingLimit'], parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updateLimit(
+                      ['limits', 'free', 'adoptionListingLimit'],
+                      parseInt(e.target.value) || 0
+                    )
+                  }
                 />
               </div>
             </div>
@@ -312,7 +331,12 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.premium.boostsPerWeek}
-                  onChange={(e) => updateLimit(['limits', 'premium', 'boostsPerWeek'], parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updateLimit(
+                      ['limits', 'premium', 'boostsPerWeek'],
+                      parseInt(e.target.value) || 0
+                    )
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -320,7 +344,12 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.premium.superLikesPerDay}
-                  onChange={(e) => updateLimit(['limits', 'premium', 'superLikesPerDay'], parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updateLimit(
+                      ['limits', 'premium', 'superLikesPerDay'],
+                      parseInt(e.target.value) || 0
+                    )
+                  }
                 />
               </div>
             </div>
@@ -334,7 +363,9 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.elite.boostsPerWeek}
-                  onChange={(e) => updateLimit(['limits', 'elite', 'boostsPerWeek'], parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updateLimit(['limits', 'elite', 'boostsPerWeek'], parseInt(e.target.value) || 0)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -342,7 +373,12 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.elite.superLikesPerDay}
-                  onChange={(e) => updateLimit(['limits', 'elite', 'superLikesPerDay'], parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updateLimit(
+                      ['limits', 'elite', 'superLikesPerDay'],
+                      parseInt(e.target.value) || 0
+                    )
+                  }
                 />
               </div>
             </div>
@@ -358,6 +394,5 @@ export default function BusinessConfigPanel() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

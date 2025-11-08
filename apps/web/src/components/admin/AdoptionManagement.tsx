@@ -1,34 +1,49 @@
-'use client'
+'use client';
 
-import { useState, useMemo, useCallback } from 'react'
-import { useStorage } from '@/hooks/useStorage'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Trash, Eye, EyeSlash, MagnifyingGlass, Heart, PawPrint, CheckCircle } from '@phosphor-icons/react'
-import { toast } from 'sonner'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useStaggeredItem } from '@/effects/reanimated'
-import { adoptionApi } from '@/api/adoption-api'
-import { createLogger } from '@/lib/logger'
-import type { AdoptionProfile } from '@/lib/adoption-types'
-import { AdoptionCard } from '@/components/adoption/AdoptionCard'
+import { useState, useMemo, useCallback } from 'react';
+import { useStorage } from '@/hooks/use-storage';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Trash,
+  Eye,
+  EyeSlash,
+  MagnifyingGlass,
+  Heart,
+  PawPrint,
+  CheckCircle,
+} from '@phosphor-icons/react';
+import { toast } from 'sonner';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useStaggeredItem } from '@/effects/reanimated';
+import { adoptionApi } from '@/api/adoption-api';
+import { createLogger } from '@/lib/logger';
+import type { AdoptionProfile } from '@/lib/adoption-types';
+import { AdoptionCard } from '@/components/adoption/AdoptionCard';
 
-const logger = createLogger('AdoptionManagement')
+const logger = createLogger('AdoptionManagement');
 
-type TabValue = 'all' | 'available' | 'pending' | 'adopted' | 'flagged' | 'hidden'
+type TabValue = 'all' | 'available' | 'pending' | 'adopted' | 'flagged' | 'hidden';
 
 interface AdoptionProfileCardProps {
-  profile: AdoptionProfile
-  index: number
-  isHidden: boolean
-  onHide: (profileId: string) => void
-  onUnhide: (profileId: string) => void
-  onDelete: (profile: AdoptionProfile) => void
+  profile: AdoptionProfile;
+  index: number;
+  isHidden: boolean;
+  onHide: (profileId: string) => void;
+  onUnhide: (profileId: string) => void;
+  onDelete: (profile: AdoptionProfile) => void;
 }
 
 function AdoptionProfileCard({
@@ -37,9 +52,9 @@ function AdoptionProfileCard({
   isHidden,
   onHide,
   onUnhide,
-  onDelete
+  onDelete,
 }: AdoptionProfileCardProps): JSX.Element {
-  const animation = useStaggeredItem({ index, staggerDelay: 50 })
+  const animation = useStaggeredItem({ index, staggerDelay: 50 });
 
   return (
     <AnimatedView
@@ -80,144 +95,153 @@ function AdoptionProfileCard({
           Delete
         </Button>
       </div>
-      <AdoptionCard 
-        profile={profile} 
-        onFavorite={() => {}} 
-        isFavorited={false} 
-        onSelect={() => {}} 
+      <AdoptionCard
+        profile={profile}
+        onFavorite={() => {}}
+        isFavorited={false}
+        onSelect={() => {}}
       />
     </AnimatedView>
-  )
+  );
 }
 
 interface AdoptionManagementStats {
-  total: number
-  available: number
-  pending: number
-  adopted: number
-  flagged: number
-  hidden: number
-  last7days: number
+  total: number;
+  available: number;
+  pending: number;
+  adopted: number;
+  flagged: number;
+  hidden: number;
+  last7days: number;
 }
 
 export default function AdoptionManagement(): JSX.Element {
-  const [profiles] = useStorage<AdoptionProfile[]>('adoption-profiles', [])
-  const [flaggedProfiles] = useStorage<string[]>('flagged-adoption-profiles', [])
-  const [hiddenProfiles, setHiddenProfiles] = useStorage<string[]>('hidden-adoption-profiles', [])
-  const [searchQuery, setSearchQuery] = useState<string>('')
-  const [selectedProfile, setSelectedProfile] = useState<AdoptionProfile | null>(null)
-  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
-  const [activeTab, setActiveTab] = useState<TabValue>('all')
-  const [isDeleting, setIsDeleting] = useState<boolean>(false)
+  const [profiles] = useStorage<AdoptionProfile[]>('adoption-profiles', []);
+  const [flaggedProfiles] = useStorage<string[]>('flagged-adoption-profiles', []);
+  const [hiddenProfiles, setHiddenProfiles] = useStorage<string[]>('hidden-adoption-profiles', []);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedProfile, setSelectedProfile] = useState<AdoptionProfile | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<TabValue>('all');
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-  const allProfiles = useMemo<AdoptionProfile[]>(() => profiles || [], [profiles])
+  const allProfiles = useMemo<AdoptionProfile[]>(() => profiles || [], [profiles]);
   const flaggedProfilesList = useMemo<AdoptionProfile[]>(
-    () => allProfiles.filter(p => flaggedProfiles?.includes(p._id)),
+    () => allProfiles.filter((p) => flaggedProfiles?.includes(p._id)),
     [allProfiles, flaggedProfiles]
-  )
+  );
   const hiddenProfilesList = useMemo<AdoptionProfile[]>(
-    () => allProfiles.filter(p => hiddenProfiles?.includes(p._id)),
+    () => allProfiles.filter((p) => hiddenProfiles?.includes(p._id)),
     [allProfiles, hiddenProfiles]
-  )
+  );
 
   const filteredProfiles = useMemo<AdoptionProfile[]>(() => {
-    let list = allProfiles
-    
+    let list = allProfiles;
+
     if (activeTab === 'flagged') {
-      list = flaggedProfilesList
+      list = flaggedProfilesList;
     } else if (activeTab === 'hidden') {
-      list = hiddenProfilesList
+      list = hiddenProfilesList;
     } else if (activeTab !== 'all') {
-      list = list.filter(p => p.status === activeTab)
+      list = list.filter((p) => p.status === activeTab);
     }
-    
+
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      list = list.filter(p => 
-        p.petName?.toLowerCase().includes(query) ||
-        p.breed?.toLowerCase().includes(query) ||
-        p.shelterName?.toLowerCase().includes(query)
-      )
+      const query = searchQuery.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.petName?.toLowerCase().includes(query) ||
+          p.breed?.toLowerCase().includes(query) ||
+          p.shelterName?.toLowerCase().includes(query)
+      );
     }
-    
-    return list.sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime())
-  }, [allProfiles, activeTab, flaggedProfilesList, hiddenProfilesList, searchQuery])
 
-  const handleHideProfile = useCallback((profileId: string): void => {
-    try {
-      setHiddenProfiles(prev => {
-        const current = prev || []
-        if (current.includes(profileId)) {
-          return current
-        }
-        return [...current, profileId]
-      })
-      toast.success('Adoption profile hidden')
-      logger.info('Profile hidden', { profileId })
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to hide profile', err, { profileId })
-      toast.error('Failed to hide profile')
-    }
-  }, [setHiddenProfiles])
+    return list.sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime());
+  }, [allProfiles, activeTab, flaggedProfilesList, hiddenProfilesList, searchQuery]);
 
-  const handleUnhideProfile = useCallback((profileId: string): void => {
-    try {
-      setHiddenProfiles(prev => (prev || []).filter(id => id !== profileId))
-      toast.success('Adoption profile restored')
-      logger.info('Profile unhidden', { profileId })
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to unhide profile', err, { profileId })
-      toast.error('Failed to restore profile')
-    }
-  }, [setHiddenProfiles])
+  const handleHideProfile = useCallback(
+    (profileId: string): void => {
+      try {
+        setHiddenProfiles((prev) => {
+          const current = prev || [];
+          if (current.includes(profileId)) {
+            return current;
+          }
+          return [...current, profileId];
+        });
+        toast.success('Adoption profile hidden');
+        logger.info('Profile hidden', { profileId });
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to hide profile', err, { profileId });
+        toast.error('Failed to hide profile');
+      }
+    },
+    [setHiddenProfiles]
+  );
+
+  const handleUnhideProfile = useCallback(
+    (profileId: string): void => {
+      try {
+        setHiddenProfiles((prev) => (prev || []).filter((id) => id !== profileId));
+        toast.success('Adoption profile restored');
+        logger.info('Profile unhidden', { profileId });
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to unhide profile', err, { profileId });
+        toast.error('Failed to restore profile');
+      }
+    },
+    [setHiddenProfiles]
+  );
 
   const handleDeleteProfile = useCallback(async (): Promise<void> => {
     if (!selectedProfile) {
-      return
+      return;
     }
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await adoptionApi.deleteProfile(selectedProfile._id)
-      toast.success('Adoption profile deleted successfully')
-      logger.info('Profile deleted', { profileId: selectedProfile._id })
-      setShowDeleteDialog(false)
-      setSelectedProfile(null)
+      await adoptionApi.deleteProfile(selectedProfile._id);
+      toast.success('Adoption profile deleted successfully');
+      logger.info('Profile deleted', { profileId: selectedProfile._id });
+      setShowDeleteDialog(false);
+      setSelectedProfile(null);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to delete profile', err, { profileId: selectedProfile._id })
-      toast.error('Failed to delete adoption profile. Please try again.')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to delete profile', err, { profileId: selectedProfile._id });
+      toast.error('Failed to delete adoption profile. Please try again.');
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }, [selectedProfile])
+  }, [selectedProfile]);
 
   const handleDeleteClick = useCallback((profile: AdoptionProfile): void => {
-    setSelectedProfile(profile)
-    setShowDeleteDialog(true)
-  }, [])
+    setSelectedProfile(profile);
+    setShowDeleteDialog(true);
+  }, []);
 
   const stats = useMemo<AdoptionManagementStats>(() => {
-    const now = Date.now()
-    const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000
-    
+    const now = Date.now();
+    const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
+
     return {
       total: allProfiles.length,
-      available: allProfiles.filter(p => p.status === 'available').length,
-      pending: allProfiles.filter(p => p.status === 'pending').length,
-      adopted: allProfiles.filter(p => p.status === 'adopted').length,
+      available: allProfiles.filter((p) => p.status === 'available').length,
+      pending: allProfiles.filter((p) => p.status === 'pending').length,
+      adopted: allProfiles.filter((p) => p.status === 'adopted').length,
       flagged: flaggedProfilesList.length,
       hidden: hiddenProfilesList.length,
-      last7days: allProfiles.filter(p => 
-        new Date(p.postedDate).getTime() > sevenDaysAgo
-      ).length
-    }
-  }, [allProfiles, flaggedProfilesList.length, hiddenProfilesList.length])
+      last7days: allProfiles.filter((p) => new Date(p.postedDate).getTime() > sevenDaysAgo).length,
+    };
+  }, [allProfiles, flaggedProfilesList.length, hiddenProfilesList.length]);
 
   return (
-    <div className="flex-1 overflow-auto p-6 space-y-6" role="main" aria-label="Adoption Management">
+    <div
+      className="flex-1 overflow-auto p-6 space-y-6"
+      role="main"
+      aria-label="Adoption Management"
+    >
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Adoption Profiles</h1>
@@ -231,7 +255,9 @@ export default function AdoptionManagement(): JSX.Element {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Profiles</p>
-                <p className="text-2xl font-bold" aria-live="polite">{stats.total}</p>
+                <p className="text-2xl font-bold" aria-live="polite">
+                  {stats.total}
+                </p>
               </div>
               <PawPrint size={32} className="text-primary" weight="fill" aria-hidden="true" />
             </div>
@@ -243,7 +269,9 @@ export default function AdoptionManagement(): JSX.Element {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Available</p>
-                <p className="text-2xl font-bold" aria-live="polite">{stats.available}</p>
+                <p className="text-2xl font-bold" aria-live="polite">
+                  {stats.available}
+                </p>
               </div>
               <Heart size={32} className="text-accent" weight="fill" aria-hidden="true" />
             </div>
@@ -255,7 +283,9 @@ export default function AdoptionManagement(): JSX.Element {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold" aria-live="polite">{stats.pending}</p>
+                <p className="text-2xl font-bold" aria-live="polite">
+                  {stats.pending}
+                </p>
               </div>
               <Eye size={32} className="text-secondary" weight="fill" aria-hidden="true" />
             </div>
@@ -267,7 +297,9 @@ export default function AdoptionManagement(): JSX.Element {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Adopted</p>
-                <p className="text-2xl font-bold" aria-live="polite">{stats.adopted}</p>
+                <p className="text-2xl font-bold" aria-live="polite">
+                  {stats.adopted}
+                </p>
               </div>
               <CheckCircle size={32} className="text-green-500" weight="fill" aria-hidden="true" />
             </div>
@@ -285,9 +317,9 @@ export default function AdoptionManagement(): JSX.Element {
                 <label htmlFor="adoption-search" className="sr-only">
                   Search adoption profiles
                 </label>
-                <MagnifyingGlass 
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" 
-                  size={20} 
+                <MagnifyingGlass
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  size={20}
                   aria-hidden="true"
                 />
                 <Input
@@ -315,7 +347,12 @@ export default function AdoptionManagement(): JSX.Element {
                   Adopted
                 </TabsTrigger>
                 <TabsTrigger value="flagged" role="tab" aria-selected={activeTab === 'flagged'}>
-                  Flagged {stats.flagged > 0 && <Badge variant="destructive" className="ml-2">{stats.flagged}</Badge>}
+                  Flagged{' '}
+                  {stats.flagged > 0 && (
+                    <Badge variant="destructive" className="ml-2">
+                      {stats.flagged}
+                    </Badge>
+                  )}
                 </TabsTrigger>
                 <TabsTrigger value="hidden" role="tab" aria-selected={activeTab === 'hidden'}>
                   Hidden
@@ -350,29 +387,31 @@ export default function AdoptionManagement(): JSX.Element {
       </Card>
 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent role="alertdialog" aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description">
+        <DialogContent
+          role="alertdialog"
+          aria-labelledby="delete-dialog-title"
+          aria-describedby="delete-dialog-description"
+        >
           <DialogHeader>
             <DialogTitle id="delete-dialog-title">Delete Adoption Profile</DialogTitle>
             <DialogDescription id="delete-dialog-description">
               Are you sure you want to delete this adoption profile? This action cannot be undone.
               {selectedProfile && (
-                <span className="block mt-2 font-semibold">
-                  Profile: {selectedProfile.petName}
-                </span>
+                <span className="block mt-2 font-semibold">Profile: {selectedProfile.petName}</span>
               )}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setShowDeleteDialog(false)}
               disabled={isDeleting}
               aria-label="Cancel deletion"
             >
               Cancel
             </Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={handleDeleteProfile}
               disabled={isDeleting}
               aria-label="Confirm deletion"
@@ -383,5 +422,5 @@ export default function AdoptionManagement(): JSX.Element {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

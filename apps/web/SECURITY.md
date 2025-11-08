@@ -26,6 +26,7 @@
 **Please do not report security vulnerabilities through public GitHub issues, discussions, or pull requests.**
 
 Instead, please report security vulnerabilities to:
+
 - **Email**: security@pawfectmatch.com
 - **PGP Key**: [Provide PGP key for encrypted communication]
 
@@ -52,12 +53,12 @@ Please include as much information as possible:
 
 ### Severity Levels
 
-| Severity | Description | Fix Timeline | Example |
-|----------|-------------|--------------|---------|
-| Critical | Complete system compromise | 24-48 hours | RCE, authentication bypass |
-| High | Significant data breach risk | 3-7 days | SQL injection, privilege escalation |
-| Medium | Limited data exposure | 14-30 days | XSS, CSRF |
-| Low | Minor information disclosure | 30-60 days | Information leakage |
+| Severity | Description                  | Fix Timeline | Example                             |
+| -------- | ---------------------------- | ------------ | ----------------------------------- |
+| Critical | Complete system compromise   | 24-48 hours  | RCE, authentication bypass          |
+| High     | Significant data breach risk | 3-7 days     | SQL injection, privilege escalation |
+| Medium   | Limited data exposure        | 14-30 days   | XSS, CSRF                           |
+| Low      | Minor information disclosure | 30-60 days   | Information leakage                 |
 
 ---
 
@@ -87,17 +88,20 @@ PawfectMatch implements multiple layers of security:
 ### Authentication
 
 **JWT-Based Authentication**:
+
 - Access tokens: Short-lived (15 minutes)
 - Refresh tokens: Longer-lived (7 days), stored securely
 - Token rotation on refresh
 - Revocation list for compromised tokens
 
 **OAuth via Spark**:
+
 - GitHub OAuth integration
 - PKCE flow for mobile
 - State parameter for CSRF protection
 
 **Password Security**:
+
 - Minimum 12 characters
 - bcrypt hashing (cost factor 12)
 - Password strength meter
@@ -107,11 +111,13 @@ PawfectMatch implements multiple layers of security:
 ### Authorization
 
 **Role-Based Access Control (RBAC)**:
+
 - User, Moderator, Admin roles
 - Fine-grained permissions
 - Role verification on every request
 
 **Resource-Based Access**:
+
 - Users can only access their own data
 - Pet ownership verification
 - Match relationship validation
@@ -123,11 +129,13 @@ PawfectMatch implements multiple layers of security:
 ### Encryption
 
 **At Rest**:
+
 - Database encryption (AES-256)
 - File system encryption
 - Encrypted backups
 
 **In Transit**:
+
 - TLS 1.3 for all connections
 - Certificate pinning in mobile apps
 - HSTS enabled
@@ -135,6 +143,7 @@ PawfectMatch implements multiple layers of security:
 ### Personal Data
 
 **PII Protection**:
+
 - Email addresses hashed in logs
 - IP addresses truncated
 - Location data coarsened (city-level)
@@ -142,6 +151,7 @@ PawfectMatch implements multiple layers of security:
 - User IDs pseudonymized in analytics
 
 **Data Minimization**:
+
 - Collect only necessary data
 - Regular data cleanup
 - Automatic deletion of expired content (stories after 24h)
@@ -149,6 +159,7 @@ PawfectMatch implements multiple layers of security:
 ### Privacy Controls
 
 **User Rights**:
+
 - View all data (data export)
 - Delete account and data
 - Opt-out of analytics
@@ -156,6 +167,7 @@ PawfectMatch implements multiple layers of security:
 - Manage visibility settings
 
 **GDPR Compliance**:
+
 - Lawful basis for processing
 - Data Processing Agreement (DPA) with vendors
 - Right to be forgotten
@@ -175,6 +187,7 @@ PawfectMatch implements multiple layers of security:
 ### Server-Side Validation
 
 **Never trust client input**:
+
 - Validate all inputs
 - Type checking
 - Length limits
@@ -182,6 +195,7 @@ PawfectMatch implements multiple layers of security:
 - Whitelist approach
 
 **Sanitization**:
+
 ```typescript
 // Example sanitization
 const sanitizeInput = (input: string): string => {
@@ -195,6 +209,7 @@ const sanitizeInput = (input: string): string => {
 ```
 
 **No Dynamic Code Execution**:
+
 - No `eval()`
 - No `Function()` constructor
 - No `__import__()` in Python
@@ -207,6 +222,7 @@ const sanitizeInput = (input: string): string => {
 ### HTTP Headers
 
 **Required Headers**:
+
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 X-Content-Type-Options: nosniff
@@ -217,8 +233,9 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
 
 **Content Security Policy (CSP)**:
+
 ```
-Content-Security-Policy: 
+Content-Security-Policy:
   default-src 'self';
   script-src 'self' 'unsafe-inline' https://cdn.pawfectmatch.com;
   style-src 'self' 'unsafe-inline';
@@ -249,12 +266,14 @@ const corsOptions = {
 ### Secret Storage
 
 **Never commit secrets**:
+
 - No API keys in code
 - No passwords in config files
 - Use environment variables
 - Vault/secret manager for production
 
 **Secret Rotation**:
+
 - API keys: 90 days
 - JWT secrets: 30 days
 - Database passwords: 90 days
@@ -273,17 +292,20 @@ const corsOptions = {
 ### Supply Chain Security
 
 **Dependency Scanning**:
+
 - `npm audit` on every build
 - Dependabot automated updates
 - Weekly security review
 - SCA (Software Composition Analysis)
 
 **Integrity Checks**:
+
 - Lock files committed (package-lock.json)
 - Subresource Integrity (SRI) for CDN resources
 - Verify package signatures
 
 **Allowed Sources**:
+
 - npm registry (official packages only)
 - GitHub packages (verified publishers)
 - No arbitrary CDN scripts
@@ -301,6 +323,7 @@ const corsOptions = {
 ### Audit Logging
 
 **What We Log**:
+
 - Authentication events (success/failure)
 - Authorization decisions
 - Admin actions
@@ -309,6 +332,7 @@ const corsOptions = {
 - Security events
 
 **What We Don't Log**:
+
 - Passwords
 - Raw PII (email, location)
 - Session tokens
@@ -340,12 +364,14 @@ interface AuditLog {
 ### Compliance
 
 **Standards**:
+
 - OWASP ASVS Level 1
 - GDPR (EU)
 - COPPA (US children's privacy)
 - WCAG 2.1 AA (accessibility)
 
 **Regular Audits**:
+
 - Quarterly security reviews
 - Annual penetration testing
 - Continuous vulnerability scanning
@@ -374,11 +400,13 @@ interface AuditLog {
 ### Notification
 
 **When to Notify**:
+
 - Data breach affecting users
 - Compliance requirement
 - Significant service disruption
 
 **Who to Notify**:
+
 - Affected users (within 72 hours)
 - Regulatory authorities (if required)
 - Law enforcement (if criminal activity)

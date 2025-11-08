@@ -1,79 +1,58 @@
-'use client'
+'use client';
 
-import type { ComponentProps } from 'react'
-import { useEffect, useCallback } from 'react'
-import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated'
+import type { ComponentProps } from 'react';
+import { useEffect, useCallback } from 'react';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { X } from 'lucide-react';
+import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 
-import { cn } from '@/lib/utils'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { Motion } from '@/core/tokens/motion'
-import { haptics } from '@/lib/haptics'
+import { cn } from '@/lib/utils';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { Motion } from '@/core/tokens/motion';
+import { haptics } from '@/lib/haptics';
 
 export interface DialogProps extends ComponentProps<typeof DialogPrimitive.Root> {
-  hapticFeedback?: boolean
+  hapticFeedback?: boolean;
 }
 
 export interface DialogContentProps extends ComponentProps<typeof DialogPrimitive.Content> {
-  showCloseButton?: boolean
-  hapticFeedback?: boolean
+  showCloseButton?: boolean;
+  hapticFeedback?: boolean;
 }
 
-function Dialog({
-  hapticFeedback = true,
-  ...props
-}: DialogProps): React.JSX.Element {
-  const handleOpenChange = useCallback((open: boolean): void => {
-    if (hapticFeedback && open) {
-      haptics.trigger('light')
-    }
-    props.onOpenChange?.(open)
-  }, [hapticFeedback, props])
+function Dialog({ hapticFeedback = true, ...props }: DialogProps): React.JSX.Element {
+  const handleOpenChange = useCallback(
+    (open: boolean): void => {
+      if (hapticFeedback && open) {
+        haptics.trigger('light');
+      }
+      props.onOpenChange?.(open);
+    },
+    [hapticFeedback, props]
+  );
 
-  return (
-    <DialogPrimitive.Root
-      data-slot="dialog"
-      {...props}
-      onOpenChange={handleOpenChange}
-    />
-  )
+  return <DialogPrimitive.Root data-slot="dialog" {...props} onOpenChange={handleOpenChange} />;
 }
 
 function DialogTrigger({
   ...props
 }: ComponentProps<typeof DialogPrimitive.Trigger>): React.JSX.Element {
-  return (
-    <DialogPrimitive.Trigger
-      data-slot="dialog-trigger"
-      {...props}
-    />
-  )
+  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
 function DialogPortal({
   ...props
 }: ComponentProps<typeof DialogPrimitive.Portal>): React.JSX.Element {
-  return (
-    <DialogPrimitive.Portal
-      data-slot="dialog-portal"
-      {...props}
-    />
-  )
+  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
 function DialogClose({
   ...props
 }: ComponentProps<typeof DialogPrimitive.Close>): React.JSX.Element {
-  return (
-    <DialogPrimitive.Close
-      data-slot="dialog-close"
-      {...props}
-    />
-  )
+  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
 }
 
 function DialogOverlay({
@@ -91,7 +70,7 @@ function DialogOverlay({
       )}
       {...props}
     />
-  )
+  );
 }
 
 function DialogContent({
@@ -101,36 +80,31 @@ function DialogContent({
   hapticFeedback = true,
   ...props
 }: DialogContentProps): React.JSX.Element {
-  const reducedMotion = useReducedMotion()
-  const opacity = useSharedValue(0)
-  const scale = useSharedValue(0.95)
-  const y = useSharedValue(20)
+  const reducedMotion = useReducedMotion();
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.95);
+  const y = useSharedValue(20);
 
   useEffect(() => {
     opacity.value = withTiming(1, {
-      duration: reducedMotion
-        ? Motion.durations.fast
-        : Motion.components.modal.open.duration,
-    })
-    scale.value = withSpring(1, springConfigs.smooth)
-    y.value = withSpring(0, springConfigs.smooth)
-  }, [opacity, scale, y, reducedMotion])
+      duration: reducedMotion ? Motion.durations.fast : Motion.components.modal.open.duration,
+    });
+    scale.value = withSpring(1, springConfigs.smooth);
+    y.value = withSpring(0, springConfigs.smooth);
+  }, [opacity, scale, y, reducedMotion]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [
-        { scale: scale.value },
-        { translateY: y.value },
-      ],
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: scale.value }, { translateY: y.value }],
+    };
+  }) as AnimatedStyle;
 
   const handleClose = useCallback((): void => {
     if (hapticFeedback) {
-      haptics.trigger('light')
+      haptics.trigger('light');
     }
-  }, [hapticFeedback])
+  }, [hapticFeedback]);
 
   return (
     <DialogPortal data-slot="dialog-portal">
@@ -150,10 +124,7 @@ function DialogContent({
         )}
         {...props}
       >
-        <AnimatedView
-          style={animatedStyle}
-          className="contents"
-        >
+        <AnimatedView style={animatedStyle} className="contents">
           {children}
         </AnimatedView>
         {showCloseButton && (
@@ -165,7 +136,7 @@ function DialogContent({
               'focus:outline-none disabled:pointer-events-none',
               'data-[state=open]:bg-accent data-[state=open]:text-muted-foreground',
               '[&_svg]:pointer-events-none [&_svg]:shrink-0',
-              '[&_svg:not([class*=\'size-\'])]:size-4'
+              "[&_svg:not([class*='size-'])]:size-4"
             )}
             onClick={handleClose}
             aria-label="Close dialog"
@@ -176,39 +147,27 @@ function DialogContent({
         )}
       </DialogPrimitive.Content>
     </DialogPortal>
-  )
+  );
 }
 
-function DialogHeader({
-  className,
-  ...props
-}: ComponentProps<'div'>): React.JSX.Element {
+function DialogHeader({ className, ...props }: ComponentProps<'div'>): React.JSX.Element {
   return (
     <div
       data-slot="dialog-header"
-      className={cn(
-        'flex flex-col gap-2 text-center sm:text-left',
-        className
-      )}
+      className={cn('flex flex-col gap-2 text-center sm:text-left', className)}
       {...props}
     />
-  )
+  );
 }
 
-function DialogFooter({
-  className,
-  ...props
-}: ComponentProps<'div'>): React.JSX.Element {
+function DialogFooter({ className, ...props }: ComponentProps<'div'>): React.JSX.Element {
   return (
     <div
       data-slot="dialog-footer"
-      className={cn(
-        'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
-        className
-      )}
+      className={cn('flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)}
       {...props}
     />
-  )
+  );
 }
 
 function DialogTitle({
@@ -218,13 +177,10 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn(
-        'text-lg font-semibold leading-none tracking-tight',
-        className
-      )}
+      className={cn('text-lg font-semibold leading-none tracking-tight', className)}
       {...props}
     />
-  )
+  );
 }
 
 function DialogDescription({
@@ -234,13 +190,10 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn(
-        'text-sm text-muted-foreground',
-        className
-      )}
+      className={cn('text-sm text-muted-foreground', className)}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -254,4 +207,4 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-}
+};

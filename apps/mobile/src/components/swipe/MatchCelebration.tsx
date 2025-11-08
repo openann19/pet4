@@ -13,7 +13,7 @@ import Animated, {
   useSharedValue,
   withRepeat,
   withSequence,
-  withSpring
+  withSpring,
 } from 'react-native-reanimated'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window')
@@ -76,10 +76,7 @@ export function MatchCelebration({
 
   const containerStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: scale.value },
-        { rotate: `${rotation.value}deg` },
-      ],
+      transform: [{ scale: scale.value }, { rotate: `${rotation.value}deg` }],
       opacity: scale.value,
     }
   })
@@ -96,11 +93,7 @@ export function MatchCelebration({
 
   return (
     <Modal visible={visible} transparent animationType="none">
-      <Animated.View
-        entering={FadeIn}
-        exiting={FadeOut}
-        style={styles.backdrop}
-      >
+      <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.backdrop}>
         <Animated.View style={[styles.container, containerStyle]}>
           <Animated.View style={[styles.pulse, pulseStyle]} />
           <Text style={styles.title}>🎉 It's a Match! 🎉</Text>
@@ -153,4 +146,3 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
 })
-

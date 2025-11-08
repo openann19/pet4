@@ -35,9 +35,7 @@ export function useTheme(): {
 
   const activeTheme = useMemo(() => {
     if (themeId === 'auto') {
-      const theme = systemScheme === 'dark'
-        ? themes['default-dark']
-        : themes[defaultThemeId]
+      const theme = systemScheme === 'dark' ? themes['default-dark'] : themes[defaultThemeId]
       if (!theme) {
         return themes[defaultThemeId]!
       }
@@ -61,9 +59,9 @@ export function useTheme(): {
 
   return {
     theme: activeTheme,
-    themeId: themeId === 'auto' ? (systemScheme === 'dark' ? 'default-dark' : 'default-light') : themeId,
+    themeId:
+      themeId === 'auto' ? (systemScheme === 'dark' ? 'default-dark' : 'default-light') : themeId,
     setTheme,
     availableThemes,
   }
 }
-

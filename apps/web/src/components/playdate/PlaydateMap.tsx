@@ -1,29 +1,37 @@
-import { useState, useEffect } from 'react'
-import { motion } from '@petspark/motion'
-import { MapPin, NavigationArrow, Calendar, Clock, X, List, MapTrifold } from '@phosphor-icons/react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import type { Playdate } from '@/lib/playdate-types'
-import type { Location } from '@/lib/maps/types'
-import { getCurrentLocation, calculateDistance, formatDistance } from '@/lib/maps/utils'
-import { format } from 'date-fns'
+import { useState, useEffect } from 'react';
+import { motion } from '@petspark/motion';
+import {
+  MapPin,
+  NavigationArrow,
+  Calendar,
+  Clock,
+  X,
+  List,
+  MapTrifold,
+} from '@phosphor-icons/react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import type { Playdate } from '@/lib/playdate-types';
+import type { Location } from '@/lib/maps/types';
+import { getCurrentLocation, calculateDistance, formatDistance } from '@/lib/maps/utils';
+import { format } from 'date-fns';
 
 interface PlaydateMapProps {
-  playdates: Playdate[]
-  onSelectPlaydate?: (playdate: Playdate) => void
-  onClose?: () => void
+  playdates: Playdate[];
+  onSelectPlaydate?: (playdate: Playdate) => void;
+  onClose?: () => void;
 }
 
 export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: PlaydateMapProps) {
-  const [userLocation, setUserLocation] = useState<Location | null>(null)
-  const [selectedPlaydate, setSelectedPlaydate] = useState<Playdate | null>(null)
-  const [viewMode, setViewMode] = useState<'map' | 'list'>('map')
+  const [userLocation, setUserLocation] = useState<Location | null>(null);
+  const [selectedPlaydate, setSelectedPlaydate] = useState<Playdate | null>(null);
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
 
   useEffect(() => {
     getCurrentLocation()
-      .then(location => {
-        setUserLocation(location)
+      .then((location) => {
+        setUserLocation(location);
       })
       .catch((error: unknown) => {
         // Location access denied or unavailable - component handles gracefully
@@ -31,36 +39,36 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
         if (error instanceof Error && error.name !== 'NotAllowedError') {
           // Only handle unexpected errors, permission denials are expected
         }
-      })
-  }, [])
+      });
+  }, []);
 
   const playdatesWithLocation = playdates.filter(
-    p => p.location.lat && p.location.lng && p.status !== 'cancelled'
-  )
+    (p) => p.location.lat && p.location.lng && p.status !== 'cancelled'
+  );
 
   const handleSelectPlaydate = (playdate: Playdate) => {
-    setSelectedPlaydate(playdate)
+    setSelectedPlaydate(playdate);
     if (onSelectPlaydate) {
-      onSelectPlaydate(playdate)
+      onSelectPlaydate(playdate);
     }
-  }
+  };
 
   const handleGetDirections = (playdate: Playdate) => {
-    if (!playdate.location.lat || !playdate.location.lng) return
+    if (!playdate.location.lat || !playdate.location.lng) return;
 
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${playdate.location.lat},${playdate.location.lng}`
-    window.open(url, '_blank')
-  }
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${playdate.location.lat},${playdate.location.lng}`;
+    window.open(url, '_blank');
+  };
 
   const getDistanceFromUser = (playdate: Playdate) => {
-    if (!userLocation || !playdate.location.lat || !playdate.location.lng) return null
+    if (!userLocation || !playdate.location.lat || !playdate.location.lng) return null;
 
     const distance = calculateDistance(userLocation, {
       lat: playdate.location.lat,
-      lng: playdate.location.lng
-    })
-    return formatDistance(distance)
-  }
+      lng: playdate.location.lng,
+    });
+    return formatDistance(distance);
+  };
 
   return (
     <MotionView
@@ -78,7 +86,8 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
             <div>
               <h1 className="text-2xl font-bold">Playdate Locations</h1>
               <p className="text-sm text-muted-foreground">
-                {playdatesWithLocation.length} upcoming playdate{playdatesWithLocation.length !== 1 ? 's' : ''}
+                {playdatesWithLocation.length} upcoming playdate
+                {playdatesWithLocation.length !== 1 ? 's' : ''}
               </p>
             </div>
           </div>
@@ -115,12 +124,13 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                   <MapTrifold size={64} className="mx-auto mb-4 text-muted-foreground" />
                   <h3 className="text-2xl font-bold mb-2">Interactive Playdate Map</h3>
                   <p className="text-muted-foreground mb-6">
-                    Visualization of all your upcoming playdate locations with directions and distance info
+                    Visualization of all your upcoming playdate locations with directions and
+                    distance info
                   </p>
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
                     {playdatesWithLocation.slice(0, 6).map((playdate, index) => {
-                      const distance = getDistanceFromUser(playdate)
+                      const distance = getDistanceFromUser(playdate);
                       return (
                         <MotionView
                           key={playdate.id}
@@ -140,11 +150,19 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                               <MapPin
                                 size={20}
                                 weight="fill"
-                                className={selectedPlaydate?.id === playdate.id ? 'text-primary' : 'text-muted-foreground'}
+                                className={
+                                  selectedPlaydate?.id === playdate.id
+                                    ? 'text-primary'
+                                    : 'text-muted-foreground'
+                                }
                               />
                               <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-sm truncate">{playdate.location.name}</h4>
-                                <p className="text-xs text-muted-foreground truncate">{playdate.location.address}</p>
+                                <h4 className="font-semibold text-sm truncate">
+                                  {playdate.location.name}
+                                </h4>
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {playdate.location.address}
+                                </p>
                               </div>
                             </div>
                             <div className="flex items-center justify-between text-xs">
@@ -161,7 +179,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                             </div>
                           </Card>
                         </MotionView>
-                      )
+                      );
                     })}
                   </div>
                 </div>
@@ -184,7 +202,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
         ) : (
           <div className="space-y-3">
             {playdatesWithLocation.map((playdate, index) => {
-              const distance = getDistanceFromUser(playdate)
+              const distance = getDistanceFromUser(playdate);
               return (
                 <MotionView
                   key={playdate.id}
@@ -216,7 +234,9 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                           <MapPin size={16} className="text-muted-foreground mt-0.5 shrink-0" />
                           <div>
                             <p className="font-medium text-sm">{playdate.location.name}</p>
-                            <p className="text-sm text-muted-foreground">{playdate.location.address}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {playdate.location.address}
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -237,7 +257,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                     </div>
                   </Card>
                 </MotionView>
-              )
+              );
             })}
             {playdatesWithLocation.length === 0 && (
               <Card className="p-12">
@@ -262,18 +282,11 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                   <h4 className="font-semibold text-lg">{selectedPlaydate.title}</h4>
                   <p className="text-sm text-muted-foreground">{selectedPlaydate.location.name}</p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSelectedPlaydate(null)}
-                >
+                <Button variant="ghost" size="icon" onClick={() => setSelectedPlaydate(null)}>
                   <X size={20} />
                 </Button>
               </div>
-              <Button
-                onClick={() => handleGetDirections(selectedPlaydate)}
-                className="w-full"
-              >
+              <Button onClick={() => handleGetDirections(selectedPlaydate)} className="w-full">
                 <NavigationArrow size={18} className="mr-2" weight="bold" />
                 Get Directions
               </Button>
@@ -282,5 +295,5 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
         )}
       </div>
     </MotionView>
-  )
+  );
 }

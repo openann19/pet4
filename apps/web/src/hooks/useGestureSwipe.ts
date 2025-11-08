@@ -29,11 +29,7 @@ export function useGestureSwipe<T extends HTMLElement = HTMLDivElement>(
   handlers: SwipeHandlers = {},
   options: SwipeOptions = {}
 ): RefObject<T | null> {
-  const {
-    threshold = 50,
-    velocityThreshold = 0.3,
-    enabled = true,
-  } = options;
+  const { threshold = 50, velocityThreshold = 0.3, enabled = true } = options;
 
   const ref = useRef<T>(null);
   const startX = useRef<number>(0);
@@ -105,7 +101,7 @@ export function useGestureSwipe<T extends HTMLElement = HTMLDivElement>(
 
       // Call handlers
       handlers.onSwipe?.(direction);
-      
+
       switch (direction) {
         case 'up':
           handlers.onSwipeUp?.();

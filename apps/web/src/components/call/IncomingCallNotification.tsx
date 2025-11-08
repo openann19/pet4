@@ -1,26 +1,32 @@
-'use client'
+'use client';
 
-import { useCallback, useMemo } from 'react'
-import { Phone, PhoneDisconnect, VideoCamera } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import type { Call } from '@/lib/call-types'
-import { haptics } from '@/lib/haptics'
-import { createLogger } from '@/lib/logger'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useModalAnimation, useGlowPulse, useBounceOnTap } from '@/effects/reanimated'
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
-import { useEffect } from 'react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { useCallback, useMemo } from 'react';
+import { Phone, PhoneDisconnect, VideoCamera } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import type { Call } from '@/lib/call-types';
+import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useModalAnimation, useGlowPulse, useBounceOnTap } from '@/effects/reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import { useEffect } from 'react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
-const logger = createLogger('IncomingCallNotification')
+const logger = createLogger('IncomingCallNotification');
 
 interface IncomingCallNotificationProps {
-  call: Call
-  callerName: string
-  callerAvatar?: string
-  onAccept: () => void
-  onDecline: () => void
+  call: Call;
+  callerName: string;
+  callerAvatar?: string;
+  onAccept: () => void;
+  onDecline: () => void;
 }
 
 export default function IncomingCallNotification({
@@ -28,77 +34,74 @@ export default function IncomingCallNotification({
   callerName,
   callerAvatar,
   onAccept,
-  onDecline
+  onDecline,
 }: IncomingCallNotificationProps): JSX.Element {
-  const modalAnimation = useModalAnimation({ isVisible: true, duration: 300 })
-  const glowPulse = useGlowPulse({ duration: 1500, intensity: 0.4, enabled: true })
-  
-  const avatarScale = useSharedValue(1)
+  const modalAnimation = useModalAnimation({ isVisible: true, duration: 300 });
+  const glowPulse = useGlowPulse({ duration: 1500, intensity: 0.4, enabled: true });
+
+  const avatarScale = useSharedValue(1);
 
   const handleAccept = useCallback((): void => {
     try {
-      haptics.success()
-      logger.info('Call accepted', { callId: call.id, callerName, callType: call.type })
-      onAccept()
+      haptics.success();
+      logger.info('Call accepted', { callId: call.id, callerName, callType: call.type });
+      onAccept();
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to accept call', err, { callId: call.id, callerName })
-      haptics.error()
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to accept call', err, { callId: call.id, callerName });
+      haptics.error();
     }
-  }, [call.id, call.type, callerName, onAccept])
+  }, [call.id, call.type, callerName, onAccept]);
 
   const handleDecline = useCallback((): void => {
     try {
-      haptics.heavy()
-      logger.info('Call declined', { callId: call.id, callerName, callType: call.type })
-      onDecline()
+      haptics.heavy();
+      logger.info('Call declined', { callId: call.id, callerName, callType: call.type });
+      onDecline();
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to decline call', err, { callId: call.id, callerName })
-      haptics.error()
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to decline call', err, { callId: call.id, callerName });
+      haptics.error();
     }
-  }, [call.id, call.type, callerName, onDecline])
+  }, [call.id, call.type, callerName, onDecline]);
 
   const acceptBounce = useBounceOnTap({
     scale: 0.98,
     onPress: handleAccept,
-    hapticFeedback: false
-  })
-  
+    hapticFeedback: false,
+  });
+
   const declineBounce = useBounceOnTap({
     scale: 0.98,
     onPress: handleDecline,
-    hapticFeedback: false
-  })
+    hapticFeedback: false,
+  });
 
   useEffect(() => {
     avatarScale.value = withRepeat(
-      withSequence(
-        withTiming(1.05, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
-      ),
+      withSequence(withTiming(1.05, { duration: 1000 }), withTiming(1, { duration: 1000 })),
       -1,
       true
-    )
-  }, [avatarScale])
+    );
+  }, [avatarScale]);
 
   const avatarAnimatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: avatarScale.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: avatarScale.value }],
+    };
+  }) as AnimatedStyle;
 
   const callTypeLabel = useMemo<string>(() => {
-    return call.type === 'video' ? 'Incoming video call' : 'Incoming call'
-  }, [call.type])
+    return call.type === 'video' ? 'Incoming video call' : 'Incoming call';
+  }, [call.type]);
 
   const callTypeIcon = useMemo(() => {
     return call.type === 'video' ? (
       <VideoCamera size={16} weight="fill" aria-hidden="true" />
     ) : (
       <Phone size={16} weight="fill" aria-hidden="true" />
-    )
-  }, [call.type])
+    );
+  }, [call.type]);
 
   return (
     <AnimatedView
@@ -127,7 +130,7 @@ export default function IncomingCallNotification({
             <h3 id="incoming-call-title" className="font-bold text-lg text-foreground">
               {callerName}
             </h3>
-            <div 
+            <div
               id="incoming-call-description"
               className="flex items-center gap-2 text-sm text-muted-foreground"
               role="status"
@@ -140,10 +143,7 @@ export default function IncomingCallNotification({
         </div>
 
         <div className="flex gap-3" role="group" aria-label="Call actions">
-          <AnimatedView
-            style={declineBounce.animatedStyle}
-            className="flex-1"
-          >
+          <AnimatedView style={declineBounce.animatedStyle} className="flex-1">
             <Button
               onClick={declineBounce.handlePress}
               variant="outline"
@@ -155,10 +155,7 @@ export default function IncomingCallNotification({
             </Button>
           </AnimatedView>
 
-          <AnimatedView
-            style={acceptBounce.animatedStyle}
-            className="flex-1"
-          >
+          <AnimatedView style={acceptBounce.animatedStyle} className="flex-1">
             <Button
               onClick={acceptBounce.handlePress}
               className="w-full h-12 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg"
@@ -171,5 +168,5 @@ export default function IncomingCallNotification({
         </div>
       </AnimatedView>
     </AnimatedView>
-  )
+  );
 }

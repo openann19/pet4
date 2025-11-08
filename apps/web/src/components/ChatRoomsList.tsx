@@ -1,13 +1,13 @@
-import { MotionView } from '@petspark/motion'
-import { ChatCircle, Check, Checks } from '@phosphor-icons/react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import type { ChatRoom } from '@/lib/chat-types'
-import { formatMessageTime } from '@/lib/chat-utils'
+import { MotionView } from '@petspark/motion';
+import { ChatCircle, Check, Checks } from '@phosphor-icons/react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import type { ChatRoom } from '@/lib/chat-types';
+import { formatMessageTime } from '@/lib/chat-utils';
 
 interface ChatRoomsListProps {
-  rooms: ChatRoom[]
-  onSelectRoom: (room: ChatRoom) => void
-  selectedRoomId?: string
+  rooms: ChatRoom[];
+  onSelectRoom: (room: ChatRoom) => void;
+  selectedRoomId?: string;
 }
 
 export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: ChatRoomsListProps) {
@@ -49,19 +49,20 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
           Start chatting with your matches to plan playdates and get to know each other!
         </MotionView>
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-2 overflow-y-auto max-h-full">
       {rooms.map((room, idx) => {
-        const unreadValue = typeof room.unreadCount === 'number' 
-          ? room.unreadCount 
-          : typeof room.unreadCount === 'object' && room.unreadCount 
-            ? Object.values(room.unreadCount).reduce((sum, count) => sum + count, 0)
-            : 0
-        const hasUnread = unreadValue > 0
-        
+        const unreadValue =
+          typeof room.unreadCount === 'number'
+            ? room.unreadCount
+            : typeof room.unreadCount === 'object' && room.unreadCount
+              ? Object.values(room.unreadCount).reduce((sum, count) => sum + count, 0)
+              : 0;
+        const hasUnread = unreadValue > 0;
+
         return (
           <MotionView
             key={room.id}
@@ -69,7 +70,8 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: idx * 0.05, type: 'spring', stiffness: 300, damping: 30 }}
           >
-            <MotionView as="button"
+            <MotionView
+              as="button"
               onClick={() => onSelectRoom(room)}
               className={`w-full text-left p-4 rounded-2xl transition-all relative overflow-hidden ${
                 selectedRoomId === room.id
@@ -86,21 +88,23 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
                   transition={{ duration: 2, repeat: Infinity }}
                 />
               )}
-              
+
               <div className="flex items-start gap-3 relative z-10">
                 <div className="relative shrink-0">
                   <MotionView
                     animate={hasUnread ? { scale: [1, 1.05, 1] } : {}}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <Avatar className={`w-14 h-14 ${hasUnread ? 'ring-2 ring-primary' : 'ring-2 ring-white/30'}`}>
+                    <Avatar
+                      className={`w-14 h-14 ${hasUnread ? 'ring-2 ring-primary' : 'ring-2 ring-white/30'}`}
+                    >
                       <AvatarImage src={room.matchedPetPhoto} alt={room.matchedPetName || 'Pet'} />
                       <AvatarFallback className="bg-linear-to-br from-primary to-accent text-white font-bold">
                         {room.matchedPetName?.[0] || '?'}
                       </AvatarFallback>
                     </Avatar>
                   </MotionView>
-                  
+
                   {hasUnread && (
                     <MotionView
                       initial={{ scale: 0 }}
@@ -120,36 +124,45 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <h3 className={`font-semibold truncate ${hasUnread ? 'text-foreground' : 'text-foreground/90'}`}>
+                    <h3
+                      className={`font-semibold truncate ${hasUnread ? 'text-foreground' : 'text-foreground/90'}`}
+                    >
                       {room.matchedPetName || 'Unknown Pet'}
                     </h3>
                     {room.lastMessage && (
-                      <span className={`text-xs shrink-0 ml-2 ${hasUnread ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>
-                        {formatMessageTime(room.lastMessage.timestamp || room.lastMessage.createdAt)}
+                      <span
+                        className={`text-xs shrink-0 ml-2 ${hasUnread ? 'text-primary font-semibold' : 'text-muted-foreground'}`}
+                      >
+                        {formatMessageTime(
+                          room.lastMessage.timestamp || room.lastMessage.createdAt
+                        )}
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     {room.lastMessage ? (
                       <div className="flex-1 min-w-0 flex items-center gap-1">
-                        {room.lastMessage.status && ['sent', 'delivered', 'read'].includes(room.lastMessage.status) && (
-                          <span className="shrink-0">
-                            {room.lastMessage.status === 'read' ? (
-                              <Checks size={14} weight="bold" className="text-primary" />
-                            ) : (
-                              <Check size={14} weight="bold" className="text-muted-foreground" />
-                            )}
-                          </span>
-                        )}
-                        <p className={`text-sm truncate ${hasUnread ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
-                          {room.lastMessage.type === 'text' 
-                            ? room.lastMessage.content 
+                        {room.lastMessage.status &&
+                          ['sent', 'delivered', 'read'].includes(room.lastMessage.status) && (
+                            <span className="shrink-0">
+                              {room.lastMessage.status === 'read' ? (
+                                <Checks size={14} weight="bold" className="text-primary" />
+                              ) : (
+                                <Check size={14} weight="bold" className="text-muted-foreground" />
+                              )}
+                            </span>
+                          )}
+                        <p
+                          className={`text-sm truncate ${hasUnread ? 'text-foreground font-medium' : 'text-muted-foreground'}`}
+                        >
+                          {room.lastMessage.type === 'text'
+                            ? room.lastMessage.content
                             : room.lastMessage.type === 'sticker'
-                            ? `${room.lastMessage.content} Sticker`
-                            : room.lastMessage.type === 'voice'
-                            ? '🎤 Voice message'
-                            : '📷 Image'}
+                              ? `${room.lastMessage.content} Sticker`
+                              : room.lastMessage.type === 'voice'
+                                ? '🎤 Voice message'
+                                : '📷 Image'}
                         </p>
                       </div>
                     ) : (
@@ -182,8 +195,8 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
               </div>
             </MotionView>
           </MotionView>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

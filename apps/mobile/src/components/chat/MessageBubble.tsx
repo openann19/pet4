@@ -1,12 +1,12 @@
 /**
  * MessageBubble Component
- * 
+ *
  * Premium chat message bubble component integrating:
  * - Send/receive effects
  * - Status ticks
  * - Reactions
  * - Layout animations for list insert/remove
- * 
+ *
  * Location: apps/mobile/src/components/chat/MessageBubble.tsx
  */
 
@@ -65,23 +65,26 @@ export function MessageBubble({
   bubbleHeight: propBubbleHeight,
 }: MessageBubbleProps): React.ReactElement {
   const isOwn = message.senderId === currentUserId
-  
+
   // Measure bubble dimensions dynamically
   const [bubbleWidth, setBubbleWidth] = useState(propBubbleWidth ?? 200)
   const [bubbleHeight, setBubbleHeight] = useState(propBubbleHeight ?? 60)
-  
-  const handleLayout = React.useCallback((event: { nativeEvent: { layout: { width: number; height: number } } }) => {
-    const { width, height } = event.nativeEvent.layout
-    if (width > 0 && height > 0) {
-      setBubbleWidth(width)
-      setBubbleHeight(height)
-    }
-  }, [])
+
+  const handleLayout = React.useCallback(
+    (event: { nativeEvent: { layout: { width: number; height: number } } }) => {
+      const { width, height } = event.nativeEvent.layout
+      if (width > 0 && height > 0) {
+        setBubbleWidth(width)
+        setBubbleHeight(height)
+      }
+    },
+    []
+  )
 
   // Send effect (for own messages)
   const sendWarp = useSendWarp({
     enabled: !!(isOwn && message.isNew),
-    onStatusChange: (status) => {
+    onStatusChange: status => {
       logger.debug('Message status changed', { messageId: message.id, status })
     },
   })
@@ -126,7 +129,7 @@ export function MessageBubble({
   const [showRibbon, setShowRibbon] = useState(false)
   useAnimatedReaction(
     () => swipeReply.ribbonAlpha.value,
-    (value) => {
+    value => {
       setShowRibbon(value > 0)
     }
   )
@@ -142,7 +145,7 @@ export function MessageBubble({
       sendWarp.trigger()
     }
   }, [isOwn, message.isNew, message.status, sendWarp, bubbleWidth, bubbleHeight])
-  
+
   // Update ribbon coordinates when bubble size changes
   React.useEffect(() => {
     // Update ribbon glow to respect <= 24px constraint
@@ -226,15 +229,11 @@ export function MessageBubble({
           {isOwn && (
             <View style={styles.statusContainer}>
               <Animated.View style={[styles.tick, tick1Style]}>
-                <Text style={[styles.tickText, { color: statusTicks.color.value }]}>
-                  ✓
-                </Text>
+                <Text style={[styles.tickText, { color: statusTicks.color.value }]}>✓</Text>
               </Animated.View>
               {message.status !== 'sending' && (
                 <Animated.View style={[styles.tick, tick2Style]}>
-                  <Text style={[styles.tickText, { color: statusTicks.color.value }]}>
-                    ✓
-                  </Text>
+                  <Text style={[styles.tickText, { color: statusTicks.color.value }]}>✓</Text>
                 </Animated.View>
               )}
             </View>
@@ -291,4 +290,3 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 })
-

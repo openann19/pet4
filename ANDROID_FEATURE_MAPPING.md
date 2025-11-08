@@ -2,30 +2,31 @@
 
 ## Complete Feature Inventory
 
-| Feature | Priority | Library | RN Coverage | Gaps | Decision | Implementation Path |
-|---------|----------|---------|-------------|------|----------|-------------------|
-| **Push Notifications** | Critical | `expo-notifications` | ✅ Full | None | **RN-only** | Install + configure channels |
-| **Deep Links** | Critical | `expo-linking` | ✅ Full | None | **RN-only** | Install + universal links setup |
-| **Maps** | Critical | `react-native-maps` (Google) or `@react-native-mapbox/maps` | ✅ Full | None | **RN-only** | Install + Mapbox token |
-| **In-App Purchases** | High | `react-native-iap` | ✅ Full | Server validation | **RN-only** | Install + server receipt validation |
-| **Live Streaming** | High | `react-native-webrtc` + `@livekit/react-native` | ✅ Full | None | **RN-only** | Install + LiveKit server config |
-| **Chat** | Critical | Socket.io (existing) | ✅ Full | None | **RN-only** | No changes needed |
-| **KYC Verification** | Medium | `@onfido/react-native-sdk` or `react-native-persona` | ⚠️ Partial | May need bridge | **Check RN first** | Try RN wrapper → Kotlin bridge if needed |
-| **Background Tasks** | Low | `expo-task-manager` + `expo-background-fetch` | ✅ 90% | Foreground services | **RN-only** | Use RN unless proven insufficient |
-| **Geolocation** | Critical | `expo-location` | ✅ Full | None | **RN-only** | Install + permissions |
-| **Camera/Media** | High | `expo-camera` + `expo-image-picker` | ✅ Full | None | **RN-only** | Install + permissions |
-| **File Uploads** | High | `expo-file-system` | ✅ Full | None | **RN-only** | Install + upload logic |
-| **Biometrics** | Low | `expo-local-authentication` | ✅ Full | None | **RN-only** | Install + auth flow |
-| **Secure Storage** | High | `expo-secure-store` | ✅ Full | None | **RN-only** | Install + token storage |
-| **Permissions** | Critical | `expo-permissions` | ✅ Full | None | **RN-only** | Install + runtime handling |
-| **Haptics** | Medium | `expo-haptics` | ✅ Full | None | **RN-only** | Install + feedback triggers |
-| **Sharing** | Low | `expo-sharing` | ✅ Full | None | **RN-only** | Install + share sheet |
+| Feature                | Priority | Library                                                     | RN Coverage | Gaps                | Decision           | Implementation Path                      |
+| ---------------------- | -------- | ----------------------------------------------------------- | ----------- | ------------------- | ------------------ | ---------------------------------------- |
+| **Push Notifications** | Critical | `expo-notifications`                                        | ✅ Full     | None                | **RN-only**        | Install + configure channels             |
+| **Deep Links**         | Critical | `expo-linking`                                              | ✅ Full     | None                | **RN-only**        | Install + universal links setup          |
+| **Maps**               | Critical | `react-native-maps` (Google) or `@react-native-mapbox/maps` | ✅ Full     | None                | **RN-only**        | Install + Mapbox token                   |
+| **In-App Purchases**   | High     | `react-native-iap`                                          | ✅ Full     | Server validation   | **RN-only**        | Install + server receipt validation      |
+| **Live Streaming**     | High     | `react-native-webrtc` + `@livekit/react-native`             | ✅ Full     | None                | **RN-only**        | Install + LiveKit server config          |
+| **Chat**               | Critical | Socket.io (existing)                                        | ✅ Full     | None                | **RN-only**        | No changes needed                        |
+| **KYC Verification**   | Medium   | `@onfido/react-native-sdk` or `react-native-persona`        | ⚠️ Partial  | May need bridge     | **Check RN first** | Try RN wrapper → Kotlin bridge if needed |
+| **Background Tasks**   | Low      | `expo-task-manager` + `expo-background-fetch`               | ✅ 90%      | Foreground services | **RN-only**        | Use RN unless proven insufficient        |
+| **Geolocation**        | Critical | `expo-location`                                             | ✅ Full     | None                | **RN-only**        | Install + permissions                    |
+| **Camera/Media**       | High     | `expo-camera` + `expo-image-picker`                         | ✅ Full     | None                | **RN-only**        | Install + permissions                    |
+| **File Uploads**       | High     | `expo-file-system`                                          | ✅ Full     | None                | **RN-only**        | Install + upload logic                   |
+| **Biometrics**         | Low      | `expo-local-authentication`                                 | ✅ Full     | None                | **RN-only**        | Install + auth flow                      |
+| **Secure Storage**     | High     | `expo-secure-store`                                         | ✅ Full     | None                | **RN-only**        | Install + token storage                  |
+| **Permissions**        | Critical | `expo-permissions`                                          | ✅ Full     | None                | **RN-only**        | Install + runtime handling               |
+| **Haptics**            | Medium   | `expo-haptics`                                              | ✅ Full     | None                | **RN-only**        | Install + feedback triggers              |
+| **Sharing**            | Low      | `expo-sharing`                                              | ✅ Full     | None                | **RN-only**        | Install + share sheet                    |
 
 ## Detailed Analysis
 
 ### ✅ **RN-Only Features (No Kotlin)**
 
 #### 1. Push Notifications
+
 - **Library**: `expo-notifications`
 - **Coverage**: 100%
 - **Features**: Channels, categories, foreground handling, badges, actions
@@ -33,6 +34,7 @@
 - **Implementation**: `expo install expo-notifications` + configure channels
 
 #### 2. Deep Links
+
 - **Library**: `expo-linking`
 - **Coverage**: 100%
 - **Features**: Universal links, app links, custom schemes, cold start handling
@@ -40,6 +42,7 @@
 - **Implementation**: `expo install expo-linking` + configure intent-filter
 
 #### 3. Maps
+
 - **Library**: `react-native-maps` (Google) or `@react-native-mapbox/maps`
 - **Coverage**: 100%
 - **Features**: Map rendering, markers, polygons, clustering, geocoding
@@ -47,6 +50,7 @@
 - **Implementation**: `npm install react-native-maps` + API key
 
 #### 4. In-App Purchases
+
 - **Library**: `react-native-iap`
 - **Coverage**: 100% (with server validation)
 - **Features**: Google Play Billing, subscriptions, one-time purchases
@@ -54,6 +58,7 @@
 - **Implementation**: `npm install react-native-iap` + server receipt validation
 
 #### 5. WebRTC / Live Streaming
+
 - **Library**: `react-native-webrtc` + `@livekit/react-native`
 - **Coverage**: 100%
 - **Features**: Peer connections, media streams, live streaming
@@ -61,6 +66,7 @@
 - **Implementation**: `npm install react-native-webrtc @livekit/react-native`
 
 #### 6. Chat
+
 - **Library**: Socket.io (existing implementation)
 - **Coverage**: 100%
 - **Features**: WebSocket connections, message queuing, offline support
@@ -68,6 +74,7 @@
 - **Implementation**: No changes needed
 
 #### 7. Background Tasks
+
 - **Library**: `expo-task-manager` + `expo-background-fetch`
 - **Coverage**: 90% (periodic tasks)
 - **Features**: Periodic background tasks, location updates
@@ -77,6 +84,7 @@
 ### ⚠️ **Potentially Kotlin Needed**
 
 #### 1. KYC Verification (Priority: Medium)
+
 - **Libraries to Try**:
   - `@onfido/react-native-sdk` (check if maintained)
   - `react-native-persona` (check if available)
@@ -90,6 +98,7 @@
   3. If fails → Create minimal Kotlin bridge (see below)
 
 #### 2. Long Foreground Uploads (Priority: Low)
+
 - **Library**: `expo-task-manager` (may be insufficient)
 - **RN Coverage**: 90% (periodic tasks only)
 - **Gaps**: Foreground services for long uploads
@@ -115,16 +124,16 @@ import com.facebook.react.bridge.Arguments
 
 class KycModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     override fun getName(): String = "KycModule"
-    
+
     @ReactMethod
     fun startKycSession(config: ReadableMap, promise: Promise) {
         try {
             val userId = config.getString("userId") ?: throw IllegalArgumentException("userId required")
             val token = config.getString("token") ?: throw IllegalArgumentException("token required")
-            
+
             // Bridge to KYC SDK (e.g., Onfido/Persona native SDK)
             // Implementation depends on chosen provider
-            
+
             val result = Arguments.createMap().apply {
                 putString("sessionId", "session_123")
                 putString("status", "started")
@@ -134,7 +143,7 @@ class KycModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMod
             promise.reject("KYC_ERROR", e.message, e)
         }
     }
-    
+
     @ReactMethod
     fun getKycStatus(userId: String, promise: Promise) {
         try {
@@ -148,12 +157,12 @@ class KycModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaMod
             promise.reject("KYC_ERROR", e.message, e)
         }
     }
-    
+
     @ReactMethod
     fun addListener(eventName: String) {
         // Setup event listeners for KYC progress
     }
-    
+
     @ReactMethod
     fun removeListeners(count: Int) {
         // Remove event listeners
@@ -184,56 +193,57 @@ override fun getPackages(): List<ReactPackage> {
 **JS Interface**: `src/lib/kyc-native.ts`
 
 ```typescript
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeModules, NativeEventEmitter } from 'react-native'
 
 interface KycConfig {
-  userId: string;
-  token: string;
-  locale?: 'en' | 'bg';
+  userId: string
+  token: string
+  locale?: 'en' | 'bg'
 }
 
 interface KycResult {
-  sessionId: string;
-  status: 'started' | 'completed' | 'failed';
+  sessionId: string
+  status: 'started' | 'completed' | 'failed'
 }
 
 interface KycStatus {
-  status: 'pending' | 'verified' | 'rejected';
-  verificationId?: string;
+  status: 'pending' | 'verified' | 'rejected'
+  verificationId?: string
 }
 
-const { KycModule } = NativeModules;
+const { KycModule } = NativeModules
 
 class KycNative {
-  private emitter: NativeEventEmitter;
+  private emitter: NativeEventEmitter
 
   constructor() {
-    this.emitter = new NativeEventEmitter(KycModule);
+    this.emitter = new NativeEventEmitter(KycModule)
   }
 
   async startKycSession(config: KycConfig): Promise<KycResult> {
-    return KycModule.startKycSession(config);
+    return KycModule.startKycSession(config)
   }
 
   async getKycStatus(userId: string): Promise<KycStatus> {
-    return KycModule.getKycStatus(userId);
+    return KycModule.getKycStatus(userId)
   }
 
   onProgress(callback: (progress: number) => void) {
-    return this.emitter.addListener('KycProgress', callback);
+    return this.emitter.addListener('KycProgress', callback)
   }
 
   onResult(callback: (result: KycResult) => void) {
-    return this.emitter.addListener('KycResult', callback);
+    return this.emitter.addListener('KycResult', callback)
   }
 }
 
-export const kycNative = new KycNative();
+export const kycNative = new KycNative()
 ```
 
 ## Implementation Checklist
 
 ### Phase 1: RN-Only Core (Week 1-2)
+
 - [ ] Install Expo modules: `expo-notifications`, `expo-linking`, `expo-location`, `expo-camera`, `expo-image-picker`
 - [ ] Install RN modules: `react-native-maps`, `react-native-iap`, `react-native-webrtc`, `@livekit/react-native`
 - [ ] Configure notification channels
@@ -243,11 +253,13 @@ export const kycNative = new KycNative();
 - [ ] Test WebRTC calls
 
 ### Phase 2: KYC Evaluation (Week 2-3)
+
 - [ ] Test `@onfido/react-native-sdk` or `react-native-persona`
 - [ ] If RN wrapper works → Use RN-only ✅
 - [ ] If no RN wrapper → Create Kotlin bridge (see above)
 
 ### Phase 3: Android Polish (Week 3-4)
+
 - [ ] Configure notification channels (EN/BG)
 - [ ] Test back gesture (React Navigation)
 - [ ] Verify BG long strings (no clipping)
@@ -256,6 +268,7 @@ export const kycNative = new KycNative();
 - [ ] Configure Play Billing
 
 ### Phase 4: QA & Store Prep (Week 4-5)
+
 - [ ] Test on Pixel 6-8 (Android 12-14)
 - [ ] Test on Samsung mid-tier
 - [ ] Test notifications (background, foreground, killed)
@@ -271,6 +284,7 @@ export const kycNative = new KycNative();
 **Start RN-only. Add Kotlin only if KYC requires it.**
 
 ### Why RN-Only?
+
 - ✅ 95%+ feature coverage
 - ✅ Faster development
 - ✅ Easier maintenance
@@ -278,6 +292,7 @@ export const kycNative = new KycNative();
 - ✅ Well-maintained modules
 
 ### When to Add Kotlin?
+
 - ⚠️ KYC SDK has no RN wrapper → Minimal bridge (50-100 lines)
 - ⚠️ Long foreground uploads → WorkManager wrapper (if RN insufficient)
 - ⚠️ Custom native UI → Unlikely for this app
@@ -309,16 +324,15 @@ export const kycNative = new KycNative();
 
 ## Summary Table
 
-| Feature | RN Coverage | Kotlin Needed? | Status |
-|---------|-------------|----------------|--------|
-| Push Notifications | ✅ 100% | ❌ No | RN-only |
-| Deep Links | ✅ 100% | ❌ No | RN-only |
-| Maps | ✅ 100% | ❌ No | RN-only |
-| IAP | ✅ 100% | ❌ No | RN-only |
-| WebRTC/Live | ✅ 100% | ❌ No | RN-only |
-| Chat | ✅ 100% | ❌ No | RN-only |
-| KYC | ⚠️ 80% | ⚠️ Maybe | Check RN wrappers first |
-| Background Tasks | ✅ 90% | ⚠️ Only for foreground | RN-first |
+| Feature            | RN Coverage | Kotlin Needed?         | Status                  |
+| ------------------ | ----------- | ---------------------- | ----------------------- |
+| Push Notifications | ✅ 100%     | ❌ No                  | RN-only                 |
+| Deep Links         | ✅ 100%     | ❌ No                  | RN-only                 |
+| Maps               | ✅ 100%     | ❌ No                  | RN-only                 |
+| IAP                | ✅ 100%     | ❌ No                  | RN-only                 |
+| WebRTC/Live        | ✅ 100%     | ❌ No                  | RN-only                 |
+| Chat               | ✅ 100%     | ❌ No                  | RN-only                 |
+| KYC                | ⚠️ 80%      | ⚠️ Maybe               | Check RN wrappers first |
+| Background Tasks   | ✅ 90%      | ⚠️ Only for foreground | RN-first                |
 
 **Verdict: Start RN-only. Add Kotlin only if KYC requires it.**
-

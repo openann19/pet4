@@ -152,9 +152,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
         {!image ? (
           <View style={styles.selectContainer}>
             <Text style={styles.selectTitle}>Add to Your Story</Text>
-            <Text style={styles.selectSubtitle}>
-              Share a moment with your friends
-            </Text>
+            <Text style={styles.selectSubtitle}>Share a moment with your friends</Text>
 
             <View style={styles.optionsContainer}>
               <Pressable style={styles.optionButton} onPress={takePhoto}>
@@ -188,10 +186,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
 
             {/* Action Buttons */}
             <View style={styles.actionsContainer}>
-              <Pressable
-                style={styles.changeImageButton}
-                onPress={() => setImage(null)}
-              >
+              <Pressable style={styles.changeImageButton} onPress={() => setImage(null)}>
                 <Text style={styles.changeImageButtonText}>Change Image</Text>
               </Pressable>
               <Pressable
@@ -199,9 +194,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
                 onPress={handlePost}
                 disabled={isPosting}
               >
-                <Text style={styles.postButtonText}>
-                  {isPosting ? 'Posting...' : 'Post Story'}
-                </Text>
+                <Text style={styles.postButtonText}>{isPosting ? 'Posting...' : 'Post Story'}</Text>
               </Pressable>
             </View>
           </View>

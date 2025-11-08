@@ -40,7 +40,7 @@ export class ErrorBoundary extends Component<Props, State> {
       componentStack: errorInfo.componentStack,
       errorBoundary: true,
     });
-    
+
     // Call custom error handler if provided
     this.props.onError?.(error, errorInfo);
   }
@@ -50,7 +50,7 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
     });
-    
+
     // Call custom reset handler if provided
     this.props.onReset?.();
   };
@@ -71,11 +71,9 @@ export class ErrorBoundary extends Component<Props, State> {
                 <Warning size={48} weight="bold" className="text-destructive" />
               </div>
             </div>
-            
+
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-foreground">
-                Oops! Something went wrong
-              </h1>
+              <h1 className="text-2xl font-bold text-foreground">Oops! Something went wrong</h1>
               <p className="text-muted-foreground">
                 We encountered an unexpected error. Please try refreshing the page.
               </p>
@@ -96,10 +94,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <Button onClick={this.handleReset} variant="default">
                 Try Again
               </Button>
-              <Button
-                onClick={() => window.location.reload()}
-                variant="outline"
-              >
+              <Button onClick={() => window.location.reload()} variant="outline">
                 Refresh Page
               </Button>
             </div>

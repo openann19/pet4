@@ -14,8 +14,8 @@ Cross-platform media editor (image + video) with resize, crop, rotate, filters, 
 ### Image Editing
 
 ```typescript
-import { editMedia } from '@/core/services/media/edit-media'
-import type { MediaInput, ImageOperation } from '@/core/types/media-types'
+import { editMedia } from '@/core/services/media/edit-media';
+import type { MediaInput, ImageOperation } from '@/core/types/media-types';
 
 const result = await editMedia(
   {
@@ -30,9 +30,9 @@ const result = await editMedia(
     { type: 'resize', width: 1440, height: 1920 },
   ],
   { imageFormat: 'jpeg', quality: 0.92 }
-)
+);
 
-console.log(result.uri) // Edited image URI
+console.log(result.uri); // Edited image URI
 ```
 
 ### Video Editing
@@ -58,7 +58,7 @@ const result = await editMedia(
     },
   ],
   { quality: 0.9 }
-)
+);
 ```
 
 ### Using the MediaEditor Component
@@ -109,4 +109,3 @@ function MyComponent() {
 - Native implementation saves to cache directory
 - All operations are validated with Zod schemas
 - Error handling with structured logging
-

@@ -1,2 +1,1 @@
-export { ParticleEffect } from './particle-effect'
-
+export { ParticleEffect } from './particle-effect';

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
-import Animated, { useAnimatedStyle, withRepeat, withTiming, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { StreamControls } from './StreamControls';
 import { LiveChatOverlay } from './LiveChatOverlay';
 import { ViewersList } from './ViewersList';
@@ -23,20 +28,16 @@ export const LiveStreamInterface: React.FC<LiveStreamInterfaceProps> = ({
   const [viewersCount, setViewersCount] = useState(1);
   const [duration, setDuration] = useState(0);
   const [showViewersList, setShowViewersList] = useState(false);
-  
+
   const pulseScale = useSharedValue(1);
 
   useEffect(() => {
     // Pulse animation for live badge
-    pulseScale.value = withRepeat(
-      withTiming(1.1, { duration: 1000 }),
-      -1,
-      true
-    );
+    pulseScale.value = withRepeat(withTiming(1.1, { duration: 1000 }), -1, true);
 
     // Duration timer
     const timer = setInterval(() => {
-      setDuration(prev => prev + 1);
+      setDuration((prev) => prev + 1);
     }, 1000);
 
     return () => clearInterval(timer);
@@ -72,11 +73,8 @@ export const LiveStreamInterface: React.FC<LiveStreamInterfaceProps> = ({
             <Text style={styles.durationText}>{formatDuration(duration)}</Text>
           </View>
         </View>
-        
-        <TouchableOpacity 
-          style={styles.viewersButton}
-          onPress={() => setShowViewersList(true)}
-        >
+
+        <TouchableOpacity style={styles.viewersButton} onPress={() => setShowViewersList(true)}>
           <Text style={styles.viewersIcon}>👥</Text>
           <Text style={styles.viewersText}>{viewersCount}</Text>
         </TouchableOpacity>
@@ -95,10 +93,7 @@ export const LiveStreamInterface: React.FC<LiveStreamInterfaceProps> = ({
 
       {/* Controls (Host only) */}
       {isHost && (
-        <StreamControls
-          onEndStream={onEndStream}
-          onShowViewers={() => setShowViewersList(true)}
-        />
+        <StreamControls onEndStream={onEndStream} onShowViewers={() => setShowViewersList(true)} />
       )}
 
       {/* Viewers List Modal */}
@@ -108,10 +103,7 @@ export const LiveStreamInterface: React.FC<LiveStreamInterfaceProps> = ({
         animationType="slide"
         onRequestClose={() => setShowViewersList(false)}
       >
-        <ViewersList
-          streamId={streamId}
-          onClose={() => setShowViewersList(false)}
-        />
+        <ViewersList streamId={streamId} onClose={() => setShowViewersList(false)} />
       </Modal>
     </View>
   );

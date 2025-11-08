@@ -1,68 +1,103 @@
-import { useState, useEffect } from 'react'
-import { motion } from '@petspark/motion'
-import { CloudArrowUp, CloudSlash, CloudCheck, Warning } from '@phosphor-icons/react'
-import { subscribeToSyncStatus, type SyncStatus } from '@/lib/offline-sync'
-import { Button } from '@/components/ui/button'
+import { useState, useEffect } from 'react';
+import { CloudArrowUp, CloudSlash, CloudCheck, Warning } from '@phosphor-icons/react';
+import { subscribeToSyncStatus, type SyncStatus } from '@/lib/offline-sync';
+import { Button } from '@/components/ui/button';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { logger } from '@/lib/logger'
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { logger } from '@/lib/logger';
 
 export function SyncStatusIndicator() {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({
     isOnline: navigator.onLine,
     isSyncing: false,
     pendingActions: 0,
-    failedActions: 0
-  })
-  const [isOpen, setIsOpen] = useState(false)
+    failedActions: 0,
+  });
+  const [isOpen, setIsOpen] = useState(false);
+
+  const iconScale = useSharedValue(1);
+  const iconRotate = useSharedValue(0);
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: iconScale.value }, { rotate: `${iconRotate.value}deg` }],
+  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+
+  useEffect(() => {
+    if (syncStatus.isSyncing) {
+      iconScale.value = withRepeat(
+        withSequence(withTiming(1.1, { duration: 1000 }), withTiming(1, { duration: 1000 })),
+        -1,
+        true
+      );
+      iconRotate.value = withRepeat(
+        withSequence(
+          withTiming(10, { duration: 1000 }),
+          withTiming(-10, { duration: 1000 }),
+          withTiming(0, { duration: 1000 })
+        ),
+        -1,
+        false
+      );
+    } else {
+      iconScale.value = 1;
+      iconRotate.value = 0;
+    }
+  }, [syncStatus.isSyncing, iconScale, iconRotate]);
 
   useEffect(() => {
     const unsubscribe = subscribeToSyncStatus((status) => {
-      setSyncStatus(status)
-    })
+      setSyncStatus(status);
+    });
 
-    return unsubscribe
-  }, [])
+    return unsubscribe;
+  }, []);
 
   const getIcon = () => {
     if (!syncStatus.isOnline) {
-      return <CloudSlash size={18} weight="fill" className="text-destructive" />
+      return <CloudSlash size={18} weight="fill" className="text-destructive" />;
     }
     if (syncStatus.isSyncing) {
-      return <CloudArrowUp size={18} weight="fill" className="text-primary animate-pulse" />
+      return <CloudArrowUp size={18} weight="fill" className="text-primary animate-pulse" />;
     }
     if (syncStatus.failedActions > 0) {
-      return <Warning size={18} weight="fill" className="text-amber-500" />
+      return <Warning size={18} weight="fill" className="text-amber-500" />;
     }
     if (syncStatus.pendingActions > 0) {
-      return <CloudArrowUp size={18} weight="fill" className="text-primary" />
+      return <CloudArrowUp size={18} weight="fill" className="text-primary" />;
     }
-    return <CloudCheck size={18} weight="fill" className="text-green-500" />
-  }
+    return <CloudCheck size={18} weight="fill" className="text-green-500" />;
+  };
 
   const getLabel = () => {
     if (!syncStatus.isOnline) {
-      return 'Offline'
+      return 'Offline';
     }
     if (syncStatus.isSyncing) {
-      return 'Syncing...'
+      return 'Syncing...';
     }
     if (syncStatus.failedActions > 0) {
-      return `${syncStatus.failedActions} failed`
+      return `${syncStatus.failedActions} failed`;
     }
     if (syncStatus.pendingActions > 0) {
-      return `${syncStatus.pendingActions} pending`
+      return `${syncStatus.pendingActions} pending`;
     }
-    return 'Synced'
-  }
+    return 'Synced';
+  };
 
-  const shouldShow = !syncStatus.isOnline || syncStatus.isSyncing || syncStatus.pendingActions > 0 || syncStatus.failedActions > 0
+  const shouldShow =
+    !syncStatus.isOnline ||
+    syncStatus.isSyncing ||
+    syncStatus.pendingActions > 0 ||
+    syncStatus.failedActions > 0;
 
   if (!shouldShow) {
-    return null
+    return null;
   }
 
   return (
@@ -73,19 +108,7 @@ export function SyncStatusIndicator() {
           size="sm"
           className="h-9 px-3 gap-2 hover:bg-primary/10 active:bg-primary/20 transition-colors"
         >
-          <MotionView
-            animate={{
-              scale: syncStatus.isSyncing ? [1, 1.1, 1] : 1,
-              rotate: syncStatus.isSyncing ? [0, 10, -10, 0] : 0
-            }}
-            transition={{
-              duration: 2,
-              repeat: syncStatus.isSyncing ? Infinity : 0,
-              repeatType: 'loop'
-            }}
-          >
-            {getIcon()}
-          </MotionView>
+          <AnimatedView style={iconStyle}>{getIcon()}</AnimatedView>
           <span className="text-xs font-medium">{getLabel()}</span>
         </Button>
       </PopoverTrigger>
@@ -101,7 +124,9 @@ export function SyncStatusIndicator() {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Connection</span>
-              <span className={`font-medium ${syncStatus.isOnline ? 'text-green-600' : 'text-destructive'}`}>
+              <span
+                className={`font-medium ${syncStatus.isOnline ? 'text-green-600' : 'text-destructive'}`}
+              >
                 {syncStatus.isOnline ? 'Online' : 'Offline'}
               </span>
             </div>
@@ -133,7 +158,8 @@ export function SyncStatusIndicator() {
           {!syncStatus.isOnline && (
             <div className="bg-muted p-3 rounded-lg">
               <p className="text-xs text-muted-foreground">
-                You're currently offline. Your actions will be saved and synced automatically when you're back online.
+                You're currently offline. Your actions will be saved and synced automatically when
+                you're back online.
               </p>
             </div>
           )}
@@ -148,8 +174,11 @@ export function SyncStatusIndicator() {
                 variant="outline"
                 className="w-full"
                 onClick={() => {
-                  logger.info('Retry failed actions', { action: 'retryFailedActions', failedActions: syncStatus.failedActions })
-                  setIsOpen(false)
+                  logger.info('Retry failed actions', {
+                    action: 'retryFailedActions',
+                    failedActions: syncStatus.failedActions,
+                  });
+                  setIsOpen(false);
                 }}
               >
                 Retry Now
@@ -159,5 +188,5 @@ export function SyncStatusIndicator() {
         </div>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

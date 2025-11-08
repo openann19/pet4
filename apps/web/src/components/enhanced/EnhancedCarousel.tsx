@@ -1,23 +1,23 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import { Presence } from '@petspark/motion'
-import { CaretLeft, CaretRight } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { haptics } from '@/lib/haptics'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { Presence } from '@petspark/motion';
+import { CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { haptics } from '@/lib/haptics';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 interface EnhancedCarouselProps {
-  items: React.ReactNode[]
-  className?: string
-  autoPlay?: boolean
-  autoPlayInterval?: number
-  showControls?: boolean
-  showIndicators?: boolean
-  loop?: boolean
-  onSlideChange?: (index: number) => void
+  items: React.ReactNode[];
+  className?: string;
+  autoPlay?: boolean;
+  autoPlayInterval?: number;
+  showControls?: boolean;
+  showIndicators?: boolean;
+  loop?: boolean;
+  onSlideChange?: (index: number) => void;
 }
 
 export function EnhancedCarousel({
@@ -30,115 +30,116 @@ export function EnhancedCarousel({
   loop = true,
   onSlideChange,
 }: EnhancedCarouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [direction, setDirection] = useState<'left' | 'right'>('right')
-  const autoPlayRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState<'left' | 'right'>('right');
+  const autoPlayRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  const itemCount = items.length
+  const itemCount = items.length;
 
   const goToSlide = (index: number, dir: 'left' | 'right' = 'right') => {
-    if (index === currentIndex) return
-    
-    haptics.impact('light')
-    setDirection(dir)
-    setCurrentIndex(index)
-    onSlideChange?.(index)
-  }
+    if (index === currentIndex) return;
+
+    haptics.impact('light');
+    setDirection(dir);
+    setCurrentIndex(index);
+    onSlideChange?.(index);
+  };
 
   const goToNext = useCallback(() => {
     setCurrentIndex((prevIndex) => {
-      const nextIndex = prevIndex === itemCount - 1 ? (loop ? 0 : prevIndex) : prevIndex + 1
+      const nextIndex = prevIndex === itemCount - 1 ? (loop ? 0 : prevIndex) : prevIndex + 1;
       if (nextIndex !== prevIndex) {
-        setDirection('right')
-        onSlideChange?.(nextIndex)
-        haptics.impact('light')
+        setDirection('right');
+        onSlideChange?.(nextIndex);
+        haptics.impact('light');
       }
-      return nextIndex
-    })
-  }, [itemCount, loop, onSlideChange])
+      return nextIndex;
+    });
+  }, [itemCount, loop, onSlideChange]);
 
   const goToPrev = useCallback(() => {
     setCurrentIndex((prevIndex) => {
-      const prevIndexValue = prevIndex === 0 ? (loop ? itemCount - 1 : prevIndex) : prevIndex - 1
+      const prevIndexValue = prevIndex === 0 ? (loop ? itemCount - 1 : prevIndex) : prevIndex - 1;
       if (prevIndexValue !== prevIndex) {
-        setDirection('left')
-        onSlideChange?.(prevIndexValue)
-        haptics.impact('light')
+        setDirection('left');
+        onSlideChange?.(prevIndexValue);
+        haptics.impact('light');
       }
-      return prevIndexValue
-    })
-  }, [itemCount, loop, onSlideChange])
+      return prevIndexValue;
+    });
+  }, [itemCount, loop, onSlideChange]);
 
   const resetAutoPlay = useCallback(() => {
     if (autoPlay && autoPlayRef.current) {
-      clearInterval(autoPlayRef.current)
+      clearInterval(autoPlayRef.current);
       autoPlayRef.current = setInterval(() => {
-        goToNext()
-      }, autoPlayInterval)
+        goToNext();
+      }, autoPlayInterval);
     }
-  }, [autoPlay, autoPlayInterval, goToNext])
+  }, [autoPlay, autoPlayInterval, goToNext]);
 
   useEffect(() => {
     if (autoPlay) {
       autoPlayRef.current = setInterval(() => {
-        goToNext()
-      }, autoPlayInterval)
+        goToNext();
+      }, autoPlayInterval);
 
       return () => {
         if (autoPlayRef.current) {
-          clearInterval(autoPlayRef.current)
+          clearInterval(autoPlayRef.current);
         }
-      }
+      };
     }
-    return undefined
-  }, [autoPlay, autoPlayInterval, goToNext])
+    return undefined;
+  }, [autoPlay, autoPlayInterval, goToNext]);
 
-  const translateX = useSharedValue(0)
-  const opacity = useSharedValue(1)
-  const dragX = useSharedValue(0)
+  const translateX = useSharedValue(0);
+  const opacity = useSharedValue(1);
+  const dragX = useSharedValue(0);
 
   useEffect(() => {
-    translateX.value = withSpring(0, springConfigs.smooth)
-    opacity.value = withTiming(1, timingConfigs.fast)
-    dragX.value = 0
-  }, [currentIndex, direction, translateX, opacity, dragX])
+    translateX.value = withSpring(0, springConfigs.smooth);
+    opacity.value = withTiming(1, timingConfigs.fast);
+    dragX.value = 0;
+  }, [currentIndex, direction, translateX, opacity, dragX]);
 
   const handleDragStart = useCallback(() => {
-    dragX.value = 0
-  }, [dragX])
+    dragX.value = 0;
+  }, [dragX]);
 
   const handleDrag = useCallback((_e: React.MouseEvent | React.TouchEvent) => {
     // Note: Custom drag handling removed for motion facade compatibility
     // Drag functionality should be implemented using MotionView if needed
-  }, [])
+  }, []);
 
-  const handleDragEnd = useCallback((_e: React.MouseEvent | React.TouchEvent) => {
-    const swipeThreshold = 50
-    const currentDrag = dragX.value
-    
-    if (Math.abs(currentDrag) > swipeThreshold) {
-      if (currentDrag > 0) {
-        goToPrev()
-      } else {
-        goToNext()
+  const handleDragEnd = useCallback(
+    (_e: React.MouseEvent | React.TouchEvent) => {
+      const swipeThreshold = 50;
+      const currentDrag = dragX.value;
+
+      if (Math.abs(currentDrag) > swipeThreshold) {
+        if (currentDrag > 0) {
+          goToPrev();
+        } else {
+          goToNext();
+        }
       }
-    }
-    dragX.value = 0
-  }, [dragX, goToPrev, goToNext])
+      dragX.value = 0;
+    },
+    [dragX, goToPrev, goToNext]
+  );
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { translateX: translateX.value + dragX.value },
-      ],
+      transform: [{ translateX: translateX.value + dragX.value }],
       opacity: opacity.value,
-    }
-  }) as AnimatedStyle
+    };
+  }) as AnimatedStyle;
 
-  const styleValue = useAnimatedStyleValue(animatedStyle)
+  const styleValue = useAnimatedStyleValue(animatedStyle);
 
   if (itemCount === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -168,8 +169,8 @@ export function EnhancedCarousel({
             variant="ghost"
             size="icon"
             onClick={() => {
-              goToPrev()
-              resetAutoPlay()
+              goToPrev();
+              resetAutoPlay();
             }}
             disabled={!loop && currentIndex === 0}
             className={cn(
@@ -184,8 +185,8 @@ export function EnhancedCarousel({
             variant="ghost"
             size="icon"
             onClick={() => {
-              goToNext()
-              resetAutoPlay()
+              goToNext();
+              resetAutoPlay();
             }}
             disabled={!loop && currentIndex === itemCount - 1}
             className={cn(
@@ -204,8 +205,8 @@ export function EnhancedCarousel({
             <button
               key={index}
               onClick={() => {
-                goToSlide(index, index > currentIndex ? 'right' : 'left')
-                resetAutoPlay()
+                goToSlide(index, index > currentIndex ? 'right' : 'left');
+                resetAutoPlay();
               }}
               className={cn(
                 'h-2 rounded-full transition-all duration-300',
@@ -225,5 +226,5 @@ export function EnhancedCarousel({
         </div>
       )}
     </div>
-  )
+  );
 }

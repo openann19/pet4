@@ -1,5 +1,6 @@
 /**
  * React Query hooks for chat API (Mobile)
+ * Uses hardened API client for all requests
  * Location: apps/mobile/src/hooks/api/use-chat.ts
  */
 
@@ -7,69 +8,46 @@ import type { UseMutationResult } from '@tanstack/react-query'
 import { useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-client'
 import type { Message } from '@/lib/types'
-
-const API_BASE_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'https://api.petspark.app'
+import { apiClient } from '@/utils/api-client'
 
 /**
  * Fetch chat messages
  */
-async function fetchMessages(chatRoomId: string, cursor?: string): Promise<{ items: Message[]; nextCursor?: string }> {
-  const url = cursor
-    ? `${API_BASE_URL}/api/chat/${chatRoomId}/messages?cursor=${cursor}`
-    : `${API_BASE_URL}/api/chat/${chatRoomId}/messages`
-
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+async function fetchMessages(
+  chatRoomId: string,
+  cursor?: string
+): Promise<{ items: Message[]; nextCursor?: string }> {
+  const endpoint = cursor
+    ? `/api/chat/${chatRoomId}/messages?cursor=${cursor}`
+    : `/api/chat/${chatRoomId}/messages`
+  return apiClient.get<{ items: Message[]; nextCursor?: string }>(endpoint, {
+    cacheKey: `chat:${chatRoomId}:messages:${cursor || 'initial'}`,
+    skipCache: false,
   })
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch messages: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  return data
 }
 
 /**
  * Send a message
  */
 async function sendMessage(chatRoomId: string, content: string): Promise<Message> {
-  const response = await fetch(`${API_BASE_URL}/api/chat/${chatRoomId}/messages`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ content }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to send message: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  return data.message
+  const data = await apiClient.post<{ message?: Message } | Message>(
+    `/api/chat/${chatRoomId}/messages`,
+    { content },
+    {
+      skipCache: true,
+    }
+  )
+  return (data as { message?: Message }).message || (data as Message)
 }
 
 /**
  * Mark message as read
  */
-async function markMessageAsRead(chatRoomId: string, messageId: string): Promise<{ success: boolean }> {
-  const response = await fetch(`${API_BASE_URL}/api/chat/${chatRoomId}/messages/${messageId}/read`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to mark message as read: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  return data
+async function markMessageAsRead(
+  chatRoomId: string,
+  messageId: string
+): Promise<{ success: boolean }> {
+  return apiClient.post<{ success: boolean }>(`/api/chat/${chatRoomId}/messages/${messageId}/read`)
 }
 
 /**

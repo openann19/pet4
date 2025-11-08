@@ -1,157 +1,174 @@
-import { adoptionApi } from '@/api/adoption-api'
-import { AdoptionListingCard } from '@/components/adoption/AdoptionListingCard'
-import { AdoptionListingDetailDialog } from '@/components/adoption/AdoptionListingDetailDialog'
-import { CreateAdoptionListingDialog } from '@/components/adoption/CreateAdoptionListingDialog'
-import { MyApplicationsView } from '@/components/adoption/MyApplicationsView'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useApp } from '@/contexts/AppContext'
-import { useStorage } from '@/hooks/useStorage'
-import type { AdoptionListing } from '@/lib/adoption-marketplace-types'
-import { createLogger } from '@/lib/logger'
-import { ClipboardText, Heart, MagnifyingGlass, Plus } from '@phosphor-icons/react'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence'
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+import { adoptionApi } from '@/api/adoption-api';
+import { AdoptionListingCard } from '@/components/adoption/AdoptionListingCard';
+import { AdoptionListingDetailDialog } from '@/components/adoption/AdoptionListingDetailDialog';
+import { CreateAdoptionListingDialog } from '@/components/adoption/CreateAdoptionListingDialog';
+import { MyApplicationsView } from '@/components/adoption/MyApplicationsView';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useApp } from '@/contexts/AppContext';
+import { useStorage } from '@/hooks/use-storage';
+import type { AdoptionListing } from '@/lib/adoption-marketplace-types';
+import { createLogger } from '@/lib/logger';
+import { ClipboardText, Heart, MagnifyingGlass, Plus } from '@phosphor-icons/react';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('AdoptionView')
+const logger = createLogger('AdoptionView');
 
-type ViewMode = 'browse' | 'my-applications' | 'my-listings'
+type ViewMode = 'browse' | 'my-applications' | 'my-listings';
 
 export default function AdoptionView() {
-  const { t } = useApp()
-  const [viewMode, setViewMode] = useState<ViewMode>('browse')
-  const [listings, setListings] = useState<AdoptionListing[]>([])
-  const [loading, setLoading] = useState(true)
-  const [favorites, setFavorites] = useStorage<string[]>('adoption-favorites', [])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'all' | 'available' | 'favorites'>('all')
-  const [userApplicationsCount, setUserApplicationsCount] = useState(0)
-  const [selectedListing, setSelectedListing] = useState<AdoptionListing | null>(null)
-  const [showDetailDialog, setShowDetailDialog] = useState(false)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
-  const [_cursor, setCursor] = useState<string | undefined>()
+  const { t } = useApp();
+  const [viewMode, setViewMode] = useState<ViewMode>('browse');
+  const [listings, setListings] = useState<AdoptionListing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useStorage<string[]>('adoption-favorites', []);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'all' | 'available' | 'favorites'>('all');
+  const [userApplicationsCount, setUserApplicationsCount] = useState(0);
+  const [selectedListing, setSelectedListing] = useState<AdoptionListing | null>(null);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [_cursor, setCursor] = useState<string | undefined>();
 
   // Animation hooks
-  const contentPresence = useAnimatePresence(!loading)
-  
+  const contentPresence = useAnimatePresence(!loading);
+
   // Interactive element hooks
-  const cardHover = useHoverLift()
-  const cardTap = useBounceOnTap()
+  const cardHover = useHoverLift();
+  const cardTap = useBounceOnTap();
 
   useEffect(() => {
-    loadListings()
-    loadUserApplicationsCount()
-  }, [])
+    loadListings();
+    loadUserApplicationsCount();
+  }, []);
 
   const loadListings = async () => {
     try {
-      setLoading(true)
-      await spark.user()
-      const result = await adoptionApi.getAdoptionProfiles({ limit: 50 })
-      const mappedListings = result.profiles.map(p => ({
-        id: p._id,
-        ownerId: p.shelterId,
-        ownerName: p.shelterName,
-        petId: p.petId,
-        petName: p.petName,
-        petBreed: p.breed,
-        petAge: p.age,
-        petGender: p.gender,
-        petSize: p.size,
-        petSpecies: 'dog' as const,
-        petPhotos: p.photos,
-        petDescription: p.description,
-        status: p.status === 'available' ? 'active' as const : p.status === 'pending' ? 'pending_review' as const : p.status === 'adopted' ? 'adopted' as const : 'pending_review' as const,
-        location: { city: p.location.split(', ')[0] || '', country: p.location.split(', ')[1] || '', privacyRadiusM: 1000 },
-        requirements: [],
-        vetDocuments: [],
-        vaccinated: p.vaccinated,
-        spayedNeutered: p.spayedNeutered,
-        microchipped: false,
-        goodWithKids: p.goodWithKids,
-        goodWithPets: p.goodWithPets,
-        energyLevel: p.energyLevel,
-        temperament: p.personality,
-        reasonForAdoption: p.description || 'Looking for a loving home',
-        createdAt: p.postedDate,
-        updatedAt: p.postedDate,
-        viewsCount: 0,
-        applicationsCount: 0,
-        featured: false
-      } as AdoptionListing))
-      setListings(mappedListings)
-      setCursor(result.nextCursor)
+      setLoading(true);
+      await spark.user();
+      const result = await adoptionApi.getAdoptionProfiles({ limit: 50 });
+      const mappedListings = result.profiles.map(
+        (p) =>
+          ({
+            id: p._id,
+            ownerId: p.shelterId,
+            ownerName: p.shelterName,
+            petId: p.petId,
+            petName: p.petName,
+            petBreed: p.breed,
+            petAge: p.age,
+            petGender: p.gender,
+            petSize: p.size,
+            petSpecies: 'dog' as const,
+            petPhotos: p.photos,
+            petDescription: p.description,
+            status:
+              p.status === 'available'
+                ? ('active' as const)
+                : p.status === 'pending'
+                  ? ('pending_review' as const)
+                  : p.status === 'adopted'
+                    ? ('adopted' as const)
+                    : ('pending_review' as const),
+            location: {
+              city: p.location.split(', ')[0] || '',
+              country: p.location.split(', ')[1] || '',
+              privacyRadiusM: 1000,
+            },
+            requirements: [],
+            vetDocuments: [],
+            vaccinated: p.vaccinated,
+            spayedNeutered: p.spayedNeutered,
+            microchipped: false,
+            goodWithKids: p.goodWithKids,
+            goodWithPets: p.goodWithPets,
+            energyLevel: p.energyLevel,
+            temperament: p.personality,
+            reasonForAdoption: p.description || 'Looking for a loving home',
+            createdAt: p.postedDate,
+            updatedAt: p.postedDate,
+            viewsCount: 0,
+            applicationsCount: 0,
+            featured: false,
+          }) as AdoptionListing
+      );
+      setListings(mappedListings);
+      setCursor(result.nextCursor);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load listings', err, { action: 'loadListings' })
-      toast.error('Failed to load adoption listings')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load listings', err, { action: 'loadListings' });
+      toast.error('Failed to load adoption listings');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadUserApplicationsCount = async () => {
     try {
-      const user = await spark.user()
-      const applications = await adoptionApi.getUserApplications(user.id)
-      setUserApplicationsCount(applications.length)
+      const user = await spark.user();
+      const applications = await adoptionApi.getUserApplications(user.id);
+      setUserApplicationsCount(applications.length);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load user applications count', err, { action: 'loadUserApplicationsCount' })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load user applications count', err, {
+        action: 'loadUserApplicationsCount',
+      });
     }
-  }
+  };
 
   const handleToggleFavorite = (listingId: string) => {
     setFavorites((currentFavorites) => {
-      const current = Array.isArray(currentFavorites) ? currentFavorites : []
+      const current = Array.isArray(currentFavorites) ? currentFavorites : [];
       if (current.includes(listingId)) {
-        return current.filter(id => id !== listingId)
+        return current.filter((id) => id !== listingId);
       } else {
-        return [...current, listingId]
+        return [...current, listingId];
       }
-    })
-  }
+    });
+  };
 
   const handleSelectListing = (listing: AdoptionListing) => {
-    setSelectedListing(listing)
-    setShowDetailDialog(true)
-  }
+    setSelectedListing(listing);
+    setShowDetailDialog(true);
+  };
 
   const filteredListings = () => {
-    let list = listings.filter(l => l.status === 'active')
+    let list = listings.filter((l) => l.status === 'active');
 
     if (activeTab === 'available') {
-      list = list.filter(l => l.status === 'active')
+      list = list.filter((l) => l.status === 'active');
     } else if (activeTab === 'favorites') {
-      list = list.filter(l => Array.isArray(favorites) && favorites.includes(l.id))
+      list = list.filter((l) => Array.isArray(favorites) && favorites.includes(l.id));
     }
 
     if (searchQuery) {
-      list = list.filter(l =>
-        l.petName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        l.petBreed.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        l.location.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        l.location.country.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      list = list.filter(
+        (l) =>
+          l.petName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          l.petBreed.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          l.location.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          l.location.country.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
 
-    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  }
+    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  };
 
   if (viewMode === 'my-applications') {
-    return <MyApplicationsView onBack={() => setViewMode('browse')} />
+    return <MyApplicationsView onBack={() => setViewMode('browse')} />;
   }
 
-  const availableCount = listings.filter(l => l.status === 'active').length
+  const availableCount = listings.filter((l) => l.status === 'active').length;
 
   if (loading && listings.length === 0) {
     return (
@@ -161,7 +178,7 @@ export default function AdoptionView() {
           <p className="text-muted-foreground">{t.common.loading}</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -191,10 +208,7 @@ export default function AdoptionView() {
               </Badge>
             )}
           </Button>
-          <Button
-            onClick={() => setShowCreateDialog(true)}
-            className="gap-2"
-          >
+          <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
             <Plus size={20} weight="fill" />
             {t.adoption?.createListing || 'Create Listing'}
           </Button>
@@ -203,12 +217,12 @@ export default function AdoptionView() {
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex-1 relative w-full">
-          <MagnifyingGlass 
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" 
-            size={20} 
+          <MagnifyingGlass
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            size={20}
           />
           <Input
-            placeholder={"Search by pet name, breed, location..."}
+            placeholder={'Search by pet name, breed, location...'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -224,7 +238,8 @@ export default function AdoptionView() {
               {t.adoption?.available || 'Available'} {availableCount > 0 && `(${availableCount})`}
             </TabsTrigger>
             <TabsTrigger value="favorites">
-              Favorites {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
+              Favorites{' '}
+              {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -234,24 +249,21 @@ export default function AdoptionView() {
         {contentPresence.shouldRender && !loading && (
           <AnimatedView style={contentPresence.animatedStyle}>
             {filteredListings().length === 0 ? (
-              <AnimatedView
-                key="empty"
-                className="flex flex-col items-center justify-center py-16"
-              >
+              <AnimatedView key="empty" className="flex flex-col items-center justify-center py-16">
                 <Heart size={64} className="text-muted-foreground mb-4" weight="thin" />
                 <h3 className="text-xl font-semibold mb-2">
-                  {activeTab === 'favorites' 
-                    ? 'No Favorites Yet' 
-                    : searchQuery 
-                    ? 'No Results Found' 
-                    : 'No Pets Available'}
+                  {activeTab === 'favorites'
+                    ? 'No Favorites Yet'
+                    : searchQuery
+                      ? 'No Results Found'
+                      : 'No Pets Available'}
                 </h3>
                 <p className="text-muted-foreground text-center max-w-md">
                   {activeTab === 'favorites'
                     ? 'Start adding pets to your favorites to see them here.'
                     : searchQuery
-                    ? 'Try adjusting your search terms or filters.'
-                    : 'Check back soon for new pets looking for their forever homes.'}
+                      ? 'Try adjusting your search terms or filters.'
+                      : 'Check back soon for new pets looking for their forever homes.'}
                 </p>
               </AnimatedView>
             ) : (
@@ -262,10 +274,7 @@ export default function AdoptionView() {
                 {filteredListings().map((listing, index) => (
                   <AnimatedView
                     key={listing.id}
-                    style={[
-                      cardHover.animatedStyle,
-                      cardTap.animatedStyle
-                    ]}
+                    style={[cardHover.animatedStyle, cardTap.animatedStyle]}
                     onMouseEnter={cardHover.handleEnter}
                     onMouseLeave={cardHover.handleLeave}
                     onMouseDown={cardTap.handlePress}
@@ -288,8 +297,8 @@ export default function AdoptionView() {
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
         onSuccess={() => {
-          loadListings()
-          loadUserApplicationsCount()
+          loadListings();
+          loadUserApplicationsCount();
         }}
       />
 
@@ -297,16 +306,16 @@ export default function AdoptionView() {
         listing={selectedListing}
         open={showDetailDialog}
         onOpenChange={(open) => {
-          setShowDetailDialog(open)
+          setShowDetailDialog(open);
           if (!open) {
-            setSelectedListing(null)
+            setSelectedListing(null);
           }
-          loadUserApplicationsCount()
+          loadUserApplicationsCount();
         }}
         onApplicationSubmitted={() => {
-          loadUserApplicationsCount()
+          loadUserApplicationsCount();
         }}
       />
     </div>
-  )
+  );
 }

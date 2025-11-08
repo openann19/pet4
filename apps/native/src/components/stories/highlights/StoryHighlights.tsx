@@ -1,17 +1,6 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  Image,
-} from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  withSpring,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { View, Text, StyleSheet, ScrollView, Pressable, Image } from 'react-native';
+import Animated, { useAnimatedStyle, withSpring, useSharedValue } from 'react-native-reanimated';
 
 export interface Highlight {
   id: string;
@@ -49,17 +38,10 @@ const HighlightRing: React.FC<{
 
   return (
     <Animated.View style={[styles.highlightContainer, animatedStyle]}>
-      <Pressable
-        onPress={onPress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-      >
+      <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
         <View style={styles.highlightRing}>
           {highlight.coverImage ? (
-            <Image
-              source={{ uri: highlight.coverImage }}
-              style={styles.highlightImage}
-            />
+            <Image source={{ uri: highlight.coverImage }} style={styles.highlightImage} />
           ) : (
             <View style={styles.highlightPlaceholder}>
               <Text style={styles.highlightPlaceholderIcon}>📸</Text>
@@ -126,9 +108,7 @@ export const StoryHighlights: React.FC<StoryHighlightsProps> = ({
         {/* Empty State for Owner */}
         {isOwner && highlights.length === 0 && (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>
-              Create highlights to save your favorite stories
-            </Text>
+            <Text style={styles.emptyText}>Create highlights to save your favorite stories</Text>
           </View>
         )}
       </ScrollView>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useStorage } from '@/hooks/useStorage';
+import { useStorage } from '@/hooks/use-storage';
 import { getGeocodingReport } from '@/lib/maps/geocoding';
 import { createLogger } from '@/lib/logger';
 
@@ -47,7 +47,7 @@ export function useMapQuotaMonitor(config: QuotaConfig = DEFAULT_QUOTA_CONFIG): 
   useEffect(() => {
     const now = Date.now();
     const dayInMs = 24 * 60 * 60 * 1000;
-    
+
     if (now - lastReset > dayInMs) {
       resetQuotas();
       setLastReset(now);
@@ -63,13 +63,11 @@ export function useMapQuotaMonitor(config: QuotaConfig = DEFAULT_QUOTA_CONFIG): 
 
   useEffect(() => {
     const geocodingReport = getGeocodingReport();
-    const geocodingPercentage = config.geocodingLimit > 0
-      ? (geocodingReport.totalRequests / config.geocodingLimit) * 100
-      : 0;
+    const geocodingPercentage =
+      config.geocodingLimit > 0 ? (geocodingReport.totalRequests / config.geocodingLimit) * 100 : 0;
 
-    const tilesPercentage = config.tilesLimit > 0
-      ? (tilesRequestCount / config.tilesLimit) * 100
-      : 0;
+    const tilesPercentage =
+      config.tilesLimit > 0 ? (tilesRequestCount / config.tilesLimit) * 100 : 0;
 
     const newAlerts: QuotaAlert[] = [];
 
@@ -136,14 +134,17 @@ Tiles:
   Last Reset: ${new Date(lastResetTime).toISOString()}
 
 Recent Geocoding Metrics:
-${geocodingReport.recentMetrics.map((m, i) => `
+${geocodingReport.recentMetrics
+  .map(
+    (m, i) => `
   ${i + 1}. Query: ${m.query}
      Latency: ${m.latency}ms
      Results: ${m.resultCount}
      ${m.error ? `Error: ${m.error}` : 'Success'}
-`).join('')}
+`
+  )
+  .join('')}
 `;
 
   return report;
 }
-

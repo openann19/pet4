@@ -6,8 +6,8 @@ export type PerfBudget = {
 }
 
 export function usePerfBudget(): PerfBudget {
-  const mem = (navigator as { deviceMemory?: number }).deviceMemory ?? 4
-  const cores = navigator.hardwareConcurrency ?? 4
+  const mem = (navigator as { deviceMemory?: number })?.deviceMemory ?? 4
+  const cores = navigator?.hardwareConcurrency ?? 4
   const tier = mem >= 12 && cores >= 12 ? 3 : mem >= 8 && cores >= 8 ? 2 : 1
 
   return {
@@ -17,4 +17,3 @@ export function usePerfBudget(): PerfBudget {
     animations: tier === 3 ? 1 : tier === 2 ? 0.75 : 0.5,
   }
 }
-

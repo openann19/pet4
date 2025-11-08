@@ -1,28 +1,28 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
+import { useEffect } from 'react';
 import {
   useSharedValue,
   withTiming,
   useAnimatedStyle,
   withRepeat,
   withSequence,
-  Easing
-} from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useUIConfig } from '@/hooks/useUIConfig'
+  Easing,
+} from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from '@/hooks/useUIConfig';
 
 export interface UseAIReplyAuraReturn {
-  animatedStyle: AnimatedStyle
-  glow: ReturnType<typeof useSharedValue<number>>
-  shimmer: ReturnType<typeof useSharedValue<number>>
+  animatedStyle: AnimatedStyle;
+  glow: ReturnType<typeof useSharedValue<number>>;
+  shimmer: ReturnType<typeof useSharedValue<number>>;
 }
 
 /**
  * AGI-Level AI Reply Visual Effects
- * 
+ *
  * Provides shimmer, glow, and mood theme for AI messages
- * 
+ *
  * @example
  * ```tsx
  * const { animatedStyle } = useAIReplyAura()
@@ -30,21 +30,21 @@ export interface UseAIReplyAuraReturn {
  * ```
  */
 export function useAIReplyAura(): UseAIReplyAuraReturn {
-  const { visual } = useUIConfig()
+  const { visual } = useUIConfig();
 
-  const glow = useSharedValue(0)
-  const shimmer = useSharedValue(0)
+  const glow = useSharedValue(0);
+  const shimmer = useSharedValue(0);
 
   useEffect(() => {
     if (!visual.enableGlow && !visual.enableShimmer) {
-      return
+      return;
     }
 
     if (visual.enableGlow) {
       glow.value = withTiming(0.8, {
         duration: 800,
-        easing: Easing.out(Easing.ease)
-      })
+        easing: Easing.out(Easing.ease),
+      });
     }
 
     if (visual.enableShimmer) {
@@ -52,22 +52,22 @@ export function useAIReplyAura(): UseAIReplyAuraReturn {
         withSequence(
           withTiming(1, {
             duration: 1200,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           }),
           withTiming(0, {
             duration: 1200,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           })
         ),
         -1,
         false
-      )
+      );
     }
-  }, [glow, shimmer, visual.enableGlow, visual.enableShimmer])
+  }, [glow, shimmer, visual.enableGlow, visual.enableShimmer]);
 
   const animatedStyle = useAnimatedStyle(() => {
     if (!visual.enableGlow && !visual.enableShimmer) {
-      return {}
+      return {};
     }
 
     return {
@@ -77,16 +77,13 @@ export function useAIReplyAura(): UseAIReplyAuraReturn {
       backgroundColor: visual.enableGlow
         ? `rgba(110, 231, 183, ${0.05 + glow.value * 0.1})`
         : undefined,
-      opacity: visual.enableShimmer
-        ? 0.9 + shimmer.value * 0.1
-        : undefined
-    }
-  }) as AnimatedStyle
+      opacity: visual.enableShimmer ? 0.9 + shimmer.value * 0.1 : undefined,
+    };
+  }) as AnimatedStyle;
 
   return {
     animatedStyle,
     glow,
-    shimmer
-  }
+    shimmer,
+  };
 }
-

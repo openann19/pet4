@@ -2,22 +2,27 @@
  * Live Streaming API tests
  * Exercises HTTP flows against a contract server to ensure backend integration.
  */
-import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
-import { URL } from 'node:url'
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { URL } from 'node:url';
 
-import { liveStreamingAPI } from '@/api/live-streaming-api'
-import type { LiveStream, LiveStreamViewer, LiveStreamReaction, LiveStreamChatMessage } from '@/lib/live-streaming-types'
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { liveStreamingAPI } from '@/api/live-streaming-api';
+import type {
+  LiveStream,
+  LiveStreamViewer,
+  LiveStreamReaction,
+  LiveStreamChatMessage,
+} from '@/lib/live-streaming-types';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-let server: ReturnType<typeof createServer>
+let server: ReturnType<typeof createServer>;
 
 async function readJson<T>(req: IncomingMessage): Promise<T> {
-  const chunks: Buffer[] = []
+  const chunks: Buffer[] = [];
   for await (const chunk of req) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk)
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
   }
-  const body = Buffer.concat(chunks).toString('utf8')
-  return body ? (JSON.parse(body) as T) : ({} as T)
+  const body = Buffer.concat(chunks).toString('utf8');
+  return body ? (JSON.parse(body) as T) : ({} as T);
 }
 
 const mockStream: LiveStream = {
@@ -34,7 +39,7 @@ const mockStream: LiveStream = {
   reactionsCount: 5,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
-}
+};
 
 const mockViewer: LiveStreamViewer = {
   id: 'viewer-1',
@@ -43,7 +48,7 @@ const mockViewer: LiveStreamViewer = {
   userName: 'Viewer',
   joinedAt: new Date().toISOString(),
   reactionsSent: 2,
-}
+};
 
 const mockReaction: LiveStreamReaction = {
   id: 'reaction-1',
@@ -52,7 +57,7 @@ const mockReaction: LiveStreamReaction = {
   userName: 'Viewer',
   emoji: '❤️',
   createdAt: new Date().toISOString(),
-}
+};
 
 const mockChatMessage: LiveStreamChatMessage = {
   id: 'msg-1',
@@ -62,22 +67,22 @@ const mockChatMessage: LiveStreamChatMessage = {
   text: 'Hello!',
   createdAt: new Date().toISOString(),
   banned: false,
-}
+};
 
 beforeAll(async () => {
   server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
     if (!req.url || !req.method) {
-      res.statusCode = 400
-      res.end()
-      return
+      res.statusCode = 400;
+      res.end();
+      return;
     }
 
-    const url = new URL(req.url, 'http://localhost:8080')
+    const url = new URL(req.url, 'http://localhost:8080');
 
     if (req.method === 'POST' && url.pathname === '/live/createRoom') {
-      await readJson(req)
-      res.setHeader('Content-Type', 'application/json')
-      res.statusCode = 201
+      await readJson(req);
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 201;
       res.end(
         JSON.stringify({
           data: {
@@ -86,25 +91,25 @@ beforeAll(async () => {
             publishToken: 'publish-token-1',
           },
         })
-      )
-      return
+      );
+      return;
     }
 
     if (req.method === 'POST' && url.pathname === '/live/endRoom') {
-      await readJson(req)
-      res.setHeader('Content-Type', 'application/json')
+      await readJson(req);
+      res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           data: {
             stream: { ...mockStream, status: 'ended', endedAt: new Date().toISOString() },
           },
         })
-      )
-      return
+      );
+      return;
     }
 
     if (req.method === 'GET' && url.pathname === '/live/active') {
-      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           data: {
@@ -113,103 +118,107 @@ beforeAll(async () => {
             total: 1,
           },
         })
-      )
-      return
+      );
+      return;
     }
 
-    if (req.method === 'GET' && url.pathname.startsWith('/live/') && !url.pathname.includes('/chat')) {
-      res.setHeader('Content-Type', 'application/json')
+    if (
+      req.method === 'GET' &&
+      url.pathname.startsWith('/live/') &&
+      !url.pathname.includes('/chat')
+    ) {
+      res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           data: {
             stream: mockStream,
           },
         })
-      )
-      return
+      );
+      return;
     }
 
     if (req.method === 'POST' && url.pathname.includes('/join')) {
-      await readJson(req)
-      res.setHeader('Content-Type', 'application/json')
+      await readJson(req);
+      res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           data: {
             viewer: mockViewer,
           },
         })
-      )
-      return
+      );
+      return;
     }
 
     if (req.method === 'POST' && url.pathname.includes('/leave')) {
-      await readJson(req)
-      res.setHeader('Content-Type', 'application/json')
-      res.statusCode = 200
-      res.end(JSON.stringify({ data: {} }))
-      return
+      await readJson(req);
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 200;
+      res.end(JSON.stringify({ data: {} }));
+      return;
     }
 
     if (req.method === 'POST' && url.pathname.includes('/react')) {
-      await readJson(req)
-      res.setHeader('Content-Type', 'application/json')
+      await readJson(req);
+      res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           data: {
             reaction: mockReaction,
           },
         })
-      )
-      return
+      );
+      return;
     }
 
     if (req.method === 'POST' && url.pathname.includes('/chat')) {
-      await readJson(req)
-      res.setHeader('Content-Type', 'application/json')
+      await readJson(req);
+      res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           data: {
             message: mockChatMessage,
           },
         })
-      )
-      return
+      );
+      return;
     }
 
     if (req.method === 'GET' && url.pathname.includes('/chat')) {
-      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           data: {
             messages: [mockChatMessage],
           },
         })
-      )
-      return
+      );
+      return;
     }
 
-    res.statusCode = 404
-    res.end()
-  })
+    res.statusCode = 404;
+    res.end();
+  });
 
-  await new Promise<void>(resolve => {
+  await new Promise<void>((resolve) => {
     server.listen(0, () => {
-      const address = server.address()
+      const address = server.address();
       if (address && typeof address === 'object') {
-        process.env['TEST_API_PORT'] = String(address.port)
+        process.env['TEST_API_PORT'] = String(address.port);
       }
-      resolve()
-    })
-  })
-})
+      resolve();
+    });
+  });
+});
 
 afterAll(async () => {
-  await new Promise<void>(resolve => server.close(() => resolve()))
-})
+  await new Promise<void>((resolve) => server.close(() => resolve()));
+});
 
 afterEach(() => {
-  vi.clearAllMocks()
-})
+  vi.clearAllMocks();
+});
 
 describe('LiveStreamingAPI.createRoom', () => {
   it('should create room', async () => {
@@ -219,18 +228,18 @@ describe('LiveStreamingAPI.createRoom', () => {
       title: 'Test Stream',
       category: 'general',
       allowChat: true,
-    })
+    });
 
     expect(result).toMatchObject({
       stream: expect.any(Object),
       joinToken: expect.any(String),
       publishToken: expect.any(String),
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
     await expect(
       liveStreamingAPI.createRoom({
@@ -240,171 +249,182 @@ describe('LiveStreamingAPI.createRoom', () => {
         category: 'general',
         allowChat: true,
       })
-    ).rejects.toThrow()
+    ).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('LiveStreamingAPI.endRoom', () => {
   it('should end room', async () => {
-    const stream = await liveStreamingAPI.endRoom('stream-1', 'user-1')
+    const stream = await liveStreamingAPI.endRoom('stream-1', 'user-1');
 
     expect(stream).toMatchObject({
       id: 'stream-1',
       status: 'ended',
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
-    await expect(liveStreamingAPI.endRoom('stream-1', 'user-1')).rejects.toThrow()
+    await expect(liveStreamingAPI.endRoom('stream-1', 'user-1')).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('LiveStreamingAPI.queryActiveStreams', () => {
   it('should return active streams', async () => {
-    const result = await liveStreamingAPI.queryActiveStreams()
+    const result = await liveStreamingAPI.queryActiveStreams();
 
     expect(result).toMatchObject({
       streams: expect.any(Array),
       total: expect.any(Number),
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
-    await expect(liveStreamingAPI.queryActiveStreams()).rejects.toThrow()
+    await expect(liveStreamingAPI.queryActiveStreams()).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('LiveStreamingAPI.getStreamById', () => {
   it('should return stream', async () => {
-    const stream = await liveStreamingAPI.getStreamById('stream-1')
+    const stream = await liveStreamingAPI.getStreamById('stream-1');
 
     expect(stream).toMatchObject({
       id: 'stream-1',
-    })
-  })
+    });
+  });
 
   it('should return null for non-existent stream', async () => {
-    const originalFetch = global.fetch
+    const originalFetch = global.fetch;
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: false,
       status: 404,
-    } as Response)
+    } as Response);
 
-    const stream = await liveStreamingAPI.getStreamById('stream-999')
+    const stream = await liveStreamingAPI.getStreamById('stream-999');
 
-    expect(stream).toBeNull()
+    expect(stream).toBeNull();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('LiveStreamingAPI.joinStream', () => {
   it('should join stream', async () => {
-    const viewer = await liveStreamingAPI.joinStream('stream-1', 'user-2', 'Viewer')
+    const viewer = await liveStreamingAPI.joinStream('stream-1', 'user-2', 'Viewer');
 
     expect(viewer).toMatchObject({
       streamId: 'stream-1',
       userId: 'user-2',
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
-    await expect(liveStreamingAPI.joinStream('stream-1', 'user-2', 'Viewer')).rejects.toThrow()
+    await expect(liveStreamingAPI.joinStream('stream-1', 'user-2', 'Viewer')).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('LiveStreamingAPI.leaveStream', () => {
   it('should leave stream', async () => {
-    await expect(liveStreamingAPI.leaveStream('stream-1', 'user-2')).resolves.not.toThrow()
-  })
+    await expect(liveStreamingAPI.leaveStream('stream-1', 'user-2')).resolves.not.toThrow();
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
-    await expect(liveStreamingAPI.leaveStream('stream-1', 'user-2')).rejects.toThrow()
+    await expect(liveStreamingAPI.leaveStream('stream-1', 'user-2')).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('LiveStreamingAPI.sendReaction', () => {
   it('should send reaction', async () => {
-    const reaction = await liveStreamingAPI.sendReaction('stream-1', 'user-2', 'Viewer', undefined, '❤️')
+    const reaction = await liveStreamingAPI.sendReaction(
+      'stream-1',
+      'user-2',
+      'Viewer',
+      undefined,
+      '❤️'
+    );
 
     expect(reaction).toMatchObject({
       streamId: 'stream-1',
       emoji: '❤️',
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
     await expect(
       liveStreamingAPI.sendReaction('stream-1', 'user-2', 'Viewer', undefined, '❤️')
-    ).rejects.toThrow()
+    ).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('LiveStreamingAPI.sendChatMessage', () => {
   it('should send chat message', async () => {
-    const message = await liveStreamingAPI.sendChatMessage('stream-1', 'user-2', 'Viewer', undefined, 'Hello!')
+    const message = await liveStreamingAPI.sendChatMessage(
+      'stream-1',
+      'user-2',
+      'Viewer',
+      undefined,
+      'Hello!'
+    );
 
     expect(message).toMatchObject({
       streamId: 'stream-1',
       text: 'Hello!',
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
     await expect(
       liveStreamingAPI.sendChatMessage('stream-1', 'user-2', 'Viewer', undefined, 'Hello!')
-    ).rejects.toThrow()
+    ).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
+    global.fetch = originalFetch;
+  });
+});
 
 describe('LiveStreamingAPI.queryChatMessages', () => {
   it('should return chat messages', async () => {
-    const result = await liveStreamingAPI.queryChatMessages('stream-1')
+    const result = await liveStreamingAPI.queryChatMessages('stream-1');
 
     expect(result).toMatchObject({
       messages: expect.any(Array),
-    })
-  })
+    });
+  });
 
   it('should throw on error', async () => {
-    const originalFetch = global.fetch
-    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'))
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
 
-    await expect(liveStreamingAPI.queryChatMessages('stream-1')).rejects.toThrow()
+    await expect(liveStreamingAPI.queryChatMessages('stream-1')).rejects.toThrow();
 
-    global.fetch = originalFetch
-  })
-})
-
+    global.fetch = originalFetch;
+  });
+});

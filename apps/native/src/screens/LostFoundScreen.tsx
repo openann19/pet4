@@ -53,12 +53,14 @@ export default function LostFoundScreen(): React.JSX.Element {
       <View style={styles.reportContent}>
         <View style={styles.reportHeader}>
           <Text style={styles.petName}>{item.petName}</Text>
-          <View style={[
-            styles.statusBadge,
-            item.status === 'lost' && styles.lostBadge,
-            item.status === 'found' && styles.foundBadge,
-            item.status === 'reunited' && styles.reunitedBadge,
-          ]}>
+          <View
+            style={[
+              styles.statusBadge,
+              item.status === 'lost' && styles.lostBadge,
+              item.status === 'found' && styles.foundBadge,
+              item.status === 'reunited' && styles.reunitedBadge,
+            ]}
+          >
             <Text style={styles.statusText}>{item.status}</Text>
           </View>
         </View>
@@ -66,12 +68,8 @@ export default function LostFoundScreen(): React.JSX.Element {
         <Text style={styles.description} numberOfLines={2}>
           {item.description}
         </Text>
-        <Text style={styles.location}>
-          📍 Last seen: {item.lastSeenLocation}
-        </Text>
-        <Text style={styles.date}>
-          {new Date(item.lastSeenDate).toLocaleDateString()}
-        </Text>
+        <Text style={styles.location}>📍 Last seen: {item.lastSeenLocation}</Text>
+        <Text style={styles.date}>{new Date(item.lastSeenDate).toLocaleDateString()}</Text>
         <TouchableOpacity style={styles.contactButton}>
           <Text style={styles.contactButtonText}>Contact</Text>
         </TouchableOpacity>
@@ -83,10 +81,7 @@ export default function LostFoundScreen(): React.JSX.Element {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Lost & Found</Text>
-        <TouchableOpacity
-          style={styles.reportButton}
-          onPress={() => setShowReportModal(true)}
-        >
+        <TouchableOpacity style={styles.reportButton} onPress={() => setShowReportModal(true)}>
           <Text style={styles.reportButtonText}>+ Report Pet</Text>
         </TouchableOpacity>
       </View>

@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
+import { useCallback } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -8,10 +8,10 @@ import {
   withRepeat,
   withSequence,
   withTiming,
-  Easing
-} from 'react-native-reanimated'
-import { springConfigs, timingConfigs } from './transitions'
-import type { AnimatedStyle } from './animated-view'
+  Easing,
+} from 'react-native-reanimated';
+import { springConfigs, timingConfigs } from './transitions';
+import type { AnimatedStyle } from './animated-view';
 
 export type StickerAnimationType =
   | 'bounce'
@@ -21,24 +21,24 @@ export type StickerAnimationType =
   | 'float'
   | 'grow'
   | 'wiggle'
-  | 'flip'
+  | 'flip';
 
 export interface UseStickerAnimationOptions {
-  animation?: StickerAnimationType
-  enabled?: boolean
-  duration?: number
-  intensity?: number
+  animation?: StickerAnimationType;
+  enabled?: boolean;
+  duration?: number;
+  intensity?: number;
 }
 
 export interface UseStickerAnimationReturn {
-  animatedStyle: AnimatedStyle
-  trigger: () => void
-  reset: () => void
+  animatedStyle: AnimatedStyle;
+  trigger: () => void;
+  reset: () => void;
 }
 
-const DEFAULT_ENABLED = true
-const DEFAULT_DURATION = 1000
-const DEFAULT_INTENSITY = 1
+const DEFAULT_ENABLED = true;
+const DEFAULT_DURATION = 1000;
+const DEFAULT_INTENSITY = 1;
 
 export function useStickerAnimation(
   options: UseStickerAnimationOptions = {}
@@ -47,53 +47,53 @@ export function useStickerAnimation(
     animation,
     enabled = DEFAULT_ENABLED,
     duration = DEFAULT_DURATION,
-    intensity = DEFAULT_INTENSITY
-  } = options
+    intensity = DEFAULT_INTENSITY,
+  } = options;
 
-  const scale = useSharedValue(1)
-  const rotation = useSharedValue(0)
-  const translateY = useSharedValue(0)
-  const translateX = useSharedValue(0)
-  const opacity = useSharedValue(1)
+  const scale = useSharedValue(1);
+  const rotation = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const translateX = useSharedValue(0);
+  const opacity = useSharedValue(1);
 
   const reset = useCallback(() => {
-    scale.value = 1
-    rotation.value = 0
-    translateY.value = 0
-    translateX.value = 0
-    opacity.value = 1
-  }, [scale, rotation, translateY, translateX, opacity])
+    scale.value = 1;
+    rotation.value = 0;
+    translateY.value = 0;
+    translateX.value = 0;
+    opacity.value = 1;
+  }, [scale, rotation, translateY, translateX, opacity]);
 
   const trigger = useCallback(() => {
     if (!enabled || !animation) {
-      return
+      return;
     }
 
-    reset()
+    reset();
 
     switch (animation) {
       case 'bounce': {
         scale.value = withSequence(
           withSpring(1.2 * intensity, springConfigs.bouncy),
           withSpring(1, springConfigs.smooth)
-        )
+        );
         translateY.value = withSequence(
           withSpring(-10 * intensity, springConfigs.bouncy),
           withSpring(0, springConfigs.smooth)
-        )
-        break
+        );
+        break;
       }
 
       case 'spin': {
         rotation.value = withRepeat(
           withTiming(360, {
             duration: duration / 2,
-            easing: Easing.linear
+            easing: Easing.linear,
           }),
           -1,
           false
-        )
-        break
+        );
+        break;
       }
 
       case 'pulse': {
@@ -104,8 +104,8 @@ export function useStickerAnimation(
           ),
           -1,
           true
-        )
-        break
+        );
+        break;
       }
 
       case 'shake': {
@@ -119,8 +119,8 @@ export function useStickerAnimation(
           ),
           1,
           false
-        )
-        break
+        );
+        break;
       }
 
       case 'float': {
@@ -128,25 +128,25 @@ export function useStickerAnimation(
           withSequence(
             withTiming(-8 * intensity, {
               duration: duration / 2,
-              easing: Easing.inOut(Easing.ease)
+              easing: Easing.inOut(Easing.ease),
             }),
             withTiming(0, {
               duration: duration / 2,
-              easing: Easing.inOut(Easing.ease)
+              easing: Easing.inOut(Easing.ease),
             })
           ),
           -1,
           true
-        )
-        break
+        );
+        break;
       }
 
       case 'grow': {
         scale.value = withSequence(
           withSpring(1.3 * intensity, springConfigs.bouncy),
           withSpring(1, springConfigs.smooth)
-        )
-        break
+        );
+        break;
       }
 
       case 'wiggle': {
@@ -160,31 +160,31 @@ export function useStickerAnimation(
           ),
           1,
           false
-        )
-        break
+        );
+        break;
       }
 
       case 'flip': {
         rotation.value = withSequence(
           withTiming(180, {
             duration: duration / 2,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           }),
           withTiming(360, {
             duration: duration / 2,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           }),
           withTiming(0, {
-            duration: 0
+            duration: 0,
           })
-        )
-        break
+        );
+        break;
       }
 
       default:
-        break
+        break;
     }
-  }, [enabled, animation, duration, intensity, scale, rotation, translateY, translateX, reset])
+  }, [enabled, animation, duration, intensity, scale, rotation, translateY, translateX, reset]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -192,16 +192,15 @@ export function useStickerAnimation(
         { scale: scale.value },
         { rotate: `${rotation.value}deg` },
         { translateX: translateX.value },
-        { translateY: translateY.value }
+        { translateY: translateY.value },
       ],
-      opacity: opacity.value
-    }
-  }) as AnimatedStyle
+      opacity: opacity.value,
+    };
+  }) as AnimatedStyle;
 
   return {
     animatedStyle,
     trigger,
-    reset
-  }
+    reset,
+  };
 }
-

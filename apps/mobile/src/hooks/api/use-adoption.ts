@@ -1,5 +1,6 @@
 /**
  * React Query hooks for adoption API (Mobile)
+ * Uses hardened API client for all requests
  * Location: apps/mobile/src/hooks/api/use-adoption.ts
  */
 
@@ -7,84 +8,63 @@ import type { UseMutationResult, UseQueryResult } from '@tanstack/react-query'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-client'
 import type { AdoptionApplication, AdoptionProcess } from '@/lib/types'
-
-const API_BASE_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'https://api.petspark.app'
+import { apiClient } from '@/utils/api-client'
 
 /**
  * Fetch adoption applications for current user
  */
 async function fetchApplications(): Promise<AdoptionApplication[]> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/adoption/applications`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch applications: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  return data.items || data
+  const data = await apiClient.get<{ items?: AdoptionApplication[] } | AdoptionApplication[]>(
+    '/api/v1/adoption/applications',
+    {
+      cacheKey: 'adoption:applications',
+      skipCache: false,
+    }
+  )
+  return Array.isArray(data) ? data : data.items || []
 }
 
 /**
  * Fetch adoption applications for a specific pet
  */
 async function fetchPetApplications(petId: string): Promise<AdoptionApplication[]> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/adoption/pets/${petId}/applications`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch pet applications: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  return data.items || data
+  const data = await apiClient.get<{ items?: AdoptionApplication[] } | AdoptionApplication[]>(
+    `/api/v1/adoption/pets/${petId}/applications`,
+    {
+      cacheKey: `adoption:pet:${petId}:applications`,
+      skipCache: false,
+    }
+  )
+  return Array.isArray(data) ? data : data.items || []
 }
 
 /**
  * Fetch adoption process details
  */
 async function fetchProcess(applicationId: string): Promise<AdoptionProcess> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/adoption/applications/${applicationId}/process`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+  return apiClient.get<AdoptionProcess>(`/api/v1/adoption/applications/${applicationId}/process`, {
+    cacheKey: `adoption:process:${applicationId}`,
+    skipCache: false,
   })
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch process: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  return data
 }
 
 /**
  * Submit an adoption application
  */
-async function submitApplication(petId: string, answers: Record<string, unknown>): Promise<AdoptionApplication> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/adoption/applications`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ petId, answers }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to submit application: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  return data.application || data
+async function submitApplication(
+  petId: string,
+  answers: Record<string, unknown>
+): Promise<AdoptionApplication> {
+  const data = await apiClient.post<{ application?: AdoptionApplication } | AdoptionApplication>(
+    '/api/v1/adoption/applications',
+    { petId, answers },
+    {
+      skipCache: true,
+    }
+  )
+  return (
+    (data as { application?: AdoptionApplication }).application || (data as AdoptionApplication)
+  )
 }
 
 /**
@@ -95,20 +75,13 @@ async function updateStatus(
   status: string,
   notes?: string
 ): Promise<{ success: boolean }> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/adoption/applications/${applicationId}/status`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ status, notes }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to update status: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  return data
+  return apiClient.patch<{ success: boolean }>(
+    `/api/v1/adoption/applications/${applicationId}/status`,
+    {
+      status,
+      notes,
+    }
+  )
 }
 
 /**
@@ -119,26 +92,17 @@ async function scheduleMeeting(
   dateTime: string,
   location: string
 ): Promise<{ success: boolean; meetingId: string }> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/adoption/applications/${applicationId}/meetings`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ dateTime, location }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to schedule meeting: ${response.statusText}`)
-  }
-
-  const data = await response.json()
+  const data = await apiClient.post<{ success?: boolean; meetingId?: string }>(
+    `/api/v1/adoption/applications/${applicationId}/meetings`,
+    { dateTime, location }
+  )
   return { success: data.success ?? true, meetingId: data.meetingId ?? '' }
 }
 
 /**
  * Hook to get adoption applications for current user
  */
-export function useAdoptionApplications(): UseQueryResult<AdoptionApplication[]> {                                                                              
+export function useAdoptionApplications(): UseQueryResult<AdoptionApplication[]> {
   return useQuery({
     queryKey: queryKeys.adoption.applications(),
     queryFn: () => fetchApplications(),
@@ -196,9 +160,8 @@ export function useSubmitApplication(): UseMutationResult<
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ petId, answers }) =>
-      submitApplication(petId, answers),
-    onSuccess: (data) => {
+    mutationFn: ({ petId, answers }) => submitApplication(petId, answers),
+    onSuccess: data => {
       // Invalidate user's applications
       void queryClient.invalidateQueries({
         queryKey: queryKeys.adoption.applications(),
@@ -225,8 +188,7 @@ export function useUpdateApplicationStatus(): UseMutationResult<
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ applicationId, status, notes }) =>
-      updateStatus(applicationId, status, notes),
+    mutationFn: ({ applicationId, status, notes }) => updateStatus(applicationId, status, notes),
     onSuccess: (_, variables) => {
       void queryClient.invalidateQueries({
         queryKey: queryKeys.adoption.applications(),

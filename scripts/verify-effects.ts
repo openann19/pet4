@@ -21,19 +21,27 @@ function filesUnder(d: string) {
 const effects = [
   path.join(root, 'apps/web/src/effects'),
   path.join(root, 'apps/mobile/src/effects'),
-].flatMap(p => fs.existsSync(p) ? filesUnder(p) : [])
+].flatMap(p => (fs.existsSync(p) ? filesUnder(p) : []))
 
 let bad = false
 
-function fail(msg: string) { bad = true; console.error(`❌ ${msg}`) }
-function pass(msg: string) { console.log(`✅ ${msg}`) }
+function fail(msg: string) {
+  bad = true
+  console.error(`❌ ${msg}`)
+}
+function pass(msg: string) {
+  console.log(`✅ ${msg}`)
+}
 
 // Check for Math.random usage (but allow if seeded RNG is imported)
 const rnd = effects.filter(f => {
   const content = fs.readFileSync(f, 'utf8')
   if (!/Math\.random\(/.test(content)) return false
   // Allow if seeded RNG is imported
-  const hasSeededRng = /makeRng|SeededRNG|from.*['"]@petspark\/shared.*rng|from.*['"]@\/lib\/seeded-rng|from.*['"]@\/effects.*seeded-rng/.test(content)
+  const hasSeededRng =
+    /makeRng|SeededRNG|from.*['"]@petspark\/shared.*rng|from.*['"]@\/lib\/seeded-rng|from.*['"]@\/effects.*seeded-rng/.test(
+      content
+    )
   return !hasSeededRng
 })
 if (rnd.length) {
@@ -45,7 +53,9 @@ if (rnd.length) {
 // Check for reduced-motion checks
 const rm = effects.filter(f => {
   const content = fs.readFileSync(f, 'utf8')
-  return /prefers-reduced-motion|useReducedMotion|useReducedMotionSV|getReducedMotionDuration|getReducedMotionMultiplier/.test(content)
+  return /prefers-reduced-motion|useReducedMotion|useReducedMotionSV|getReducedMotionDuration|getReducedMotionMultiplier/.test(
+    content
+  )
 })
 if (rm.length === 0) {
   fail('No reduced-motion checks found in effects')

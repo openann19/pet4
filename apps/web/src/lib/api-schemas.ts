@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const locationSchema = z.object({
   latitude: z.number().min(-90).max(90),
@@ -6,16 +6,16 @@ export const locationSchema = z.object({
   city: z.string().min(1),
   country: z.string().min(1),
   roundedLat: z.number().optional(),
-  roundedLng: z.number().optional()
-})
+  roundedLng: z.number().optional(),
+});
 
 export const photoSchema = z.object({
   id: z.string(),
   url: z.string().url(),
   thumbnailUrl: z.string().url(),
   order: z.number().int().min(0),
-  uploadedAt: z.string().datetime()
-})
+  uploadedAt: z.string().datetime(),
+});
 
 export const petSchema = z.object({
   id: z.string(),
@@ -34,8 +34,8 @@ export const petSchema = z.object({
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
   status: z.enum(['active', 'hidden', 'banned']),
-  isActive: z.boolean().optional()
-})
+  isActive: z.boolean().optional(),
+});
 
 export const compatibilityBreakdownSchema = z.object({
   personality: z.number().min(0).max(100),
@@ -43,8 +43,8 @@ export const compatibilityBreakdownSchema = z.object({
   size: z.number().min(0).max(100),
   age: z.number().min(0).max(100),
   location: z.number().min(0).max(100),
-  overall: z.number().min(0).max(100)
-})
+  overall: z.number().min(0).max(100),
+});
 
 export const matchSchema = z.object({
   id: z.string(),
@@ -55,14 +55,14 @@ export const matchSchema = z.object({
   status: z.enum(['active', 'archived']),
   chatRoomId: z.string(),
   createdAt: z.string().datetime(),
-  lastInteractionAt: z.string().datetime()
-})
+  lastInteractionAt: z.string().datetime(),
+});
 
 export const reactionSchema = z.object({
   userId: z.string(),
   emoji: z.string(),
-  addedAt: z.string().datetime()
-})
+  addedAt: z.string().datetime(),
+});
 
 export const messageSchema = z.object({
   id: z.string(),
@@ -74,8 +74,8 @@ export const messageSchema = z.object({
   status: z.enum(['sending', 'sent', 'delivered', 'read']),
   createdAt: z.string().datetime(),
   deliveredAt: z.string().datetime().optional(),
-  readAt: z.string().datetime().optional()
-})
+  readAt: z.string().datetime().optional(),
+});
 
 export const userPreferencesSchema = z.object({
   theme: z.enum(['light', 'dark']),
@@ -85,13 +85,15 @@ export const userPreferencesSchema = z.object({
     email: z.boolean(),
     matches: z.boolean(),
     messages: z.boolean(),
-    likes: z.boolean()
+    likes: z.boolean(),
   }),
-  quietHours: z.object({
-    start: z.string(),
-    end: z.string()
-  }).nullable()
-})
+  quietHours: z
+    .object({
+      start: z.string(),
+      end: z.string(),
+    })
+    .nullable(),
+});
 
 export const userSchema = z.object({
   id: z.string(),
@@ -103,14 +105,14 @@ export const userSchema = z.object({
   updatedAt: z.string().datetime(),
   status: z.enum(['active', 'suspended', 'banned']),
   lastSeenAt: z.string().datetime(),
-  preferences: userPreferencesSchema
-})
+  preferences: userPreferencesSchema,
+});
 
 export const authTokensSchema = z.object({
   accessToken: z.string().min(1),
   refreshToken: z.string().min(1),
-  expiresIn: z.number().int().positive()
-})
+  expiresIn: z.number().int().positive(),
+});
 
 export const notificationSchema = z.object({
   id: z.string(),
@@ -123,21 +125,21 @@ export const notificationSchema = z.object({
     'verification_approved',
     'verification_rejected',
     'content_removed',
-    'account_warning'
+    'account_warning',
   ]),
   title: z.string(),
   body: z.string(),
   data: z.record(z.unknown()),
   read: z.boolean(),
   createdAt: z.string().datetime(),
-  expiresAt: z.string().datetime().optional()
-})
+  expiresAt: z.string().datetime().optional(),
+});
 
 export const reportResolutionSchema = z.object({
   action: z.enum(['warn', 'suspend', 'ban', 'remove_content', 'no_action']),
   notes: z.string(),
-  resolvedBy: z.string()
-})
+  resolvedBy: z.string(),
+});
 
 export const reportSchema = z.object({
   id: z.string(),
@@ -150,13 +152,13 @@ export const reportSchema = z.object({
   assignedTo: z.string().optional(),
   resolution: reportResolutionSchema.optional(),
   createdAt: z.string().datetime(),
-  resolvedAt: z.string().datetime().optional()
-})
+  resolvedAt: z.string().datetime().optional(),
+});
 
 export const storyViewSchema = z.object({
   userId: z.string(),
-  viewedAt: z.string().datetime()
-})
+  viewedAt: z.string().datetime(),
+});
 
 export const storySchema = z.object({
   id: z.string(),
@@ -167,8 +169,8 @@ export const storySchema = z.object({
   views: z.array(storyViewSchema),
   expiresAt: z.string().datetime(),
   createdAt: z.string().datetime(),
-  status: z.enum(['active', 'expired', 'removed'])
-})
+  status: z.enum(['active', 'expired', 'removed']),
+});
 
 export const verificationSchema = z.object({
   id: z.string(),
@@ -178,8 +180,8 @@ export const verificationSchema = z.object({
   submittedAt: z.string().datetime(),
   reviewedAt: z.string().datetime().optional(),
   reviewedBy: z.string().optional(),
-  notes: z.string().optional()
-})
+  notes: z.string().optional(),
+});
 
 export const adoptionProfileSchema = z.object({
   id: z.string(),
@@ -201,8 +203,8 @@ export const adoptionProfileSchema = z.object({
   contactEmail: z.string().email(),
   contactPhone: z.string().optional(),
   createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime()
-})
+  updatedAt: z.string().datetime(),
+});
 
 export const communityPostSchema = z.object({
   id: z.string(),
@@ -212,19 +214,21 @@ export const communityPostSchema = z.object({
   content: z.string().max(5000),
   mediaUrls: z.array(z.string().url()),
   tags: z.array(z.string()).max(10),
-  location: z.object({
-    lat: z.number(),
-    lng: z.number(),
-    name: z.string()
-  }).optional(),
+  location: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+      name: z.string(),
+    })
+    .optional(),
   reactions: z.record(z.number()),
   commentCount: z.number().int().min(0),
   shareCount: z.number().int().min(0),
   viewCount: z.number().int().min(0),
   status: z.enum(['active', 'hidden', 'removed']),
   createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime()
-})
+  updatedAt: z.string().datetime(),
+});
 
 export const commentSchema = z.object({
   id: z.string(),
@@ -237,8 +241,8 @@ export const commentSchema = z.object({
   reactions: z.record(z.number()),
   status: z.enum(['active', 'hidden', 'removed']),
   createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime()
-})
+  updatedAt: z.string().datetime(),
+});
 
 export const apiErrorSchema = z.object({
   code: z.string(),
@@ -247,54 +251,69 @@ export const apiErrorSchema = z.object({
   correlationId: z.string(),
   timestamp: z.string().datetime(),
   field: z.string().optional(),
-  validationErrors: z.array(z.object({
-    field: z.string(),
-    message: z.string()
-  })).optional()
-})
+  validationErrors: z
+    .array(
+      z.object({
+        field: z.string(),
+        message: z.string(),
+      })
+    )
+    .optional(),
+});
 
-export const paginatedResponseSchema = <T extends z.ZodTypeAny>(itemSchema: T) => 
+export const paginatedResponseSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z.object({
     items: z.array(itemSchema),
     total: z.number().int().min(0),
     page: z.number().int().positive(),
     pageSize: z.number().int().positive(),
     hasMore: z.boolean(),
-    nextCursor: z.string().optional()
-  })
+    nextCursor: z.string().optional(),
+  });
 
 export const discoverResponseSchema = z.object({
-  candidates: z.array(z.object({
-    pet: petSchema,
-    score: z.number().min(0).max(100),
-    distance: z.number().min(0)
-  })),
+  candidates: z.array(
+    z.object({
+      pet: petSchema,
+      score: z.number().min(0).max(100),
+      distance: z.number().min(0),
+    })
+  ),
   nextCursor: z.string().optional(),
-  totalCount: z.number().int().min(0)
-})
+  totalCount: z.number().int().min(0),
+});
 
 export const swipeResponseSchema = z.object({
   recorded: z.boolean(),
   isMatch: z.boolean(),
   matchId: z.string().optional(),
-  chatRoomId: z.string().optional()
-})
+  chatRoomId: z.string().optional(),
+});
 
 export const photoRecordSchema = z.object({
   id: z.string(),
   petId: z.string(),
   ownerId: z.string(),
-  status: z.enum(['pending_upload', 'processing', 'awaiting_review', 'approved', 'rejected', 'held_for_kyc']),
+  status: z.enum([
+    'pending_upload',
+    'processing',
+    'awaiting_review',
+    'approved',
+    'rejected',
+    'held_for_kyc',
+  ]),
   originalUrl: z.string().url(),
   processedUrl: z.string().url().optional(),
   thumbnailUrl: z.string().url().optional(),
-  variants: z.array(z.object({
-    size: z.enum(['small', 'medium', 'large', 'original']),
-    url: z.string().url(),
-    width: z.number().int().positive(),
-    height: z.number().int().positive(),
-    fileSize: z.number().int().positive()
-  })),
+  variants: z.array(
+    z.object({
+      size: z.enum(['small', 'medium', 'large', 'original']),
+      url: z.string().url(),
+      width: z.number().int().positive(),
+      height: z.number().int().positive(),
+      fileSize: z.number().int().positive(),
+    })
+  ),
   metadata: z.object({
     fileHash: z.string(),
     contentFingerprint: z.string(),
@@ -304,7 +323,7 @@ export const photoRecordSchema = z.object({
     width: z.number().int().positive(),
     height: z.number().int().positive(),
     exifStripped: z.boolean(),
-    uploadIP: z.string().optional()
+    uploadIP: z.string().optional(),
   }),
   safetyCheck: z.object({
     isNSFW: z.boolean(),
@@ -318,21 +337,23 @@ export const photoRecordSchema = z.object({
       nsfw: z.number().min(0).max(1),
       violence: z.number().min(0).max(1),
       animal: z.number().min(0).max(1),
-      humanFace: z.number().min(0).max(1)
+      humanFace: z.number().min(0).max(1),
     }),
-    breedInference: z.object({
-      breed: z.string(),
-      confidence: z.number().min(0).max(1)
-    }).optional(),
+    breedInference: z
+      .object({
+        breed: z.string(),
+        confidence: z.number().min(0).max(1),
+      })
+      .optional(),
     flags: z.array(z.string()),
-    scannedAt: z.string().datetime()
+    scannedAt: z.string().datetime(),
   }),
   uploadedAt: z.string().datetime(),
   processedAt: z.string().datetime().optional(),
   reviewedAt: z.string().datetime().optional(),
   approvedAt: z.string().datetime().optional(),
-  rejectedAt: z.string().datetime().optional()
-})
+  rejectedAt: z.string().datetime().optional(),
+});
 
 export const kycSessionSchema = z.object({
   id: z.string(),
@@ -341,58 +362,74 @@ export const kycSessionSchema = z.object({
   provider: z.enum(['manual', 'stripe_identity', 'onfido', 'persona']),
   providerSessionId: z.string().optional(),
   providerDecisionId: z.string().optional(),
-  documents: z.array(z.object({
-    id: z.string(),
-    type: z.enum(['id_card', 'passport', 'drivers_license', 'selfie']),
-    url: z.string().url(),
-    uploadedAt: z.string().datetime(),
-    verified: z.boolean(),
-    extractedData: z.record(z.unknown()).optional()
-  })),
-  livenessCheck: z.object({
-    passed: z.boolean(),
-    confidence: z.number().min(0).max(1),
-    attemptCount: z.number().int().min(0),
-    completedAt: z.string().datetime().optional()
-  }).optional(),
-  verificationData: z.object({
-    fullName: z.string().optional(),
-    dateOfBirth: z.string().optional(),
-    documentNumber: z.string().optional(),
-    documentExpiry: z.string().optional(),
-    nationality: z.string().optional(),
-    verifiedFields: z.array(z.string())
-  }).optional(),
+  documents: z.array(
+    z.object({
+      id: z.string(),
+      type: z.enum(['id_card', 'passport', 'drivers_license', 'selfie']),
+      url: z.string().url(),
+      uploadedAt: z.string().datetime(),
+      verified: z.boolean(),
+      extractedData: z.record(z.unknown()).optional(),
+    })
+  ),
+  livenessCheck: z
+    .object({
+      passed: z.boolean(),
+      confidence: z.number().min(0).max(1),
+      attemptCount: z.number().int().min(0),
+      completedAt: z.string().datetime().optional(),
+    })
+    .optional(),
+  verificationData: z
+    .object({
+      fullName: z.string().optional(),
+      dateOfBirth: z.string().optional(),
+      documentNumber: z.string().optional(),
+      documentExpiry: z.string().optional(),
+      nationality: z.string().optional(),
+      verifiedFields: z.array(z.string()),
+    })
+    .optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
   submittedAt: z.string().datetime().optional(),
   verifiedAt: z.string().datetime().optional(),
   rejectedAt: z.string().datetime().optional(),
   expiresAt: z.string().datetime().optional(),
-  rejectReason: z.enum(['blurry_document', 'expired_document', 'document_mismatch', 'liveness_failed', 'unreadable', 'incomplete', 'suspicious']).optional(),
+  rejectReason: z
+    .enum([
+      'blurry_document',
+      'expired_document',
+      'document_mismatch',
+      'liveness_failed',
+      'unreadable',
+      'incomplete',
+      'suspicious',
+    ])
+    .optional(),
   rejectReasonText: z.string().optional(),
-  retryCount: z.number().int().min(0)
-})
+  retryCount: z.number().int().min(0),
+});
 
-export type Location = z.infer<typeof locationSchema>
-export type Photo = z.infer<typeof photoSchema>
-export type Pet = z.infer<typeof petSchema>
-export type CompatibilityBreakdown = z.infer<typeof compatibilityBreakdownSchema>
-export type Match = z.infer<typeof matchSchema>
-export type Reaction = z.infer<typeof reactionSchema>
-export type Message = z.infer<typeof messageSchema>
-export type UserPreferences = z.infer<typeof userPreferencesSchema>
-export type User = z.infer<typeof userSchema>
-export type AuthTokens = z.infer<typeof authTokensSchema>
-export type Notification = z.infer<typeof notificationSchema>
-export type Report = z.infer<typeof reportSchema>
-export type Story = z.infer<typeof storySchema>
-export type Verification = z.infer<typeof verificationSchema>
-export type AdoptionProfile = z.infer<typeof adoptionProfileSchema>
-export type CommunityPost = z.infer<typeof communityPostSchema>
-export type Comment = z.infer<typeof commentSchema>
-export type APIError = z.infer<typeof apiErrorSchema>
-export type DiscoverResponse = z.infer<typeof discoverResponseSchema>
-export type SwipeResponse = z.infer<typeof swipeResponseSchema>
-export type PhotoRecord = z.infer<typeof photoRecordSchema>
-export type KYCSession = z.infer<typeof kycSessionSchema>
+export type Location = z.infer<typeof locationSchema>;
+export type Photo = z.infer<typeof photoSchema>;
+export type Pet = z.infer<typeof petSchema>;
+export type CompatibilityBreakdown = z.infer<typeof compatibilityBreakdownSchema>;
+export type Match = z.infer<typeof matchSchema>;
+export type Reaction = z.infer<typeof reactionSchema>;
+export type Message = z.infer<typeof messageSchema>;
+export type UserPreferences = z.infer<typeof userPreferencesSchema>;
+export type User = z.infer<typeof userSchema>;
+export type AuthTokens = z.infer<typeof authTokensSchema>;
+export type Notification = z.infer<typeof notificationSchema>;
+export type Report = z.infer<typeof reportSchema>;
+export type Story = z.infer<typeof storySchema>;
+export type Verification = z.infer<typeof verificationSchema>;
+export type AdoptionProfile = z.infer<typeof adoptionProfileSchema>;
+export type CommunityPost = z.infer<typeof communityPostSchema>;
+export type Comment = z.infer<typeof commentSchema>;
+export type APIError = z.infer<typeof apiErrorSchema>;
+export type DiscoverResponse = z.infer<typeof discoverResponseSchema>;
+export type SwipeResponse = z.infer<typeof swipeResponseSchema>;
+export type PhotoRecord = z.infer<typeof photoRecordSchema>;
+export type KYCSession = z.infer<typeof kycSessionSchema>;

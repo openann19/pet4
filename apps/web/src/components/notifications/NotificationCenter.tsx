@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { useStorage } from '@/hooks/useStorage'
-import { motion, Presence } from '@petspark/motion'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Badge } from '@/components/ui/badge'
+import { useState } from 'react';
+import { useStorage } from '@/hooks/use-storage';
+import { motion, Presence } from '@petspark/motion';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import {
   Bell,
   BellRinging,
@@ -15,122 +15,119 @@ import {
   Trash,
   DotsThreeVertical,
   Camera,
-  ShieldCheck
-} from '@phosphor-icons/react'
-import { cn } from '@/lib/utils'
-import { haptics } from '@/lib/haptics'
-import { formatDistanceToNow } from 'date-fns'
+  ShieldCheck,
+} from '@phosphor-icons/react';
+import { cn } from '@/lib/utils';
+import { haptics } from '@/lib/haptics';
+import { formatDistanceToNow } from 'date-fns';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+} from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 export interface AppNotification {
-  id: string
-  type: 'match' | 'message' | 'like' | 'verification' | 'story' | 'system' | 'moderation'
-  title: string
-  message: string
-  timestamp: number
-  read: boolean
-  priority: 'low' | 'normal' | 'high' | 'urgent'
-  actionUrl?: string
-  actionLabel?: string
-  imageUrl?: string
+  id: string;
+  type: 'match' | 'message' | 'like' | 'verification' | 'story' | 'system' | 'moderation';
+  title: string;
+  message: string;
+  timestamp: number;
+  read: boolean;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  actionUrl?: string;
+  actionLabel?: string;
+  imageUrl?: string;
   metadata?: {
-    petName?: string
-    userName?: string
-    matchId?: string
-    messageId?: string
-    count?: number
-  }
+    petName?: string;
+    userName?: string;
+    matchId?: string;
+    messageId?: string;
+    count?: number;
+  };
 }
 
 interface NotificationCenterProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps) {
-  const [notifications, setNotifications] = useStorage<AppNotification[]>('app-notifications', [])
-  const [filter, setFilter] = useState<'all' | 'unread'>('all')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [notifications, setNotifications] = useStorage<AppNotification[]>('app-notifications', []);
+  const [filter, setFilter] = useState<'all' | 'unread'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const unreadCount = (notifications || []).filter(n => !n.read).length
+  const unreadCount = (notifications || []).filter((n) => !n.read).length;
 
   const filteredNotifications = (notifications || [])
-    .filter(n => filter === 'all' || !n.read)
-    .filter(n => selectedCategory === 'all' || n.type === selectedCategory)
-    .sort((a, b) => b.timestamp - a.timestamp)
+    .filter((n) => filter === 'all' || !n.read)
+    .filter((n) => selectedCategory === 'all' || n.type === selectedCategory)
+    .sort((a, b) => b.timestamp - a.timestamp);
 
   const markAsRead = (id: string) => {
-    haptics.trigger('light')
-    setNotifications(current =>
-      (current || []).map(n => n.id === id ? { ...n, read: true } : n)
-    )
-  }
+    haptics.trigger('light');
+    setNotifications((current) =>
+      (current || []).map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
 
   const markAllAsRead = () => {
-    haptics.trigger('medium')
-    setNotifications(current =>
-      (current || []).map(n => ({ ...n, read: true }))
-    )
-  }
+    haptics.trigger('medium');
+    setNotifications((current) => (current || []).map((n) => ({ ...n, read: true })));
+  };
 
   const deleteNotification = (id: string) => {
-    haptics.trigger('medium')
-    setNotifications(current =>
-      (current || []).filter(n => n.id !== id)
-    )
-  }
+    haptics.trigger('medium');
+    setNotifications((current) => (current || []).filter((n) => n.id !== id));
+  };
 
   const deleteAllRead = () => {
-    haptics.trigger('heavy')
-    setNotifications(current =>
-      (current || []).filter(n => !n.read)
-    )
-  }
+    haptics.trigger('heavy');
+    setNotifications((current) => (current || []).filter((n) => !n.read));
+  };
 
-  const getNotificationIcon = (type: AppNotification['type'], priority: AppNotification['priority']) => {
+  const getNotificationIcon = (
+    type: AppNotification['type'],
+    priority: AppNotification['priority']
+  ) => {
     const iconProps = {
       size: 24,
-      weight: priority === 'urgent' || priority === 'high' ? 'fill' : 'regular'
-    } as const
+      weight: priority === 'urgent' || priority === 'high' ? 'fill' : 'regular',
+    } as const;
 
     switch (type) {
       case 'match':
-        return <Heart {...iconProps} className="text-primary" />
+        return <Heart {...iconProps} className="text-primary" />;
       case 'message':
-        return <ChatCircle {...iconProps} className="text-secondary" />
+        return <ChatCircle {...iconProps} className="text-secondary" />;
       case 'like':
-        return <Heart {...iconProps} className="text-accent" />
+        return <Heart {...iconProps} className="text-accent" />;
       case 'verification':
-        return <CheckCircle {...iconProps} className="text-green-500" />
+        return <CheckCircle {...iconProps} className="text-green-500" />;
       case 'story':
-        return <Camera {...iconProps} className="text-purple-500" />
+        return <Camera {...iconProps} className="text-purple-500" />;
       case 'moderation':
-        return <ShieldCheck {...iconProps} className="text-orange-500" />
+        return <ShieldCheck {...iconProps} className="text-orange-500" />;
       case 'system':
-        return <Info {...iconProps} className="text-blue-500" />
+        return <Info {...iconProps} className="text-blue-500" />;
       default:
-        return <Bell {...iconProps} />
+        return <Bell {...iconProps} />;
     }
-  }
+  };
 
   const getPriorityStyles = (priority: AppNotification['priority']) => {
     switch (priority) {
       case 'urgent':
-        return 'border-l-4 border-l-destructive bg-destructive/5'
+        return 'border-l-4 border-l-destructive bg-destructive/5';
       case 'high':
-        return 'border-l-4 border-l-accent bg-accent/5'
+        return 'border-l-4 border-l-accent bg-accent/5';
       case 'normal':
-        return 'border-l-2 border-l-border'
+        return 'border-l-2 border-l-border';
       case 'low':
-        return 'border-l border-l-border/50'
+        return 'border-l border-l-border/50';
     }
-  }
+  };
 
   const categories = [
     { value: 'all', label: 'All', icon: Bell },
@@ -139,7 +136,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
     { value: 'like', label: 'Likes', icon: Heart },
     { value: 'verification', label: 'Verified', icon: CheckCircle },
     { value: 'story', label: 'Stories', icon: Camera },
-  ]
+  ];
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -151,11 +148,11 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                 <MotionView
                   animate={{
                     rotate: [0, -10, 10, -10, 0],
-                    scale: [1, 1.1, 1]
+                    scale: [1, 1.1, 1],
                   }}
                   transition={{
                     duration: 0.5,
-                    ease: "easeInOut"
+                    ease: 'easeInOut',
                   }}
                 >
                   <BellRinging size={28} weight="fill" className="text-primary" />
@@ -163,9 +160,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                 <div>
                   <SheetTitle className="text-xl">Notifications</SheetTitle>
                   {unreadCount > 0 && (
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                      {unreadCount} unread
-                    </p>
+                    <p className="text-sm text-muted-foreground mt-0.5">{unreadCount} unread</p>
                   )}
                 </div>
               </div>
@@ -181,7 +176,10 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                     <Check size={16} className="mr-2" />
                     Mark all as read
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={deleteAllRead} disabled={(notifications || []).every(n => !n.read)}>
+                  <DropdownMenuItem
+                    onClick={deleteAllRead}
+                    disabled={(notifications || []).every((n) => !n.read)}
+                  >
                     <Trash size={16} className="mr-2" />
                     Clear read
                   </DropdownMenuItem>
@@ -191,10 +189,10 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
 
             <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-2 -mb-2">
               {categories.map((cat) => {
-                const Icon = cat.icon
-                const count = (notifications || []).filter(n => 
-                  (cat.value === 'all' || n.type === cat.value) && !n.read
-                ).length
+                const Icon = cat.icon;
+                const count = (notifications || []).filter(
+                  (n) => (cat.value === 'all' || n.type === cat.value) && !n.read
+                ).length;
 
                 return (
                   <Button
@@ -202,8 +200,8 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                     variant={selectedCategory === cat.value ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => {
-                      haptics.trigger('selection')
-                      setSelectedCategory(cat.value)
+                      haptics.trigger('selection');
+                      setSelectedCategory(cat.value);
                     }}
                     className={cn(
                       'rounded-full shrink-0 h-9',
@@ -221,7 +219,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                       </Badge>
                     )}
                   </Button>
-                )
+                );
               })}
             </div>
           </SheetHeader>
@@ -231,8 +229,8 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
               variant={filter === 'all' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => {
-                haptics.trigger('selection')
-                setFilter('all')
+                haptics.trigger('selection');
+                setFilter('all');
               }}
               className="rounded-full flex-1"
             >
@@ -242,8 +240,8 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
               variant={filter === 'unread' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => {
-                haptics.trigger('selection')
-                setFilter('unread')
+                haptics.trigger('selection');
+                setFilter('unread');
               }}
               className="rounded-full flex-1"
             >
@@ -269,12 +267,12 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                     <MotionView
                       animate={{
                         rotate: [0, -10, 10, -10, 0],
-                        scale: [1, 1.05, 1]
+                        scale: [1, 1.05, 1],
                       }}
                       transition={{
                         duration: 2,
                         repeat: Infinity,
-                        repeatDelay: 3
+                        repeatDelay: 3,
                       }}
                     >
                       <Bell size={64} weight="thin" className="text-muted-foreground/40" />
@@ -295,9 +293,9 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20, height: 0 }}
-                        transition={{ 
+                        transition={{
                           delay: index * 0.02,
-                          layout: { duration: 0.2 }
+                          layout: { duration: 0.2 },
                         }}
                       >
                         <NotificationItem
@@ -317,15 +315,18 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
         </div>
       </SheetContent>
     </Sheet>
-  )
+  );
 }
 
 interface NotificationItemProps {
-  notification: AppNotification
-  onMarkAsRead: (id: string) => void
-  onDelete: (id: string) => void
-  getIcon: (type: AppNotification['type'], priority: AppNotification['priority']) => React.ReactNode
-  getPriorityStyles: (priority: AppNotification['priority']) => string
+  notification: AppNotification;
+  onMarkAsRead: (id: string) => void;
+  onDelete: (id: string) => void;
+  getIcon: (
+    type: AppNotification['type'],
+    priority: AppNotification['priority']
+  ) => React.ReactNode;
+  getPriorityStyles: (priority: AppNotification['priority']) => string;
 }
 
 function NotificationItem({
@@ -333,9 +334,9 @@ function NotificationItem({
   onMarkAsRead,
   onDelete,
   getIcon,
-  getPriorityStyles
+  getPriorityStyles,
 }: NotificationItemProps) {
-  const [isHovered, setIsHovered] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <MotionView
@@ -359,13 +360,11 @@ function NotificationItem({
               notification.priority === 'low' && 'bg-muted'
             )}
             animate={{
-              scale: !notification.read && notification.priority === 'urgent' 
-                ? [1, 1.1, 1] 
-                : 1
+              scale: !notification.read && notification.priority === 'urgent' ? [1, 1.1, 1] : 1,
             }}
-            transition={{ 
-              duration: 1, 
-              repeat: !notification.read && notification.priority === 'urgent' ? Infinity : 0 
+            transition={{
+              duration: 1,
+              repeat: !notification.read && notification.priority === 'urgent' ? Infinity : 0,
             }}
           >
             {getIcon(notification.type, notification.priority)}
@@ -374,18 +373,22 @@ function NotificationItem({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <h4 className={cn(
-                  'font-semibold text-sm leading-tight',
-                  !notification.read && 'text-foreground',
-                  notification.read && 'text-muted-foreground'
-                )}>
+                <h4
+                  className={cn(
+                    'font-semibold text-sm leading-tight',
+                    !notification.read && 'text-foreground',
+                    notification.read && 'text-muted-foreground'
+                  )}
+                >
                   {notification.title}
                 </h4>
-                <p className={cn(
-                  'text-sm mt-1 leading-relaxed',
-                  !notification.read && 'text-foreground/80',
-                  notification.read && 'text-muted-foreground/70'
-                )}>
+                <p
+                  className={cn(
+                    'text-sm mt-1 leading-relaxed',
+                    !notification.read && 'text-foreground/80',
+                    notification.read && 'text-muted-foreground/70'
+                  )}
+                >
                   {notification.message}
                 </p>
               </div>
@@ -478,14 +481,14 @@ function NotificationItem({
         <MotionView
           className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-destructive via-accent to-destructive"
           animate={{
-            opacity: [0.5, 1, 0.5]
+            opacity: [0.5, 1, 0.5],
           }}
           transition={{
             duration: 1.5,
-            repeat: Infinity
+            repeat: Infinity,
           }}
         />
       )}
     </MotionView>
-  )
+  );
 }

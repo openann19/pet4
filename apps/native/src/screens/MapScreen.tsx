@@ -33,7 +33,9 @@ export default function MapScreen() {
   const [loading, setLoading] = useState(true);
   const [markers, setMarkers] = useState<MapMarker[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'pets' | 'places' | 'lost'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'pets' | 'places' | 'lost'>(
+    'all'
+  );
   const [preciseSharingEnabled, setPreciseSharingEnabled] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +54,7 @@ export default function MapScreen() {
 
         const loc = await Location.getCurrentPositionAsync({});
         setLocation(loc);
-        
+
         await loadNearbyMarkers(loc.coords.latitude, loc.coords.longitude);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to get location';
@@ -122,8 +124,7 @@ export default function MapScreen() {
     if (location && !loading) {
       loadNearbyMarkers(location.coords.latitude, location.coords.longitude);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategory]);
+  }, [selectedCategory, location, loading, loadNearbyMarkers]);
 
   const filteredMarkers = markers.filter((marker) => {
     if (selectedCategory !== 'all') {
@@ -168,7 +169,9 @@ export default function MapScreen() {
             <Text style={styles.errorText}>{error}</Text>
             {location && (
               <TouchableOpacity
-                onPress={() => loadNearbyMarkers(location.coords.latitude, location.coords.longitude)}
+                onPress={() =>
+                  loadNearbyMarkers(location.coords.latitude, location.coords.longitude)
+                }
                 style={styles.retryButton}
               >
                 <Text style={styles.retryButtonText}>Retry</Text>
@@ -219,10 +222,10 @@ export default function MapScreen() {
                 {category === 'all'
                   ? '🌍 All'
                   : category === 'pets'
-                  ? '🐾 Pets'
-                  : category === 'places'
-                  ? '📍 Places'
-                  : '🔍 Lost'}
+                    ? '🐾 Pets'
+                    : category === 'places'
+                      ? '📍 Places'
+                      : '🔍 Lost'}
               </Text>
             </TouchableOpacity>
           ))}
@@ -243,10 +246,7 @@ export default function MapScreen() {
           </View>
           <AnimatedButton
             onPress={togglePreciseSharing}
-            style={[
-              styles.preciseButton,
-              preciseSharingEnabled && styles.preciseButtonActive,
-            ]}
+            style={[styles.preciseButton, preciseSharingEnabled && styles.preciseButtonActive]}
           >
             <Text
               style={[
@@ -287,9 +287,7 @@ export default function MapScreen() {
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>🗺️</Text>
               <Text style={styles.emptyTitle}>No results found</Text>
-              <Text style={styles.emptyText}>
-                Try adjusting your filters or search query
-              </Text>
+              <Text style={styles.emptyText}>Try adjusting your filters or search query</Text>
             </View>
           </FadeInView>
         )}

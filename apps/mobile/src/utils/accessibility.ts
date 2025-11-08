@@ -102,30 +102,26 @@ export function createAccessibilityLabel(
   target?: string
 ): string {
   const parts: string[] = []
-  
+
   if (action) {
     parts.push(action)
   }
-  
+
   if (target) {
     parts.push(target)
   }
-  
+
   if (context) {
     parts.push(`(${context})`)
   }
-  
+
   return parts.join(' ')
 }
 
 /**
  * Format accessibility value for progress/status
  */
-export function formatAccessibilityValue(
-  current: number,
-  max: number,
-  unit?: string
-): string {
+export function formatAccessibilityValue(current: number, max: number, unit?: string): string {
   const percentage = Math.round((current / max) * 100)
   if (unit) {
     return `${current} ${unit} of ${max} ${unit}, ${percentage}%`
@@ -146,4 +142,3 @@ export function announceToScreenReader(
     logger.debug('Screen reader announcement', { message, priority })
   }
 }
-

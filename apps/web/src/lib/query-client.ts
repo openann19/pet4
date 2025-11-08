@@ -5,12 +5,9 @@
  * using the IndexedDB storage adapter.
  */
 
-import { QueryClient } from '@tanstack/react-query'
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
-import { idbStorage } from '@/lib/storage-adapter'
-import { createLogger } from '@/lib/logger'
-
-const logger = createLogger('QueryClient')
+import { QueryClient } from '@tanstack/react-query';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { idbStorage } from '@/lib/storage-adapter';
 
 // Create storage persister for offline caching
 export const queryPersister = createSyncStoragePersister({
@@ -18,7 +15,7 @@ export const queryPersister = createSyncStoragePersister({
   key: 'petspark-query-cache',
   serialize: JSON.stringify,
   deserialize: JSON.parse,
-})
+});
 
 // Query client configuration
 export const queryClient = new QueryClient({
@@ -46,7 +43,7 @@ export const queryClient = new QueryClient({
       retryDelay: 1000,
     },
   },
-})
+});
 
 // Background sync configuration
 export const backgroundSyncConfig = {
@@ -56,7 +53,7 @@ export const backgroundSyncConfig = {
   maxRetries: 3,
   // Backoff multiplier for retry delays
   backoffMultiplier: 2,
-}
+};
 
 // Query keys for consistent caching
 export const queryKeys = {
@@ -125,7 +122,7 @@ export const queryKeys = {
     list: ['notifications'] as const,
     unread: ['notifications', 'unread'] as const,
   },
-} as const
+} as const;
 
 // Mutation keys for optimistic updates
 export const mutationKeys = {
@@ -134,4 +131,4 @@ export const mutationKeys = {
   playdate: ['playdate'] as const,
   post: ['post'] as const,
   comment: ['comment'] as const,
-} as const
+} as const;

@@ -1,52 +1,51 @@
 /**
  * Password Utilities
- * 
+ *
  * Functions for hashing and verifying passwords using Web Crypto API.
  * Note: In production, password hashing should be done server-side.
  * This is suitable for client-side storage with basic security.
  */
 
-import { log } from './logger'
+import { log } from './logger';
 
 /**
  * Hash a password using PBKDF2
  */
-export async function hashPassword(password: string, salt?: Uint8Array): Promise<{ hash: string; salt: string }> {
+export async function hashPassword(
+  password: string,
+  salt?: Uint8Array
+): Promise<{ hash: string; salt: string }> {
   // Generate salt if not provided
   if (!salt) {
-    salt = crypto.getRandomValues(new Uint8Array(16))
+    salt = crypto.getRandomValues(new Uint8Array(16));
   }
 
   // Import password as key material
-  const encoder = new TextEncoder()
-  const passwordData = encoder.encode(password)
+  const encoder = new TextEncoder();
+  const passwordData = encoder.encode(password);
 
   // Derive key using PBKDF2
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    passwordData,
-    'PBKDF2',
-    false,
-    ['deriveBits']
-  )
+  const keyMaterial = await crypto.subtle.importKey('raw', passwordData, 'PBKDF2', false, [
+    'deriveBits',
+  ]);
 
   const hashBuffer = await crypto.subtle.deriveBits(
     {
       name: 'PBKDF2',
       salt: salt as BufferSource,
       iterations: 100000, // High iteration count for security
-      hash: 'SHA-256'
+      hash: 'SHA-256',
     },
     keyMaterial,
     256 // 32 bytes
-  )
+  );
 
   // Convert to base64 strings for storage
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashString = btoa(String.fromCharCode(...hashArray))
-  const saltString = btoa(String.fromCharCode(...salt))
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashString = btoa(String.fromCharCode(...hashArray));
+  const saltString = btoa(String.fromCharCode(...salt));
 
-  return { hash: hashString, salt: saltString }
+  return { hash: hashString, salt: saltString };
 }
 
 /**
@@ -59,16 +58,19 @@ export async function verifyPassword(
 ): Promise<boolean> {
   try {
     // Decode salt from base64
-    const saltArray = Uint8Array.from(atob(salt), c => c.charCodeAt(0))
+    const saltArray = Uint8Array.from(atob(salt), (c) => c.charCodeAt(0));
 
     // Hash the provided password with the same salt
-    const { hash: newHash } = await hashPassword(password, saltArray)
+    const { hash: newHash } = await hashPassword(password, saltArray);
 
     // Compare hashes (constant-time comparison)
-    return newHash === hash
+    return newHash === hash;
   } catch (error) {
-    log.error('Error verifying password', error instanceof Error ? error : new Error(String(error)))
-    return false
+    log.error(
+      'Error verifying password',
+      error instanceof Error ? error : new Error(String(error))
+    );
+    return false;
   }
 }
 
@@ -76,9 +78,7 @@ export async function verifyPassword(
  * Generate a secure random password reset token
  */
 export function generatePasswordResetToken(): string {
-  const array = new Uint8Array(32)
-  crypto.getRandomValues(array)
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('')
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
-
-

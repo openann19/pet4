@@ -1,32 +1,47 @@
-import CallInterface from '@/components/call/CallInterface'
-import CompatibilityBreakdown from '@/components/CompatibilityBreakdown'
-import { DetailedPetAnalytics } from '@/components/enhanced/DetailedPetAnalytics'
-import { EnhancedPetDetailView } from '@/components/enhanced/EnhancedPetDetailView'
-import PlaydateScheduler from '@/components/playdate/PlaydateScheduler'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useApp } from '@/contexts/AppContext'
-import { useCall } from '@/hooks/useCall'
-import { useMatches } from '@/hooks/useMatches'
-import { haptics } from '@/lib/haptics'
-import { calculateCompatibility, getCompatibilityFactors } from '@/lib/matching'
-import type { Match, Pet } from '@/lib/types'
-import { Calendar, ChartBar, ChatCircle, Heart, MapPin, Sparkle, VideoCamera } from '@phosphor-icons/react'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence'
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence } from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useState, useEffect } from 'react'
+import CallInterface from '@/components/call/CallInterface';
+import CompatibilityBreakdown from '@/components/CompatibilityBreakdown';
+import { DetailedPetAnalytics } from '@/components/enhanced/DetailedPetAnalytics';
+import { EnhancedPetDetailView } from '@/components/enhanced/EnhancedPetDetailView';
+import PlaydateScheduler from '@/components/playdate/PlaydateScheduler';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useApp } from '@/contexts/AppContext';
+import { useCall } from '@/hooks/useCall';
+import { useMatches } from '@/hooks/useMatches';
+import { haptics } from '@/lib/haptics';
+import { calculateCompatibility, getCompatibilityFactors } from '@/lib/matching';
+import type { Match, Pet } from '@/lib/types';
+import {
+  Calendar,
+  ChartBar,
+  ChatCircle,
+  Heart,
+  MapPin,
+  Sparkle,
+  VideoCamera,
+} from '@phosphor-icons/react';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withRepeat,
+  withSequence,
+} from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useState, useEffect } from 'react';
 
 interface MatchesViewProps {
-  onNavigateToChat?: () => void
+  onNavigateToChat?: () => void;
 }
 
 export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
-  const { t } = useApp()
+  const { t } = useApp();
   const {
     matchedPets,
     userPet,
@@ -36,87 +51,72 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
     isLoading,
     selectPet,
     clearSelection,
-  } = useMatches()
+  } = useMatches();
 
-  const [breakdownPet, setBreakdownPet] = useState<(Pet & { match: Match }) | null>(null)
-  const [playdatePet, setPlaydatePet] = useState<Pet & { match: Match } | null>(null)
+  const [breakdownPet, setBreakdownPet] = useState<(Pet & { match: Match }) | null>(null);
+  const [playdatePet, setPlaydatePet] = useState<(Pet & { match: Match }) | null>(null);
 
-  const {
-    activeCall,
-    initiateCall,
-    endCall,
-    toggleMute,
-    toggleVideo
-  } = useCall(
+  const { activeCall, initiateCall, endCall, toggleMute, toggleVideo } = useCall(
     selectedPet?.id || 'room',
     userPet?.id || 'user',
     userPet?.name || 'You',
     userPet?.photo
-  )
+  );
 
   // Animation hooks for empty state
-  const emptyHeartScale = useSharedValue(0)
-  const emptyHeartRotate = useSharedValue(-180)
-  const emptyPulseScale = useSharedValue(1)
-  const emptyPulseOpacity = useSharedValue(0.5)
-  const emptyTextOpacity = useSharedValue(0)
-  const emptyTextY = useSharedValue(20)
-  
+  const emptyHeartScale = useSharedValue(0);
+  const emptyHeartRotate = useSharedValue(-180);
+  const emptyPulseScale = useSharedValue(1);
+  const emptyPulseOpacity = useSharedValue(0.5);
+  const emptyTextOpacity = useSharedValue(0);
+  const emptyTextY = useSharedValue(20);
+
   // Interactive element hooks
-  const cardHover = useHoverLift()
-  const cardTap = useBounceOnTap()
-  
+  const cardHover = useHoverLift();
+  const cardTap = useBounceOnTap();
+
   // Presence hooks
-  const emptyStatePresence = useAnimatePresence(matchedPets.length === 0 && !isLoading)
-  const selectedPetPresence = useAnimatePresence(!!selectedPet)
+  const emptyStatePresence = useAnimatePresence(matchedPets.length === 0 && !isLoading);
+  const selectedPetPresence = useAnimatePresence(!!selectedPet);
 
   // Initialize empty state animations
   useEffect(() => {
     if (matchedPets.length === 0 && !isLoading) {
-      emptyHeartScale.value = withSpring(1, { damping: 15, stiffness: 200 })
-      emptyHeartRotate.value = withSpring(0, { damping: 15, stiffness: 200 })
-      emptyTextOpacity.value = withTiming(1, { duration: 300 })
-      emptyTextY.value = withSpring(0, { damping: 20, stiffness: 300 })
-      
+      emptyHeartScale.value = withSpring(1, { damping: 15, stiffness: 200 });
+      emptyHeartRotate.value = withSpring(0, { damping: 15, stiffness: 200 });
+      emptyTextOpacity.value = withTiming(1, { duration: 300 });
+      emptyTextY.value = withSpring(0, { damping: 20, stiffness: 300 });
+
       // Pulse animation
       emptyPulseScale.value = withRepeat(
-        withSequence(
-          withTiming(1.5, { duration: 1000 }),
-          withTiming(1, { duration: 1000 })
-        ),
+        withSequence(withTiming(1.5, { duration: 1000 }), withTiming(1, { duration: 1000 })),
         -1,
         false
-      )
+      );
       emptyPulseOpacity.value = withRepeat(
-        withSequence(
-          withTiming(0, { duration: 1000 }),
-          withTiming(0.5, { duration: 1000 })
-        ),
+        withSequence(withTiming(0, { duration: 1000 }), withTiming(0.5, { duration: 1000 })),
         -1,
         false
-      )
+      );
     }
-  }, [matchedPets.length, isLoading])
+  }, [matchedPets.length, isLoading]);
 
   const emptyHeartStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: emptyHeartScale.value },
-      { rotate: `${emptyHeartRotate.value}deg` }
-    ]
-  })) as AnimatedStyle
+    transform: [{ scale: emptyHeartScale.value }, { rotate: `${emptyHeartRotate.value}deg` }],
+  })) as AnimatedStyle;
 
   const emptyPulseStyle = useAnimatedStyle(() => ({
     transform: [{ scale: emptyPulseScale.value }],
-    opacity: emptyPulseOpacity.value
-  })) as AnimatedStyle
+    opacity: emptyPulseOpacity.value,
+  })) as AnimatedStyle;
 
   const emptyTextStyle = useAnimatedStyle(() => ({
     opacity: emptyTextOpacity.value,
-    transform: [{ translateY: emptyTextY.value }]
-  })) as AnimatedStyle
+    transform: [{ translateY: emptyTextY.value }],
+  })) as AnimatedStyle;
 
   if (isLoading) {
-    return null
+    return null;
   }
 
   if (matchedPets.length === 0) {
@@ -128,16 +128,22 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
             className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
           >
             <AnimatedView
-              style={useAnimatedStyle(() => ({
-                transform: [{ scale: withRepeat(
-                  withSequence(
-                    withTiming(1.2, { duration: 750 }),
-                    withTiming(1, { duration: 750 })
-                  ),
-                  -1,
-                  true
-                )}]
-              })) as AnimatedStyle}
+              style={
+                useAnimatedStyle(() => ({
+                  transform: [
+                    {
+                      scale: withRepeat(
+                        withSequence(
+                          withTiming(1.2, { duration: 750 }),
+                          withTiming(1, { duration: 750 })
+                        ),
+                        -1,
+                        true
+                      ),
+                    },
+                  ],
+                })) as AnimatedStyle
+              }
             >
               <Heart size={48} className="text-primary" />
             </AnimatedView>
@@ -147,20 +153,14 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
             />
           </AnimatedView>
         )}
-        <AnimatedView
-          style={emptyTextStyle}
-          className="text-2xl font-bold mb-2"
-        >
+        <AnimatedView style={emptyTextStyle} className="text-2xl font-bold mb-2">
           {t.matches.noMatches}
         </AnimatedView>
-        <AnimatedView
-          style={emptyTextStyle}
-          className="text-muted-foreground mb-6 max-w-md"
-        >
+        <AnimatedView style={emptyTextStyle} className="text-muted-foreground mb-6 max-w-md">
           {t.matches.noMatchesDesc}
         </AnimatedView>
       </div>
-    )
+    );
   }
 
   return (
@@ -169,16 +169,16 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
         <div className="flex-1 min-w-0">
           <h2 className="text-2xl font-bold mb-2">{t.matches.title}</h2>
           <p className="text-muted-foreground">
-            {matchedPets.length} {matchedPets.length === 1 ? t.matches.subtitle : t.matches.subtitlePlural}
+            {matchedPets.length}{' '}
+            {matchedPets.length === 1 ? t.matches.subtitle : t.matches.subtitlePlural}
           </p>
         </div>
         {onNavigateToChat && matchedPets.length > 0 && (
-          <AnimatedView
-          >
+          <AnimatedView>
             <Button
               onClick={() => {
-                haptics.trigger('medium')
-                onNavigateToChat()
+                haptics.trigger('medium');
+                onNavigateToChat();
               }}
               className="bg-gradient-to-r from-primary to-accent hover:shadow-xl transition-all"
               size="lg"
@@ -192,116 +192,16 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {matchedPets.map((pet, idx) => (
-          <AnimatedView
+          <MatchCard
             key={pet.id}
-          >
-            <div 
-              className="overflow-hidden rounded-3xl glass-strong premium-shadow backdrop-blur-2xl cursor-pointer group relative border border-white/20"
-            >
-              <AnimatedView
-                className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-              />
-              <div 
-                className="relative h-64 overflow-hidden"
-                onClick={() => {
-                  haptics.trigger('selection')
-                  selectPet(pet, pet.match)
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
-                <img
-                  src={pet.photo}
-                  alt={pet.name}
-                  className="w-full h-full object-cover"
-                />
-                <AnimatedView
-                  className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"
-                />
-                <AnimatedView 
-                  className="absolute top-3 right-3 glass-strong px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl border border-white/30 backdrop-blur-xl"
-                >
-                  <span className="bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent">
-                    {pet.match.compatibilityScore}%
-                  </span>
-                </AnimatedView>
-                <AnimatedView
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    haptics.trigger('selection')
-                    setBreakdownPet(pet)
-                  }}
-                  className="absolute bottom-3 right-3 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl"
-                >
-                  <ChartBar size={20} className="text-white drop-shadow-lg" weight="bold" />
-                </AnimatedView>
-              </div>
-
-              <div className="p-5 bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-md">
-                <div className="flex items-start justify-between mb-2 gap-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold truncate">{pet.name}</h3>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1 truncate">
-                      <MapPin size={14} weight="fill" />
-                      {pet.location}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <AnimatedView
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        haptics.trigger('selection')
-                        setPlaydatePet(pet)
-                      }}
-                      className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-lg"
-                      title="Schedule playdate"
-                    >
-                      <Calendar size={18} weight="fill" className="text-white" />
-                    </AnimatedView>
-                    <AnimatedView
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        haptics.trigger('medium')
-                        initiateCall(pet.id, pet.name, pet.photo, 'video')
-                      }}
-                      className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg"
-                      title="Start video call"
-                    >
-                      <VideoCamera size={18} weight="fill" className="text-white" />
-                    </AnimatedView>
-                    {onNavigateToChat && (
-                      <AnimatedView
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          haptics.trigger('medium')
-                          onNavigateToChat()
-                        }}
-                        className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg"
-                        title="Start chat"
-                      >
-                        <ChatCircle size={18} weight="fill" className="text-white" />
-                      </AnimatedView>
-                    )}
-                  </div>
-                </div>
-
-                <p className="text-sm text-muted-foreground mb-3">
-                  {pet.breed} • {pet.age} {t.common.years}
-                </p>
-
-                {pet.match.reasoning.length > 0 && (
-                  <div className="pt-3 border-t border-border">
-                    <p className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1">
-                      <Sparkle size={12} weight="fill" className="text-accent" />
-                      {t.matches.whyMatched}
-                    </p>
-                    <p className="text-sm text-foreground line-clamp-2">
-                      {pet.match.reasoning[0]}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </AnimatedView>
+            pet={pet}
+            onSelect={() => selectPet(pet, pet.match)}
+            onBreakdown={() => setBreakdownPet(pet)}
+            onPlaydate={() => setPlaydatePet(pet)}
+            onVideoCall={() => initiateCall(pet.id, pet.name, pet.photo, 'video')}
+            onChat={onNavigateToChat}
+            t={t}
+          />
         ))}
       </div>
 
@@ -324,7 +224,9 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
             <div>
               <div className="mb-4">
                 <h3 className="text-2xl font-bold">{breakdownPet.name}</h3>
-                <p className="text-muted-foreground">{t.matches.compatibilityWith} {userPet.name}</p>
+                <p className="text-muted-foreground">
+                  {t.matches.compatibilityWith} {userPet.name}
+                </p>
               </div>
               <Tabs defaultValue="analytics" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
@@ -334,13 +236,15 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                 <TabsContent value="analytics" className="mt-4">
                   <DetailedPetAnalytics
                     pet={breakdownPet}
-                    {...(breakdownPet.trustProfile ? { trustProfile: breakdownPet.trustProfile } : {})}
+                    {...(breakdownPet.trustProfile
+                      ? { trustProfile: breakdownPet.trustProfile }
+                      : {})}
                     compatibilityScore={calculateCompatibility(userPet, breakdownPet)}
                     matchReasons={breakdownPet.match.reasoning || []}
                   />
                 </TabsContent>
                 <TabsContent value="breakdown" className="mt-4">
-                  <CompatibilityBreakdown 
+                  <CompatibilityBreakdown
                     factors={getCompatibilityFactors(userPet, breakdownPet)}
                   />
                 </TabsContent>
@@ -356,12 +260,12 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
           userPet={userPet}
           onClose={() => setPlaydatePet(null)}
           onStartVideoCall={() => {
-            initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video')
-            setPlaydatePet(null)
+            initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video');
+            setPlaydatePet(null);
           }}
           onStartVoiceCall={() => {
-            initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice')
-            setPlaydatePet(null)
+            initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice');
+            setPlaydatePet(null);
           }}
         />
       )}
@@ -377,5 +281,138 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
         )}
       </AnimatedView>
     </div>
-  )
+  );
+}
+
+interface MatchCardProps {
+  pet: Pet & { match: Match };
+  onSelect: () => void;
+  onBreakdown: () => void;
+  onPlaydate: () => void;
+  onVideoCall: () => void;
+  onChat?: () => void;
+  t: ReturnType<typeof useApp>['t'];
+}
+
+function MatchCard({
+  pet,
+  onSelect,
+  onBreakdown,
+  onPlaydate,
+  onVideoCall,
+  onChat,
+  t,
+}: MatchCardProps): React.ReactElement {
+  return (
+    <AnimatedView>
+      <div className="overflow-hidden rounded-3xl glass-strong premium-shadow backdrop-blur-2xl cursor-pointer group relative border border-white/20">
+        <AnimatedView className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div
+          className="relative h-64 overflow-hidden"
+          onClick={() => {
+            haptics.trigger('selection');
+            onSelect();
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
+          <img src={pet.photo} alt={pet.name} className="w-full h-full object-cover" />
+          <AnimatedView className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <AnimatedView className="absolute top-3 right-3 glass-strong px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl border border-white/30 backdrop-blur-xl">
+            <span className="bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent">
+              {pet.match.compatibilityScore}%
+            </span>
+          </AnimatedView>
+          <AnimatedView
+            onClick={(e) => {
+              e.stopPropagation();
+              haptics.trigger('selection');
+              onBreakdown();
+            }}
+            className="absolute bottom-3 right-3 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl"
+          >
+            <ChartBar size={20} className="text-white drop-shadow-lg" weight="bold" />
+          </AnimatedView>
+        </div>
+
+        <div className="p-5 bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-md">
+          <div className="flex items-start justify-between mb-2 gap-2">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-bold truncate">{pet.name}</h3>
+              <p className="text-sm text-muted-foreground flex items-center gap-1 truncate">
+                <MapPin size={14} weight="fill" />
+                {pet.location}
+              </p>
+            </div>
+            <MatchCardActions onPlaydate={onPlaydate} onVideoCall={onVideoCall} onChat={onChat} />
+          </div>
+
+          <p className="text-sm text-muted-foreground mb-3">
+            {pet.breed} • {pet.age} {t.common.years}
+          </p>
+
+          {pet.match.reasoning.length > 0 && (
+            <div className="pt-3 border-t border-border">
+              <p className="text-xs font-semibold text-muted-foreground mb-1 flex items-center gap-1">
+                <Sparkle size={12} weight="fill" className="text-accent" />
+                {t.matches.whyMatched}
+              </p>
+              <p className="text-sm text-foreground line-clamp-2">{pet.match.reasoning[0]}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </AnimatedView>
+  );
+}
+
+interface MatchCardActionsProps {
+  onPlaydate: () => void;
+  onVideoCall: () => void;
+  onChat?: () => void;
+}
+
+function MatchCardActions({
+  onPlaydate,
+  onVideoCall,
+  onChat,
+}: MatchCardActionsProps): React.ReactElement {
+  return (
+    <div className="flex items-center gap-1.5 shrink-0">
+      <AnimatedView
+        onClick={(e) => {
+          e.stopPropagation();
+          haptics.trigger('selection');
+          onPlaydate();
+        }}
+        className="w-10 h-10 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-lg"
+        title="Schedule playdate"
+      >
+        <Calendar size={18} weight="fill" className="text-white" />
+      </AnimatedView>
+      <AnimatedView
+        onClick={(e) => {
+          e.stopPropagation();
+          haptics.trigger('medium');
+          onVideoCall();
+        }}
+        className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg"
+        title="Start video call"
+      >
+        <VideoCamera size={18} weight="fill" className="text-white" />
+      </AnimatedView>
+      {onChat && (
+        <AnimatedView
+          onClick={(e) => {
+            e.stopPropagation();
+            haptics.trigger('medium');
+            onChat();
+          }}
+          className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg"
+          title="Start chat"
+        >
+          <ChatCircle size={18} weight="fill" className="text-white" />
+        </AnimatedView>
+      )}
+    </div>
+  );
 }

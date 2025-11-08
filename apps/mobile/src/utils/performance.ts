@@ -62,7 +62,7 @@ class PerformanceMonitor {
    * Get entries for a specific name
    */
   getEntriesByName(name: string): PerformanceEntry[] {
-    return this.entries.filter((entry) => entry.name === name)
+    return this.entries.filter(entry => entry.name === name)
   }
 
   /**
@@ -94,10 +94,7 @@ export function usePerformanceMeasure(
 
   const endMeasure = (): void => {
     if (enabled) {
-      performanceMonitor.measure(
-        `${componentName}-render`,
-        `${componentName}-render-start`
-      )
+      performanceMonitor.measure(`${componentName}-render`, `${componentName}-render-start`)
     }
   }
 
@@ -106,4 +103,3 @@ export function usePerformanceMeasure(
     endMeasure,
   }
 }
-

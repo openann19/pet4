@@ -70,4 +70,3 @@ describe('usePetsStore', () => {
     expect(state.likedPets.size).toBe(0)
   })
 })
-

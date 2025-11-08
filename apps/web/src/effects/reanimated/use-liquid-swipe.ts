@@ -33,7 +33,7 @@ export function useLiquidSwipe(options: UseLiquidSwipeOptions = {}) {
 
   const handleDragStart = useCallback((event: React.MouseEvent | React.TouchEvent) => {
     setIsDragging(true);
-    const clientX = 'touches' in event ? event.touches[0]?.clientX ?? 0 : event.clientX;
+    const clientX = 'touches' in event ? (event.touches[0]?.clientX ?? 0) : event.clientX;
     setStartX(clientX);
   }, []);
 
@@ -41,7 +41,7 @@ export function useLiquidSwipe(options: UseLiquidSwipeOptions = {}) {
     (event: React.MouseEvent | React.TouchEvent) => {
       if (!isDragging) return;
 
-      const clientX = 'touches' in event ? event.touches[0]?.clientX ?? 0 : event.clientX;
+      const clientX = 'touches' in event ? (event.touches[0]?.clientX ?? 0) : event.clientX;
       const deltaX = clientX - startX;
 
       translateX.value = deltaX;

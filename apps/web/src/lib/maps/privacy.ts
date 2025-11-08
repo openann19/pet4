@@ -22,7 +22,7 @@ export function applyPrivacyToLocation(
   }
 
   const coarse = snapToGrid(location, gridSizeMeters);
-  
+
   const jitterRange = 0.002;
   const jitterLat = (Math.random() - 0.5) * jitterRange;
   const jitterLng = (Math.random() - 0.5) * jitterRange;
@@ -35,12 +35,9 @@ export function applyPrivacyToLocation(
   };
 }
 
-export function getPrivacyBlurredLocation(
-  location: Location,
-  gridSizeMeters: number = 500
-): Location {
+export function getPrivacyBlurredLocation(location: Location, gridSizeMeters = 500): Location {
   const coarse = snapToGrid(location, gridSizeMeters);
-  
+
   const jitterRange = 0.003;
   const jitterLat = (Math.random() - 0.5) * jitterRange;
   const jitterLng = (Math.random() - 0.5) * jitterRange;
@@ -58,14 +55,13 @@ export function resetPrivacySession(): void {
 export function degradePrecisionOverTime(
   location: Location,
   createdAt: Date,
-  gridSizeMeters: number = 500
+  gridSizeMeters = 500
 ): Location {
   const now = Date.now();
   const ageInHours = (now - createdAt.getTime()) / (1000 * 60 * 60);
-  
+
   const degradationFactor = Math.min(ageInHours / 24, 2);
   const degradedGridSize = gridSizeMeters * (1 + degradationFactor);
-  
+
   return snapToGrid(location, degradedGridSize);
 }
-

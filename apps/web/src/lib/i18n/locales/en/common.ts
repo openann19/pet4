@@ -29,5 +29,5 @@ export default {
   areNowConnected: 'are now connected!',
   posting: 'Posting...',
   post: 'Post',
-  submitting: 'Submitting...'
-} as const
+  submitting: 'Submitting...',
+} as const;

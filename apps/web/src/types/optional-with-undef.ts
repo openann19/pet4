@@ -3,7 +3,7 @@
  * Use this when you need to explicitly distinguish between:
  * - Omitted property (not present)
  * - Property set to undefined (intentionally cleared)
- * 
+ *
  * @example
  * ```ts
  * type UpdateUser = OptionalWithUndef<User>;
@@ -11,4 +11,3 @@
  * ```
  */
 export type OptionalWithUndef<T> = { [K in keyof T]?: T[K] | undefined };
-

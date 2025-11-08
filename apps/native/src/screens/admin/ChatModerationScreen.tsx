@@ -1,6 +1,6 @@
 /**
  * Chat Moderation Screen (Mobile)
- * 
+ *
  * Mobile admin screen for reviewing reported chat messages.
  */
 
@@ -14,8 +14,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AnimatedCard } from '../components/AnimatedCard';
-import { FadeInView } from '../components/FadeInView';
+import { createLogger } from '../../utils/logger';
+import { AnimatedCard } from '../../components/AnimatedCard';
+import { FadeInView } from '../../components/FadeInView';
+
+const logger = createLogger('ChatModerationScreen');
 
 interface MessageReport {
   id: string;
@@ -41,12 +44,12 @@ export const ChatModerationScreen: React.FC = () => {
   const loadReports = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const data = await adminApi.getChatReports();
-      // setReports(data);
+      // Note: Chat reports API endpoint not yet available in admin-api
+      // When backend provides endpoint, update to: await mobileAdminApi.getChatReports();
       setReports([]);
     } catch (error) {
-      console.error('Failed to load reports:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load reports', err, { context: 'loadReports' });
     } finally {
       setLoading(false);
     }
@@ -54,13 +57,14 @@ export const ChatModerationScreen: React.FC = () => {
 
   const handleReview = async (reportId: string) => {
     try {
-      // TODO: Implement review API call
-      // await adminApi.reviewChatReport(reportId, action);
+      // Note: Chat report review API endpoint not yet available in admin-api
+      // When backend provides endpoint, update to: await mobileAdminApi.reviewChatReport(reportId, action);
       await loadReports();
       setSelectedReport(null);
       setAction('no_action');
     } catch (error) {
-      console.error('Failed to review report:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to review report', err, { context: 'handleReview', reportId, action });
     }
   };
 
@@ -112,12 +116,7 @@ export const ChatModerationScreen: React.FC = () => {
                       { backgroundColor: getStatusColor(report.status) + '20' },
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.statusText,
-                        { color: getStatusColor(report.status) },
-                      ]}
-                    >
+                    <Text style={[styles.statusText, { color: getStatusColor(report.status) }]}>
                       {report.status.toUpperCase()}
                     </Text>
                   </View>
@@ -298,4 +297,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

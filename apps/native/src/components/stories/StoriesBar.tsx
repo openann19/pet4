@@ -1,28 +1,21 @@
-import React, { useState } from 'react'
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  Animated,
-} from 'react-native'
-import { StoryRing } from './StoryRing'
-import StoryViewer from './StoryViewer'
-import CreateStoryDialog from './CreateStoryDialog'
-import { groupStoriesByUser, filterActiveStories } from '@petspark/shared'
-import type { Story } from '@petspark/shared'
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, Animated } from 'react-native';
+import { StoryRing } from './StoryRing';
+import StoryViewer from './StoryViewer';
+import CreateStoryDialog from './CreateStoryDialog';
+import { groupStoriesByUser, filterActiveStories } from '@petspark/shared';
+import type { Story } from '@petspark/shared';
 
 interface StoriesBarProps {
-  allStories: Story[]
-  currentUserId: string
-  currentUserName: string
-  currentUserPetId: string
-  currentUserPetName: string
-  currentUserPetPhoto: string
-  currentUserAvatar?: string
-  onStoryCreated: (story: Story) => void
-  onStoryUpdate: (story: Story) => void
+  allStories: Story[];
+  currentUserId: string;
+  currentUserName: string;
+  currentUserPetId: string;
+  currentUserPetName: string;
+  currentUserPetPhoto: string;
+  currentUserAvatar?: string;
+  onStoryCreated: (story: Story) => void;
+  onStoryUpdate: (story: Story) => void;
 }
 
 export const StoriesBar: React.FC<StoriesBarProps> = ({
@@ -34,40 +27,40 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
   currentUserPetPhoto,
   currentUserAvatar,
   onStoryCreated,
-  onStoryUpdate
+  onStoryUpdate,
 }) => {
-  const [viewingStories, setViewingStories] = useState<Story[] | null>(null)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
-  const [fadeAnim] = useState(new Animated.Value(0))
+  const [viewingStories, setViewingStories] = useState<Story[] | null>(null);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [fadeAnim] = useState(new Animated.Value(0));
 
-  const activeStories = filterActiveStories(allStories)
-  const storiesByUser = groupStoriesByUser(activeStories)
+  const activeStories = filterActiveStories(allStories);
+  const storiesByUser = groupStoriesByUser(activeStories);
 
-  const ownStories = activeStories.filter(s => s.userId === currentUserId)
-  const otherStories = activeStories.filter(s => s.userId !== currentUserId)
+  const ownStories = activeStories.filter((s) => s.userId === currentUserId);
+  const otherStories = activeStories.filter((s) => s.userId !== currentUserId);
 
   React.useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 300,
       useNativeDriver: true,
-    }).start()
-  }, [])
+    }).start();
+  }, []);
 
   const handleStoryRingClick = (userId: string) => {
-    const userStories = storiesByUser.get(userId)
+    const userStories = storiesByUser.get(userId);
     if (userStories && userStories.length > 0) {
-      setViewingStories(userStories)
+      setViewingStories(userStories);
     }
-  }
+  };
 
   const handleOwnStoryClick = () => {
     if (ownStories.length > 0) {
-      setViewingStories(ownStories)
+      setViewingStories(ownStories);
     } else {
-      setShowCreateDialog(true)
+      setShowCreateDialog(true);
     }
-  }
+  };
 
   if (activeStories.length === 0 && ownStories.length === 0) {
     return (
@@ -75,23 +68,25 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
         <Animated.View
           style={[
             styles.emptyContainer,
-            { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({
-              inputRange: [0, 1],
-              outputRange: [-10, 0]
-            }) }] }
+            {
+              opacity: fadeAnim,
+              transform: [
+                {
+                  translateY: fadeAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-10, 0],
+                  }),
+                },
+              ],
+            },
           ]}
         >
           <View style={styles.emptyContent}>
             <View>
               <Text style={styles.emptyTitle}>Share Your Story</Text>
-              <Text style={styles.emptySubtitle}>
-                Be the first to share a story!
-              </Text>
+              <Text style={styles.emptySubtitle}>Be the first to share a story!</Text>
             </View>
-            <Pressable
-              style={styles.addButton}
-              onPress={() => setShowCreateDialog(true)}
-            >
+            <Pressable style={styles.addButton} onPress={() => setShowCreateDialog(true)}>
               <Text style={styles.addButtonText}>+</Text>
             </Pressable>
           </View>
@@ -109,22 +104,27 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
           onStoryCreated={onStoryCreated}
         />
       </>
-    )
+    );
   }
 
-  const uniqueUserIds = Array.from(new Set([
-    ...otherStories.map(s => s.userId)
-  ]))
+  const uniqueUserIds = Array.from(new Set([...otherStories.map((s) => s.userId)]));
 
   return (
     <>
       <Animated.View
         style={[
           styles.container,
-          { opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [-10, 0]
-          }) }] }
+          {
+            opacity: fadeAnim,
+            transform: [
+              {
+                translateY: fadeAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-10, 0],
+                }),
+              },
+            ],
+          },
         ]}
       >
         <ScrollView
@@ -141,25 +141,27 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
             onClick={handleOwnStoryClick}
           />
 
-          {uniqueUserIds.map(userId => {
-            const userStories = storiesByUser.get(userId)
+          {uniqueUserIds.map((userId) => {
+            const userStories = storiesByUser.get(userId);
 
-            if (!userStories || userStories.length === 0) return null
+            if (!userStories || userStories.length === 0) return null;
 
-            const firstStory = userStories[0]
+            const firstStory = userStories[0];
 
             return (
               <StoryRing
                 key={userId}
                 stories={userStories}
-                petName={firstStory.petName}
-                petPhoto={firstStory.petPhoto}
-                hasUnviewed={!userStories.some(s =>
-                  Array.isArray(s.views) && s.views.some(v => v.userId === currentUserId)
-                )}
+                petName={firstStory!.petName}
+                petPhoto={firstStory!.petPhoto}
+                hasUnviewed={
+                  !userStories.some(
+                    (s) => Array.isArray(s.views) && s.views.some((v) => v.userId === currentUserId)
+                  )
+                }
                 onClick={() => handleStoryRingClick(userId)}
               />
-            )
+            );
           })}
         </ScrollView>
       </Animated.View>
@@ -169,7 +171,7 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
           stories={viewingStories}
           currentUserId={currentUserId}
           currentUserName={currentUserName}
-          currentUserAvatar={currentUserAvatar}
+          currentUserAvatar={currentUserAvatar ?? ''}
           onClose={() => setViewingStories(null)}
           onStoryUpdate={onStoryUpdate}
         />
@@ -183,12 +185,12 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
         petId={currentUserPetId}
         petName={currentUserPetName}
         petPhoto={currentUserPetPhoto}
-        userAvatar={currentUserAvatar}
+        userAvatar={currentUserAvatar ?? ''}
         onStoryCreated={onStoryCreated}
       />
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -259,6 +261,10 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: 'bold',
   },
-})
+});
 
-export default StoriesBar
+export default StoriesBar;
+
+// Re-export types for convenience
+export type { Story };
+export type StoryItem = Story;

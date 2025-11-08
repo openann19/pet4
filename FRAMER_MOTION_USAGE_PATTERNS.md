@@ -8,15 +8,18 @@
 ## Usage Pattern Categories
 
 ### Pattern 1: Simple MotionView (Low Complexity)
+
 **Migration Effort:** Low  
 **Pattern:** Basic `MotionView` with simple props
 
 **Examples:**
+
 - `apps/web/src/components/admin/DashboardView.tsx`
 - `apps/web/src/components/admin/PerformanceMonitoring.tsx`
 - `apps/web/src/components/admin/ChatModerationPanel.tsx`
 
 **Migration Strategy:**
+
 ```typescript
 // Before
 <MotionView animate={{ opacity: 1 }}>
@@ -28,10 +31,12 @@
 ---
 
 ### Pattern 2: Presence with Layout (Medium Complexity)
+
 **Migration Effort:** Medium  
 **Pattern:** `Presence` component with `mode="popLayout"` and nested `MotionView`
 
 **Examples:**
+
 - `apps/web/src/components/admin/AuditLogView.tsx`
 - `apps/web/src/components/admin/ContentModerationQueue.tsx`
 - `apps/web/src/components/admin/ContentView.tsx`
@@ -39,6 +44,7 @@
 - `apps/web/src/components/admin/ModerationQueue.tsx`
 
 **Migration Strategy:**
+
 ```typescript
 // Before
 <Presence mode="popLayout">
@@ -58,15 +64,18 @@
 ---
 
 ### Pattern 3: Motion Variants (High Complexity)
+
 **Migration Effort:** High  
 **Pattern:** Complex animation variants with multiple states
 
 **Examples:**
+
 - `apps/web/src/components/MatchCelebration.tsx`
 - `apps/web/src/components/CreatePetDialog.tsx`
 - `apps/web/src/components/views/MatchesView.tsx`
 
 **Migration Strategy:**
+
 ```typescript
 // Before
 const variants = {
@@ -92,10 +101,12 @@ useEffect(() => {
 ---
 
 ### Pattern 4: Gesture-Based Animations (Very High Complexity)
+
 **Migration Effort:** Very High  
 **Pattern:** Animations tied to gestures (drag, swipe, etc.)
 
 **Examples:**
+
 - `apps/web/src/components/enhanced/EnhancedCarousel.tsx`
 - `apps/web/src/components/stories/StoriesBar.tsx`
 - `apps/web/src/components/playdate/PlaydateScheduler.tsx`
@@ -106,10 +117,12 @@ Requires React Native Gesture Handler + Reanimated integration
 ---
 
 ### Pattern 5: Particle Effects (Very High Complexity)
+
 **Migration Effort:** Very High  
 **Pattern:** Complex particle systems and visual effects
 
 **Examples:**
+
 - `apps/web/src/effects/visual/particle-effect.tsx`
 - `apps/web/src/components/MatchCelebration.tsx` (confetti)
 
@@ -123,6 +136,7 @@ May require Skia or custom GPU-accelerated solutions
 ### High-Priority Components (P0)
 
 #### Auth Components
+
 - **SignInForm.tsx** - Form animations, validation feedback
 - **SignUpForm.tsx** - Multi-step form animations
 - **AgeGateModal.tsx** - Modal entrance/exit animations
@@ -132,6 +146,7 @@ May require Skia or custom GPU-accelerated solutions
 **Estimated Time:** 2-3 hours per file
 
 #### Core Views
+
 - **MatchesView.tsx** - List animations, card transitions
 - **AdoptionMarketplaceView.tsx** - Grid layout animations
 - **MapView.tsx** - Map overlay animations
@@ -141,6 +156,7 @@ May require Skia or custom GPU-accelerated solutions
 **Estimated Time:** 4-6 hours per file
 
 #### Critical Dialogs
+
 - **CreatePetDialog.tsx** - Multi-step wizard animations
 - **PetDetailDialog.tsx** - Image carousel, detail reveal
 - **MatchCelebration.tsx** - Celebration animations, confetti
@@ -153,6 +169,7 @@ May require Skia or custom GPU-accelerated solutions
 ### Medium-Priority Components (P1)
 
 #### Enhanced Components
+
 - **EnhancedCarousel.tsx** - Swipe gestures, pagination animations
 - **EnhancedPetDetailView.tsx** - Scroll-based animations, parallax
 - **SmartSearch.tsx** - Search results animations
@@ -162,6 +179,7 @@ May require Skia or custom GPU-accelerated solutions
 **Estimated Time:** 4-6 hours per file
 
 #### Stories Components
+
 - **StoriesBar.tsx** - Horizontal scroll, story ring animations
 - **StoryRing.tsx** - Progress ring, tap animations
 - **CreateStoryDialog.tsx** - Media picker, filter animations
@@ -171,6 +189,7 @@ May require Skia or custom GPU-accelerated solutions
 **Estimated Time:** 6-8 hours per file
 
 #### Adoption Components
+
 - **CreateAdoptionListingWizard.tsx** - Multi-step form
 - **AdoptionListingCard.tsx** - Card hover/lift animations
 - **AdoptionDetailDialog.tsx** - Image gallery, detail animations
@@ -183,12 +202,14 @@ May require Skia or custom GPU-accelerated solutions
 ### Low-Priority Components (P2-P3)
 
 #### Admin Components
+
 Most admin components use simple `MotionView` patterns.
 
 **Complexity:** Low  
 **Estimated Time:** 1-2 hours per file
 
 #### Utility Components
+
 - **LoadingState.tsx** - Spinner animations
 - **StatsCard.tsx** - Number counting animations
 - **ThemePresetSelector.tsx** - Selection animations
@@ -200,13 +221,13 @@ Most admin components use simple `MotionView` patterns.
 
 ## Migration Complexity Matrix
 
-| Component Type | Files | Avg Complexity | Avg Hours | Total Hours |
-|----------------|-------|----------------|-----------|-------------|
-| P0 - Critical | 20 | High | 4-6 | 80-120 |
-| P1 - High | 45 | Medium-High | 3-5 | 135-225 |
-| P2 - Medium | 20 | Low-Medium | 2-3 | 40-60 |
-| P3 - Low | 15 | Low | 1-2 | 15-30 |
-| **Total** | **100** | - | - | **270-435** |
+| Component Type | Files   | Avg Complexity | Avg Hours | Total Hours |
+| -------------- | ------- | -------------- | --------- | ----------- |
+| P0 - Critical  | 20      | High           | 4-6       | 80-120      |
+| P1 - High      | 45      | Medium-High    | 3-5       | 135-225     |
+| P2 - Medium    | 20      | Low-Medium     | 2-3       | 40-60       |
+| P3 - Low       | 15      | Low            | 1-2       | 15-30       |
+| **Total**      | **100** | -              | -         | **270-435** |
 
 **Estimated Timeline:** 6-8 weeks with 1 developer, 3-4 weeks with 2 developers
 
@@ -215,6 +236,7 @@ Most admin components use simple `MotionView` patterns.
 ## Common Migration Patterns
 
 ### Pattern A: Simple Fade In/Out
+
 ```typescript
 // Before
 <MotionView
@@ -238,6 +260,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 ```
 
 ### Pattern B: Scale Animation
+
 ```typescript
 // Before
 <MotionView
@@ -260,6 +283,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 ```
 
 ### Pattern C: Slide Animations
+
 ```typescript
 // Before
 <MotionView
@@ -283,6 +307,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 ```
 
 ### Pattern D: Stagger Children
+
 ```typescript
 // Before
 <MotionView
@@ -319,6 +344,7 @@ items.forEach((item, i) => {
 ## Risk Assessment
 
 ### High Risk Components
+
 1. **MatchCelebration.tsx** - Complex particle effects
 2. **EnhancedCarousel.tsx** - Gesture-based animations
 3. **StoriesBar.tsx** - Complex scroll animations
@@ -327,6 +353,7 @@ items.forEach((item, i) => {
 **Mitigation:** Test thoroughly, consider Skia for complex effects
 
 ### Medium Risk Components
+
 1. Multi-step wizards (CreatePetDialog, CreateAdoptionListingWizard)
 2. Image carousels (PetDetailDialog, AdoptionDetailDialog)
 3. List animations (MatchesView, AdoptionMarketplaceView)
@@ -334,6 +361,7 @@ items.forEach((item, i) => {
 **Mitigation:** Use Layout Animations for list changes
 
 ### Low Risk Components
+
 1. Simple modals and dialogs
 2. Button animations
 3. Loading states
@@ -345,16 +373,19 @@ items.forEach((item, i) => {
 ## Testing Strategy
 
 ### Unit Tests
+
 - Test animation values and timing
 - Test Reduced Motion mode
 - Test animation cleanup
 
 ### Integration Tests
+
 - Test component interactions
 - Test animation sequences
 - Test performance (60fps target)
 
 ### Visual Regression Tests
+
 - Screenshot comparisons
 - Animation frame captures
 - Reduced Motion comparisons
@@ -364,12 +395,14 @@ items.forEach((item, i) => {
 ## Performance Considerations
 
 ### Optimization Targets
+
 - **Frame Rate:** Maintain 60fps
 - **Bundle Size:** Minimize Reanimated imports
 - **Memory:** Clean up animations on unmount
 - **CPU:** Use worklets for heavy animations
 
 ### Monitoring
+
 - Track frame drops during animations
 - Monitor bundle size impact
 - Measure animation performance
@@ -392,4 +425,3 @@ items.forEach((item, i) => {
 - `MIGRATION_PROGRESS_REPORT.md` - Auto-generated progress report
 - `packages/motion/README.md` - Motion package docs
 - `apps/web/src/effects/reanimated/README.md` - Reanimated effects docs
-

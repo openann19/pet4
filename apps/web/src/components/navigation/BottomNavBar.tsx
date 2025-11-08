@@ -1,21 +1,27 @@
-'use client'
+'use client';
 
-import { Link, useLocation } from 'react-router-dom'
-import { useState, useEffect, useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withDelay } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation'
-import { useBounceOnTap } from '@/effects/reanimated'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { Link, useLocation } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withDelay,
+} from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
+import { useBounceOnTap } from '@/effects/reanimated';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 interface NavItem {
-  to: string
-  label: string
-  icon: string
-  badge?: number
+  to: string;
+  label: string;
+  icon: string;
+  badge?: number;
 }
 
 const items: NavItem[] = [
@@ -25,45 +31,42 @@ const items: NavItem[] = [
   { to: '/adopt', label: 'Adopt', icon: '🐾' },
   { to: '/community', label: 'Community', icon: '👥' },
   { to: '/profile', label: 'Profile', icon: '👤' },
-]
+];
 
 export default function BottomNavBar() {
-  const { pathname } = useLocation()
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null)
-  
-  const barOpacity = useSharedValue(0)
-  const barY = useSharedValue(20)
+  const { pathname } = useLocation();
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
+  const barOpacity = useSharedValue(0);
+  const barY = useSharedValue(20);
 
   useEffect(() => {
-    barOpacity.value = withDelay(200, withTiming(1, timingConfigs.smooth))
-    barY.value = withDelay(200, withSpring(0, springConfigs.smooth))
-  }, [barOpacity, barY])
+    barOpacity.value = withDelay(200, withTiming(1, timingConfigs.smooth));
+    barY.value = withDelay(200, withSpring(0, springConfigs.smooth));
+  }, [barOpacity, barY]);
 
   const barStyle = useAnimatedStyle(() => {
     return {
       opacity: barOpacity.value,
-      transform: [{ translateY: barY.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ translateY: barY.value }],
+    };
+  }) as AnimatedStyle;
 
   return (
-    <AnimatedView
-      style={barStyle}
-      className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
-    >
+    <AnimatedView style={barStyle} className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
       <nav className="border-t border-border/40 bg-card/80 backdrop-blur-2xl shadow-2xl">
         <div className="relative overflow-hidden">
           {/* Glow effect */}
           <div className="absolute inset-0 bg-linear-to-t from-accent/5 via-transparent to-transparent pointer-events-none" />
-          
+
           {/* Glassmorphism overlay */}
           <div className="absolute inset-0 bg-linear-to-t from-background/60 to-background/40 backdrop-blur-xl pointer-events-none" />
-          
+
           <ul className="grid grid-cols-6 relative z-10">
             {items.map((item) => {
-              const isActive = pathname.startsWith(item.to)
-              const isHovered = hoveredItem === item.to
-              
+              const isActive = pathname.startsWith(item.to);
+              const isHovered = hoveredItem === item.to;
+
               return (
                 <NavItem
                   key={item.to}
@@ -73,21 +76,21 @@ export default function BottomNavBar() {
                   onHover={() => setHoveredItem(item.to)}
                   onLeave={() => setHoveredItem(null)}
                 />
-              )
+              );
             })}
           </ul>
         </div>
       </nav>
     </AnimatedView>
-  )
+  );
 }
 
 interface NavItemProps {
-  item: NavItem
-  isActive: boolean
-  isHovered: boolean
-  onHover: () => void
-  onLeave: () => void
+  item: NavItem;
+  isActive: boolean;
+  isHovered: boolean;
+  onHover: () => void;
+  onLeave: () => void;
 }
 
 function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) {
@@ -95,59 +98,59 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
     isActive,
     enablePulse: true,
     enableRotation: false,
-    hapticFeedback: true
-  })
+    hapticFeedback: true,
+  });
 
   const bounceAnimation = useBounceOnTap({
     scale: 0.85,
-    hapticFeedback: false
-  })
+    hapticFeedback: false,
+  });
 
-  const iconScale = useSharedValue(1)
-  const iconY = useSharedValue(0)
-  const glowOpacity = useSharedValue(0)
+  const iconScale = useSharedValue(1);
+  const iconY = useSharedValue(0);
+  const glowOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (isActive) {
-      iconScale.value = withSpring(1.15, springConfigs.bouncy)
-      iconY.value = withSpring(-2, springConfigs.smooth)
-      glowOpacity.value = withSpring(1, springConfigs.smooth)
+      iconScale.value = withSpring(1.15, springConfigs.bouncy);
+      iconY.value = withSpring(-2, springConfigs.smooth);
+      glowOpacity.value = withSpring(1, springConfigs.smooth);
     } else {
-      iconScale.value = withSpring(1, springConfigs.smooth)
-      iconY.value = withSpring(0, springConfigs.smooth)
-      glowOpacity.value = withSpring(0, springConfigs.smooth)
+      iconScale.value = withSpring(1, springConfigs.smooth);
+      iconY.value = withSpring(0, springConfigs.smooth);
+      glowOpacity.value = withSpring(0, springConfigs.smooth);
     }
-  }, [isActive, iconScale, iconY, glowOpacity])
+  }, [isActive, iconScale, iconY, glowOpacity]);
 
   useEffect(() => {
     if (isHovered && !isActive) {
-      iconScale.value = withSpring(1.1, springConfigs.smooth)
+      iconScale.value = withSpring(1.1, springConfigs.smooth);
     } else if (!isActive) {
-      iconScale.value = withSpring(1, springConfigs.smooth)
+      iconScale.value = withSpring(1, springConfigs.smooth);
     }
-  }, [isHovered, isActive, iconScale])
+  }, [isHovered, isActive, iconScale]);
 
   const iconStyle = useAnimatedStyle(() => {
     return {
       transform: [
         { scale: iconScale.value * animation.iconScale.value },
-        { translateY: iconY.value }
-      ]
-    }
-  }) as AnimatedStyle
+        { translateY: iconY.value },
+      ],
+    };
+  }) as AnimatedStyle;
 
   const glowStyle = useAnimatedStyle(() => {
     return {
-      opacity: glowOpacity.value * 0.6
-    }
-  }) as AnimatedStyle
+      opacity: glowOpacity.value * 0.6,
+    };
+  }) as AnimatedStyle;
 
   const handleClick = useCallback(() => {
-    bounceAnimation.handlePress()
+    bounceAnimation.handlePress();
     if (!isActive) {
-      haptics.impact('light')
+      haptics.impact('light');
     }
-  }, [bounceAnimation, isActive])
+  }, [bounceAnimation, isActive]);
 
   return (
     <li className="text-center relative">
@@ -183,22 +186,15 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
           )}
 
           {/* Icon container */}
-          <AnimatedView
-            style={iconStyle}
-            className="relative z-10"
-          >
-            <span className="text-2xl leading-none select-none">
-              {item.icon}
-            </span>
+          <AnimatedView style={iconStyle} className="relative z-10">
+            <span className="text-2xl leading-none select-none">{item.icon}</span>
           </AnimatedView>
 
           {/* Label */}
           <span
             className={cn(
               'text-[10px] leading-tight font-semibold transition-all duration-200 relative z-10',
-              isActive
-                ? 'text-accent-foreground font-bold'
-                : 'text-muted-foreground opacity-70'
+              isActive ? 'text-accent-foreground font-bold' : 'text-muted-foreground opacity-70'
             )}
           >
             {item.label}
@@ -215,44 +211,42 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
           )}
 
           {/* Badge */}
-          {item.badge && item.badge > 0 && (
-            <Badge count={item.badge} isActive={isActive} />
-          )}
+          {item.badge && item.badge > 0 && <Badge count={item.badge} isActive={isActive} />}
         </AnimatedView>
       </Link>
     </li>
-  )
+  );
 }
 
 interface BadgeProps {
-  count: number
-  isActive: boolean
+  count: number;
+  isActive: boolean;
 }
 
 function Badge({ count, isActive }: BadgeProps) {
-  const scale = useSharedValue(0)
-  const opacity = useSharedValue(0)
-  const pulseScale = useSharedValue(1)
+  const scale = useSharedValue(0);
+  const opacity = useSharedValue(0);
+  const pulseScale = useSharedValue(1);
 
   useEffect(() => {
-    scale.value = withSpring(1, springConfigs.bouncy)
-    opacity.value = withTiming(1, timingConfigs.fast)
-  }, [scale, opacity])
+    scale.value = withSpring(1, springConfigs.bouncy);
+    opacity.value = withTiming(1, timingConfigs.fast);
+  }, [scale, opacity]);
 
   useEffect(() => {
     if (isActive) {
       pulseScale.value = withSpring(1.2, springConfigs.bouncy, () => {
-        pulseScale.value = withSpring(1, springConfigs.smooth)
-      })
+        pulseScale.value = withSpring(1, springConfigs.smooth);
+      });
     }
-  }, [isActive, pulseScale])
+  }, [isActive, pulseScale]);
 
   const badgeStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value * pulseScale.value }],
-      opacity: opacity.value
-    }
-  }) as AnimatedStyle
+      opacity: opacity.value,
+    };
+  }) as AnimatedStyle;
 
   return (
     <AnimatedView
@@ -263,5 +257,5 @@ function Badge({ count, isActive }: BadgeProps) {
         {count > 9 ? '9+' : count}
       </span>
     </AnimatedView>
-  )
+  );
 }

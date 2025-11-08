@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Framer Motion to React Reanimated Migration Script
- * 
+ *
  * This script helps migrate components from framer-motion to react-native-reanimated
  * by identifying patterns and suggesting replacements.
  */
@@ -19,57 +19,57 @@ const MIGRATION_PATTERNS: MigrationPattern[] = [
   {
     from: /import\s+{\s*motion\s*}\s+from\s+['"]framer-motion['"]/g,
     to: "import { AnimatedView } from '@/effects/reanimated/animated-view'",
-    description: 'Replace motion import with AnimatedView'
+    description: 'Replace motion import with AnimatedView',
   },
   {
     from: /import\s+{\s*AnimatePresence\s*}\s+from\s+['"]framer-motion['"]/g,
     to: "import { Presence } from '@petspark/motion'",
-    description: 'Replace AnimatePresence with Presence'
+    description: 'Replace AnimatePresence with Presence',
   },
   {
     from: /<motion\.div/g,
     to: '<AnimatedView',
-    description: 'Replace motion.div with AnimatedView'
+    description: 'Replace motion.div with AnimatedView',
   },
   {
     from: /<motion\.span/g,
     to: '<AnimatedView',
-    description: 'Replace motion.span with AnimatedView'
+    description: 'Replace motion.span with AnimatedView',
   },
   {
     from: /<motion\.button/g,
     to: '<AnimatedView as="button"',
-    description: 'Replace motion.button with AnimatedView'
+    description: 'Replace motion.button with AnimatedView',
   },
   {
     from: /initial=\{[^}]+\}/g,
     to: '',
-    description: 'Remove initial prop (use useSharedValue instead)'
+    description: 'Remove initial prop (use useSharedValue instead)',
   },
   {
     from: /animate=\{[^}]+\}/g,
     to: '',
-    description: 'Remove animate prop (use useAnimatedStyle instead)'
+    description: 'Remove animate prop (use useAnimatedStyle instead)',
   },
   {
     from: /whileHover=\{[^}]+\}/g,
     to: '',
-    description: 'Remove whileHover (use useHoverLift hook)'
+    description: 'Remove whileHover (use useHoverLift hook)',
   },
   {
     from: /whileTap=\{[^}]+\}/g,
     to: '',
-    description: 'Remove whileTap (use useBounceOnTap hook)'
+    description: 'Remove whileTap (use useBounceOnTap hook)',
   },
   {
     from: /transition=\{[^}]+\}/g,
     to: '',
-    description: 'Remove transition (use springConfigs/timingConfigs)'
+    description: 'Remove transition (use springConfigs/timingConfigs)',
   },
   {
     from: /variants=\{[^}]+\}/g,
     to: '',
-    description: 'Remove variants (use useAnimatedStyle directly)'
+    description: 'Remove variants (use useAnimatedStyle directly)',
   },
 ]
 
@@ -105,7 +105,7 @@ function generateMigrationReport(rootDir: string): void {
   const framerMotionFiles = files.filter(checkFile)
 
   console.log(`Found ${framerMotionFiles.length} files using framer-motion:\n`)
-  
+
   framerMotionFiles.forEach(file => {
     console.log(`  - ${file.replace(rootDir, '')}`)
   })
@@ -122,4 +122,3 @@ if (require.main === module) {
 }
 
 export { generateMigrationReport, MIGRATION_PATTERNS }
-

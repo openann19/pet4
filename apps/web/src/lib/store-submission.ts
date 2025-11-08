@@ -1,6 +1,6 @@
 /**
  * Store Submission Helpers
- * 
+ *
  * Utilities for preparing App Store and Google Play submissions:
  * - Metadata generation (EN + BG)
  * - Asset validation
@@ -8,116 +8,115 @@
  * - Version management
  */
 
-
 export interface StoreMetadata {
   appName: {
-    en: string
-    bg: string
-  }
+    en: string;
+    bg: string;
+  };
   subtitle?: {
-    en: string
-    bg: string
-  }
+    en: string;
+    bg: string;
+  };
   description: {
-    en: string
-    bg: string
-  }
+    en: string;
+    bg: string;
+  };
   shortDescription: {
-    en: string
-    bg: string
-  }
+    en: string;
+    bg: string;
+  };
   keywords: {
-    en: string[]
-    bg: string[]
-  }
+    en: string[];
+    bg: string[];
+  };
   promotionalText?: {
-    en: string
-    bg: string
-  }
-  supportUrl: string
-  marketingUrl?: string
-  privacyPolicyUrl: string
+    en: string;
+    bg: string;
+  };
+  supportUrl: string;
+  marketingUrl?: string;
+  privacyPolicyUrl: string;
 }
 
 export interface AppVersion {
-  version: string
-  buildNumber: number
+  version: string;
+  buildNumber: number;
   releaseNotes: {
-    en: string
-    bg: string
-  }
+    en: string;
+    bg: string;
+  };
 }
 
 export interface StoreAssets {
   icon: {
-    path: string
-    sizes: Array<{ width: number; height: number }>
-  }
+    path: string;
+    sizes: { width: number; height: number }[];
+  };
   screenshots: {
     phone: {
-      en: string[]
-      bg: string[]
-    }
+      en: string[];
+      bg: string[];
+    };
     tablet?: {
-      en: string[]
-      bg: string[]
-    }
-  }
+      en: string[];
+      bg: string[];
+    };
+  };
   appPreview?: {
-    en: string
-    bg: string
-  }
+    en: string;
+    bg: string;
+  };
 }
 
 export interface PrivacyInfo {
-  dataTypes: Array<{
-    type: string
-    purpose: string[]
-    linked: boolean
-    tracking: boolean
-    usedForAds: boolean
-  }>
-  tracking: boolean
-  trackingDomains?: string[]
+  dataTypes: {
+    type: string;
+    purpose: string[];
+    linked: boolean;
+    tracking: boolean;
+    usedForAds: boolean;
+  }[];
+  tracking: boolean;
+  trackingDomains?: string[];
 }
 
 const DEFAULT_METADATA: StoreMetadata = {
   appName: {
     en: 'PawfectMatch',
-    bg: 'PawfectMatch'
+    bg: 'PawfectMatch',
   },
   description: {
     en: 'Find perfect companions for your pets with AI-powered matching. Connect with pet owners, discover compatible matches, and build lasting friendships.',
-    bg: 'Намерете перфектни спътници за вашите домашни любимци с AI-управлявано съвпадение. Свържете се с собственици на домашни любимци, открийте съвместими съвпадения и изградете трайни приятелства.'
+    bg: 'Намерете перфектни спътници за вашите домашни любимци с AI-управлявано съвпадение. Свържете се с собственици на домашни любимци, открийте съвместими съвпадения и изградете трайни приятелства.',
   },
   shortDescription: {
     en: 'AI-powered pet companion matching app',
-    bg: 'Приложение за AI-управлявано съвпадение на домашни любимци'
+    bg: 'Приложение за AI-управлявано съвпадение на домашни любимци',
   },
   keywords: {
     en: ['pets', 'dogs', 'cats', 'matching', 'social', 'community'],
-    bg: ['домашни любимци', 'кучета', 'котки', 'съвпадение', 'социални', 'общност']
+    bg: ['домашни любимци', 'кучета', 'котки', 'съвпадение', 'социални', 'общност'],
   },
   supportUrl: 'https://pawfectmatch.app/support',
-  privacyPolicyUrl: 'https://pawfectmatch.app/privacy'
-}
+  privacyPolicyUrl: 'https://pawfectmatch.app/privacy',
+};
 
 export class StoreSubmissionHelper {
-  private metadata: StoreMetadata
-  private version: AppVersion
-  private assets: StoreAssets
-  private privacyInfo: PrivacyInfo
+  private metadata: StoreMetadata;
+  private version: AppVersion;
+  private assets: StoreAssets;
+  private privacyInfo: PrivacyInfo;
 
   constructor(config: {
-    metadata?: Partial<StoreMetadata>
-    version: AppVersion
-    assets: StoreAssets
-    privacyInfo: PrivacyInfo
+    metadata?: Partial<StoreMetadata>;
+    version: AppVersion;
+    assets: StoreAssets;
+    privacyInfo: PrivacyInfo;
   }) {
-    this.metadata = { ...DEFAULT_METADATA, ...config.metadata }
-    this.version = config.version
-    this.assets = config.assets
-    this.privacyInfo = config.privacyInfo
+    this.metadata = { ...DEFAULT_METADATA, ...config.metadata };
+    this.version = config.version;
+    this.assets = config.assets;
+    this.privacyInfo = config.privacyInfo;
   }
 
   /**
@@ -136,9 +135,9 @@ export class StoreSubmissionHelper {
         releaseNotes: this.version.releaseNotes.en,
         supportUrl: this.metadata.supportUrl,
         marketingUrl: this.metadata.marketingUrl,
-        privacyPolicyUrl: this.metadata.privacyPolicyUrl
+        privacyPolicyUrl: this.metadata.privacyPolicyUrl,
       },
-      'bg': {
+      bg: {
         name: this.metadata.appName.bg,
         subtitle: this.metadata.subtitle?.bg,
         description: this.metadata.description.bg,
@@ -147,9 +146,9 @@ export class StoreSubmissionHelper {
         releaseNotes: this.version.releaseNotes.bg,
         supportUrl: this.metadata.supportUrl,
         marketingUrl: this.metadata.marketingUrl,
-        privacyPolicyUrl: this.metadata.privacyPolicyUrl
-      }
-    }
+        privacyPolicyUrl: this.metadata.privacyPolicyUrl,
+      },
+    };
   }
 
   /**
@@ -164,15 +163,15 @@ export class StoreSubmissionHelper {
         title: this.metadata.appName.en,
         shortDescription: this.metadata.shortDescription.en,
         fullDescription: this.metadata.description.en,
-        recentChanges: this.version.releaseNotes.en
+        recentChanges: this.version.releaseNotes.en,
       },
       bg: {
         title: this.metadata.appName.bg,
         shortDescription: this.metadata.shortDescription.bg,
         fullDescription: this.metadata.description.bg,
-        recentChanges: this.version.releaseNotes.bg
-      }
-    }
+        recentChanges: this.version.releaseNotes.bg,
+      },
+    };
   }
 
   /**
@@ -185,11 +184,11 @@ export class StoreSubmissionHelper {
         purpose: dt.purpose,
         linked: dt.linked,
         tracking: dt.tracking,
-        usedForAds: dt.usedForAds
+        usedForAds: dt.usedForAds,
       })),
       tracking: this.privacyInfo.tracking,
-      trackingDomains: this.privacyInfo.trackingDomains || []
-    }
+      trackingDomains: this.privacyInfo.trackingDomains ?? [],
+    };
   }
 
   /**
@@ -202,90 +201,90 @@ export class StoreSubmissionHelper {
         type: dt.type,
         purpose: dt.purpose,
         shared: dt.linked,
-        collected: true
+        collected: true,
       })),
       securityPractices: {
         encryption: true,
-        dataDeletion: true
-      }
-    }
+        dataDeletion: true,
+      },
+    };
   }
 
   /**
    * Validate store assets
    */
   validateAssets(): { valid: boolean; errors: string[] } {
-    const errors: string[] = []
+    const errors: string[] = [];
 
     // Validate icon
     if (!this.assets.icon.path) {
-      errors.push('Icon path is required')
+      errors.push('Icon path is required');
     }
 
     // Validate screenshots
     if (!this.assets.screenshots.phone.en || this.assets.screenshots.phone.en.length === 0) {
-      errors.push('Phone screenshots (EN) are required')
+      errors.push('Phone screenshots (EN) are required');
     }
 
     if (!this.assets.screenshots.phone.bg || this.assets.screenshots.phone.bg.length === 0) {
-      errors.push('Phone screenshots (BG) are required')
+      errors.push('Phone screenshots (BG) are required');
     }
 
     // Validate screenshot count (minimum 2, maximum 10)
     if (this.assets.screenshots.phone.en.length < 2) {
-      errors.push('Minimum 2 phone screenshots (EN) required')
+      errors.push('Minimum 2 phone screenshots (EN) required');
     }
 
     if (this.assets.screenshots.phone.en.length > 10) {
-      errors.push('Maximum 10 phone screenshots (EN) allowed')
+      errors.push('Maximum 10 phone screenshots (EN) allowed');
     }
 
     if (this.assets.screenshots.phone.bg.length < 2) {
-      errors.push('Minimum 2 phone screenshots (BG) required')
+      errors.push('Minimum 2 phone screenshots (BG) required');
     }
 
     if (this.assets.screenshots.phone.bg.length > 10) {
-      errors.push('Maximum 10 phone screenshots (BG) allowed')
+      errors.push('Maximum 10 phone screenshots (BG) allowed');
     }
 
     return {
       valid: errors.length === 0,
-      errors
-    }
+      errors,
+    };
   }
 
   /**
    * Validate version format (SemVer)
    */
   validateVersion(): { valid: boolean; error?: string } {
-    const semverRegex = /^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?(\+[a-zA-Z0-9]+)?$/
-    
+    const semverRegex = /^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?(\+[a-zA-Z0-9]+)?$/;
+
     if (!semverRegex.test(this.version.version)) {
       return {
         valid: false,
-        error: `Invalid version format: ${this.version.version}. Expected SemVer (e.g., 1.0.0)`
-      }
+        error: `Invalid version format: ${this.version.version}. Expected SemVer (e.g., 1.0.0)`,
+      };
     }
 
     if (this.version.buildNumber <= 0) {
       return {
         valid: false,
-        error: 'Build number must be greater than 0'
-      }
+        error: 'Build number must be greater than 0',
+      };
     }
 
-    return { valid: true }
+    return { valid: true };
   }
 
   /**
    * Generate submission checklist
    */
   generateChecklist(): {
-    category: string
-    items: Array<{ item: string; status: 'pending' | 'complete' | 'error' }>
+    category: string;
+    items: { item: string; status: 'pending' | 'complete' | 'error' }[];
   }[] {
-    const assetValidation = this.validateAssets()
-    const versionValidation = this.validateVersion()
+    const assetValidation = this.validateAssets();
+    const versionValidation = this.validateVersion();
 
     return [
       {
@@ -295,35 +294,53 @@ export class StoreSubmissionHelper {
           { item: 'App name (BG)', status: 'complete' },
           { item: 'Description (EN)', status: 'complete' },
           { item: 'Description (BG)', status: 'complete' },
-          { item: 'Privacy policy URL', status: this.metadata.privacyPolicyUrl ? 'complete' : 'pending' }
-        ]
+          {
+            item: 'Privacy policy URL',
+            status: this.metadata.privacyPolicyUrl ? 'complete' : 'pending',
+          },
+        ],
       },
       {
         category: 'Assets',
         items: [
           { item: 'App icon', status: this.assets.icon.path ? 'complete' : 'pending' },
-          { item: 'Phone screenshots (EN)', status: this.assets.screenshots.phone.en.length >= 2 ? 'complete' : 'pending' },
-          { item: 'Phone screenshots (BG)', status: this.assets.screenshots.phone.bg.length >= 2 ? 'complete' : 'pending' },
-          { item: 'Asset validation', status: assetValidation.valid ? 'complete' : 'error' }
-        ]
+          {
+            item: 'Phone screenshots (EN)',
+            status: this.assets.screenshots.phone.en.length >= 2 ? 'complete' : 'pending',
+          },
+          {
+            item: 'Phone screenshots (BG)',
+            status: this.assets.screenshots.phone.bg.length >= 2 ? 'complete' : 'pending',
+          },
+          { item: 'Asset validation', status: assetValidation.valid ? 'complete' : 'error' },
+        ],
       },
       {
         category: 'Version',
         items: [
           { item: 'Version format', status: versionValidation.valid ? 'complete' : 'error' },
           { item: 'Build number', status: this.version.buildNumber > 0 ? 'complete' : 'error' },
-          { item: 'Release notes (EN)', status: this.version.releaseNotes.en ? 'complete' : 'pending' },
-          { item: 'Release notes (BG)', status: this.version.releaseNotes.bg ? 'complete' : 'pending' }
-        ]
+          {
+            item: 'Release notes (EN)',
+            status: this.version.releaseNotes.en ? 'complete' : 'pending',
+          },
+          {
+            item: 'Release notes (BG)',
+            status: this.version.releaseNotes.bg ? 'complete' : 'pending',
+          },
+        ],
       },
       {
         category: 'Privacy',
         items: [
-          { item: 'Privacy info defined', status: this.privacyInfo.dataTypes.length > 0 ? 'complete' : 'pending' },
-          { item: 'Tracking declared', status: 'complete' }
-        ]
-      }
-    ]
+          {
+            item: 'Privacy info defined',
+            status: this.privacyInfo.dataTypes.length > 0 ? 'complete' : 'pending',
+          },
+          { item: 'Tracking declared', status: 'complete' },
+        ],
+      },
+    ];
   }
 
   /**
@@ -333,32 +350,34 @@ export class StoreSubmissionHelper {
     return {
       metadata: {
         appStore: this.generateAppStoreMetadata(),
-        playStore: this.generatePlayStoreMetadata()
+        playStore: this.generatePlayStoreMetadata(),
       },
       privacy: {
         appStore: this.generatePrivacyLabels(),
-        playStore: this.generateDataSafetyForm()
+        playStore: this.generateDataSafetyForm(),
       },
       assets: this.assets,
       version: this.version,
       checklist: this.generateChecklist(),
       validation: {
         assets: this.validateAssets(),
-        version: this.validateVersion()
-      }
-    }
+        version: this.validateVersion(),
+      },
+    };
   }
 }
 
 /**
  * Parse SemVer version string
  */
-export function parseVersion(version: string): { major: number; minor: number; patch: number; prerelease?: string; build?: string } | null {
-  const regex = /^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9]+))?(?:\+([a-zA-Z0-9]+))?$/
-  const match = version.match(regex)
+export function parseVersion(
+  version: string
+): { major: number; minor: number; patch: number; prerelease?: string; build?: string } | null {
+  const regex = /^(\d+)\.(\d+)\.(\d+)(?:-([a-zA-Z0-9]+))?(?:\+([a-zA-Z0-9]+))?$/;
+  const match = regex.exec(version);
 
   if (!match) {
-    return null
+    return null;
   }
 
   return {
@@ -366,8 +385,8 @@ export function parseVersion(version: string): { major: number; minor: number; p
     minor: parseInt(match[2] ?? '0', 10),
     patch: parseInt(match[3] ?? '0', 10),
     ...(match[4] && { prerelease: match[4] }),
-    ...(match[5] && { build: match[5] })
-  }
+    ...(match[5] && { build: match[5] }),
+  };
 }
 
 /**
@@ -377,17 +396,17 @@ export function incrementVersion(
   currentVersion: string,
   type: 'major' | 'minor' | 'patch'
 ): string | null {
-  const parsed = parseVersion(currentVersion)
+  const parsed = parseVersion(currentVersion);
   if (!parsed) {
-    return null
+    return null;
   }
 
   switch (type) {
     case 'major':
-      return `${parsed.major + 1}.0.0`
+      return `${parsed.major + 1}.0.0`;
     case 'minor':
-      return `${parsed.major}.${parsed.minor + 1}.0`
+      return `${parsed.major}.${parsed.minor + 1}.0`;
     case 'patch':
-      return `${parsed.major}.${parsed.minor}.${parsed.patch + 1}`
+      return `${parsed.major}.${parsed.minor}.${parsed.patch + 1}`;
   }
 }

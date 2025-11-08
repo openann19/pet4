@@ -48,7 +48,7 @@ describe('Logger', () => {
       debug: vi.fn(),
       info: vi.fn(),
       warn: vi.fn(),
-      error: vi.fn()
+      error: vi.fn(),
     }
 
     setDefaultLogger(customLogger)
@@ -56,4 +56,3 @@ describe('Logger', () => {
     expect(retrieved).toBe(customLogger)
   })
 })
-

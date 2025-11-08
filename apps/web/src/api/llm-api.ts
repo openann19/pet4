@@ -1,24 +1,24 @@
 /**
  * LLM API Service
- * 
+ *
  * Handles LLM calls through backend API.
  */
 
-import { APIClient } from '@/lib/api-client'
-import { createLogger } from '@/lib/logger'
+import { APIClient } from '@/lib/api-client';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('LLMAPI')
+const logger = createLogger('LLMAPI');
 
 export interface LLMCallRequest {
-  prompt: string | Record<string, unknown>
-  model?: string
-  jsonMode?: boolean
+  prompt: string | Record<string, unknown>;
+  model?: string;
+  jsonMode?: boolean;
 }
 
 export interface LLMCallResponse {
-  response: string
-  model: string
-  tokensUsed?: number
+  response: string;
+  model: string;
+  tokensUsed?: number;
 }
 
 class LLMApiImpl {
@@ -35,24 +35,20 @@ class LLMApiImpl {
       const request: LLMCallRequest = {
         prompt,
         ...(model !== undefined && { model }),
-        ...(jsonMode !== undefined && { jsonMode })
-      }
+        ...(jsonMode !== undefined && { jsonMode }),
+      };
 
-      const response = await APIClient.post<LLMCallResponse>(
-        '/llm/chat',
-        request
-      )
-      return response.data.response
+      const response = await APIClient.post<LLMCallResponse>('/llm/chat', request);
+      return response.data.response;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+      const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to call LLM', err, {
         prompt: typeof prompt === 'string' ? prompt.substring(0, 100) : 'object',
-        model
-      })
-      throw err
+        model,
+      });
+      throw err;
     }
   }
 }
 
-export const llmApi = new LLMApiImpl()
-
+export const llmApi = new LLMApiImpl();

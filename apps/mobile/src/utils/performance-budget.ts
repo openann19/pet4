@@ -68,7 +68,7 @@ class PerformanceBudgetChecker {
   checkFrameTime(frameTimeMs: number): boolean {
     if (frameTimeMs > this.budget.frameTimeMs) {
       this.recordViolation('frameTime', frameTimeMs, this.budget.frameTimeMs)
-      
+
       // Log jank detection
       telemetry.trace({
         name: 'jank_detected',
@@ -78,7 +78,7 @@ class PerformanceBudgetChecker {
           jankPercentage: ((frameTimeMs - this.budget.frameTimeMs) / this.budget.frameTimeMs) * 100,
         },
       })
-      
+
       return false
     }
     return true
@@ -90,7 +90,7 @@ class PerformanceBudgetChecker {
   checkRenderTime(componentName: string, durationMs: number): boolean {
     // Target: < 16ms for 60 FPS
     const maxRenderTime = 16
-    
+
     if (durationMs > maxRenderTime) {
       logger.warn('Slow render detected', {
         component: componentName,
@@ -142,11 +142,7 @@ class PerformanceBudgetChecker {
     this.violations = []
   }
 
-  private recordViolation(
-    metric: string,
-    value: number,
-    limit: number
-  ): void {
+  private recordViolation(metric: string, value: number, limit: number): void {
     const violation = {
       metric,
       value,
@@ -170,16 +166,12 @@ export const performanceBudget = new PerformanceBudgetChecker()
 /**
  * Monitor frame rate and detect jank
  */
-export function createFrameRateMonitor(
-  onJankDetected?: (frameTimeMs: number) => void
-): {
+export function createFrameRateMonitor(onJankDetected?: (frameTimeMs: number) => void): {
   start: () => void
   stop: () => void
   getFPS: () => number
 } {
   // Frame count is tracked but not currently used in calculations
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let frameCount = 0
   let lastTime = Date.now()
   let frameTimes: number[] = []
   let isRunning = false
@@ -194,7 +186,7 @@ export function createFrameRateMonitor(
     const frameTime = now - lastTime
     lastTime = now
 
-    frameCount++
+    // Frame count tracked but not used in calculations (reserved for future use)
     frameTimes.push(frameTime)
 
     // Keep only last 60 frames
@@ -214,7 +206,7 @@ export function createFrameRateMonitor(
 
     // Use requestAnimationFrame equivalent for React Native
     // In React Native, we'd use InteractionManager or a native module
-    animationFrameId = requestAnimationFrame(measureFrame) as unknown as number
+    animationFrameId = requestAnimationFrame(measureFrame)
   }
 
   return {
@@ -224,7 +216,6 @@ export function createFrameRateMonitor(
       }
       isRunning = true
       lastTime = Date.now()
-      frameCount = 0
       frameTimes = []
       measureFrame()
     },
@@ -239,8 +230,7 @@ export function createFrameRateMonitor(
       if (frameTimes.length === 0) {
         return 0
       }
-      const avgFrameTime =
-        frameTimes.reduce((sum, time) => sum + time, 0) / frameTimes.length
+      const avgFrameTime = frameTimes.reduce((sum, time) => sum + time, 0) / frameTimes.length
       return 1000 / avgFrameTime
     },
   }
@@ -249,10 +239,14 @@ export function createFrameRateMonitor(
 // Polyfill for requestAnimationFrame in React Native
 function requestAnimationFrame(callback: () => void): number {
   // Use InteractionManager or native timing
-  return setTimeout(callback, 16) as unknown as number
+  // In React Native environment, setTimeout returns a number
+  // The return value is compatible with cancelAnimationFrame which expects a number
+  const timeoutId = setTimeout(callback, 16)
+  // TypeScript types may show NodeJS.Timeout, but in RN it's actually a number
+  // We know this is safe in the React Native environment
+  return Number(timeoutId)
 }
 
 function cancelAnimationFrame(id: number): void {
   clearTimeout(id)
 }
-

@@ -1,4 +1,11 @@
-import { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence, withDelay, type SharedValue } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withDelay,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
@@ -7,10 +14,10 @@ export interface UseHeaderAnimationOptions {
 }
 
 export interface UseHeaderAnimationReturn {
-  y: SharedValue<number>
-  opacity: SharedValue<number>
-  shimmerX: SharedValue<number>
-  shimmerOpacity: SharedValue<number>
+  y: ReturnType<typeof useSharedValue<number>>
+  opacity: ReturnType<typeof useSharedValue<number>>
+  shimmerX: ReturnType<typeof useSharedValue<number>>
+  shimmerOpacity: ReturnType<typeof useSharedValue<number>>
   headerStyle: AnimatedStyle
   shimmerStyle: AnimatedStyle
 }
@@ -31,10 +38,7 @@ export function useHeaderAnimation(
     opacity.value = withDelay(delayMs, withTiming(1, { duration: 400 }))
 
     shimmerX.value = withRepeat(
-      withSequence(
-        withTiming(-100, { duration: 0 }),
-        withTiming(100, { duration: 3000 })
-      ),
+      withSequence(withTiming(-100, { duration: 0 }), withTiming(100, { duration: 3000 })),
       -1,
       false
     )
@@ -53,16 +57,14 @@ export function useHeaderAnimation(
   const headerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: y.value }],
-      opacity: opacity.value
+      opacity: opacity.value,
     }
   }) as AnimatedStyle
 
   const shimmerStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { translateX: shimmerX.value }
-      ],
-      opacity: shimmerOpacity.value
+      transform: [{ translateX: shimmerX.value }],
+      opacity: shimmerOpacity.value,
     }
   }) as AnimatedStyle
 
@@ -72,6 +74,6 @@ export function useHeaderAnimation(
     shimmerX,
     shimmerOpacity,
     headerStyle,
-    shimmerStyle
+    shimmerStyle,
   }
 }

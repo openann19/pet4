@@ -1,6 +1,6 @@
 /**
  * KYC Management Screen (Mobile)
- * 
+ *
  * Mobile admin screen for reviewing KYC verification submissions.
  */
 
@@ -14,8 +14,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createLogger } from '../../utils/logger';
+import { mobileAdminApi } from '../../api/admin-api';
 import { AnimatedCard } from '../../components/AnimatedCard';
 import { FadeInView } from '../../components/FadeInView';
+
+const logger = createLogger('KYCManagementScreen');
 
 interface KYCSession {
   id: string;
@@ -38,40 +42,46 @@ export const KYCManagementScreen: React.FC = () => {
   const loadSessions = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const data = await adminApi.getKYCQueue();
-      // setSessions(data);
-      
-      // Mock data for now
-      setSessions([]);
+      const data = await mobileAdminApi.getKYCQueue();
+      const sessionsData: KYCSession[] = data.map((item) => ({
+        id: item.id,
+        userId: item.userId,
+        userName: `User ${item.userId.substring(0, 8)}`,
+        status: item.status as 'pending' | 'verified' | 'rejected',
+        createdAt: item.createdAt,
+        documents: [],
+      }));
+      setSessions(sessionsData);
     } catch (error) {
-      console.error('Failed to load KYC sessions:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load KYC sessions', err, { context: 'loadSessions', filter });
+      setSessions([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVerify = async (_sessionId: string) => {
+  const handleVerify = async (sessionId: string) => {
     try {
-      // TODO: Implement verify API call
-      // await adminApi.reviewKYC(sessionId, 'approve');
+      await mobileAdminApi.reviewKYC(sessionId, 'approve');
       await loadSessions();
     } catch (error) {
-      console.error('Failed to verify session:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to verify session', err, { context: 'handleVerify', sessionId });
     }
   };
 
-  const handleReject = async (_sessionId: string) => {
+  const handleReject = async (sessionId: string) => {
     try {
-      // TODO: Implement reject API call
-      // await adminApi.reviewKYC(sessionId, 'reject', 'Reason');
+      await mobileAdminApi.reviewKYC(sessionId, 'reject', 'Rejected by admin');
       await loadSessions();
     } catch (error) {
-      console.error('Failed to reject session:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to reject session', err, { context: 'handleReject', sessionId });
     }
   };
 
-  const filteredSessions = sessions.filter(s => {
+  const filteredSessions = sessions.filter((s) => {
     if (filter === 'all') return true;
     return s.status === filter;
   });
@@ -139,32 +149,29 @@ export const KYCManagementScreen: React.FC = () => {
                       { backgroundColor: getStatusColor(session.status) + '20' },
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.statusText,
-                        { color: getStatusColor(session.status) },
-                      ]}
-                    >
+                    <Text style={[styles.statusText, { color: getStatusColor(session.status) }]}>
                       {session.status.toUpperCase()}
                     </Text>
                   </View>
                 </View>
 
-                <Text style={styles.documentsLabel}>
-                  {session.documents.length} document(s)
-                </Text>
+                <Text style={styles.documentsLabel}>{session.documents.length} document(s)</Text>
 
                 {session.status === 'pending' && (
                   <View style={styles.actions}>
                     <TouchableOpacity
                       style={[styles.actionButton, styles.approveButton]}
-                      onPress={() => handleVerify(session.id)}
+                      onPress={() => {
+                        void handleVerify(session.id);
+                      }}
                     >
                       <Text style={styles.approveText}>Approve</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.actionButton, styles.rejectButton]}
-                      onPress={() => handleReject(session.id)}
+                      onPress={() => {
+                        void handleReject(session.id);
+                      }}
                     >
                       <Text style={styles.rejectText}>Reject</Text>
                     </TouchableOpacity>
@@ -302,4 +309,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-

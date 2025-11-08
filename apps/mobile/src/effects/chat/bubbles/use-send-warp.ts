@@ -1,21 +1,21 @@
 /**
  * Send "Warp" Effect Hook
- * 
+ *
  * Creates a premium send animation with:
  * - Cubic bezier slide out (220ms)
  * - Skia glow trail with bloom + chromatic aberration (140ms decay)
  * - Haptic feedback (Selection at send, Light when status flips to "sent")
- * 
+ *
  * Location: apps/mobile/src/effects/chat/bubbles/use-send-warp.ts
  */
 
 import { useCallback, useEffect, useRef } from 'react'
 import {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-    type SharedValue,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
 } from 'react-native-reanimated'
 import { createLogger } from '../../../utils/logger'
 import { triggerHaptic } from '../core/haptic-manager'
@@ -62,16 +62,14 @@ const DEFAULT_ENABLED = true
 const SLIDE_DURATION = 220 // ms
 const GLOW_DECAY_DURATION = 140 // ms
 
-export function useSendWarp(
-  options: UseSendWarpOptions = {}
-): UseSendWarpReturn {
+export function useSendWarp(options: UseSendWarpOptions = {}): UseSendWarpReturn {
   const { enabled = DEFAULT_ENABLED, onComplete, onStatusChange } = options
 
   const reducedMotion = useReducedMotionSV()
   const translateX = useSharedValue(0)
   const opacity = useSharedValue(1)
   const glowOpacity = useSharedValue(0)
-  
+
   // AdditiveBloom shared values
   const bloomCenterX = useSharedValue(0)
   const bloomCenterY = useSharedValue(0)
@@ -111,13 +109,10 @@ export function useSendWarp(
     )
 
     // Fade out
-    opacity.value = withTiming(
-      0,
-      {
-        duration: slideDuration,
-        easing: isReducedMotion ? Easing.linear : SEND_WARP_EASING,
-      }
-    )
+    opacity.value = withTiming(0, {
+      duration: slideDuration,
+      easing: isReducedMotion ? Easing.linear : SEND_WARP_EASING,
+    })
 
     // Glow trail animation (only if not reduced motion)
     if (!isReducedMotion) {
@@ -129,16 +124,13 @@ export function useSendWarp(
         },
         () => {
           // Fade out after peak
-          glowOpacity.value = withTiming(
-            0,
-            {
-              duration: GLOW_DECAY_DURATION,
-              easing: Easing.in(Easing.ease),
-            }
-          )
+          glowOpacity.value = withTiming(0, {
+            duration: GLOW_DECAY_DURATION,
+            easing: Easing.in(Easing.ease),
+          })
         }
       )
-      
+
       // AdditiveBloom animation - quick pulse then decay
       bloomIntensity.value = withTiming(
         0.9,
@@ -148,13 +140,10 @@ export function useSendWarp(
         },
         () => {
           // Decay
-          bloomIntensity.value = withTiming(
-            0,
-            {
-              duration: 160,
-              easing: Easing.in(Easing.ease),
-            }
-          )
+          bloomIntensity.value = withTiming(0, {
+            duration: 160,
+            easing: Easing.in(Easing.ease),
+          })
         }
       )
     }
@@ -235,4 +224,3 @@ export function getGlowTrailStyle(glowOpacity: SharedValue<number>): {
     bloomConfig: getBloomImageFilter({ intensity: 0.85, radius: 8 }),
   }
 }
-

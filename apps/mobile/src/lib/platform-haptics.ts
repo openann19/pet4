@@ -21,7 +21,10 @@ class NativePlatformHaptics implements PlatformHaptics {
         this.isSupported = true
       }
     } catch (error) {
-      logger.warn('Haptics initialization failed', error instanceof Error ? error : new Error(String(error)))
+      logger.warn(
+        'Haptics initialization failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
     }
   }
 
@@ -30,7 +33,10 @@ class NativePlatformHaptics implements PlatformHaptics {
     try {
       navigator.vibrate(pattern)
     } catch (error) {
-      logger.warn('Haptic feedback failed', error instanceof Error ? error : new Error(String(error)))
+      logger.warn(
+        'Haptic feedback failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
     }
   }
 
@@ -70,4 +76,3 @@ export function createPlatformHaptics(): PlatformHaptics {
 }
 
 export const platformHaptics = createPlatformHaptics()
-

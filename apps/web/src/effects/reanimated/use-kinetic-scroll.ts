@@ -3,7 +3,12 @@
  * Momentum-based scrolling with decay physics
  */
 
-import { useSharedValue, useAnimatedStyle, withDecay, cancelAnimation } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withDecay,
+  cancelAnimation,
+} from 'react-native-reanimated';
 import { useCallback, useState, useRef } from 'react';
 
 export interface UseKineticScrollOptions {
@@ -13,11 +18,7 @@ export interface UseKineticScrollOptions {
 }
 
 export function useKineticScroll(options: UseKineticScrollOptions = {}) {
-  const {
-    damping = 0.998,
-    velocityMultiplier = 1,
-    clamp,
-  } = options;
+  const { damping = 0.998, velocityMultiplier = 1, clamp } = options;
 
   const offset = useSharedValue(0);
   const velocity = useSharedValue(0);
@@ -28,8 +29,8 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
   const handleDragStart = useCallback((event: React.MouseEvent | React.TouchEvent) => {
     cancelAnimation(offset);
     setIsDragging(true);
-    
-    const clientY = 'touches' in event ? event.touches[0]?.clientY ?? 0 : event.clientY;
+
+    const clientY = 'touches' in event ? (event.touches[0]?.clientY ?? 0) : event.clientY;
     lastPosition.current = clientY;
     lastTime.current = Date.now();
     velocity.value = 0;
@@ -39,7 +40,7 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
     (event: React.MouseEvent | React.TouchEvent) => {
       if (!isDragging) return;
 
-      const clientY = 'touches' in event ? event.touches[0]?.clientY ?? 0 : event.clientY;
+      const clientY = 'touches' in event ? (event.touches[0]?.clientY ?? 0) : event.clientY;
       const currentTime = Date.now();
       const deltaY = clientY - lastPosition.current;
       const deltaTime = currentTime - lastTime.current;
@@ -64,10 +65,16 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
     if (!isDragging) return;
     setIsDragging(false);
 
-    const decayConfig = clamp !== undefined 
-      ? { velocity: velocity.value, deceleration: damping, rubberBandEffect: true as const, clamp }
-      : { velocity: velocity.value, deceleration: damping };
-    
+    const decayConfig =
+      clamp !== undefined
+        ? {
+            velocity: velocity.value,
+            deceleration: damping,
+            rubberBandEffect: true as const,
+            clamp,
+          }
+        : { velocity: velocity.value, deceleration: damping };
+
     offset.value = withDecay(decayConfig);
   }, [isDragging, damping, clamp, velocity]);
 

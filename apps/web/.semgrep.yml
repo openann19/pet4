@@ -2,13 +2,13 @@
 rules:
   - id: no-eval
     languages: [javascript, typescript]
-    message: "Avoid eval() – security risk."
+    message: 'Avoid eval() – security risk.'
     pattern: eval(...)
     severity: ERROR
 
   - id: no-unsafe-innerHTML
     languages: [typescript, javascript]
-    message: "Avoid setting innerHTML directly."
+    message: 'Avoid setting innerHTML directly.'
     patterns:
       - pattern: $X.innerHTML = $Y
     severity: ERROR
@@ -16,6 +16,5 @@ rules:
   - id: no-broad-any
     languages: [typescript]
     message: "Broad 'any' type is not allowed."
-    pattern: ": any"
+    pattern: ': any'
     severity: ERROR
-

@@ -24,10 +24,7 @@ export default function SavedPostsScreen() {
   const [savedPosts, setSavedPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [storedSavedPostIds, setStoredSavedPostIds] = useStorage<string[]>(
-    'savedPostIds',
-    []
-  );
+  const [storedSavedPostIds, setStoredSavedPostIds] = useStorage<string[]>('savedPostIds', []);
 
   useEffect(() => {
     loadSavedPosts();
@@ -70,7 +67,10 @@ export default function SavedPostsScreen() {
       setSavedPosts(posts);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load saved posts';
-      logger.error('Failed to load saved posts', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to load saved posts',
+        err instanceof Error ? err : new Error(String(err))
+      );
       setError(errorMessage);
       Alert.alert('Error', errorMessage);
     } finally {
@@ -174,9 +174,7 @@ export default function SavedPostsScreen() {
 
               <View style={styles.postActions}>
                 <AnimatedButton style={styles.actionButton}>
-                  <Text style={styles.actionButtonText}>
-                    {post.liked ? '❤️' : '🤍'} Like
-                  </Text>
+                  <Text style={styles.actionButtonText}>{post.liked ? '❤️' : '🤍'} Like</Text>
                 </AnimatedButton>
                 <AnimatedButton style={styles.actionButton}>
                   <Text style={styles.actionButtonText}>💬 Comment</Text>
@@ -194,9 +192,7 @@ export default function SavedPostsScreen() {
             <View style={styles.emptyState}>
               <Text style={styles.emptyEmoji}>📖</Text>
               <Text style={styles.emptyTitle}>No saved posts yet</Text>
-              <Text style={styles.emptyText}>
-                Save posts from the community to see them here
-              </Text>
+              <Text style={styles.emptyText}>Save posts from the community to see them here</Text>
               <AnimatedButton style={styles.exploreButton}>
                 <Text style={styles.exploreButtonText}>Explore Community</Text>
               </AnimatedButton>

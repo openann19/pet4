@@ -1,6 +1,6 @@
 /**
  * User Management Screen (Mobile)
- * 
+ *
  * Mobile admin screen for managing users, including password reset functionality.
  */
 
@@ -16,8 +16,12 @@ import {
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AnimatedCard } from '../components/AnimatedCard';
-import { FadeInView } from '../components/FadeInView';
+import { createLogger } from '../../utils/logger';
+import { mobileAdminApi } from '../../api/admin-api';
+import { AnimatedCard } from '../../components/AnimatedCard';
+import { FadeInView } from '../../components/FadeInView';
+
+const logger = createLogger('UserManagementScreen');
 
 interface User {
   id: string;
@@ -44,12 +48,12 @@ export const UserManagementScreen: React.FC = () => {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const data = await adminApi.getUsers(filter);
-      // setUsers(data);
+      // Note: getUserDetails requires userId, so we use empty array for now
+      // When backend provides list endpoint, update to: await mobileAdminApi.getUsers(filter);
       setUsers([]);
     } catch (error) {
-      console.error('Failed to load users:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load users', err, { context: 'loadUsers', filter });
     } finally {
       setLoading(false);
     }
@@ -60,22 +64,27 @@ export const UserManagementScreen: React.FC = () => {
 
     try {
       setResettingPassword(true);
-      // TODO: Implement password reset API call
-      // await adminApi.resetUserPassword(selectedUser.id, {
-      //   sendEmail: resetMode === 'email',
-      //   ...(resetMode === 'manual' && newPassword ? { newPassword } : {})
-      // });
+      await mobileAdminApi.resetUserPassword(selectedUser.id, {
+        sendEmail: resetMode === 'email',
+        ...(resetMode === 'manual' && newPassword ? { newPassword } : {}),
+      });
       setResetPasswordModalOpen(false);
       setNewPassword('');
       setResetMode('email');
+      await loadUsers();
     } catch (error) {
-      console.error('Failed to reset password:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to reset password', err, {
+        context: 'handleResetPassword',
+        userId: selectedUser.id,
+        resetMode,
+      });
     } finally {
       setResettingPassword(false);
     }
   };
 
-  const filteredUsers = users.filter(u => {
+  const filteredUsers = users.filter((u) => {
     if (filter === 'all') return true;
     return u.status === filter;
   });
@@ -140,12 +149,7 @@ export const UserManagementScreen: React.FC = () => {
                       { backgroundColor: getStatusColor(user.status) + '20' },
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.statusText,
-                        { color: getStatusColor(user.status) },
-                      ]}
-                    >
+                    <Text style={[styles.statusText, { color: getStatusColor(user.status) }]}>
                       {user.status.toUpperCase()}
                     </Text>
                   </View>
@@ -181,10 +185,7 @@ export const UserManagementScreen: React.FC = () => {
 
             <View style={styles.modeSelector}>
               <TouchableOpacity
-                style={[
-                  styles.modeButton,
-                  resetMode === 'email' && styles.modeButtonActive,
-                ]}
+                style={[styles.modeButton, resetMode === 'email' && styles.modeButtonActive]}
                 onPress={() => setResetMode('email')}
               >
                 <Text
@@ -197,10 +198,7 @@ export const UserManagementScreen: React.FC = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.modeButton,
-                  resetMode === 'manual' && styles.modeButtonActive,
-                ]}
+                style={[styles.modeButton, resetMode === 'manual' && styles.modeButtonActive]}
                 onPress={() => setResetMode('manual')}
               >
                 <Text
@@ -451,4 +449,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

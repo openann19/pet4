@@ -1,22 +1,22 @@
 /**
  * Image/Video Open "Glass Morph Zoom" Effect Hook
- * 
+ *
  * Creates a premium media zoom animation with:
  * - Shared-element zoom with backdrop blur (8-16px)
  * - Subtle bloom
  * - Duration 240-280ms, easing (0.2, 0.8, 0.2, 1)
  * - Haptic Selection on open, none on close
- * 
+ *
  * Location: apps/mobile/src/effects/chat/media/use-glass-morph-zoom.ts
  */
 
 import { useCallback } from 'react'
 import {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-    type SharedValue,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
 } from 'react-native-reanimated'
 import { triggerHaptic } from '../core/haptic-manager'
 import { getReducedMotionDuration } from '../core/reduced-motion'
@@ -62,19 +62,13 @@ const ZOOM_DURATION_MIN = 240 // ms
 const ZOOM_DURATION_MAX = 280 // ms
 const DEFAULT_BLUR_RADIUS = 12 // px
 
-export function useGlassMorphZoom(
-  options: UseGlassMorphZoomOptions = {}
-): UseGlassMorphZoomReturn {
-  const {
-    enabled = DEFAULT_ENABLED,
-    blurRadius = DEFAULT_BLUR_RADIUS,
-    onComplete,
-  } = options
+export function useGlassMorphZoom(options: UseGlassMorphZoomOptions = {}): UseGlassMorphZoomReturn {
+  const { enabled = DEFAULT_ENABLED, blurRadius = DEFAULT_BLUR_RADIUS, onComplete } = options
 
   const scale = useSharedValue(1)
   const opacity = useSharedValue(0)
   const blurOpacity = useSharedValue(0)
-  
+
   // ChromaticAberrationFX shared values
   // Center will be set when image dimensions are known
   const aberrationCenter = useSharedValue({ x: 0, y: 0 })
@@ -86,8 +80,7 @@ export function useGlassMorphZoom(
       return
     }
 
-    const duration =
-      ZOOM_DURATION_MIN + randomRange(0, ZOOM_DURATION_MAX - ZOOM_DURATION_MIN)
+    const duration = ZOOM_DURATION_MIN + randomRange(0, ZOOM_DURATION_MAX - ZOOM_DURATION_MIN)
     const finalDuration = getReducedMotionDuration(duration, false)
 
     // Log effect start
@@ -115,7 +108,7 @@ export function useGlassMorphZoom(
       duration: finalDuration,
       easing: GLASS_ZOOM_EASING,
     })
-    
+
     // Chromatic aberration animation (only if not reduced motion)
     aberrationRadius.value = withTiming(6, {
       duration: finalDuration,
@@ -140,7 +133,16 @@ export function useGlassMorphZoom(
         success: true,
       })
     }, finalDuration)
-  }, [enabled, blurRadius, scale, opacity, blurOpacity, aberrationRadius, aberrationIntensity, onComplete])
+  }, [
+    enabled,
+    blurRadius,
+    scale,
+    opacity,
+    blurOpacity,
+    aberrationRadius,
+    aberrationIntensity,
+    onComplete,
+  ])
 
   const close = useCallback(() => {
     if (!enabled) {
@@ -168,7 +170,7 @@ export function useGlassMorphZoom(
       duration,
       easing: GLASS_ZOOM_EASING,
     })
-    
+
     // Reset chromatic aberration
     aberrationRadius.value = withTiming(0, {
       duration,
@@ -205,4 +207,3 @@ export function useGlassMorphZoom(
     close,
   }
 }
-

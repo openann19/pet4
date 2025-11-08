@@ -4,110 +4,207 @@
  */
 
 export enum LogLevel {
-  DEBUG = 0,
-  INFO = 1,
-  WARN = 2,
-  ERROR = 3,
-  NONE = 4
+  DEBUG = 10,
+  INFO = 20,
+  WARN = 30,
+  ERROR = 40,
+  NONE = 100,
 }
 
-export interface LogEntry {
-  level: LogLevel
-  message: string
-  context?: string
-  data?: unknown
-  timestamp: string
-  error?: Error
+interface LogRecord {
+  level: LogLevel;
+  message: string;
+  args: unknown[];
+  ts: number;
+  context?: string;
 }
 
-type LogHandler = (entry: LogEntry) => void | Promise<void>
+type LogHandler = (record: LogRecord) => void | Promise<void>;
+
+interface SentryInstance {
+  init: (config: { dsn: string; tracesSampleRate: number }) => void;
+  withScope: (
+    callback: (scope: {
+      setLevel: (level: string) => void;
+      setTag: (key: string, value: string) => void;
+    }) => void
+  ) => void;
+  captureException: (error: Error) => void;
+  captureMessage: (message: string) => void;
+}
+
+let sentryInitPromise: Promise<SentryInstance | null> | null = null;
+
+function resolveSentry(): Promise<SentryInstance | null> {
+  if (sentryInitPromise) return sentryInitPromise;
+
+  if (typeof window === 'undefined') {
+    sentryInitPromise = Promise.resolve(null);
+    return sentryInitPromise;
+  }
+
+  const dsn = import.meta.env.VITE_SENTRY_DSN as string | undefined;
+  if (!dsn) {
+    sentryInitPromise = Promise.resolve(null);
+    return sentryInitPromise;
+  }
+
+  sentryInitPromise = import('@sentry/browser')
+    .then((module) => {
+      // Type guard for Sentry module
+      function isSentryInstance(m: unknown): m is SentryInstance {
+        return (
+          typeof m === 'object' &&
+          m !== null &&
+          'init' in m &&
+          typeof (m as { init?: unknown }).init === 'function'
+        );
+      }
+
+      if (isSentryInstance(module)) {
+        if (typeof module.init === 'function') {
+          module.init({ dsn, tracesSampleRate: 0.1 });
+        }
+        return module;
+      }
+      return null;
+    })
+    .catch(() => null);
+
+  return sentryInitPromise;
+}
+
+interface LoggerOptions {
+  readonly enableSentry?: boolean;
+}
 
 class Logger {
-  private level: LogLevel = LogLevel.NONE
-  private handlers: LogHandler[] = []
-  private context: string = ''
+  private level: LogLevel;
+  private readonly handlers: LogHandler[] = [];
+  private readonly context: string | undefined;
+  private readonly enableSentry: boolean;
 
-  constructor(context?: string) {
-    this.context = context || ''
-    
-    // Set log level from environment or default to NONE (silent)
-    if (typeof window !== 'undefined') {
-      const envLevel = (window as Window & { __LOG_LEVEL__?: string }).__LOG_LEVEL__
-      if (envLevel) {
-        this.level = LogLevel[envLevel.toUpperCase() as keyof typeof LogLevel] ?? LogLevel.NONE
-      }
+  constructor(context?: string, level?: LogLevel, options?: LoggerOptions) {
+    this.context = context;
+    this.level = level ?? (import.meta.env.PROD ? LogLevel.INFO : LogLevel.DEBUG);
+    this.enableSentry = options?.enableSentry ?? false;
+
+    this.addConsoleHandler();
+    if (this.enableSentry) {
+      this.addSentryHandler();
     }
-    
-    // Default mode is silent (no-op logger) to preserve deterministic builds
-    // Handlers can be added via addHandler() for routing to file, CI pipeline, etc.
   }
 
   setLevel(level: LogLevel): void {
-    this.level = level
+    this.level = level;
   }
 
   addHandler(handler: LogHandler): void {
-    this.handlers.push(handler)
+    this.handlers.push(handler);
   }
 
   private shouldLog(level: LogLevel): boolean {
-    return level >= this.level
+    return level >= this.level;
   }
 
-  private async log(level: LogLevel, message: string, data?: unknown, error?: Error): Promise<void> {
-    if (!this.shouldLog(level)) return
+  private addConsoleHandler(): void {
+    this.addHandler((record) => {
+      const ts = new Date(record.ts).toISOString();
+      const levelName = LogLevel[record.level];
+      const prefix = record.context
+        ? `[${ts}] ${levelName} [${record.context}]`
+        : `[${ts}] ${levelName}`;
 
-    const entry: LogEntry = {
+      if (record.level >= LogLevel.ERROR) {
+        console.error(prefix, record.message, ...record.args);
+      } else if (record.level >= LogLevel.WARN) {
+        console.warn(prefix, record.message, ...record.args);
+      } else if (record.level >= LogLevel.INFO) {
+        console.info(prefix, record.message, ...record.args);
+      } else {
+        console.debug(prefix, record.message, ...record.args);
+      }
+    });
+  }
+
+  private addSentryHandler(): void {
+    void resolveSentry().then((Sentry) => {
+      if (!Sentry) return;
+
+      this.addHandler((record) => {
+        if (record.level >= LogLevel.ERROR) {
+          const err = record.args[0] instanceof Error ? record.args[0] : undefined;
+          Sentry.withScope((scope) => {
+            scope.setLevel('error');
+            if (this.context) scope.setTag('logger', this.context);
+            if (err) {
+              Sentry.captureException(err);
+            } else {
+              Sentry.captureMessage(record.message);
+            }
+          });
+        } else if (record.level >= LogLevel.WARN) {
+          Sentry.withScope((scope) => {
+            scope.setLevel('warning');
+            if (this.context) scope.setTag('logger', this.context);
+            Sentry.captureMessage(record.message);
+          });
+        }
+      });
+    });
+  }
+
+  private emit(level: LogLevel, message: string, args: unknown[]): void {
+    if (!this.shouldLog(level)) return;
+
+    const record: LogRecord = {
       level,
       message,
+      args,
+      ts: Date.now(),
       ...(this.context ? { context: this.context } : {}),
-      ...(data !== undefined ? { data } : {}),
-      timestamp: new Date().toISOString(),
-      ...(error ? { error } : {}),
-    }
+    };
 
-    // Execute handlers in parallel
-    await Promise.all(this.handlers.map(handler => {
+    for (const handler of this.handlers) {
       try {
-        return handler(entry)
+        const result = handler(record);
+        if (result && typeof result.then === 'function') {
+          result.catch(() => undefined);
+        }
       } catch {
-        // Silently ignore handler failures to preserve deterministic builds
-        // Handler implementations should handle their own errors internally
-        return Promise.resolve()
+        // Ignore handler failures; handlers must be defensive on their own.
       }
-    }))
+    }
   }
 
-  debug(message: string, data?: unknown): void {
-    this.log(LogLevel.DEBUG, message, data).catch(() => {})
+  debug(message: string, ...args: unknown[]): void {
+    this.emit(LogLevel.DEBUG, message, args);
   }
 
-  info(message: string, data?: unknown): void {
-    this.log(LogLevel.INFO, message, data).catch(() => {})
+  info(message: string, ...args: unknown[]): void {
+    this.emit(LogLevel.INFO, message, args);
   }
 
-  warn(message: string, data?: unknown): void {
-    this.log(LogLevel.WARN, message, data).catch(() => {})
+  warn(message: string, ...args: unknown[]): void {
+    this.emit(LogLevel.WARN, message, args);
   }
 
-  error(message: string, error?: Error | unknown, data?: unknown): void {
-    const err = error instanceof Error ? error : error ? new Error(String(error)) : undefined
-    this.log(LogLevel.ERROR, message, data, err).catch(() => {})
+  error(message: string, ...args: unknown[]): void {
+    this.emit(LogLevel.ERROR, message, args);
   }
 }
 
-// Create default logger instance
-export const logger = new Logger()
-
-// Factory function to create contextual loggers
-export function createLogger(context: string): Logger {
-  return new Logger(context)
+export function createLogger(context: string, level?: LogLevel, options?: LoggerOptions): Logger {
+  return new Logger(context, level, options);
 }
 
-// Export convenience functions
+export const logger = new Logger('root', undefined, { enableSentry: true });
+
 export const log = {
-  debug: (message: string, data?: unknown) => logger.debug(message, data),
-  info: (message: string, data?: unknown) => logger.info(message, data),
-  warn: (message: string, data?: unknown) => logger.warn(message, data),
-  error: (message: string, error?: Error | unknown, data?: unknown) => logger.error(message, error, data),
-}
+  debug: (message: string, ...args: unknown[]) => logger.debug(message, ...args),
+  info: (message: string, ...args: unknown[]) => logger.info(message, ...args),
+  warn: (message: string, ...args: unknown[]) => logger.warn(message, ...args),
+  error: (message: string, ...args: unknown[]) => logger.error(message, ...args),
+};
+
+export default logger;

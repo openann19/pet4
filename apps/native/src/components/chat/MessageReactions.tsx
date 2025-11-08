@@ -1,111 +1,121 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react'
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Modal,
-} from 'react-native'
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { View, Text, StyleSheet, Pressable, Modal } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
   withSequence,
-} from 'react-native-reanimated'
-import { haptics } from '../../lib/haptics'
+} from 'react-native-reanimated';
+import { haptics } from '../../lib/haptics';
 
 // Support both old Reaction format and new MessageReaction format
 export interface Reaction {
-  emoji: string
-  users: string[]
+  emoji: string;
+  users: string[];
 }
 
 export interface MessageReaction {
-  emoji: string
-  userId?: string
-  userName?: string
-  userAvatar?: string
-  timestamp?: string
-  userIds?: string[]
-  count?: number
+  emoji: string;
+  userId?: string;
+  userName?: string;
+  userAvatar?: string;
+  timestamp?: string;
+  userIds?: string[];
+  count?: number;
 }
 
 interface MessageReactionsProps {
-  messageId: string
-  reactions: Reaction[] | MessageReaction[]
-  currentUserId: string
-  onAddReaction: (emoji: string) => void
-  onRemoveReaction: (emoji: string) => void
-  onLongPress?: () => void
-  availableReactions?: readonly string[]
+  messageId: string;
+  reactions: Reaction[] | MessageReaction[];
+  currentUserId: string;
+  onAddReaction: (emoji: string) => void;
+  onRemoveReaction: (emoji: string) => void;
+  onLongPress?: () => void;
+  availableReactions?: readonly string[];
 }
 
-const DEFAULT_REACTIONS = ['❤️', '😂', '😮', '😢', '😡', '👍', '👎', '🎉', '🔥', '💯', '🙏', '👀'] as const
+const DEFAULT_REACTIONS = [
+  '❤️',
+  '😂',
+  '😮',
+  '😢',
+  '😡',
+  '👍',
+  '👎',
+  '🎉',
+  '🔥',
+  '💯',
+  '🙏',
+  '👀',
+] as const;
 
 const springConfigs = {
   smooth: { damping: 25, stiffness: 400 },
   bouncy: { damping: 15, stiffness: 500 },
   snappy: { damping: 20, stiffness: 600 },
-}
+};
 
 const timingConfigs = {
   fast: { duration: 150 },
   smooth: { duration: 300 },
-}
+};
 
 // Convert MessageReaction[] to Reaction[] format for compatibility
 function normalizeReactions(
   reactions: Reaction[] | MessageReaction[]
 ): Array<{ emoji: string; users: string[]; reactions: MessageReaction[] }> {
-  if (reactions.length === 0) return []
+  if (reactions.length === 0) return [];
 
   // Check if it's the new format (MessageReaction[])
-  const firstReaction = reactions[0]
+  const firstReaction = reactions[0];
   if (firstReaction && ('userId' in firstReaction || 'userIds' in firstReaction)) {
-    const messageReactions = reactions as MessageReaction[]
-    const grouped = messageReactions.reduce((acc, reaction) => {
-      if (!reaction.emoji) return acc
-      
-      if (!acc[reaction.emoji]) {
-        acc[reaction.emoji] = {
-          emoji: reaction.emoji,
-          users: [],
-          reactions: [],
+    const messageReactions = reactions as MessageReaction[];
+    const grouped = messageReactions.reduce(
+      (acc, reaction) => {
+        if (!reaction.emoji) return acc;
+
+        if (!acc[reaction.emoji]) {
+          acc[reaction.emoji] = {
+            emoji: reaction.emoji,
+            users: [],
+            reactions: [],
+          };
         }
-      }
-      
-      const group = acc[reaction.emoji]
-      if (group) {
-        group.reactions.push(reaction)
-        if (reaction.userId && !group.users.includes(reaction.userId)) {
-          group.users.push(reaction.userId)
+
+        const group = acc[reaction.emoji];
+        if (group) {
+          group.reactions.push(reaction);
+          if (reaction.userId && !group.users.includes(reaction.userId)) {
+            group.users.push(reaction.userId);
+          }
+          if (reaction.userIds) {
+            reaction.userIds.forEach((userId) => {
+              if (!group.users.includes(userId)) {
+                group.users.push(userId);
+              }
+            });
+          }
         }
-        if (reaction.userIds) {
-          reaction.userIds.forEach(userId => {
-            if (!group.users.includes(userId)) {
-              group.users.push(userId)
-            }
-          })
-        }
-      }
-      
-      return acc
-    }, {} as Record<string, { emoji: string; users: string[]; reactions: MessageReaction[] }>)
-    
-    return Object.values(grouped)
+
+        return acc;
+      },
+      {} as Record<string, { emoji: string; users: string[]; reactions: MessageReaction[] }>
+    );
+
+    return Object.values(grouped);
   }
 
   // Old format (Reaction[])
-  const oldReactions = reactions as Reaction[]
-  return oldReactions.map(reaction => ({
+  const oldReactions = reactions as Reaction[];
+  return oldReactions.map((reaction) => ({
     emoji: reaction.emoji,
     users: reaction.users,
-    reactions: reaction.users.map(userId => ({
+    reactions: reaction.users.map((userId) => ({
       emoji: reaction.emoji,
       userId,
     })) as MessageReaction[],
-  }))
+  }));
 }
 
 export const MessageReactions: React.FC<MessageReactionsProps> = ({
@@ -117,71 +127,77 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
   onLongPress,
   availableReactions = DEFAULT_REACTIONS,
 }) => {
-  const [showPicker, setShowPicker] = useState(false)
-  const [visibleReactions, setVisibleReactions] = useState<Set<string>>(new Set())
+  const [showPicker, setShowPicker] = useState(false);
+  const [visibleReactions, setVisibleReactions] = useState<Set<string>>(new Set());
 
   const normalizedReactions = useMemo(() => {
-    return normalizeReactions(reactions)
-  }, [reactions])
+    return normalizeReactions(reactions);
+  }, [reactions]);
 
   // Track visible reactions for animations
   useEffect(() => {
-    const currentEmojis = new Set(normalizedReactions.map(r => r.emoji))
-    setVisibleReactions(prev => {
-      const next = new Set(prev)
-      currentEmojis.forEach(emoji => next.add(emoji))
-      prev.forEach(emoji => {
+    const currentEmojis = new Set(normalizedReactions.map((r) => r.emoji));
+    setVisibleReactions((prev) => {
+      const next = new Set(prev);
+      currentEmojis.forEach((emoji) => next.add(emoji));
+      prev.forEach((emoji) => {
         if (!currentEmojis.has(emoji)) {
-          next.delete(emoji)
+          next.delete(emoji);
         }
-      })
-      return next
-    })
-  }, [normalizedReactions])
+      });
+      return next;
+    });
+  }, [normalizedReactions]);
 
-  const handleReactionPress = useCallback((emoji: string) => {
-    const existingReaction = normalizedReactions.find((r) => r.emoji === emoji)
-    const userHasReacted = existingReaction?.users.includes(currentUserId) ?? false
+  const handleReactionPress = useCallback(
+    (emoji: string) => {
+      const existingReaction = normalizedReactions.find((r) => r.emoji === emoji);
+      const userHasReacted = existingReaction?.users.includes(currentUserId) ?? false;
 
-    haptics.selection()
+      haptics.selection();
 
-    if (userHasReacted) {
-      onRemoveReaction(emoji)
-    } else {
-      onAddReaction(emoji)
-    }
-  }, [normalizedReactions, currentUserId, onAddReaction, onRemoveReaction])
+      if (userHasReacted) {
+        onRemoveReaction(emoji);
+      } else {
+        onAddReaction(emoji);
+      }
+    },
+    [normalizedReactions, currentUserId, onAddReaction, onRemoveReaction]
+  );
 
-  const handlePickerReaction = useCallback((emoji: string) => {
-    haptics.selection()
-    onAddReaction(emoji)
-    setShowPicker(false)
-  }, [onAddReaction])
+  const handlePickerReaction = useCallback(
+    (emoji: string) => {
+      haptics.selection();
+      onAddReaction(emoji);
+      setShowPicker(false);
+    },
+    [onAddReaction]
+  );
 
-  const pickerScale = useSharedValue(0.9)
-  const pickerOpacity = useSharedValue(0)
+  const pickerScale = useSharedValue(0.9);
+  const pickerOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (showPicker) {
-      pickerScale.value = withSpring(1, springConfigs.bouncy)
-      pickerOpacity.value = withTiming(1, timingConfigs.fast)
+      pickerScale.value = withSpring(1, springConfigs.bouncy);
+      pickerOpacity.value = withTiming(1, timingConfigs.fast);
     } else {
-      pickerScale.value = withTiming(0.9, timingConfigs.fast)
-      pickerOpacity.value = withTiming(0, timingConfigs.fast)
+      pickerScale.value = withTiming(0.9, timingConfigs.fast);
+      pickerOpacity.value = withTiming(0, timingConfigs.fast);
     }
-  }, [showPicker, pickerScale, pickerOpacity])
+  }, [showPicker, pickerScale, pickerOpacity]);
 
   const pickerAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pickerScale.value }],
     opacity: pickerOpacity.value,
-  }))
+  }));
 
   return (
     <View style={styles.container}>
       {normalizedReactions.length > 0 && (
         <View style={styles.reactionsDisplay}>
           {normalizedReactions.map((reaction) => {
-            if (!visibleReactions.has(reaction.emoji)) return null
+            if (!visibleReactions.has(reaction.emoji)) return null;
 
             return (
               <ReactionButton
@@ -191,15 +207,12 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
                 userReacted={reaction.users.includes(currentUserId)}
                 onPress={() => handleReactionPress(reaction.emoji)}
               />
-            )
+            );
           })}
         </View>
       )}
 
-      <AddReactionButton
-        onPress={() => setShowPicker(true)}
-        onLongPress={onLongPress}
-      />
+      <AddReactionButton onPress={() => setShowPicker(true)} onLongPress={onLongPress} />
 
       <Modal
         visible={showPicker}
@@ -230,14 +243,14 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
         </Pressable>
       </Modal>
     </View>
-  )
-}
+  );
+};
 
 interface ReactionButtonProps {
-  emoji: string
-  count: number
-  userReacted: boolean
-  onPress: () => void
+  emoji: string;
+  count: number;
+  userReacted: boolean;
+  onPress: () => void;
 }
 
 function ReactionButton({
@@ -246,68 +259,60 @@ function ReactionButton({
   userReacted,
   onPress,
 }: ReactionButtonProps): React.JSX.Element {
-  const scale = useSharedValue(0)
-  const hoverScale = useSharedValue(1)
+  const scale = useSharedValue(0);
+  const hoverScale = useSharedValue(1);
 
   useEffect(() => {
-    scale.value = withSpring(1, springConfigs.bouncy)
-  }, [scale])
+    scale.value = withSpring(1, springConfigs.bouncy);
+  }, [scale]);
 
   const handlePress = useCallback(() => {
     hoverScale.value = withSequence(
       withSpring(1.2, springConfigs.bouncy),
       withSpring(1, springConfigs.smooth)
-    )
-    onPress()
-  }, [hoverScale, onPress])
+    );
+    onPress();
+  }, [hoverScale, onPress]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value * hoverScale.value }],
-  }))
+  }));
 
   return (
     <Pressable
       onPress={handlePress}
-      style={[
-        styles.reactionBubble,
-        userReacted && styles.reactionBubbleActive,
-      ]}
+      style={[styles.reactionBubble, userReacted && styles.reactionBubbleActive]}
       accessibilityRole="button"
       accessibilityLabel={`${emoji} reaction, ${count} ${count === 1 ? 'person' : 'people'}`}
       accessibilityState={{ selected: userReacted }}
     >
       <Animated.View style={animatedStyle}>
         <Text style={styles.reactionEmoji}>{emoji}</Text>
-        {count > 1 && (
-          <Text style={styles.reactionCount}>{count}</Text>
-        )}
+        {count > 1 && <Text style={styles.reactionCount}>{count}</Text>}
       </Animated.View>
     </Pressable>
-  )
+  );
 }
 
 interface AddReactionButtonProps {
-  onPress: () => void
-  onLongPress?: (() => void) | undefined
+  onPress: () => void;
+  onLongPress?: (() => void) | undefined;
 }
 
-function AddReactionButton({
-  onPress,
-  onLongPress,
-}: AddReactionButtonProps): React.JSX.Element {
-  const scale = useSharedValue(1)
+function AddReactionButton({ onPress, onLongPress }: AddReactionButtonProps): React.JSX.Element {
+  const scale = useSharedValue(1);
 
   const handlePress = useCallback(() => {
     scale.value = withSequence(
       withSpring(1.1, springConfigs.bouncy),
       withSpring(1, springConfigs.smooth)
-    )
-    onPress()
-  }, [scale, onPress])
+    );
+    onPress();
+  }, [scale, onPress]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-  }))
+  }));
 
   return (
     <Pressable
@@ -321,28 +326,28 @@ function AddReactionButton({
         <Text style={styles.addReactionText}>+</Text>
       </Animated.View>
     </Pressable>
-  )
+  );
 }
 
 interface EmojiButtonProps {
-  emoji: string
-  onPress: () => void
+  emoji: string;
+  onPress: () => void;
 }
 
 function EmojiButton({ emoji, onPress }: EmojiButtonProps): React.JSX.Element {
-  const scale = useSharedValue(1)
+  const scale = useSharedValue(1);
 
   const handlePress = useCallback(() => {
     scale.value = withSequence(
       withSpring(1.2, springConfigs.bouncy),
       withSpring(1, springConfigs.smooth)
-    )
-    onPress()
-  }, [scale, onPress])
+    );
+    onPress();
+  }, [scale, onPress]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-  }))
+  }));
 
   return (
     <Pressable
@@ -355,7 +360,7 @@ function EmojiButton({ emoji, onPress }: EmojiButtonProps): React.JSX.Element {
         <Text style={styles.reactionOptionEmoji}>{emoji}</Text>
       </Animated.View>
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -450,4 +455,4 @@ const styles = StyleSheet.create({
   reactionOptionEmoji: {
     fontSize: 28,
   },
-})
+});

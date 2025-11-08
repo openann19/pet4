@@ -1,30 +1,32 @@
-import type { PremiumNotification } from '@/components/notifications/PremiumNotificationCenter'
-import { storage } from './storage'
-import { generateULID } from './utils'
+import type { PremiumNotification } from '@/components/notifications/PremiumNotificationCenter';
+import { storage } from './storage';
+import { generateULID } from './utils';
 
-const STORAGE_KEY = 'premium-notifications'
+const STORAGE_KEY = 'premium-notifications';
 
 async function readNotifications(): Promise<PremiumNotification[]> {
-  return (await storage.get<PremiumNotification[]>(STORAGE_KEY)) ?? []
+  return (await storage.get<PremiumNotification[]>(STORAGE_KEY)) ?? [];
 }
 
 async function writeNotifications(notifications: PremiumNotification[]): Promise<void> {
-  await storage.set(STORAGE_KEY, notifications)
+  await storage.set(STORAGE_KEY, notifications);
 }
 
-export async function createPremiumNotification(notification: Omit<PremiumNotification, 'id' | 'timestamp' | 'read' | 'archived'>) {
+export async function createPremiumNotification(
+  notification: Omit<PremiumNotification, 'id' | 'timestamp' | 'read' | 'archived'>
+) {
   const newNotification: PremiumNotification = {
     id: generateULID(),
     timestamp: Date.now(),
     read: false,
     archived: false,
-    ...notification
-  }
+    ...notification,
+  };
 
-  const existing = await readNotifications()
-  await writeNotifications([newNotification, ...existing])
+  const existing = await readNotifications();
+  await writeNotifications([newNotification, ...existing]);
 
-  return newNotification
+  return newNotification;
 }
 
 export async function createMatchNotification(
@@ -46,8 +48,8 @@ export async function createMatchNotification(
       petName: matchedPetName,
       matchId,
       ...(compatibilityScore !== undefined ? { compatibilityScore } : {}),
-    }
-  })
+    },
+  });
 }
 
 export async function createMessageNotification(
@@ -66,30 +68,27 @@ export async function createMessageNotification(
     ...(avatarUrl ? { avatarUrl } : {}),
     metadata: {
       userName: senderName,
-      messageId: roomId
-    }
-  })
+      messageId: roomId,
+    },
+  });
 }
 
-export async function createLikeNotification(
-  petName: string,
-  count: number = 1,
-  avatarUrl?: string
-) {
+export async function createLikeNotification(petName: string, count = 1, avatarUrl?: string) {
   return createPremiumNotification({
     type: 'like',
     title: count === 1 ? `${petName} liked your pet!` : `${count} new likes!`,
-    message: count === 1 
-      ? `${petName} is interested in your pet` 
-      : `${petName} and ${count - 1} others liked your pet`,
+    message:
+      count === 1
+        ? `${petName} is interested in your pet`
+        : `${petName} and ${count - 1} others liked your pet`,
     priority: 'normal',
     actionLabel: 'View Profile',
     ...(avatarUrl ? { avatarUrl } : {}),
     metadata: {
       petName,
-      count
-    }
-  })
+      count,
+    },
+  });
 }
 
 export async function createVerificationNotification(
@@ -100,21 +99,21 @@ export async function createVerificationNotification(
     approved: {
       title: 'Pet Verified! ✅',
       message: `${petName} has been verified and is now live`,
-      priority: 'high' as const
+      priority: 'high' as const,
     },
     rejected: {
       title: 'Verification Issue',
       message: `${petName}'s verification needs attention`,
-      priority: 'urgent' as const
+      priority: 'urgent' as const,
     },
     pending: {
       title: 'Verification Pending',
       message: `${petName} is being reviewed`,
-      priority: 'normal' as const
-    }
-  }
+      priority: 'normal' as const,
+    },
+  };
 
-  const config = messages[status]
+  const config = messages[status];
 
   return createPremiumNotification({
     type: 'verification',
@@ -123,32 +122,30 @@ export async function createVerificationNotification(
     priority: config.priority,
     actionLabel: 'View Details',
     metadata: {
-      petName
-    }
-  })
+      petName,
+    },
+  });
 }
 
 export async function createStoryNotification(
   userName: string,
-  count: number = 1,
+  count = 1,
   avatarUrl?: string,
   imageUrl?: string
 ) {
   return createPremiumNotification({
     type: 'story',
     title: count === 1 ? `${userName} posted a story` : `${count} new stories`,
-    message: count === 1
-      ? 'View their latest update'
-      : `${userName} and others shared new stories`,
+    message: count === 1 ? 'View their latest update' : `${userName} and others shared new stories`,
     priority: 'low',
     actionLabel: 'Watch',
     ...(avatarUrl ? { avatarUrl } : {}),
     ...(imageUrl ? { imageUrl } : {}),
     metadata: {
       userName,
-      count
-    }
-  })
+      count,
+    },
+  });
 }
 
 export async function createModerationNotification(
@@ -161,8 +158,8 @@ export async function createModerationNotification(
     title,
     message,
     priority,
-    actionLabel: 'Learn More'
-  })
+    actionLabel: 'Learn More',
+  });
 }
 
 export async function createAchievementNotification(
@@ -179,9 +176,9 @@ export async function createAchievementNotification(
     actionLabel: 'View Achievements',
     ...(imageUrl ? { imageUrl } : {}),
     metadata: {
-      achievementBadge: badge || achievementName
-    }
-  })
+      achievementBadge: badge || achievementName,
+    },
+  });
 }
 
 export async function createSocialNotification(
@@ -198,8 +195,8 @@ export async function createSocialNotification(
     ...(avatarUrl ? { avatarUrl } : {}),
     metadata: {
       ...(userName ? { userName } : {}),
-    }
-  })
+    },
+  });
 }
 
 export async function createEventNotification(
@@ -217,9 +214,9 @@ export async function createEventNotification(
     ...(imageUrl ? { imageUrl } : {}),
     metadata: {
       ...(location ? { location } : {}),
-      eventType: eventName
-    }
-  })
+      eventType: eventName,
+    },
+  });
 }
 
 export async function createSystemNotification(
@@ -231,60 +228,56 @@ export async function createSystemNotification(
     type: 'system',
     title,
     message,
-    priority
-  })
+    priority,
+  });
 }
 
 export async function markNotificationAsRead(id: string) {
-  const notifications = await readNotifications()
-  const updated = notifications.map(n => 
-    n.id === id ? { ...n, read: true } : n
-  )
-  
-  await writeNotifications(updated)
+  const notifications = await readNotifications();
+  const updated = notifications.map((n) => (n.id === id ? { ...n, read: true } : n));
+
+  await writeNotifications(updated);
 }
 
 export async function archiveNotification(id: string) {
-  const notifications = await readNotifications()
-  const updated = notifications.map(n => 
+  const notifications = await readNotifications();
+  const updated = notifications.map((n) =>
     n.id === id ? { ...n, archived: true, read: true } : n
-  )
-  
-  await writeNotifications(updated)
+  );
+
+  await writeNotifications(updated);
 }
 
 export async function deleteNotification(id: string) {
-  const notifications = await readNotifications()
-  const updated = notifications.filter(n => n.id !== id)
-  
-  await writeNotifications(updated)
+  const notifications = await readNotifications();
+  const updated = notifications.filter((n) => n.id !== id);
+
+  await writeNotifications(updated);
 }
 
 export async function clearAllNotifications() {
-  await writeNotifications([])
+  await writeNotifications([]);
 }
 
 export async function getUnreadCount() {
-  const notifications = await readNotifications()
-  return notifications.filter(n => !n.read && !n.archived).length
+  const notifications = await readNotifications();
+  return notifications.filter((n) => !n.read && !n.archived).length;
 }
 
 export async function getUrgentNotifications() {
-  const notifications = await readNotifications()
-  return notifications.filter(n => 
-    !n.read && 
-    !n.archived && 
-    (n.priority === 'urgent' || n.priority === 'critical')
-  )
+  const notifications = await readNotifications();
+  return notifications.filter(
+    (n) => !n.read && !n.archived && (n.priority === 'urgent' || n.priority === 'critical')
+  );
 }
 
 export async function createGroupedNotifications(
   type: PremiumNotification['type'],
-  items: Array<{ name: string; avatarUrl?: string }>,
+  items: { name: string; avatarUrl?: string }[],
   baseMessage: string
 ) {
-  const groupId = generateULID()
-  
+  const groupId = generateULID();
+
   const notifications = items.map((item, index) => ({
     id: generateULID(),
     type,
@@ -297,12 +290,12 @@ export async function createGroupedNotifications(
     ...(item.avatarUrl !== undefined && { avatarUrl: item.avatarUrl }),
     groupId,
     metadata: {
-      userName: item.name
-    }
-  }))
+      userName: item.name,
+    },
+  }));
 
-  const existing = await readNotifications()
-  await writeNotifications([...notifications, ...existing])
+  const existing = await readNotifications();
+  await writeNotifications([...notifications, ...existing]);
 
-  return notifications
+  return notifications;
 }

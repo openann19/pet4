@@ -1,6 +1,6 @@
 /**
  * Shared Chat Types
- * 
+ *
  * Strict domain model for chat messages, reactions, read receipts, and media.
  * Used across web and mobile applications.
  */
@@ -176,7 +176,15 @@ export interface Sticker {
   keywords: string[]
 }
 
-export const REACTION_EMOJIS: readonly ReactionType[] = ['❤️', '😂', '👍', '👎', '🔥', '🙏', '⭐'] as const
+export const REACTION_EMOJIS: readonly ReactionType[] = [
+  '❤️',
+  '😂',
+  '👍',
+  '👎',
+  '🔥',
+  '🙏',
+  '⭐',
+] as const
 
 export const MESSAGE_TEMPLATES: readonly MessageTemplate[] = [
   { id: 'greet-1', text: 'Hey! Your pet looks adorable!', category: 'greeting' },
@@ -184,6 +192,5 @@ export const MESSAGE_TEMPLATES: readonly MessageTemplate[] = [
   { id: 'playdate-1', text: 'Want to meet up at the park this weekend?', category: 'playdate' },
   { id: 'playdate-2', text: 'Are you free for a playdate?', category: 'playdate' },
   { id: 'followup-1', text: 'Thanks for the great time!', category: 'followup' },
-  { id: 'closing-1', text: 'Talk to you soon!', category: 'closing' }
+  { id: 'closing-1', text: 'Talk to you soon!', category: 'closing' },
 ] as const
-

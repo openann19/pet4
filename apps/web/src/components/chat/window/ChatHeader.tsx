@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
-import { DotsThree, ArrowLeft } from '@phosphor-icons/react'
-import { blockService } from '@/lib/block-service'
-import type { ChatRoom } from '@/lib/chat-types'
-import { createLogger } from '@/lib/logger'
-import { toast } from 'sonner'
-import type { ReactNode } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
+import { DotsThree, ArrowLeft } from '@phosphor-icons/react';
+import { blockService } from '@/lib/block-service';
+import type { ChatRoom } from '@/lib/chat-types';
+import { createLogger } from '@/lib/logger';
+import { toast } from 'sonner';
+import type { ReactNode } from 'react';
 
-const logger = createLogger('ChatHeader')
+const logger = createLogger('ChatHeader');
 
 export interface ChatHeaderProps {
-  room: ChatRoom
-  typingIndicator: ReactNode
-  onBack?: () => void
-  awayMode: boolean
-  setAwayMode: (next: boolean | ((p: boolean) => boolean)) => void
+  room: ChatRoom;
+  typingIndicator: ReactNode;
+  onBack?: () => void;
+  awayMode: boolean;
+  setAwayMode: (next: boolean | ((p: boolean) => boolean)) => void;
 }
 
 export function ChatHeader({
@@ -29,7 +29,7 @@ export function ChatHeader({
   awayMode,
   setAwayMode,
 }: ChatHeaderProps): JSX.Element {
-  const headerAnim = useEntryAnimation({ initialY: -20, delay: 0 })
+  const headerAnim = useEntryAnimation({ initialY: -20, delay: 0 });
 
   return (
     <AnimatedView
@@ -67,7 +67,7 @@ export function ChatHeader({
                 variant="ghost"
                 className="w-full justify-start"
                 onClick={() => {
-                  setAwayMode((p) => !p)
+                  setAwayMode((p) => !p);
                 }}
               >
                 {awayMode ? '🟢 Available' : '🌙 Away Mode'}
@@ -77,28 +77,28 @@ export function ChatHeader({
                 className="w-full justify-start text-destructive"
                 onClick={async () => {
                   try {
-                    const currentUserId = room.participantIds[0] // parent should pass if different ownership needed
-                    const otherUserId = room.participantIds.find((id) => id !== currentUserId)
+                    const currentUserId = room.participantIds[0]; // parent should pass if different ownership needed
+                    const otherUserId = room.participantIds.find((id) => id !== currentUserId);
 
                     if (!otherUserId) {
-                      return
+                      return;
                     }
 
-                    const confirmed = window.confirm('Block this user?')
+                    const confirmed = window.confirm('Block this user?');
 
                     if (!confirmed) {
-                      return
+                      return;
                     }
 
-                    await blockService.blockUser(currentUserId, otherUserId, 'harassment')
+                    await blockService.blockUser(currentUserId, otherUserId, 'harassment');
 
-                    toast.success('User blocked.')
+                    toast.success('User blocked.');
 
-                    onBack?.()
+                    onBack?.();
                   } catch (e) {
-                    const err = e instanceof Error ? e : new Error(String(e))
-                    logger.error('Block failed', err)
-                    toast.error('Failed to block user')
+                    const err = e instanceof Error ? e : new Error(String(e));
+                    logger.error('Block failed', err);
+                    toast.error('Failed to block user');
                   }
                 }}
               >
@@ -109,6 +109,5 @@ export function ChatHeader({
         </Popover>
       </div>
     </AnimatedView>
-  )
+  );
 }
-

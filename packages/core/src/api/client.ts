@@ -1,6 +1,6 @@
 /**
  * Unified API Client
- * 
+ *
  * Centralized API client with:
  * - Auth refresh (401 → token refresh once)
  * - Retry/backoff for idempotent GET/PUT (0ms, 300ms, 1s)
@@ -63,59 +63,81 @@ function calculateRetryDelay(attempt: number): number {
 
 function normalizeError(
   error: unknown,
-  url: string,
+  _url?: string,
   statusCode?: number,
   correlationId?: string
 ): APIError {
+  const errorObj: APIError = {
+    code: 'UNKNOWN_ERROR',
+    message: String(error),
+  }
+
+  if (statusCode !== undefined) {
+    errorObj.statusCode = statusCode
+  }
+
+  if (correlationId !== undefined) {
+    errorObj.correlationId = correlationId
+  }
+
   if (error instanceof Error) {
     // Try to parse structured error from response
     try {
-      const parsed = JSON.parse(error.message)
-      if (parsed.code && parsed.message) {
-        return {
-          code: parsed.code,
-          message: parsed.message,
-          details: parsed.details,
-          statusCode,
-          correlationId,
+      const parsed: unknown = JSON.parse(error.message)
+      // Type guard for structured error response
+      if (
+        typeof parsed === 'object' &&
+        parsed !== null &&
+        'code' in parsed &&
+        'message' in parsed &&
+        typeof (parsed as { code: unknown }).code === 'string' &&
+        typeof (parsed as { message: unknown }).message === 'string'
+      ) {
+        const structuredError = parsed as { code: string; message: string; details?: unknown }
+        errorObj.code = structuredError.code
+        errorObj.message = structuredError.message
+        if (structuredError.details !== undefined) {
+          errorObj.details = structuredError.details as Record<string, unknown>
         }
+        return errorObj
       }
     } catch {
       // Not JSON, continue with error message
     }
 
-    return {
-      code: 'UNKNOWN_ERROR',
-      message: error.message,
-      statusCode,
-      correlationId,
-    }
+    errorObj.message = error.message
+    return errorObj
   }
 
-  return {
-    code: 'UNKNOWN_ERROR',
-    message: String(error),
-    statusCode,
-    correlationId,
-  }
+  return errorObj
 }
 
 function generateCorrelationId(): string {
+  // eslint-disable-next-line no-restricted-syntax -- Math.random() acceptable for correlation IDs (uniqueness only)
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
 }
 
 export class UnifiedAPIClient {
-  private config: Required<Pick<APIClientConfig, 'baseURL' | 'timeout' | 'defaultHeaders'>> &
+  private readonly config: Required<Pick<APIClientConfig, 'baseURL' | 'timeout' | 'defaultHeaders'>> &
     Pick<APIClientConfig, 'auth' | 'telemetry'>
   private refreshTokenPromise: Promise<string> | null = null
 
   constructor(config: APIClientConfig) {
-    this.config = {
+    const baseConfig: Required<Pick<APIClientConfig, 'baseURL' | 'timeout' | 'defaultHeaders'>> = {
       baseURL: config.baseURL,
       timeout: config.timeout ?? DEFAULT_TIMEOUT,
       defaultHeaders: config.defaultHeaders ?? {},
-      auth: config.auth,
-      telemetry: config.telemetry,
+    }
+
+    // Build config object, only including auth/telemetry if they're defined
+    if (config.auth !== undefined && config.telemetry !== undefined) {
+      this.config = { ...baseConfig, auth: config.auth, telemetry: config.telemetry }
+    } else if (config.auth !== undefined) {
+      this.config = { ...baseConfig, auth: config.auth }
+    } else if (config.telemetry !== undefined) {
+      this.config = { ...baseConfig, telemetry: config.telemetry }
+    } else {
+      this.config = baseConfig
     }
   }
 
@@ -131,12 +153,12 @@ export class UnifiedAPIClient {
 
     this.refreshTokenPromise = this.config.auth
       .refreshAccessToken()
-      .then((token) => {
+      .then(token => {
         this.config.auth?.setAccessToken(token)
         this.refreshTokenPromise = null
         return token
       })
-      .catch((error) => {
+      .catch(error => {
         this.refreshTokenPromise = null
         this.config.auth?.onAuthError?.()
         throw error
@@ -148,7 +170,7 @@ export class UnifiedAPIClient {
   private async requestWithAuth(
     url: string,
     options: RequestConfig,
-    attempt: number = 0
+    attempt = 0
   ): Promise<Response> {
     const headers = new Headers(this.config.defaultHeaders)
     if (options.headers) {
@@ -157,29 +179,33 @@ export class UnifiedAPIClient {
       })
     }
 
-    if (!options.skipAuth && this.config.auth) {
+    if (options.skipAuth !== true && this.config.auth !== undefined) {
       let token = this.config.auth.getAccessToken()
-      if (!token) {
-        token = await this.refreshAuthToken()
-      }
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`)
-      }
+      token ??= await this.refreshAuthToken()
+      headers.set('Authorization', `Bearer ${token}`)
     }
 
     const correlationId = generateCorrelationId()
     headers.set('X-Correlation-ID', correlationId)
 
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), options.timeout ?? this.config.timeout)
+    const timeoutId = setTimeout(() => {
+      controller.abort()
+    }, options.timeout ?? this.config.timeout)
 
     const startTime = Date.now()
 
     try {
+      // Convert Headers to plain object for telemetry
+      const headersObj: Record<string, string> = {};
+      headers.forEach((value, key) => {
+        headersObj[key] = value;
+      });
+
       this.config.telemetry?.onRequest?.({
         url,
         method: options.method ?? 'GET',
-        headers: Object.fromEntries(headers.entries()),
+        headers: headersObj,
       })
 
       const response = await fetch(url, {
@@ -199,11 +225,11 @@ export class UnifiedAPIClient {
       })
 
       // Handle 401 with auth refresh
-      if (response.status === 401 && this.config.auth && !options.skipAuth && attempt === 0) {
+      if (response.status === 401 && this.config.auth !== undefined && options.skipAuth !== true && attempt === 0) {
         try {
           await this.refreshAuthToken()
           // Retry once with new token
-          return this.requestWithAuth(url, options, attempt + 1)
+          return await this.requestWithAuth(url, options, attempt + 1)
         } catch (refreshError) {
           const error = normalizeError(refreshError, url, 401, correlationId)
           this.config.telemetry?.onError?.(error)
@@ -243,7 +269,7 @@ export class UnifiedAPIClient {
 
       if (shouldRetry && error instanceof Error && error.name !== 'AbortError') {
         const delay = calculateRetryDelay(attempt)
-        await new Promise((resolve) => setTimeout(resolve, delay))
+        await new Promise(resolve => setTimeout(resolve, delay))
         return this.requestWithAuth(url, options, attempt + 1)
       }
 
@@ -251,16 +277,13 @@ export class UnifiedAPIClient {
     }
   }
 
-  async request<T>(
-    endpoint: string,
-    options: RequestConfig = {}
-  ): Promise<T> {
+  async request<T>(endpoint: string, options: RequestConfig = {}): Promise<T> {
     const url = `${this.config.baseURL}${endpoint}`
     const response = await this.requestWithAuth(url, options)
 
     try {
       const contentType = response.headers.get('content-type')
-      if (contentType?.includes('application/json')) {
+      if (contentType?.includes('application/json') === true) {
         return (await response.json()) as T
       }
       return (await response.text()) as T
@@ -313,4 +336,3 @@ export class UnifiedAPIClient {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' })
   }
 }
-

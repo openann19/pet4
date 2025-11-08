@@ -35,71 +35,67 @@ interface SwipeCardStackProps {
   onSwipeRight: (petId: string) => void
 }
 
-export const SwipeCardStack = memo(({
-  pets,
-  onSwipeLeft,
-  onSwipeRight,
-}: SwipeCardStackProps): React.JSX.Element => {
-  const visiblePets = useMemo(() => pets.slice(0, MAX_VISIBLE_CARDS), [pets])
-  const offset = useSharedValue(0)
+export const SwipeCardStack = memo(
+  ({ pets, onSwipeLeft, onSwipeRight }: SwipeCardStackProps): React.JSX.Element => {
+    const visiblePets = useMemo(() => pets.slice(0, MAX_VISIBLE_CARDS), [pets])
+    const offset = useSharedValue(0)
 
-  const containerStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: offset.value }],
-    }
-  })
-
-  const handleCardSwipe = useCallback(
-    (direction: 'left' | 'right', petId: string): void => {
-      if (direction === 'right') {
-        onSwipeRight(petId)
-      } else {
-        onSwipeLeft(petId)
+    const containerStyle = useAnimatedStyle(() => {
+      return {
+        transform: [{ translateY: offset.value }],
       }
+    })
 
-      // Animate stack shift with proper cleanup
-      cancelAnimation(offset)
-      offset.value = withSequence(
-        withSpring(-10, SPRING_CONFIG),
-        withSpring(0, {
-          ...SPRING_CONFIG,
-          damping: 25,
-        })
+    const handleCardSwipe = useCallback(
+      (direction: 'left' | 'right', petId: string): void => {
+        if (direction === 'right') {
+          onSwipeRight(petId)
+        } else {
+          onSwipeLeft(petId)
+        }
+
+        // Animate stack shift with proper cleanup
+        cancelAnimation(offset)
+        offset.value = withSequence(
+          withSpring(-10, SPRING_CONFIG),
+          withSpring(0, {
+            ...SPRING_CONFIG,
+            damping: 25,
+          })
+        )
+      },
+      [onSwipeLeft, onSwipeRight, offset]
+    )
+
+    if (visiblePets.length === 0) {
+      return (
+        <View style={styles.emptyContainer} accessible accessibilityRole="text">
+          <Text style={styles.emptyText}>No more pets to swipe!</Text>
+          <Text style={styles.emptySubtext}>Pull down to refresh and discover more pets</Text>
+        </View>
       )
-    },
-    [onSwipeLeft, onSwipeRight, offset]
-  )
+    }
 
-  if (visiblePets.length === 0) {
     return (
-      <View style={styles.emptyContainer} accessible accessibilityRole="text">
-        <Text style={styles.emptyText}>No more pets to swipe!</Text>
-        <Text style={styles.emptySubtext}>
-          Pull down to refresh and discover more pets
-        </Text>
-      </View>
+      <Animated.View
+        style={[styles.container, containerStyle]}
+        accessible={false}
+        accessibilityRole="none"
+      >
+        {visiblePets.map((pet: PetProfile, index: number) => (
+          <CardWrapper
+            key={pet.id}
+            pet={pet}
+            index={index}
+            totalCards={visiblePets.length}
+            onSwipeLeft={petId => handleCardSwipe('left', petId)}
+            onSwipeRight={petId => handleCardSwipe('right', petId)}
+          />
+        ))}
+      </Animated.View>
     )
   }
-
-  return (
-    <Animated.View
-      style={[styles.container, containerStyle]}
-      accessible={false}
-      accessibilityRole="none"
-    >
-      {visiblePets.map((pet: PetProfile, index: number) => (
-        <CardWrapper
-          key={pet.id}
-          pet={pet}
-          index={index}
-          totalCards={visiblePets.length}
-          onSwipeLeft={(petId) => handleCardSwipe('left', petId)}
-          onSwipeRight={(petId) => handleCardSwipe('right', petId)}
-        />
-      ))}
-    </Animated.View>
-  )
-})
+)
 
 interface CardWrapperProps {
   pet: PetProfile
@@ -109,41 +105,37 @@ interface CardWrapperProps {
   onSwipeRight: (petId: string) => void
 }
 
-const CardWrapper = memo(({
-  pet,
-  index,
-  totalCards,
-  onSwipeLeft,
-  onSwipeRight,
-}: CardWrapperProps): React.JSX.Element => {
-  const zIndex = totalCards - index
-  const scale = 1 - index * 0.05
-  const translateY = index * 10
+const CardWrapper = memo(
+  ({ pet, index, totalCards, onSwipeLeft, onSwipeRight }: CardWrapperProps): React.JSX.Element => {
+    const zIndex = totalCards - index
+    const scale = 1 - index * 0.05
+    const translateY = index * 10
 
-  return (
-    <Animated.View
-      entering={FadeIn.delay(index * 100)}
-      exiting={FadeOut}
-      layout={Layout.springify()}
-      style={[
-        styles.cardWrapper,
-        {
-          zIndex,
-          transform: [{ scale }, { translateY }],
-        },
-      ]}
-      accessible={index === 0}
-      accessibilityRole="none"
-    >
-      <SwipeCard
-        pet={pet}
-        onSwipeLeft={onSwipeLeft}
-        onSwipeRight={onSwipeRight}
-        isTop={index === 0}
-      />
-    </Animated.View>
-  )
-})
+    return (
+      <Animated.View
+        entering={FadeIn.delay(index * 100)}
+        exiting={FadeOut}
+        layout={Layout.springify()}
+        style={[
+          styles.cardWrapper,
+          {
+            zIndex,
+            transform: [{ scale }, { translateY }],
+          },
+        ]}
+        accessible={index === 0}
+        accessibilityRole="none"
+      >
+        <SwipeCard
+          pet={pet}
+          onSwipeLeft={onSwipeLeft}
+          onSwipeRight={onSwipeRight}
+          isTop={index === 0}
+        />
+      </Animated.View>
+    )
+  }
+)
 
 const styles = StyleSheet.create({
   container: {

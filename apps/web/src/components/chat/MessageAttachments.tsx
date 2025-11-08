@@ -1,60 +1,62 @@
-'use client'
+'use client';
 
-import { useState, useCallback } from 'react'
-import { Play, Pause, DownloadSimple } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { SmartImage } from '@/components/media/SmartImage'
-import type { MessageAttachment } from '@/lib/chat-types'
+import { useState, useCallback } from 'react';
+import { Play, Pause, DownloadSimple } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { SmartImage } from '@/components/media/SmartImage';
+import type { MessageAttachment } from '@/lib/chat-types';
 
 interface MessageAttachmentsProps {
-  attachments: MessageAttachment[]
+  attachments: MessageAttachment[];
 }
 
-export default function MessageAttachments({ attachments }: MessageAttachmentsProps): React.JSX.Element {
+export default function MessageAttachments({
+  attachments,
+}: MessageAttachmentsProps): React.JSX.Element {
   return (
     <div className="space-y-2">
       {attachments.map((attachment) => {
         if (attachment.type === 'voice') {
-          return <VoiceAttachment key={attachment.id} attachment={attachment} />
+          return <VoiceAttachment key={attachment.id} attachment={attachment} />;
         }
         if (attachment.type === 'photo') {
-          return <PhotoAttachment key={attachment.id} attachment={attachment} />
+          return <PhotoAttachment key={attachment.id} attachment={attachment} />;
         }
         if (attachment.type === 'video') {
-          return <VideoAttachment key={attachment.id} attachment={attachment} />
+          return <VideoAttachment key={attachment.id} attachment={attachment} />;
         }
         if (attachment.type === 'document') {
-          return <DocumentAttachment key={attachment.id} attachment={attachment} />
+          return <DocumentAttachment key={attachment.id} attachment={attachment} />;
         }
-        return null
+        return null;
       })}
     </div>
-  )
+  );
 }
 
 interface VoiceAttachmentProps {
   attachment: MessageAttachment & {
-    waveform?: number[]
-  }
+    waveform?: number[];
+  };
 }
 
 function VoiceAttachment({ attachment }: VoiceAttachmentProps): React.JSX.Element {
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const formatDuration = useCallback((seconds = 0): string => {
-    const mins = Math.floor(seconds / 60)
-    const secs = Math.floor(seconds % 60)
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }, [])
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }, []);
 
   const togglePlayback = useCallback(() => {
-    setIsPlaying((prev) => !prev)
-  }, [])
+    setIsPlaying((prev) => !prev);
+  }, []);
 
   // Use waveform from attachment if available, otherwise generate default
-  const waveform = attachment.waveform ?? Array.from({ length: 30 }, () => 0.5)
+  const waveform = attachment.waveform ?? Array.from({ length: 30 }, () => 0.5);
 
   return (
     <div className="flex items-center gap-3 min-w-[200px]">
@@ -65,11 +67,7 @@ function VoiceAttachment({ attachment }: VoiceAttachmentProps): React.JSX.Elemen
         className="shrink-0 w-8 h-8"
         aria-label={isPlaying ? 'Pause voice message' : 'Play voice message'}
       >
-        {isPlaying ? (
-          <Pause size={16} weight="fill" />
-        ) : (
-          <Play size={16} weight="fill" />
-        )}
+        {isPlaying ? <Pause size={16} weight="fill" /> : <Play size={16} weight="fill" />}
       </Button>
 
       <div className="flex-1 space-y-1">
@@ -82,29 +80,27 @@ function VoiceAttachment({ attachment }: VoiceAttachmentProps): React.JSX.Elemen
             />
           ))}
         </div>
-        <span className="text-[10px] opacity-70">
-          {formatDuration(attachment.duration)}
-        </span>
+        <span className="text-[10px] opacity-70">{formatDuration(attachment.duration)}</span>
       </div>
     </div>
-  )
+  );
 }
 
 interface PhotoAttachmentProps {
-  attachment: MessageAttachment
+  attachment: MessageAttachment;
 }
 
 function PhotoAttachment({ attachment }: PhotoAttachmentProps): React.JSX.Element {
   const hoverAnimation = useHoverLift({
     scale: 1.02,
-  })
+  });
 
   const handleDownload = useCallback(() => {
-    const link = document.createElement('a')
-    link.href = attachment.url
-    link.download = attachment.name ?? 'photo'
-    link.click()
-  }, [attachment.url, attachment.name])
+    const link = document.createElement('a');
+    link.href = attachment.url;
+    link.download = attachment.name ?? 'photo';
+    link.click();
+  }, [attachment.url, attachment.name]);
 
   return (
     <AnimatedView
@@ -132,17 +128,17 @@ function PhotoAttachment({ attachment }: PhotoAttachmentProps): React.JSX.Elemen
         <DownloadSimple size={16} weight="bold" />
       </Button>
     </AnimatedView>
-  )
+  );
 }
 
 interface VideoAttachmentProps {
-  attachment: MessageAttachment
+  attachment: MessageAttachment;
 }
 
 function VideoAttachment({ attachment }: VideoAttachmentProps): React.JSX.Element {
   const hoverAnimation = useHoverLift({
     scale: 1.02,
-  })
+  });
 
   return (
     <AnimatedView
@@ -159,30 +155,30 @@ function VideoAttachment({ attachment }: VideoAttachmentProps): React.JSX.Elemen
         aria-label={attachment.name ?? 'Video attachment'}
       />
     </AnimatedView>
-  )
+  );
 }
 
 interface DocumentAttachmentProps {
-  attachment: MessageAttachment
+  attachment: MessageAttachment;
 }
 
 function DocumentAttachment({ attachment }: DocumentAttachmentProps): React.JSX.Element {
   const hoverAnimation = useHoverLift({
     scale: 1.02,
-  })
+  });
 
   const formatFileSize = useCallback((bytes = 0): string => {
-    if (bytes < 1024) return `${bytes} B`
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-  }, [])
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }, []);
 
   const handleDownload = useCallback(() => {
-    const link = document.createElement('a')
-    link.href = attachment.url
-    link.download = attachment.name ?? 'document'
-    link.click()
-  }, [attachment.url, attachment.name])
+    const link = document.createElement('a');
+    link.href = attachment.url;
+    link.download = attachment.name ?? 'document';
+    link.click();
+  }, [attachment.url, attachment.name]);
 
   return (
     <AnimatedView
@@ -196,12 +192,10 @@ function DocumentAttachment({ attachment }: DocumentAttachmentProps): React.JSX.
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate">{attachment.name ?? 'Document'}</p>
-        <p className="text-xs text-muted-foreground">
-          {formatFileSize(attachment.size ?? 0)}
-        </p>
+        <p className="text-xs text-muted-foreground">{formatFileSize(attachment.size ?? 0)}</p>
       </div>
-      <Button 
-        size="icon" 
+      <Button
+        size="icon"
         variant="ghost"
         onClick={handleDownload}
         aria-label={`Download ${attachment.name ?? 'document'}`}
@@ -209,5 +203,5 @@ function DocumentAttachment({ attachment }: DocumentAttachmentProps): React.JSX.
         <DownloadSimple size={16} weight="bold" />
       </Button>
     </AnimatedView>
-  )
+  );
 }

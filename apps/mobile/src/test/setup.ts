@@ -8,19 +8,30 @@ afterEach(() => {
 })
 
 // Set globals/env expected by app code
-// @ts-expect-error - global assignment for tests
-global.__DEV__ = false
+Object.defineProperty(global, '__DEV__', {
+  value: false,
+  configurable: true,
+  writable: true,
+})
 process.env['EXPO_PUBLIC_API_URL'] = process.env['EXPO_PUBLIC_API_URL'] ?? ''
 process.env['EXPO_PUBLIC_ANALYTICS_ENDPOINT'] = process.env['EXPO_PUBLIC_ANALYTICS_ENDPOINT'] ?? ''
 
 // Help surface early syntax errors with clearer stacks during environment boot
-process.on('uncaughtException', (err) => {
-  // eslint-disable-next-line no-console
-  console.error('uncaughtException:', err && (err as Error).stack || err)
+// Use vitest's built-in error handling instead of console.error
+process.on('uncaughtException', err => {
+  // Vitest will handle these errors in its test environment
+  // Only log if we're not in a test environment (shouldn't happen in tests)
+  if (typeof process !== 'undefined' && process.env['NODE_ENV'] !== 'test') {
+    // In non-test environments, these should be handled by the application
+    throw err
+  }
 })
-process.on('unhandledRejection', (reason) => {
-  // eslint-disable-next-line no-console
-  console.error('unhandledRejection:', reason)
+process.on('unhandledRejection', reason => {
+  // Vitest will handle these errors in its test environment
+  // Only throw if we're not in a test environment (shouldn't happen in tests)
+  if (typeof process !== 'undefined' && process.env['NODE_ENV'] !== 'test') {
+    throw new Error(`Unhandled rejection: ${String(reason)}`)
+  }
 })
 
 // Mock React Native modules

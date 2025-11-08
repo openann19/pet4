@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-const isWeb = typeof window !== 'undefined'
+const isWeb = typeof window !== 'undefined';
 
 /**
  * Generates video thumbnails at evenly spaced intervals
@@ -10,110 +10,115 @@ const isWeb = typeof window !== 'undefined'
  */
 export async function getVideoThumbnails(uri: string, count = 8): Promise<string[]> {
   if (isWeb) {
-    return generateWebThumbnails(uri, count)
+    return generateWebThumbnails(uri, count);
   }
 
-  return generateNativeThumbnails(uri, count)
+  return generateNativeThumbnails(uri, count);
 }
 
 async function generateWebThumbnails(uri: string, count: number): Promise<string[]> {
   return new Promise<string[]>((resolve) => {
-    const video = document.createElement('video')
-    video.crossOrigin = 'anonymous'
-    video.src = uri
-    video.preload = 'auto'
+    const video = document.createElement('video');
+    video.crossOrigin = 'anonymous';
+    video.src = uri;
+    video.preload = 'auto';
 
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
 
     if (!context) {
-      resolve([])
-      return
+      resolve([]);
+      return;
     }
 
-    const frames: string[] = []
+    const frames: string[] = [];
 
     video.onloadedmetadata = async () => {
-      const maxWidth = 320
-      const aspectRatio = video.videoWidth / video.videoHeight
-      canvas.width = Math.min(maxWidth, video.videoWidth)
-      canvas.height = Math.round(canvas.width / aspectRatio)
+      const maxWidth = 320;
+      const aspectRatio = video.videoWidth / video.videoHeight;
+      canvas.width = Math.min(maxWidth, video.videoWidth);
+      canvas.height = Math.round(canvas.width / aspectRatio);
 
-      const duration = video.duration
-      const step = duration / (count + 1)
+      const duration = video.duration;
+      const step = duration / (count + 1);
 
-      let index = 1
+      let index = 1;
 
       const capture = (): void => {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height)
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.7)
-        frames.push(dataUrl)
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        frames.push(dataUrl);
 
-        index++
+        index++;
         if (index > count) {
-          resolve(frames)
+          resolve(frames);
         } else {
-          seekTo(index * step)
+          seekTo(index * step);
         }
-      }
+      };
 
       const seekTo = (time: number): void => {
-        video.currentTime = Math.min(duration - 0.05, Math.max(0, time))
-      }
+        video.currentTime = Math.min(duration - 0.05, Math.max(0, time));
+      };
 
-      video.onseeked = capture
+      video.onseeked = capture;
       video.onerror = () => {
-        resolve(frames)
-      }
+        resolve(frames);
+      };
 
-      seekTo(step)
-    }
+      seekTo(step);
+    };
 
     video.onerror = () => {
-      resolve([])
-    }
-  })
+      resolve([]);
+    };
+  });
 }
 
 async function generateNativeThumbnails(uri: string, count: number): Promise<string[]> {
   try {
     // Dynamic import to avoid bundling if not available
-    const FFmpegKitModule = await import('ffmpeg-kit-react-native')
-    const FFmpegKit = FFmpegKitModule.default ?? (FFmpegKitModule as any).FFmpegKit
-
-    const FileSystemModule = await import('expo-file-system')
-    const FileSystem = FileSystemModule.default
-
-    const cacheDir = (FileSystem as any).cacheDirectory
-    if (!cacheDir) {
-      return []
+    const FFmpegKitModule = await import('ffmpeg-kit-react-native');
+    const FFmpegKit =
+      FFmpegKitModule.default ??
+      (FFmpegKitModule as { FFmpegKit?: typeof FFmpegKitModule.default }).FFmpegKit;
+    if (!FFmpegKit) {
+      return [];
     }
 
-    const outDir = `${cacheDir}thumbs_${Date.now()}/`
-    await FileSystem.makeDirectoryAsync(outDir, { intermediates: true })
+    const FileSystemModule = await import('expo-file-system');
+    const FileSystem = FileSystemModule.default ?? FileSystemModule;
 
-    const thumbnails: string[] = []
-    const stepSec = 1.0
-    const targets = Array.from({ length: count }, (_, i) => (i + 1) * stepSec)
+    const cacheDir = FileSystem.cacheDirectory;
+    if (!cacheDir) {
+      return [];
+    }
+
+    const outDir = `${cacheDir}thumbs_${Date.now()}/`;
+    await FileSystem.makeDirectoryAsync(outDir, { intermediates: true });
+
+    const thumbnails: string[] = [];
+    const stepSec = 1.0;
+    const targets = Array.from({ length: count }, (_, i) => (i + 1) * stepSec);
 
     for (let i = 0; i < targets.length; i++) {
-      const outputPath = `${outDir}t${i}.jpg`
-      const args = `-y -ss ${targets[i]} -i "${uri}" -frames:v 1 -q:v 5 "${outputPath}"`
+      const outputPath = `${outDir}t${i}.jpg`;
+      const args = `-y -ss ${targets[i]} -i "${uri}" -frames:v 1 -q:v 5 "${outputPath}"`;
 
       try {
-        await FFmpegKit.execute(args)
-        const info = await FileSystem.getInfoAsync(outputPath)
+        await FFmpegKit.execute(args);
+        const info = await FileSystem.getInfoAsync(outputPath);
         if (info.exists) {
-          thumbnails.push(outputPath)
+          thumbnails.push(outputPath);
         }
       } catch {
         // Continue to next thumbnail if this one fails
       }
     }
 
-    return thumbnails
+    return thumbnails;
   } catch {
     // FFmpeg not available or failed to import
-    return []
+    return [];
   }
 }

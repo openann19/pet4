@@ -1,36 +1,36 @@
 /**
  * Message Item Component
- * 
+ *
  * Individual message bubble with animations and interactions
  */
 
-import { useEffect } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { MapPin, Translate as TranslateIcon } from '@phosphor-icons/react'
-import { useAnimatedStyle } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
-import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation'
-import { useSendWarp } from '@/effects/chat/bubbles/use-send-warp'
-import { useReceiveAirCushion } from '@/effects/chat/bubbles/use-receive-air-cushion'
-import { WebBubbleWrapper } from '../WebBubbleWrapper'
-import { PresenceAvatar } from '../PresenceAvatar'
-import { MessageAttachments } from '../MessageAttachments'
-import { MessageReactions } from '../MessageReactions'
-import { VoiceWaveform } from '../VoiceWaveform'
-import { formatChatTime } from '@/lib/chat-utils'
-import { REACTION_EMOJIS } from '@/lib/chat-types'
-import type { ChatMessage } from '@/lib/chat-types'
+import { useEffect } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { MapPin, Translate as TranslateIcon } from '@phosphor-icons/react';
+import { useAnimatedStyle } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
+import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
+import { useSendWarp } from '@/effects/chat/bubbles/use-send-warp';
+import { useReceiveAirCushion } from '@/effects/chat/bubbles/use-receive-air-cushion';
+import { WebBubbleWrapper } from '../WebBubbleWrapper';
+import { PresenceAvatar } from '../PresenceAvatar';
+import { MessageAttachments } from '../MessageAttachments';
+import { MessageReactions } from '../MessageReactions';
+import { VoiceWaveform } from '../VoiceWaveform';
+import { formatChatTime } from '@/lib/chat-utils';
+import { REACTION_EMOJIS } from '@/lib/chat-types';
+import type { ChatMessage } from '@/lib/chat-types';
 
 export interface MessageItemProps {
-  message: ChatMessage
-  isCurrentUser: boolean
-  currentUserId: string
-  currentUserName: string
-  delay: number
-  onReaction: (messageId: string, emoji: string) => void
-  onTranslate: (messageId: string) => void
+  message: ChatMessage;
+  isCurrentUser: boolean;
+  currentUserId: string;
+  currentUserName: string;
+  delay: number;
+  onReaction: (messageId: string, emoji: string) => void;
+  onTranslate: (messageId: string) => void;
 }
 
 export function MessageItem({
@@ -40,49 +40,51 @@ export function MessageItem({
   currentUserName,
   delay,
   onReaction,
-  onTranslate
+  onTranslate,
 }: MessageItemProps): JSX.Element {
-  const bubbleHover = useHoverAnimation({ scale: 1.02 })
-  
+  const bubbleHover = useHoverAnimation({ scale: 1.02 });
+
   // Premium send/receive effects
   const sendWarp = useSendWarp({
     enabled: isCurrentUser && message.status === 'sent',
     onStatusChange: () => {
       // Status change handled by effect
     },
-  })
-  
+  });
+
   const receiveAir = useReceiveAirCushion({
     enabled: !isCurrentUser,
     isNew: delay < 100,
-    isMention: (message.content?.includes(`@${currentUserName}`) ?? false) || (message.content?.includes(`@${currentUserId}`) ?? false),
-  })
-  
+    isMention:
+      (message.content?.includes(`@${currentUserName}`) ?? false) ||
+      (message.content?.includes(`@${currentUserId}`) ?? false),
+  });
+
   // Combine entry animation with send/receive effects
-  const messageAnimation = useEntryAnimation({ 
-    initialY: 20, 
-    initialScale: 0.95, 
-    delay 
-  })
-  
+  const messageAnimation = useEntryAnimation({
+    initialY: 20,
+    initialScale: 0.95,
+    delay,
+  });
+
   // Trigger send warp when message is sent
   useEffect(() => {
     if (isCurrentUser && message.status === 'sent') {
-      sendWarp.trigger()
+      sendWarp.trigger();
     }
-  }, [isCurrentUser, message.status, sendWarp])
-  
+  }, [isCurrentUser, message.status, sendWarp]);
+
   // Combine all animations
   const combinedStyle = useAnimatedStyle(() => {
-    const entryStyle = messageAnimation.animatedStyle
-    const effectStyle = isCurrentUser ? sendWarp.animatedStyle : receiveAir.animatedStyle
-    
+    const entryStyle = messageAnimation.animatedStyle;
+    const effectStyle = isCurrentUser ? sendWarp.animatedStyle : receiveAir.animatedStyle;
+
     return {
       ...entryStyle,
       ...effectStyle,
-    }
-  })
-  
+    };
+  });
+
   return (
     <AnimatedView
       style={combinedStyle}
@@ -133,12 +135,8 @@ export function MessageItem({
                 )}
               </>
             )}
-            
-            {message.type === 'sticker' && (
-              <div className="text-5xl p-2">
-                {message.content}
-              </div>
-            )}
+
+            {message.type === 'sticker' && <div className="text-5xl p-2">{message.content}</div>}
 
             {message.type === 'voice' && message.attachments && (
               <div className="space-y-2">
@@ -169,8 +167,8 @@ export function MessageItem({
 
             {message.type === 'pet-card' && message.metadata?.petCard && (
               <div className="flex items-center gap-3 p-2 bg-white/10 rounded-lg">
-                <img 
-                  src={message.metadata.petCard.petPhoto} 
+                <img
+                  src={message.metadata.petCard.petPhoto}
                   alt={message.metadata.petCard.petName}
                   className="w-12 h-12 rounded-full object-cover"
                 />
@@ -184,7 +182,7 @@ export function MessageItem({
               reactions={Array.isArray(message.reactions) ? message.reactions : []}
               availableReactions={REACTION_EMOJIS}
               onReact={(emoji) => {
-                onReaction(message.id, emoji)
+                onReaction(message.id, emoji);
               }}
               currentUserId={currentUserId}
             />
@@ -212,5 +210,5 @@ export function MessageItem({
         </span>
       </div>
     </AnimatedView>
-  )
+  );
 }

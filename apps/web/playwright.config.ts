@@ -1,11 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
+import type { PlaywrightTestConfig } from '@playwright/test';
 
-export default defineConfig({
+const isCI = Boolean(process.env['CI']);
+
+const config: PlaywrightTestConfig = {
   testDir: './e2e',
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
   reporter: 'html',
   use: {
     baseURL: 'http://localhost:5173',
@@ -20,6 +22,12 @@ export default defineConfig({
   webServer: {
     command: 'pnpm dev',
     url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !isCI,
   },
-});
+};
+
+if (isCI) {
+  config.workers = 1;
+}
+
+export default defineConfig(config);

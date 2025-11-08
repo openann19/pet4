@@ -1,23 +1,12 @@
 /**
  * Admin Console Screen (Mobile) - Enhanced
- * 
+ *
  * Full-featured mobile admin console with navigation matching web AdminLayout.
  */
 
 import React, { useState } from 'react';
-import {
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SpringConfig } from '../animations/springConfigs';
 import { FadeInView } from '../components/FadeInView';
@@ -115,10 +104,7 @@ export const AdminConsoleScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.menuButton}
-          onPress={() => setMenuOpen(!menuOpen)}
-        >
+        <TouchableOpacity style={styles.menuButton} onPress={() => setMenuOpen(!menuOpen)}>
           <Text style={styles.menuIcon}>☰</Text>
         </TouchableOpacity>
         <View style={styles.headerContent}>
@@ -141,10 +127,7 @@ export const AdminConsoleScreen: React.FC = () => {
           {menuItems.map((item) => (
             <TouchableOpacity
               key={item.id}
-              style={[
-                styles.menuItem,
-                selectedView === item.id && styles.menuItemActive,
-              ]}
+              style={[styles.menuItem, selectedView === item.id && styles.menuItemActive]}
               onPress={() => {
                 setSelectedView(item.id);
                 setMenuOpen(false);
@@ -152,10 +135,7 @@ export const AdminConsoleScreen: React.FC = () => {
             >
               <Text style={styles.menuIcon}>{item.icon}</Text>
               <Text
-                style={[
-                  styles.menuItemText,
-                  selectedView === item.id && styles.menuItemTextActive,
-                ]}
+                style={[styles.menuItemText, selectedView === item.id && styles.menuItemTextActive]}
               >
                 {item.label}
               </Text>

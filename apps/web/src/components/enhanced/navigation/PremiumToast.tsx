@@ -1,32 +1,32 @@
-'use client'
+'use client';
 
-import { useEffect, useState, useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import { X, CheckCircle, Warning, Info, XCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { useEffect, useState, useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import { X, CheckCircle, Warning, Info, XCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
-export type PremiumToastType = 'success' | 'error' | 'warning' | 'info'
+export type PremiumToastType = 'success' | 'error' | 'warning' | 'info';
 
 export interface PremiumToastAction {
-  label: string
-  onClick: () => void
+  label: string;
+  onClick: () => void;
 }
 
 export interface PremiumToastProps {
-  id: string
-  type: PremiumToastType
-  title: string
-  description?: string
-  action?: PremiumToastAction
-  duration?: number
-  onDismiss: (id: string) => void
-  position?: 'top' | 'bottom'
-  showProgress?: boolean
+  id: string;
+  type: PremiumToastType;
+  title: string;
+  description?: string;
+  action?: PremiumToastAction;
+  duration?: number;
+  onDismiss: (id: string) => void;
+  position?: 'top' | 'bottom';
+  showProgress?: boolean;
 }
 
 const icons = {
@@ -34,21 +34,21 @@ const icons = {
   error: XCircle,
   warning: Warning,
   info: Info,
-}
+};
 
 const colors = {
   success: 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-300',
   error: 'bg-red-500/10 border-red-500/30 text-red-700 dark:text-red-300',
   warning: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-300',
   info: 'bg-blue-500/10 border-blue-500/30 text-blue-700 dark:text-blue-300',
-}
+};
 
 const iconColors = {
   success: 'text-green-600 dark:text-green-400',
   error: 'text-red-600 dark:text-red-400',
   warning: 'text-yellow-600 dark:text-yellow-400',
   info: 'text-blue-600 dark:text-blue-400',
-}
+};
 
 export function PremiumToast({
   id,
@@ -61,31 +61,31 @@ export function PremiumToast({
   position = 'top',
   showProgress = true,
 }: PremiumToastProps): React.JSX.Element {
-  const Icon = icons[type]
-  const opacity = useSharedValue(0)
-  const translateY = useSharedValue(position === 'top' ? -20 : 20)
-  const translateX = useSharedValue(0)
-  const scale = useSharedValue(0.95)
-  const progressWidth = useSharedValue(100)
-  const [isPaused, setIsPaused] = useState(false)
+  const Icon = icons[type];
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(position === 'top' ? -20 : 20);
+  const translateX = useSharedValue(0);
+  const scale = useSharedValue(0.95);
+  const progressWidth = useSharedValue(100);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    opacity.value = withSpring(1, springConfigs.smooth)
-    translateY.value = withSpring(0, springConfigs.smooth)
-    scale.value = withSpring(1, springConfigs.smooth)
-  }, [opacity, translateY, scale])
+    opacity.value = withSpring(1, springConfigs.smooth);
+    translateY.value = withSpring(0, springConfigs.smooth);
+    scale.value = withSpring(1, springConfigs.smooth);
+  }, [opacity, translateY, scale]);
 
   useEffect(() => {
-    if (!showProgress || isPaused || duration === 0) return
+    if (!showProgress || isPaused || duration === 0) return;
 
-    progressWidth.value = withTiming(0, { duration })
+    progressWidth.value = withTiming(0, { duration });
 
     const timer = setTimeout(() => {
-      handleDismiss()
-    }, duration)
+      handleDismiss();
+    }, duration);
 
-    return () => clearTimeout(timer)
-  }, [duration, isPaused, showProgress, progressWidth])
+    return () => clearTimeout(timer);
+  }, [duration, isPaused, showProgress, progressWidth]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -94,18 +94,18 @@ export function PremiumToast({
       { translateX: translateX.value },
       { scale: scale.value },
     ],
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const progressStyle = useAnimatedStyle(() => ({
     width: `${progressWidth.value}%`,
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const handleDismiss = useCallback(() => {
-    opacity.value = withTiming(0, { duration: 200 })
-    translateX.value = withTiming(300, { duration: 200 })
-    scale.value = withTiming(0.9, { duration: 200 })
-    setTimeout(() => onDismiss(id), 200)
-  }, [id, onDismiss, opacity, translateX, scale])
+    opacity.value = withTiming(0, { duration: 200 });
+    translateX.value = withTiming(300, { duration: 200 });
+    scale.value = withTiming(0.9, { duration: 200 });
+    setTimeout(() => onDismiss(id), 200);
+  }, [id, onDismiss, opacity, translateX, scale]);
 
   return (
     <AnimatedView
@@ -131,16 +131,14 @@ export function PremiumToast({
 
       <div className="flex-1 min-w-0">
         <div className="font-semibold text-sm mb-1">{title}</div>
-        {description && (
-          <div className="text-xs opacity-90 leading-relaxed">{description}</div>
-        )}
+        {description && <div className="text-xs opacity-90 leading-relaxed">{description}</div>}
         {action && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
-              action.onClick()
-              handleDismiss()
+              action.onClick();
+              handleDismiss();
             }}
             className="mt-2 h-7 text-xs font-medium hover:bg-background/50"
           >
@@ -157,6 +155,5 @@ export function PremiumToast({
         <X size={16} />
       </button>
     </AnimatedView>
-  )
+  );
 }
-

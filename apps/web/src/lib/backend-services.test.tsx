@@ -1,19 +1,14 @@
-import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
-import { URL } from 'node:url'
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { URL } from 'node:url';
 
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { PhotoService, ModerationService, KYCService } from './backend-services'
-import type {
-  KYCSession,
-  ModerationTask,
-  PhotoRecord,
-  UploadSession,
-} from './backend-types'
+import { PhotoService, ModerationService, KYCService } from './backend-services';
+import type { KYCSession, ModerationTask, PhotoRecord, UploadSession } from './backend-types';
 
-const photoService = new PhotoService()
-const moderationService = new ModerationService()
-const kycService = new KYCService()
+const photoService = new PhotoService();
+const moderationService = new ModerationService();
+const kycService = new KYCService();
 
 const basePhoto: PhotoRecord = {
   id: 'photo-1',
@@ -49,7 +44,7 @@ const basePhoto: PhotoRecord = {
     scannedAt: new Date().toISOString(),
   },
   uploadedAt: new Date().toISOString(),
-}
+};
 
 const baseTask: ModerationTask = {
   id: 'task-1',
@@ -59,7 +54,7 @@ const baseTask: ModerationTask = {
   priority: 'low',
   status: 'pending',
   createdAt: new Date().toISOString(),
-}
+};
 
 const quota = {
   userId: 'owner-1',
@@ -67,7 +62,7 @@ const quota = {
   uploadsThisHour: 0,
   totalStorage: 0,
   resetAt: new Date().toISOString(),
-}
+};
 
 const policy = {
   requireKYCToPublish: false,
@@ -82,41 +77,45 @@ const policy = {
   retentionDaysLogs: 365,
   autoApproveThreshold: 0.95,
   enableDuplicateDetection: true,
-}
+};
 
-const auditLogSpy = vi.fn()
-const notificationSpy = vi.fn()
-const eventSpy = vi.fn()
+const auditLogSpy = vi.fn();
+const notificationSpy = vi.fn();
+const eventSpy = vi.fn();
 
-let server: ReturnType<typeof createServer>
+let server: ReturnType<typeof createServer>;
 
 async function readJson<T>(req: IncomingMessage): Promise<T> {
-  const chunks: Buffer[] = []
+  const chunks: Buffer[] = [];
   for await (const chunk of req) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk)
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
   }
-  const body = Buffer.concat(chunks).toString('utf8')
-  return body ? (JSON.parse(body) as T) : ({} as T)
+  const body = Buffer.concat(chunks).toString('utf8');
+  return body ? (JSON.parse(body) as T) : ({} as T);
 }
 
 beforeAll(async () => {
   server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
     if (!req.url || !req.method) {
-      res.statusCode = 400
-      res.end()
-      return
+      res.statusCode = 400;
+      res.end();
+      return;
     }
 
-    const url = new URL(req.url, 'http://localhost:8080')
+    const url = new URL(req.url, 'http://localhost:8080');
 
-    if (req.method === 'GET' && url.pathname.startsWith('/users/') && url.pathname.endsWith('/quota')) {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: quota }))
-      return
+    if (
+      req.method === 'GET' &&
+      url.pathname.startsWith('/users/') &&
+      url.pathname.endsWith('/quota')
+    ) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: quota }));
+      return;
     }
 
     if (req.method === 'POST' && url.pathname === '/uploads/sign-url') {
-      const payload = await readJson<{ userId: string; petId: string }>(req)
+      const payload = await readJson<{ userId: string; petId: string }>(req);
       const session: UploadSession = {
         id: 'session-1',
         userId: payload.userId,
@@ -127,55 +126,55 @@ beforeAll(async () => {
         allowedMimeTypes: ['image/jpeg'],
         status: 'pending',
         createdAt: new Date().toISOString(),
-      }
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { session } }))
-      return
+      };
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { session } }));
+      return;
     }
 
     if (req.method === 'GET' && url.pathname === '/admin/moderation/policy') {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { policy } }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { policy } }));
+      return;
     }
 
     if (req.method === 'POST' && url.pathname === '/photos') {
-      const payload = await readJson<{ sessionId: string }>(req)
-      const ownerId = payload.sessionId?.includes('owner-1') ? 'owner-1' : basePhoto.ownerId
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { photo: { ...basePhoto, ownerId } } }))
-      return
+      const payload = await readJson<{ sessionId: string }>(req);
+      const ownerId = payload.sessionId?.includes('owner-1') ? 'owner-1' : basePhoto.ownerId;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { photo: { ...basePhoto, ownerId } } }));
+      return;
     }
 
     if (req.method === 'POST' && url.pathname.endsWith('/quota/increment')) {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { success: true } }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { success: true } }));
+      return;
     }
 
     if (req.method === 'POST' && url.pathname === '/events') {
-      eventSpy()
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { success: true } }))
-      return
+      eventSpy();
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { success: true } }));
+      return;
     }
 
     if (req.method === 'GET' && url.pathname === '/photos') {
-      const ownerId = url.searchParams.get('ownerId')
-      const photos = ownerId === basePhoto.ownerId ? [basePhoto] : []
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { photos } }))
-      return
+      const ownerId = url.searchParams.get('ownerId');
+      const photos = ownerId === basePhoto.ownerId ? [basePhoto] : [];
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { photos } }));
+      return;
     }
 
     if (req.method === 'POST' && url.pathname === '/admin/moderation/tasks') {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { task: baseTask } }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { task: baseTask } }));
+      return;
     }
 
     if (req.method === 'GET' && url.pathname === '/admin/moderation/tasks') {
-      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           data: {
@@ -187,45 +186,49 @@ beforeAll(async () => {
               averageReviewTime: 0,
             },
           },
-        }),
-      )
-      return
+        })
+      );
+      return;
     }
 
     if (req.method === 'POST' && url.pathname === '/admin/audit-logs') {
-      auditLogSpy()
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { success: true } }))
-      return
+      auditLogSpy();
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { success: true } }));
+      return;
     }
 
-    if (req.method === 'POST' && url.pathname.startsWith('/admin/moderation/tasks/') && url.pathname.endsWith('/take')) {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { task: { ...baseTask, status: 'in_progress' } } }))
-      return
+    if (
+      req.method === 'POST' &&
+      url.pathname.startsWith('/admin/moderation/tasks/') &&
+      url.pathname.endsWith('/take')
+    ) {
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { task: { ...baseTask, status: 'in_progress' } } }));
+      return;
     }
 
     if (req.method === 'PATCH' && url.pathname.startsWith('/admin/moderation/tasks/')) {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { task: { ...baseTask, status: 'completed' } } }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { task: { ...baseTask, status: 'completed' } } }));
+      return;
     }
 
     if (req.method === 'GET' && url.pathname === `/photos/${basePhoto.id}`) {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { photo: basePhoto } }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { photo: basePhoto } }));
+      return;
     }
 
     if (req.method === 'POST' && url.pathname === '/notifications') {
-      notificationSpy()
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { success: true } }))
-      return
+      notificationSpy();
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { success: true } }));
+      return;
     }
 
     if (req.method === 'GET' && url.pathname === '/admin/moderation/metrics') {
-      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           data: {
@@ -241,13 +244,13 @@ beforeAll(async () => {
               duplicateRate: 0,
             },
           },
-        }),
-      )
-      return
+        })
+      );
+      return;
     }
 
     if (req.method === 'POST' && url.pathname === '/kyc/start') {
-      const payload = await readJson<{ userId: string }>(req)
+      const payload = await readJson<{ userId: string }>(req);
       const session: KYCSession = {
         id: 'kyc-1',
         userId: payload.userId,
@@ -257,10 +260,10 @@ beforeAll(async () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         retryCount: 0,
-      }
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { session } }))
-      return
+      };
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { session } }));
+      return;
     }
 
     if (req.method === 'GET' && url.pathname === '/kyc/status') {
@@ -274,84 +277,84 @@ beforeAll(async () => {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           retryCount: 0,
-        }
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({ data: { session } }))
-        return
+        };
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ data: { session } }));
+        return;
       }
 
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: null }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: null }));
+      return;
     }
 
     if (
       (req.method === 'PATCH' || req.method === 'POST') &&
       url.pathname.startsWith('/kyc/verifications/')
     ) {
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ data: { success: true } }))
-      return
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ data: { success: true } }));
+      return;
     }
 
-    res.statusCode = 404
-    res.end()
-  })
+    res.statusCode = 404;
+    res.end();
+  });
 
-  await new Promise<void>(resolve => server.listen(8080, resolve))
-})
+  await new Promise<void>((resolve) => server.listen(8080, resolve));
+});
 
 afterAll(async () => {
-  await new Promise<void>(resolve => server.close(() => resolve()))
-})
+  await new Promise<void>((resolve) => server.close(() => resolve()));
+});
 
 afterEach(() => {
-  auditLogSpy.mockReset()
-  notificationSpy.mockReset()
-  eventSpy.mockReset()
-})
+  auditLogSpy.mockReset();
+  notificationSpy.mockReset();
+  eventSpy.mockReset();
+});
 
 describe('PhotoService', () => {
   it('creates upload sessions via backend', async () => {
-    const session = await photoService.createUploadSession('owner-1', 'pet-1')
-    expect(session).toMatchObject({ id: 'session-1', status: 'pending' })
-  })
+    const session = await photoService.createUploadSession('owner-1', 'pet-1');
+    expect(session).toMatchObject({ id: 'session-1', status: 'pending' });
+  });
 
   it('processes uploads through backend pipeline', async () => {
     const photo = await photoService.processUpload('session-owner-1', {
       size: 1024,
       type: 'image/jpeg',
       data: 'encoded-data',
-    })
+    });
 
-    expect(photo).toMatchObject({ id: basePhoto.id, ownerId: basePhoto.ownerId })
-    expect(eventSpy).toHaveBeenCalled()
-  })
+    expect(photo).toMatchObject({ id: basePhoto.id, ownerId: basePhoto.ownerId });
+    expect(eventSpy).toHaveBeenCalled();
+  });
 
   it('fetches owner photos from backend', async () => {
-    const photos = await photoService.getPhotosByOwner(basePhoto.ownerId)
-    expect(photos).toHaveLength(1)
-    expect(photos[0]?.id).toBe(basePhoto.id)
-  })
+    const photos = await photoService.getPhotosByOwner(basePhoto.ownerId);
+    expect(photos).toHaveLength(1);
+    expect(photos[0]?.id).toBe(basePhoto.id);
+  });
 
   it('creates moderation tasks remotely', async () => {
-    const task = await photoService.createModerationTask(basePhoto)
-    expect(task).toMatchObject({ id: baseTask.id, status: baseTask.status })
-  })
-})
+    const task = await photoService.createModerationTask(basePhoto);
+    expect(task).toMatchObject({ id: baseTask.id, status: baseTask.status });
+  });
+});
 
 describe('ModerationService', () => {
   it('fetches moderation queue', async () => {
-    const queue = await moderationService.getQueue()
-    expect(queue.pending).toHaveLength(1)
-    expect(queue.totalCount).toBe(1)
-  })
+    const queue = await moderationService.getQueue();
+    expect(queue.pending).toHaveLength(1);
+    expect(queue.totalCount).toBe(1);
+  });
 
   it('assigns tasks and records audit log', async () => {
-    const task = await moderationService.takeTask(baseTask.id, 'moderator-1')
-    expect(task.status).toBe('in_progress')
-    expect(auditLogSpy).toHaveBeenCalled()
-  })
+    const task = await moderationService.takeTask(baseTask.id, 'moderator-1');
+    expect(task.status).toBe('in_progress');
+    expect(auditLogSpy).toHaveBeenCalled();
+  });
 
   it('submits moderation decisions and notifies user', async () => {
     const task = await moderationService.makeDecision(
@@ -360,28 +363,28 @@ describe('ModerationService', () => {
       undefined,
       undefined,
       'moderator-1',
-      'Moderator',
-    )
+      'Moderator'
+    );
 
-    expect(task.status).toBe('completed')
-    expect(notificationSpy).toHaveBeenCalled()
-  })
+    expect(task.status).toBe('completed');
+    expect(notificationSpy).toHaveBeenCalled();
+  });
 
   it('retrieves metrics from backend', async () => {
-    const metrics = await moderationService.getMetrics()
-    expect(metrics).toMatchObject({ totalReviews: 1, approvalRate: 1 })
-  })
-})
+    const metrics = await moderationService.getMetrics();
+    expect(metrics).toMatchObject({ totalReviews: 1, approvalRate: 1 });
+  });
+});
 
 describe('KYCService', () => {
   it('creates sessions through backend', async () => {
-    const session = await kycService.createSession('user-kyc')
-    expect(session).toMatchObject({ id: 'kyc-1', status: 'pending' })
-  })
+    const session = await kycService.createSession('user-kyc');
+    expect(session).toMatchObject({ id: 'kyc-1', status: 'pending' });
+  });
 
   it('retrieves latest session for user', async () => {
-    const session = await kycService.getUserSession('user-kyc')
-    expect(session).not.toBeNull()
-    expect(session?.id).toBe('kyc-1')
-  })
-})
+    const session = await kycService.getUserSession('user-kyc');
+    expect(session).not.toBeNull();
+    expect(session?.id).toBe('kyc-1');
+  });
+});

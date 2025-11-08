@@ -22,11 +22,7 @@ export function usePinchZoom<T extends HTMLElement = HTMLDivElement>(
   handlers: PinchZoomHandlers = {},
   options: PinchZoomOptions = {}
 ): RefObject<T | null> {
-  const {
-    minScale = 0.5,
-    maxScale = 3,
-    enabled = true,
-  } = options;
+  const { minScale = 0.5, maxScale = 3, enabled = true } = options;
 
   const ref = useRef<T | null>(null);
   const initialDistance = useRef<number>(0);

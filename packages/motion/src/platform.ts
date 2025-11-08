@@ -1,2 +1,3 @@
-export const isWeb = typeof navigator !== 'undefined' && navigator.product === 'Gecko' || typeof document !== 'undefined';
-
+export const isWeb =
+  (typeof navigator !== 'undefined' && (navigator as { product?: string }).product === 'Gecko') ||
+  typeof document !== 'undefined'

@@ -1,6 +1,6 @@
 /**
  * Playwright smoke test for AdvancedChatWindow performance
- * 
+ *
  * Measures dropped frames during 5 seconds of chat activity with 30 concurrent message entries.
  * Asserts RAF dropped frames < 3%.
  */
@@ -52,7 +52,8 @@ test.describe('AdvancedChatWindow Performance', () => {
 
     // Simulate 30 concurrent message entries
     const inputSelector = 'textarea, input[type="text"]';
-    const sendButtonSelector = 'button[type="submit"], button:has-text("Send"), [aria-label*="Send"]';
+    const sendButtonSelector =
+      'button[type="submit"], button:has-text("Send"), [aria-label*="Send"]';
 
     for (let i = 0; i < 30; i++) {
       const input = page.locator(inputSelector).first();
@@ -80,17 +81,17 @@ test.describe('AdvancedChatWindow Performance', () => {
       return {
         frameCount,
         droppedFrames,
-        averageFrameTime: frameTimes.length > 0
-          ? frameTimes.reduce((a: number, b: number) => a + b, 0) / frameTimes.length
-          : 0,
+        averageFrameTime:
+          frameTimes.length > 0
+            ? frameTimes.reduce((a: number, b: number) => a + b, 0) / frameTimes.length
+            : 0,
         maxFrameTime: frameTimes.length > 0 ? Math.max(...frameTimes) : 0,
       };
     });
 
     // Calculate dropped frame percentage
-    const droppedFramePercentage = metrics.frameCount > 0
-      ? (metrics.droppedFrames / metrics.frameCount) * 100
-      : 0;
+    const droppedFramePercentage =
+      metrics.frameCount > 0 ? (metrics.droppedFrames / metrics.frameCount) * 100 : 0;
 
     // Assertions
     expect(metrics.frameCount).toBeGreaterThan(0);
@@ -116,7 +117,9 @@ test.describe('AdvancedChatWindow Performance', () => {
 
     // Check that animations are instant (≤120ms)
     const animationDuration = await page.evaluate(() => {
-      const animatedElements = document.querySelectorAll('[style*="transition"], [style*="animation"]');
+      const animatedElements = document.querySelectorAll(
+        '[style*="transition"], [style*="animation"]'
+      );
       let maxDuration = 0;
 
       animatedElements.forEach((el) => {

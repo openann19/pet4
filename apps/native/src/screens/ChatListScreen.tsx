@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import type { ChatRoom } from '../types';
 import { useStorage } from '../hooks/useStorage';
 import { useNavigation } from '@react-navigation/native';
@@ -52,9 +45,7 @@ export default function ChatListScreen(): React.JSX.Element {
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyIcon}>💬</Text>
         <Text style={styles.emptyTitle}>No Chats Yet</Text>
-        <Text style={styles.emptyText}>
-          Match with pets to start chatting with their owners!
-        </Text>
+        <Text style={styles.emptyText}>Match with pets to start chatting with their owners!</Text>
       </View>
     );
   }

@@ -18,16 +18,16 @@ export function SectionHeader({ title, description }: SectionHeaderProps): React
 const styles = StyleSheet.create({
   container: {
     gap: 6,
-    marginBottom: 12
+    marginBottom: 12,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: colors.textPrimary
+    color: colors.textPrimary,
   },
   description: {
     fontSize: 14,
     color: colors.textSecondary,
-    lineHeight: 20
-  }
+    lineHeight: 20,
+  },
 })

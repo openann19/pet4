@@ -29,7 +29,7 @@ export const useStories = (currentUserId: string = 'user-1') => {
           return hoursDiff < STORY_EXPIRATION_HOURS;
         });
         setStories(validStories);
-        
+
         // Save filtered stories back if any were removed
         if (validStories.length !== parsedStories.length) {
           await saveStories(validStories);
@@ -116,7 +116,10 @@ export const useStories = (currentUserId: string = 'user-1') => {
         await saveStories(updatedStories);
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to mark story as viewed', err, { context: 'markStoryAsViewed', storyId });
+        logger.error('Failed to mark story as viewed', err, {
+          context: 'markStoryAsViewed',
+          storyId,
+        });
       }
     },
     [stories]
@@ -140,20 +143,26 @@ export const useStories = (currentUserId: string = 'user-1') => {
   const deleteStoryItem = useCallback(
     async (storyId: string, itemId: string) => {
       try {
-        const updatedStories = stories.map((story) => {
-          if (story.id === storyId) {
-            const filteredItems = story.stories.filter((item) => item.id !== itemId);
-            // If no items left, we'll filter out the entire story later
-            return { ...story, stories: filteredItems };
-          }
-          return story;
-        }).filter((story) => story.stories.length > 0);
-        
+        const updatedStories = stories
+          .map((story) => {
+            if (story.id === storyId) {
+              const filteredItems = story.stories.filter((item) => item.id !== itemId);
+              // If no items left, we'll filter out the entire story later
+              return { ...story, stories: filteredItems };
+            }
+            return story;
+          })
+          .filter((story) => story.stories.length > 0);
+
         await saveStories(updatedStories);
         return { success: true };
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to delete story item', err, { context: 'deleteStoryItem', storyId, itemId });
+        logger.error('Failed to delete story item', err, {
+          context: 'deleteStoryItem',
+          storyId,
+          itemId,
+        });
         return { success: false, error: 'Failed to delete story item' };
       }
     },

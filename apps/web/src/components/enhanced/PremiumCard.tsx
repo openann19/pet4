@@ -1,17 +1,17 @@
-import { useEffect } from 'react'
-import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated'
-import { MotionView } from '@petspark/motion'
-import { useHoverLift } from '@petspark/motion'
-import { cn } from '@/lib/utils'
+import { useEffect } from 'react';
+import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
+import { MotionView } from '@petspark/motion';
+import { useHoverLift } from '@petspark/motion';
+import { cn } from '@/lib/utils';
 
 interface PremiumCardProps {
-  variant?: 'default' | 'glass' | 'elevated' | 'gradient'
-  hover?: boolean
-  glow?: boolean
-  className?: string
-  children?: React.ReactNode
-  style?: React.CSSProperties
-  [key: string]: unknown
+  variant?: 'default' | 'glass' | 'elevated' | 'gradient';
+  hover?: boolean;
+  glow?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+  style?: React.CSSProperties;
+  [key: string]: unknown;
 }
 
 export function PremiumCard({
@@ -23,30 +23,29 @@ export function PremiumCard({
   style,
   ...props
 }: PremiumCardProps) {
-  const opacity = useSharedValue(0)
-  const translateY = useSharedValue(20)
-  const hoverLift = useHoverLift(8)
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(20);
+  const hoverLift = useHoverLift(8);
 
   useEffect(() => {
-    opacity.value = withTiming(1, { duration: 220 })
-    translateY.value = withTiming(0, { duration: 220 })
-  }, [opacity, translateY])
+    opacity.value = withTiming(1, { duration: 220 });
+    translateY.value = withTiming(0, { duration: 220 });
+  }, [opacity, translateY]);
 
   const entryStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     transform: [{ translateY: translateY.value }],
-  }))
+  }));
 
-  const combinedStyle = hover && hoverLift.animatedStyle ?
-    [entryStyle, hoverLift.animatedStyle] :
-    entryStyle
+  const combinedStyle =
+    hover && hoverLift.animatedStyle ? [entryStyle, hoverLift.animatedStyle] : entryStyle;
 
   const variants = {
     default: 'bg-card border border-border',
     glass: 'glass-card',
     elevated: 'bg-card border border-border premium-shadow-lg',
-    gradient: 'premium-gradient text-primary-foreground border-none'
-  }
+    gradient: 'premium-gradient text-primary-foreground border-none',
+  };
 
   return (
     <MotionView
@@ -64,5 +63,5 @@ export function PremiumCard({
     >
       {children}
     </MotionView>
-  )
+  );
 }

@@ -1,11 +1,11 @@
 /**
  * Receive "Air-Cushion" Effect Hook
- * 
+ *
  * Creates a premium receive animation with:
  * - Spring scale animation (0.98→1.0, stiffness 280, damping 20, 180-220ms)
  * - Soft drop shadow animation (0→4dp over 120ms)
  * - No haptic by default (respect quiet inbox), optional Light on mentions
- * 
+ *
  * Location: apps/mobile/src/effects/chat/bubbles/use-receive-air-cushion.ts
  */
 
@@ -17,7 +17,7 @@ import {
   withTiming,
   type SharedValue,
 } from 'react-native-reanimated'
-import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-motion'                                                                           
+import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-motion'
 import { triggerHaptic } from '../core/haptic-manager'
 import { logEffectStart, logEffectEnd } from '../core/telemetry'
 import { randomRange } from '../core/seeded-rng'
@@ -96,7 +96,7 @@ export function useReceiveAirCushion(
       // Instant scale for reduced motion
       scale.value = withTiming(1.0, {
         duration: getReducedMotionDuration(SCALE_DURATION_MIN, true),
-        easing: (t) => t, // linear
+        easing: t => t, // linear
       })
     } else {
       scale.value = withSpring(1.0, AIR_CUSHION_SPRING)
@@ -107,12 +107,12 @@ export function useReceiveAirCushion(
 
     shadowOpacity.value = withTiming(1.0, {
       duration: shadowDuration,
-      easing: (t) => t, // linear
+      easing: t => t, // linear
     })
 
     shadowRadius.value = withTiming(SHADOW_MAX_RADIUS, {
       duration: shadowDuration,
-      easing: (t) => t, // linear
+      easing: t => t, // linear
     })
 
     // Haptic feedback (only on mentions)
@@ -134,16 +134,7 @@ export function useReceiveAirCushion(
         success: true,
       })
     }, scaleDuration)
-  }, [
-    enabled,
-    isNew,
-    isMention,
-    reducedMotion,
-    scale,
-    shadowOpacity,
-    shadowRadius,
-    onComplete,
-  ])
+  }, [enabled, isNew, isMention, reducedMotion, scale, shadowOpacity, shadowRadius, onComplete])
 
   useEffect(() => {
     if (enabled && isNew) {
@@ -168,4 +159,3 @@ export function useReceiveAirCushion(
     trigger,
   }
 }
-

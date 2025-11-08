@@ -22,24 +22,28 @@
 ### 3. Functional Surfaces ✅
 
 #### Discover → Map Mode
+
 - Реална карта с клъстерирани маркери
 - Превключвател Cards | Map
 - Уважава всички филтри (age/size/distance)
 - Bottom sheet при тап на маркер
 
-#### Match → Plan Playdate  
+#### Match → Plan Playdate
+
 - VenuePicker component с геокодиране
 - Категории: Park, Vet, Groomer, Pet-friendly Café, Store
 - Търсене с дебаунс
 - Deep links към Apple/Google Maps
 
 #### Chat → Location Sharing
+
 - LocationBubble component за мини карта
 - LocationPicker за избор на локация
 - Privacy blur (coarse grid + jitter)
 - Full map sheet при тап
 
 #### Community → Lost & Found
+
 - Map-first view с филтри (radius, time)
 - Клъстерирани alert маркери
 - Report Sighting функционалност
@@ -105,15 +109,13 @@ VITE_MAP_PROVIDER=maplibre
 ## Usage Examples
 
 ### Discover Map Mode
+
 ```tsx
-<DiscoverMapMode 
-  pets={pets}
-  userPet={userPet}
-  onSwipe={handleSwipe}
-/>
+<DiscoverMapMode pets={pets} userPet={userPet} onSwipe={handleSwipe} />
 ```
 
 ### Venue Picker
+
 ```tsx
 <VenuePicker
   open={showVenuePicker}
@@ -124,6 +126,7 @@ VITE_MAP_PROVIDER=maplibre
 ```
 
 ### Location Sharing
+
 ```tsx
 <LocationBubble
   location={location}
@@ -136,6 +139,7 @@ VITE_MAP_PROVIDER=maplibre
 ## Privacy Implementation
 
 Всички локации минават през:
+
 1. **Grid snapping** - закръгляне до 300-500m grid
 2. **Session jitter** - случайно отместване 200-500m, уникално за сешън
 3. **Precision degradation** - Lost & Found пинове стават по-неточни с времето
@@ -143,11 +147,13 @@ VITE_MAP_PROVIDER=maplibre
 ## Testing
 
 Run type checking:
+
 ```bash
 npm run typecheck
 ```
 
 Run tests:
+
 ```bash
 npm test
 ```
@@ -173,4 +179,3 @@ npm test
    - Map interaction tracking
    - Venue selection analytics
    - Location sharing metrics
-

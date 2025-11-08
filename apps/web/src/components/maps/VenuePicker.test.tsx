@@ -26,25 +26,14 @@ describe('VenuePicker', () => {
   });
 
   it('renders when open', () => {
-    render(
-      <VenuePicker
-        open={true}
-        onClose={vi.fn()}
-        onSelectVenue={vi.fn()}
-      />
-    );
+    render(<VenuePicker open={true} onClose={vi.fn()} onSelectVenue={vi.fn()} />);
     expect(screen.getByText(/choose a place/i)).toBeInTheDocument();
   });
 
   it('does not render when closed', () => {
     const { container } = render(
-      <VenuePicker
-        open={false}
-        onClose={vi.fn()}
-        onSelectVenue={vi.fn()}
-      />
+      <VenuePicker open={false} onClose={vi.fn()} onSelectVenue={vi.fn()} />
     );
     expect(container.querySelector('[data-testid="map-container"]')).not.toBeInTheDocument();
   });
 });
-

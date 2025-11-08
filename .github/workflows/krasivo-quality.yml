@@ -1,5 +1,5 @@
 # KRASIVO CI Pipeline - Zero Tolerance Quality Gates
-# 
+#
 # Enforces premium standards: 0 warnings, 60fps, mobile parity required
 
 name: KRASIVO Quality Gates
@@ -23,20 +23,20 @@ jobs:
         with:
           node-version: '18'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: TypeScript Check - Zero Errors
         run: |
           pnpm typecheck:web
           pnpm typecheck:mobile
-      
+
       - name: ESLint - Zero Warnings
         run: |
           pnpm lint:web
           pnpm lint:mobile
-      
+
       - name: Remove all console.* calls
         run: |
           if grep -r "console\." apps/ packages/ --include="*.ts" --include="*.tsx" --exclude-dir=node_modules --exclude="*.test.*" --exclude="*.stories.*"; then
@@ -57,13 +57,13 @@ jobs:
         with:
           node-version: '18'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Mobile Parity Check
         run: pnpm check:parity
-  
+
   # Performance Smoke - 60fps Required
   performance:
     runs-on: ubuntu-latest
@@ -76,13 +76,13 @@ jobs:
         with:
           node-version: '18'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Performance Smoke Test
         run: ./scripts/performance-smoke.sh
-      
+
       - name: Bundle Size Check
         run: |
           pnpm build:web
@@ -101,13 +101,13 @@ jobs:
         with:
           node-version: '18'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Motion Package Build
         run: pnpm --filter @petspark/motion build
-      
+
       - name: Verify No Console Calls in Motion
         run: |
           if find packages/motion/dist -name "*.js" -exec grep -l "console\." {} \; | head -1; then
@@ -128,11 +128,11 @@ jobs:
         with:
           node-version: '18'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
-      - name: Verify KV Migration Complete  
+
+      - name: Verify KV Migration Complete
         run: |
           # Should find no localStorage or KV references in new code
           if grep -r "localStorage\|\.kv\." apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx" --exclude="*.test.*" | grep -v "storage-adapter" | grep -v "query-client"; then
@@ -140,7 +140,7 @@ jobs:
             exit 1
           fi
           echo "✅ KV migration complete"
-      
+
       - name: Test Query Client Setup
         run: |
           pnpm test:unit
@@ -158,16 +158,16 @@ jobs:
         with:
           node-version: '18'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Build All Packages
         run: pnpm build
-      
+
       - name: Integration Tests
         run: pnpm test:integration
-      
+
       - name: KRASIVO Quality Summary
         run: |
           echo "🎉 KRASIVO Quality Gates Passed!"

@@ -50,16 +50,12 @@ describe('Secure Storage', () => {
     })
 
     it('should throw error on invalid value', async () => {
-      // @ts-expect-error - Testing invalid input
-      await expect(saveSecureValue('test-key', null)).rejects.toThrow()
-      // @ts-expect-error - Testing invalid input
-      await expect(saveSecureValue('test-key', undefined)).rejects.toThrow()
+      await expect(saveSecureValue('test-key', null as unknown as string)).rejects.toThrow()
+      await expect(saveSecureValue('test-key', undefined as unknown as string)).rejects.toThrow()
     })
 
     it('should throw error on failure', async () => {
-      vi.mocked(SecureStore.setItemAsync).mockRejectedValue(
-        new Error('Save failed')
-      )
+      vi.mocked(SecureStore.setItemAsync).mockRejectedValue(new Error('Save failed'))
 
       await expect(saveSecureValue('test-key', 'test-value')).rejects.toThrow()
     })
@@ -85,7 +81,7 @@ describe('Secure Storage', () => {
       vi.mocked(SecureStore.getItemAsync).mockResolvedValue('test-value')
 
       await saveSecureValue('test-key', 'test-value')
-      
+
       // Second call should use cache
       const value = await getSecureValue('test-key')
       expect(value).toBe('test-value')
@@ -98,7 +94,7 @@ describe('Secure Storage', () => {
       vi.mocked(SecureStore.getItemAsync).mockResolvedValue('test-value')
 
       await saveSecureValue('test-key', 'test-value', { skipCache: true })
-      
+
       const value = await getSecureValue('test-key')
       expect(value).toBe('test-value')
     })
@@ -115,9 +111,7 @@ describe('Secure Storage', () => {
     })
 
     it('should return null on error', async () => {
-      vi.mocked(SecureStore.getItemAsync).mockRejectedValue(
-        new Error('Get failed')
-      )
+      vi.mocked(SecureStore.getItemAsync).mockRejectedValue(new Error('Get failed'))
 
       const value = await getSecureValue('test-key')
 
@@ -128,10 +122,10 @@ describe('Secure Storage', () => {
       vi.mocked(SecureStore.setItemAsync).mockResolvedValue()
 
       await saveSecureValue('cached-key', 'cached-value')
-      
+
       // Clear mock to ensure we're using cache
       vi.mocked(SecureStore.getItemAsync).mockClear()
-      
+
       const value = await getSecureValue('cached-key', { skipCache: false })
       expect(value).toBe('cached-value')
       // Should not call getItemAsync if cache hit
@@ -158,7 +152,7 @@ describe('Secure Storage', () => {
 
       await saveSecureValue('test-key', 'test-value')
       await deleteSecureValue('test-key')
-      
+
       // Should not find in cache
       vi.mocked(SecureStore.getItemAsync).mockResolvedValue(null)
       const value = await getSecureValue('test-key', { skipCache: true })
@@ -188,9 +182,7 @@ describe('Secure Storage', () => {
     })
 
     it('should return false on error', async () => {
-      vi.mocked(SecureStore.getItemAsync).mockRejectedValue(
-        new Error('Get failed')
-      )
+      vi.mocked(SecureStore.getItemAsync).mockRejectedValue(new Error('Get failed'))
 
       const exists = await hasSecureValue('test-key')
 
@@ -242,9 +234,7 @@ describe('Secure Storage', () => {
           .mockRejectedValueOnce(new Error('Failed'))
           .mockResolvedValueOnce(undefined)
 
-        await expect(
-          deleteMultipleSecureValues(['key1', 'key2'])
-        ).resolves.not.toThrow()
+        await expect(deleteMultipleSecureValues(['key1', 'key2'])).resolves.not.toThrow()
 
         expect(SecureStore.deleteItemAsync).toHaveBeenCalledTimes(2)
       })

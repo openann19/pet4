@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import { PlaydateCard, type Playdate } from './PlaydateCard';
 
 interface PlaydatesListProps {
@@ -44,35 +38,17 @@ export const PlaydatesList: React.FC<PlaydatesListProps> = ({
       style={[styles.filterButton, filter === type && styles.filterButtonActive]}
       onPress={() => setFilter(type)}
     >
-      <Text
-        style={[styles.filterText, filter === type && styles.filterTextActive]}
-      >
-        {label}
-      </Text>
-      <View
-        style={[
-          styles.filterBadge,
-          filter === type && styles.filterBadgeActive,
-        ]}
-      >
-        <Text
-          style={[
-            styles.filterBadgeText,
-            filter === type && styles.filterBadgeTextActive,
-          ]}
-        >
+      <Text style={[styles.filterText, filter === type && styles.filterTextActive]}>{label}</Text>
+      <View style={[styles.filterBadge, filter === type && styles.filterBadgeActive]}>
+        <Text style={[styles.filterBadgeText, filter === type && styles.filterBadgeTextActive]}>
           {count}
         </Text>
       </View>
     </Pressable>
   );
 
-  const upcomingCount = playdates.filter(
-    (p) => new Date(p.date) >= new Date()
-  ).length;
-  const pastCount = playdates.filter(
-    (p) => new Date(p.date) < new Date()
-  ).length;
+  const upcomingCount = playdates.filter((p) => new Date(p.date) >= new Date()).length;
+  const pastCount = playdates.filter((p) => new Date(p.date) < new Date()).length;
 
   return (
     <View style={styles.container}>
@@ -89,9 +65,7 @@ export const PlaydatesList: React.FC<PlaydatesListProps> = ({
           <Text style={styles.emptyIcon}>📅</Text>
           <Text style={styles.emptyTitle}>No playdates</Text>
           <Text style={styles.emptyText}>
-            {filter === 'upcoming'
-              ? 'Schedule a playdate to get started!'
-              : 'No playdates to show'}
+            {filter === 'upcoming' ? 'Schedule a playdate to get started!' : 'No playdates to show'}
           </Text>
         </View>
       ) : (

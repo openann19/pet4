@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 
 export interface Playdate {
   id: string;
@@ -31,11 +26,7 @@ interface PlaydateCardProps {
   onRSVP?: (response: 'yes' | 'no' | 'maybe') => void;
 }
 
-export const PlaydateCard: React.FC<PlaydateCardProps> = ({
-  playdate,
-  onPress,
-  onRSVP,
-}) => {
+export const PlaydateCard: React.FC<PlaydateCardProps> = ({ playdate, onPress, onRSVP }) => {
   const formatDate = (dateStr: string): string => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
@@ -83,12 +74,7 @@ export const PlaydateCard: React.FC<PlaydateCardProps> = ({
           <Text style={styles.title} numberOfLines={1}>
             {playdate.title}
           </Text>
-          <View
-            style={[
-              styles.statusBadge,
-              { backgroundColor: getStatusColor(playdate.status) },
-            ]}
-          >
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(playdate.status) }]}>
             <Text style={styles.statusText}>{getStatusLabel(playdate.status)}</Text>
           </View>
         </View>
@@ -166,10 +152,7 @@ export const PlaydateCard: React.FC<PlaydateCardProps> = ({
               </Text>
             </Pressable>
             <Pressable
-              style={[
-                styles.rsvpButton,
-                playdate.currentUserRSVP === 'no' && styles.rsvpButtonNo,
-              ]}
+              style={[styles.rsvpButton, playdate.currentUserRSVP === 'no' && styles.rsvpButtonNo]}
               onPress={() => onRSVP('no')}
             >
               <Text

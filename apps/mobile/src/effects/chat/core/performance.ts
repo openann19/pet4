@@ -1,9 +1,9 @@
 /**
  * Performance Monitoring for Chat Effects
- * 
+ *
  * Monitors frame budgets, dropped frames, and performance metrics.
  * Ensures all effects stay within frame budget (≤8.3ms at 120Hz, ≤16.6ms at 60Hz).
- * 
+ *
  * Location: apps/mobile/src/effects/chat/core/performance.ts
  */
 
@@ -29,25 +29,26 @@ export function getFrameBudget(deviceHz: DeviceHz): number {
 }
 
 /**
- * Detect device refresh rate
+ * Detect device refresh rate (async)
  * Defaults to 60Hz if detection fails
  */
-export function detectDeviceHz(): DeviceHz {
+export async function detectDeviceHzAsync(): Promise<DeviceHz> {
   // Try to detect device refresh rate using available APIs
   try {
     // Check if react-native-device-info is available
     // Dynamic import to avoid bundling issues
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const DeviceInfo = require('react-native-device-info')
+    const deviceInfoModule = await import('react-native-device-info').catch(() => null)
+    const DeviceInfo = deviceInfoModule?.default ?? deviceInfoModule
+
     if (DeviceInfo && typeof DeviceInfo.getDeviceId === 'function') {
       // iOS ProMotion devices (iPhone 13 Pro and later) support 120Hz
       const deviceId = DeviceInfo.getDeviceId()
-      const isProMotion = deviceId && (
-        deviceId.includes('iPhone14') || // iPhone 13 Pro series
-        deviceId.includes('iPhone15') || // iPhone 14 Pro series
-        deviceId.includes('iPhone16') || // iPhone 15 Pro series
-        deviceId.includes('iPad') // iPad Pro models
-      )
+      const isProMotion =
+        deviceId &&
+        (deviceId.includes('iPhone14') || // iPhone 13 Pro series
+          deviceId.includes('iPhone15') || // iPhone 14 Pro series
+          deviceId.includes('iPhone16') || // iPhone 15 Pro series
+          deviceId.includes('iPad')) // iPad Pro models
       if (isProMotion) {
         return 120
       }
@@ -57,6 +58,30 @@ export function detectDeviceHz(): DeviceHz {
   }
 
   // Default to 60Hz
+  return 60
+}
+
+/**
+ * Detect device refresh rate (synchronous, returns cached or default)
+ * For reactive updates, use detectDeviceHzAsync() or a hook
+ */
+let cachedDeviceHz: DeviceHz | null = null
+
+export function detectDeviceHz(): DeviceHz {
+  if (cachedDeviceHz !== null) {
+    return cachedDeviceHz
+  }
+
+  // Initialize asynchronously (non-blocking)
+  detectDeviceHzAsync()
+    .then(hz => {
+      cachedDeviceHz = hz
+    })
+    .catch(() => {
+      // Silent fail, will use default
+    })
+
+  // Return default while detecting
   return 60
 }
 
@@ -86,7 +111,7 @@ export function useFrameDropCounter(
   const frameBudget = getFrameBudget(deviceHz)
   const droppedFrames = useSharedValue<number>(0)
   const droppedFramesInWindow = useSharedValue<number>(0)
-  
+
   const counterRef = useRef<FrameDropCounter>({
     droppedFrames: 0,
     totalFrames: 0,
@@ -121,7 +146,7 @@ export function useFrameDropCounter(
       // Clean up old dropped frames outside the window
       const windowStart = now - windowSizeMs
       counter.droppedFramesInWindow = counter.droppedFramesInWindow.filter(
-        (time) => time >= windowStart
+        time => time >= windowStart
       )
 
       // Update SharedValues
@@ -174,10 +199,7 @@ export function useFrameDropCounter(
 /**
  * Check if effect duration exceeds frame budget
  */
-export function exceedsFrameBudget(
-  durationMs: number,
-  deviceHz: DeviceHz
-): boolean {
+export function exceedsFrameBudget(durationMs: number, deviceHz: DeviceHz): boolean {
   const frameBudget = getFrameBudget(deviceHz)
   return durationMs > frameBudget
 }
@@ -226,4 +248,3 @@ export function getPerformanceMetrics(
     withinBudget,
   }
 }
-

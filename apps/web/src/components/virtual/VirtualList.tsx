@@ -3,19 +3,19 @@
  * Uses @tanstack/react-virtual for efficient rendering
  */
 
-import * as React from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
+import * as React from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 export interface VirtualListProps<T> {
-  items: T[]
-  renderItem: (item: T, index: number) => React.ReactNode
-  estimateSize?: (index: number) => number
-  overscan?: number
-  className?: string
-  containerClassName?: string
-  onEndReached?: () => void
-  endReachedThreshold?: number
-  keyExtractor?: (item: T, index: number) => string | number
+  items: T[];
+  renderItem: (item: T, index: number) => React.ReactNode;
+  estimateSize?: (index: number) => number;
+  overscan?: number;
+  className?: string;
+  containerClassName?: string;
+  onEndReached?: () => void;
+  endReachedThreshold?: number;
+  keyExtractor?: (item: T, index: number) => string | number;
 }
 
 export function VirtualList<T>({
@@ -29,50 +29,49 @@ export function VirtualList<T>({
   endReachedThreshold = 200,
   keyExtractor,
 }: VirtualListProps<T>): JSX.Element {
-  const containerRef = React.useRef<HTMLDivElement>(null)
-  const [isScrolling, setIsScrolling] = React.useState(false)
-  const scrollTimeoutRef = React.useRef<number | undefined>(undefined)
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [isScrolling, setIsScrolling] = React.useState(false);
+  const scrollTimeoutRef = React.useRef<number | undefined>(undefined);
 
   const rowVirtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => containerRef.current,
     estimateSize,
     overscan,
-  })
+  });
 
   const handleScroll = React.useCallback(() => {
-    setIsScrolling(true)
+    setIsScrolling(true);
 
     if (scrollTimeoutRef.current) {
-      clearTimeout(scrollTimeoutRef.current)
+      clearTimeout(scrollTimeoutRef.current);
     }
 
     scrollTimeoutRef.current = window.setTimeout(() => {
-      setIsScrolling(false)
-    }, 150)
+      setIsScrolling(false);
+    }, 150);
 
     if (onEndReached && containerRef.current) {
-      const container = containerRef.current
-      const bottomDistance =
-        container.scrollHeight - container.scrollTop - container.clientHeight
+      const container = containerRef.current;
+      const bottomDistance = container.scrollHeight - container.scrollTop - container.clientHeight;
       if (bottomDistance < endReachedThreshold) {
-        onEndReached()
+        onEndReached();
       }
     }
-  }, [onEndReached, endReachedThreshold])
+  }, [onEndReached, endReachedThreshold]);
 
   React.useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
+    const container = containerRef.current;
+    if (!container) return;
 
-    container.addEventListener('scroll', handleScroll, { passive: true })
+    container.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
-      container.removeEventListener('scroll', handleScroll)
+      container.removeEventListener('scroll', handleScroll);
       if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current)
+        clearTimeout(scrollTimeoutRef.current);
       }
-    }
-  }, [handleScroll])
+    };
+  }, [handleScroll]);
 
   return (
     <div
@@ -89,10 +88,8 @@ export function VirtualList<T>({
         className={className}
       >
         {rowVirtualizer.getVirtualItems().map((virtualItem) => {
-          const item = items[virtualItem.index]
-          const key = keyExtractor
-            ? keyExtractor(item, virtualItem.index)
-            : virtualItem.index
+          const item = items[virtualItem.index];
+          const key = keyExtractor ? keyExtractor(item, virtualItem.index) : virtualItem.index;
 
           return (
             <div
@@ -108,10 +105,9 @@ export function VirtualList<T>({
             >
               {renderItem(item, virtualItem.index)}
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
-

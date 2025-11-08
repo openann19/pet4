@@ -1,20 +1,20 @@
 /**
  * Ribbon Shader for Swipe-to-Reply Effect
- * 
+ *
  * GPU-accelerated ribbon effect with RuntimeEffect shader for reply/quote tethers.
  * Also includes utility functions for path-based ribbon rendering (backwards compatibility).
- * 
+ *
  * Location: apps/mobile/src/effects/chat/shaders/ribbon.ts
  */
 
 import {
-    Canvas,
-    Paint,
-    Rect,
-    Shader,
-    Skia,
-    type SkPaint,
-    type SkPath,
+  Canvas,
+  Paint,
+  Rect,
+  Shader,
+  Skia,
+  type SkPaint,
+  type SkPath,
 } from '@shopify/react-native-skia'
 import React, { useMemo, useState } from 'react'
 import type { SharedValue } from 'react-native-reanimated'
@@ -55,9 +55,9 @@ const DEFAULT_RIBBON_CONFIG: RibbonConfig = {
 
 /**
  * Create a ribbon path from points
- * 
+ *
  * Creates a smooth curved path through the points using cubic bezier
- * 
+ *
  * @param points - Array of points along the ribbon path
  * @param config - Ribbon configuration
  * @returns Skia path
@@ -95,7 +95,7 @@ export function createRibbonPath(
       // First segment: use next point for control
       const cp1x = prev.x + (curr.x - prev.x) * finalConfig.curveTension
       const cp1y = prev.y + (curr.y - prev.y) * finalConfig.curveTension
-      
+
       if (next) {
         const cp2x = curr.x - (next.x - curr.x) * finalConfig.curveTension
         const cp2y = curr.y - (next.y - curr.y) * finalConfig.curveTension
@@ -129,7 +129,7 @@ export function createRibbonPath(
 
 /**
  * Create ribbon paint
- * 
+ *
  * Creates a Skia paint configured for ribbon rendering
  */
 export function createRibbonPaint(config: Partial<RibbonConfig> = {}): SkPaint {
@@ -148,7 +148,7 @@ export function createRibbonPaint(config: Partial<RibbonConfig> = {}): SkPaint {
 
 /**
  * Animate ribbon path following gesture
- * 
+ *
  * Creates a path that follows finger movement with trailing effect
  */
 export function createAnimatedRibbonPath(
@@ -161,7 +161,7 @@ export function createAnimatedRibbonPath(
 
   // Filter points within trail duration
   const cutoffTime = currentTime - trailDuration
-  const activePoints = gesturePoints.filter((p) => p.timestamp >= cutoffTime)
+  const activePoints = gesturePoints.filter(p => p.timestamp >= cutoffTime)
 
   if (activePoints.length < 2) {
     // Return empty path if not enough points
@@ -169,7 +169,7 @@ export function createAnimatedRibbonPath(
   }
 
   // Convert to points for path creation
-  const points = activePoints.map((p) => ({ x: p.x, y: p.y }))
+  const points = activePoints.map(p => ({ x: p.x, y: p.y }))
 
   // Create path with varying width based on age
   const path = createRibbonPath(points, finalConfig)
@@ -279,37 +279,37 @@ export function RibbonFX({
   // Sync SharedValues to state
   useAnimatedReaction(
     () => p0.value,
-    (value) => {
+    value => {
       setP0Val(value)
     }
   )
   useAnimatedReaction(
     () => p1.value,
-    (value) => {
+    value => {
       setP1Val(value)
     }
   )
   useAnimatedReaction(
     () => thickness.value,
-    (value) => {
+    value => {
       setThVal(value)
     }
   )
   useAnimatedReaction(
     () => glow.value,
-    (value) => {
+    value => {
       setGlowVal(value)
     }
   )
   useAnimatedReaction(
     () => progress.value,
-    (value) => {
+    value => {
       setProgVal(value)
     }
   )
   useAnimatedReaction(
     () => alpha.value,
-    (value) => {
+    value => {
       setAlphaVal(value)
     }
   )
@@ -341,4 +341,3 @@ export function RibbonFX({
     </Canvas>
   )
 }
-

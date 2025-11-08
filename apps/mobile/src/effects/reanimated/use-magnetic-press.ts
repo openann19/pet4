@@ -1,4 +1,9 @@
-import { useSharedValue, useAnimatedStyle, withSpring, type SharedValue } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  type SharedValue,
+} from 'react-native-reanimated'
 import { useState, useCallback } from 'react'
 import type { LayoutChangeEvent } from 'react-native'
 import { springConfigs } from './transitions'
@@ -25,18 +30,23 @@ export interface UseMagneticPressReturn {
 
 export function useMagneticPress(options: UseMagneticPressOptions = {}): UseMagneticPressReturn {
   const {
-    strength = 0.3,
+    strength: _strength = 0.3,
     damping = springConfigs.smooth.damping ?? 20,
     stiffness = springConfigs.smooth.stiffness ?? 150,
-    maxDistance = 50,
+    maxDistance: _maxDistance = 50,
     enabled = true,
-    hapticFeedback = false
+    hapticFeedback: _hapticFeedback = false,
   } = options
 
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
   const scale = useSharedValue(1)
-  const [elementLayout, setElementLayout] = useState<{ width: number; height: number; x: number; y: number } | null>(null)
+  const [_elementLayout, setElementLayout] = useState<{
+    width: number
+    height: number
+    x: number
+    y: number
+  } | null>(null)
 
   const handlePressIn = useCallback(() => {
     if (!enabled) return

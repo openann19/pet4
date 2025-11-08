@@ -16,8 +16,7 @@ After semantic analysis of the codebase, here are files that are **truly unused*
 - **`ThemeProvider.tsx`** - NOT USED
   - Reason: App uses `UIContext` and `AppContext` for theming, not this provider
   - Only referenced in `visuals.txt` (documentation), never imported in actual code
-  
-- **`themes.ts`** - NOT USED  
+- **`themes.ts`** - NOT USED
   - Reason: Exports `getThemeTokens`, `applyTheme`, `designTokens` but none are imported anywhere
   - App uses different theme system via contexts
 
@@ -32,7 +31,6 @@ After semantic analysis of the codebase, here are files that are **truly unused*
 - **`config/ABSOLUTE_MAX_UI_MODE.ts`** - Used in tests only
   - Used in: `useUIConfig.test.tsx`, `UIContext.test.tsx`, `absolute-max-ui-mode.test.ts`
   - NOT used in any actual components
-  
 - **All effect hooks** (`useAIReplyAura`, `useTypingTrail`, `useBubbleGlow`, etc.) - NOT USED
   - Exported from `index.ts` but never imported in components
   - App uses `@/effects/reanimated` hooks instead
@@ -42,6 +40,7 @@ After semantic analysis of the codebase, here are files that are **truly unused*
 ### 3. API Files - ALL USED ✅
 
 All API files in `apps/web/src/api/` are **ACTUALLY USED**:
+
 - Exported from `api/index.ts`
 - Imported and used in components, services, and hooks
 - **DO NOT DELETE** - These are false positives from AST analysis
@@ -53,7 +52,7 @@ All API files in `apps/web/src/api/` are **ACTUALLY USED**:
 - **`e2e-walkthrough.ts`** - Flagged as unused but might be run manually
   - Contains `runWalkthrough` function
   - Check if it's used in CI/CD or run manually
-  
+
 **Action:** ⚠️ MANUAL REVIEW
 
 ## Files That Appear Unused But Are Actually Used
@@ -109,13 +108,14 @@ To verify a file is truly unused:
 **False positives:** ~1,100+ files (packages, APIs, services that ARE used)
 
 The AST-based analysis had many false positives because:
+
 - Workspace imports aren't detected correctly
 - Dynamic imports aren't tracked
 - Barrel exports create indirect dependencies
 - Build-time usage (config files) isn't detected
 
 **Next Steps:**
+
 1. Delete confirmed unused files (design-system)
 2. Review agi_ui_engine usage in tests
 3. Keep all API/service files - they're actively used
-

@@ -3,14 +3,16 @@
 ## WCAG 2.2 Compliance
 
 ### Contrast Requirements
-| Element | Requirement | Verified |
-|---------|-------------|----------|
-| Normal text | AA: 4.5:1, AAA: 7:1 | ✅ AAA (21:1) |
-| Large text | AA: 3:1, AAA: 4.5:1 | ✅ AAA |
-| Text on glass | AA: 4.5:1 | ✅ AAA (15:1) |
-| UI components | AA: 3:1 | ✅ AAA |
+
+| Element       | Requirement         | Verified      |
+| ------------- | ------------------- | ------------- |
+| Normal text   | AA: 4.5:1, AAA: 7:1 | ✅ AAA (21:1) |
+| Large text    | AA: 3:1, AAA: 4.5:1 | ✅ AAA        |
+| Text on glass | AA: 4.5:1           | ✅ AAA (15:1) |
+| UI components | AA: 3:1             | ✅ AAA        |
 
 ### Verified Contrast Ratios
+
 - `text.primary` on `surface.background`: **21:1** (AAA)
 - `text.onGlass` on `glass.card`: **15:1** (AAA)
 - `text.secondary` on `surface.card`: **7.2:1** (AAA)
@@ -18,6 +20,7 @@
 - `primary.500` on `surface.background`: **8.5:1** (AAA)
 
 ### Blur Readability
+
 - ✅ Blur never reduces contrast below AA
 - ✅ Text on glass maintains AAA contrast
 - ✅ Backdrop blur respects readability
@@ -25,6 +28,7 @@
 ## Compose Semantics
 
 ### Roles & Labels
+
 ```kotlin
 // Button
 Button(
@@ -55,6 +59,7 @@ Image(
 ```
 
 ### State Announcements
+
 ```kotlin
 // Match announcement
 LaunchedEffect(match) {
@@ -74,18 +79,21 @@ LaunchedEffect(liked) {
 ## Focus Management
 
 ### Focus Rings
+
 - **Width**: 2dp
 - **Color**: `border.focus` (primary.300)
 - **Visible**: Always on focus, even in dark mode
 - **Implementation**: Material 3 default focus indicators
 
 ### Focus Order
+
 1. App bar navigation
 2. Main content (cards, lists)
 3. Action buttons
 4. Bottom navigation
 
 ### Focus Trapping
+
 ```kotlin
 // Modal focus trap
 ModalBottomSheet(
@@ -100,6 +108,7 @@ ModalBottomSheet(
 ```
 
 ### Focus Return
+
 ```kotlin
 // Return focus to trigger on close
 var triggerFocused by remember { mutableStateOf(false) }
@@ -128,11 +137,13 @@ if (showSheet) {
 ## Touch Target Sizes
 
 ### Minimum Requirements
+
 - **Minimum**: 48dp × 48dp
 - **Spacing**: 8dp between targets
 - **Compliance**: ✅ All interactive elements meet minimum
 
 ### Verified Components
+
 - ✅ Buttons: 48dp minimum height
 - ✅ Tabs: 48dp minimum height
 - ✅ List items: 56dp minimum height
@@ -142,16 +153,18 @@ if (showSheet) {
 ## TalkBack Support
 
 ### Announcements
-| Action | Announcement |
-|--------|-------------|
-| Like | "Liked {pet name}" |
-| Match | "Match! You and {pet name} liked each other" |
-| Pass | "Passed {pet name}" |
-| Open Sheet | "Opened {sheet name}" |
-| Close Sheet | "Closed {sheet name}" |
-| Navigate | "Navigated to {screen name}" |
+
+| Action      | Announcement                                 |
+| ----------- | -------------------------------------------- |
+| Like        | "Liked {pet name}"                           |
+| Match       | "Match! You and {pet name} liked each other" |
+| Pass        | "Passed {pet name}"                          |
+| Open Sheet  | "Opened {sheet name}"                        |
+| Close Sheet | "Closed {sheet name}"                        |
+| Navigate    | "Navigated to {screen name}"                 |
 
 ### Traversal Order
+
 1. App bar
 2. Content header
 3. Main content (cards)
@@ -159,6 +172,7 @@ if (showSheet) {
 5. Bottom navigation
 
 ### Custom Actions
+
 ```kotlin
 Card(
     modifier = Modifier.semantics {
@@ -175,12 +189,14 @@ Card(
 ## Keyboard Navigation
 
 ### Web Views
+
 - ✅ Keyboard traversal supported
 - ✅ Tab order logical
 - ✅ Focus visible
 - ✅ Enter/Space activate
 
 ### Focus Indicators
+
 - ✅ Clear focus rings
 - ✅ High contrast
 - ✅ Visible in dark mode
@@ -189,11 +205,13 @@ Card(
 ## Hit Areas
 
 ### Minimum Hit Areas
+
 - **Interactive Elements**: 48dp × 48dp
 - **Spacing**: 8dp between hit areas
 - **Padding**: Extend hit area beyond visual bounds if needed
 
 ### Implementation
+
 ```kotlin
 Button(
     onClick = { },
@@ -208,6 +226,7 @@ Button(
 ## Accessibility Scanner Results
 
 ### Critical Issues (Resolved)
+
 - ✅ Text contrast: All text meets AA minimum
 - ✅ Touch targets: All targets ≥48dp
 - ✅ Focus indicators: All focus rings visible
@@ -215,6 +234,7 @@ Button(
 - ✅ State announcements: All state changes announced
 
 ### Warnings (Resolved)
+
 - ✅ Icon-only buttons: Added content descriptions
 - ✅ Decorative images: Marked as decorative
 - ✅ Form labels: All inputs have labels
@@ -222,6 +242,7 @@ Button(
 ## Implementation Checklist
 
 ### ✅ Requirements
+
 - [ ] All text contrast ≥ AA (4.5:1)
 - [ ] All touch targets ≥ 48dp
 - [ ] All images have content descriptions
@@ -234,6 +255,7 @@ Button(
 - [ ] Focus return on close
 
 ### ✅ Testing
+
 - [ ] Test with TalkBack enabled
 - [ ] Test with large text enabled
 - [ ] Test with high contrast enabled
@@ -245,6 +267,7 @@ Button(
 ## Code Examples
 
 ### Accessible Button
+
 ```kotlin
 Button(
     onClick = { like() },
@@ -265,6 +288,7 @@ Button(
 ```
 
 ### Accessible Card
+
 ```kotlin
 Card(
     onClick = { navigateToProfile(pet.id) },
@@ -281,6 +305,7 @@ Card(
 ```
 
 ### Accessible Image
+
 ```kotlin
 Image(
     painter = painterResource(id = pet.image),
@@ -291,4 +316,3 @@ Image(
         }
 )
 ```
-

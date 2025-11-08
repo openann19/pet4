@@ -5,17 +5,17 @@ import React from 'react';
 import type { ReactNode } from 'react';
 
 interface GlassCardProps {
-  children: ReactNode
-  intensity?: 'light' | 'medium' | 'strong'
-  enableHover?: boolean
-  className?: string
+  children: ReactNode;
+  intensity?: 'light' | 'medium' | 'strong';
+  enableHover?: boolean;
+  className?: string;
 }
 
 const intensityClasses = {
   light: 'bg-white/5 backdrop-blur-sm border-white/10',
   medium: 'bg-white/10 backdrop-blur-md border-white/20',
   strong: 'bg-white/20 backdrop-blur-xl border-white/30',
-}
+};
 
 export default function GlassCard({
   children,
@@ -52,12 +52,9 @@ export default function GlassCard({
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
-    transform: [
-      { translateY: y.value + hoverY.value },
-      { scale: hoverScale.value }
-    ],
-    boxShadow: enableHover && hoverY.value < 0 ?
-      '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : undefined
+    transform: [{ translateY: y.value + hoverY.value }, { scale: hoverScale.value }],
+    boxShadow:
+      enableHover && hoverY.value < 0 ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : undefined,
   }));
 
   return (
@@ -72,9 +69,7 @@ export default function GlassCard({
       )}
       {...props}
     >
-      <div className="relative overflow-hidden rounded-3xl">
-        {children}
-      </div>
+      <div className="relative overflow-hidden rounded-3xl">{children}</div>
     </MotionView>
-  )
+  );
 }

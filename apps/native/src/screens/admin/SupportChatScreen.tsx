@@ -1,6 +1,6 @@
 /**
  * Support Chat Screen (Mobile)
- * 
+ *
  * Mobile admin screen for managing support tickets.
  */
 
@@ -15,8 +15,11 @@ import {
   TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AnimatedCard } from '../components/AnimatedCard';
-import { FadeInView } from '../components/FadeInView';
+import { createLogger } from '@petspark/shared/core/logger';
+import { AnimatedCard } from '../../components/AnimatedCard';
+import { FadeInView } from '../../components/FadeInView';
+
+const logger = createLogger('SupportChatScreen');
 
 interface SupportTicket {
   id: string;
@@ -41,18 +44,18 @@ export const SupportChatScreen: React.FC = () => {
   const loadTickets = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const data = await supportApi.getTickets({ status: filter === 'all' ? undefined : [filter] });
-      // setTickets(data);
+      // Note: Support tickets API endpoint not yet available in admin-api
+      // When backend provides endpoint, update to: await mobileAdminApi.getSupportTickets({ status: filter === 'all' ? undefined : [filter] });
       setTickets([]);
     } catch (error) {
-      console.error('Failed to load tickets:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load tickets', err, { context: 'loadTickets', filter });
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredTickets = tickets.filter(t => {
+  const filteredTickets = tickets.filter((t) => {
     if (filter === 'all') return true;
     return t.status === filter;
   });
@@ -122,10 +125,7 @@ export const SupportChatScreen: React.FC = () => {
         ) : (
           filteredTickets.map((ticket, index) => (
             <FadeInView key={ticket.id} delay={index * 50}>
-              <TouchableOpacity
-                onPress={() => setSelectedTicket(ticket)}
-                activeOpacity={0.7}
-              >
+              <TouchableOpacity onPress={() => setSelectedTicket(ticket)} activeOpacity={0.7}>
                 <AnimatedCard style={styles.ticketCard}>
                   <View style={styles.ticketHeader}>
                     <View style={styles.ticketInfo}>
@@ -154,12 +154,7 @@ export const SupportChatScreen: React.FC = () => {
                           { backgroundColor: getStatusColor(ticket.status) + '20' },
                         ]}
                       >
-                        <Text
-                          style={[
-                            styles.statusText,
-                            { color: getStatusColor(ticket.status) },
-                          ]}
-                        >
+                        <Text style={[styles.statusText, { color: getStatusColor(ticket.status) }]}>
                           {ticket.status.replace('-', ' ').toUpperCase()}
                         </Text>
                       </View>
@@ -291,4 +286,3 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
 });
-

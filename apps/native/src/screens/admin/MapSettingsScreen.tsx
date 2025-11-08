@@ -1,6 +1,6 @@
 /**
  * Map Settings Screen (Mobile)
- * 
+ *
  * Mobile admin screen for configuring map settings and provider configuration.
  */
 
@@ -15,8 +15,12 @@ import {
   Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AnimatedCard } from '../components/AnimatedCard';
-import { FadeInView } from '../components/FadeInView';
+import { createLogger } from '../../utils/logger';
+import { mobileAdminApi } from '../../api/admin-api';
+import { AnimatedCard } from '../../components/AnimatedCard';
+import { FadeInView } from '../../components/FadeInView';
+
+const logger = createLogger('MapSettingsScreen');
 
 export const MapSettingsScreen: React.FC = () => {
   const [privacyGridMeters, setPrivacyGridMeters] = useState(1000);
@@ -30,10 +34,18 @@ export const MapSettingsScreen: React.FC = () => {
   const handleBroadcast = async () => {
     setBroadcasting(true);
     try {
-      // TODO: Implement broadcast API call
-      // await adminApi.broadcastConfig('map', { ...settings });
+      const config: Record<string, unknown> = {
+        privacyGridMeters,
+        defaultRadiusKm,
+        maxRadiusKm,
+        enablePreciseLocation,
+        enableGeofencing,
+        enableLostPetAlerts,
+      };
+      await mobileAdminApi.broadcastConfig('map', config);
     } catch (error) {
-      console.error('Failed to broadcast:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to broadcast map settings', err, { context: 'handleBroadcast' });
     } finally {
       setBroadcasting(false);
     }
@@ -52,13 +64,11 @@ export const MapSettingsScreen: React.FC = () => {
         <FadeInView delay={100}>
           <AnimatedCard style={styles.section}>
             <Text style={styles.sectionTitle}>Privacy Settings</Text>
-            
+
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
                 <Text style={styles.settingLabel}>Privacy Grid (meters)</Text>
-                <Text style={styles.settingDescription}>
-                  Grid size for location privacy
-                </Text>
+                <Text style={styles.settingDescription}>Grid size for location privacy</Text>
               </View>
               <TextInput
                 style={styles.input}
@@ -73,7 +83,7 @@ export const MapSettingsScreen: React.FC = () => {
         <FadeInView delay={150}>
           <AnimatedCard style={styles.section}>
             <Text style={styles.sectionTitle}>Radius Settings</Text>
-            
+
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
                 <Text style={styles.settingLabel}>Default Radius (km)</Text>
@@ -103,13 +113,11 @@ export const MapSettingsScreen: React.FC = () => {
         <FadeInView delay={200}>
           <AnimatedCard style={styles.section}>
             <Text style={styles.sectionTitle}>Feature Flags</Text>
-            
+
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
                 <Text style={styles.settingLabel}>Precise Location</Text>
-                <Text style={styles.settingDescription}>
-                  Enable precise location tracking
-                </Text>
+                <Text style={styles.settingDescription}>Enable precise location tracking</Text>
               </View>
               <Switch
                 value={enablePreciseLocation}
@@ -122,9 +130,7 @@ export const MapSettingsScreen: React.FC = () => {
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
                 <Text style={styles.settingLabel}>Geofencing</Text>
-                <Text style={styles.settingDescription}>
-                  Enable geofence notifications
-                </Text>
+                <Text style={styles.settingDescription}>Enable geofence notifications</Text>
               </View>
               <Switch
                 value={enableGeofencing}
@@ -137,9 +143,7 @@ export const MapSettingsScreen: React.FC = () => {
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
                 <Text style={styles.settingLabel}>Lost Pet Alerts</Text>
-                <Text style={styles.settingDescription}>
-                  Enable lost pet alert system
-                </Text>
+                <Text style={styles.settingDescription}>Enable lost pet alert system</Text>
               </View>
               <Switch
                 value={enableLostPetAlerts}
@@ -250,4 +254,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

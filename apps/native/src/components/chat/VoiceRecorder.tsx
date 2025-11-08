@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Alert,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -21,24 +15,19 @@ interface VoiceRecorderProps {
   onCancel: () => void;
 }
 
-export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
-  onSendVoice,
-  onCancel,
-}) => {
+export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSendVoice, onCancel }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [recording, setRecording] = useState<{ stopAndUnloadAsync: () => Promise<{ uri: string }> } | null>(null);
+  const [recording, setRecording] = useState<{
+    stopAndUnloadAsync: () => Promise<{ uri: string }>;
+  } | null>(null);
   const waveScale = useSharedValue(1);
 
   useEffect(() => {
     if (isRecording && !isPaused) {
       // Animate waveform
-      waveScale.value = withRepeat(
-        withTiming(1.5, { duration: 500 }),
-        -1,
-        true
-      );
+      waveScale.value = withRepeat(withTiming(1.5, { duration: 500 }), -1, true);
 
       // Timer
       const interval = setInterval(() => {
@@ -64,33 +53,38 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   const handleStartRecording = async () => {
     try {
       // Request audio recording permissions
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { Audio } = require('expo-av')
-      
-      const { status } = await Audio.requestPermissionsAsync()
+      const expoAvModule = await import('expo-av');
+      const Audio = expoAvModule.Audio ?? expoAvModule.default?.Audio;
+
+      if (!Audio || typeof Audio.requestPermissionsAsync !== 'function') {
+        Alert.alert('Error', 'Audio module not available');
+        return;
+      }
+
+      const { status } = await Audio.requestPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Audio recording permission is required')
-        return
+        Alert.alert('Permission Denied', 'Audio recording permission is required');
+        return;
       }
 
       // Configure audio mode for recording
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
-      })
+      });
 
       // Start recording
       const newRecording = await Audio.Recording.createAsync(
         Audio.RecordingOptionsPresets.HIGH_QUALITY
-      )
+      );
 
       // Store recording object for later use
-      setRecording(newRecording)
+      setRecording(newRecording);
 
       setIsRecording(true);
       setDuration(0);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+      const err = error instanceof Error ? error : new Error(String(error));
       Alert.alert('Error', `Failed to start recording: ${err.message}`);
     }
   };
@@ -100,16 +94,16 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     if (duration > 0 && recording) {
       try {
         // Stop recording and get URI
-        const { uri } = await recording.stopAndUnloadAsync()
-        onSendVoice(uri, duration)
-        setRecording(null)
+        const { uri } = await recording.stopAndUnloadAsync();
+        onSendVoice(uri, duration);
+        setRecording(null);
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error))
-        Alert.alert('Error', `Failed to stop recording: ${err.message}`)
+        const err = error instanceof Error ? error : new Error(String(error));
+        Alert.alert('Error', `Failed to stop recording: ${err.message}`);
         // Fallback on error
-        const fallbackUri = `voice_${Date.now()}.m4a`
-        onSendVoice(fallbackUri, duration)
-        setRecording(null)
+        const fallbackUri = `voice_${Date.now()}.m4a`;
+        onSendVoice(fallbackUri, duration);
+        setRecording(null);
       }
     }
     setDuration(0);
@@ -119,11 +113,11 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     setIsRecording(false);
     if (recording) {
       try {
-        await recording.stopAndUnloadAsync()
+        await recording.stopAndUnloadAsync();
       } catch {
         // Ignore errors when canceling
       }
-      setRecording(null)
+      setRecording(null);
     }
     setDuration(0);
     onCancel();
@@ -158,11 +152,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         {[...Array(5)].map((_, index) => (
           <Animated.View
             key={index}
-            style={[
-              styles.waveBar,
-              animatedWaveStyle,
-              { height: 10 + index * 8 },
-            ]}
+            style={[styles.waveBar, animatedWaveStyle, { height: 10 + index * 8 }]}
           />
         ))}
       </View>
@@ -172,33 +162,22 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
       {/* Controls */}
       <View style={styles.controls}>
-        <Pressable
-          style={styles.cancelButton}
-          onPress={handleCancelRecording}
-        >
+        <Pressable style={styles.cancelButton} onPress={handleCancelRecording}>
           <Text style={styles.cancelIcon}>✕</Text>
         </Pressable>
 
-        <Pressable
-          style={styles.pauseButton}
-          onPress={() => setIsPaused(!isPaused)}
-        >
+        <Pressable style={styles.pauseButton} onPress={() => setIsPaused(!isPaused)}>
           <Text style={styles.pauseIcon}>{isPaused ? '▶️' : '⏸️'}</Text>
         </Pressable>
 
-        <Pressable
-          style={styles.sendButton}
-          onPress={handleStopRecording}
-        >
+        <Pressable style={styles.sendButton} onPress={handleStopRecording}>
           <Text style={styles.sendIcon}>📤</Text>
         </Pressable>
       </View>
 
       {/* Duration Warning */}
       {duration >= MAX_DURATION - 10 && (
-        <Text style={styles.warningText}>
-          {MAX_DURATION - duration}s remaining
-        </Text>
+        <Text style={styles.warningText}>{MAX_DURATION - duration}s remaining</Text>
       )}
     </View>
   );

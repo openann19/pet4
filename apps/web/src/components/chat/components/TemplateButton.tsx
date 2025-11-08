@@ -1,21 +1,21 @@
 /**
  * Template Button Component
- * 
+ *
  * Individual template button in the template panel
  */
 
-import { Button } from '@/components/ui/button'
-import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import type { MessageTemplate } from '@/lib/chat-types'
+import { Button } from '@/components/ui/button';
+import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import type { MessageTemplate } from '@/lib/chat-types';
 
 export interface TemplateButtonProps {
-  template: MessageTemplate
-  onSelect: (template: MessageTemplate) => void
+  template: MessageTemplate;
+  onSelect: (template: MessageTemplate) => void;
 }
 
 export function TemplateButton({ template, onSelect }: TemplateButtonProps): JSX.Element {
-  const hover = useHoverAnimation({ scale: 1.02 })
+  const hover = useHoverAnimation({ scale: 1.02 });
 
   return (
     <AnimatedView style={hover.animatedStyle}>
@@ -32,5 +32,5 @@ export function TemplateButton({ template, onSelect }: TemplateButtonProps): JSX
         </div>
       </Button>
     </AnimatedView>
-  )
+  );
 }

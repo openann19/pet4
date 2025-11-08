@@ -3,7 +3,15 @@
  * Gentle, organic breathing effect for ambient UI elements
  */
 
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, Easing } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { useEffect } from 'react';
 
 export interface UseBreathingAnimationOptions {
@@ -48,7 +56,7 @@ export function useBreathingAnimation(options: UseBreathingAnimationOptions = {}
 
   const animatedStyle = useAnimatedStyle(() => {
     const scale = interpolate(progress.value, [0, 0.5, 1], [minScale, maxScale, minScale]);
-    
+
     const opacity = interpolate(progress.value, [0, 0.5, 1], [0.95, 1, 0.95]);
 
     return {

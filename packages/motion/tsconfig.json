@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "lib": ["ES2020", "DOM"],
+    "lib": ["ES2020"],
     "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
@@ -12,8 +12,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["react", "react-native"]
+    "types": ["react", "react-native"],
+    "typeRoots": ["./node_modules/@types", "./types", "./src/types"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "types/**/*.d.ts"],
   "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx", "src/test/**"]
 }

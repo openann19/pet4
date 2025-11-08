@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
 import type {
   PanGestureConfig,
   TapGestureConfig,
-  LongPressGestureConfig
-} from '@/types/gesture-types'
+  LongPressGestureConfig,
+} from '@/types/gesture-types';
 
 export function calculateVelocity(
   translationX: number,
@@ -12,17 +12,17 @@ export function calculateVelocity(
   timeDelta: number
 ): { velocityX: number; velocityY: number } {
   if (timeDelta === 0) {
-    return { velocityX: 0, velocityY: 0 }
+    return { velocityX: 0, velocityY: 0 };
   }
 
   return {
     velocityX: translationX / timeDelta,
-    velocityY: translationY / timeDelta
-  }
+    velocityY: translationY / timeDelta,
+  };
 }
 
 export function calculateMagnitude(x: number, y: number): number {
-  return Math.sqrt(x * x + y * y)
+  return Math.sqrt(x * x + y * y);
 }
 
 export function checkThreshold(
@@ -31,12 +31,12 @@ export function checkThreshold(
   direction: 'positive' | 'negative' | 'both' = 'both'
 ): boolean {
   if (direction === 'positive') {
-    return value >= threshold
+    return value >= threshold;
   }
   if (direction === 'negative') {
-    return value <= -threshold
+    return value <= -threshold;
   }
-  return Math.abs(value) >= threshold
+  return Math.abs(value) >= threshold;
 }
 
 export function checkVelocityThreshold(
@@ -44,40 +44,40 @@ export function checkVelocityThreshold(
   velocityY: number,
   threshold: number
 ): boolean {
-  const magnitude = calculateMagnitude(velocityX, velocityY)
-  return magnitude >= threshold
+  const magnitude = calculateMagnitude(velocityX, velocityY);
+  return magnitude >= threshold;
 }
 
 export function getPlatformGestureConfig(): {
-  pan: Partial<PanGestureConfig>
-  tap: Partial<TapGestureConfig>
-  longPress: Partial<LongPressGestureConfig>
+  pan: Partial<PanGestureConfig>;
+  tap: Partial<TapGestureConfig>;
+  longPress: Partial<LongPressGestureConfig>;
 } {
-  const isWeb = typeof window !== 'undefined' && window.navigator
+  const isWeb = typeof window !== 'undefined' && window.navigator;
 
   return {
     pan: {
       enabled: true,
       ...(isWeb ? {} : { activeOffsetX: [-10, 10], activeOffsetY: [-10, 10] }),
       minPointers: 1,
-      maxPointers: 1
+      maxPointers: 1,
     },
     tap: {
       enabled: true,
       numberOfTaps: 1,
       maxDurationMs: 500,
-      maxDelayMs: 300
+      maxDelayMs: 300,
     },
     longPress: {
       enabled: true,
       minDurationMs: 500,
-      maxDistance: 10
-    }
-  }
+      maxDistance: 10,
+    },
+  };
 }
 
 export function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max)
+  return Math.min(Math.max(value, min), max);
 }
 
 export function interpolateGesture(
@@ -86,36 +86,36 @@ export function interpolateGesture(
   outputRange: [number, number],
   extrapolate: 'clamp' | 'extend' = 'clamp'
 ): number {
-  const [inputMin, inputMax] = inputRange
-  const [outputMin, outputMax] = outputRange
+  const [inputMin, inputMax] = inputRange;
+  const [outputMin, outputMax] = outputRange;
 
   if (inputMin === inputMax) {
-    return outputMin
+    return outputMin;
   }
 
-  const ratio = (value - inputMin) / (inputMax - inputMin)
-  let result = outputMin + ratio * (outputMax - outputMin)
+  const ratio = (value - inputMin) / (inputMax - inputMin);
+  let result = outputMin + ratio * (outputMax - outputMin);
 
   if (extrapolate === 'clamp') {
-    result = clamp(result, Math.min(outputMin, outputMax), Math.max(outputMin, outputMax))
+    result = clamp(result, Math.min(outputMin, outputMax), Math.max(outputMin, outputMax));
   }
 
-  return result
+  return result;
 }
 
 export function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: ReturnType<typeof setTimeout> | undefined
+  let timeout: ReturnType<typeof setTimeout> | undefined;
 
   return function executedFunction(...args: Parameters<T>) {
     const later = () => {
-      clearTimeout(timeout)
-      func(...args)
-    }
+      clearTimeout(timeout);
+      func(...args);
+    };
 
-    clearTimeout(timeout)
-    timeout = setTimeout(later, wait)
-  }
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
 }

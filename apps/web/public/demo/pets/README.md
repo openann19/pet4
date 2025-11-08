@@ -11,4 +11,3 @@ Place the following pet images in this directory:
 - `fallback-avatar.jpg` - Fallback avatar image (optional)
 
 If images are missing, the demo will gracefully fallback to `/demo/gradient.jpg` for backgrounds and `/demo/pets/fallback-avatar.jpg` for avatars.
-

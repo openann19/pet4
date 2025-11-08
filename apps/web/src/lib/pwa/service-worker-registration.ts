@@ -52,14 +52,20 @@ export async function registerServiceWorker(
     });
 
     // Check for updates every hour
-    setInterval(() => {
-      registration.update();
-    }, 60 * 60 * 1000);
+    window.setInterval(
+      () => {
+        void registration.update();
+      },
+      60 * 60 * 1000
+    );
 
     return registration;
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    logger.error('Service worker registration failed', err);
+    logger.error('Service worker registration failed', {
+      message: err.message,
+      stack: err.stack,
+    });
     config.onError?.(err);
     return null;
   }
@@ -81,7 +87,10 @@ export async function unregisterServiceWorker(): Promise<boolean> {
     return false;
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    logger.error('Service worker unregistration failed', err);
+    logger.error('Service worker unregistration failed', {
+      message: err.message,
+      stack: err.stack,
+    });
     return false;
   }
 }
@@ -90,8 +99,8 @@ export async function unregisterServiceWorker(): Promise<boolean> {
  * Check if app is running as PWA
  */
 export function isPWA(): boolean {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-    (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+  const nav = window.navigator as Navigator & { standalone?: boolean };
+  return window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true;
 }
 
 /**
@@ -112,14 +121,17 @@ export async function promptPWAInstall(
   }
 
   const promptEvent = event as BeforeInstallPromptEvent;
-  
+
   try {
-    promptEvent.prompt();
+    await promptEvent.prompt();
     const result = await promptEvent.userChoice;
     return result;
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    logger.error('PWA install prompt failed', err);
+    logger.error('PWA install prompt failed', {
+      message: err.message,
+      stack: err.stack,
+    });
     return null;
   }
 }

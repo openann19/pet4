@@ -1,21 +1,20 @@
-import { useRef, useEffect } from 'react'
-import { MicroInteractions } from '../micro-interactions/core'
+import { useRef, useEffect } from 'react';
+import { MicroInteractions } from '../micro-interactions/core';
 
 export function useShimmerOnHover() {
-  const ref = useRef<HTMLElement>(null)
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const element = ref.current
-    if (!element) return
+    const element = ref.current;
+    if (!element) return;
 
     const handleMouseEnter = () => {
-      MicroInteractions.shimmer(element)
-    }
+      MicroInteractions.shimmer(element);
+    };
 
-    element.addEventListener('mouseenter', handleMouseEnter)
-    return () => element.removeEventListener('mouseenter', handleMouseEnter)
-  }, [])
+    element.addEventListener('mouseenter', handleMouseEnter);
+    return () => element.removeEventListener('mouseenter', handleMouseEnter);
+  }, []);
 
-  return ref
+  return ref;
 }
-

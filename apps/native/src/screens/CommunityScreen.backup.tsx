@@ -48,16 +48,11 @@ export default function CommunityScreen(): React.JSX.Element {
     <View style={styles.postCard}>
       <View style={styles.postHeader}>
         {item.authorAvatar && (
-          <Image
-            source={{ uri: item.authorAvatar }}
-            style={styles.authorAvatar}
-          />
+          <Image source={{ uri: item.authorAvatar }} style={styles.authorAvatar} />
         )}
         <View style={styles.authorInfo}>
           <Text style={styles.authorName}>{item.authorName}</Text>
-          <Text style={styles.postTime}>
-            {new Date(item.timestamp).toLocaleDateString()}
-          </Text>
+          <Text style={styles.postTime}>{new Date(item.timestamp).toLocaleDateString()}</Text>
         </View>
       </View>
       <Text style={styles.postContent}>{item.content}</Text>
@@ -65,10 +60,7 @@ export default function CommunityScreen(): React.JSX.Element {
         <Image source={{ uri: item.images[0] }} style={styles.postImage} />
       )}
       <View style={styles.postActions}>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => handleLike(item.id)}
-        >
+        <TouchableOpacity style={styles.actionButton} onPress={() => handleLike(item.id)}>
           <Text style={styles.actionIcon}>♥</Text>
           <Text style={styles.actionText}>{item.likes}</Text>
         </TouchableOpacity>
@@ -88,10 +80,7 @@ export default function CommunityScreen(): React.JSX.Element {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Community</Text>
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={() => setShowCreatePost(true)}
-        >
+        <TouchableOpacity style={styles.createButton} onPress={() => setShowCreatePost(true)}>
           <Text style={styles.createButtonText}>+ New Post</Text>
         </TouchableOpacity>
       </View>

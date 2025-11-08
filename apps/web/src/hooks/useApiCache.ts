@@ -127,9 +127,6 @@ export function useApiCache<T>(
 }
 
 // Helper hook for generating cache keys
-export function useCacheKey(
-  endpoint: string,
-  params?: Record<string, unknown>
-): string {
+export function useCacheKey(endpoint: string, params?: Record<string, unknown>): string {
   return generateCacheKey(endpoint, params);
 }

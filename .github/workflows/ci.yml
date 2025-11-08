@@ -1,0 +1,41 @@
+name: CI - Type Safety & Lint Gates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.18.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript Check - Zero Errors
+        run: pnpm typecheck
+
+      - name: ESLint - Zero Warnings
+        run: pnpm lint
+
+      - name: Format Check
+        run: pnpm format:check
+
+      - name: Run Tests
+        run: pnpm test
+
+      - name: Depcheck
+        run: pnpm depcheck
+        continue-on-error: true

@@ -3,7 +3,14 @@
  * Celebratory confetti explosion with physics
  */
 
-import { useSharedValue, useAnimatedStyle, withTiming, withSequence, interpolate, Easing } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { useCallback, useState } from 'react';
 import { makeRng } from '@petspark/shared';
 
@@ -38,10 +45,10 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}) {
   const burst = useCallback(
     (centerX: number = window.innerWidth / 2, centerY: number = window.innerHeight / 2) => {
       const newParticles: ConfettiParticle[] = [];
-      
+
       // Create seeded RNG for deterministic confetti generation
-      const seed = Date.now() + centerX + centerY
-      const rng = makeRng(seed)
+      const seed = Date.now() + centerX + centerY;
+      const rng = makeRng(seed);
 
       for (let i = 0; i < particleCount; i++) {
         const angle = (Math.PI * 2 * i) / particleCount;
@@ -65,9 +72,7 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}) {
       setParticles(newParticles);
 
       progress.value = 0;
-      progress.value = withSequence(
-        withTiming(1, { duration, easing: Easing.out(Easing.quad) })
-      );
+      progress.value = withSequence(withTiming(1, { duration, easing: Easing.out(Easing.quad) }));
 
       setTimeout(() => {
         setParticles([]);
@@ -76,32 +81,25 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}) {
     [particleCount, colors, duration, spread]
   );
 
-  const createParticleStyle = useCallback(
-    (particle: ConfettiParticle) => {
-      return useAnimatedStyle(() => {
-        const x = particle.x + particle.velocity.x * progress.value;
-        const y = particle.y + particle.velocity.y * progress.value + 300 * progress.value * progress.value;
-        
-        const rotation = particle.rotation + progress.value * 720;
-        const opacity = interpolate(progress.value, [0, 0.7, 1], [1, 1, 0]);
-        const scale = interpolate(progress.value, [0, 0.2, 1], [0, 1, 0.8]);
+  const createParticleStyle = useCallback((particle: ConfettiParticle) => {
+    return useAnimatedStyle(() => {
+      const x = particle.x + particle.velocity.x * progress.value;
+      const y =
+        particle.y + particle.velocity.y * progress.value + 300 * progress.value * progress.value;
 
-        return {
-          transform: [
-            { translateX: x },
-            { translateY: y },
-            { rotate: `${rotation}deg` },
-            { scale },
-          ],
-          opacity,
-          backgroundColor: particle.color,
-          width: particle.size,
-          height: particle.size,
-        };
-      });
-    },
-    []
-  );
+      const rotation = particle.rotation + progress.value * 720;
+      const opacity = interpolate(progress.value, [0, 0.7, 1], [1, 1, 0]);
+      const scale = interpolate(progress.value, [0, 0.2, 1], [0, 1, 0.8]);
+
+      return {
+        transform: [{ translateX: x }, { translateY: y }, { rotate: `${rotation}deg` }, { scale }],
+        opacity,
+        backgroundColor: particle.color,
+        width: particle.size,
+        height: particle.size,
+      };
+    });
+  }, []);
 
   return {
     burst,

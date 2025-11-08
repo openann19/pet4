@@ -1,22 +1,16 @@
 import React, { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Alert,
-} from 'react-native';
-import { PlaydatesList, PlaydateScheduler, type Playdate, type PlaydateData } from '../components/playdate';
+  PlaydatesList,
+  PlaydateScheduler,
+  type Playdate,
+  type PlaydateData,
+} from '../components/playdate';
 import { usePlaydates } from '../hooks/playdate/usePlaydates';
 
 export default function PlaydatesScreen(): React.JSX.Element {
   const [showScheduler, setShowScheduler] = useState(false);
-  const {
-    playdates,
-    createPlaydate,
-    updateRSVP,
-    cancelPlaydate,
-  } = usePlaydates();
+  const { playdates, createPlaydate, updateRSVP, cancelPlaydate } = usePlaydates();
 
   const handleSchedulePlaydate = async (data: PlaydateData) => {
     const result = await createPlaydate(data);
@@ -28,29 +22,26 @@ export default function PlaydatesScreen(): React.JSX.Element {
   };
 
   const handlePlaydatePress = (playdate: Playdate) => {
-    Alert.alert(
-      playdate.title,
-      `${playdate.notes || 'No additional notes'}`,
-      [
-        { text: 'OK', style: 'default' },
-        {
-          text: 'Cancel Playdate',
-          style: 'destructive',
-          onPress: async () => {
-            const result = await cancelPlaydate(playdate.id);
-            if (result.success) {
-              Alert.alert('Cancelled', 'Playdate has been cancelled');
-            }
-          },
+    Alert.alert(playdate.title, `${playdate.notes || 'No additional notes'}`, [
+      { text: 'OK', style: 'default' },
+      {
+        text: 'Cancel Playdate',
+        style: 'destructive',
+        onPress: async () => {
+          const result = await cancelPlaydate(playdate.id);
+          if (result.success) {
+            Alert.alert('Cancelled', 'Playdate has been cancelled');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleRSVP = async (playdateId: string, response: 'yes' | 'no' | 'maybe') => {
     const result = await updateRSVP(playdateId, response);
     if (result.success) {
-      const responseText = response === 'yes' ? 'confirmed' : response === 'no' ? 'declined' : 'marked as maybe';
+      const responseText =
+        response === 'yes' ? 'confirmed' : response === 'no' ? 'declined' : 'marked as maybe';
       Alert.alert('RSVP Updated', `You've ${responseText} for this playdate`);
     } else {
       Alert.alert('Error', result.error || 'Failed to update RSVP');
@@ -67,10 +58,7 @@ export default function PlaydatesScreen(): React.JSX.Element {
             {playdates.length} total playdate{playdates.length !== 1 ? 's' : ''}
           </Text>
         </View>
-        <Pressable
-          style={styles.addButton}
-          onPress={() => setShowScheduler(true)}
-        >
+        <Pressable style={styles.addButton} onPress={() => setShowScheduler(true)}>
           <Text style={styles.addButtonIcon}>+</Text>
         </Pressable>
       </View>

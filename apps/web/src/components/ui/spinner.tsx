@@ -1,33 +1,39 @@
-'use client'
+'use client';
 
-import type { ComponentProps } from 'react'
-import { useEffect } from 'react'
-import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated'
-import { cn } from '@/lib/utils'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
+import type { ComponentProps } from 'react';
+import { useEffect } from 'react';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
+import { cn } from '@/lib/utils';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 export interface SpinnerProps extends ComponentProps<'div'> {
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'default' | 'subtle' | 'premium'
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'subtle' | 'premium';
 }
 
 const sizeClasses = {
   sm: 'h-4 w-4 border-2',
   md: 'h-8 w-8 border-2',
   lg: 'h-12 w-12 border-4',
-} as const
+} as const;
 
-function Spinner({ 
-  className, 
-  size = 'md', 
+function Spinner({
+  className,
+  size = 'md',
   variant = 'default',
-  ...props 
+  ...props
 }: SpinnerProps): React.JSX.Element {
-  const reducedMotion = useReducedMotion()
-  const rotation = useSharedValue(0)
-  const opacity = useSharedValue(1)
+  const reducedMotion = useReducedMotion();
+  const rotation = useSharedValue(0);
+  const opacity = useSharedValue(1);
 
   useEffect(() => {
     if (reducedMotion) {
@@ -39,7 +45,7 @@ function Spinner({
         }),
         -1,
         false
-      )
+      );
       opacity.value = withRepeat(
         withTiming(0.7, {
           duration: 1500,
@@ -47,7 +53,7 @@ function Spinner({
         }),
         -1,
         true
-      )
+      );
     } else {
       // Premium smooth animation for normal users
       rotation.value = withRepeat(
@@ -57,23 +63,23 @@ function Spinner({
         }),
         -1,
         false
-      )
-      opacity.value = 1
+      );
+      opacity.value = 1;
     }
-  }, [reducedMotion, rotation, opacity])
+  }, [reducedMotion, rotation, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ rotate: `${rotation.value}deg` }],
       opacity: opacity.value,
-    }
-  }) as AnimatedStyle
+    };
+  }) as AnimatedStyle;
 
   const variantClasses = {
     default: 'border-primary border-t-transparent',
     subtle: 'border-primary/60 border-t-transparent/40',
     premium: 'border-primary border-t-transparent shadow-lg shadow-primary/20',
-  } as const
+  } as const;
 
   return (
     <div
@@ -85,15 +91,11 @@ function Spinner({
     >
       <AnimatedView
         style={animatedStyle}
-        className={cn(
-          'rounded-full',
-          sizeClasses[size],
-          variantClasses[variant]
-        )}
+        className={cn('rounded-full', sizeClasses[size], variantClasses[variant])}
       />
       <span className="sr-only">Loading...</span>
     </div>
-  )
+  );
 }
 
-export { Spinner }
+export { Spinner };

@@ -1,107 +1,109 @@
-import { useState } from 'react'
-import { motion } from '@petspark/motion'
-import { EnvelopeSimple, LockKey, Eye, EyeSlash } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useApp } from '@/contexts/AppContext'
-import { useAuth } from '@/contexts/AuthContext'
-import { haptics } from '@/lib/haptics'
-import { analytics } from '@/lib/analytics'
-import { toast } from 'sonner'
-import OAuthButtons from './OAuthButtons'
-import { createLogger } from '@/lib/logger'
-import type { APIError } from '@/lib/contracts'
+import { useState } from 'react';
+import { EnvelopeSimple, LockKey, Eye, EyeSlash } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useApp } from '@/contexts/AppContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { haptics } from '@/lib/haptics';
+import { analytics } from '@/lib/analytics';
+import { toast } from 'sonner';
+import OAuthButtons from './OAuthButtons';
+import { createLogger } from '@/lib/logger';
+import type { APIError } from '@/lib/contracts';
 
-const logger = createLogger('SignInForm')
+const logger = createLogger('SignInForm');
 
-type SignInFormProps = {
-  onSuccess: () => void
-  onSwitchToSignUp: () => void
+interface SignInFormProps {
+  onSuccess: () => void;
+  onSwitchToSignUp: () => void;
 }
 
-type UserCredentials = {
-  email: string
-  password: string
+interface UserCredentials {
+  email: string;
+  password: string;
 }
 
-export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps) {
-  const { t } = useApp()
-  const { login } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState<Partial<Record<keyof UserCredentials, string>>>({})
-  
+export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps): JSX.Element {
+  const { t } = useApp();
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof UserCredentials, string>>>({});
+
   const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof UserCredentials, string>> = {}
+    const newErrors: Partial<Record<keyof UserCredentials, string>> = {};
 
     if (!email.trim()) {
-      newErrors.email = t.auth?.emailRequired || 'Email is required'
+      newErrors.email = t.auth?.emailRequired || 'Email is required';
     } else if (!validateEmail(email)) {
-      newErrors.email = t.auth?.emailInvalid || 'Please enter a valid email'
+      newErrors.email = t.auth?.emailInvalid || 'Please enter a valid email';
     }
 
     if (!password) {
-      newErrors.password = t.auth?.passwordRequired || 'Password is required'
+      newErrors.password = t.auth?.passwordRequired || 'Password is required';
     } else if (password.length < 6) {
-      newErrors.password = t.auth?.passwordTooShort || 'Password must be at least 6 characters'
+      newErrors.password = t.auth?.passwordTooShort || 'Password must be at least 6 characters';
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!validateForm()) {
-      haptics.trigger('error')
-      return
+      haptics.trigger('error');
+      return;
     }
 
-    setIsLoading(true)
-    haptics.trigger('light')
+    setIsLoading(true);
+    haptics.trigger('light');
 
     try {
-      await login(email, password)
+      await login(email, password);
 
-      analytics.track('user_signed_in', { email, method: 'email' })
-      
-      toast.success(t.auth?.signInSuccess || 'Welcome back!')
-      haptics.trigger('success')
-      
-      onSuccess()
+      analytics.track('user_signed_in', { email, method: 'email' });
+
+      toast.success(t.auth?.signInSuccess || 'Welcome back!');
+      haptics.trigger('success');
+
+      onSuccess();
     } catch (error) {
-      const err = error as APIError | Error
-      logger.error('Sign in error', err instanceof Error ? err : new Error(err.message || 'Unknown error'))
-      const errorMessage = 'message' in err ? err.message : (err as APIError).message || t.auth?.signInError || 'Failed to sign in. Please try again.'
-      toast.error(errorMessage)
-      haptics.trigger('error')
+      const err = error as APIError | Error;
+      logger.error(
+        'Sign in error',
+        err instanceof Error ? err : new Error(err.message || 'Unknown error')
+      );
+      const errorMessage =
+        'message' in err
+          ? err.message
+          : (err as APIError).message ||
+            t.auth?.signInError ||
+            'Failed to sign in. Please try again.';
+      toast.error(errorMessage);
+      haptics.trigger('error');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleForgotPassword = () => {
-    haptics.trigger('selection')
-    analytics.track('forgot_password_clicked')
-    toast.info(t.auth?.forgotPasswordInfo || 'Password reset link would be sent to your email')
-  }
+    haptics.trigger('selection');
+    analytics.track('forgot_password_clicked');
+    toast.info(t.auth?.forgotPasswordInfo || 'Password reset link would be sent to your email');
+  };
 
   return (
-    <MotionView
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-foreground mb-2">
           {t.auth?.signInTitle || 'Welcome Back'}
@@ -117,8 +119,8 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
             {t.auth?.email || 'Email'}
           </Label>
           <div className="relative">
-            <EnvelopeSimple 
-              size={20} 
+            <EnvelopeSimple
+              size={20}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
             <Input
@@ -127,17 +129,15 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
               placeholder={t.auth?.emailPlaceholder || 'you@example.com'}
               value={email}
               onChange={(e) => {
-                setEmail(e.target.value)
-                setErrors(prev => ({ ...prev, email: '' }))
+                setEmail(e.target.value);
+                setErrors((prev) => ({ ...prev, email: '' }));
               }}
               className={`pl-10 h-12 ${errors.email ? 'border-destructive' : ''}`}
               disabled={isLoading}
               autoComplete="email"
             />
           </div>
-          {errors.email && (
-            <p className="text-sm text-destructive">{errors.email}</p>
-          )}
+          {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
         </div>
 
         <div className="space-y-2">
@@ -145,8 +145,8 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
             {t.auth?.password || 'Password'}
           </Label>
           <div className="relative">
-            <LockKey 
-              size={20} 
+            <LockKey
+              size={20}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
             <Input
@@ -155,8 +155,8 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
               placeholder={t.auth?.passwordPlaceholder || '••••••••'}
               value={password}
               onChange={(e) => {
-                setPassword(e.target.value)
-                setErrors(prev => ({ ...prev, password: '' }))
+                setPassword(e.target.value);
+                setErrors((prev) => ({ ...prev, password: '' }));
               }}
               className={`pl-10 pr-12 h-12 ${errors.password ? 'border-destructive' : ''}`}
               disabled={isLoading}
@@ -165,8 +165,8 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
             <button
               type="button"
               onClick={() => {
-                setShowPassword(!showPassword)
-                haptics.trigger('selection')
+                setShowPassword(!showPassword);
+                haptics.trigger('selection');
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
@@ -174,9 +174,7 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
               {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
             </button>
           </div>
-          {errors.password && (
-            <p className="text-sm text-destructive">{errors.password}</p>
-          )}
+          {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
         </div>
 
         <div className="flex justify-end">
@@ -195,7 +193,7 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
           disabled={isLoading}
           className="w-full text-base font-semibold"
         >
-          {isLoading ? (t.common.loading || 'Loading...') : (t.auth?.signIn || 'Sign In')}
+          {isLoading ? t.common.loading || 'Loading...' : t.auth?.signIn || 'Sign In'}
         </Button>
 
         <div className="relative my-6">
@@ -203,24 +201,22 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
             <div className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-background text-muted-foreground">
-              {t.auth?.or || 'or'}
-            </span>
+            <span className="px-4 bg-background text-muted-foreground">{t.auth?.or || 'or'}</span>
           </div>
         </div>
 
         <OAuthButtons
           onGoogleSignIn={() => {
-            haptics.trigger('light')
-            analytics.track('oauth_clicked', { provider: 'google', action: 'signin' })
+            haptics.trigger('light');
+            analytics.track('oauth_clicked', { provider: 'google', action: 'signin' });
             // OAuth flow would handle sign-in
-            toast.info(t.auth?.signInWithGoogle || 'Signing in with Google...')
+            toast.info(t.auth?.signInWithGoogle || 'Signing in with Google...');
           }}
           onAppleSignIn={() => {
-            haptics.trigger('light')
-            analytics.track('oauth_clicked', { provider: 'apple', action: 'signin' })
+            haptics.trigger('light');
+            analytics.track('oauth_clicked', { provider: 'apple', action: 'signin' });
             // OAuth flow would handle sign-in
-            toast.info(t.auth?.signInWithApple || 'Signing in with Apple...')
+            toast.info(t.auth?.signInWithApple || 'Signing in with Apple...');
           }}
           disabled={isLoading}
         />
@@ -238,6 +234,6 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
           </p>
         </div>
       </form>
-    </MotionView>
-  )
+    </div>
+  );
 }

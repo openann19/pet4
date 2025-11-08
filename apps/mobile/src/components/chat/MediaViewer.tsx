@@ -1,29 +1,17 @@
 /**
  * MediaViewer Component
- * 
+ *
  * Premium media viewer component integrating:
  * - Glass morph zoom effect
  * - Sticker physics for stickers
  * - Shared element transitions
- * 
+ *
  * Location: apps/mobile/src/components/chat/MediaViewer.tsx
  */
 
 import React, { useCallback, useEffect } from 'react'
-import {
-  Dimensions,
-  Image,
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
-import Animated, {
-  FadeIn,
-  FadeOut,
-  useAnimatedStyle,
-} from 'react-native-reanimated'
+import { Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated'
 import { useGlassMorphZoom } from '../../effects/chat/media/use-glass-morph-zoom'
 import { useStickerPhysics } from '../../effects/chat/media/use-sticker-physics'
 import { ChromaticAberrationFX } from '../../effects/chat/shaders/chromatic-aberration'
@@ -107,22 +95,13 @@ export function MediaViewer({
   }))
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      onRequestClose={handleClose}
-    >
+    <Modal visible={visible} transparent animationType="none" onRequestClose={handleClose}>
       <Animated.View
         style={[styles.backdrop, backdropStyle]}
         entering={FadeIn.duration(200)}
         exiting={FadeOut.duration(200)}
       >
-        <TouchableOpacity
-          style={styles.backdropTouchable}
-          activeOpacity={1}
-          onPress={handleClose}
-        >
+        <TouchableOpacity style={styles.backdropTouchable} activeOpacity={1} onPress={handleClose}>
           <Animated.View
             style={[
               styles.mediaContainer,
@@ -143,11 +122,7 @@ export function MediaViewer({
                   radius={glassZoom.aberrationRadius}
                   intensity={glassZoom.aberrationIntensity}
                 />
-                <Image
-                  source={{ uri: mediaUri }}
-                  style={styles.image}
-                  resizeMode="contain"
-                />
+                <Image source={{ uri: mediaUri }} style={styles.image} resizeMode="contain" />
               </View>
             )}
             {mediaType === 'video' && (
@@ -156,11 +131,7 @@ export function MediaViewer({
               </View>
             )}
             {mediaType === 'sticker' && (
-              <Image
-                source={{ uri: mediaUri }}
-                style={styles.sticker}
-                resizeMode="contain"
-              />
+              <Image source={{ uri: mediaUri }} style={styles.sticker} resizeMode="contain" />
             )}
           </Animated.View>
         </TouchableOpacity>
@@ -212,4 +183,3 @@ const styles = StyleSheet.create({
     height: 200,
   },
 })
-

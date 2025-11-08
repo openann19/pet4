@@ -1,14 +1,14 @@
 /**
  * Design Token Dimensions - Single Source of Truth
  * Generated from android-design-tokens/tokens/spacing.json and radius.json
- * 
+ *
  * All dimensions use px for web, but convert to dp for React Native
  */
 
 export const Dimens = {
   // Base spacing unit
   spacingBase: 4,
-  
+
   // Spacing scale (4/8 grid)
   spacing: {
     xs: 2,
@@ -26,7 +26,7 @@ export const Dimens = {
     '9xl': 80,
     '10xl': 96,
   },
-  
+
   // Component spacing
   component: {
     touchTargetMin: 48,
@@ -75,7 +75,7 @@ export const Dimens = {
       paddingVertical: 12,
     },
   },
-  
+
   // Layout spacing
   layout: {
     gridGutter: 16,
@@ -87,7 +87,7 @@ export const Dimens = {
       element: 12,
     },
   },
-  
+
   // Border radius scale
   radius: {
     none: 0,
@@ -99,7 +99,7 @@ export const Dimens = {
     '2xl': 20,
     '3xl': 24,
     full: 9999,
-    
+
     // Component radius
     button: {
       sm: 8,
@@ -142,7 +142,7 @@ export const Dimens = {
       container: 12,
     },
   },
-  
+
   // Elevation (shadow)
   elevation: {
     none: 0,
@@ -155,7 +155,7 @@ export const Dimens = {
     '4xl': 12,
     '5xl': 16,
     '6xl': 24,
-    
+
     component: {
       card: {
         default: 2,
@@ -176,7 +176,7 @@ export const Dimens = {
       appBar: 4,
     },
   },
-  
+
   // Glow spread
   glowSpread: 8,
 } as const;
@@ -186,4 +186,3 @@ export const Dimens = {
  * In React Native, use these values directly as numbers
  */
 export const toRN = (px: number): number => px;
-

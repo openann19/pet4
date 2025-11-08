@@ -8,7 +8,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
 import type { Location, Place } from '@/lib/maps/types';
-import { getCurrentLocation, snapToGrid, calculateDistance, formatDistance } from '@/lib/maps/utils';
+import {
+  getCurrentLocation,
+  snapToGrid,
+  calculateDistance,
+  formatDistance,
+} from '@/lib/maps/utils';
 import MapLibreMap from '@/components/maps/MapLibreMap';
 import type { MapMarker } from '@/lib/maps/useMapLibreMap';
 import { forwardGeocode } from '@/lib/maps/geocoding';
@@ -65,11 +70,11 @@ export default function VenuePicker({
 
   const loadVenues = async (): Promise<void> => {
     if (!userLocation) return;
-    
+
     try {
       const query = searchQuery || (selectedCategory ? `${selectedCategory} pet` : 'pet friendly');
       const results = await forwardGeocode(query, 'en', userLocation);
-      
+
       const places: Place[] = results.map((result) => ({
         id: result.id,
         name: result.name,
@@ -84,7 +89,7 @@ export default function VenuePicker({
         amenities: [],
         moderationStatus: 'approved',
       }));
-      
+
       setVenues(places.slice(0, 20));
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -212,11 +217,7 @@ export default function VenuePicker({
                     )}
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSelectedVenue(null)}
-                >
+                <Button variant="ghost" size="icon" onClick={() => setSelectedVenue(null)}>
                   <X size={20} />
                 </Button>
               </div>
@@ -230,10 +231,7 @@ export default function VenuePicker({
                   <NavigationArrow size={18} className="mr-2" />
                   {t.map?.openInMaps || 'Open in Maps'}
                 </Button>
-                <Button
-                  className="flex-1"
-                  onClick={handleSelectVenue}
-                >
+                <Button className="flex-1" onClick={handleSelectVenue}>
                   {t.map?.selectLocation || 'Select'}
                 </Button>
               </div>
@@ -244,4 +242,3 @@ export default function VenuePicker({
     </Sheet>
   );
 }
-

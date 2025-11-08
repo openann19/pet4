@@ -85,6 +85,7 @@ PETSPARK/
 **Framework**: Vite with React SWC
 
 **File: `apps/web/vite.config.ts`**
+
 - React SWC plugin for fast compilation
 - Tailwind CSS plugin
 - Node polyfills for browser compatibility
@@ -161,6 +162,7 @@ apps/web/src/
 - **Custom Theme**: `theme.json` for runtime theme customization
 
 **File: `apps/web/tailwind.config.js`**
+
 - CSS variable-based color system
 - Design token spacing scale
 - Custom animations (shimmer, etc.)
@@ -184,6 +186,7 @@ apps/web/src/
 - **Test Structure**: Co-located with source files (`*.test.ts`, `*.test.tsx`)
 
 **File: `apps/web/vitest.config.ts`**
+
 - jsdom environment
 - Path aliases configured
 - Coverage thresholds enforced
@@ -193,15 +196,15 @@ apps/web/src/
 **Script: `apps/web/package.json` → `strict`**
 
 ```bash
-pnpm typecheck && 
-pnpm typecheck:strict-optionals && 
-pnpm lint && 
-pnpm stylelint && 
-pnpm test:cov && 
-pnpm semgrep && 
-pnpm depcheck && 
-pnpm tsprune && 
-pnpm forbid && 
+pnpm typecheck &&
+pnpm typecheck:strict-optionals &&
+pnpm lint &&
+pnpm stylelint &&
+pnpm test:cov &&
+pnpm semgrep &&
+pnpm depcheck &&
+pnpm tsprune &&
+pnpm forbid &&
 pnpm size
 ```
 
@@ -226,6 +229,7 @@ pnpm size
 **React**: 18.2.0
 
 **File: `apps/mobile/app.config.ts`**
+
 - Expo configuration
 - iOS/Android native configs
 - Permissions declarations
@@ -290,6 +294,7 @@ apps/mobile/src/
 - **Deep Linking**: Configured via `linking.ts`
 
 **File: `apps/mobile/src/navigation/AppNavigator.tsx`**
+
 - Tab navigation with 6 tabs (Community, Chat, Discover, Adopt, Matches, Profile)
 - Stack navigation for detail screens
 - Type-safe navigation with TypeScript
@@ -309,12 +314,14 @@ apps/mobile/src/
 - **Responsive**: Platform-specific styles (iOS/Android)
 
 **File: `apps/mobile/tailwind.config.js`**
+
 - NativeWind configuration
 - Design token integration
 
 ### Native Modules Integration
 
 **Expo Modules Used**:
+
 - `expo-camera` - Camera access
 - `expo-image-picker` - Image selection
 - `expo-location` - Location services
@@ -333,6 +340,7 @@ apps/mobile/src/
 - **Test Structure**: `__tests__/` directories
 
 **File: `apps/mobile/vitest.config.ts`**
+
 - jsdom environment (web-compatible)
 - Path aliases configured
 - Coverage thresholds enforced
@@ -345,6 +353,7 @@ apps/mobile/src/
 - **CI/CD**: GitHub Actions with EAS CLI
 
 **Scripts**:
+
 ```bash
 pnpm build:eas              # Build for all platforms
 pnpm build:eas:ios          # Build iOS only
@@ -372,6 +381,7 @@ pnpm submit:android         # Submit to Play Store
 **Purpose**: Core utilities, types, and platform-agnostic business logic
 
 **Structure**:
+
 ```
 packages/shared/src/
 ├── api/                 # API client and types
@@ -389,6 +399,7 @@ packages/shared/src/
 ```
 
 **Key Exports**:
+
 - Type definitions (Pet, Story, Admin types)
 - Storage adapter (cross-platform storage)
 - Device quality utilities
@@ -396,6 +407,7 @@ packages/shared/src/
 - API client types
 
 **Dependencies**:
+
 - React 18.3.1
 - React Native 0.74.5
 - React Native Web 0.19.12
@@ -408,6 +420,7 @@ packages/shared/src/
 **Purpose**: Cross-platform animation library
 
 **Structure**:
+
 ```
 packages/motion/src/
 ├── primitives/          # Motion primitives (MotionView, MotionText, MotionScrollView)
@@ -426,6 +439,7 @@ packages/motion/src/
 ```
 
 **Key Features**:
+
 - Cross-platform (web + mobile)
 - Reduced motion support
 - Performance budget tracking
@@ -433,6 +447,7 @@ packages/motion/src/
 - Haptic feedback integration
 
 **Peer Dependencies**:
+
 - React ≥18
 - React Native Reanimated ≥3.6.0
 
@@ -443,6 +458,7 @@ packages/motion/src/
 **Purpose**: Feature flags and configuration management
 
 **Structure**:
+
 ```
 packages/config/src/
 ├── feature-flags.ts     # Feature flag definitions
@@ -450,6 +466,7 @@ packages/config/src/
 ```
 
 **Dependencies**:
+
 - Zod 3.25.76 (validation)
 
 ### @petspark/chat-core
@@ -459,6 +476,7 @@ packages/config/src/
 **Purpose**: Chat functionality (outbox, message queue)
 
 **Structure**:
+
 ```
 packages/chat-core/src/
 ├── useOutbox.ts         # Outbox hook for offline messages
@@ -466,6 +484,7 @@ packages/chat-core/src/
 ```
 
 **Dependencies**:
+
 - React 18.3.1
 
 ### Package Dependency Graph
@@ -516,6 +535,7 @@ apps/web/src/core/domain/
 ```
 
 **Principles**:
+
 - Pure functions (no side effects)
 - Type-safe domain models
 - Business rule validation
@@ -524,6 +544,7 @@ apps/web/src/core/domain/
 ### Feature-Sliced Structure
 
 **Web**: Feature-based component organization
+
 ```
 components/
 ├── auth/          # Authentication feature
@@ -533,6 +554,7 @@ components/
 ```
 
 **Mobile**: Feature-sliced with entities
+
 ```
 src/
 ├── components/    # UI components (by feature)
@@ -550,6 +572,7 @@ src/
 **Purpose**: Distinguish between omitted properties and explicitly undefined values
 
 **Usage**:
+
 ```typescript
 // Update operations allow explicit undefined
 type UpdateUser = OptionalWithUndef<Omit<User, 'id' | 'createdAt'>>
@@ -558,7 +581,7 @@ type UpdateUser = OptionalWithUndef<Omit<User, 'id' | 'createdAt'>>
 await api.updateUser(id, { name: undefined })
 
 // Can omit a field (don't change it)
-await api.updateUser(id, { email: "new@example.com" })
+await api.updateUser(id, { email: 'new@example.com' })
 ```
 
 **Enforcement**: `tsconfig.strict-optionals.json` with `exactOptionalPropertyTypes: true`
@@ -568,6 +591,7 @@ await api.updateUser(id, { email: "new@example.com" })
 **Location**: `apps/web/src/api/`
 
 **Structure**:
+
 ```typescript
 // Feature-specific API clients
 export class FeatureAPI {
@@ -582,6 +606,7 @@ type UpdateItemData = OptionalWithUndef<Omit<Item, 'id' | 'createdAt'>>
 ```
 
 **Patterns**:
+
 - Class-based API clients
 - Type-safe request/response types
 - Error handling with typed errors
@@ -592,6 +617,7 @@ type UpdateItemData = OptionalWithUndef<Omit<Item, 'id' | 'createdAt'>>
 **Location**: `apps/web/src/core/services/`
 
 **Structure**:
+
 ```typescript
 // Base service class
 export abstract class BaseService {
@@ -608,6 +634,7 @@ export class ContentModerationService extends BaseService {
 ### Type Safety Patterns
 
 **Strict TypeScript**:
+
 - `strict: true`
 - `noUncheckedIndexedAccess: true`
 - `noImplicitReturns: true`
@@ -615,6 +642,7 @@ export class ContentModerationService extends BaseService {
 - Zero `any` types (except in typed boundaries)
 
 **Type Guards**:
+
 ```typescript
 export function isPet(obj: unknown): obj is Pet {
   return typeof obj === 'object' && obj !== null && 'id' in obj
@@ -622,6 +650,7 @@ export function isPet(obj: unknown): obj is Pet {
 ```
 
 **Branded Types**:
+
 ```typescript
 type UserId = string & { readonly __brand: 'UserId' }
 ```
@@ -657,6 +686,7 @@ type UserId = string & { readonly __brand: 'UserId' }
 **File: `eslint.config.js` (root)**
 
 **Key Rules**:
+
 - Zero warnings policy
 - TypeScript strict rules
 - React hooks rules
@@ -666,6 +696,7 @@ type UserId = string & { readonly __brand: 'UserId' }
 - Motion library restrictions (prefer @petspark/motion over framer-motion)
 
 **Configuration Structure**:
+
 - Base config for all files
 - Platform-specific overrides (web/mobile)
 - Test file overrides (relaxed rules)
@@ -710,15 +741,18 @@ type UserId = string & { readonly __brand: 'UserId' }
 ### Performance Budgets
 
 **Web Bundle Size**:
+
 - Target: ≤ 500 KB (compressed)
 - Monitoring: `size-limit` package
 
 **Mobile Bundle Size**:
+
 - Target: ≤ 12 MB JS
 - Install Size: ≤ 60 MB
 - Monitoring: EAS build reports
 
 **Performance Targets**:
+
 - Cold Start: ≤ 1.8s (mobile)
 - TTI: ≤ 2.2s (mobile)
 - Frame Time: ≤ 16.67ms (60 FPS)
@@ -730,6 +764,7 @@ type UserId = string & { readonly __brand: 'UserId' }
 ### Local Development Setup
 
 **Prerequisites**:
+
 - Node.js ≥18
 - pnpm ≥8
 - (Mobile) Expo CLI (optional, EAS CLI recommended)
@@ -779,12 +814,14 @@ cd packages/shared && pnpm add <package>
 ### Scripts and Commands
 
 **Root Scripts**:
+
 - `pnpm install:all` - Install all dependencies
 - `pnpm typecheck` - Type check all packages
 - `pnpm lint` - Lint all packages
 - `pnpm test` - Run all tests
 
 **Web Scripts** (apps/web):
+
 - `pnpm dev` - Start dev server
 - `pnpm build` - Production build
 - `pnpm typecheck` - Type check
@@ -793,6 +830,7 @@ cd packages/shared && pnpm add <package>
 - `pnpm strict` - Run all quality gates
 
 **Mobile Scripts** (apps/mobile):
+
 - `pnpm start` - Start Expo dev server
 - `pnpm android` - Run on Android
 - `pnpm ios` - Run on iOS
@@ -860,74 +898,74 @@ pnpm strict
 
 ### React Ecosystem
 
-| Package | Version | Usage |
-|---------|---------|-------|
-| React | 18.2.0 | Core framework (web + mobile) |
-| React DOM | 18.2.0 | Web rendering |
-| React Native | 0.74.5 | Mobile framework |
-| React Native Web | 0.19.12 | Web compatibility layer |
+| Package          | Version | Usage                         |
+| ---------------- | ------- | ----------------------------- |
+| React            | 18.2.0  | Core framework (web + mobile) |
+| React DOM        | 18.2.0  | Web rendering                 |
+| React Native     | 0.74.5  | Mobile framework              |
+| React Native Web | 0.19.12 | Web compatibility layer       |
 
 ### TypeScript
 
-| Package | Version | Usage |
-|---------|---------|-------|
-| TypeScript | ~5.7.2 | Type checking and compilation |
+| Package    | Version | Usage                         |
+| ---------- | ------- | ----------------------------- |
+| TypeScript | ~5.7.2  | Type checking and compilation |
 
 ### Build Tools
 
-| Package | Version | Usage |
-|---------|---------|-------|
-| Vite | ^6.3.5 | Web build tool |
-| Expo | ~51.0.39 | Mobile framework |
-| Metro | (bundled) | React Native bundler |
+| Package | Version   | Usage                |
+| ------- | --------- | -------------------- |
+| Vite    | ^6.3.5    | Web build tool       |
+| Expo    | ~51.0.39  | Mobile framework     |
+| Metro   | (bundled) | React Native bundler |
 
 ### State Management
 
-| Package | Version | Usage |
-|---------|---------|-------|
+| Package               | Version | Usage                   |
+| --------------------- | ------- | ----------------------- |
 | @tanstack/react-query | ^5.83.1 | Remote state management |
-| zustand | ^4.5.0 | Global state management |
+| zustand               | ^4.5.0  | Global state management |
 
 ### Animation Libraries
 
-| Package | Version | Usage |
-|---------|---------|-------|
-| react-native-reanimated | ~3.10.1 | Cross-platform animations |
-| framer-motion | ^12.6.2 | Web-only DOM animations |
-| @petspark/motion | workspace:* | Shared animation library |
+| Package                 | Version      | Usage                     |
+| ----------------------- | ------------ | ------------------------- |
+| react-native-reanimated | ~3.10.1      | Cross-platform animations |
+| framer-motion           | ^12.6.2      | Web-only DOM animations   |
+| @petspark/motion        | workspace:\* | Shared animation library  |
 
 ### Styling
 
-| Package | Version | Usage |
-|---------|---------|-------|
-| tailwindcss | ^4.1.11 (web), ^3.4.1 (mobile) | CSS framework |
-| nativewind | ^4.0.1 | Tailwind for React Native |
+| Package     | Version                        | Usage                     |
+| ----------- | ------------------------------ | ------------------------- |
+| tailwindcss | ^4.1.11 (web), ^3.4.1 (mobile) | CSS framework             |
+| nativewind  | ^4.0.1                         | Tailwind for React Native |
 
 ### Testing
 
-| Package | Version | Usage |
-|---------|---------|-------|
-| vitest | ^4.0.6 | Test runner |
-| @testing-library/react | ^14.3.1 | Component testing (web) |
+| Package                       | Version | Usage                      |
+| ----------------------------- | ------- | -------------------------- |
+| vitest                        | ^4.0.6  | Test runner                |
+| @testing-library/react        | ^14.3.1 | Component testing (web)    |
 | @testing-library/react-native | ^13.3.3 | Component testing (mobile) |
-| @playwright/test | ^1.56.1 | E2E testing (web) |
+| @playwright/test              | ^1.56.1 | E2E testing (web)          |
 
 ### Navigation
 
-| Package | Version | Usage |
-|---------|---------|-------|
-| react-router-dom | (web) | Web routing |
+| Package                  | Version | Usage             |
+| ------------------------ | ------- | ----------------- |
+| react-router-dom         | (web)   | Web routing       |
 | @react-navigation/native | ^7.0.14 | Mobile navigation |
 
 ### Code Quality
 
-| Package | Version | Usage |
-|---------|---------|-------|
-| eslint | ^9.28.0 | Linting |
-| typescript-eslint | ^8.38.0 | TypeScript ESLint rules |
-| prettier | ^3.4.2 | Code formatting |
-| husky | ^9.1.6 | Git hooks |
-| lint-staged | ^15.2.10 | Pre-commit linting |
+| Package           | Version  | Usage                   |
+| ----------------- | -------- | ----------------------- |
+| eslint            | ^9.28.0  | Linting                 |
+| typescript-eslint | ^8.38.0  | TypeScript ESLint rules |
+| prettier          | ^3.4.2   | Code formatting         |
+| husky             | ^9.1.6   | Git hooks               |
+| lint-staged       | ^15.2.10 | Pre-commit linting      |
 
 ---
 
@@ -947,14 +985,12 @@ pnpm strict
    ```
 
 2. **Update Project Name**:
-
    - Update `package.json` name fields
    - Update `apps/web/package.json` (name: "spark-template" → your name)
    - Update `apps/mobile/package.json` (name: "petspark-mobile" → your name)
    - Update workspace package names (`@petspark/*` → `@yourproject/*`)
 
 3. **Update Configuration Files**:
-
    - `apps/mobile/app.config.ts` (name, slug, bundle identifiers)
    - `apps/web/vite.config.ts` (project-specific aliases)
    - Update all references to "PETSPARK" / "PetSpark"
@@ -976,24 +1012,20 @@ pnpm strict
 #### Step 3: Domain Logic
 
 1. **Update Domain Models**:
-
    - Modify `apps/web/src/core/domain/` for your domain
    - Update type definitions in `packages/shared/src/types/`
 
 2. **Update API Clients**:
-
    - Modify `apps/web/src/api/` for your API endpoints
    - Update API types in `apps/web/src/api/types.ts`
 
 #### Step 4: Features
 
 1. **Remove Unused Features**:
-
    - Delete feature directories you don't need
    - Update navigation/routing
 
 2. **Add Your Features**:
-
    - Create feature directories in `components/`
    - Add API clients in `api/`
    - Add hooks in `hooks/`
@@ -1001,32 +1033,27 @@ pnpm strict
 #### Step 5: Styling
 
 1. **Update Design Tokens**:
-
    - Modify `apps/web/src/styles/theme.css`
    - Update `apps/web/tailwind.config.js`
    - Update `apps/mobile/src/theme/colors.ts`
 
 2. **Update Branding**:
-
    - Update colors, fonts, spacing
    - Update logo/assets
 
 #### Step 6: Configuration
 
 1. **Update Environment Variables**:
-
    - Create `.env.example` files
    - Update environment configs
 
 2. **Update CI/CD**:
-
    - Modify GitHub Actions workflows
    - Update EAS configuration (mobile)
 
 #### Step 7: Testing
 
 1. **Update Tests**:
-
    - Modify test files for your domain
    - Update test data/mocks
 
@@ -1039,17 +1066,17 @@ pnpm strict
 
 ### Key Files to Update
 
-| File | What to Update |
-|------|----------------|
-| `package.json` (root) | Project name, scripts |
-| `apps/web/package.json` | App name, dependencies |
-| `apps/mobile/package.json` | App name, dependencies |
-| `apps/mobile/app.config.ts` | App name, bundle IDs, permissions |
-| `apps/web/vite.config.ts` | Build configuration |
-| `apps/web/src/core/domain/` | Domain models |
-| `apps/web/src/api/` | API clients |
-| `packages/shared/src/types/` | Shared types |
-| `README.md` | Project documentation |
+| File                         | What to Update                    |
+| ---------------------------- | --------------------------------- |
+| `package.json` (root)        | Project name, scripts             |
+| `apps/web/package.json`      | App name, dependencies            |
+| `apps/mobile/package.json`   | App name, dependencies            |
+| `apps/mobile/app.config.ts`  | App name, bundle IDs, permissions |
+| `apps/web/vite.config.ts`    | Build configuration               |
+| `apps/web/src/core/domain/`  | Domain models                     |
+| `apps/web/src/api/`          | API clients                       |
+| `packages/shared/src/types/` | Shared types                      |
+| `README.md`                  | Project documentation             |
 
 ### Common Patterns to Reuse
 
@@ -1084,4 +1111,3 @@ This template provides:
 **Last Updated**: 2024  
 **Template Version**: 1.0.0  
 **Maintained By**: Engineering Team
-

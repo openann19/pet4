@@ -20,4 +20,3 @@ declare module 'lucide-react/dist/esm/icons/chevron-up' {
   const ChevronUp: LucideIcon;
   export default ChevronUp;
 }
-

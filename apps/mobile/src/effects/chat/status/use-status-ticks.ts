@@ -1,21 +1,21 @@
 /**
  * Message Status Ticks Effect Hook
- * 
+ *
  * Creates a premium status tick animation with:
  * - Tick(s) morph from outline→solid with 120ms crossfade
  * - Color animates
  * - Haptic Selection only on sender when "Delivered→Read"
- * 
+ *
  * Location: apps/mobile/src/effects/chat/status/use-status-ticks.ts
  */
 
 import { useCallback, useEffect } from 'react'
 import {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-    type SharedValue,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  type SharedValue,
 } from 'react-native-reanimated'
 import { createLogger } from '../../../utils/logger'
 import { triggerHaptic } from '../core/haptic-manager'
@@ -48,15 +48,8 @@ export interface UseStatusTicksReturn {
 const DEFAULT_ENABLED = true
 const CROSSFADE_DURATION = 120 // ms
 
-export function useStatusTicks(
-  options: UseStatusTicksOptions
-): UseStatusTicksReturn {
-  const {
-    enabled = DEFAULT_ENABLED,
-    status,
-    previousStatus,
-    isOwnMessage = false,
-  } = options
+export function useStatusTicks(options: UseStatusTicksOptions): UseStatusTicksReturn {
+  const { enabled = DEFAULT_ENABLED, status, previousStatus, isOwnMessage = false } = options
 
   const reducedMotion = useReducedMotionSV()
 
@@ -121,24 +114,11 @@ export function useStatusTicks(
     color.value = newColor // Direct assignment for color (can't animate string in Reanimated)
 
     // Trigger haptic on "Delivered→Read" transition (only for own messages)
-    if (
-      isOwnMessage &&
-      previousStatus === 'delivered' &&
-      status === 'read'
-    ) {
+    if (isOwnMessage && previousStatus === 'delivered' && status === 'read') {
       triggerHaptic('selection')
       logger.debug('Status changed to read, haptic triggered')
     }
-  }, [
-    enabled,
-    reducedMotion,
-    status,
-    previousStatus,
-    isOwnMessage,
-    tick1Fill,
-    tick2Fill,
-    color,
-  ])
+  }, [enabled, reducedMotion, status, previousStatus, isOwnMessage, tick1Fill, tick2Fill, color])
 
   useEffect(() => {
     updateStatus()
@@ -159,4 +139,3 @@ export function useStatusTicks(
     animatedStyle,
   }
 }
-

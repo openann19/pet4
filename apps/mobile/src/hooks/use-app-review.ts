@@ -20,8 +20,8 @@ export function useAppReview(): UseAppReviewReturn {
 
   const checkAvailability = useCallback(async (): Promise<void> => {
     try {
-    const available = await StoreReview.isAvailableAsync()
-    setIsAvailable(available)
+      const available = await StoreReview.isAvailableAsync()
+      setIsAvailable(available)
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to check review availability', err)
@@ -51,4 +51,3 @@ export function useAppReview(): UseAppReviewReturn {
     checkAvailability,
   }
 }
-

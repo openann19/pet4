@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   PhoneDisconnect,
   Microphone,
@@ -11,25 +11,31 @@ import {
   SpeakerSlash,
   ArrowsOut,
   ArrowsIn,
-  MonitorPlay
-} from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import type { CallSession } from '@/lib/call-types'
-import { formatCallDuration } from '@/lib/call-utils'
-import { haptics } from '@/lib/haptics'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence } from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+  MonitorPlay,
+} from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import type { CallSession } from '@/lib/call-types';
+import { formatCallDuration } from '@/lib/call-utils';
+import { haptics } from '@/lib/haptics';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+} from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 interface CallInterfaceProps {
-  session: CallSession
-  onEndCall: () => void
-  onToggleMute: () => void
-  onToggleVideo: () => void
-  onToggleSpeaker?: () => void
-  onMinimize?: () => void
+  session: CallSession;
+  onEndCall: () => void;
+  onToggleMute: () => void;
+  onToggleVideo: () => void;
+  onToggleSpeaker?: () => void;
+  onMinimize?: () => void;
 }
 
 export default function CallInterface({
@@ -38,106 +44,104 @@ export default function CallInterface({
   onToggleMute,
   onToggleVideo,
   onToggleSpeaker,
-  onMinimize: _onMinimize
+  onMinimize: _onMinimize,
 }: CallInterfaceProps) {
-  const [duration, setDuration] = useState(0)
-  const [isSpeakerOn, setIsSpeakerOn] = useState(true)
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [duration, setDuration] = useState(0);
+  const [isSpeakerOn, setIsSpeakerOn] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [audioWaveform, setAudioWaveform] = useState<number[]>(
     Array.from({ length: 30 }, () => 0.5)
-  )
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const remoteVideoRef = useRef<HTMLVideoElement>(null)
-  const animationFrameRef = useRef<number | null>(null)
+  );
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (session.call.status === 'active') {
       const interval = setInterval(() => {
-        setDuration(prev => prev + 1)
-      }, 1000)
+        setDuration((prev) => prev + 1);
+      }, 1000);
 
-      return () => clearInterval(interval)
+      return () => clearInterval(interval);
     }
-    return undefined
-  }, [session.call.status])
+    return undefined;
+  }, [session.call.status]);
 
   useEffect(() => {
     if (videoRef.current && session.localStream) {
-      videoRef.current.srcObject = session.localStream
+      videoRef.current.srcObject = session.localStream;
     }
-  }, [session.localStream])
+  }, [session.localStream]);
 
   useEffect(() => {
     if (remoteVideoRef.current && session.remoteStream) {
-      remoteVideoRef.current.srcObject = session.remoteStream
+      remoteVideoRef.current.srcObject = session.remoteStream;
     }
-  }, [session.remoteStream])
+  }, [session.remoteStream]);
 
   useEffect(() => {
     if (!session.localParticipant.isMuted && session.call.status === 'active') {
       const updateWaveform = () => {
-        setAudioWaveform(prev => 
-          prev.map(() => Math.random() * 0.6 + 0.2)
-        )
-        animationFrameRef.current = requestAnimationFrame(updateWaveform)
-      }
-      updateWaveform()
+        setAudioWaveform((prev) => prev.map(() => Math.random() * 0.6 + 0.2));
+        animationFrameRef.current = requestAnimationFrame(updateWaveform);
+      };
+      updateWaveform();
     } else {
       if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
+        cancelAnimationFrame(animationFrameRef.current);
       }
-      setAudioWaveform(Array.from({ length: 30 }, () => 0.2))
+      setAudioWaveform(Array.from({ length: 30 }, () => 0.2));
     }
 
     return () => {
       if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
+        cancelAnimationFrame(animationFrameRef.current);
       }
-    }
-  }, [session.localParticipant.isMuted, session.call.status])
+    };
+  }, [session.localParticipant.isMuted, session.call.status]);
 
   const handleToggleSpeaker = useCallback(() => {
-    haptics.trigger('selection')
-    setIsSpeakerOn(prev => !prev)
-    onToggleSpeaker?.()
-  }, [onToggleSpeaker])
+    haptics.trigger('selection');
+    setIsSpeakerOn((prev) => !prev);
+    onToggleSpeaker?.();
+  }, [onToggleSpeaker]);
 
   const handleToggleMute = useCallback(() => {
-    haptics.trigger('selection')
-    onToggleMute()
-  }, [onToggleMute])
+    haptics.trigger('selection');
+    onToggleMute();
+  }, [onToggleMute]);
 
   const handleToggleVideo = useCallback(() => {
-    haptics.trigger('selection')
-    onToggleVideo()
-  }, [onToggleVideo])
+    haptics.trigger('selection');
+    onToggleVideo();
+  }, [onToggleVideo]);
 
   const handleEndCall = useCallback(() => {
-    haptics.trigger('heavy')
-    onEndCall()
-  }, [onEndCall])
+    haptics.trigger('heavy');
+    onEndCall();
+  }, [onEndCall]);
 
   const handleToggleFullscreen = useCallback(() => {
-    setIsFullscreen(prev => !prev)
-  }, [])
+    setIsFullscreen((prev) => !prev);
+  }, []);
 
-  const isVideoCall = session.call.type === 'video'
-  const isActive = session.call.status === 'active'
+  const isVideoCall = session.call.type === 'video';
+  const isActive = session.call.status === 'active';
 
-  const containerOpacity = useSharedValue(0)
-  const containerScale = useSharedValue(0.95)
+  const containerOpacity = useSharedValue(0);
+  const containerScale = useSharedValue(0.95);
 
   useEffect(() => {
-    containerOpacity.value = withTiming(1, { duration: 300 })
-    containerScale.value = withTiming(1, { duration: 300 })
-  }, [containerOpacity, containerScale])
+    containerOpacity.value = withTiming(1, { duration: 300 });
+    containerScale.value = withTiming(1, { duration: 300 });
+  }, [containerOpacity, containerScale]);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
       opacity: containerOpacity.value,
-      transform: [{ scale: containerScale.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: containerScale.value }],
+    };
+  }) as AnimatedStyle;
 
   return (
     <AnimatedView
@@ -211,36 +215,33 @@ export default function CallInterface({
         />
       </div>
     </AnimatedView>
-  )
+  );
 }
 
 interface AvatarPulseViewProps {
-  avatar?: string
-  name: string
-  isMuted: boolean
-  isActive: boolean
-  audioWaveform: number[]
+  avatar?: string;
+  name: string;
+  isMuted: boolean;
+  isActive: boolean;
+  audioWaveform: number[];
 }
 
 function AvatarPulseView({ avatar, name, isMuted, isActive, audioWaveform }: AvatarPulseViewProps) {
-  const scale = useSharedValue(1)
+  const scale = useSharedValue(1);
 
   useEffect(() => {
     scale.value = withRepeat(
-      withSequence(
-        withTiming(1.05, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
-      ),
+      withSequence(withTiming(1.05, { duration: 1000 }), withTiming(1, { duration: 1000 })),
       -1,
       false
-    )
-  }, [scale])
+    );
+  }, [scale]);
 
   const avatarStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: scale.value }],
+    };
+  }) as AnimatedStyle;
 
   return (
     <div className="absolute inset-0 flex items-center justify-center">
@@ -252,16 +253,14 @@ function AvatarPulseView({ avatar, name, isMuted, isActive, audioWaveform }: Ava
           </AvatarFallback>
         </Avatar>
 
-        {!isMuted && isActive && (
-          <AudioWaveformView waveform={audioWaveform} />
-        )}
+        {!isMuted && isActive && <AudioWaveformView waveform={audioWaveform} />}
       </AnimatedView>
     </div>
-  )
+  );
 }
 
 interface AudioWaveformViewProps {
-  waveform: number[]
+  waveform: number[];
 }
 
 function AudioWaveformView({ waveform }: AudioWaveformViewProps) {
@@ -271,53 +270,48 @@ function AudioWaveformView({ waveform }: AudioWaveformViewProps) {
         <WaveformBar key={idx} value={value} />
       ))}
     </div>
-  )
+  );
 }
 
 interface WaveformBarProps {
-  value: number
+  value: number;
 }
 
 function WaveformBar({ value }: WaveformBarProps) {
-  const height = useSharedValue(value * 64)
+  const height = useSharedValue(value * 64);
 
   useEffect(() => {
-    height.value = withTiming(value * 64, { duration: 150 })
-  }, [value, height])
+    height.value = withTiming(value * 64, { duration: 150 });
+  }, [value, height]);
 
   const barStyle = useAnimatedStyle(() => {
     return {
-      height: `${height.value}px`
-    }
-  }) as AnimatedStyle
+      height: `${height.value}px`,
+    };
+  }) as AnimatedStyle;
 
-  return (
-    <AnimatedView
-      style={barStyle}
-      className="w-1.5 bg-primary rounded-full"
-    />
-  )
+  return <AnimatedView style={barStyle} className="w-1.5 bg-primary rounded-full" />;
 }
 
 interface LocalVideoViewProps {
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement>;
 }
 
 function LocalVideoView({ videoRef }: LocalVideoViewProps) {
-  const opacity = useSharedValue(0)
-  const scale = useSharedValue(0.8)
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.8);
 
   useEffect(() => {
-    opacity.value = withTiming(1, { duration: 300 })
-    scale.value = withTiming(1, { duration: 300 })
-  }, [opacity, scale])
+    opacity.value = withTiming(1, { duration: 300 });
+    scale.value = withTiming(1, { duration: 300 });
+  }, [opacity, scale]);
 
   const videoStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [{ scale: scale.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: scale.value }],
+    };
+  }) as AnimatedStyle;
 
   return (
     <AnimatedView
@@ -333,94 +327,89 @@ function LocalVideoView({ videoRef }: LocalVideoViewProps) {
         style={{ transform: 'scaleX(-1)' }}
       />
     </AnimatedView>
-  )
+  );
 }
 
 interface CallInfoViewProps {
-  name: string
-  isActive: boolean
-  duration: number
-  callStatus: string
-  quality: string
-  actualResolution?: string
+  name: string;
+  isActive: boolean;
+  duration: number;
+  callStatus: string;
+  quality: string;
+  actualResolution?: string;
 }
 
-function CallInfoView({ name, isActive, duration, callStatus, quality, actualResolution }: CallInfoViewProps) {
-  const opacity = useSharedValue(0)
-  const translateY = useSharedValue(-20)
+function CallInfoView({
+  name,
+  isActive,
+  duration,
+  callStatus,
+  quality,
+  actualResolution,
+}: CallInfoViewProps) {
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(-20);
 
   useEffect(() => {
-    opacity.value = withTiming(1, { duration: 300 })
-    translateY.value = withTiming(0, { duration: 300 })
-  }, [opacity, translateY])
+    opacity.value = withTiming(1, { duration: 300 });
+    translateY.value = withTiming(0, { duration: 300 });
+  }, [opacity, translateY]);
 
   const infoStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [{ translateY: translateY.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ translateY: translateY.value }],
+    };
+  }) as AnimatedStyle;
 
-  const statusScale = useSharedValue(1)
-  const statusOpacity = useSharedValue(1)
+  const statusScale = useSharedValue(1);
+  const statusOpacity = useSharedValue(1);
 
   useEffect(() => {
     if (isActive) {
       statusScale.value = withRepeat(
-        withSequence(
-          withTiming(1.2, { duration: 1000 }),
-          withTiming(1, { duration: 1000 })
-        ),
+        withSequence(withTiming(1.2, { duration: 1000 }), withTiming(1, { duration: 1000 })),
         -1,
         false
-      )
+      );
       statusOpacity.value = withRepeat(
-        withSequence(
-          withTiming(0.5, { duration: 1000 }),
-          withTiming(1, { duration: 1000 })
-        ),
+        withSequence(withTiming(0.5, { duration: 1000 }), withTiming(1, { duration: 1000 })),
         -1,
         false
-      )
+      );
     } else {
       statusScale.value = withRepeat(
-        withSequence(
-          withTiming(1.2, { duration: 750 }),
-          withTiming(1, { duration: 750 })
-        ),
+        withSequence(withTiming(1.2, { duration: 750 }), withTiming(1, { duration: 750 })),
         -1,
         false
-      )
+      );
     }
-  }, [isActive, statusScale, statusOpacity])
+  }, [isActive, statusScale, statusOpacity]);
 
   const statusStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: statusScale.value }],
-      opacity: statusOpacity.value
-    }
-  }) as AnimatedStyle
+      opacity: statusOpacity.value,
+    };
+  }) as AnimatedStyle;
 
   return (
-    <AnimatedView style={infoStyle} className="glass-strong rounded-2xl px-4 py-3 backdrop-blur-2xl">
+    <AnimatedView
+      style={infoStyle}
+      className="glass-strong rounded-2xl px-4 py-3 backdrop-blur-2xl"
+    >
       <h3 className="font-bold text-white text-lg mb-1">{name}</h3>
       <div className="flex items-center gap-2">
         {isActive ? (
           <>
-            <AnimatedView
-              style={statusStyle}
-              className="w-2 h-2 bg-green-500 rounded-full"
-            />
+            <AnimatedView style={statusStyle} className="w-2 h-2 bg-green-500 rounded-full" />
             <span className="text-sm text-white/90 font-medium">
               {formatCallDuration(duration)}
             </span>
           </>
         ) : (
           <>
-            <AnimatedView
-              style={statusStyle}
-              className="w-2 h-2 bg-yellow-500 rounded-full"
-            />
+            <AnimatedView style={statusStyle} className="w-2 h-2 bg-yellow-500 rounded-full" />
             <span className="text-sm text-white/90">
               {callStatus === 'ringing' ? 'Ringing...' : 'Connecting...'}
             </span>
@@ -429,11 +418,17 @@ function CallInfoView({ name, isActive, duration, callStatus, quality, actualRes
       </div>
       <div className="flex items-center gap-2 mt-1 flex-wrap">
         <div className="flex items-center gap-1">
-          <div className={`w-1.5 h-1.5 rounded-full ${
-            quality === 'excellent' ? 'bg-green-500' :
-            quality === 'good' ? 'bg-blue-500' :
-            quality === 'fair' ? 'bg-yellow-500' : 'bg-red-500'
-          }`} />
+          <div
+            className={`w-1.5 h-1.5 rounded-full ${
+              quality === 'excellent'
+                ? 'bg-green-500'
+                : quality === 'good'
+                  ? 'bg-blue-500'
+                  : quality === 'fair'
+                    ? 'bg-yellow-500'
+                    : 'bg-red-500'
+            }`}
+          />
           <span className="text-xs text-white/70 capitalize">{quality}</span>
         </div>
         {actualResolution && (
@@ -447,18 +442,18 @@ function CallInfoView({ name, isActive, duration, callStatus, quality, actualRes
         )}
       </div>
     </AnimatedView>
-  )
+  );
 }
 
 interface CallControlsViewProps {
-  isVideoCall: boolean
-  isMuted: boolean
-  isVideoEnabled: boolean
-  isSpeakerOn: boolean
-  onToggleMute: () => void
-  onToggleVideo: () => void
-  onEndCall: () => void
-  onToggleSpeaker: () => void
+  isVideoCall: boolean;
+  isMuted: boolean;
+  isVideoEnabled: boolean;
+  isSpeakerOn: boolean;
+  onToggleMute: () => void;
+  onToggleVideo: () => void;
+  onEndCall: () => void;
+  onToggleSpeaker: () => void;
 }
 
 function CallControlsView({
@@ -469,27 +464,27 @@ function CallControlsView({
   onToggleMute,
   onToggleVideo,
   onEndCall,
-  onToggleSpeaker
+  onToggleSpeaker,
 }: CallControlsViewProps) {
-  const translateY = useSharedValue(50)
-  const opacity = useSharedValue(0)
+  const translateY = useSharedValue(50);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
-    translateY.value = withTiming(0, { duration: 300 })
-    opacity.value = withTiming(1, { duration: 300 })
-  }, [translateY, opacity])
+    translateY.value = withTiming(0, { duration: 300 });
+    opacity.value = withTiming(1, { duration: 300 });
+  }, [translateY, opacity]);
 
   const controlsStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
-      opacity: opacity.value
-    }
-  }) as AnimatedStyle
+      opacity: opacity.value,
+    };
+  }) as AnimatedStyle;
 
-  const muteAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false })
-  const videoAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false })
-  const endCallAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false })
-  const speakerAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false })
+  const muteAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
+  const videoAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
+  const endCallAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
+  const speakerAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
 
   return (
     <div className="absolute bottom-0 left-0 right-0 p-8">
@@ -497,8 +492,8 @@ function CallControlsView({
         <AnimatedView style={muteAnimation.animatedStyle}>
           <Button
             onClick={() => {
-              muteAnimation.handlePress()
-              onToggleMute()
+              muteAnimation.handlePress();
+              onToggleMute();
             }}
             size="icon"
             className={`w-14 h-14 rounded-full shadow-xl ${
@@ -519,8 +514,8 @@ function CallControlsView({
           <AnimatedView style={videoAnimation.animatedStyle}>
             <Button
               onClick={() => {
-                videoAnimation.handlePress()
-                onToggleVideo()
+                videoAnimation.handlePress();
+                onToggleVideo();
               }}
               size="icon"
               className={`w-14 h-14 rounded-full shadow-xl ${
@@ -541,8 +536,8 @@ function CallControlsView({
         <AnimatedView style={endCallAnimation.animatedStyle}>
           <Button
             onClick={() => {
-              endCallAnimation.handlePress()
-              onEndCall()
+              endCallAnimation.handlePress();
+              onEndCall();
             }}
             size="icon"
             className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-2xl"
@@ -554,8 +549,8 @@ function CallControlsView({
         <AnimatedView style={speakerAnimation.animatedStyle}>
           <Button
             onClick={() => {
-              speakerAnimation.handlePress()
-              onToggleSpeaker()
+              speakerAnimation.handlePress();
+              onToggleSpeaker();
             }}
             size="icon"
             className={`w-14 h-14 rounded-full shadow-xl ${
@@ -573,5 +568,5 @@ function CallControlsView({
         </AnimatedView>
       </AnimatedView>
     </div>
-  )
+  );
 }

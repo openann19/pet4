@@ -20,10 +20,7 @@ export function useDoubleTap<T extends HTMLElement = HTMLDivElement>(
   handlers: DoubleTapHandlers = {},
   options: DoubleTapOptions = {}
 ): RefObject<T | null> {
-  const {
-    delay = 300,
-    enabled = true,
-  } = options;
+  const { delay = 300, enabled = true } = options;
 
   const ref = useRef<T | null>(null);
   const lastTapTime = useRef<number>(0);
@@ -50,7 +47,7 @@ export function useDoubleTap<T extends HTMLElement = HTMLDivElement>(
       } else {
         // Potential single tap
         lastTapTime.current = now;
-        
+
         // Wait to see if another tap comes
         singleTapTimer.current = setTimeout(() => {
           handlers.onSingleTap?.();

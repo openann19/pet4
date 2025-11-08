@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  Pressable,
-  FlatList,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, FlatList, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const TEMPLATE_WIDTH = (width - 48) / 2;
@@ -202,19 +194,9 @@ export const StoryTemplates: React.FC<StoryTemplatesProps> = ({
   };
 
   const renderTemplate = ({ item }: { item: StoryTemplate }) => (
-    <Pressable
-      style={styles.templateItem}
-      onPress={() => handleSelectTemplate(item)}
-    >
-      <View
-        style={[
-          styles.templatePreview,
-          { backgroundColor: item.backgroundColor },
-        ]}
-      >
-        {item.icon && (
-          <Text style={styles.templateIcon}>{item.icon}</Text>
-        )}
+    <Pressable style={styles.templateItem} onPress={() => handleSelectTemplate(item)}>
+      <View style={[styles.templatePreview, { backgroundColor: item.backgroundColor }]}>
+        {item.icon && <Text style={styles.templateIcon}>{item.icon}</Text>}
         <Text
           style={[
             styles.templateText,
@@ -233,25 +215,15 @@ export const StoryTemplates: React.FC<StoryTemplatesProps> = ({
     </Pressable>
   );
 
-  const renderCategoryButton = (
-    category: CategoryFilter,
-    label: string,
-    icon: string
-  ) => (
+  const renderCategoryButton = (category: CategoryFilter, label: string, icon: string) => (
     <Pressable
       key={category}
-      style={[
-        styles.categoryButton,
-        selectedCategory === category && styles.categoryButtonActive,
-      ]}
+      style={[styles.categoryButton, selectedCategory === category && styles.categoryButtonActive]}
       onPress={() => setSelectedCategory(category)}
     >
       <Text style={styles.categoryIcon}>{icon}</Text>
       <Text
-        style={[
-          styles.categoryText,
-          selectedCategory === category && styles.categoryTextActive,
-        ]}
+        style={[styles.categoryText, selectedCategory === category && styles.categoryTextActive]}
       >
         {label}
       </Text>

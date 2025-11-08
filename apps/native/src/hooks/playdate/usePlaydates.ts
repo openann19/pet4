@@ -64,7 +64,10 @@ export const usePlaydates = (currentUserId: string = 'my-user-id') => {
         return { success: true, playdate: newPlaydate };
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to create playdate', err, { context: 'createPlaydate', userId: currentUserId });
+        logger.error('Failed to create playdate', err, {
+          context: 'createPlaydate',
+          userId: currentUserId,
+        });
         return { success: false, error: 'Failed to create playdate' };
       }
     },
@@ -112,12 +115,12 @@ export const usePlaydates = (currentUserId: string = 'my-user-id') => {
           if (p.id === playdateId) {
             // Update RSVP
             const updated = { ...p, currentUserRSVP: response };
-            
+
             // If user responded 'yes', change status to confirmed
             if (response === 'yes') {
               updated.status = 'confirmed';
             }
-            
+
             return updated;
           }
           return p;

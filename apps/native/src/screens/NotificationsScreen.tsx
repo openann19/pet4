@@ -49,7 +49,7 @@ export default function NotificationsScreen() {
       setError(null);
 
       const apiNotifications = await notificationsApi.list();
-      
+
       const mappedNotifications: Notification[] = apiNotifications.map((n) => ({
         id: n.id,
         type: n.type as Notification['type'],
@@ -64,18 +64,19 @@ export default function NotificationsScreen() {
       // Merge with stored notifications (for offline support)
       const merged = [
         ...mappedNotifications,
-        ...storedNotifications.filter(
-          (sn) => !mappedNotifications.find((n) => n.id === sn.id)
-        ),
+        ...storedNotifications.filter((sn) => !mappedNotifications.find((n) => n.id === sn.id)),
       ].sort((a, b) => b.timestamp - a.timestamp);
 
       setNotifications(merged);
       setStoredNotifications(merged);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load notifications';
-      logger.error('Failed to load notifications', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to load notifications',
+        err instanceof Error ? err : new Error(String(err))
+      );
       setError(errorMessage);
-      
+
       // Fallback to stored notifications if API fails
       if (storedNotifications.length > 0) {
         setNotifications(storedNotifications);
@@ -90,17 +91,16 @@ export default function NotificationsScreen() {
   const markAsRead = async (id: string) => {
     try {
       await notificationsApi.markAsRead(id);
-      const updated = notifications.map((n) =>
-        n.id === id ? { ...n, read: true } : n
-      );
+      const updated = notifications.map((n) => (n.id === id ? { ...n, read: true } : n));
       setNotifications(updated);
       setStoredNotifications(updated);
     } catch (err) {
-      logger.error('Failed to mark notification as read', err instanceof Error ? err : new Error(String(err)));
-      // Still update UI optimistically
-      const updated = notifications.map((n) =>
-        n.id === id ? { ...n, read: true } : n
+      logger.error(
+        'Failed to mark notification as read',
+        err instanceof Error ? err : new Error(String(err))
       );
+      // Still update UI optimistically
+      const updated = notifications.map((n) => (n.id === id ? { ...n, read: true } : n));
       setNotifications(updated);
       setStoredNotifications(updated);
     }
@@ -113,7 +113,10 @@ export default function NotificationsScreen() {
       setNotifications(updated);
       setStoredNotifications(updated);
     } catch (err) {
-      logger.error('Failed to mark all notifications as read', err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        'Failed to mark all notifications as read',
+        err instanceof Error ? err : new Error(String(err))
+      );
       // Still update UI optimistically
       const updated = notifications.map((n) => ({ ...n, read: true }));
       setNotifications(updated);
@@ -126,9 +129,7 @@ export default function NotificationsScreen() {
     setStoredNotifications([]);
   };
 
-  const filteredNotifications = notifications.filter((n) =>
-    filter === 'all' ? true : !n.read
-  );
+  const filteredNotifications = notifications.filter((n) => (filter === 'all' ? true : !n.read));
 
   const formatTime = (timestamp: number) => {
     const now = Date.now();
@@ -209,28 +210,15 @@ export default function NotificationsScreen() {
             onPress={() => setFilter('all')}
             style={[styles.filterButton, filter === 'all' && styles.filterButtonActive]}
           >
-            <Text
-              style={[
-                styles.filterText,
-                filter === 'all' && styles.filterTextActive,
-              ]}
-            >
+            <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>
               All ({notifications.length})
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setFilter('unread')}
-            style={[
-              styles.filterButton,
-              filter === 'unread' && styles.filterButtonActive,
-            ]}
+            style={[styles.filterButton, filter === 'unread' && styles.filterButtonActive]}
           >
-            <Text
-              style={[
-                styles.filterText,
-                filter === 'unread' && styles.filterTextActive,
-              ]}
-            >
+            <Text style={[styles.filterText, filter === 'unread' && styles.filterTextActive]}>
               Unread ({notifications.filter((n) => !n.read).length})
             </Text>
           </TouchableOpacity>
@@ -240,10 +228,7 @@ export default function NotificationsScreen() {
       <ScrollView style={styles.notificationsList} showsVerticalScrollIndicator={false}>
         {filteredNotifications.map((notification, index) => (
           <FadeInView key={notification.id} delay={200 + index * 50}>
-            <TouchableOpacity
-              onPress={() => markAsRead(notification.id)}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity onPress={() => markAsRead(notification.id)} activeOpacity={0.7}>
               <AnimatedCard
                 style={[
                   styles.notificationCard,
@@ -258,12 +243,8 @@ export default function NotificationsScreen() {
                 </View>
                 <View style={styles.notificationContent}>
                   <Text style={styles.notificationTitle}>{notification.title}</Text>
-                  <Text style={styles.notificationMessage}>
-                    {notification.message}
-                  </Text>
-                  <Text style={styles.notificationTime}>
-                    {formatTime(notification.timestamp)}
-                  </Text>
+                  <Text style={styles.notificationMessage}>{notification.message}</Text>
+                  <Text style={styles.notificationTime}>{formatTime(notification.timestamp)}</Text>
                 </View>
               </AnimatedCard>
             </TouchableOpacity>

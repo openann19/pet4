@@ -7,11 +7,7 @@ import { createLogger } from '@mobile/utils/logger'
 import * as Haptics from 'expo-haptics'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList, Platform, StyleSheet, Text, View } from 'react-native'
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-} from 'react-native-reanimated'
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const logger = createLogger('FeedScreen')
@@ -48,9 +44,9 @@ function DiscoveryList(): React.ReactElement {
       setLoading(true)
       setError(null)
       const response = await matchingApi.getAvailablePets({ limit: 20 })
-      
+
       // Map API response to PetProfile format
-      const mappedPets: PetProfile[] = response.pets.map((pet) => ({
+      const mappedPets: PetProfile[] = response.pets.map(pet => ({
         id: pet.id,
         ownerId: pet.ownerId,
         name: pet.name,
@@ -63,11 +59,11 @@ function DiscoveryList(): React.ReactElement {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }))
-      
+
       setPets(mappedPets)
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load pets'                                                                           
-      logger.error('Failed to load pets', err instanceof Error ? err : new Error(String(err)))                                                                  
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load pets'
+      logger.error('Failed to load pets', err instanceof Error ? err : new Error(String(err)))
       setError(errorMessage)
     } finally {
       setLoading(false)
@@ -90,7 +86,12 @@ function DiscoveryList(): React.ReactElement {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
-        <Text onPress={() => { void loadPets() }} style={styles.retryText}>
+        <Text
+          onPress={() => {
+            void loadPets()
+          }}
+          style={styles.retryText}
+        >
           Retry
         </Text>
       </View>
@@ -101,7 +102,7 @@ function DiscoveryList(): React.ReactElement {
     <FlatList
       contentContainerStyle={{ padding: 16, paddingBottom: 28 }}
       data={pets}
-      keyExtractor={(p) => String(p.id)}
+      keyExtractor={p => String(p.id)}
       renderItem={({ item }) => (
         <FeatureCard title={item.name} subtitle={`${item.breed} • ${item.age} years old`}>
           <View style={styles.row}>
@@ -158,56 +159,64 @@ function MapPane(): React.ReactElement {
   }> | null>(null)
 
   useEffect(() => {
-    try {
-      // Dynamic import for optional dependency
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const mapsModule = require('react-native-maps') as {
-        default: React.ComponentType<{
-          style?: unknown
-          initialRegion?: {
-            latitude: number
-            longitude: number
-            latitudeDelta: number
-            longitudeDelta: number
+    let mounted = true
+
+    async function loadMapView() {
+      try {
+        // Dynamic import for optional dependency
+        const mapsModule = await import('react-native-maps').catch(() => null)
+        if (!mounted) return
+
+        if (mapsModule) {
+          const MapComponent = mapsModule.default
+          if (MapComponent && typeof MapComponent === 'function') {
+            setMapView(() => MapComponent as React.ComponentType<any>)
+          } else {
+            setMapView(null)
           }
-          onRegionChange?: (region: {
-            latitude: number
-            longitude: number
-            latitudeDelta: number
-            longitudeDelta: number
-          }) => void
-          children?: React.ReactNode
-        }>
+        } else {
+          setMapView(null)
+        }
+      } catch {
+        if (mounted) {
+          setMapView(null)
+        }
       }
-      setMapView(() => mapsModule.default)
-    } catch {
-      setMapView(null)
+    }
+
+    loadMapView()
+
+    return () => {
+      mounted = false
     }
   }, [])
 
-  const onRegionChange = useCallback((region: typeof initialRegion) => {
-    // Store pending region
-    pendingRegionRef.current = region
+  const onRegionChange = useCallback(
+    (region: typeof initialRegion) => {
+      // Store pending region
+      pendingRegionRef.current = region
 
-    // Clear existing timeout
-    if (throttleTimeoutRef.current) {
-      clearTimeout(throttleTimeoutRef.current)
-    }
-
-    // Set new timeout with trailing behavior
-    throttleTimeoutRef.current = setTimeout(() => {
-      if (pendingRegionRef.current) {
-        regionSV.value = {
-          latitude: pendingRegionRef.current.latitude,
-          longitude: pendingRegionRef.current.longitude,
-          latitudeDelta: pendingRegionRef.current.latitudeDelta,
-          longitudeDelta: pendingRegionRef.current.longitudeDelta,
-        }
-        pendingRegionRef.current = null
+      // Clear existing timeout
+      if (throttleTimeoutRef.current) {
+        clearTimeout(throttleTimeoutRef.current)
       }
-      throttleTimeoutRef.current = null
-    }, 120)
-  }, [regionSV])
+
+      // Set new timeout with trailing behavior
+      throttleTimeoutRef.current = setTimeout(() => {
+        if (pendingRegionRef.current) {
+          regionSV.value = {
+            latitude: pendingRegionRef.current.latitude,
+            longitude: pendingRegionRef.current.longitude,
+            latitudeDelta: pendingRegionRef.current.latitudeDelta,
+            longitudeDelta: pendingRegionRef.current.longitudeDelta,
+          }
+          pendingRegionRef.current = null
+        }
+        throttleTimeoutRef.current = null
+      }, 120)
+    },
+    [regionSV]
+  )
 
   useEffect(() => {
     return () => {
@@ -231,8 +240,8 @@ function MapPane(): React.ReactElement {
   return (
     <View style={styles.mapWrap}>
       {MapView && (
-        <MapView 
-          style={StyleSheet.absoluteFill} 
+        <MapView
+          style={StyleSheet.absoluteFill}
           initialRegion={initialRegion}
           onRegionChange={onRegionChange}
         >
@@ -271,10 +280,7 @@ export function FeedScreen(): React.ReactElement {
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
       <View style={styles.container}>
-        <SectionHeader
-          title="Discover"
-          description="Browse nearby pets or switch to map view."
-        />
+        <SectionHeader title="Discover" description="Browse nearby pets or switch to map view." />
 
         <View style={styles.segment} accessibilityRole="tablist">
           <View style={styles.segmentTrack}>
@@ -397,4 +403,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 })
-

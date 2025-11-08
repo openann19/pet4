@@ -8,64 +8,64 @@
 @layer theme {
   :root {
     /* Default (Light theme, English) */
-    --btn-primary-bg: #2563EB;
-    --btn-primary-fg: #FFFFFF;
-    --btn-primary-hover-bg: #1D4ED8;
-    --btn-primary-hover-fg: #FFFFFF;
-    --btn-primary-press-bg: #1E40AF;
-    --btn-primary-press-fg: #FFFFFF;
-    --btn-primary-disabled-bg: #F1F5F9;
-    --btn-primary-disabled-fg: #94A3B8;
-    --btn-primary-focus-ring: #3B82F6;
+    --btn-primary-bg: #2563eb;
+    --btn-primary-fg: #ffffff;
+    --btn-primary-hover-bg: #1d4ed8;
+    --btn-primary-hover-fg: #ffffff;
+    --btn-primary-press-bg: #1e40af;
+    --btn-primary-press-fg: #ffffff;
+    --btn-primary-disabled-bg: #f1f5f9;
+    --btn-primary-disabled-fg: #94a3b8;
+    --btn-primary-focus-ring: #3b82f6;
 
-    --btn-secondary-bg: #64748B;
-    --btn-secondary-fg: #FFFFFF;
+    --btn-secondary-bg: #64748b;
+    --btn-secondary-fg: #ffffff;
     --btn-secondary-hover-bg: #475569;
-    --btn-secondary-hover-fg: #FFFFFF;
+    --btn-secondary-hover-fg: #ffffff;
     --btn-secondary-press-bg: #334155;
-    --btn-secondary-press-fg: #FFFFFF;
-    --btn-secondary-disabled-bg: #F1F5F9;
-    --btn-secondary-disabled-fg: #94A3B8;
+    --btn-secondary-press-fg: #ffffff;
+    --btn-secondary-disabled-bg: #f1f5f9;
+    --btn-secondary-disabled-fg: #94a3b8;
     --btn-secondary-focus-ring: #475569;
 
-    --btn-destructive-bg: #DC2626;
-    --btn-destructive-fg: #FFFFFF;
-    --btn-destructive-hover-bg: #B91C1C;
-    --btn-destructive-hover-fg: #FFFFFF;
-    --btn-destructive-press-bg: #991B1B;
-    --btn-destructive-press-fg: #FFFFFF;
-    --btn-destructive-disabled-bg: #F1F5F9;
-    --btn-destructive-disabled-fg: #94A3B8;
-    --btn-destructive-focus-ring: #EF4444;
+    --btn-destructive-bg: #dc2626;
+    --btn-destructive-fg: #ffffff;
+    --btn-destructive-hover-bg: #b91c1c;
+    --btn-destructive-hover-fg: #ffffff;
+    --btn-destructive-press-bg: #991b1b;
+    --btn-destructive-press-fg: #ffffff;
+    --btn-destructive-disabled-bg: #f1f5f9;
+    --btn-destructive-disabled-fg: #94a3b8;
+    --btn-destructive-focus-ring: #ef4444;
 
-    --btn-outline-border: #CBD5E1;
+    --btn-outline-border: #cbd5e1;
     --btn-outline-bg: transparent;
-    --btn-outline-fg: #0F172A;
-    --btn-outline-hover-border: #94A3B8;
-    --btn-outline-hover-bg: #F8FAFC;
+    --btn-outline-fg: #0f172a;
+    --btn-outline-hover-border: #94a3b8;
+    --btn-outline-hover-bg: #f8fafc;
     --btn-outline-hover-fg: #020617;
-    --btn-outline-press-border: #94A3B8;
-    --btn-outline-press-bg: #F1F5F9;
+    --btn-outline-press-border: #94a3b8;
+    --btn-outline-press-bg: #f1f5f9;
     --btn-outline-press-fg: #020617;
-    --btn-outline-disabled-border: #E2E8F0;
+    --btn-outline-disabled-border: #e2e8f0;
     --btn-outline-disabled-bg: transparent;
-    --btn-outline-disabled-fg: #94A3B8;
-    --btn-outline-focus-ring: #64748B;
+    --btn-outline-disabled-fg: #94a3b8;
+    --btn-outline-focus-ring: #64748b;
 
     --btn-ghost-bg: transparent;
-    --btn-ghost-fg: #0F172A;
-    --btn-ghost-hover-bg: #F8FAFC;
+    --btn-ghost-fg: #0f172a;
+    --btn-ghost-hover-bg: #f8fafc;
     --btn-ghost-hover-fg: #020617;
-    --btn-ghost-press-bg: #F1F5F9;
+    --btn-ghost-press-bg: #f1f5f9;
     --btn-ghost-press-fg: #020617;
     --btn-ghost-disabled-bg: transparent;
-    --btn-ghost-disabled-fg: #94A3B8;
-    --btn-ghost-focus-ring: #64748B;
+    --btn-ghost-disabled-fg: #94a3b8;
+    --btn-ghost-focus-ring: #64748b;
 
-    --btn-link-fg: #2563EB;
-    --btn-link-hover-fg: #1D4ED8;
-    --btn-link-disabled-fg: #94A3B8;
-    --btn-link-focus-ring: #3B82F6;
+    --btn-link-fg: #2563eb;
+    --btn-link-hover-fg: #1d4ed8;
+    --btn-link-disabled-fg: #94a3b8;
+    --btn-link-focus-ring: #3b82f6;
 
     /* Minimum touch target size */
     --btn-min-size: 44px;
@@ -73,68 +73,68 @@
 
   .dark-theme {
     /* Dark theme, English (same as Bulgarian) */
-    --btn-primary-bg: #3B82F6;
-    --btn-primary-fg: #FFFFFF;
-    --btn-primary-hover-bg: #2563EB;
-    --btn-primary-hover-fg: #FFFFFF;
-    --btn-primary-press-bg: #1D4ED8;
-    --btn-primary-press-fg: #FFFFFF;
-    --btn-primary-disabled-bg: #1E293B;
+    --btn-primary-bg: #3b82f6;
+    --btn-primary-fg: #ffffff;
+    --btn-primary-hover-bg: #2563eb;
+    --btn-primary-hover-fg: #ffffff;
+    --btn-primary-press-bg: #1d4ed8;
+    --btn-primary-press-fg: #ffffff;
+    --btn-primary-disabled-bg: #1e293b;
     --btn-primary-disabled-fg: #475569;
-    --btn-primary-focus-ring: #60A5FA;
+    --btn-primary-focus-ring: #60a5fa;
 
     --btn-secondary-bg: #475569;
-    --btn-secondary-fg: #FFFFFF;
+    --btn-secondary-fg: #ffffff;
     --btn-secondary-hover-bg: #334155;
-    --btn-secondary-hover-fg: #FFFFFF;
-    --btn-secondary-press-bg: #1E293B;
-    --btn-secondary-press-fg: #FFFFFF;
-    --btn-secondary-disabled-bg: #1E293B;
+    --btn-secondary-hover-fg: #ffffff;
+    --btn-secondary-press-bg: #1e293b;
+    --btn-secondary-press-fg: #ffffff;
+    --btn-secondary-disabled-bg: #1e293b;
     --btn-secondary-disabled-fg: #475569;
-    --btn-secondary-focus-ring: #64748B;
+    --btn-secondary-focus-ring: #64748b;
 
-    --btn-destructive-bg: #EF4444;
-    --btn-destructive-fg: #FFFFFF;
-    --btn-destructive-hover-bg: #DC2626;
-    --btn-destructive-hover-fg: #FFFFFF;
-    --btn-destructive-press-bg: #B91C1C;
-    --btn-destructive-press-fg: #FFFFFF;
-    --btn-destructive-disabled-bg: #1E293B;
+    --btn-destructive-bg: #ef4444;
+    --btn-destructive-fg: #ffffff;
+    --btn-destructive-hover-bg: #dc2626;
+    --btn-destructive-hover-fg: #ffffff;
+    --btn-destructive-press-bg: #b91c1c;
+    --btn-destructive-press-fg: #ffffff;
+    --btn-destructive-disabled-bg: #1e293b;
     --btn-destructive-disabled-fg: #475569;
-    --btn-destructive-focus-ring: #F87171;
+    --btn-destructive-focus-ring: #f87171;
 
     --btn-outline-border: #475569;
     --btn-outline-bg: transparent;
-    --btn-outline-fg: #F1F5F9;
-    --btn-outline-hover-border: #64748B;
-    --btn-outline-hover-bg: #1E293B;
-    --btn-outline-hover-fg: #FFFFFF;
-    --btn-outline-press-border: #64748B;
-    --btn-outline-press-bg: #0F172A;
-    --btn-outline-press-fg: #FFFFFF;
+    --btn-outline-fg: #f1f5f9;
+    --btn-outline-hover-border: #64748b;
+    --btn-outline-hover-bg: #1e293b;
+    --btn-outline-hover-fg: #ffffff;
+    --btn-outline-press-border: #64748b;
+    --btn-outline-press-bg: #0f172a;
+    --btn-outline-press-fg: #ffffff;
     --btn-outline-disabled-border: #334155;
     --btn-outline-disabled-bg: transparent;
     --btn-outline-disabled-fg: #475569;
-    --btn-outline-focus-ring: #64748B;
+    --btn-outline-focus-ring: #64748b;
 
     --btn-ghost-bg: transparent;
-    --btn-ghost-fg: #F1F5F9;
-    --btn-ghost-hover-bg: #1E293B;
-    --btn-ghost-hover-fg: #FFFFFF;
-    --btn-ghost-press-bg: #0F172A;
-    --btn-ghost-press-fg: #FFFFFF;
+    --btn-ghost-fg: #f1f5f9;
+    --btn-ghost-hover-bg: #1e293b;
+    --btn-ghost-hover-fg: #ffffff;
+    --btn-ghost-press-bg: #0f172a;
+    --btn-ghost-press-fg: #ffffff;
     --btn-ghost-disabled-bg: transparent;
     --btn-ghost-disabled-fg: #475569;
-    --btn-ghost-focus-ring: #64748B;
+    --btn-ghost-focus-ring: #64748b;
 
-    --btn-link-fg: #3B82F6;
-    --btn-link-hover-fg: #60A5FA;
+    --btn-link-fg: #3b82f6;
+    --btn-link-hover-fg: #60a5fa;
     --btn-link-disabled-fg: #475569;
-    --btn-link-focus-ring: #60A5FA;
+    --btn-link-focus-ring: #60a5fa;
   }
 
   /* Locale-specific overrides can be added here if needed */
-  [data-locale="bg"] {
+  [data-locale='bg'] {
     /* Bulgarian locale uses same colors as English for now */
   }
 }

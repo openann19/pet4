@@ -1,35 +1,35 @@
 /**
  * PostCard tests
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { PostCard } from '@/components/community/PostCard'
-import type { Post } from '@/lib/community-types'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { PostCard } from '@/components/community/PostCard';
+import type { Post } from '@/lib/community-types';
 
 // Mock dependencies
 vi.mock('@/api/community-api', () => ({
   communityAPI: {
     toggleReaction: vi.fn().mockResolvedValue({ added: true, reactionsCount: 1 }),
   },
-}))
+}));
 
 vi.mock('@/lib/community-service', () => ({
   communityService: {
     savePost: vi.fn().mockResolvedValue({}),
     unsavePost: vi.fn().mockResolvedValue({}),
   },
-}))
+}));
 
 vi.mock('@/lib/haptics', () => ({
   triggerHaptic: vi.fn(),
-}))
+}));
 
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
   },
-}))
+}));
 
 vi.mock('react-native-reanimated', () => ({
   useSharedValue: vi.fn(() => ({ value: 0 })),
@@ -37,44 +37,48 @@ vi.mock('react-native-reanimated', () => ({
   withSpring: vi.fn((v) => v),
   withTiming: vi.fn((v) => v),
   withSequence: vi.fn((v) => v),
-}))
+}));
 
 vi.mock('@/effects/reanimated/animated-view', () => ({
   AnimatedView: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-}))
+}));
 
 vi.mock('@/effects/reanimated', () => ({
   useHoverTap: vi.fn(() => ({ scale: { value: 1 } })),
-}))
+}));
 
 vi.mock('@/effects/reanimated/transitions', () => ({
   springConfigs: { smooth: {}, bouncy: {} },
   timingConfigs: { fast: {} },
-}))
+}));
 
 vi.mock('@/components/community/CommentsSheet', () => ({
   CommentsSheet: () => <div data-testid="comments-sheet">Comments</div>,
-}))
+}));
 
 vi.mock('@/components/community/MediaViewer', () => ({
   MediaViewer: () => <div data-testid="media-viewer">Media</div>,
-}))
+}));
 
 vi.mock('@/components/community/PostDetailView', () => ({
   PostDetailView: () => <div data-testid="post-detail">Detail</div>,
-}))
+}));
 
 vi.mock('@/components/community/ReportDialog', () => ({
   ReportDialog: () => <div data-testid="report-dialog">Report</div>,
-}))
+}));
 
 // Mock spark
 global.window = {
   ...global.window,
   spark: {
-    user: vi.fn().mockResolvedValue({ id: 'user-1', login: 'testuser', avatarUrl: 'https://example.com/avatar.jpg' }),
+    user: vi.fn().mockResolvedValue({
+      id: 'user-1',
+      login: 'testuser',
+      avatarUrl: 'https://example.com/avatar.jpg',
+    }),
   },
-} as any
+} as any;
 
 describe('PostCard', () => {
   const mockPost: Post = {
@@ -87,50 +91,49 @@ describe('PostCard', () => {
     status: 'active',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  }
+  };
 
-  const mockOnAuthorClick = vi.fn()
+  const mockOnAuthorClick = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('should render post card', () => {
-    render(<PostCard post={mockPost} onAuthorClick={mockOnAuthorClick} />)
+    render(<PostCard post={mockPost} onAuthorClick={mockOnAuthorClick} />);
 
-    expect(screen.getByText('Test post content')).toBeInTheDocument()
-    expect(screen.getByText('Test User')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Test post content')).toBeInTheDocument();
+    expect(screen.getByText('Test User')).toBeInTheDocument();
+  });
 
   it('should display post text', () => {
-    render(<PostCard post={mockPost} />)
+    render(<PostCard post={mockPost} />);
 
-    expect(screen.getByText('Test post content')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Test post content')).toBeInTheDocument();
+  });
 
   it('should display author name', () => {
-    render(<PostCard post={mockPost} />)
+    render(<PostCard post={mockPost} />);
 
-    expect(screen.getByText('Test User')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Test User')).toBeInTheDocument();
+  });
 
   it('should render action buttons', () => {
-    render(<PostCard post={mockPost} />)
+    render(<PostCard post={mockPost} />);
 
-    expect(screen.getByRole('button', { name: /like/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /comment/i })).toBeInTheDocument()
-  })
+    expect(screen.getByRole('button', { name: /like/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /comment/i })).toBeInTheDocument();
+  });
 
   it('should handle empty post text', () => {
     const postWithoutText: Post = {
       ...mockPost,
       text: undefined,
-    }
+    };
 
-    render(<PostCard post={postWithoutText} />)
+    render(<PostCard post={postWithoutText} />);
 
     // Should still render the card
-    expect(screen.getByText('Test User')).toBeInTheDocument()
-  })
-})
-
+    expect(screen.getByText('Test User')).toBeInTheDocument();
+  });
+});

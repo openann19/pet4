@@ -16,12 +16,14 @@ export default tseslint.config(
       '**/coverage/**',
       '**/*.config.js',
       '**/*.config.mjs',
+      '**/*.config.cjs',
       '**/.eslintrc.cjs',
       '**/.lintstagedrc.js',
       '**/index.js',
       '**/__tests__/**',
       'android/**',
       'ios/**',
+      'metro.config.cjs',
     ],
   },
   js.configs.recommended,
@@ -76,19 +78,19 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-expressions': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
-      
+
       // React
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // React Native - Disabled due to ESLint 9 compatibility issues
       // 'react-native/no-unused-styles': 'warn',
       // 'react-native/split-platform-components': 'warn',
       // 'react-native/no-inline-styles': 'warn',
       // 'react-native/no-color-literals': 'warn',
-      
+
       // General
       'no-console': 'error',
       'no-debugger': 'error',
@@ -96,7 +98,7 @@ export default tseslint.config(
       'no-var': 'error',
       'prefer-const': 'error',
       'prefer-arrow-callback': 'error',
-      
+
       // Unicorn
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/filename-case': [
@@ -113,14 +115,14 @@ export default tseslint.config(
       'unicorn/prefer-array-some': 'error',
       'unicorn/prefer-includes': 'error',
       'unicorn/prefer-string-starts-ends-with': 'error',
-      
+
       // Code quality
       'no-param-reassign': ['error', { props: true }],
       'no-return-await': 'error',
       'require-await': 'error',
       'no-throw-literal': 'error',
       'prefer-promise-reject-errors': 'error',
-      
+
       // Ultra Chat FX Rules
       'ultra-chatfx/no-react-native-animated': 'error',
       'ultra-chatfx/require-reduced-motion-guard': [
@@ -142,10 +144,7 @@ export default tseslint.config(
       'ultra-chatfx/ban-math-random-in-effects': [
         'error',
         {
-          globs: [
-            'src/**/effects/**/*.{ts,tsx}',
-            'src/**/features/chat/**/*.{ts,tsx}',
-          ],
+          globs: ['src/**/effects/**/*.{ts,tsx}', 'src/**/features/chat/**/*.{ts,tsx}'],
         },
       ],
     },
@@ -177,4 +176,3 @@ export default tseslint.config(
     },
   }
 )
-

@@ -30,19 +30,20 @@ Created a new utility module for consistent LLM error handling:
 
 ```typescript
 export interface LLMErrorInfo {
-  isBudgetLimit: boolean
-  isRateLimit: boolean
-  isNetworkError: boolean
-  userMessage: string
-  technicalMessage: string
+  isBudgetLimit: boolean;
+  isRateLimit: boolean;
+  isNetworkError: boolean;
+  userMessage: string;
+  technicalMessage: string;
 }
 
-export function parseLLMError(error: any): LLMErrorInfo
+export function parseLLMError(error: any): LLMErrorInfo;
 ```
 
 **Features**:
+
 - Detects budget limit errors
-- Detects rate limit errors  
+- Detects rate limit errors
 - Detects network errors
 - Provides user-friendly messages
 - Maintains technical details for debugging
@@ -85,18 +86,22 @@ export function parseLLMError(error: any): LLMErrorInfo
 ## Error Messages
 
 ### Budget Limit Error
+
 - **User Message**: "AI features are temporarily unavailable due to usage limits. Using fallback data instead."
 - **Technical Log**: Full error details for debugging
 
 ### Rate Limit Error
+
 - **User Message**: "AI service is temporarily busy. Please try again in a moment."
 - **Technical Log**: Rate limit details
 
 ### Network Error
+
 - **User Message**: "Unable to connect to AI service. Using fallback data instead."
 - **Technical Log**: Network error details
 
 ### Generic Error
+
 - **User Message**: "AI service temporarily unavailable. Using fallback data instead."
 - **Technical Log**: Complete error information
 

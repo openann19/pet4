@@ -6,17 +6,18 @@ interface SkeletonProps {
   animation?: 'pulse' | 'wave' | 'none';
 }
 
-export function Skeleton({ 
-  className, 
+export function Skeleton({
+  className,
   variant = 'rectangular',
-  animation = 'pulse' 
+  animation = 'pulse',
 }: SkeletonProps): JSX.Element {
   return (
     <div
       className={cn(
         'bg-muted',
         animation === 'pulse' && 'animate-pulse',
-        animation === 'wave' && 'animate-shimmer bg-gradient-to-r from-muted via-muted-foreground/10 to-muted bg-[length:200%_100%]',
+        animation === 'wave' &&
+          'animate-shimmer bg-gradient-to-r from-muted via-muted-foreground/10 to-muted bg-[length:200%_100%]',
         variant === 'text' && 'h-4 rounded',
         variant === 'circular' && 'rounded-full',
         variant === 'rectangular' && 'rounded-md',

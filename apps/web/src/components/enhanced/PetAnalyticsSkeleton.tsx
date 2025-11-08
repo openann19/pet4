@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function PetAnalyticsSkeleton(): JSX.Element {
   return (
@@ -79,6 +79,5 @@ export function PetAnalyticsSkeleton(): JSX.Element {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

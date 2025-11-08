@@ -1,6 +1,7 @@
 # Full Backend + Frontend + Admin + Photo Moderation + KYC Implementation
 
 ## Overview
+
 This document describes the complete production-ready backend architecture implemented for PawfectMatch, including authentication, photo upload pipeline, automated safety scanning, moderation queue, KYC verification, and comprehensive admin console.
 
 ## Architecture Components
@@ -8,11 +9,12 @@ This document describes the complete production-ready backend architecture imple
 ### 1. Backend Services (`src/lib/backend-services.ts`)
 
 #### PhotoService
+
 - **Upload Session Management**: Creates secure upload sessions with expiry and validation
 - **Photo Processing Pipeline**: Automated flow from upload → processing → safety scan → moderation → approval
 - **AI Safety Scanning**: Uses GPT-4o-mini to analyze photos for:
   - NSFW content detection
-  - Violence detection  
+  - Violence detection
   - Human face detection and dominance scoring
   - Duplicate detection via file hashing
   - Breed inference with confidence scores
@@ -22,6 +24,7 @@ This document describes the complete production-ready backend architecture imple
 - **Notifications**: User notifications for all photo status updates
 
 #### ModerationService
+
 - **Queue Management**: Pending, in-progress, completed task queues with priority sorting
 - **Task Assignment**: Moderators can take tasks from the queue
 - **Decision Making**: Approve, Reject, Hold for KYC, Request Retake actions
@@ -31,6 +34,7 @@ This document describes the complete production-ready backend architecture imple
 - **User Notifications**: Automatic notifications for decisions with reasons
 
 #### KYCService
+
 - **Session Creation**: Creates KYC verification sessions for users
 - **Status Management**: Tracks unverified → pending → verified/rejected/expired states
 - **Document Management**: Handles ID documents, passports, selfies, liveness checks
@@ -42,6 +46,7 @@ This document describes the complete production-ready backend architecture imple
 ### 2. Type System (`src/lib/backend-types.ts`)
 
 Comprehensive TypeScript types for:
+
 - Photo statuses and records
 - Safety check results
 - Moderation tasks and decisions
@@ -55,6 +60,7 @@ Comprehensive TypeScript types for:
 ### 3. Frontend Components
 
 #### Admin Console - Moderation Queue (`src/components/admin/ModerationQueue.tsx`)
+
 - **Three-Tab Interface**: Pending, In Progress, Completed
 - **Task Cards**: Display photo preview, safety flags, confidence scores, priority
 - **Detail View**: Full-screen photo review with all safety check results
@@ -64,12 +70,14 @@ Comprehensive TypeScript types for:
 - **Notes Field**: Additional context for decisions
 
 #### KYC Management (`src/components/admin/KYCManagement.tsx`) - To be created
+
 - Session list with status filters
 - Document viewer
 - Verification actions (approve/reject with reasons)
 - User context and history
 
 #### Photo Upload Widget (`src/components/PhotoUploader.tsx`) - To be created
+
 - Create upload session
 - File validation (size, type)
 - Progress tracking
@@ -115,6 +123,7 @@ Photo Visible in Public Feed
 ### 5. Policy Configuration
 
 Default policy settings (stored in KV as `'moderation-policy'`):
+
 - `requireKYCToPublish`: false (can be enabled per-region)
 - `blockHumanDominantPhotos`: true
 - `humanDominanceThreshold`: 0.7 (70%)
@@ -131,10 +140,12 @@ Default policy settings (stored in KV as `'moderation-policy'`):
 Photos are filtered based on status:
 
 **Public Discover/Matches/Community:**
+
 - Only `status === 'approved'` photos are visible
 - All other statuses are hidden from public
 
 **Owner View (Profile):**
+
 - Approved photos: visible to everyone
 - Pending/Processing/Awaiting Review: visible only to owner with status badge
 - Held for KYC: visible to owner with "Complete KYC" CTA
@@ -143,6 +154,7 @@ Photos are filtered based on status:
 ### 7. Notification System
 
 Users receive notifications for:
+
 - **photo_processing**: "Your photo is being reviewed"
 - **photo_approved**: "Your photo is now live!"
 - **photo_rejected**: "Photo not approved. Reason: [specific reason]"
@@ -155,6 +167,7 @@ All notifications stored in KV as `'user-notifications'` array.
 ### 8. Event System
 
 Events emitted to `'system-events'` KV array:
+
 - `photo.processing.completed`
 - `photo.approved`
 - `photo.rejected`
@@ -164,6 +177,7 @@ Events emitted to `'system-events'` KV array:
 - `kyc.status.changed`
 
 Each event includes:
+
 - event name
 - data payload
 - correlationId for tracing
@@ -172,6 +186,7 @@ Each event includes:
 ### 9. Audit Trail
 
 All admin actions logged to `'audit-logs'`:
+
 - Action type
 - Resource and resource ID
 - User ID, role, name
@@ -184,6 +199,7 @@ All admin actions logged to `'audit-logs'`:
 ### 10. Observability Metrics
 
 Moderation metrics available via `moderationService.getMetrics()`:
+
 - Total reviews count
 - Approval rate (percentage)
 - Rejection rate (percentage)
@@ -197,6 +213,7 @@ Moderation metrics available via `moderationService.getMetrics()`:
 ### 11. KV Storage Schema
 
 **Keys:**
+
 - `photo-records`: PhotoRecord[]
 - `upload-sessions`: UploadSession[]
 - `moderation-tasks`: ModerationTask[]
@@ -210,6 +227,7 @@ Moderation metrics available via `moderationService.getMetrics()`:
 ### 12. API Surface
 
 #### Photo Service
+
 ```typescript
 photoService.createUploadSession(userId, petId): UploadSession
 photoService.processUpload(sessionId, file): PhotoRecord
@@ -219,6 +237,7 @@ photoService.getPublicPhotos(): PhotoRecord[]
 ```
 
 #### Moderation Service
+
 ```typescript
 moderationService.getQueue(): ModerationQueue
 moderationService.takeTask(taskId, reviewerId): ModerationTask
@@ -227,6 +246,7 @@ moderationService.getMetrics(): ModerationMetrics
 ```
 
 #### KYC Service
+
 ```typescript
 kycService.createSession(userId): KYCSession
 kycService.getUserSession(userId): KYCSession | null
@@ -238,6 +258,7 @@ kycService.rejectSession(sessionId, reason, reasonText, reviewerId): void
 ### 13. Localization (i18n)
 
 All user-facing strings available in EN + BG:
+
 - Photo status labels
 - Rejection reasons
 - Notification messages
@@ -288,6 +309,7 @@ All user-facing strings available in EN + BG:
 ### 18. Next Steps for Implementation
 
 **Immediate:**
+
 1. ✅ Backend services complete
 2. ✅ Type system complete
 3. ✅ Moderation Queue UI complete
@@ -300,6 +322,7 @@ All user-facing strings available in EN + BG:
 10. 🔄 Add Policy Configuration UI in Admin
 
 **Future Enhancements:**
+
 - Bulk moderation actions
 - Automated ban system for repeat offenders
 - Shadow ban capability
@@ -312,6 +335,7 @@ All user-facing strings available in EN + BG:
 ## Conclusion
 
 This implementation provides a production-ready, full-stack photo moderation system with:
+
 - ✅ Real backend processing (not simulated)
 - ✅ AI-powered safety scanning
 - ✅ Manual moderation queue with full audit trail

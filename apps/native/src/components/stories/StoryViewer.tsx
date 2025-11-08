@@ -23,14 +23,14 @@ const { width, height } = Dimensions.get('window');
 const STORY_DURATION = 5000; // 5 seconds per story
 
 interface StoryViewerProps {
-  stories: Story[]
-  initialIndex?: number
-  currentUserId: string
-  currentUserName: string
-  currentUserAvatar?: string
-  onClose: () => void
-  onComplete?: () => void
-  onStoryUpdate?: (story: Story) => void
+  stories: Story[];
+  initialIndex?: number;
+  currentUserId: string;
+  currentUserName: string;
+  currentUserAvatar?: string;
+  onClose: () => void;
+  onComplete?: () => void;
+  onStoryUpdate?: (story: Story) => void;
 }
 
 export const StoryViewer: React.FC<StoryViewerProps> = ({
@@ -41,7 +41,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
   currentUserAvatar,
   onClose,
   onComplete,
-  onStoryUpdate
+  onStoryUpdate,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isPaused, setIsPaused] = useState(false);
@@ -117,18 +117,13 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
     });
 
   // Swipe down to close
-  const panGesture = Gesture.Pan()
-    .onUpdate((event) => {
-      if (event.translationY > 100) {
-        runOnJS(onClose)();
-      }
-    });
+  const panGesture = Gesture.Pan().onUpdate((event) => {
+    if (event.translationY > 100) {
+      runOnJS(onClose)();
+    }
+  });
 
-  const composedGesture = Gesture.Race(
-    tapGesture,
-    longPressGesture,
-    panGesture
-  );
+  const composedGesture = Gesture.Race(tapGesture, longPressGesture, panGesture);
 
   const progressBarStyle = useAnimatedStyle(() => ({
     width: `${progressAnimation.value * 100}%`,
@@ -156,12 +151,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
                   ]}
                 >
                   {index === currentIndex && (
-                    <AnimatedReanimated.View
-                      style={[
-                        styles.progressBarFill,
-                        progressBarStyle,
-                      ]}
-                    />
+                    <AnimatedReanimated.View style={[styles.progressBarFill, progressBarStyle]} />
                   )}
                 </View>
               </View>
@@ -172,15 +162,10 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
           <View style={styles.header}>
             <View style={styles.userInfo}>
               {currentStory.userAvatar ? (
-                <Image
-                  source={{ uri: currentStory.userAvatar }}
-                  style={styles.userPhoto}
-                />
+                <Image source={{ uri: currentStory.userAvatar }} style={styles.userPhoto} />
               ) : (
                 <View style={styles.userPhotoPlaceholder}>
-                  <Text style={styles.userPhotoText}>
-                    {getInitial(currentStory.userName)}
-                  </Text>
+                  <Text style={styles.userPhotoText}>{getInitial(currentStory.userName)}</Text>
                 </View>
               )}
               <View>
@@ -188,7 +173,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
                 <Text style={styles.timestamp}>
                   {new Date(currentStory.createdAt).toLocaleTimeString([], {
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
                   })}
                 </Text>
               </View>
@@ -212,9 +197,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
               {currentStory.type === 'video' && (
                 <View style={styles.videoPlaceholder}>
                   <Text style={styles.videoText}>Video Player</Text>
-                  <Text style={styles.videoSubtext}>
-                    Video support coming soon
-                  </Text>
+                  <Text style={styles.videoSubtext}>Video support coming soon</Text>
                 </View>
               )}
 

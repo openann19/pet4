@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { cn } from '@/lib/utils'
-import { TypingDots } from './TypingDots'
-import { TypingDotsWeb } from './TypingDotsWeb'
+import { cn } from '@/lib/utils';
+import { TypingDots } from './TypingDots';
+import { TypingDotsWeb } from './TypingDotsWeb';
 
 export interface TypingBubbleProps {
-  isIncoming?: boolean
-  variant?: 'mobile' | 'web'
-  dotSize?: number
-  dotColor?: string
-  className?: string
-  bubbleClassName?: string
+  isIncoming?: boolean;
+  variant?: 'mobile' | 'web';
+  dotSize?: number;
+  dotColor?: string;
+  className?: string;
+  bubbleClassName?: string;
 }
 
 export function TypingBubble({
@@ -19,9 +19,9 @@ export function TypingBubble({
   dotSize,
   dotColor,
   className,
-  bubbleClassName
+  bubbleClassName,
 }: TypingBubbleProps): React.JSX.Element {
-  const isMobile = variant === 'mobile'
+  const isMobile = variant === 'mobile';
 
   return (
     <div
@@ -34,14 +34,11 @@ export function TypingBubble({
         className
       )}
       style={{
-        alignSelf: isIncoming ? 'flex-start' : 'flex-end'
+        alignSelf: isIncoming ? 'flex-start' : 'flex-end',
       }}
     >
       {isMobile ? (
-        <TypingDots
-          {...(dotSize !== undefined ? { dotSize } : {})}
-          dotColor={dotColor ?? '#aaa'}
-        />
+        <TypingDots {...(dotSize !== undefined ? { dotSize } : {})} dotColor={dotColor ?? '#aaa'} />
       ) : (
         <TypingDotsWeb
           {...(dotSize !== undefined ? { dotSize } : {})}
@@ -49,6 +46,5 @@ export function TypingBubble({
         />
       )}
     </div>
-  )
+  );
 }
-

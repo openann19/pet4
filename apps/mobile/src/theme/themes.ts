@@ -143,4 +143,3 @@ export const allThemes: Record<string, Theme> = {
     {} as Record<string, Theme>
   ),
 }
-

@@ -1,6 +1,6 @@
 /**
  * Shared Admin Types
- * 
+ *
  * Types shared between web and mobile admin panels.
  */
 
@@ -33,7 +33,7 @@ export interface AdminStats {
   resolvedReports: number
 }
 
-export type AdminView = 
+export type AdminView =
   | 'dashboard'
   | 'users'
   | 'reports'
@@ -53,4 +53,3 @@ export type AdminView =
   | 'config'
   | 'audit'
   | 'settings'
-

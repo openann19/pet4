@@ -3,10 +3,5 @@
   "compilerOptions": {
     "exactOptionalPropertyTypes": true
   },
-  "include": [
-    "src/core/**/*.{ts,tsx}",
-    "src/api/**/*.{ts,tsx}",
-    "design-system/**/*.{ts,tsx}"
-  ]
+  "include": ["src/core/**/*.{ts,tsx}", "src/api/**/*.{ts,tsx}", "design-system/**/*.{ts,tsx}"]
 }
-

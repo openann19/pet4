@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-    Dimensions,
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
-} from 'react-native';
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
@@ -98,16 +92,11 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             style={[styles.controlButton, isMuted && styles.controlButtonActive]}
             onPress={toggleMute}
           >
-            <Text style={styles.controlButtonText}>
-              {isMuted ? '🔇' : '🎤'}
-            </Text>
+            <Text style={styles.controlButtonText}>{isMuted ? '🔇' : '🎤'}</Text>
           </Pressable>
 
           {/* End Call Button */}
-          <Pressable
-            style={[styles.controlButton, styles.endCallButton]}
-            onPress={handleEndCall}
-          >
+          <Pressable style={[styles.controlButton, styles.endCallButton]} onPress={handleEndCall}>
             <Text style={styles.controlButtonText}>📞</Text>
           </Pressable>
 
@@ -116,9 +105,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             style={[styles.controlButton, !isCameraOn && styles.controlButtonActive]}
             onPress={toggleCamera}
           >
-            <Text style={styles.controlButtonText}>
-              {isCameraOn ? '📹' : '📷'}
-            </Text>
+            <Text style={styles.controlButtonText}>{isCameraOn ? '📹' : '📷'}</Text>
           </Pressable>
         </View>
       </View>

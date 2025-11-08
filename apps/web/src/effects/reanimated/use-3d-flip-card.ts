@@ -30,26 +30,20 @@ export function use3DFlipCard(options: Use3DFlipCardOptions = {}) {
 
   const frontAnimatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(rotateY.value, [0, 90, 180], [1, 0, 0]);
-    
+
     return {
       opacity,
-      transform: [
-        { perspective },
-        { rotateY: `${rotateY.value}deg` },
-      ],
+      transform: [{ perspective }, { rotateY: `${rotateY.value}deg` }],
       backfaceVisibility: 'hidden',
     };
   });
 
   const backAnimatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(rotateY.value, [0, 90, 180], [0, 0, 1]);
-    
+
     return {
       opacity,
-      transform: [
-        { perspective },
-        { rotateY: `${rotateY.value + 180}deg` },
-      ],
+      transform: [{ perspective }, { rotateY: `${rotateY.value + 180}deg` }],
       backfaceVisibility: 'hidden',
     };
   });

@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  Pressable,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, ScrollView, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -215,10 +207,7 @@ export const PricingModal: React.FC<PricingModalProps> = ({
             </Text>
           </Pressable>
           <Pressable
-            style={[
-              styles.billingToggle,
-              billingPeriod === 'yearly' && styles.billingToggleActive,
-            ]}
+            style={[styles.billingToggle, billingPeriod === 'yearly' && styles.billingToggleActive]}
             onPress={() => setBillingPeriod('yearly')}
           >
             <Text
@@ -255,9 +244,7 @@ export const PricingModal: React.FC<PricingModalProps> = ({
               {selectedPlan === currentPlan ? 'Current Plan' : 'Subscribe Now'}
             </Text>
           </Pressable>
-          <Text style={styles.disclaimer}>
-            Cancel anytime. Terms and conditions apply.
-          </Text>
+          <Text style={styles.disclaimer}>Cancel anytime. Terms and conditions apply.</Text>
         </View>
       </View>
     </Modal>

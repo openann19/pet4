@@ -1,6 +1,6 @@
 /**
  * Audit Log Screen (Mobile)
- * 
+ *
  * Mobile admin screen for viewing audit logs of admin actions.
  */
 
@@ -14,8 +14,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AnimatedCard } from '../components/AnimatedCard';
-import { FadeInView } from '../components/FadeInView';
+import { createLogger } from '../../utils/logger';
+import { mobileAdminApi } from '../../api/admin-api';
+import { AnimatedCard } from '../../components/AnimatedCard';
+import { FadeInView } from '../../components/FadeInView';
+
+const logger = createLogger('AuditLogScreen');
 
 interface AuditLogEntry {
   id: string;
@@ -40,18 +44,30 @@ export const AuditLogScreen: React.FC = () => {
   const loadLogs = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const data = await adminApi.getAuditLogs(filter);
-      // setLogs(data);
-      setLogs([]);
+      const data = await mobileAdminApi.getAuditLogs(100);
+      const filteredData =
+        filter === 'all' ? data : data.filter((log) => log.targetType === filter);
+      const logsData: AuditLogEntry[] = filteredData.map((item) => ({
+        id: item.id,
+        adminId: item.adminId,
+        adminName: `Admin ${item.adminId.substring(0, 8)}`,
+        action: item.action,
+        targetType: item.targetType,
+        targetId: item.targetId,
+        details: item.details,
+        timestamp: item.timestamp,
+      }));
+      setLogs(logsData);
     } catch (error) {
-      console.error('Failed to load audit logs:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load audit logs', err, { context: 'loadLogs', filter });
+      setLogs([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredLogs = logs.filter(log => {
+  const filteredLogs = logs.filter((log) => {
     if (filter === 'all') return true;
     return log.targetType === filter;
   });
@@ -108,9 +124,7 @@ export const AuditLogScreen: React.FC = () => {
                 <View style={styles.logHeader}>
                   <View>
                     <Text style={styles.adminName}>{log.adminName}</Text>
-                    <Text style={styles.logTime}>
-                      {new Date(log.timestamp).toLocaleString()}
-                    </Text>
+                    <Text style={styles.logTime}>{new Date(log.timestamp).toLocaleString()}</Text>
                   </View>
                   <View
                     style={[
@@ -118,12 +132,7 @@ export const AuditLogScreen: React.FC = () => {
                       { backgroundColor: getActionColor(log.action) + '20' },
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.actionText,
-                        { color: getActionColor(log.action) },
-                      ]}
-                    >
+                    <Text style={[styles.actionText, { color: getActionColor(log.action) }]}>
                       {log.action.replace(/_/g, ' ').toUpperCase()}
                     </Text>
                   </View>
@@ -255,4 +264,3 @@ const styles = StyleSheet.create({
     color: '#374151',
   },
 });
-

@@ -1,24 +1,24 @@
 /**
  * Template Panel Component
- * 
+ *
  * Message template selection panel
  */
 
-import { X } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
-import type { MessageTemplate } from '@/lib/chat-types'
-import { MESSAGE_TEMPLATES } from '@/lib/chat-types'
-import { TemplateButton } from './TemplateButton'
+import { X } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
+import type { MessageTemplate } from '@/lib/chat-types';
+import { MESSAGE_TEMPLATES } from '@/lib/chat-types';
+import { TemplateButton } from './TemplateButton';
 
 export interface TemplatePanelProps {
-  onClose: () => void
-  onSelect: (template: MessageTemplate) => void
+  onClose: () => void;
+  onSelect: (template: MessageTemplate) => void;
 }
 
 export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.Element {
-  const animation = useEntryAnimation({ initialY: 20, delay: 0 })
+  const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
   return (
     <AnimatedView
@@ -27,24 +27,15 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
     >
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-foreground">Message Templates</h3>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="h-6 w-6"
-        >
+        <Button variant="ghost" size="icon" onClick={onClose} className="h-6 w-6">
           <X size={16} />
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
         {MESSAGE_TEMPLATES.map((template) => (
-          <TemplateButton
-            key={template.id}
-            template={template}
-            onSelect={onSelect}
-          />
+          <TemplateButton key={template.id} template={template} onSelect={onSelect} />
         ))}
       </div>
     </AnimatedView>
-  )
+  );
 }

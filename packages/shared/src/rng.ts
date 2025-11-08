@@ -1,15 +1,15 @@
 /**
  * Seeded Random Number Generator
- * 
+ *
  * Xorshift32 algorithm for deterministic random number generation.
  * Useful for particle effects and animations where reproducibility is needed.
- * 
+ *
  * Location: packages/shared/src/rng.ts
  */
 
 /**
  * Create a seeded random number generator function
- * 
+ *
  * @param seed - Initial seed value (will be converted to unsigned 32-bit integer)
  * @returns Function that returns random numbers in [0, 1)
  */
@@ -30,7 +30,6 @@ export function makeRng(seed: number): () => number {
  * Uses current timestamp + Math.random as fallback seed
  */
 export function makeAutoRng(): () => number {
-  const seed = Date.now() ^ (Math.random() * 0xFFFFFFFF)
+  const seed = Date.now() ^ (Math.random() * 0xffffffff)
   return makeRng(seed)
 }
-

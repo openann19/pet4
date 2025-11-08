@@ -1,100 +1,107 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { motion, Presence } from '@petspark/motion'
-import { Check, MagnifyingGlass, Sliders } from '@phosphor-icons/react'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Slider } from '@/components/ui/slider'
-import { Label } from '@/components/ui/label'
-import { 
-  STORY_FILTERS, 
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { Presence, MotionView } from '@petspark/motion';
+import { Check, MagnifyingGlass, Sliders } from '@phosphor-icons/react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import {
+  STORY_FILTERS,
   FILTER_CATEGORIES,
   getFiltersByCategory,
-  type StoryFilter 
-} from '@/lib/story-templates'
-import { cn } from '@/lib/utils'
+  type StoryFilter,
+} from '@/lib/story-templates';
+import { cn } from '@/lib/utils';
 
 export interface StoryFilterSelectorProps {
-  readonly selectedFilter: StoryFilter
-  readonly onSelectFilter: (filter: StoryFilter) => void
-  readonly mediaPreview?: string
-  readonly intensity?: number
-  readonly onIntensityChange?: (intensity: number) => void
+  readonly selectedFilter: StoryFilter;
+  readonly onSelectFilter: (filter: StoryFilter) => void;
+  readonly mediaPreview?: string;
+  readonly intensity?: number;
+  readonly onIntensityChange?: (intensity: number) => void;
 }
 
-export default function StoryFilterSelector({ 
-  selectedFilter, 
+export default function StoryFilterSelector({
+  selectedFilter,
   onSelectFilter,
   mediaPreview,
   intensity = 1,
-  onIntensityChange
+  onIntensityChange,
 }: StoryFilterSelectorProps): JSX.Element {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const [searchQuery, setSearchQuery] = useState<string>('')
-  const [localIntensity, setLocalIntensity] = useState<number>(intensity)
-  const previewRefs = useRef<Map<string, HTMLImageElement>>(new Map())
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [localIntensity, setLocalIntensity] = useState<number>(intensity);
+  const previewRefs = useRef<Map<string, HTMLImageElement>>(new Map());
 
   const filteredFilters = useMemo(() => {
-    const categoryFilters = getFiltersByCategory(selectedCategory)
-    const normalizedQuery = searchQuery.toLowerCase().trim()
-    
+    const categoryFilters = getFiltersByCategory(selectedCategory);
+    const normalizedQuery = searchQuery.toLowerCase().trim();
+
     if (normalizedQuery === '') {
-      return categoryFilters
+      return categoryFilters;
     }
-    
-    return categoryFilters.filter((filter) =>
-      filter.name.toLowerCase().includes(normalizedQuery)
-    )
-  }, [selectedCategory, searchQuery])
+
+    return categoryFilters.filter((filter) => filter.name.toLowerCase().includes(normalizedQuery));
+  }, [selectedCategory, searchQuery]);
 
   useEffect(() => {
     previewRefs.current.forEach((img, filterId) => {
-      const filter = STORY_FILTERS.find((f) => f.id === filterId)
+      const filter = STORY_FILTERS.find((f) => f.id === filterId);
       if (filter && img) {
-        img.style.filter = filter.cssFilter
+        img.style.filter = filter.cssFilter;
       }
-    })
-  }, [])
+    });
+  }, []);
 
   useEffect(() => {
-    setLocalIntensity(intensity)
-  }, [intensity])
+    setLocalIntensity(intensity);
+  }, [intensity]);
 
-  const handleIntensityChange = useCallback((value: readonly number[]) => {
-    const newIntensity = value[0] ?? 1
-    setLocalIntensity(newIntensity)
-    onIntensityChange?.(newIntensity)
-  }, [onIntensityChange])
+  const handleIntensityChange = useCallback(
+    (value: readonly number[]) => {
+      const newIntensity = value[0] ?? 1;
+      setLocalIntensity(newIntensity);
+      onIntensityChange?.(newIntensity);
+    },
+    [onIntensityChange]
+  );
 
   const handleCategorySelect = useCallback((categoryId: string) => {
-    setSelectedCategory(categoryId)
-  }, [])
+    setSelectedCategory(categoryId);
+  }, []);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value)
-  }, [])
+    setSearchQuery(e.target.value);
+  }, []);
 
-  const handleFilterSelect = useCallback((filter: StoryFilter) => {
-    onSelectFilter(filter)
-  }, [onSelectFilter])
+  const handleFilterSelect = useCallback(
+    (filter: StoryFilter) => {
+      onSelectFilter(filter);
+    },
+    [onSelectFilter]
+  );
 
   const handleImageRef = useCallback((filterId: string) => {
     return (el: HTMLImageElement | null) => {
       if (el) {
-        previewRefs.current.set(filterId, el)
+        previewRefs.current.set(filterId, el);
       } else {
-        previewRefs.current.delete(filterId)
+        previewRefs.current.delete(filterId);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <div className="space-y-4">
       <div className="space-y-3">
         <div className="relative">
-          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+          <MagnifyingGlass
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            size={18}
+          />
           <Input
             placeholder="Search filters..."
             value={searchQuery}
@@ -113,13 +120,15 @@ export default function StoryFilterSelector({
                 size="sm"
                 onClick={() => handleCategorySelect(category.id)}
                 className={cn(
-                  "whitespace-nowrap",
-                  selectedCategory === category.id && "bg-gradient-to-r from-primary to-accent"
+                  'whitespace-nowrap',
+                  selectedCategory === category.id && 'bg-linear-to-r from-primary to-accent'
                 )}
                 aria-pressed={selectedCategory === category.id}
                 aria-label={`Filter category: ${category.name}`}
               >
-                <span className="mr-1.5" aria-hidden="true">{category.icon}</span>
+                <span className="mr-1.5" aria-hidden="true">
+                  {category.icon}
+                </span>
                 {category.name}
               </Button>
             ))}
@@ -151,22 +160,23 @@ export default function StoryFilterSelector({
 
       <ScrollArea className="h-[280px]">
         <div className="grid grid-cols-3 gap-3 pr-4">
-          <Presence mode="popLayout">
+          <Presence visible={true}>
             {filteredFilters.map((filter, index) => (
-              <MotionView as="button"
+              <MotionView
+                as="button"
                 key={filter.id}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ 
+                transition={{
                   duration: 0.2,
-                  delay: index * 0.03
+                  delay: index * 0.03,
                 }}
                 onClick={() => handleFilterSelect(filter)}
                 aria-label={`Select filter: ${filter.name}`}
                 aria-pressed={selectedFilter.id === filter.id}
                 className={cn(
-                  "relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200 bg-muted",
+                  'relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200 bg-muted',
                   selectedFilter.id === filter.id
                     ? 'border-primary ring-2 ring-primary/20'
                     : 'border-border hover:border-primary/50'
@@ -184,18 +194,19 @@ export default function StoryFilterSelector({
                     loading="lazy"
                   />
                 ) : (
-                  <div 
+                  <div
                     className="w-full h-full"
                     style={{
-                      background: filter.id === 'filter-none' 
-                        ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                        : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                      filter: filter.cssFilter
+                      background:
+                        filter.id === 'filter-none'
+                          ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                          : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                      filter: filter.cssFilter,
                     }}
                   />
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end">
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent flex items-end">
                   <p className="text-[10px] font-semibold text-white px-2 pb-1.5 w-full text-center">
                     {filter.name}
                   </p>
@@ -223,5 +234,5 @@ export default function StoryFilterSelector({
         )}
       </ScrollArea>
     </div>
-  )
+  );
 }

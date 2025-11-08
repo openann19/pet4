@@ -32,11 +32,7 @@ export function useDrag<T extends HTMLElement = HTMLDivElement>(
   handlers: DragHandlers = {},
   options: DragOptions = {}
 ): RefObject<T | null> {
-  const {
-    enabled = true,
-    bounds,
-    axis = 'both',
-  } = options;
+  const { enabled = true, bounds, axis = 'both' } = options;
 
   const ref = useRef<T | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -64,7 +60,7 @@ export function useDrag<T extends HTMLElement = HTMLDivElement>(
       setIsDragging(true);
       startPos.current = { x: clientX, y: clientY };
       currentPos.current = { x: clientX, y: clientY };
-      
+
       const position = clampPosition({ x: clientX, y: clientY });
       handlers.onDragStart?.(position);
     };

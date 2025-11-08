@@ -35,6 +35,7 @@ eas credentials
 ```
 
 Follow the prompts to:
+
 - Select iOS platform
 - Choose production profile
 - Configure Apple Developer account
@@ -90,16 +91,19 @@ eas build --platform android --profile production
 ### iOS (App Store)
 
 1. Build production IPA:
+
 ```bash
 eas build --platform ios --profile production
 ```
 
 2. Submit to App Store Connect:
+
 ```bash
 eas submit --platform ios
 ```
 
 Or configure automatic submission in `eas.json`:
+
 ```json
 {
   "submit": {
@@ -117,16 +121,19 @@ Or configure automatic submission in `eas.json`:
 ### Android (Google Play)
 
 1. Build production AAB:
+
 ```bash
 eas build --platform android --profile production
 ```
 
 2. Submit to Google Play:
+
 ```bash
 eas submit --platform android
 ```
 
 Or configure automatic submission with service account:
+
 ```json
 {
   "submit": {
@@ -161,6 +168,7 @@ Add these secrets to your GitHub repository:
 Go to Actions → EAS Build → Run workflow → Select platform and profile
 
 **Tag-based (Automatic):**
+
 ```bash
 git tag mobile-v1.0.0
 git push origin mobile-v1.0.0
@@ -177,6 +185,7 @@ expo start
 ```
 
 Or:
+
 ```bash
 expo run:ios
 ```
@@ -190,6 +199,7 @@ expo start
 ```
 
 Or:
+
 ```bash
 expo run:android
 ```
@@ -211,6 +221,7 @@ EXPO_PUBLIC_ENV=development
 ```
 
 Access in code:
+
 ```typescript
 const apiUrl = process.env.EXPO_PUBLIC_API_URL
 ```
@@ -220,12 +231,14 @@ const apiUrl = process.env.EXPO_PUBLIC_API_URL
 ### Build Failures
 
 1. Check EAS build logs:
+
 ```bash
 eas build:list
 eas build:view [build-id]
 ```
 
 2. Clear cache and rebuild:
+
 ```bash
 eas build --platform ios --clear-cache
 ```
@@ -260,4 +273,3 @@ rm -rf node_modules/.cache
 - [EAS Build Docs](https://docs.expo.dev/build/introduction/)
 - [EAS Submit Docs](https://docs.expo.dev/submit/introduction/)
 - [Expo Updates](https://docs.expo.dev/guides/over-the-air-updates/)
-

@@ -6,50 +6,50 @@ import type { ReactNode } from 'react';
 import { Component } from 'react';
 
 interface Props {
-  children: ReactNode
-  fallback?: ReactNode
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
-  hasError: boolean
-  error?: Error
-  errorInfo?: React.ErrorInfo
+  hasError: boolean;
+  error?: Error;
+  errorInfo?: React.ErrorInfo;
 }
 
 export class EnhancedErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false }
+    super(props);
+    this.state = { hasError: false };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error }
+    return { hasError: true, error };
   }
 
   override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    this.setState({ error, errorInfo })
-    
-    const logger = createLogger('ErrorBoundary')
-    logger.error('Error Boundary caught an error', error, { 
+    this.setState({ error, errorInfo });
+
+    const logger = createLogger('ErrorBoundary');
+    logger.error('Error Boundary caught an error', error, {
       componentStack: errorInfo.componentStack,
-      errorBoundary: true
-    })
-    
+      errorBoundary: true,
+    });
+
     if (typeof window !== 'undefined' && window.performance) {
-      const perfData = window.performance.getEntriesByType('navigation')[0]
-      logger.debug('Performance data at error', { perfData })
+      const perfData = window.performance.getEntriesByType('navigation')[0];
+      logger.debug('Performance data at error', { perfData });
     }
   }
 
   handleReset = () => {
-    this.setState({ hasError: false })
-    window.location.reload()
-  }
+    this.setState({ hasError: false });
+    window.location.reload();
+  };
 
   override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
-        return this.props.fallback
+        return this.props.fallback;
       }
 
       return (
@@ -58,11 +58,9 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
             <div className="w-20 h-20 mx-auto rounded-full bg-destructive/10 flex items-center justify-center">
               <Warning size={40} className="text-destructive" weight="fill" />
             </div>
-            
+
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-foreground">
-                Oops! Something went wrong
-              </h1>
+              <h1 className="text-2xl font-bold text-foreground">Oops! Something went wrong</h1>
               <p className="text-muted-foreground">
                 We encountered an unexpected error. Don't worry, your data is safe.
               </p>
@@ -77,11 +75,7 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
             )}
 
             <div className="flex gap-3 justify-center">
-              <Button
-                onClick={this.handleReset}
-                className="gap-2"
-                size="lg"
-              >
+              <Button onClick={this.handleReset} className="gap-2" size="lg">
                 <ArrowClockwise size={20} weight="bold" />
                 Reload App
               </Button>
@@ -92,9 +86,9 @@ export class EnhancedErrorBoundary extends Component<Props, State> {
             </p>
           </Card>
         </div>
-      )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }

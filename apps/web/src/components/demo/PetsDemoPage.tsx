@@ -1,31 +1,38 @@
-'use client'
+'use client';
 
-import { useEffect, useMemo, useState, type ReactElement } from 'react'
-import { Heart, ChatCircleDots, ShareFat, DotsThreeVertical, ShieldCheck, MapPin } from '@phosphor-icons/react'
-import { useApp } from '@/contexts/AppContext'
+import { useEffect, useMemo, useState, type ReactElement } from 'react';
+import {
+  Heart,
+  ChatCircleDots,
+  ShareFat,
+  DotsThreeVertical,
+  ShieldCheck,
+  MapPin,
+} from '@phosphor-icons/react';
+import { useApp } from '@/contexts/AppContext';
 
 function applyVhFix(): void {
   const set = (): void => {
-    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`)
-  }
-  set()
-  addEventListener('resize', set)
-  addEventListener('orientationchange', set)
+    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+  };
+  set();
+  addEventListener('resize', set);
+  addEventListener('orientationchange', set);
 }
 
-type Pet = {
-  id: string
-  name: string
-  kind: 'Dog' | 'Cat'
-  breed: string
-  ageYears: number
-  sex: 'Female' | 'Male'
-  distanceKm: number
-  tags: string[]
-  bgUrl: string
-  avatarUrl: string
-  shelter: { name: string; verified: boolean }
-  stats: { saves: number; messages: number }
+interface Pet {
+  id: string;
+  name: string;
+  kind: 'Dog' | 'Cat';
+  breed: string;
+  ageYears: number;
+  sex: 'Female' | 'Male';
+  distanceKm: number;
+  tags: string[];
+  bgUrl: string;
+  avatarUrl: string;
+  shelter: { name: string; verified: boolean };
+  stats: { saves: number; messages: number };
 }
 
 const PETS: Pet[] = [
@@ -71,73 +78,77 @@ const PETS: Pet[] = [
     shelter: { name: 'Kind Tails', verified: true },
     stats: { saves: 2010, messages: 102 },
   },
-]
+];
 
-const k = (n: number): string => (n >= 1000 ? `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}K` : `${n}`)
+const k = (n: number): string =>
+  n >= 1000 ? `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}K` : `${n}`;
 
 export default function PetsDemoPage(): ReactElement {
-  const [petIdx, setPetIdx] = useState(0)
+  const [petIdx, setPetIdx] = useState(0);
   const pet = useMemo(() => {
-    const index = petIdx % PETS.length
-    const selectedPet = PETS[index]
+    const index = petIdx % PETS.length;
+    const selectedPet = PETS[index];
     if (!selectedPet) {
-      return PETS[0]!
+      return PETS[0]!;
     }
-    return selectedPet
-  }, [petIdx])
-  const { theme, toggleTheme, language, toggleLanguage } = useApp()
-  const themeDark = theme === 'dark'
-  const locale = language
+    return selectedPet;
+  }, [petIdx]);
+  const { theme, toggleTheme, language, toggleLanguage } = useApp();
+  const themeDark = theme === 'dark';
+  const locale = language;
 
   useEffect(() => {
-    applyVhFix()
-  }, [])
+    applyVhFix();
+  }, []);
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', themeDark)
-  }, [themeDark])
+    document.documentElement.classList.toggle('dark', themeDark);
+  }, [themeDark]);
 
   useEffect(() => {
-    const style = document.createElement('style')
+    const style = document.createElement('style');
     style.innerHTML = `
       .glass { background-color: hsl(var(--card) / .60); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.10) }
       .hero-top { background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.28) 40%, rgba(0,0,0,0) 100%) }
       .hero-bottom { background: linear-gradient(0deg, rgba(0,0,0,.70) 0%, rgba(0,0,0,0) 52%) }
       .grad-brand { background-image: linear-gradient(90deg, hsl(var(--primary)) 0%, #ff52a8 45%, hsl(var(--accent)) 100%); }
-    `
-    document.head.appendChild(style)
+    `;
+    document.head.appendChild(style);
     return () => {
-      style.remove()
-    }
-  }, [])
+      style.remove();
+    };
+  }, []);
 
-  const t = useMemo(() => ({
-    adopt: locale === 'bg' ? 'Осинови' : 'Adopt',
-    messageShelter: locale === 'bg' ? 'Съобщение до приюта' : 'Message Shelter',
-    nearby: locale === 'bg' ? 'Наблизо' : 'Nearby',
-    foryou: locale === 'bg' ? 'За теб' : 'For you',
-    rescues: locale === 'bg' ? 'Приюти' : 'Rescues',
-    trending: locale === 'bg' ? 'Тенденции' : 'Trending',
-    saved: locale === 'bg' ? 'Запазени' : 'Saved',
-    verified: locale === 'bg' ? 'Верифициран приют' : 'Verified shelter',
-    away: locale === 'bg' ? 'далеч' : 'away',
-    years: locale === 'bg' ? 'г.' : 'yr',
-  }), [locale])
+  const t = useMemo(
+    () => ({
+      adopt: locale === 'bg' ? 'Осинови' : 'Adopt',
+      messageShelter: locale === 'bg' ? 'Съобщение до приюта' : 'Message Shelter',
+      nearby: locale === 'bg' ? 'Наблизо' : 'Nearby',
+      foryou: locale === 'bg' ? 'За теб' : 'For you',
+      rescues: locale === 'bg' ? 'Приюти' : 'Rescues',
+      trending: locale === 'bg' ? 'Тенденции' : 'Trending',
+      saved: locale === 'bg' ? 'Запазени' : 'Saved',
+      verified: locale === 'bg' ? 'Верифициран приют' : 'Verified shelter',
+      away: locale === 'bg' ? 'далеч' : 'away',
+      years: locale === 'bg' ? 'г.' : 'yr',
+    }),
+    [locale]
+  );
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>): void => {
-    const target = e.currentTarget as HTMLImageElement
+    const target = e.currentTarget as HTMLImageElement;
     if (target.src !== `${window.location.origin}/demo/gradient.jpg`) {
-      target.src = '/demo/gradient.jpg'
+      target.src = '/demo/gradient.jpg';
     }
-  }
+  };
 
   const handleAvatarError = (e: React.SyntheticEvent<HTMLImageElement>): void => {
-    const target = e.currentTarget as HTMLImageElement
-    const fallbackSrc = '/demo/pets/fallback-avatar.jpg'
+    const target = e.currentTarget as HTMLImageElement;
+    const fallbackSrc = '/demo/pets/fallback-avatar.jpg';
     if (target.src !== `${window.location.origin}${fallbackSrc}`) {
-      target.src = fallbackSrc
+      target.src = fallbackSrc;
     }
-  }
+  };
 
   return (
     <div
@@ -161,22 +172,20 @@ export default function PetsDemoPage(): ReactElement {
             {/* Brand */}
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-full grad-brand shadow-[0_0_24px_rgba(255,82,168,.35)]" />
-              <span className="font-semibold bg-clip-text text-transparent grad-brand">PawfectMatch Premium</span>
+              <span className="font-semibold bg-clip-text text-transparent grad-brand">
+                PawfectMatch Premium
+              </span>
             </div>
 
             {/* Segmented tabs (demo, not switching content here) */}
             <div className="hidden md:flex items-center gap-1 px-1 py-1 rounded-full glass">
-              {[
-                t.nearby,
-                t.foryou,
-                t.rescues,
-                t.trending,
-                t.saved,
-              ].map((label, i) => (
+              {[t.nearby, t.foryou, t.rescues, t.trending, t.saved].map((label, i) => (
                 <button
                   key={label}
                   className={`h-9 px-4 rounded-full text-sm font-medium transition ${
-                    i === 1 ? 'text-white grad-brand shadow-[0_0_24px_rgba(255,82,168,.35)]' : 'text-white/70 hover:text-white/90 hover:bg-white/10'
+                    i === 1
+                      ? 'text-white grad-brand shadow-[0_0_24px_rgba(255,82,168,.35)]'
+                      : 'text-white/70 hover:text-white/90 hover:bg-white/10'
                   }`}
                   aria-current={i === 1 ? 'page' : undefined}
                   type="button"
@@ -188,15 +197,15 @@ export default function PetsDemoPage(): ReactElement {
 
             {/* Controls */}
             <div className="flex items-center gap-2">
-              <button 
-                className="px-3 h-9 rounded-full bg-white/10 hover:bg-white/15 text-white text-sm" 
+              <button
+                className="px-3 h-9 rounded-full bg-white/10 hover:bg-white/15 text-white text-sm"
                 onClick={() => toggleLanguage()}
                 type="button"
               >
                 EN/BG
               </button>
-              <button 
-                className="px-3 h-9 rounded-full bg-white/10 hover:bg-white/15 text-white text-sm" 
+              <button
+                className="px-3 h-9 rounded-full bg-white/10 hover:bg-white/15 text-white text-sm"
                 onClick={() => toggleTheme()}
                 type="button"
               >
@@ -204,7 +213,7 @@ export default function PetsDemoPage(): ReactElement {
               </button>
               <button
                 className="ml-1 h-9 px-4 rounded-full grad-brand text-white text-sm font-semibold shadow-[0_0_24px_rgba(255,82,168,.35)] hover:opacity-95"
-                onClick={() => setPetIdx(p => (p + 1) % PETS.length)}
+                onClick={() => setPetIdx((p) => (p + 1) % PETS.length)}
                 aria-label="Next pet"
                 type="button"
               >
@@ -219,10 +228,10 @@ export default function PetsDemoPage(): ReactElement {
       <section className="relative z-10">
         <div className="absolute top-28 left-6 md:left-10 max-w-xl text-white drop-shadow-lg space-y-3">
           <div className="flex items-center gap-3">
-            <img 
-              src={pet.avatarUrl} 
-              alt="" 
-              className="w-10 h-10 rounded-full ring-2 ring-white/20" 
+            <img
+              src={pet.avatarUrl}
+              alt=""
+              className="w-10 h-10 rounded-full ring-2 ring-white/20"
               onError={handleAvatarError}
             />
             <div>
@@ -241,7 +250,8 @@ export default function PetsDemoPage(): ReactElement {
           </div>
 
           <p className="text-white/90 max-w-lg text-[15px]">
-            {pet.name} is a {pet.ageYears}{t.years} {pet.sex.toLowerCase()} looking for a loving home.
+            {pet.name} is a {pet.ageYears}
+            {t.years} {pet.sex.toLowerCase()} looking for a loving home.
           </p>
 
           {/* facts + chips */}
@@ -249,20 +259,22 @@ export default function PetsDemoPage(): ReactElement {
             <span className="inline-flex items-center gap-1 text-[12px] px-2 h-7 rounded-full glass">
               <MapPin size={14} /> {pet.distanceKm.toFixed(1)} km {t.away}
             </span>
-            {pet.tags.map(tag => (
-              <span key={tag} className="text-[12px] px-2 h-7 rounded-full bg-white/12">{tag}</span>
+            {pet.tags.map((tag) => (
+              <span key={tag} className="text-[12px] px-2 h-7 rounded-full bg-white/12">
+                {tag}
+              </span>
             ))}
           </div>
 
           {/* CTAs */}
           <div className="flex items-center gap-2 pt-1">
-            <button 
+            <button
               className="h-9 px-4 rounded-full bg-cyan-500 text-white font-semibold hover:opacity-95"
               type="button"
             >
               {t.messageShelter}
             </button>
-            <button 
+            <button
               className="h-9 px-4 rounded-full grad-brand text-white font-semibold shadow-[0_0_24px_rgba(255,82,168,.35)] hover:opacity-95"
               type="button"
             >
@@ -286,15 +298,15 @@ export default function PetsDemoPage(): ReactElement {
           </div>
           <span className="text-xs text-white/90">{k(pet.stats.messages)}</span>
         </button>
-        <button 
-          className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/16" 
+        <button
+          className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/16"
           aria-label="Share"
           type="button"
         >
           <ShareFat size={22} />
         </button>
-        <button 
-          className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/16" 
+        <button
+          className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/16"
           aria-label="More"
           type="button"
         >
@@ -307,19 +319,20 @@ export default function PetsDemoPage(): ReactElement {
         <div className="hero-bottom pointer-events-none h-16 w-full" />
         <div className="pointer-events-auto px-2 sm:px-4 pb-[env(safe-area-inset-bottom,0px)]">
           <div className="glass h-14 rounded-xl flex items-center justify-around text-white/85">
-            {['Home','Discover','Messages','Wallet','Profile'].map((label, i) => (
-              <button 
-                key={label} 
-                className={`flex flex-col items-center justify-center h-full w-16 rounded-lg ${i===0 ? 'text-white' : 'hover:text-white'}`}
+            {['Home', 'Discover', 'Messages', 'Wallet', 'Profile'].map((label, i) => (
+              <button
+                key={label}
+                className={`flex flex-col items-center justify-center h-full w-16 rounded-lg ${i === 0 ? 'text-white' : 'hover:text-white'}`}
                 type="button"
               >
-                <span className={i===0 ? 'grad-brand bg-clip-text text-transparent' : ''}>{label}</span>
+                <span className={i === 0 ? 'grad-brand bg-clip-text text-transparent' : ''}>
+                  {label}
+                </span>
               </button>
             ))}
           </div>
         </div>
       </nav>
     </div>
-  )
+  );
 }
-

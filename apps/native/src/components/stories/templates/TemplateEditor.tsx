@@ -89,15 +89,8 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
         </View>
 
         {/* Preview */}
-        <View
-          style={[
-            styles.preview,
-            { backgroundColor: template.backgroundColor },
-          ]}
-        >
-          {template.icon && (
-            <Text style={styles.previewIcon}>{template.icon}</Text>
-          )}
+        <View style={[styles.preview, { backgroundColor: template.backgroundColor }]}>
+          {template.icon && <Text style={styles.previewIcon}>{template.icon}</Text>}
           <Text
             style={[
               styles.previewText,
@@ -137,10 +130,7 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               {FONT_SIZES.map((size) => (
                 <Pressable
                   key={size}
-                  style={[
-                    styles.sizeButton,
-                    template.fontSize === size && styles.sizeButtonActive,
-                  ]}
+                  style={[styles.sizeButton, template.fontSize === size && styles.sizeButtonActive]}
                   onPress={() => updateFontSize(size)}
                 >
                   <Text

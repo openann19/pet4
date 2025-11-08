@@ -1,13 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import React, { useEffect, useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { createLogger } from '../../utils/logger';
 
 const logger = createLogger('VideoQualitySettings');
@@ -39,7 +33,7 @@ export const VideoQualitySettings: React.FC = () => {
     checkNetworkQuality();
 
     // Subscribe to network changes
-    const unsubscribe = NetInfo.addEventListener(state => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
       if (state.isConnected) {
         checkNetworkQuality();
       }
@@ -75,47 +69,56 @@ export const VideoQualitySettings: React.FC = () => {
   const checkNetworkQuality = async () => {
     try {
       // Use NetInfo to detect network type and speed
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const NetInfo = require('@react-native-community/netinfo')
-      const state = await NetInfo.fetch()
-      
-      if (!state.isConnected) {
-        setNetworkRecommendation('480p')
-        return
+      const netInfoModule = await import('@react-native-community/netinfo');
+      const NetInfo = netInfoModule.default ?? netInfoModule;
+
+      if (!NetInfo || typeof NetInfo.fetch !== 'function') {
+        setNetworkRecommendation('720p');
+        return;
       }
 
-      const connectionType = state.type
-      const isWifi = connectionType === 'wifi'
-      const isEthernet = connectionType === 'ethernet'
-      const isCellular = connectionType === 'cellular'
+      const state = await NetInfo.fetch();
+
+      if (!state.isConnected) {
+        setNetworkRecommendation('480p');
+        return;
+      }
+
+      const connectionType = state.type;
+      const isWifi = connectionType === 'wifi';
+      const isEthernet = connectionType === 'ethernet';
+      const isCellular = connectionType === 'cellular';
 
       // Check if detailed info is available
-      const details = state.details as { effectiveType?: string; downlink?: number } | undefined
+      const details = state.details as { effectiveType?: string; downlink?: number } | undefined;
 
       if (isWifi || isEthernet) {
         // WiFi/Ethernet: recommend 1080p or 4K
         if (details?.downlink && details.downlink > 10) {
-          setNetworkRecommendation('4K')
+          setNetworkRecommendation('4K');
         } else {
-          setNetworkRecommendation('1080p')
+          setNetworkRecommendation('1080p');
         }
       } else if (isCellular) {
         // Cellular: check connection quality
         if (details?.effectiveType === '4g' && details?.downlink && details.downlink > 5) {
-          setNetworkRecommendation('1080p')
+          setNetworkRecommendation('1080p');
         } else if (details?.effectiveType === '4g' || details?.effectiveType === '3g') {
-          setNetworkRecommendation('720p')
+          setNetworkRecommendation('720p');
         } else {
-          setNetworkRecommendation('480p')
+          setNetworkRecommendation('480p');
         }
       } else {
         // Unknown connection: default to 720p
-        setNetworkRecommendation('720p')
+        setNetworkRecommendation('720p');
       }
     } catch (error) {
-      logger.error('Failed to check network quality', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        'Failed to check network quality',
+        error instanceof Error ? error : new Error(String(error))
+      );
       // Default to 720p on error
-      setNetworkRecommendation('720p')
+      setNetworkRecommendation('720p');
     }
   };
 
@@ -132,22 +135,16 @@ export const VideoQualitySettings: React.FC = () => {
 
   const renderQualityOption = (preset: QualityPreset, isRecommended: boolean = false) => {
     const isSelected = selectedQuality === preset;
-    
+
     return (
       <Pressable
         key={preset}
-        style={[
-          styles.qualityOption,
-          isSelected && styles.qualityOptionSelected,
-        ]}
+        style={[styles.qualityOption, isSelected && styles.qualityOptionSelected]}
         onPress={() => saveSettings(preset)}
       >
         <View style={styles.qualityOptionContent}>
           <View style={styles.qualityHeader}>
-            <Text style={[
-              styles.qualityTitle,
-              isSelected && styles.qualityTitleSelected,
-            ]}>
+            <Text style={[styles.qualityTitle, isSelected && styles.qualityTitleSelected]}>
               {preset}
             </Text>
             {isRecommended && (
@@ -156,18 +153,14 @@ export const VideoQualitySettings: React.FC = () => {
               </View>
             )}
           </View>
-          
-          <Text style={styles.qualityDescription}>
-            {getQualityDescription(preset)}
-          </Text>
-          
+
+          <Text style={styles.qualityDescription}>{getQualityDescription(preset)}</Text>
+
           <View style={styles.qualityStats}>
-            <Text style={styles.qualityStatText}>
-              Data usage: {getDataUsage(preset)}
-            </Text>
+            <Text style={styles.qualityStatText}>Data usage: {getDataUsage(preset)}</Text>
           </View>
         </View>
-        
+
         {isSelected && (
           <View style={styles.checkmark}>
             <Text style={styles.checkmarkText}>✓</Text>
@@ -204,9 +197,8 @@ export const VideoQualitySettings: React.FC = () => {
         <View style={styles.infoCard}>
           <Text style={styles.infoTitle}>💡 Tips</Text>
           <Text style={styles.infoText}>
-            • Quality automatically adjusts if your connection drops{'\n'}
-            • Higher quality requires stable Wi-Fi or strong 4G/5G{'\n'}
-            • Lower quality works better on mobile data
+            • Quality automatically adjusts if your connection drops{'\n'}• Higher quality requires
+            stable Wi-Fi or strong 4G/5G{'\n'}• Lower quality works better on mobile data
           </Text>
         </View>
       </View>

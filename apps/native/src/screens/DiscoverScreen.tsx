@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -64,13 +56,7 @@ export default function DiscoverScreen(): React.JSX.Element {
     text?: string,
     privacy?: 'public' | 'friends' | 'private'
   ) => {
-    const result = await createStory(
-      imageUri,
-      userProfile.name,
-      userProfile.avatar,
-      text,
-      privacy
-    );
+    const result = await createStory(imageUri, userProfile.name, userProfile.avatar, text, privacy);
     if (result.success) {
       Alert.alert('Success', 'Story created!');
     } else {
@@ -109,9 +95,7 @@ export default function DiscoverScreen(): React.JSX.Element {
           <View style={styles.emptyState}>
             <Text style={styles.emptyText}>🐾</Text>
             <Text style={styles.emptyTitle}>No More Pets</Text>
-            <Text style={styles.emptySubtitle}>
-              Check back later for new matches!
-            </Text>
+            <Text style={styles.emptySubtitle}>Check back later for new matches!</Text>
           </View>
         </FadeInView>
       </View>
@@ -164,7 +148,9 @@ export default function DiscoverScreen(): React.JSX.Element {
             <View style={styles.cardContent}>
               <FadeInView delay={100}>
                 <View style={styles.header}>
-                  <Text style={styles.name}>{currentPet.name}, {currentPet.age}</Text>
+                  <Text style={styles.name}>
+                    {currentPet.name}, {currentPet.age}
+                  </Text>
                   {currentPet.verified && <Text style={styles.verified}>✓</Text>}
                 </View>
               </FadeInView>

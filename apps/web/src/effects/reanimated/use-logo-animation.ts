@@ -1,16 +1,22 @@
-'use client'
+'use client';
 
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
-import { useEffect } from 'react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import { useEffect } from 'react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface UseLogoAnimationReturn {
-  scale: ReturnType<typeof useSharedValue<number>>
-  style: AnimatedStyle
+  scale: ReturnType<typeof useSharedValue<number>>;
+  style: AnimatedStyle;
 }
 
 export function useLogoAnimation(): UseLogoAnimationReturn {
-  const scale = useSharedValue(1)
+  const scale = useSharedValue(1);
 
   useEffect(() => {
     scale.value = withRepeat(
@@ -21,30 +27,30 @@ export function useLogoAnimation(): UseLogoAnimationReturn {
       ),
       -1,
       true
-    )
-  }, [scale])
+    );
+  }, [scale]);
 
   const style = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: scale.value }],
+    };
+  }) as AnimatedStyle;
 
   return {
     scale,
-    style
-  }
+    style,
+  };
 }
 
 export interface UseLogoGlowReturn {
-  scale: ReturnType<typeof useSharedValue<number>>
-  opacity: ReturnType<typeof useSharedValue<number>>
-  style: AnimatedStyle
+  scale: ReturnType<typeof useSharedValue<number>>;
+  opacity: ReturnType<typeof useSharedValue<number>>;
+  style: AnimatedStyle;
 }
 
 export function useLogoGlow(): UseLogoGlowReturn {
-  const scale = useSharedValue(1)
-  const opacity = useSharedValue(0.7)
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(0.7);
 
   useEffect(() => {
     scale.value = withRepeat(
@@ -55,7 +61,7 @@ export function useLogoGlow(): UseLogoGlowReturn {
       ),
       -1,
       false
-    )
+    );
 
     opacity.value = withRepeat(
       withSequence(
@@ -65,20 +71,19 @@ export function useLogoGlow(): UseLogoGlowReturn {
       ),
       -1,
       false
-    )
-  }, [scale, opacity])
+    );
+  }, [scale, opacity]);
 
   const style = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
-      opacity: opacity.value
-    }
-  }) as AnimatedStyle
+      opacity: opacity.value,
+    };
+  }) as AnimatedStyle;
 
   return {
     scale,
     opacity,
-    style
-  }
+    style,
+  };
 }
-

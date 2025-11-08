@@ -26,7 +26,7 @@ export function useFilters({ categories, initialValues = {}, onApply }: UseFilte
       if (Array.isArray(value) && value.length > 0) return count + 1
       if (typeof value === 'boolean' && value) return count + 1
       if (typeof value === 'number') {
-        const category = categories.find((c) => c.id === key)
+        const category = categories.find(c => c.id === key)
         if (category?.type === 'range' && value !== category.min) return count + 1
       }
       return count
@@ -41,7 +41,7 @@ export function useFilters({ categories, initialValues = {}, onApply }: UseFilte
   const resetFilters = useCallback(() => {
     haptics.impact('light')
     const resetValues: Record<string, unknown> = {}
-    categories.forEach((category) => {
+    categories.forEach(category => {
       if (category.type === 'multi-select') {
         resetValues[category.id] = []
       } else if (category.type === 'range') {
@@ -55,31 +55,34 @@ export function useFilters({ categories, initialValues = {}, onApply }: UseFilte
     setLocalValues(resetValues)
   }, [categories])
 
-  const handleMultiSelect = useCallback((categoryId: string, optionId: string) => {
-    haptics.impact('light')
-    const current = (localValues[categoryId] as string[]) || []
-    const updated = current.includes(optionId)
-      ? current.filter((id) => id !== optionId)
-      : [...current, optionId]
-    
-    setLocalValues((prev) => ({ ...prev, [categoryId]: updated }))
-  }, [localValues])
+  const handleMultiSelect = useCallback(
+    (categoryId: string, optionId: string) => {
+      haptics.impact('light')
+      const current = (localValues[categoryId] as string[]) || []
+      const updated = current.includes(optionId)
+        ? current.filter(id => id !== optionId)
+        : [...current, optionId]
+
+      setLocalValues(prev => ({ ...prev, [categoryId]: updated }))
+    },
+    [localValues]
+  )
 
   const handleSingleSelect = useCallback((categoryId: string, optionId: string) => {
     haptics.impact('light')
-    setLocalValues((prev) => ({
+    setLocalValues(prev => ({
       ...prev,
       [categoryId]: prev[categoryId] === optionId ? null : optionId,
     }))
   }, [])
 
   const handleRangeChange = useCallback((categoryId: string, value: number[]) => {
-    setLocalValues((prev) => ({ ...prev, [categoryId]: value[0] }))
+    setLocalValues(prev => ({ ...prev, [categoryId]: value[0] }))
   }, [])
 
   const handleToggle = useCallback((categoryId: string) => {
     haptics.impact('light')
-    setLocalValues((prev) => ({ ...prev, [categoryId]: !prev[categoryId] }))
+    setLocalValues(prev => ({ ...prev, [categoryId]: !prev[categoryId] }))
   }, [])
 
   return {
@@ -94,4 +97,3 @@ export function useFilters({ categories, initialValues = {}, onApply }: UseFilte
     setValues: setLocalValues,
   }
 }
-

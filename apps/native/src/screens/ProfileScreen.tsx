@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import type { UserProfile, Pet } from '../types';
 import { useStorage } from '../hooks/useStorage';
 import { useNavigation } from '@react-navigation/native';
@@ -28,7 +20,7 @@ export default function ProfileScreen(): React.JSX.Element {
     bio: 'Loving pet parent looking for playmates!',
   });
   const [userPets] = useStorage<Pet[]>('user-pets', []);
-  
+
   // Subscription management
   const {
     subscription,
@@ -44,11 +36,7 @@ export default function ProfileScreen(): React.JSX.Element {
   const { highlights, createHighlight } = useHighlights(userProfile.id);
   const [showCreateHighlight, setShowCreateHighlight] = useState(false);
 
-  const handleCreateHighlight = async (
-    title: string,
-    storyIds: string[],
-    coverImage: string
-  ) => {
+  const handleCreateHighlight = async (title: string, storyIds: string[], coverImage: string) => {
     const result = await createHighlight(title, storyIds, coverImage);
     if (result.success) {
       Alert.alert('Success', 'Highlight created successfully!');
@@ -80,32 +68,28 @@ export default function ProfileScreen(): React.JSX.Element {
   };
 
   const handleManageSubscription = () => {
-    Alert.alert(
-      'Manage Subscription',
-      'Choose an action',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Cancel Subscription',
-          style: 'destructive',
-          onPress: async () => {
-            const result = await cancelSubscription();
-            if (result.success) {
-              Alert.alert('Success', 'Subscription cancelled');
-            }
-          },
+    Alert.alert('Manage Subscription', 'Choose an action', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Cancel Subscription',
+        style: 'destructive',
+        onPress: async () => {
+          const result = await cancelSubscription();
+          if (result.success) {
+            Alert.alert('Success', 'Subscription cancelled');
+          }
         },
-        {
-          text: 'Update Payment',
-          onPress: async () => {
-            const result = await updatePaymentMethod();
-            if (result.success) {
-              Alert.alert('Success', 'Payment method updated');
-            }
-          },
+      },
+      {
+        text: 'Update Payment',
+        onPress: async () => {
+          const result = await updatePaymentMethod();
+          if (result.success) {
+            Alert.alert('Success', 'Payment method updated');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const renderPetCard = (pet: Pet) => (
@@ -122,12 +106,7 @@ export default function ProfileScreen(): React.JSX.Element {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        {userProfile.avatar && (
-          <Image
-            source={{ uri: userProfile.avatar }}
-            style={styles.avatar}
-          />
-        )}
+        {userProfile.avatar && <Image source={{ uri: userProfile.avatar }} style={styles.avatar} />}
         <Text style={styles.name}>{userProfile.name}</Text>
         <Text style={styles.location}>📍 {userProfile.location}</Text>
         {userProfile.bio && <Text style={styles.bio}>{userProfile.bio}</Text>}
@@ -179,35 +158,35 @@ export default function ProfileScreen(): React.JSX.Element {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Quick Access</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingItem}
           onPress={() => navigation.navigate('Playdates' as never)}
         >
           <Text style={styles.settingText}>📅 Playdates</Text>
           <Text style={styles.settingArrow}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingItem}
           onPress={() => navigation.navigate('Map' as never)}
         >
           <Text style={styles.settingText}>🗺️ Map View</Text>
           <Text style={styles.settingArrow}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingItem}
           onPress={() => navigation.navigate('Notifications' as never)}
         >
           <Text style={styles.settingText}>🔔 Notifications</Text>
           <Text style={styles.settingArrow}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingItem}
           onPress={() => navigation.navigate('SavedPosts' as never)}
         >
           <Text style={styles.settingText}>📖 Saved Posts</Text>
           <Text style={styles.settingArrow}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingItem}
           onPress={() => navigation.navigate('Settings' as never)}
         >

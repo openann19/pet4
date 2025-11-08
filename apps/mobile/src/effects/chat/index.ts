@@ -1,6 +1,6 @@
 /**
  * Chat Effects Index
- * 
+ *
  * Central export point for all chat effects:
  * - Core utilities
  * - Shaders
@@ -11,7 +11,7 @@
  * - Gesture effects
  * - Media effects
  * - UI effects
- * 
+ *
  * Location: apps/mobile/src/effects/chat/index.ts
  */
 
@@ -24,4 +24,3 @@ export * from './shaders'
 export * from './status'
 export * from './typing'
 export * from './ui'
-

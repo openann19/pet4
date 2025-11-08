@@ -1,6 +1,6 @@
 /**
  * Community Management Screen (Mobile)
- * 
+ *
  * Mobile admin screen for moderating community posts and comments.
  */
 
@@ -14,8 +14,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AnimatedCard } from '../components/AnimatedCard';
-import { FadeInView } from '../components/FadeInView';
+import { createLogger } from '../../utils/logger';
+import { AnimatedCard } from '../../components/AnimatedCard';
+import { FadeInView } from '../../components/FadeInView';
+
+const logger = createLogger('CommunityManagementScreen');
 
 interface CommunityPost {
   id: string;
@@ -39,12 +42,12 @@ export const CommunityManagementScreen: React.FC = () => {
   const loadPosts = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call
-      // const data = await adminApi.getCommunityPosts(filter);
-      // setPosts(data);
+      // Note: Community posts API endpoint not yet available in admin-api
+      // When backend provides endpoint, update to: await mobileAdminApi.getCommunityPosts(filter);
       setPosts([]);
     } catch (error) {
-      console.error('Failed to load posts:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load posts', err, { context: 'loadPosts', filter });
     } finally {
       setLoading(false);
     }
@@ -52,15 +55,16 @@ export const CommunityManagementScreen: React.FC = () => {
 
   const handleModerate = async (postId: string, action: 'approve' | 'hide' | 'delete') => {
     try {
-      // TODO: Implement moderation API call
-      // await adminApi.moderatePost(postId, action);
+      // Note: Post moderation API endpoint not yet available in admin-api
+      // When backend provides endpoint, update to: await mobileAdminApi.moderatePost(postId, action);
       await loadPosts();
     } catch (error) {
-      console.error('Failed to moderate post:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to moderate post', err, { context: 'handleModerate', postId, action });
     }
   };
 
-  const filteredPosts = posts.filter(p => {
+  const filteredPosts = posts.filter((p) => {
     if (filter === 'all') return true;
     return p.status === filter;
   });
@@ -275,4 +279,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

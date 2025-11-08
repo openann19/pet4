@@ -13,25 +13,32 @@ describe('Button', () => {
   it('should apply default variant', () => {
     render(<Button>Default</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-primary');
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveAttribute('data-slot', 'button');
+    // Button uses CSS variables, so we check it renders correctly
+    expect(button.className).toContain('bg-[var(--btn-primary-bg)]');
   });
 
   it('should apply destructive variant', () => {
     render(<Button variant="destructive">Delete</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-destructive');
+    expect(button).toBeInTheDocument();
+    expect(button.className).toContain('bg-[var(--btn-destructive-bg)]');
   });
 
   it('should apply outline variant', () => {
     render(<Button variant="outline">Outline</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('border-input');
+    expect(button).toBeInTheDocument();
+    expect(button.className).toContain('border-[1.5px]');
+    expect(button.className).toContain('border-[var(--btn-outline-border)]');
   });
 
   it('should apply ghost variant', () => {
     render(<Button variant="ghost">Ghost</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-transparent');
+    expect(button).toBeInTheDocument();
+    expect(button.className).toContain('bg-[var(--btn-ghost-bg)]');
   });
 
   it('should apply small size', () => {
@@ -64,10 +71,10 @@ describe('Button', () => {
     const handleClick = () => {
       clicked = true;
     };
-    
+
     render(<Button onClick={handleClick}>Click</Button>);
     const button = screen.getByRole('button');
-    
+
     await user.click(button);
     expect(clicked).toBe(true);
   });
@@ -78,10 +85,14 @@ describe('Button', () => {
     const handleClick = () => {
       clicked = true;
     };
-    
-    render(<Button disabled onClick={handleClick}>Click</Button>);
+
+    render(
+      <Button disabled onClick={handleClick}>
+        Click
+      </Button>
+    );
     const button = screen.getByRole('button');
-    
+
     await user.click(button);
     expect(clicked).toBe(false);
   });

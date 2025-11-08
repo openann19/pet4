@@ -1,9 +1,9 @@
 /**
  * Effects Playground Screen
- * 
+ *
  * Interactive demo for all three Skia effects with timing controls.
  * Allows real-time tweaking of animation parameters.
- * 
+ *
  * Location: apps/mobile/src/screens/EffectsPlaygroundScreen.tsx
  */
 
@@ -72,12 +72,12 @@ export function EffectsPlaygroundScreen(): React.ReactElement {
     sendWarp.opacity.value = 1
     sendWarp.glowOpacity.value = 0
     sendWarp.bloomIntensity.value = 0
-    
+
     mediaZoom.scale.value = 1
     mediaZoom.opacity.value = 0
     mediaZoom.aberrationRadius.value = 0
     mediaZoom.aberrationIntensity.value = 0
-    
+
     swipeReply.translateX.value = 0
     swipeReply.ribbonProgress.value = 0
     swipeReply.ribbonAlpha.value = 0
@@ -85,10 +85,7 @@ export function EffectsPlaygroundScreen(): React.ReactElement {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <SectionHeader
           title="Effects Playground"
           description="Interactive demos for Skia effects with timing controls."
@@ -254,4 +251,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 })
-

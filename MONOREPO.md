@@ -23,11 +23,13 @@ This project uses npm workspaces to manage dependencies and enable code sharing 
 ### Apps
 
 #### Web App (`apps/web/`)
+
 - Existing React web application
 - Vite build system
 - See `apps/web/README.md` for details
 
 #### Native App (`apps/native/`)
+
 - Expo-managed React Native application
 - Targets iOS, Android, and Web platforms
 - Uses React Navigation, NativeWind (Tailwind), and shared packages
@@ -36,6 +38,7 @@ This project uses npm workspaces to manage dependencies and enable code sharing 
 ### Packages
 
 #### Shared Package (`packages/shared/`)
+
 - Platform-agnostic TypeScript utilities, types, and business logic
 - Used by both web and native applications
 - Pure TypeScript with no platform-specific dependencies
@@ -62,18 +65,21 @@ npm run build
 ### Development
 
 #### Web App
+
 ```bash
 cd apps/web
 npm run dev
 ```
 
 #### Native App
+
 ```bash
 cd apps/native
 npm start
 ```
 
 #### Shared Package
+
 ```bash
 cd packages/shared
 npm run build      # Build TypeScript
@@ -126,7 +132,7 @@ See `docs/MOBILE_README.md` for the list of required GitHub secrets for EAS buil
 3. Build: `cd packages/shared && npm run build`
 4. Import in apps:
    ```typescript
-   import { myFunction } from '@pet3/shared';
+   import { myFunction } from '@pet3/shared'
    ```
 
 ### Guidelines for Shared Code
@@ -199,6 +205,7 @@ This alignment simplifies dependency management and ensures consistent behavior 
 ### Module Resolution Issues
 
 If shared package imports fail:
+
 1. Ensure shared package is built: `cd packages/shared && npm run build`
 2. Clear Metro cache (native): `cd apps/native && expo start --clear`
 3. Clear node_modules and reinstall: `rm -rf node_modules && npm install`
@@ -206,6 +213,7 @@ If shared package imports fail:
 ### TypeScript Errors
 
 Run typecheck to identify issues:
+
 ```bash
 cd packages/shared && npm run typecheck
 cd apps/native && npm run typecheck

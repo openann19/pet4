@@ -1,56 +1,74 @@
-import { communityAPI } from '@/api/community-api'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
-import { useApp } from '@/contexts/AppContext'
-import { useStorage } from '@/hooks/useStorage'
-import type { PostKind, PostVisibility } from '@/lib/community-types'
-import { haptics } from '@/lib/haptics'
-import { uploadImage } from '@/lib/image-upload'
-import { createLogger } from '@/lib/logger'
-import type { Pet } from '@/lib/types'
-import { VideoCompressor, type CompressionProgress, type VideoMetadata } from '@/lib/video-compression'
-import type { Icon } from '@phosphor-icons/react'
-import { Camera, CheckCircle, FilmSlate, Globe, Lock, Pause, Play, Sparkle, Tag, Users, VideoCamera, WarningCircle, X } from '@phosphor-icons/react'
-import { Presence, motion } from '@petspark/motion'
-import { useRef, useState } from 'react'
-import { toast } from 'sonner'
+import { communityAPI } from '@/api/community-api';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { useApp } from '@/contexts/AppContext';
+import { useStorage } from '@/hooks/use-storage';
+import type { PostKind, PostVisibility } from '@/lib/community-types';
+import { haptics } from '@/lib/haptics';
+import { uploadImage } from '@/lib/image-upload';
+import { createLogger } from '@/lib/logger';
+import type { Pet } from '@/lib/types';
+import {
+  VideoCompressor,
+  type CompressionProgress,
+  type VideoMetadata,
+} from '@/lib/video-compression';
+import type { Icon } from '@phosphor-icons/react';
+import {
+  Camera,
+  CheckCircle,
+  FilmSlate,
+  Globe,
+  Lock,
+  Pause,
+  Play,
+  Sparkle,
+  Tag,
+  Users,
+  VideoCamera,
+  WarningCircle,
+  X,
+} from '@phosphor-icons/react';
+import { Presence, motion } from '@petspark/motion';
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('PostComposer')
+const logger = createLogger('PostComposer');
 
 interface PostComposerProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onPostCreated?: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onPostCreated?: () => void;
 }
 
-const MAX_CHARS = 1000
-const MAX_IMAGES = 10
-const MAX_VIDEO_SIZE_MB = 50
-const MAX_VIDEO_DURATION = 60
+const MAX_CHARS = 1000;
+const MAX_IMAGES = 10;
+const MAX_VIDEO_SIZE_MB = 50;
+const MAX_VIDEO_DURATION = 60;
 
-type MediaType = 'photo' | 'video'
-type CropSize = 'square' | 'portrait' | 'landscape' | 'original'
+type MediaType = 'photo' | 'video';
+type CropSize = 'square' | 'portrait' | 'landscape' | 'original';
 
 interface VideoUploadState {
-  file: File | null
-  previewUrl: string | null
-  thumbnailUrl: string | null
-  compressedBlob: Blob | null
-  metadata: VideoMetadata | null
-  isCompressing: boolean
-  compressionProgress: CompressionProgress | null
-  error: string | null
+  file: File | null;
+  previewUrl: string | null;
+  thumbnailUrl: string | null;
+  compressedBlob: Blob | null;
+  metadata: VideoMetadata | null;
+  isCompressing: boolean;
+  compressionProgress: CompressionProgress | null;
+  error: string | null;
 }
 
 export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposerProps) {
-  const { t } = useApp()
-  const [text, setText] = useState('')
-  const [images, setImages] = useState<string[]>([])
+  const { t } = useApp();
+  const [text, setText] = useState('');
+  const [images, setImages] = useState<string[]>([]);
   const [videoState, setVideoState] = useState<VideoUploadState>({
     file: null,
     previewUrl: null,
@@ -59,121 +77,124 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
     metadata: null,
     isCompressing: false,
     compressionProgress: null,
-    error: null
-  })
-  const [selectedPets, setSelectedPets] = useState<string[]>([])
-  const [location, setLocation] = useState<{ lat: number; lng: number; placeName?: string } | null>(null)
-  const [visibility, setVisibility] = useState<PostVisibility>('public')
-  const [tags, setTags] = useState<string[]>([])
-  const [tagInput, setTagInput] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [userPets] = useStorage<Pet[]>('user-pets', [])
-  const [mediaType, setMediaType] = useState<MediaType>('photo')
-  const [cropSize, setCropSize] = useState<CropSize>('original')
-  const [showMediaOptions, setShowMediaOptions] = useState(false)
-  const videoInputRef = useRef<HTMLInputElement>(null)
-  const imageInputRef = useRef<HTMLInputElement>(null)
-  const videoPreviewRef = useRef<HTMLVideoElement>(null)
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const [isUploadingImage, setIsUploadingImage] = useState(false)
+    error: null,
+  });
+  const [selectedPets, setSelectedPets] = useState<string[]>([]);
+  const [location, setLocation] = useState<{ lat: number; lng: number; placeName?: string } | null>(
+    null
+  );
+  const [visibility, setVisibility] = useState<PostVisibility>('public');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userPets] = useStorage<Pet[]>('user-pets', []);
+  const [mediaType, setMediaType] = useState<MediaType>('photo');
+  const [cropSize, setCropSize] = useState<CropSize>('original');
+  const [showMediaOptions, setShowMediaOptions] = useState(false);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoPreviewRef = useRef<HTMLVideoElement>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const remainingChars = MAX_CHARS - text.length
-  const canPost = text.trim().length > 0 && remainingChars >= 0 && !isSubmitting && !videoState.isCompressing
+  const remainingChars = MAX_CHARS - text.length;
+  const canPost =
+    text.trim().length > 0 && remainingChars >= 0 && !isSubmitting && !videoState.isCompressing;
 
   const handleImageFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const file = event.target.files?.[0];
+    if (!file) return;
 
     if (images.length >= MAX_IMAGES) {
-      toast.error(t.community?.maxImagesReached || `Maximum ${MAX_IMAGES} images allowed`)
-      haptics.error()
-      return
+      toast.error(t.community?.maxImagesReached || `Maximum ${MAX_IMAGES} images allowed`);
+      haptics.error();
+      return;
     }
 
     try {
-      setIsUploadingImage(true)
-      
+      setIsUploadingImage(true);
+
       // Determine max dimensions based on crop size
       const aspectRatios = {
         square: { max: 800 },
         portrait: { max: 800 },
         landscape: { max: 1920 },
-        original: { max: 1920 }
-      }
-      
-      const maxDimension = aspectRatios[cropSize].max
-      
+        original: { max: 1920 },
+      };
+
+      const maxDimension = aspectRatios[cropSize].max;
+
       // Upload image with compression and EXIF stripping
       const result = await uploadImage(file, {
         maxWidthOrHeight: maxDimension,
-        maxSizeMB: 1
-      })
+        maxSizeMB: 1,
+      });
 
-      setImages(prev => [...prev, result.url])
-      haptics.selection()
-      toast.success(t.community?.imageAdded || 'Image added')
-      setShowMediaOptions(false)
+      setImages((prev) => [...prev, result.url]);
+      haptics.selection();
+      toast.success(t.community?.imageAdded || 'Image added');
+      setShowMediaOptions(false);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to upload image', err)
-      toast.error(err.message || 'Failed to upload image')
-      haptics.error()
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to upload image', err);
+      toast.error(err.message || 'Failed to upload image');
+      haptics.error();
     } finally {
-      setIsUploadingImage(false)
+      setIsUploadingImage(false);
       // Reset file input
       if (imageInputRef.current) {
-        imageInputRef.current.value = ''
+        imageInputRef.current.value = '';
       }
     }
-  }
+  };
 
   const handleImageUpload = (_crop?: CropSize) => {
     // Trigger file input click
     if (imageInputRef.current) {
-      imageInputRef.current.click()
+      imageInputRef.current.click();
     }
-  }
+  };
 
   const handleVideoFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const file = event.target.files?.[0];
+    if (!file) return;
 
     if (!file.type.startsWith('video/')) {
-      toast.error('Please select a valid video file')
-      haptics.error()
-      return
+      toast.error('Please select a valid video file');
+      haptics.error();
+      return;
     }
 
-    const sizeMB = file.size / (1024 * 1024)
+    const sizeMB = file.size / (1024 * 1024);
     if (sizeMB > MAX_VIDEO_SIZE_MB * 2) {
-      toast.error(`Video file is too large. Maximum size is ${MAX_VIDEO_SIZE_MB * 2}MB`)
-      haptics.error()
-      return
+      toast.error(`Video file is too large. Maximum size is ${MAX_VIDEO_SIZE_MB * 2}MB`);
+      haptics.error();
+      return;
     }
 
     try {
-      setVideoState(prev => ({ ...prev, isCompressing: true, error: null }))
-      haptics.selection()
+      setVideoState((prev) => ({ ...prev, isCompressing: true, error: null }));
+      haptics.selection();
 
-      const metadata = await VideoCompressor.getVideoMetadata(file)
-      
+      const metadata = await VideoCompressor.getVideoMetadata(file);
+
       if (metadata.duration > MAX_VIDEO_DURATION) {
-        toast.error(`Video must be less than ${MAX_VIDEO_DURATION} seconds`)
-        haptics.error()
-        setVideoState(prev => ({ ...prev, isCompressing: false, error: 'Video too long' }))
-        return
+        toast.error(`Video must be less than ${MAX_VIDEO_DURATION} seconds`);
+        haptics.error();
+        setVideoState((prev) => ({ ...prev, isCompressing: false, error: 'Video too long' }));
+        return;
       }
 
-      const thumbnailUrl = await VideoCompressor.extractThumbnail(file, metadata.duration / 2)
-      const previewUrl = URL.createObjectURL(file)
+      const thumbnailUrl = await VideoCompressor.extractThumbnail(file, metadata.duration / 2);
+      const previewUrl = URL.createObjectURL(file);
 
-      setVideoState(prev => ({
+      setVideoState((prev) => ({
         ...prev,
         file,
         previewUrl,
         thumbnailUrl,
-        metadata
-      }))
+        metadata,
+      }));
 
       const compressedBlob = await VideoCompressor.compressVideo(
         file,
@@ -181,30 +202,32 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
           maxSizeMB: MAX_VIDEO_SIZE_MB,
           maxWidthOrHeight: 1280,
           maxDurationSeconds: MAX_VIDEO_DURATION,
-          quality: 0.8
+          quality: 0.8,
         },
         (progress) => {
-          setVideoState(prev => ({ ...prev, compressionProgress: progress }))
+          setVideoState((prev) => ({ ...prev, compressionProgress: progress }));
         }
-      )
+      );
 
-      setVideoState(prev => ({
+      setVideoState((prev) => ({
         ...prev,
         compressedBlob,
         isCompressing: false,
-        compressionProgress: null
-      }))
+        compressionProgress: null,
+      }));
 
-      setImages([])
-      
-      const originalSize = VideoCompressor.formatFileSize(file.size)
-      const compressedSize = VideoCompressor.formatFileSize(compressedBlob.size)
-      toast.success(`Video compressed: ${originalSize} → ${compressedSize}`)
-      haptics.success()
-      setShowMediaOptions(false)
+      setImages([]);
 
+      const originalSize = VideoCompressor.formatFileSize(file.size);
+      const compressedSize = VideoCompressor.formatFileSize(compressedBlob.size);
+      toast.success(`Video compressed: ${originalSize} → ${compressedSize}`);
+      haptics.success();
+      setShowMediaOptions(false);
     } catch (error) {
-      logger.error('Video processing error', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        'Video processing error',
+        error instanceof Error ? error : new Error(String(error))
+      );
       setVideoState({
         file: null,
         previewUrl: null,
@@ -213,25 +236,25 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
         metadata: null,
         isCompressing: false,
         compressionProgress: null,
-        error: error instanceof Error ? error.message : 'Failed to process video'
-      })
-      toast.error('Failed to process video')
-      haptics.error()
+        error: error instanceof Error ? error.message : 'Failed to process video',
+      });
+      toast.error('Failed to process video');
+      haptics.error();
     }
-  }
+  };
 
   const handleVideoUploadClick = () => {
-    videoInputRef.current?.click()
-  }
+    videoInputRef.current?.click();
+  };
 
   const handleRemoveImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index))
-    haptics.light()
-  }
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    haptics.light();
+  };
 
   const handleRemoveVideo = () => {
     if (videoState.previewUrl) {
-      URL.revokeObjectURL(videoState.previewUrl)
+      URL.revokeObjectURL(videoState.previewUrl);
     }
     setVideoState({
       file: null,
@@ -241,55 +264,57 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
       metadata: null,
       isCompressing: false,
       compressionProgress: null,
-      error: null
-    })
-    haptics.light()
-  }
+      error: null,
+    });
+    haptics.light();
+  };
 
   const toggleVideoPlayback = () => {
-    if (!videoPreviewRef.current) return
-    
+    if (!videoPreviewRef.current) return;
+
     if (isVideoPlaying) {
-      videoPreviewRef.current.pause()
+      videoPreviewRef.current.pause();
     } else {
-      videoPreviewRef.current.play()
+      videoPreviewRef.current.play();
     }
-    setIsVideoPlaying(!isVideoPlaying)
-    haptics.light()
-  }
+    setIsVideoPlaying(!isVideoPlaying);
+    haptics.light();
+  };
 
   const handleAddTag = () => {
-    if (!tagInput.trim()) return
+    if (!tagInput.trim()) return;
     if (tags.length >= 10) {
-      toast.error(t.community?.maxTagsReached || 'Maximum 10 tags allowed')
-      return
+      toast.error(t.community?.maxTagsReached || 'Maximum 10 tags allowed');
+      return;
     }
-    
-    const tag = tagInput.trim().toLowerCase().replace(/\s+/g, '_')
+
+    const tag = tagInput.trim().toLowerCase().replace(/\s+/g, '_');
     if (!tags.includes(tag)) {
-      setTags(prev => [...prev, tag])
-      haptics.selection()
+      setTags((prev) => [...prev, tag]);
+      haptics.selection();
     }
-    setTagInput('')
-  }
+    setTagInput('');
+  };
 
   const handleRemoveTag = (tag: string) => {
-    setTags(prev => prev.filter(t => t !== tag))
-    haptics.light()
-  }
+    setTags((prev) => prev.filter((t) => t !== tag));
+    haptics.light();
+  };
 
   const handleSubmit = async () => {
-    if (!canPost) return
+    if (!canPost) return;
 
     try {
-      setIsSubmitting(true)
-      haptics.impact()
+      setIsSubmitting(true);
+      haptics.impact();
 
-      const user = await spark.user()
-      
+      const user = await spark.user();
+
       // All posts require manual admin approval
-      toast.info('Your post has been submitted and will be visible once approved by an administrator.')
-      
+      toast.info(
+        'Your post has been submitted and will be visible once approved by an administrator.'
+      );
+
       const postData: Parameters<typeof communityAPI.createPost>[0] = {
         authorId: user.id,
         authorName: user.login || 'User',
@@ -297,50 +322,53 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
         kind: 'post' as PostKind,
         text: text.trim(),
         media: videoState.file ? [] : images,
-        visibility
-      }
+        visibility,
+      };
       if (tags.length > 0) {
-        postData.tags = tags
+        postData.tags = tags;
       }
       if (location) {
         postData.location = {
           city: location.placeName?.split(',')[0] || 'Unknown',
           country: location.placeName?.split(',').pop()?.trim() || 'Unknown',
           lat: location.lat,
-          lon: location.lng
-        }
+          lon: location.lng,
+        };
       }
-      await communityAPI.createPost(postData)
-      
-      haptics.success()
-      toast.success(t.community?.postCreated || 'Post created successfully!')
-      
-      setText('')
-      setImages([])
-      handleRemoveVideo()
-      setSelectedPets([])
-      setLocation(null)
-      setTags([])
-      setVisibility('public')
-      setCropSize('original')
-      setShowMediaOptions(false)
-      
-      onPostCreated?.()
-      onOpenChange(false)
+      await communityAPI.createPost(postData);
+
+      haptics.success();
+      toast.success(t.community?.postCreated || 'Post created successfully!');
+
+      setText('');
+      setImages([]);
+      handleRemoveVideo();
+      setSelectedPets([]);
+      setLocation(null);
+      setTags([]);
+      setVisibility('public');
+      setCropSize('original');
+      setShowMediaOptions(false);
+
+      onPostCreated?.();
+      onOpenChange(false);
     } catch (error) {
-      haptics.error()
-      toast.error(t.community?.postFailed || 'Failed to create post')
-      logger.error('Post creation failed', error instanceof Error ? error : new Error(String(error)))
+      haptics.error();
+      toast.error(t.community?.postFailed || 'Failed to create post');
+      logger.error(
+        'Post creation failed',
+        error instanceof Error ? error : new Error(String(error))
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const visibilityOptions: { value: PostVisibility; icon: Icon; label: string }[] = [
     { value: 'public', icon: Globe, label: t.community?.visibilityPublic || 'Public' },
     { value: 'matches', icon: Users, label: t.community?.visibilityMatches || 'Matches Only' },
-    { value: 'private', icon: Lock, label: t.community?.visibilityPrivate || 'Private' }
-  ]
+    { value: 'private', icon: Lock, label: t.community?.visibilityPrivate || 'Private' },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -371,7 +399,9 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
               maxLength={MAX_CHARS}
             />
             <div className="flex items-center justify-between mt-2">
-              <span className={`text-sm ${remainingChars < 50 ? 'text-destructive' : 'text-muted-foreground'}`}>
+              <span
+                className={`text-sm ${remainingChars < 50 ? 'text-destructive' : 'text-muted-foreground'}`}
+              >
                 {remainingChars} {t.community?.charsRemaining || 'characters remaining'}
               </span>
             </div>
@@ -387,8 +417,12 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                 className="space-y-2"
               >
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">Photos ({images.length}/{MAX_IMAGES})</Label>
-                  <Badge variant="outline" className="text-xs capitalize">{cropSize}</Badge>
+                  <Label className="text-sm font-medium">
+                    Photos ({images.length}/{MAX_IMAGES})
+                  </Label>
+                  <Badge variant="outline" className="text-xs capitalize">
+                    {cropSize}
+                  </Badge>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {images.map((img, index) => (
@@ -399,8 +433,8 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                       exit={{ scale: 0.8, opacity: 0 }}
                       className="relative aspect-square rounded-lg overflow-hidden bg-muted group"
                     >
-                      <img 
-                        src={img} 
+                      <img
+                        src={img}
                         alt={`Upload ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
@@ -477,24 +511,26 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 flex items-start gap-2"
                   >
-                    <WarningCircle size={20} weight="fill" className="text-destructive shrink-0 mt-0.5" />
-                    <div className="text-sm text-destructive">
-                      {videoState.error}
-                    </div>
+                    <WarningCircle
+                      size={20}
+                      weight="fill"
+                      className="text-destructive shrink-0 mt-0.5"
+                    />
+                    <div className="text-sm text-destructive">{videoState.error}</div>
                   </MotionView>
                 )}
 
                 <div className="relative aspect-video rounded-lg overflow-hidden bg-black group">
-                  <video 
+                  <video
                     ref={videoPreviewRef}
-                    src={videoState.previewUrl} 
+                    src={videoState.previewUrl}
                     className="w-full h-full object-contain"
                     onPlay={() => setIsVideoPlaying(true)}
                     onPause={() => setIsVideoPlaying(false)}
                     onEnded={() => setIsVideoPlaying(false)}
                     loop
                   />
-                  
+
                   <button
                     onClick={toggleVideoPlayback}
                     className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -575,9 +611,10 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                           { value: 'original', label: 'Original', icon: '📐' },
                           { value: 'square', label: 'Square', icon: '⬜', desc: '1:1' },
                           { value: 'portrait', label: 'Portrait', icon: '📱', desc: '3:4' },
-                          { value: 'landscape', label: 'Landscape', icon: '🖼️', desc: '4:3' }
+                          { value: 'landscape', label: 'Landscape', icon: '🖼️', desc: '4:3' },
                         ].map(({ value, label, icon, desc }) => (
-                          <MotionView as="button"
+                          <MotionView
+                            as="button"
                             key={value}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -608,7 +645,11 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                   <TabsContent value="video" className="space-y-4 mt-4">
                     <div className="bg-accent/10 border border-accent/20 rounded-lg p-3">
                       <div className="flex items-start gap-2">
-                        <Sparkle size={16} weight="duotone" className="text-accent shrink-0 mt-0.5" />
+                        <Sparkle
+                          size={16}
+                          weight="duotone"
+                          className="text-accent shrink-0 mt-0.5"
+                        />
                         <div className="text-xs">
                           <div className="font-medium mb-1">Video Guidelines</div>
                           <ul className="text-muted-foreground space-y-0.5">
@@ -620,7 +661,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                         </div>
                       </div>
                     </div>
-                    
+
                     <input
                       ref={videoInputRef}
                       type="file"
@@ -628,7 +669,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                       onChange={handleVideoFileSelect}
                       className="hidden"
                     />
-                    
+
                     <Button
                       onClick={handleVideoUploadClick}
                       className="w-full"
@@ -650,23 +691,23 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                 {t.community?.tagPets || 'Tag Your Pets'}
               </label>
               <div className="flex flex-wrap gap-2">
-                {userPets.map(pet => {
-                  const isSelected = selectedPets.includes(pet.id)
+                {userPets.map((pet) => {
+                  const isSelected = selectedPets.includes(pet.id);
                   return (
                     <Badge
                       key={pet.id}
                       variant={isSelected ? 'default' : 'outline'}
                       className="cursor-pointer"
                       onClick={() => {
-                        setSelectedPets(prev =>
-                          isSelected ? prev.filter(id => id !== pet.id) : [...prev, pet.id]
-                        )
-                        haptics.selection()
+                        setSelectedPets((prev) =>
+                          isSelected ? prev.filter((id) => id !== pet.id) : [...prev, pet.id]
+                        );
+                        haptics.selection();
                       }}
                     >
                       {pet.name}
                     </Badge>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -692,7 +733,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
             </div>
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {tags.map(tag => (
+                {tags.map((tag) => (
                   <Badge key={tag} variant="secondary" className="gap-1">
                     #{tag}
                     <button onClick={() => handleRemoveTag(tag)} className="hover:text-destructive">
@@ -714,8 +755,8 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                 <button
                   key={value}
                   onClick={() => {
-                    setVisibility(value)
-                    haptics.selection()
+                    setVisibility(value);
+                    haptics.selection();
                   }}
                   className={`p-3 rounded-lg border-2 transition-all ${
                     visibility === value
@@ -723,7 +764,11 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                       : 'border-border hover:border-primary/50'
                   }`}
                 >
-                  <Icon size={24} className="mx-auto mb-1" weight={visibility === value ? 'fill' : 'regular'} />
+                  <Icon
+                    size={24}
+                    className="mx-auto mb-1"
+                    weight={visibility === value ? 'fill' : 'regular'}
+                  />
                   <div className="text-xs font-medium">{label}</div>
                 </button>
               ))}
@@ -750,18 +795,18 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                 </>
               )}
             </Button>
-            
+
             <div className="flex-1" />
-            
+
             <Button variant="ghost" onClick={() => onOpenChange(false)}>
               {t.common?.cancel || 'Cancel'}
             </Button>
             <Button onClick={handleSubmit} disabled={!canPost}>
-              {isSubmitting ? (t.common?.posting || 'Posting...') : (t.common?.post || 'Post')}
+              {isSubmitting ? t.common?.posting || 'Posting...' : t.common?.post || 'Post'}
             </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

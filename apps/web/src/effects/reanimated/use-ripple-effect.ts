@@ -3,7 +3,12 @@
  * Material-style ripple effect with smooth spring animations
  */
 
-import { useSharedValue, useAnimatedStyle, withTiming, withSequence } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+} from 'react-native-reanimated';
 import { useState, useCallback } from 'react';
 
 export interface UseRippleEffectOptions {
@@ -20,7 +25,7 @@ export interface RippleState {
 
 export function useRippleEffect(options: UseRippleEffectOptions = {}) {
   const { duration = 600, color = 'rgba(255, 255, 255, 0.5)', opacity = 0.5 } = options;
-  
+
   const [ripples, setRipples] = useState<RippleState[]>([]);
   const rippleScale = useSharedValue(0);
   const rippleOpacity = useSharedValue(opacity);

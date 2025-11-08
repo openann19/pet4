@@ -9,6 +9,7 @@
 ## ✅ Completed
 
 ### Phase 1: Foundation Fixes
+
 1. ✅ **Fixed TypeScript errors in chat-types.ts**
    - Added missing exports: `ChatMessage`, `MESSAGE_TEMPLATES`, `REACTION_EMOJIS`
    - Extended `ChatRoom` interface with `matchedPetName`, `matchedPetPhoto`, `matchedPetId`, `isTyping`
@@ -23,6 +24,7 @@
    - Average BG/EN ratio: 1.21x
 
 ### Current State Assessment
+
 - **TypeScript errors**: Reduced from 30+ to ~15 (in chat components)
 - **i18n**: 467 strings checked, 453 OK, 14 need attention
 - **SwipeEngine**: Already has correct thresholds (15px/80px/150px, 500px/s velocity)
@@ -36,6 +38,7 @@
 ## ⏳ In Progress
 
 ### Phase 2: Mobile UX Hardening
+
 1. **Updating DiscoverView to use SwipeEngine**
    - Currently uses framer-motion directly
    - Need to integrate SwipeEngine for consistent behavior
@@ -55,18 +58,21 @@
 ## 📋 Remaining Tasks
 
 ### High Priority
+
 1. **Fix remaining TypeScript errors** (chat components)
 2. **Harden SwipeEngine integration** in DiscoverView
 3. **Theme contrast fixes** (WCAG AA)
 4. **Overlay standardization** (DismissibleOverlay everywhere)
 
 ### Medium Priority
+
 5. **Maps integration** (Mapbox provider)
 6. **Backend API wiring** (v1 endpoints)
 7. **Media pipeline** (EXIF, variants, CDN)
 8. **Push notifications** (APNs/FCM)
 
 ### Lower Priority
+
 9. **Tests & CI** (unit, integration, E2E)
 10. **Store readiness** (icons, permissions, policies)
 
@@ -75,6 +81,7 @@
 ## 📊 Metrics
 
 ### i18n
+
 - Total strings: 467
 - OK (≤60 chars): 453 (97%)
 - Warning (61-120 chars): 12 (2.6%)
@@ -84,11 +91,13 @@
 - BG/EN ratio: 1.21x
 
 ### TypeScript
+
 - Errors before: ~30
 - Errors now: ~15
 - Target: 0
 
 ### Code Coverage
+
 - Current: Unknown
 - Target: ≥80%
 

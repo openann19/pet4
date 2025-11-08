@@ -1,5 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import type { ViewStyle, TextStyle, StyleProp } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -9,11 +10,12 @@ import Animated, {
 import { SpringConfig } from '../animations/springConfigs';
 
 interface AnimatedButtonProps {
-  title: string;
-  onPress: () => void;
+  title?: string;
+  children?: React.ReactNode;
+  onPress?: () => void;
   variant?: 'primary' | 'secondary' | 'outline';
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
   disabled?: boolean;
 }
 
@@ -21,6 +23,7 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   title,
+  children,
   onPress,
   variant = 'primary',
   style,
@@ -62,15 +65,13 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       disabled={disabled}
       activeOpacity={0.9}
     >
-      <Text
-        style={[
-          styles.text,
-          variant === 'outline' && styles.outlineText,
-          textStyle,
-        ]}
-      >
-        {title}
-      </Text>
+      {children ? (
+        children
+      ) : (
+        <Text style={[styles.text, variant === 'outline' && styles.outlineText, textStyle]}>
+          {title}
+        </Text>
+      )}
     </AnimatedTouchable>
   );
 };

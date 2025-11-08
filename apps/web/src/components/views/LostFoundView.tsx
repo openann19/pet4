@@ -1,44 +1,44 @@
-import { useState, useEffect } from 'react'
-import { useStorage } from '@/hooks/useStorage'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Input } from '@/components/ui/input'
-import { MagnifyingGlass, Plus, MapPin } from '@phosphor-icons/react'
-import { motion, Presence } from '@petspark/motion'
-import type { LostAlert } from '@/lib/lost-found-types'
-import { LostAlertCard } from '@/components/lost-found/LostAlertCard'
-import { CreateLostAlertDialog } from '@/components/lost-found/CreateLostAlertDialog'
-import { ReportSightingDialog } from '@/components/lost-found/ReportSightingDialog'
-import { lostFoundAPI } from '@/api/lost-found-api'
-import { useApp } from '@/contexts/AppContext'
-import { toast } from 'sonner'
-import { createLogger } from '@/lib/logger'
-import type { LostAlertFilters } from '@/lib/lost-found-types'
+import { useState, useEffect } from 'react';
+import { useStorage } from '@/hooks/use-storage';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { MagnifyingGlass, Plus, MapPin } from '@phosphor-icons/react';
+import { motion, Presence } from '@petspark/motion';
+import type { LostAlert } from '@/lib/lost-found-types';
+import { LostAlertCard } from '@/components/lost-found/LostAlertCard';
+import { CreateLostAlertDialog } from '@/components/lost-found/CreateLostAlertDialog';
+import { ReportSightingDialog } from '@/components/lost-found/ReportSightingDialog';
+import { lostFoundAPI } from '@/api/lost-found-api';
+import { useApp } from '@/contexts/AppContext';
+import { toast } from 'sonner';
+import { createLogger } from '@/lib/logger';
+import type { LostAlertFilters } from '@/lib/lost-found-types';
 
-const logger = createLogger('LostFoundView')
+const logger = createLogger('LostFoundView');
 
-type ViewMode = 'browse' | 'mine'
-type FilterTab = 'all' | 'active' | 'found' | 'favorites'
+type ViewMode = 'browse' | 'mine';
+type FilterTab = 'all' | 'active' | 'found' | 'favorites';
 
 export default function LostFoundView() {
-  const { t } = useApp()
-  const [viewMode, setViewMode] = useState<ViewMode>('browse')
-  const [activeTab, setActiveTab] = useState<FilterTab>('all')
-  const [alerts, setAlerts] = useState<LostAlert[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [favorites, setFavorites] = useStorage<string[]>('lost-found-favorites', [])
-  const [selectedAlert, setSelectedAlert] = useState<LostAlert | null>(null)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
-  const [showSightingDialog, setShowSightingDialog] = useState(false)
-  const [cursor, setCursor] = useState<string | undefined>()
-  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null)
+  const { t } = useApp();
+  const [viewMode, setViewMode] = useState<ViewMode>('browse');
+  const [activeTab, setActiveTab] = useState<FilterTab>('all');
+  const [alerts, setAlerts] = useState<LostAlert[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useStorage<string[]>('lost-found-favorites', []);
+  const [selectedAlert, setSelectedAlert] = useState<LostAlert | null>(null);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showSightingDialog, setShowSightingDialog] = useState(false);
+  const [cursor, setCursor] = useState<string | undefined>();
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
 
   useEffect(() => {
-    loadAlerts()
-    getUserLocation()
-  }, [viewMode])
+    loadAlerts();
+    getUserLocation();
+  }, [viewMode]);
 
   const getUserLocation = async () => {
     try {
@@ -47,34 +47,34 @@ export default function LostFoundView() {
           (position) => {
             setUserLocation({
               lat: position.coords.latitude,
-              lon: position.coords.longitude
-            })
+              lon: position.coords.longitude,
+            });
           },
           () => {
             // User denied or error getting location
           }
-        )
+        );
       }
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get user location', err, { action: 'getUserLocation' })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get user location', err, { action: 'getUserLocation' });
     }
-  }
+  };
 
   const loadAlerts = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const filters: LostAlertFilters & { cursor?: string; limit?: number } = {
         limit: 50,
-        ...(cursor && { cursor })
-      }
+        ...(cursor && { cursor }),
+      };
 
       if (viewMode === 'mine') {
-        const user = await spark.user()
-        const userAlerts = await lostFoundAPI.getUserAlerts(user.id)
-        setAlerts(userAlerts)
-        setLoading(false)
-        return
+        const user = await spark.user();
+        const userAlerts = await lostFoundAPI.getUserAlerts(user.id);
+        setAlerts(userAlerts);
+        setLoading(false);
+        return;
       }
 
       // For browse mode, optionally filter by location
@@ -82,67 +82,68 @@ export default function LostFoundView() {
         filters.location = {
           lat: userLocation.lat,
           lon: userLocation.lon,
-          radiusKm: 50 // 50km radius
-        }
+          radiusKm: 50, // 50km radius
+        };
       }
 
       if (activeTab === 'active') {
-        filters.status = ['active']
+        filters.status = ['active'];
       } else if (activeTab === 'found') {
-        filters.status = ['found']
+        filters.status = ['found'];
       }
 
-      const result = await lostFoundAPI.queryAlerts(filters)
-      setAlerts(result.alerts)
-      setCursor(result.nextCursor)
+      const result = await lostFoundAPI.queryAlerts(filters);
+      setAlerts(result.alerts);
+      setCursor(result.nextCursor);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load alerts', err, { action: 'loadAlerts' })
-      toast.error('Failed to load lost & found alerts')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load alerts', err, { action: 'loadAlerts' });
+      toast.error('Failed to load lost & found alerts');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleToggleFavorite = (alertId: string) => {
     setFavorites((currentFavorites) => {
-      const current = Array.isArray(currentFavorites) ? currentFavorites : []
+      const current = Array.isArray(currentFavorites) ? currentFavorites : [];
       if (current.includes(alertId)) {
-        return current.filter(id => id !== alertId)
+        return current.filter((id) => id !== alertId);
       } else {
-        return [...current, alertId]
+        return [...current, alertId];
       }
-    })
-  }
+    });
+  };
 
   const handleSelectAlert = (alert: LostAlert) => {
-    setSelectedAlert(alert)
+    setSelectedAlert(alert);
     // Could open a detail dialog here
-  }
+  };
 
   const handleReportSighting = (alert: LostAlert) => {
-    setSelectedAlert(alert)
-    setShowSightingDialog(true)
-  }
+    setSelectedAlert(alert);
+    setShowSightingDialog(true);
+  };
 
   const filteredAlerts = () => {
-    let list = alerts
+    let list = alerts;
 
     if (activeTab === 'favorites') {
-      list = list.filter(a => Array.isArray(favorites) && favorites.includes(a.id))
+      list = list.filter((a) => Array.isArray(favorites) && favorites.includes(a.id));
     }
 
     if (searchQuery) {
-      list = list.filter(a =>
-        a.petSummary.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.petSummary.breed?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.petSummary.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.lastSeen.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      list = list.filter(
+        (a) =>
+          a.petSummary.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          a.petSummary.breed?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          a.petSummary.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          a.lastSeen.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
 
-    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  }
+    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  };
 
   if (loading && alerts.length === 0) {
     return (
@@ -152,11 +153,11 @@ export default function LostFoundView() {
           <p className="text-muted-foreground">{t.common.loading}</p>
         </div>
       </div>
-    )
+    );
   }
 
-  const activeCount = alerts.filter(a => a.status === 'active').length
-  const foundCount = alerts.filter(a => a.status === 'found').length
+  const activeCount = alerts.filter((a) => a.status === 'active').length;
+  const foundCount = alerts.filter((a) => a.status === 'found').length;
 
   return (
     <div className="space-y-6">
@@ -178,10 +179,7 @@ export default function LostFoundView() {
           >
             {viewMode === 'browse' ? 'My Alerts' : 'Browse All'}
           </Button>
-          <Button
-            onClick={() => setShowCreateDialog(true)}
-            className="gap-2"
-          >
+          <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
             <Plus size={20} weight="fill" />
             {t.lostFound?.reportLost || 'Report Lost Pet'}
           </Button>
@@ -197,7 +195,9 @@ export default function LostFoundView() {
                 size={20}
               />
               <Input
-                placeholder={t.lostFound?.searchPlaceholder || "Search by pet name, breed, location..."}
+                placeholder={
+                  t.lostFound?.searchPlaceholder || 'Search by pet name, breed, location...'
+                }
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -212,11 +212,10 @@ export default function LostFoundView() {
                 <TabsTrigger value="active">
                   Active {activeCount > 0 && `(${activeCount})`}
                 </TabsTrigger>
-                <TabsTrigger value="found">
-                  Found {foundCount > 0 && `(${foundCount})`}
-                </TabsTrigger>
+                <TabsTrigger value="found">Found {foundCount > 0 && `(${foundCount})`}</TabsTrigger>
                 <TabsTrigger value="favorites">
-                  Favorites {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
+                  Favorites{' '}
+                  {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -237,15 +236,15 @@ export default function LostFoundView() {
                     {activeTab === 'favorites'
                       ? 'No Favorites Yet'
                       : searchQuery
-                      ? 'No Results Found'
-                      : 'No Active Alerts'}
+                        ? 'No Results Found'
+                        : 'No Active Alerts'}
                   </h3>
                   <p className="text-muted-foreground text-center max-w-md">
                     {activeTab === 'favorites'
                       ? 'Start adding alerts to your favorites to see them here.'
                       : searchQuery
-                      ? 'Try adjusting your search terms.'
-                      : 'Check back soon for lost pet alerts in your area.'}
+                        ? 'Try adjusting your search terms.'
+                        : 'Check back soon for lost pet alerts in your area.'}
                   </p>
                 </MotionView>
               ) : (
@@ -306,8 +305,8 @@ export default function LostFoundView() {
         open={showCreateDialog}
         onClose={() => setShowCreateDialog(false)}
         onSuccess={() => {
-          loadAlerts()
-          toast.success('Lost pet alert created successfully!')
+          loadAlerts();
+          toast.success('Lost pet alert created successfully!');
         }}
       />
 
@@ -315,14 +314,13 @@ export default function LostFoundView() {
         open={showSightingDialog}
         alert={selectedAlert}
         onClose={() => {
-          setShowSightingDialog(false)
-          setSelectedAlert(null)
+          setShowSightingDialog(false);
+          setSelectedAlert(null);
         }}
         onSuccess={() => {
-          loadAlerts()
+          loadAlerts();
         }}
       />
     </div>
-  )
+  );
 }
-

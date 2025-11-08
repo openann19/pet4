@@ -1,9 +1,9 @@
 /**
  * Skia Surface Cache for Chat Effects
- * 
+ *
  * Caches offscreen surfaces for reuse across frames.
  * Pre-rasterizes heavy layers and reuses textures to improve performance.
- * 
+ *
  * Location: apps/mobile/src/effects/chat/core/surface-cache.ts
  */
 
@@ -40,7 +40,7 @@ class SurfaceCache {
 
   /**
    * Get or create a cached surface
-   * 
+   *
    * @param key - Unique key for the surface
    * @param width - Surface width
    * @param height - Surface height
@@ -231,4 +231,3 @@ export function getSurfaceCache(): SurfaceCache {
 export function useSurfaceCache(): SurfaceCache {
   return getSurfaceCache()
 }
-

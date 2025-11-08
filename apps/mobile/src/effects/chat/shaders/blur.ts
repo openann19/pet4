@@ -1,9 +1,9 @@
 /**
  * Blur Shader for Chat Effects
- * 
+ *
  * GPU-accelerated Gaussian blur with configurable radius (8-16px).
  * Uses offscreen surface caching for performance.
- * 
+ *
  * Location: apps/mobile/src/effects/chat/shaders/blur.ts
  */
 
@@ -31,9 +31,9 @@ function calculateSigma(radius: number): number {
 
 /**
  * Create a blur image filter
- * 
+ *
  * Uses Skia's ImageFilter.blur() for GPU-accelerated blur
- * 
+ *
  * @param config - Blur configuration
  * @returns Blur image filter
  */
@@ -45,7 +45,10 @@ export function createBlurFilter(config: BlurConfig): SkImageFilter {
   const finalSigma = sigma ?? calculateSigma(clampedRadius)
 
   if (clampedRadius !== radius) {
-    logger.warn('Blur radius clamped to 8-16px range', { requested: radius, clamped: clampedRadius })
+    logger.warn('Blur radius clamped to 8-16px range', {
+      requested: radius,
+      clamped: clampedRadius,
+    })
   }
 
   // Create Skia blur filter
@@ -93,7 +96,7 @@ export function clearBlurFilterCache(): void {
 
 /**
  * Apply blur effect using offscreen surface
- * 
+ *
  * Uses surface cache to reuse offscreen surfaces for better performance
  */
 export function applyBlurWithSurface(
@@ -106,7 +109,7 @@ export function applyBlurWithSurface(
 } {
   const surfaceCache = getSurfaceCache()
   const clampedRadius = Math.max(8, Math.min(16, blurRadius))
-  
+
   // Create a cache key for this blur configuration
   const surfaceKey = `blur-${clampedRadius}-${sourceWidth}x${sourceHeight}`
 
@@ -136,4 +139,3 @@ export function releaseBlurSurface(surfaceKey: string): void {
   const surfaceCache = getSurfaceCache()
   surfaceCache.releaseSurface(surfaceKey)
 }
-

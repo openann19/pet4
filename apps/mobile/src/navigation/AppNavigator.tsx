@@ -6,7 +6,8 @@ import React from 'react'
 import { useColorScheme } from 'react-native'
 import { linking } from './linking'
 import { SignInForm } from '@ui-mobile'
-import { PostComposer } from '@ui-mobile';
+import { PostComposer } from '@ui-mobile'
+import SignUpScreen from '@mobile/screens/SignUpScreen'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 export type RootStackParamList = {
@@ -20,8 +21,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 type SignInScreenProps = NativeStackScreenProps<RootStackParamList, 'SignIn'>
-type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>
-type PostComposerScreenProps = NativeStackScreenProps<RootStackParamList, 'PostComposer'>;
+type PostComposerScreenProps = NativeStackScreenProps<RootStackParamList, 'PostComposer'>
 
 function SignInScreen({ navigation }: SignInScreenProps): React.JSX.Element {
   return (
@@ -36,40 +36,30 @@ function SignInScreen({ navigation }: SignInScreenProps): React.JSX.Element {
   )
 }
 
-function SignUpScreen({ navigation }: SignUpScreenProps): React.JSX.Element {
-  // TODO: Create SignUpForm component
-  // For now, navigate back to SignIn
-  React.useEffect(() => {
-    navigation.navigate('SignIn')
-  }, [navigation])
-  
-  return <React.Fragment />
-}
-
 function PostComposerScreen({ navigation, route }: PostComposerScreenProps): React.JSX.Element {
   return (
     <PostComposer
       open={true}
-      onOpenChange={(open) => {
-        if (!open) navigation.goBack();
+      onOpenChange={(open: boolean) => {
+        if (!open) navigation.goBack()
       }}
       onPostCreated={route.params?.onPostCreated}
     />
-  );
+  )
 }
 
 export function AppNavigator(): React.JSX.Element {
   const colorScheme = useColorScheme()
 
   return (
-    <NavigationContainer 
+    <NavigationContainer
       linking={linking}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
     >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="MainTabs" component={EnhancedTabNavigator} />
-        <Stack.Screen 
-          name="UploadAndEdit" 
+        <Stack.Screen
+          name="UploadAndEdit"
           component={UploadAndEditScreen}
           options={{
             presentation: 'modal',
@@ -77,24 +67,24 @@ export function AppNavigator(): React.JSX.Element {
             title: 'Upload & Edit',
           }}
         />
-        <Stack.Screen 
-          name="SignIn" 
+        <Stack.Screen
+          name="SignIn"
           component={SignInScreen}
           options={{
             headerShown: true,
             title: 'Sign In',
           }}
         />
-        <Stack.Screen 
-          name="SignUp" 
+        <Stack.Screen
+          name="SignUp"
           component={SignUpScreen}
           options={{
             headerShown: true,
             title: 'Sign Up',
           }}
         />
-        <Stack.Screen 
-          name="PostComposer" 
+        <Stack.Screen
+          name="PostComposer"
           component={PostComposerScreen}
           options={{
             headerShown: true,

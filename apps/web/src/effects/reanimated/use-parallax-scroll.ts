@@ -20,7 +20,7 @@ export function useParallaxScroll(options: UseParallaxScrollOptions = {}) {
 
   const handleScroll = useCallback(() => {
     if (!enabled) return;
-    
+
     scrollY.value = window.scrollY;
     scrollX.value = window.scrollX;
   }, [enabled]);
@@ -53,7 +53,7 @@ export function useParallaxScroll(options: UseParallaxScrollOptions = {}) {
   };
 }
 
-export function useParallaxLayers(layerCount: number = 3) {
+export function useParallaxLayers(layerCount = 3) {
   const scrollY = useSharedValue(0);
 
   const handleScroll = useCallback(() => {

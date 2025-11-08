@@ -32,9 +32,14 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     environmentOptions: { jsdom: { url: 'http://localhost/' } },
-  setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/__tests__/**/*.{ts,tsx}', 'src/**/*.{test,spec}.{ts,tsx}'],
-    exclude: ['src/**/__tests__/**/index.ts', 'src/**/index.ts', '**/node_modules/**', '**/.expo/**'],
+    exclude: [
+      'src/**/__tests__/**/index.ts',
+      'src/**/index.ts',
+      '**/node_modules/**',
+      '**/.expo/**',
+    ],
     deps: {
       optimizer: {
         web: {
@@ -49,16 +54,15 @@ export default defineConfig({
         statements: 95,
         branches: 95,
         functions: 95,
-        lines: 95
+        lines: 95,
       },
       exclude: [
         '**/*.test.ts',
         '**/*.test.tsx',
         '**/node_modules/**',
         '**/.expo/**',
-        '**/__tests__/**'
-      ]
-    }
-  }
+        '**/__tests__/**',
+      ],
+    },
+  },
 })
-

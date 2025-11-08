@@ -1,102 +1,103 @@
-import { AdoptionFiltersSheet } from '@/components/adoption/AdoptionFiltersSheet'
-import { AdoptionListingCard } from '@/components/adoption/AdoptionListingCard'
-import { AdoptionListingDetailDialog } from '@/components/adoption/AdoptionListingDetailDialog'
-import { CreateAdoptionListingDialog } from '@/components/adoption/CreateAdoptionListingDialog'
-import { MyAdoptionApplications } from '@/components/adoption/MyAdoptionApplications'
-import { MyAdoptionListings } from '@/components/adoption/MyAdoptionListings'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service'
-import type { AdoptionListing, AdoptionListingFilters } from '@/lib/adoption-marketplace-types'
-import { haptics } from '@/lib/haptics'
-import { logger } from '@/lib/logger'
-import { Check, Funnel, Heart, MagnifyingGlass, Plus, X } from '@phosphor-icons/react'
-import { Presence, motion } from '@petspark/motion'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+import { AdoptionFiltersSheet } from '@/components/adoption/AdoptionFiltersSheet';
+import { AdoptionListingCard } from '@/components/adoption/AdoptionListingCard';
+import { AdoptionListingDetailDialog } from '@/components/adoption/AdoptionListingDetailDialog';
+import { CreateAdoptionListingDialog } from '@/components/adoption/CreateAdoptionListingDialog';
+import { MyAdoptionApplications } from '@/components/adoption/MyAdoptionApplications';
+import { MyAdoptionListings } from '@/components/adoption/MyAdoptionListings';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service';
+import type { AdoptionListing, AdoptionListingFilters } from '@/lib/adoption-marketplace-types';
+import { haptics } from '@/lib/haptics';
+import { logger } from '@/lib/logger';
+import { Check, Funnel, Heart, MagnifyingGlass, Plus, X } from '@phosphor-icons/react';
+import { Presence, motion } from '@petspark/motion';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-type ViewTab = 'browse' | 'my-listings' | 'my-applications'
+type ViewTab = 'browse' | 'my-listings' | 'my-applications';
 
 export default function AdoptionMarketplaceView() {
-  const [activeTab, setActiveTab] = useState<ViewTab>('browse')
-  const [listings, setListings] = useState<AdoptionListing[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filters, setFilters] = useState<AdoptionListingFilters>({})
-  const [showFilters, setShowFilters] = useState(false)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
-  const [selectedListing, setSelectedListing] = useState<AdoptionListing | null>(null)
-  const [showDetailDialog, setShowDetailDialog] = useState(false)
-  const [hasMore, setHasMore] = useState(false)
-  const [currentUser, setCurrentUser] = useState<{ id: string; name: string } | null>(null)
+  const [activeTab, setActiveTab] = useState<ViewTab>('browse');
+  const [listings, setListings] = useState<AdoptionListing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState<AdoptionListingFilters>({});
+  const [showFilters, setShowFilters] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedListing, setSelectedListing] = useState<AdoptionListing | null>(null);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
-    loadCurrentUser()
-    loadListings()
-  }, [filters])
+    loadCurrentUser();
+    loadListings();
+  }, [filters]);
 
   const loadCurrentUser = async () => {
     try {
-      const user = await spark.user()
-      setCurrentUser({ id: user.id, name: user.login })
+      const user = await spark.user();
+      setCurrentUser({ id: user.id, name: user.login });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load user', err, { action: 'loadUser' })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load user', err, { action: 'loadUser' });
     }
-  }
+  };
 
   const loadListings = async (_reset = true) => {
     try {
-      setLoading(true)
-      const response = await adoptionMarketplaceService.getActiveListings(filters)
-      setListings(response)
-      setHasMore(false)
+      setLoading(true);
+      const response = await adoptionMarketplaceService.getActiveListings(filters);
+      setListings(response);
+      setHasMore(false);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load listings', err, { action: 'loadListings' })
-      toast.error('Failed to load adoption listings')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load listings', err, { action: 'loadListings' });
+      toast.error('Failed to load adoption listings');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreateListing = () => {
-    haptics.impact('medium')
-    setShowCreateDialog(true)
-  }
+    haptics.impact('medium');
+    setShowCreateDialog(true);
+  };
 
   const handleListingCreated = () => {
-    setShowCreateDialog(false)
-    toast.success('Adoption listing created! It will be reviewed by our team.')
-    loadListings()
-  }
+    setShowCreateDialog(false);
+    toast.success('Adoption listing created! It will be reviewed by our team.');
+    loadListings();
+  };
 
   const handleSelectListing = async (listing: AdoptionListing) => {
-    haptics.impact('light')
-    setSelectedListing(listing)
-    setShowDetailDialog(true)
-  }
+    haptics.impact('light');
+    setSelectedListing(listing);
+    setShowDetailDialog(true);
+  };
 
   const handleToggleFilters = () => {
-    haptics.impact('light')
-    setShowFilters(!showFilters)
-  }
+    haptics.impact('light');
+    setShowFilters(!showFilters);
+  };
 
   const filteredListings = searchQuery
-    ? listings.filter(listing =>
-        listing.petName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        listing.petBreed.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        listing.location.city.toLowerCase().includes(searchQuery.toLowerCase())
+    ? listings.filter(
+        (listing) =>
+          listing.petName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          listing.petBreed.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          listing.location.city.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : listings
+    : listings;
 
-  const activeFilterCount = Object.keys(filters).filter(key => {
-    const value = filters[key as keyof AdoptionListingFilters]
-    if (Array.isArray(value)) return value.length > 0
-    return value !== undefined && value !== null
-  }).length
+  const activeFilterCount = Object.keys(filters).filter((key) => {
+    const value = filters[key as keyof AdoptionListingFilters];
+    if (Array.isArray(value)) return value.length > 0;
+    return value !== undefined && value !== null;
+  }).length;
 
   return (
     <div className="space-y-6">
@@ -112,10 +113,7 @@ export default function AdoptionMarketplaceView() {
           </p>
         </div>
 
-        <Button
-          onClick={handleCreateListing}
-          className="gap-2"
-        >
+        <Button onClick={handleCreateListing} className="gap-2">
           <Plus size={20} weight="bold" />
           List Pet
         </Button>
@@ -140,9 +138,9 @@ export default function AdoptionMarketplaceView() {
           {/* Search and Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
-              <MagnifyingGlass 
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" 
-                size={20} 
+              <MagnifyingGlass
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                size={20}
               />
               <Input
                 placeholder="Search by name, breed, or location..."
@@ -152,11 +150,7 @@ export default function AdoptionMarketplaceView() {
               />
             </div>
 
-            <Button
-              variant="outline"
-              onClick={handleToggleFilters}
-              className="gap-2 relative"
-            >
+            <Button variant="outline" onClick={handleToggleFilters} className="gap-2 relative">
               <Funnel size={20} />
               Filters
               {activeFilterCount > 0 && (
@@ -170,27 +164,29 @@ export default function AdoptionMarketplaceView() {
           {/* Active Filters Display */}
           {activeFilterCount > 0 && (
             <div className="flex flex-wrap gap-2">
-              {filters.breed && filters.breed.length > 0 && filters.breed.map(breed => (
-                <Badge key={breed} variant="secondary" className="gap-1">
-                  {breed}
-                  <X
-                    size={14}
-                    className="cursor-pointer hover:text-destructive"
-                    onClick={() => {
-                      setFilters(prev => {
-                        const newBreed = prev.breed?.filter((b: string) => b !== breed)
-                        const updated = { ...prev }
-                        if (!newBreed || newBreed.length === 0) {
-                          delete updated.breed
-                        } else {
-                          updated.breed = newBreed
-                        }
-                        return updated
-                      })
-                    }}
-                  />
-                </Badge>
-              ))}
+              {filters.breed &&
+                filters.breed.length > 0 &&
+                filters.breed.map((breed) => (
+                  <Badge key={breed} variant="secondary" className="gap-1">
+                    {breed}
+                    <X
+                      size={14}
+                      className="cursor-pointer hover:text-destructive"
+                      onClick={() => {
+                        setFilters((prev) => {
+                          const newBreed = prev.breed?.filter((b: string) => b !== breed);
+                          const updated = { ...prev };
+                          if (!newBreed || newBreed.length === 0) {
+                            delete updated.breed;
+                          } else {
+                            updated.breed = newBreed;
+                          }
+                          return updated;
+                        });
+                      }}
+                    />
+                  </Badge>
+                ))}
               {filters.vaccinated && (
                 <Badge variant="secondary" className="gap-1">
                   <Check size={14} /> Vaccinated
@@ -198,11 +194,11 @@ export default function AdoptionMarketplaceView() {
                     size={14}
                     className="cursor-pointer hover:text-destructive"
                     onClick={() => {
-                      setFilters(prev => {
-                        const updated = { ...prev }
-                        delete updated.vaccinated
-                        return updated
-                      })
+                      setFilters((prev) => {
+                        const updated = { ...prev };
+                        delete updated.vaccinated;
+                        return updated;
+                      });
                     }}
                   />
                 </Badge>
@@ -214,11 +210,11 @@ export default function AdoptionMarketplaceView() {
                     size={14}
                     className="cursor-pointer hover:text-destructive"
                     onClick={() => {
-                      setFilters(prev => {
-                        const updated = { ...prev }
-                        delete updated.spayedNeutered
-                        return updated
-                      })
+                      setFilters((prev) => {
+                        const updated = { ...prev };
+                        delete updated.spayedNeutered;
+                        return updated;
+                      });
                     }}
                   />
                 </Badge>
@@ -281,11 +277,7 @@ export default function AdoptionMarketplaceView() {
           {/* Load More */}
           {hasMore && (
             <div className="flex justify-center pt-4">
-              <Button
-                variant="outline"
-                onClick={() => loadListings(false)}
-                disabled={loading}
-              >
+              <Button variant="outline" onClick={() => loadListings(false)} disabled={loading}>
                 {loading ? 'Loading...' : 'Load More'}
               </Button>
             </div>
@@ -314,12 +306,12 @@ export default function AdoptionMarketplaceView() {
         listing={selectedListing}
         open={showDetailDialog}
         onOpenChange={(open) => {
-          setShowDetailDialog(open)
-          if (!open) setSelectedListing(null)
+          setShowDetailDialog(open);
+          if (!open) setSelectedListing(null);
         }}
         onApplicationSubmitted={() => {
-          loadListings()
-          toast.success('Application submitted successfully!')
+          loadListings();
+          toast.success('Application submitted successfully!');
         }}
       />
 
@@ -330,5 +322,5 @@ export default function AdoptionMarketplaceView() {
         onFiltersChange={setFilters}
       />
     </div>
-  )
+  );
 }

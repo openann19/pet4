@@ -1,24 +1,36 @@
-import { liveStreamingAPI } from '@/api/live-streaming-api'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import type { LiveStreamCategory } from '@/lib/live-streaming-types'
-import { createLogger } from '@/lib/logger'
-import { ChatCircle, Tag, VideoCamera, X } from '@phosphor-icons/react'
-import { useState } from 'react'
-import { toast } from 'sonner'
+import { liveStreamingAPI } from '@/api/live-streaming-api';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import type { LiveStreamCategory } from '@/lib/live-streaming-types';
+import { createLogger } from '@/lib/logger';
+import { ChatCircle, Tag, VideoCamera, X } from '@phosphor-icons/react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('GoLiveDialog')
+const logger = createLogger('GoLiveDialog');
 
 interface GoLiveDialogProps {
-  open: boolean
-  onClose: () => void
-  onGoLive: (streamId: string) => void
+  open: boolean;
+  onClose: () => void;
+  onGoLive: (streamId: string) => void;
 }
 
 const CATEGORIES: { value: LiveStreamCategory; label: string }[] = [
@@ -28,48 +40,48 @@ const CATEGORIES: { value: LiveStreamCategory; label: string }[] = [
   { value: 'entertainment', label: 'Entertainment' },
   { value: 'education', label: 'Education & Q&A' },
   { value: 'adoption', label: 'Adoption' },
-  { value: 'community', label: 'Community & Playdates' }
-]
+  { value: 'community', label: 'Community & Playdates' },
+];
 
 const DURATION_OPTIONS = [
   { value: 900, label: '15 minutes' },
   { value: 1800, label: '30 minutes' },
   { value: 3600, label: '1 hour' },
   { value: 7200, label: '2 hours' },
-  { value: 14400, label: '4 hours' }
-]
+  { value: 14400, label: '4 hours' },
+];
 
 export function GoLiveDialog({ open, onClose, onGoLive }: GoLiveDialogProps) {
-  const [isCreating, setIsCreating] = useState(false)
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [category, setCategory] = useState<LiveStreamCategory>('general')
-  const [allowChat, setAllowChat] = useState(true)
-  const [maxDuration, setMaxDuration] = useState(3600)
-  const [tags, setTags] = useState<string[]>([])
-  const [tagInput, setTagInput] = useState('')
+  const [isCreating, setIsCreating] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<LiveStreamCategory>('general');
+  const [allowChat, setAllowChat] = useState(true);
+  const [maxDuration, setMaxDuration] = useState(3600);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
 
   const addTag = () => {
     if (tagInput.trim() && tags.length < 5) {
-      setTags([...tags, tagInput.trim()])
-      setTagInput('')
+      setTags([...tags, tagInput.trim()]);
+      setTagInput('');
     }
-  }
+  };
 
   const removeTag = (index: number) => {
-    setTags(tags.filter((_, i) => i !== index))
-  }
+    setTags(tags.filter((_, i) => i !== index));
+  };
 
   const handleGoLive = async () => {
     if (!title.trim()) {
-      toast.error('Please enter a stream title')
-      return
+      toast.error('Please enter a stream title');
+      return;
     }
 
     try {
-      setIsCreating(true)
+      setIsCreating(true);
 
-      const user = await spark.user()
+      const user = await spark.user();
 
       const result = await liveStreamingAPI.createRoom({
         hostId: user.id,
@@ -79,20 +91,23 @@ export function GoLiveDialog({ open, onClose, onGoLive }: GoLiveDialogProps) {
         ...(description.trim() ? { description: description.trim() } : {}),
         category,
         allowChat,
-        maxDuration
-      })
+        maxDuration,
+      });
 
-      toast.success('Going live!')
-      onGoLive(result.stream.id)
-      onClose()
+      toast.success('Going live!');
+      onGoLive(result.stream.id);
+      onClose();
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : undefined
-      logger.error('Failed to create stream', error instanceof Error ? error : new Error(String(error)))
-      toast.error(errorMessage || 'Failed to start stream. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : undefined;
+      logger.error(
+        'Failed to create stream',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      toast.error(errorMessage || 'Failed to start stream. Please try again.');
     } finally {
-      setIsCreating(false)
+      setIsCreating(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -117,9 +132,7 @@ export function GoLiveDialog({ open, onClose, onGoLive }: GoLiveDialogProps) {
               placeholder="e.g., Training my Golden Retriever!"
               maxLength={100}
             />
-            <p className="text-xs text-muted-foreground">
-              {title.length}/100 characters
-            </p>
+            <p className="text-xs text-muted-foreground">{title.length}/100 characters</p>
           </div>
 
           <div className="space-y-2">
@@ -132,20 +145,18 @@ export function GoLiveDialog({ open, onClose, onGoLive }: GoLiveDialogProps) {
               rows={3}
               maxLength={500}
             />
-            <p className="text-xs text-muted-foreground">
-              {description.length}/500 characters
-            </p>
+            <p className="text-xs text-muted-foreground">{description.length}/500 characters</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
-                <Select value={category} onValueChange={(v) => setCategory(v as LiveStreamCategory)}>
+              <Select value={category} onValueChange={(v) => setCategory(v as LiveStreamCategory)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {CATEGORIES.map(cat => (
+                  {CATEGORIES.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       {cat.label}
                     </SelectItem>
@@ -156,12 +167,15 @@ export function GoLiveDialog({ open, onClose, onGoLive }: GoLiveDialogProps) {
 
             <div className="space-y-2">
               <Label htmlFor="maxDuration">Max Duration</Label>
-              <Select value={maxDuration.toString()} onValueChange={(v) => setMaxDuration(parseInt(v))}>
+              <Select
+                value={maxDuration.toString()}
+                onValueChange={(v) => setMaxDuration(parseInt(v))}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {DURATION_OPTIONS.map(option => (
+                  {DURATION_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value.toString()}>
                       {option.label}
                     </SelectItem>
@@ -197,9 +211,7 @@ export function GoLiveDialog({ open, onClose, onGoLive }: GoLiveDialogProps) {
                 ))}
               </div>
             )}
-            <p className="text-xs text-muted-foreground">
-              {tags.length}/5 tags
-            </p>
+            <p className="text-xs text-muted-foreground">{tags.length}/5 tags</p>
           </div>
 
           <div className="flex items-center space-x-2 p-3 bg-muted/30 rounded-lg">
@@ -239,5 +251,5 @@ export function GoLiveDialog({ open, onClose, onGoLive }: GoLiveDialogProps) {
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

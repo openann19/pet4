@@ -1,58 +1,64 @@
 /**
  * KYC API Service
- * 
+ *
  * Handles identity verification, age verification, consent management through backend API.
  */
 
-import { APIClient } from '@/lib/api-client'
-import { ENDPOINTS } from '@/lib/endpoints'
-import type { KYCSubmission, KYCStatus, ConsentRecord, AgeVerification, KYCAuditLog } from '@/lib/kyc-types'
-import { createLogger } from '@/lib/logger'
+import { APIClient } from '@/lib/api-client';
+import { ENDPOINTS } from '@/lib/endpoints';
+import type {
+  KYCSubmission,
+  KYCStatus,
+  ConsentRecord,
+  AgeVerification,
+  KYCAuditLog,
+} from '@/lib/kyc-types';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('KYCApi')
+const logger = createLogger('KYCApi');
 
 export interface StartKYCRequest {
-  userId: string
-  provider: 'onfido' | 'veriff' | 'jumio' | 'manual'
+  userId: string;
+  provider: 'onfido' | 'veriff' | 'jumio' | 'manual';
 }
 
 export interface StartKYCResponse {
-  sessionId: string
-  submissionId: string
-  providerToken?: string
-  url?: string
+  sessionId: string;
+  submissionId: string;
+  providerToken?: string;
+  url?: string;
 }
 
 export interface KYCWebhookRequest {
-  submissionId: string
-  status: 'verified' | 'rejected'
-  reference?: string
-  reason?: string
-  riskScore?: number
-  country?: string
-  documentType?: string
+  submissionId: string;
+  status: 'verified' | 'rejected';
+  reference?: string;
+  reason?: string;
+  riskScore?: number;
+  country?: string;
+  documentType?: string;
 }
 
 export interface RecordConsentRequest {
-  userId: string
-  type: 'terms' | 'privacy' | 'marketing'
-  version: string
-  accepted: boolean
-  ipAddress?: string
-  userAgent?: string
+  userId: string;
+  type: 'terms' | 'privacy' | 'marketing';
+  version: string;
+  accepted: boolean;
+  ipAddress?: string;
+  userAgent?: string;
 }
 
 export interface RecordAgeVerificationRequest {
-  userId: string
-  ageVerified: boolean
-  country?: string
+  userId: string;
+  ageVerified: boolean;
+  country?: string;
 }
 
 export interface ManualKYCReviewRequest {
-  submissionId: string
-  decision: 'verified' | 'rejected'
-  actorUserId: string
-  reason?: string
+  submissionId: string;
+  decision: 'verified' | 'rejected';
+  actorUserId: string;
+  reason?: string;
 }
 
 class KYCApiImpl {
@@ -64,12 +70,15 @@ class KYCApiImpl {
       const response = await APIClient.post<StartKYCResponse>(
         ENDPOINTS.KYC.START_VERIFICATION,
         request
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to start KYC', err, { userId: request.userId, provider: request.provider })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to start KYC', err, {
+        userId: request.userId,
+        provider: request.provider,
+      });
+      throw err;
     }
   }
 
@@ -80,12 +89,12 @@ class KYCApiImpl {
     try {
       const response = await APIClient.get<{ status: KYCStatus }>(
         `${ENDPOINTS.KYC.STATUS}?userId=${userId}`
-      )
-      return response.data.status
+      );
+      return response.data.status;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get KYC status', err, { userId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get KYC status', err, { userId });
+      throw err;
     }
   }
 
@@ -96,16 +105,16 @@ class KYCApiImpl {
     try {
       const response = await APIClient.get<KYCSubmission>(
         ENDPOINTS.KYC.GET_VERIFICATION(submissionId)
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get KYC submission', err, { submissionId })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get KYC submission', err, { submissionId });
       // Return null if not found (404)
       if (err instanceof Error && 'status' in err && (err as { status: number }).status === 404) {
-        return null
+        return null;
       }
-      throw err
+      throw err;
     }
   }
 
@@ -116,12 +125,12 @@ class KYCApiImpl {
     try {
       const response = await APIClient.get<KYCSubmission[]>(
         `${ENDPOINTS.KYC.STATUS}?userId=${userId}&submissions=true`
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get user KYC submissions', err, { userId })
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get user KYC submissions', err, { userId });
+      return [];
     }
   }
 
@@ -133,11 +142,11 @@ class KYCApiImpl {
       await APIClient.post(
         `${ENDPOINTS.KYC.GET_VERIFICATION(request.submissionId)}/webhook`,
         request
-      )
+      );
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to handle KYC webhook', err, { submissionId: request.submissionId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to handle KYC webhook', err, { submissionId: request.submissionId });
+      throw err;
     }
   }
 
@@ -149,11 +158,11 @@ class KYCApiImpl {
       await APIClient.post(
         `${ENDPOINTS.KYC.GET_VERIFICATION(request.submissionId)}/review`,
         request
-      )
+      );
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to manual review KYC', err, { submissionId: request.submissionId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to manual review KYC', err, { submissionId: request.submissionId });
+      throw err;
     }
   }
 
@@ -165,12 +174,12 @@ class KYCApiImpl {
       const response = await APIClient.post<AgeVerification>(
         `${ENDPOINTS.KYC.STATUS}/age-verification`,
         request
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to record age verification', err, { userId: request.userId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to record age verification', err, { userId: request.userId });
+      throw err;
     }
   }
 
@@ -182,12 +191,12 @@ class KYCApiImpl {
       const response = await APIClient.post<ConsentRecord>(
         `${ENDPOINTS.KYC.STATUS}/consent`,
         request
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to record consent', err, { userId: request.userId, type: request.type })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to record consent', err, { userId: request.userId, type: request.type });
+      throw err;
     }
   }
 
@@ -198,12 +207,12 @@ class KYCApiImpl {
     try {
       const response = await APIClient.get<ConsentRecord[]>(
         `${ENDPOINTS.KYC.STATUS}/consent?userId=${userId}`
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get user consents', err, { userId })
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get user consents', err, { userId });
+      return [];
     }
   }
 
@@ -212,18 +221,18 @@ class KYCApiImpl {
    */
   async getKYCAuditLogs(userId?: string, submissionId?: string): Promise<KYCAuditLog[]> {
     try {
-      const params = new URLSearchParams()
-      if (userId) params.append('userId', userId)
-      if (submissionId) params.append('submissionId', submissionId)
-      
+      const params = new URLSearchParams();
+      if (userId) params.append('userId', userId);
+      if (submissionId) params.append('submissionId', submissionId);
+
       const response = await APIClient.get<KYCAuditLog[]>(
         `${ENDPOINTS.KYC.STATUS}/audit?${params.toString()}`
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get KYC audit logs', err, { userId, submissionId })
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get KYC audit logs', err, { userId, submissionId });
+      return [];
     }
   }
 
@@ -234,15 +243,14 @@ class KYCApiImpl {
     try {
       const response = await APIClient.get<KYCSubmission[]>(
         `${ENDPOINTS.KYC.STATUS}/admin/submissions`
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get all KYC submissions', err)
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get all KYC submissions', err);
+      return [];
     }
   }
 }
 
-export const kycApi = new KYCApiImpl()
-
+export const kycApi = new KYCApiImpl();

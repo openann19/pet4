@@ -19,7 +19,10 @@ class SilentLogger implements Logger {
 }
 
 class ConsoleLogger implements Logger {
-  constructor(private readonly name: string, private readonly level: LogLevel = 'info') {}
+  constructor(
+    private readonly name: string,
+    private readonly level: LogLevel = 'info'
+  ) {}
 
   private shouldLog(level: LogLevel): boolean {
     const levels: LogLevel[] = ['debug', 'info', 'warn', 'error']
@@ -65,4 +68,3 @@ export function setDefaultLogger(logger: Logger): void {
 export function getDefaultLogger(): Logger {
   return defaultLogger
 }
-

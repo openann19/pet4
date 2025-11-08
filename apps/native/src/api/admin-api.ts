@@ -1,10 +1,13 @@
 /**
  * Mobile Admin API Client
- * 
+ *
  * Admin API client for mobile app, matching web API structure.
  */
 
-import type { AdminUser, AdminAction } from '@petspark/shared'
+import type { AdminUser, AdminAction } from '@petspark/shared';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('AdminAPI');
 
 export interface SystemStats {
   totalUsers: number;
@@ -40,7 +43,8 @@ class MobileAdminApiImpl {
       if (!response.ok) throw new Error('Failed to fetch stats');
       return await response.json();
     } catch (error) {
-      console.error('Failed to get system stats:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get system stats', err, { context: 'getSystemStats' });
       return {
         totalUsers: 0,
         activeUsers: 0,
@@ -73,7 +77,8 @@ class MobileAdminApiImpl {
       if (!response.ok) throw new Error('Failed to reset password');
       return await response.json();
     } catch (error) {
-      console.error('Failed to reset password:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to reset password', err, { context: 'resetUserPassword', userId });
       throw error;
     }
   }
@@ -87,7 +92,8 @@ class MobileAdminApiImpl {
       if (!response.ok) throw new Error('Failed to fetch user');
       return await response.json();
     } catch (error) {
-      console.error('Failed to get user details:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get user details', err, { context: 'getUserDetails', userId });
       throw error;
     }
   }
@@ -112,7 +118,8 @@ class MobileAdminApiImpl {
       });
       if (!response.ok) throw new Error('Failed to update user');
     } catch (error) {
-      console.error('Failed to update user:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to update user', err, { context: 'updateUser', userId });
       throw error;
     }
   }
@@ -137,7 +144,8 @@ class MobileAdminApiImpl {
       if (!response.ok) throw new Error('Failed to broadcast config');
       return await response.json();
     } catch (error) {
-      console.error('Failed to broadcast config:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to broadcast config', err, { context: 'broadcastConfig', configType });
       throw error;
     }
   }
@@ -151,7 +159,8 @@ class MobileAdminApiImpl {
       if (!response.ok) throw new Error('Failed to fetch audit logs');
       return await response.json();
     } catch (error) {
-      console.error('Failed to get audit logs:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get audit logs', err, { context: 'getAuditLogs', limit });
       return [];
     }
   }
@@ -170,18 +179,15 @@ class MobileAdminApiImpl {
         }),
       });
     } catch (error) {
-      console.error('Failed to create audit log:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to create audit log', err, { context: 'createAuditLog', entry });
     }
   }
 
   /**
    * Moderate photo/content
    */
-  async moderatePhoto(
-    taskId: string,
-    action: string,
-    reason?: string
-  ): Promise<void> {
+  async moderatePhoto(taskId: string, action: string, reason?: string): Promise<void> {
     try {
       const response = await fetch(`${this.baseUrl}/moderation/photos/${taskId}`, {
         method: 'POST',
@@ -190,7 +196,8 @@ class MobileAdminApiImpl {
       });
       if (!response.ok) throw new Error('Failed to moderate photo');
     } catch (error) {
-      console.error('Failed to moderate photo:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to moderate photo', err, { context: 'moderatePhoto', taskId, action });
       throw error;
     }
   }
@@ -198,19 +205,22 @@ class MobileAdminApiImpl {
   /**
    * Get KYC queue
    */
-  async getKYCQueue(): Promise<Array<{
-    id: string;
-    userId: string;
-    status: string;
-    createdAt: string;
-  }>> {
+  async getKYCQueue(): Promise<
+    Array<{
+      id: string;
+      userId: string;
+      status: string;
+      createdAt: string;
+    }>
+  > {
     try {
       const response = await fetch(`${this.baseUrl}/kyc/queue`);
       if (!response.ok) throw new Error('Failed to fetch KYC queue');
       const data = await response.json();
       return data.pending || [];
     } catch (error) {
-      console.error('Failed to get KYC queue:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get KYC queue', err, { context: 'getKYCQueue' });
       return [];
     }
   }
@@ -218,11 +228,7 @@ class MobileAdminApiImpl {
   /**
    * Review KYC session
    */
-  async reviewKYC(
-    sessionId: string,
-    action: 'approve' | 'reject',
-    reason?: string
-  ): Promise<void> {
+  async reviewKYC(sessionId: string, action: 'approve' | 'reject', reason?: string): Promise<void> {
     try {
       const response = await fetch(`${this.baseUrl}/kyc/sessions/${sessionId}/review`, {
         method: 'POST',
@@ -231,11 +237,11 @@ class MobileAdminApiImpl {
       });
       if (!response.ok) throw new Error('Failed to review KYC');
     } catch (error) {
-      console.error('Failed to review KYC:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to review KYC', err, { context: 'reviewKYC', sessionId, action });
       throw error;
     }
   }
 }
 
 export const mobileAdminApi = new MobileAdminApiImpl();
-

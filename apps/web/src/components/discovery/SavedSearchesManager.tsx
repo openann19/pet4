@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useCallback, useMemo, useState } from 'react'
-import { useStorage } from '@/hooks/useStorage'
+import { useCallback, useMemo, useState } from 'react';
+import { useStorage } from '@/hooks/use-storage';
 import {
   BookmarkSimple,
   Plus,
@@ -10,46 +10,46 @@ import {
   Pencil,
   Trash,
   Check,
-  FloppyDisk
-} from '@phosphor-icons/react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import type { SavedSearch } from '@/lib/saved-search-types'
-import type { DiscoveryPreferences } from '@/components/DiscoveryFilters'
-import { toast } from 'sonner'
-import { triggerHaptic } from '@/lib/haptics'
-import { createLogger } from '@/lib/logger'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useModalAnimation } from '@/effects/reanimated/use-modal-animation'
-import { useExpandCollapse } from '@/effects/reanimated/use-expand-collapse'
-import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
+  FloppyDisk,
+} from '@phosphor-icons/react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import type { SavedSearch } from '@/lib/saved-search-types';
+import type { DiscoveryPreferences } from '@/components/DiscoveryFilters';
+import { toast } from 'sonner';
+import { triggerHaptic } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
+import { useExpandCollapse } from '@/effects/reanimated/use-expand-collapse';
+import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 
-const logger = createLogger('SavedSearchesManager')
+const logger = createLogger('SavedSearchesManager');
 
 interface SavedSearchesManagerProps {
-  currentPreferences: DiscoveryPreferences
-  onApplySearch: (preferences: DiscoveryPreferences) => void
-  onClose: () => void
+  currentPreferences: DiscoveryPreferences;
+  onApplySearch: (preferences: DiscoveryPreferences) => void;
+  onClose: () => void;
 }
 
 interface SearchItemProps {
-  search: SavedSearch
-  index: number
-  totalItems: number
-  editingId: string | null
-  searchName: string
-  getPreferencesSummary: (prefs: DiscoveryPreferences) => string
-  onEdit: (id: string, name: string) => void
-  onUpdate: (id: string) => void
-  onCancelEdit: () => void
-  onTogglePin: (id: string) => void
-  onDelete: (id: string, name: string) => void
-  onApply: (search: SavedSearch) => void
+  search: SavedSearch;
+  index: number;
+  totalItems: number;
+  editingId: string | null;
+  searchName: string;
+  getPreferencesSummary: (prefs: DiscoveryPreferences) => string;
+  onEdit: (id: string, name: string) => void;
+  onUpdate: (id: string) => void;
+  onCancelEdit: () => void;
+  onTogglePin: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
+  onApply: (search: SavedSearch) => void;
 }
 
 function SearchItem({
@@ -64,17 +64,17 @@ function SearchItem({
   onCancelEdit,
   onTogglePin,
   onDelete,
-  onApply
+  onApply,
 }: SearchItemProps): JSX.Element {
-  const itemAnimation = useStaggeredItem({ index, totalItems })
-  const itemBounce = useBounceOnTap({ intensity: 0.98, duration: 150 })
-  const itemHover = useHoverLift({ intensity: 1.01 })
-  const applyBounce = useBounceOnTap({ intensity: 0.95, duration: 150 })
-  const pinBounce = useBounceOnTap({ intensity: 0.9, duration: 120 })
-  const editBounce = useBounceOnTap({ intensity: 0.9, duration: 120 })
-  const deleteBounce = useBounceOnTap({ intensity: 0.9, duration: 120 })
+  const itemAnimation = useStaggeredItem({ index, totalItems });
+  const itemBounce = useBounceOnTap({ intensity: 0.98, duration: 150 });
+  const itemHover = useHoverLift({ intensity: 1.01 });
+  const applyBounce = useBounceOnTap({ intensity: 0.95, duration: 150 });
+  const pinBounce = useBounceOnTap({ intensity: 0.9, duration: 120 });
+  const editBounce = useBounceOnTap({ intensity: 0.9, duration: 120 });
+  const deleteBounce = useBounceOnTap({ intensity: 0.9, duration: 120 });
 
-  const isEditing = editingId === search.id
+  const isEditing = editingId === search.id;
 
   return (
     <AnimatedView
@@ -87,7 +87,7 @@ function SearchItem({
         <div className="space-y-3">
           <Input
             value={searchName}
-            onChange={e => onEdit(search.id, e.target.value)}
+            onChange={(e) => onEdit(search.id, e.target.value)}
             placeholder="Search name"
             autoFocus
           />
@@ -96,8 +96,8 @@ function SearchItem({
               <Button
                 size="sm"
                 onClick={() => {
-                  itemBounce.handlePress()
-                  onUpdate(search.id)
+                  itemBounce.handlePress();
+                  onUpdate(search.id);
                 }}
                 className="flex-1"
               >
@@ -105,12 +105,7 @@ function SearchItem({
                 Save
               </Button>
             </AnimatedView>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onCancelEdit}
-              className="flex-1"
-            >
+            <Button size="sm" variant="outline" onClick={onCancelEdit} className="flex-1">
               Cancel
             </Button>
           </div>
@@ -123,9 +118,7 @@ function SearchItem({
               <div>
                 <div className="flex items-center gap-2">
                   <h4 className="font-semibold">{search.name}</h4>
-                  {search.isPinned && (
-                    <Star size={14} className="text-yellow-500" weight="fill" />
-                  )}
+                  {search.isPinned && <Star size={14} className="text-yellow-500" weight="fill" />}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {getPreferencesSummary(search.preferences)}
@@ -138,8 +131,8 @@ function SearchItem({
                   size="icon"
                   variant="ghost"
                   onClick={() => {
-                    pinBounce.handlePress()
-                    onTogglePin(search.id)
+                    pinBounce.handlePress();
+                    onTogglePin(search.id);
                   }}
                   className="h-8 w-8"
                 >
@@ -155,8 +148,8 @@ function SearchItem({
                   size="icon"
                   variant="ghost"
                   onClick={() => {
-                    editBounce.handlePress()
-                    onEdit(search.id, search.name)
+                    editBounce.handlePress();
+                    onEdit(search.id, search.name);
                   }}
                   className="h-8 w-8"
                 >
@@ -168,8 +161,8 @@ function SearchItem({
                   size="icon"
                   variant="ghost"
                   onClick={() => {
-                    deleteBounce.handlePress()
-                    onDelete(search.id, search.name)
+                    deleteBounce.handlePress();
+                    onDelete(search.id, search.name);
                   }}
                   className="h-8 w-8 text-destructive hover:text-destructive"
                 >
@@ -181,16 +174,16 @@ function SearchItem({
 
           <div className="flex items-center justify-between">
             <div className="text-xs text-muted-foreground">
-              {search.useCount > 0 && `Used ${search.useCount} time${search.useCount !== 1 ? 's' : ''}`}
-              {search.lastUsed &&
-                ` • Last: ${new Date(search.lastUsed).toLocaleDateString()}`}
+              {search.useCount > 0 &&
+                `Used ${search.useCount} time${search.useCount !== 1 ? 's' : ''}`}
+              {search.lastUsed && ` • Last: ${new Date(search.lastUsed).toLocaleDateString()}`}
             </div>
             <AnimatedView style={applyBounce.animatedStyle}>
               <Button
                 size="sm"
                 onClick={() => {
-                  applyBounce.handlePress()
-                  onApply(search)
+                  applyBounce.handlePress();
+                  onApply(search);
                 }}
               >
                 Apply
@@ -200,29 +193,29 @@ function SearchItem({
         </>
       )}
     </AnimatedView>
-  )
+  );
 }
 
 export default function SavedSearchesManager({
   currentPreferences,
   onApplySearch,
-  onClose
+  onClose,
 }: SavedSearchesManagerProps): JSX.Element {
-  const [savedSearches, setSavedSearches] = useStorage<SavedSearch[]>('saved-searches', [])
-  const [showSaveForm, setShowSaveForm] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [searchName, setSearchName] = useState('')
+  const [savedSearches, setSavedSearches] = useStorage<SavedSearch[]>('saved-searches', []);
+  const [showSaveForm, setShowSaveForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [searchName, setSearchName] = useState('');
 
-  const modalAnimation = useModalAnimation({ isVisible: true, duration: 300 })
-  const saveFormExpand = useExpandCollapse({ isExpanded: showSaveForm, duration: 300 })
-  const saveButtonBounce = useBounceOnTap({ intensity: 0.95, duration: 150 })
-  const cardHover = useHoverLift({ intensity: 1.02 })
+  const modalAnimation = useModalAnimation({ isVisible: true, duration: 300 });
+  const saveFormExpand = useExpandCollapse({ isExpanded: showSaveForm, duration: 300 });
+  const saveButtonBounce = useBounceOnTap({ intensity: 0.95, duration: 150 });
+  const cardHover = useHoverLift({ intensity: 1.02 });
 
   const handleSaveCurrentSearch = useCallback((): void => {
     try {
       if (!searchName.trim()) {
-        toast.error('Please enter a name for this search')
-        return
+        toast.error('Please enter a name for this search');
+        return;
       }
 
       const newSearch: SavedSearch = {
@@ -233,128 +226,143 @@ export default function SavedSearchesManager({
         isPinned: false,
         useCount: 0,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+      };
+
+      setSavedSearches((current) => [...(current || []), newSearch]);
+      triggerHaptic('success');
+      toast.success('Search saved!', { description: `"${searchName}" has been saved` });
+      logger.info('Search saved', { searchId: newSearch.id, searchName: newSearch.name });
+      setSearchName('');
+      setShowSaveForm(false);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save search', err, { searchName });
+      toast.error('Failed to save search');
+      triggerHaptic('error');
+    }
+  }, [searchName, currentPreferences, setSavedSearches]);
+
+  const handleUpdateSearch = useCallback(
+    (id: string): void => {
+      try {
+        if (!searchName.trim()) {
+          toast.error('Please enter a name');
+          return;
+        }
+
+        setSavedSearches((current) =>
+          (current || []).map((s) =>
+            s.id === id
+              ? {
+                  ...s,
+                  name: searchName.trim(),
+                  preferences: currentPreferences,
+                  updatedAt: new Date().toISOString(),
+                }
+              : s
+          )
+        );
+        triggerHaptic('light');
+        toast.success('Search updated');
+        logger.info('Search updated', { searchId: id, searchName: searchName.trim() });
+        setEditingId(null);
+        setSearchName('');
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to update search', err, { searchId: id, searchName });
+        toast.error('Failed to update search');
+        triggerHaptic('error');
       }
+    },
+    [searchName, currentPreferences, setSavedSearches]
+  );
 
-      setSavedSearches(current => [...(current || []), newSearch])
-      triggerHaptic('success')
-      toast.success('Search saved!', { description: `"${searchName}" has been saved` })
-      logger.info('Search saved', { searchId: newSearch.id, searchName: newSearch.name })
-      setSearchName('')
-      setShowSaveForm(false)
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to save search', err, { searchName })
-      toast.error('Failed to save search')
-      triggerHaptic('error')
-    }
-  }, [searchName, currentPreferences, setSavedSearches])
-
-  const handleUpdateSearch = useCallback((id: string): void => {
-    try {
-      if (!searchName.trim()) {
-        toast.error('Please enter a name')
-        return
+  const handleApplySearch = useCallback(
+    (search: SavedSearch): void => {
+      try {
+        setSavedSearches((current) =>
+          (current || []).map((s) =>
+            s.id === search.id
+              ? { ...s, useCount: s.useCount + 1, lastUsed: new Date().toISOString() }
+              : s
+          )
+        );
+        onApplySearch(search.preferences);
+        triggerHaptic('selection');
+        toast.success('Search applied', { description: `Filters updated to "${search.name}"` });
+        logger.info('Search applied', { searchId: search.id, searchName: search.name });
+        onClose();
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to apply search', err, {
+          searchId: search.id,
+          searchName: search.name,
+        });
+        toast.error('Failed to apply search');
+        triggerHaptic('error');
       }
+    },
+    [setSavedSearches, onApplySearch, onClose]
+  );
 
-      setSavedSearches(current =>
-        (current || []).map(s =>
-          s.id === id
-            ? {
-                ...s,
-                name: searchName.trim(),
-                preferences: currentPreferences,
-                updatedAt: new Date().toISOString()
-              }
-            : s
-        )
-      )
-      triggerHaptic('light')
-      toast.success('Search updated')
-      logger.info('Search updated', { searchId: id, searchName: searchName.trim() })
-      setEditingId(null)
-      setSearchName('')
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to update search', err, { searchId: id, searchName })
-      toast.error('Failed to update search')
-      triggerHaptic('error')
-    }
-  }, [searchName, currentPreferences, setSavedSearches])
+  const handleTogglePin = useCallback(
+    (id: string): void => {
+      try {
+        setSavedSearches((current) =>
+          (current || []).map((s) => (s.id === id ? { ...s, isPinned: !s.isPinned } : s))
+        );
+        triggerHaptic('light');
+        logger.info('Search pin toggled', { searchId: id });
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to toggle pin', err, { searchId: id });
+        triggerHaptic('error');
+      }
+    },
+    [setSavedSearches]
+  );
 
-  const handleApplySearch = useCallback((search: SavedSearch): void => {
-    try {
-      setSavedSearches(current =>
-        (current || []).map(s =>
-          s.id === search.id
-            ? { ...s, useCount: s.useCount + 1, lastUsed: new Date().toISOString() }
-            : s
-        )
-      )
-      onApplySearch(search.preferences)
-      triggerHaptic('selection')
-      toast.success('Search applied', { description: `Filters updated to "${search.name}"` })
-      logger.info('Search applied', { searchId: search.id, searchName: search.name })
-      onClose()
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to apply search', err, { searchId: search.id, searchName: search.name })
-      toast.error('Failed to apply search')
-      triggerHaptic('error')
-    }
-  }, [setSavedSearches, onApplySearch, onClose])
-
-  const handleTogglePin = useCallback((id: string): void => {
-    try {
-      setSavedSearches(current =>
-        (current || []).map(s => (s.id === id ? { ...s, isPinned: !s.isPinned } : s))
-      )
-      triggerHaptic('light')
-      logger.info('Search pin toggled', { searchId: id })
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to toggle pin', err, { searchId: id })
-      triggerHaptic('error')
-    }
-  }, [setSavedSearches])
-
-  const handleDeleteSearch = useCallback((id: string, name: string): void => {
-    try {
-      setSavedSearches(current => (current || []).filter(s => s.id !== id))
-      triggerHaptic('light')
-      toast.info('Search deleted', { description: `"${name}" has been removed` })
-      logger.info('Search deleted', { searchId: id, searchName: name })
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to delete search', err, { searchId: id, searchName: name })
-      toast.error('Failed to delete search')
-      triggerHaptic('error')
-    }
-  }, [setSavedSearches])
+  const handleDeleteSearch = useCallback(
+    (id: string, name: string): void => {
+      try {
+        setSavedSearches((current) => (current || []).filter((s) => s.id !== id));
+        triggerHaptic('light');
+        toast.info('Search deleted', { description: `"${name}" has been removed` });
+        logger.info('Search deleted', { searchId: id, searchName: name });
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to delete search', err, { searchId: id, searchName: name });
+        toast.error('Failed to delete search');
+        triggerHaptic('error');
+      }
+    },
+    [setSavedSearches]
+  );
 
   const sortedSearches = useMemo(() => {
     return [...(savedSearches || [])].sort((a, b) => {
-      if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
-      return b.useCount - a.useCount
-    })
-  }, [savedSearches])
+      if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+      return b.useCount - a.useCount;
+    });
+  }, [savedSearches]);
 
   const getPreferencesSummary = useCallback((prefs: DiscoveryPreferences): string => {
-    const parts: string[] = []
+    const parts: string[] = [];
     if (prefs.minAge !== 0 || prefs.maxAge !== 15) {
-      parts.push(`${prefs.minAge}-${prefs.maxAge}y`)
+      parts.push(`${prefs.minAge}-${prefs.maxAge}y`);
     }
     if (prefs.sizes.length < 4) {
-      parts.push(`${prefs.sizes.length} sizes`)
+      parts.push(`${prefs.sizes.length} sizes`);
     }
     if (prefs.maxDistance !== 50) {
-      parts.push(`${prefs.maxDistance}km`)
+      parts.push(`${prefs.maxDistance}km`);
     }
     if (prefs.personalities.length > 0) {
-      parts.push(`${prefs.personalities.length} traits`)
+      parts.push(`${prefs.personalities.length} traits`);
     }
-    return parts.length > 0 ? parts.join(' • ') : 'All filters'
-  }, [])
+    return parts.length > 0 ? parts.join(' • ') : 'All filters';
+  }, []);
 
   return (
     <AnimatedView
@@ -389,10 +397,7 @@ export default function SavedSearchesManager({
                 onMouseEnter={cardHover.handleEnter}
                 onMouseLeave={cardHover.handleLeave}
               >
-                <Button
-                  onClick={() => setShowSaveForm(!showSaveForm)}
-                  size="sm"
-                >
+                <Button onClick={() => setShowSaveForm(!showSaveForm)} size="sm">
                   <Plus size={16} className="mr-2" />
                   Save Current
                 </Button>
@@ -401,10 +406,7 @@ export default function SavedSearchesManager({
           </CardHeader>
           <CardContent>
             {showSaveForm && (
-              <AnimatedView
-                style={saveFormExpand.heightStyle}
-                className="mb-4 overflow-hidden"
-              >
+              <AnimatedView style={saveFormExpand.heightStyle} className="mb-4 overflow-hidden">
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <Label htmlFor="search-name" className="sr-only">
@@ -414,11 +416,11 @@ export default function SavedSearchesManager({
                       id="search-name"
                       placeholder="e.g., Active dogs under 5"
                       value={searchName}
-                      onChange={e => setSearchName(e.target.value)}
-                      onKeyDown={e => {
+                      onChange={(e) => setSearchName(e.target.value)}
+                      onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          saveButtonBounce.handlePress()
-                          handleSaveCurrentSearch()
+                          saveButtonBounce.handlePress();
+                          handleSaveCurrentSearch();
                         }
                       }}
                     />
@@ -470,13 +472,13 @@ export default function SavedSearchesManager({
                       searchName={searchName}
                       getPreferencesSummary={getPreferencesSummary}
                       onEdit={(id, name) => {
-                        setEditingId(id)
-                        setSearchName(name)
+                        setEditingId(id);
+                        setSearchName(name);
                       }}
                       onUpdate={handleUpdateSearch}
                       onCancelEdit={() => {
-                        setEditingId(null)
-                        setSearchName('')
+                        setEditingId(null);
+                        setSearchName('');
                       }}
                       onTogglePin={handleTogglePin}
                       onDelete={handleDeleteSearch}
@@ -490,5 +492,5 @@ export default function SavedSearchesManager({
         </Card>
       </div>
     </AnimatedView>
-  )
+  );
 }

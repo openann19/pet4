@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import type { AdoptionListing } from '../types';
 import { useStorage } from '../hooks/useStorage';
 
@@ -19,25 +12,27 @@ export default function AdoptionScreen(): React.JSX.Element {
       <View style={styles.cardContent}>
         <View style={styles.header}>
           <Text style={styles.name}>{item.petName}</Text>
-          <View style={[
-            styles.statusBadge,
-            item.status === 'available' && styles.availableBadge,
-            item.status === 'pending' && styles.pendingBadge,
-            item.status === 'adopted' && styles.adoptedBadge,
-          ]}>
+          <View
+            style={[
+              styles.statusBadge,
+              item.status === 'available' && styles.availableBadge,
+              item.status === 'pending' && styles.pendingBadge,
+              item.status === 'adopted' && styles.adoptedBadge,
+            ]}
+          >
             <Text style={styles.statusText}>{item.status}</Text>
           </View>
         </View>
-        <Text style={styles.breed}>{item.breed} • {item.age} years</Text>
+        <Text style={styles.breed}>
+          {item.breed} • {item.age} years
+        </Text>
         <Text style={styles.location}>📍 {item.location}</Text>
         <Text style={styles.description} numberOfLines={2}>
           {item.description}
         </Text>
         <View style={styles.footer}>
           <Text style={styles.organization}>{item.organizationName}</Text>
-          <Text style={styles.fee}>
-            {item.fee === 0 ? 'Free' : `$${item.fee}`}
-          </Text>
+          <Text style={styles.fee}>{item.fee === 0 ? 'Free' : `$${item.fee}`}</Text>
         </View>
       </View>
     </TouchableOpacity>

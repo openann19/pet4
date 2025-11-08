@@ -95,7 +95,7 @@ export const CreateHighlightDialog: React.FC<CreateHighlightDialogProps> = ({
         }}
       >
         <Image source={{ uri: item.imageUri }} style={styles.storyImage} />
-        
+
         {/* Selection Indicator */}
         <View style={styles.selectionOverlay}>
           {isSelected && (
@@ -141,16 +141,14 @@ export const CreateHighlightDialog: React.FC<CreateHighlightDialogProps> = ({
             onPress={handleCreate}
             style={[
               styles.createButton,
-              (!title.trim() || selectedStories.size === 0) &&
-                styles.createButtonDisabled,
+              (!title.trim() || selectedStories.size === 0) && styles.createButtonDisabled,
             ]}
             disabled={!title.trim() || selectedStories.size === 0}
           >
             <Text
               style={[
                 styles.createText,
-                (!title.trim() || selectedStories.size === 0) &&
-                  styles.createTextDisabled,
+                (!title.trim() || selectedStories.size === 0) && styles.createTextDisabled,
               ]}
             >
               Create
@@ -170,9 +168,7 @@ export const CreateHighlightDialog: React.FC<CreateHighlightDialogProps> = ({
             maxLength={30}
             autoFocus
           />
-          <Text style={styles.charCount}>
-            {title.length}/30
-          </Text>
+          <Text style={styles.charCount}>{title.length}/30</Text>
         </View>
 
         {/* Instructions */}
@@ -182,9 +178,7 @@ export const CreateHighlightDialog: React.FC<CreateHighlightDialogProps> = ({
             Tap to select stories • Long press to set as cover
           </Text>
           <View style={styles.selectedCount}>
-            <Text style={styles.selectedCountText}>
-              {selectedStories.size} selected
-            </Text>
+            <Text style={styles.selectedCountText}>{selectedStories.size} selected</Text>
           </View>
         </View>
 

@@ -42,15 +42,15 @@ MAPS SYSTEM ARCHITECTURE
 
 ```typescript
 interface MapConfig {
-  MAP_STYLE_URL: string;          // Map tile style endpoint
-  TILES_SOURCE: string;           // Map tiles provider URL
-  GEOCODER_ENDPOINT: string;      // Geocoding API endpoint
-  PLACES_ENDPOINT: string;        // Places API endpoint
-  ROUTING_ENDPOINT: string;       // Routing API endpoint
-  PRIVACY_GRID_METERS: number;    // Coarse location grid size (500-1000m)
-  DEFAULT_RADIUS_KM: number;      // Default search radius (10km)
-  UNITS: 'metric' | 'imperial';   // Distance units
-  COUNTRY_BIAS: string;           // Country code for search bias
+  MAP_STYLE_URL: string; // Map tile style endpoint
+  TILES_SOURCE: string; // Map tiles provider URL
+  GEOCODER_ENDPOINT: string; // Geocoding API endpoint
+  PLACES_ENDPOINT: string; // Places API endpoint
+  ROUTING_ENDPOINT: string; // Routing API endpoint
+  PRIVACY_GRID_METERS: number; // Coarse location grid size (500-1000m)
+  DEFAULT_RADIUS_KM: number; // Default search radius (10km)
+  UNITS: 'metric' | 'imperial'; // Distance units
+  COUNTRY_BIAS: string; // Country code for search bias
 }
 ```
 
@@ -120,7 +120,7 @@ async function getLocation(precisionLevel: 'coarse' | 'precise'): Promise<Locati
   if (cached && isCacheValid(cached)) {
     return cached;
   }
-  
+
   // 2. Try network-based location (fast, coarse)
   try {
     const networkLoc = await navigator.geolocation.getCurrentPosition({
@@ -134,7 +134,7 @@ async function getLocation(precisionLevel: 'coarse' | 'precise'): Promise<Locati
   } catch (error) {
     // Fall through to GPS
   }
-  
+
   // 3. Use GPS if precise location requested and consented
   if (precisionLevel === 'precise' && hasConsent()) {
     const gpsLoc = await navigator.geolocation.getCurrentPosition({
@@ -143,7 +143,7 @@ async function getLocation(precisionLevel: 'coarse' | 'precise'): Promise<Locati
     });
     return gpsLoc;
   }
-  
+
   // 4. Fallback to manual selection
   return promptManualLocation();
 }
@@ -152,6 +152,7 @@ async function getLocation(precisionLevel: 'coarse' | 'precise'): Promise<Locati
 ### Accuracy Indicators
 
 Display subtle chip showing current accuracy:
+
 - "~200m" - High accuracy
 - "~1km" - Standard accuracy
 - "~5km" - Low accuracy / City-level
@@ -161,18 +162,21 @@ Display subtle chip showing current accuracy:
 ### A. Discover Near Me
 
 **Features:**
+
 - Clustered markers at low zoom levels
 - List view synced to viewport
 - Real-time filter updates
 - Distance sorting
 
 **Filters:**
+
 - Distance slider (1-50km)
 - Pet size (small/medium/large/extra-large)
 - Age range (1-15 years)
 - Intent (playdate/adoption/companionship)
 
 **Sheet Actions:**
+
 - Save to Favorites
 - Navigate (opens native maps)
 - Start Chat
@@ -181,9 +185,10 @@ Display subtle chip showing current accuracy:
 ### B. Pet-Friendly Places
 
 **Categories:**
+
 - 🌳 Parks (dog parks, trails)
 - 🏥 Veterinarians
-- ✂️ Groomers  
+- ✂️ Groomers
 - ☕ Pet Cafes
 - 🛒 Pet Stores
 - 🏨 Pet Hotels
@@ -191,6 +196,7 @@ Display subtle chip showing current accuracy:
 - 🎯 Training Centers
 
 **Features:**
+
 - Verified badge for admin-approved places
 - Community ratings (1-5 stars)
 - Open/closed status
@@ -199,6 +205,7 @@ Display subtle chip showing current accuracy:
 - "Popular now" based on check-ins
 
 **Place Sheet:**
+
 ```typescript
 interface PlaceSheet {
   name: string;
@@ -219,6 +226,7 @@ interface PlaceSheet {
 ### C. Playdate Planner
 
 **Flow:**
+
 1. Select 2+ participants from matches
 2. Calculate fair midpoint
 3. Suggest 2-3 nearby venues:
@@ -229,6 +237,7 @@ interface PlaceSheet {
 5. Share meet link
 
 **Midpoint Calculation:**
+
 ```typescript
 function calculateMidpoint(locations: Location[]): Location {
   const avgLat = locations.reduce((sum, loc) => sum + loc.lat, 0) / locations.length;
@@ -250,6 +259,7 @@ function suggestVenues(midpoint: Location): Promise<Place[]> {
 ```
 
 **Share Link Format:**
+
 ```
 pawfectmatch://playdate/{playdateId}
 ?participants={userId1},{userId2}
@@ -260,6 +270,7 @@ pawfectmatch://playdate/{playdateId}
 ### D. Lost Pet Mode
 
 **Alert Creation:**
+
 ```typescript
 interface LostPetAlert {
   petId: string;
@@ -276,6 +287,7 @@ interface LostPetAlert {
 ```
 
 **Features:**
+
 - Radius slider for alert zone (1-50km)
 - Poster sheet generator with photo
 - Notify nearby users (opt-in audience only)
@@ -283,6 +295,7 @@ interface LostPetAlert {
 - Separate map layer for alerts vs. regular POIs
 
 **Notifications:**
+
 - Alert creator: "New sighting reported near {location}"
 - Nearby users: "Lost pet alert in your area" (once per alert)
 
@@ -301,6 +314,7 @@ interface LostPetAlert {
    - Clear indicator: "Sharing precise location"
 
 **UI Elements:**
+
 - Avatar markers for matches
 - Tap to see profile card
 - Distance estimate (coarse: "< 2km", precise: "1.3 km")
@@ -311,12 +325,14 @@ interface LostPetAlert {
 ### Unified Search Box
 
 **Inputs:**
+
 - Addresses: "123 Main St, New York"
 - Place names: "Central Park"
 - Categories: "dog parks near me"
 - Bulgarian + English queries
 
 **Search API:**
+
 ```typescript
 interface SearchQuery {
   query: string;
@@ -339,6 +355,7 @@ interface SearchResult {
 ```
 
 **Ranking:**
+
 1. Recent searches (exact match)
 2. Saved places
 3. Distance (nearest first)
@@ -347,6 +364,7 @@ interface SearchResult {
 6. Relevance score
 
 **Bulgarian Example:**
+
 - Query: "парк" → Returns local dog parks
 - Query: "ветеринар" → Returns nearby veterinarians
 
@@ -371,7 +389,7 @@ interface MapMarker {
 function clusterMarkers(markers: MapMarker[], zoom: number): Cluster[] {
   const gridSize = calculateGridSize(zoom);
   const clusters: Map<string, Cluster> = new Map();
-  
+
   for (const marker of markers) {
     const cellId = getCellId(marker.location, gridSize);
     if (!clusters.has(cellId)) {
@@ -386,17 +404,19 @@ function clusterMarkers(markers: MapMarker[], zoom: number): Cluster[] {
     cluster.count++;
     cluster.markers.push(marker);
   }
-  
+
   return Array.from(clusters.values());
 }
 ```
 
 ### Zoom Behavior
+
 - Zoom < 10: Show clusters
 - Zoom 10-14: Expand to individual pins
 - Zoom > 14: Full detail + labels
 
 ### Hit Targets
+
 - Minimum: 44×44px tap target
 - Visual marker: Can be smaller (24×24px)
 - Invisible hit area extends beyond visual
@@ -409,7 +429,7 @@ function clusterMarkers(markers: MapMarker[], zoom: number): Cluster[] {
 function openNativeMap(destination: Location, label?: string) {
   const { lat, lng } = destination;
   const encoded = encodeURIComponent(label || '');
-  
+
   // iOS
   if (isIOS()) {
     window.open(`maps://?q=${encoded}&ll=${lat},${lng}`);
@@ -434,11 +454,11 @@ function openNativeMap(destination: Location, label?: string) {
 
 ```typescript
 interface MeetPointCriteria {
-  safety: number;      // Well-lit, public
+  safety: number; // Well-lit, public
   petFriendly: boolean;
   open: boolean;
   rating: number;
-  distance: number;    // From midpoint
+  distance: number; // From midpoint
 }
 
 function scoreMeetPoint(place: Place, midpoint: Location): number {
@@ -456,6 +476,7 @@ function scoreMeetPoint(place: Place, midpoint: Location): number {
 ### ETA Display
 
 Show mode-specific ETAs:
+
 - 🚶 Walk: "12 min"
 - 🚗 Drive: "5 min"
 - 🚇 Transit: "18 min"
@@ -480,16 +501,19 @@ interface Geofence {
 ### Notification Examples
 
 **Playdate Arrival:**
+
 - Title: "Almost there!"
 - Body: "You're 200m from {placeName}"
 - Action: "View Details"
 
 **Lost Pet Awareness:**
+
 - Title: "Lost pet alert"
 - Body: "A {breed} was lost near your area"
 - Action: "See Details" | "Dismiss"
 
 **Saved Place Nearby:**
+
 - Title: "You're near {placeName}"
 - Body: "One of your saved places is 500m away"
 - Action: "Navigate" | "Dismiss"
@@ -497,6 +521,7 @@ interface Geofence {
 ### Quiet Hours
 
 Respect user-defined or default quiet hours (22:00-08:00):
+
 - Queue notifications
 - Deliver summary in morning
 - Exception: Emergency/critical alerts only
@@ -530,12 +555,14 @@ interface MapCache {
 ### Offline Capabilities
 
 **Read-Only:**
+
 - View cached tiles for last viewport
 - Browse cached POIs
 - View saved places
 - View cached photos (thumbnails)
 
 **Write Queue:**
+
 - Queue place submissions
 - Queue sighting reports
 - Queue favorites/saves
@@ -544,6 +571,7 @@ interface MapCache {
 ### Offline UI
 
 Display banner:
+
 - EN: "You're offline. Viewing cached data. Updates will sync when you reconnect."
 - BG: "Няма връзка. Преглед на кеширани данни. Актуализациите ще се синхронизират при повторно свързване."
 
@@ -552,6 +580,7 @@ Display banner:
 ### Error Messages
 
 **Location Off:**
+
 ```
 Title: "Location access disabled"
 Message: "Enable location in your device settings to discover nearby pets and places"
@@ -559,6 +588,7 @@ Actions: [Open Settings] [Continue Without]
 ```
 
 **Geocoder Fail:**
+
 ```
 Title: "Couldn't find that address"
 Message: "Check the spelling or try a different search"
@@ -566,6 +596,7 @@ Actions: [Try Again] [Browse Map]
 ```
 
 **No Places Match:**
+
 ```
 Title: "No places found"
 Message: "Try adjusting your filters or search radius"
@@ -575,6 +606,7 @@ Actions: [Reset Filters] [Expand Radius]
 ### Empty States
 
 **No Saved Places:**
+
 ```
 Icon: 📍
 Title: "No saved places yet"
@@ -583,6 +615,7 @@ Action: [Discover Places]
 ```
 
 **No Lost Pet Alerts:**
+
 ```
 Icon: 🐾
 Title: "No lost pets in your area"
@@ -602,11 +635,13 @@ Message: "We'll notify you if any pet goes missing nearby"
 ### Screen Reader Support
 
 **Marker Announcements:**
+
 ```
 "Place marker: Central Dog Park, 1.2 kilometers away, 4.5 star rating, open now. Double tap to view details"
 ```
 
 **Map Region:**
+
 ```
 "Showing 15 places within 5 kilometers of your location"
 ```
@@ -615,26 +650,27 @@ Message: "We'll notify you if any pet goes missing nearby"
 
 **Key Translations:**
 
-| English | Bulgarian |
-|---------|-----------|
-| Discover Near Me | Открий наблизо |
-| Pet-Friendly Places | Места за домашни любимци |
-| Playdate Planner | Планиране на среща |
-| Lost Pet Mode | Режим изгубен любимец |
-| Navigate | Навигация |
-| Share Location | Споделяне на местоположение |
-| Save Place | Запази място |
-| Open Now | Отворено сега |
-| Distance | Разстояние |
-| Filters | Филтри |
-| My Location | Моята локация |
-| Search | Търсене |
+| English             | Bulgarian                   |
+| ------------------- | --------------------------- |
+| Discover Near Me    | Открий наблизо              |
+| Pet-Friendly Places | Места за домашни любимци    |
+| Playdate Planner    | Планиране на среща          |
+| Lost Pet Mode       | Режим изгубен любимец       |
+| Navigate            | Навигация                   |
+| Share Location      | Споделяне на местоположение |
+| Save Place          | Запази място                |
+| Open Now            | Отворено сега               |
+| Distance            | Разстояние                  |
+| Filters             | Филтри                      |
+| My Location         | Моята локация               |
+| Search              | Търсене                     |
 
 ## 12. Admin Console
 
 ### Places CMS
 
 **Create/Edit Place:**
+
 ```typescript
 interface PlaceForm {
   name: string;
@@ -661,12 +697,14 @@ interface PlaceForm {
 ```
 
 **Bulk Import (CSV):**
+
 ```csv
 name,category,lat,lng,address,phone,website,petFriendly
 "Central Dog Park",park,40.7829,-73.9654,"123 W 81st St, New York, NY 10024",555-1234,example.com,true
 ```
 
 **Duplicate Detection:**
+
 - Match by name + location (within 100m)
 - Suggest merge or mark as duplicate
 - Admin review required
@@ -674,12 +712,14 @@ name,category,lat,lng,address,phone,website,petFriendly
 ### Moderation Queue
 
 **Queue Filters:**
+
 - Status: Pending, Approved, Rejected
 - Type: Place, Report, Lost Pet, Sighting
 - Date: Last 24h, 7 days, 30 days
 - Priority: High, Medium, Low
 
 **Moderation Actions:**
+
 ```typescript
 interface ModerationAction {
   action: 'approve' | 'reject' | 'edit' | 'merge' | 'delete';
@@ -691,6 +731,7 @@ interface ModerationAction {
 ```
 
 **Quality Signals:**
+
 - ❌ Suspicious coordinates (ocean, restricted area)
 - ❌ Low-quality photos (blur, inappropriate)
 - ⚠️ Missing required fields
@@ -718,6 +759,7 @@ interface AuditLogEntry {
 ```
 
 **Audit UI:**
+
 - Filterable by entity, action, actor, date
 - Export to CSV
 - Immutable log (no deletions)
@@ -748,12 +790,14 @@ track('sighting_reported', { alertId: string, location: Location });
 ### Performance Metrics
 
 **Latency Budget:**
+
 - Map first render: < 1000ms
 - Results update (search/filter): < 500ms
 - Marker tap to sheet open: < 200ms
 - Navigation to external app: < 100ms
 
 **Tracking:**
+
 ```typescript
 interface PerformanceMetric {
   metric: string;
@@ -770,6 +814,7 @@ trackPerformance('map_first_render', renderTime, correlationId);
 ### Correlation IDs
 
 **Flow:**
+
 1. Client generates correlationId on request
 2. Attach to all API calls as header: `X-Correlation-ID`
 3. Server logs include correlationId
@@ -777,6 +822,7 @@ trackPerformance('map_first_render', renderTime, correlationId);
 5. Analytics dashboard links client → server logs
 
 **Example:**
+
 ```
 Client Event: search_performed (correlationId: abc-123)
   ↓
@@ -790,17 +836,20 @@ Server Log: [INFO] Places search query="park" results=15 latency=120ms correlati
 ### Privacy Controls
 
 **Default Settings:**
+
 - Coarse location only
 - No home address sharing
 - Private places not searchable
 - Opt-in for precise location
 
 **Home Address Protection:**
+
 - Detect if place submission is within 50m of user's home
 - Warn: "This looks like your home address. Sharing this publicly isn't safe"
 - Block publishing if confirmed as home
 
 **Abuse Prevention:**
+
 - Rate limit: 10 place submissions/day per user
 - Rate limit: 5 reports/hour per user
 - Photo moderation queue for all user-uploaded images
@@ -819,6 +868,7 @@ interface PlaceReport {
 ```
 
 **Actions:**
+
 1. User reports place
 2. Place goes to moderation queue
 3. Multiple reports trigger immediate review
@@ -833,21 +883,21 @@ interface PlaceReport {
 ✅ Privacy defaults to coarse location; precise is session-bound and opt-in  
 ✅ Clustering, search, filters, and deep links are reliable and fast  
 ✅ Admin can approve places, resolve reports, and imports work  
-✅ Five-minute demo script runs clean on staging with seed data  
+✅ Five-minute demo script runs clean on staging with seed data
 
 ### Performance Requirements
 
 ✅ Map first render < 1000ms  
 ✅ Results update < 500ms  
 ✅ Marker interactions < 200ms  
-✅ No memory leaks on long sessions  
+✅ No memory leaks on long sessions
 
 ### Accessibility Requirements
 
 ✅ Keyboard navigation works (web)  
 ✅ Screen reader compatible (mobile + web)  
 ✅ High contrast mode supported  
-✅ Reduce motion respected  
+✅ Reduce motion respected
 
 ### Security & Privacy Requirements
 
@@ -855,7 +905,7 @@ interface PlaceReport {
 ✅ Home addresses blocked from public sharing  
 ✅ Rate limiting on submissions  
 ✅ Photo moderation queue  
-✅ GDPR export/delete  
+✅ GDPR export/delete
 
 ## 16. Five-Minute Demo Script
 
@@ -876,6 +926,7 @@ npm run seed:map-data
 ### Demo Flow
 
 **1. Discover Near Me (60 sec)**
+
 - Open app → Maps tab → Discover view
 - Allow approximate location
 - See clustered pins and synced list
@@ -884,6 +935,7 @@ npm run seed:map-data
 - Save to favorites
 
 **2. Search & Places (45 sec)**
+
 - Switch to Places view
 - Search "парк" (Bulgarian)
 - Results sort by distance/open-now
@@ -893,6 +945,7 @@ npm run seed:map-data
 - Tap Navigate → opens native maps
 
 **3. Playdate Planning (90 sec)**
+
 - Switch to Playdate Planner
 - Select 2 matches from list
 - System suggests midpoint + 3 venues
@@ -902,6 +955,7 @@ npm run seed:map-data
 - Link opens to playdate details
 
 **4. Lost Pet Alert (60 sec)**
+
 - Create Lost Pet alert
 - Upload pet photo
 - Set broadcast radius (5km)
@@ -911,6 +965,7 @@ npm run seed:map-data
 - View alert on map with radius overlay
 
 **5. Admin Moderation (45 sec)**
+
 - Open Admin Console
 - Review pending place submission
 - Check location on map
@@ -924,23 +979,27 @@ npm run seed:map-data
 ## Technology Stack
 
 ### Frontend
+
 - **React** (Web) with TypeScript
 - **React Native** (Mobile) with TypeScript
 - **Leaflet** or **Mapbox GL JS** for map rendering
 - **Framer Motion** for animations
 
 ### Backend
+
 - **Node.js + Express** or **FastAPI** (Python)
 - **PostgreSQL** with PostGIS for spatial queries
 - **Redis** for caching and geofencing
 - **Socket.io** for real-time updates
 
 ### Third-Party Services
+
 - **MapTiler** or **Mapbox** for tiles and geocoding
 - **Nominatim** (OpenStreetMap) for open-source geocoding
 - **Cloudinary** for image storage and optimization
 
 ### Infrastructure
+
 - **Docker** for containerization
 - **Kubernetes** for orchestration
 - **NGINX** for API gateway and load balancing

@@ -15,7 +15,7 @@ describe('Geocoding', () => {
   it('generates map deep links', () => {
     const location: Location = { lat: 40.7128, lng: -74.006 };
     const links = generateMapDeepLink(location, 'Test Place');
-    
+
     expect(links.appleMaps).toContain('maps.apple.com');
     expect(links.googleMaps).toContain('google.com/maps');
     expect(links.universal).toContain('geo:');
@@ -35,4 +35,3 @@ describe('Geocoding', () => {
     });
   });
 });
-

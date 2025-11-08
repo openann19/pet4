@@ -1,6 +1,7 @@
 # 🚀 PawfectMatch - Immediate Next Steps
 
 ## 📊 Current State
+
 - ✅ **Frontend**: 85% complete, beautiful, functional UI
 - ❌ **Backend**: 0% complete, no API, no database, no real-time features
 - **Overall**: Impressive prototype, not yet a product
@@ -12,6 +13,7 @@
 **Goal**: Turn this into a real, functional product in 4-10 weeks.
 
 **Week 1-2: Backend Foundation**
+
 ```bash
 # 1. Create backend directory
 mkdir backend
@@ -39,6 +41,7 @@ touch src/server.ts
 ```
 
 **First Endpoint (1 hour)**:
+
 ```typescript
 // backend/src/server.ts
 import express from 'express';
@@ -54,9 +57,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date() });
 });
 
-mongoose.connect('mongodb://localhost:27017/pawfectmatch')
+mongoose
+  .connect('mongodb://localhost:27017/pawfectmatch')
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB error:', err));
+  .catch((err) => console.error('MongoDB error:', err));
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
@@ -65,6 +69,7 @@ app.listen(PORT, () => {
 ```
 
 **Test it works**:
+
 ```bash
 npm run dev
 # Visit http://localhost:3001/api/health
@@ -77,6 +82,7 @@ npm run dev
 **Goal**: Keep improving UI while backend waits.
 
 **What You Can Do**:
+
 1. Fix theme consistency issues
 2. Perfect animations
 3. Add more UI variations
@@ -90,6 +96,7 @@ npm run dev
 Regardless of path chosen, these improve the current state:
 
 ### 1. Fix Theme Visibility (30 minutes)
+
 ```typescript
 // src/index.css - Ensure these contrast ratios are correct:
 // Light theme buttons should have dark text
@@ -98,25 +105,28 @@ Regardless of path chosen, these improve the current state:
 ```
 
 ### 2. Expose All Features in UI (15 minutes)
+
 Make sure Community and Adoption tabs are visible and clickable in the nav bar.
 
 ### 3. Generate Demo Data (15 minutes)
+
 Run the profile generator to populate the feed with 15+ diverse pets so the app is explorable.
 
 ### 4. Clean Up Console (30 minutes)
+
 Fix any TypeScript errors or warnings that appear in the browser console.
 
 ## 📝 Decision Matrix
 
-| Factor | Backend Path | Frontend Path |
-|--------|--------------|---------------|
-| **Time Investment** | 4-10 weeks | Ongoing |
-| **Outcome** | Real product | Better prototype |
-| **User Value** | High | None |
-| **Learning** | Backend skills | Advanced UI |
-| **Launch Date** | 1-2 months | Never |
-| **Revenue Potential** | Yes | No |
-| **Portfolio Impact** | Full-stack project | Frontend showcase |
+| Factor                | Backend Path       | Frontend Path     |
+| --------------------- | ------------------ | ----------------- |
+| **Time Investment**   | 4-10 weeks         | Ongoing           |
+| **Outcome**           | Real product       | Better prototype  |
+| **User Value**        | High               | None              |
+| **Learning**          | Backend skills     | Advanced UI       |
+| **Launch Date**       | 1-2 months         | Never             |
+| **Revenue Potential** | Yes                | No                |
+| **Portfolio Impact**  | Full-stack project | Frontend showcase |
 
 ## 🎯 Recommendation
 
@@ -129,21 +139,25 @@ Fix any TypeScript errors or warnings that appear in the browser console.
 ## 📅 This Week's Action Plan
 
 ### **Day 1**: Setup
+
 - [ ] Choose your path (A or B)
 - [ ] Set up development environment
 - [ ] Create project structure
 
 ### **Day 2-3**: Foundation
+
 - [ ] Build first API endpoint
 - [ ] Connect to MongoDB
 - [ ] Test everything works
 
 ### **Day 4-5**: Core Features
+
 - [ ] Implement authentication
 - [ ] Create pet CRUD APIs
 - [ ] Test with Postman/curl
 
 ### **Weekend**: Integration
+
 - [ ] Connect frontend to real API
 - [ ] Replace first `useKV` with API call
 - [ ] See real data flow!
@@ -151,16 +165,19 @@ Fix any TypeScript errors or warnings that appear in the browser console.
 ## 🆘 If You're Stuck
 
 **On Backend**:
+
 - Follow Express + MongoDB tutorials
 - Use ChatGPT/Claude for code generation
 - Reference existing projects on GitHub
 
 **On Frontend**:
+
 - Check component documentation
 - Test in both themes
 - Use React DevTools
 
 **On Integration**:
+
 - Use network tab to debug API calls
 - Check CORS configuration
 - Verify API responses match expected format
@@ -168,6 +185,7 @@ Fix any TypeScript errors or warnings that appear in the browser console.
 ## ✅ Success Indicators
 
 **You'll know you're on the right track when**:
+
 1. Backend responds to API calls
 2. Frontend shows data from backend
 3. Changes in one device appear in another
@@ -177,6 +195,7 @@ Fix any TypeScript errors or warnings that appear in the browser console.
 ## 🎉 Vision of Success
 
 **4 weeks from now**:
+
 - Real users can sign up
 - They can create pet profiles
 - They can swipe and match
@@ -187,6 +206,7 @@ Fix any TypeScript errors or warnings that appear in the browser console.
 **vs.**
 
 **4 weeks from now (frontend only)**:
+
 - More beautiful animations
 - Better responsive layouts
 - Additional UI variations
@@ -212,5 +232,4 @@ You've already proven you can build complex systems. The backend is just the nex
 
 ---
 
-*Choose your path and let's build something real.* 🐾
-
+_Choose your path and let's build something real._ 🐾

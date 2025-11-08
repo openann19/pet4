@@ -14,10 +14,7 @@ interface PullToRefreshProps {
   progress: number;
 }
 
-export const PullToRefreshIndicator: React.FC<PullToRefreshProps> = ({
-  refreshing,
-  progress,
-}) => {
+export const PullToRefreshIndicator: React.FC<PullToRefreshProps> = ({ refreshing, progress }) => {
   const rotation = useSharedValue(0);
 
   React.useEffect(() => {

@@ -1,13 +1,13 @@
 /**
  * Typing Indicator "Liquid Dots" Effect Hook
- * 
+ *
  * Creates a premium typing indicator with:
  * - Three dots moving with phase-shifted sine waves
  * - Y-offset 0→5px, opacity 0.6→1.0
  * - Skia blur + bloom at 0.85 intensity
  * - CPU cost <0.8ms/frame
  * - Reduced Motion → static pulsing opacity at 0.8 Hz
- * 
+ *
  * Location: apps/mobile/src/effects/chat/typing/use-liquid-dots.ts
  */
 
@@ -63,9 +63,7 @@ const DEFAULT_DOT_COLOR = '#666666'
 const ANIMATION_DURATION = 1200 // ms per cycle
 const PULSE_DURATION = 1250 // ms for reduced motion (0.8 Hz = 1.25s period)
 
-export function useLiquidDots(
-  options: UseLiquidDotsOptions = {}
-): UseLiquidDotsReturn {
+export function useLiquidDots(options: UseLiquidDotsOptions = {}): UseLiquidDotsReturn {
   const {
     enabled = DEFAULT_ENABLED,
     dotSize = DEFAULT_DOT_SIZE,
@@ -152,24 +150,27 @@ export function useLiquidDots(
       }, ANIMATION_DURATION / 3)
 
       // Dot 3 (phase-shifted)
-      setTimeout(() => {
-        dot3Y.value = withRepeat(
-          withTiming(5, {
-            duration: ANIMATION_DURATION,
-            easing: Easing.inOut(Easing.sin),
-          }),
-          -1,
-          true
-        )
-        dot3Opacity.value = withRepeat(
-          withTiming(1.0, {
-            duration: ANIMATION_DURATION,
-            easing: Easing.inOut(Easing.sin),
-          }),
-          -1,
-          true
-        )
-      }, (ANIMATION_DURATION * 2) / 3)
+      setTimeout(
+        () => {
+          dot3Y.value = withRepeat(
+            withTiming(5, {
+              duration: ANIMATION_DURATION,
+              easing: Easing.inOut(Easing.sin),
+            }),
+            -1,
+            true
+          )
+          dot3Opacity.value = withRepeat(
+            withTiming(1.0, {
+              duration: ANIMATION_DURATION,
+              easing: Easing.inOut(Easing.sin),
+            }),
+            -1,
+            true
+          )
+        },
+        (ANIMATION_DURATION * 2) / 3
+      )
     }
   }, [reducedMotion, dot1Y, dot1Opacity, dot2Y, dot2Opacity, dot3Y, dot3Opacity])
 
@@ -211,4 +212,3 @@ export function useLiquidDots(
     bloomConfig,
   }
 }
-

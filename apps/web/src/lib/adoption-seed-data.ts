@@ -1,11 +1,11 @@
-import type { AdoptionProfile } from './adoption-types'
-import { buildLLMPrompt } from './llm-prompt'
-import { llmService } from './llm-service'
-import { parseLLMError } from './llm-utils'
-import { logger } from './logger'
-import { storage } from './storage'
+import type { AdoptionProfile } from './adoption-types';
+import { buildLLMPrompt } from './llm-prompt';
+import { llmService } from './llm-service';
+import { parseLLMError } from './llm-utils';
+import { logger } from './logger';
+import { storage } from './storage';
 
-export async function generateAdoptionProfiles(count: number = 12): Promise<AdoptionProfile[]> {
+export async function generateAdoptionProfiles(count = 12): Promise<AdoptionProfile[]> {
   const prompt = buildLLMPrompt`Generate exactly ${count} diverse pet adoption profiles. 
   
   Return ONLY a valid JSON array of objects, no additional text or explanation.
@@ -34,34 +34,34 @@ export async function generateAdoptionProfiles(count: number = 12): Promise<Adop
   }
 
   Make profiles diverse in breeds, ages, sizes, and personalities. Include both dogs and cats.
-  Some should be senior pets, puppies/kittens, special needs, etc.`
+  Some should be senior pets, puppies/kittens, special needs, etc.`;
 
   interface LLMProfileData {
-    petName: string
-    breed: string
-    age: number
-    gender: 'male' | 'female'
-    size: 'small' | 'medium' | 'large' | 'extra-large'
-    location: string
-    shelterName: string
-    description: string
-    healthStatus: string
-    vaccinated: boolean
-    spayedNeutered: boolean
-    goodWithKids: boolean
-    goodWithPets: boolean
-    energyLevel: 'low' | 'medium' | 'high'
-    specialNeeds?: string | null
-    adoptionFee: number
-    personality: string[]
-    contactEmail: string
-    contactPhone: string
+    petName: string;
+    breed: string;
+    age: number;
+    gender: 'male' | 'female';
+    size: 'small' | 'medium' | 'large' | 'extra-large';
+    location: string;
+    shelterName: string;
+    description: string;
+    healthStatus: string;
+    vaccinated: boolean;
+    spayedNeutered: boolean;
+    goodWithKids: boolean;
+    goodWithPets: boolean;
+    energyLevel: 'low' | 'medium' | 'high';
+    specialNeeds?: string | null;
+    adoptionFee: number;
+    personality: string[];
+    contactEmail: string;
+    contactPhone: string;
   }
 
   try {
-  const response = await llmService.llm(prompt, 'gpt-4o', true)
-    const profilesData = JSON.parse(response) as LLMProfileData[]
-    
+    const response = await llmService.llm(prompt, 'gpt-4o', true);
+    const profilesData = JSON.parse(response) as LLMProfileData[];
+
     const profiles: AdoptionProfile[] = profilesData.map((data: LLMProfileData, index: number) => ({
       _id: `adopt-${Date.now()}-${index}`,
       petId: `pet-adopt-${Date.now()}-${index}`,
@@ -82,37 +82,38 @@ export async function generateAdoptionProfiles(count: number = 12): Promise<Adop
       goodWithKids: data.goodWithKids,
       goodWithPets: data.goodWithPets,
       energyLevel: data.energyLevel,
-      ...(data.specialNeeds !== undefined && data.specialNeeds !== null && { specialNeeds: data.specialNeeds }),
+      ...(data.specialNeeds !== undefined &&
+        data.specialNeeds !== null && { specialNeeds: data.specialNeeds }),
       adoptionFee: data.adoptionFee,
       postedDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
       personality: data.personality,
       photos: [
         `https://picsum.photos/seed/adopt-${Date.now()}-${index}/800/600`,
         `https://picsum.photos/seed/adopt-${Date.now()}-${index}-2/800/600`,
-        `https://picsum.photos/seed/adopt-${Date.now()}-${index}-3/800/600`
+        `https://picsum.photos/seed/adopt-${Date.now()}-${index}-3/800/600`,
       ],
       contactEmail: data.contactEmail,
-      contactPhone: data.contactPhone
-    }))
+      contactPhone: data.contactPhone,
+    }));
 
-    return profiles
+    return profiles;
   } catch (error) {
-    const errorInfo = parseLLMError(error)
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to generate adoption profiles', err, { 
+    const errorInfo = parseLLMError(error);
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to generate adoption profiles', err, {
       technicalMessage: errorInfo.technicalMessage,
       userMessage: errorInfo.userMessage,
       action: 'generateAdoptionProfiles',
-      count 
-    })
-    logger.info('Using fallback profiles', { action: 'generateAdoptionProfiles' })
-    return getFallbackProfiles()
+      count,
+    });
+    logger.info('Using fallback profiles', { action: 'generateAdoptionProfiles' });
+    return getFallbackProfiles();
   }
 }
 
 function getFallbackProfiles(): AdoptionProfile[] {
-  const timestamp = Date.now()
-  
+  const timestamp = Date.now();
+
   return [
     {
       _id: `adopt-${timestamp}-1`,
@@ -127,7 +128,8 @@ function getFallbackProfiles(): AdoptionProfile[] {
       shelterId: 'shelter-1',
       shelterName: 'Happy Paws Rescue',
       status: 'available',
-      description: 'Max is a friendly and energetic Golden Retriever who loves playing fetch and going on long walks. He\'s great with families and other dogs.',
+      description:
+        "Max is a friendly and energetic Golden Retriever who loves playing fetch and going on long walks. He's great with families and other dogs.",
       healthStatus: 'Excellent health, up to date on all shots',
       vaccinated: true,
       spayedNeutered: true,
@@ -140,10 +142,10 @@ function getFallbackProfiles(): AdoptionProfile[] {
       photos: [
         `https://picsum.photos/seed/max-dog/800/600`,
         `https://picsum.photos/seed/max-dog-2/800/600`,
-        `https://picsum.photos/seed/max-dog-3/800/600`
+        `https://picsum.photos/seed/max-dog-3/800/600`,
       ],
       contactEmail: 'info@happypawsrescue.org',
-      contactPhone: '415-555-0123'
+      contactPhone: '415-555-0123',
     },
     {
       _id: `adopt-${timestamp}-2`,
@@ -158,7 +160,8 @@ function getFallbackProfiles(): AdoptionProfile[] {
       shelterId: 'shelter-2',
       shelterName: 'Feline Friends Foundation',
       status: 'available',
-      description: 'Luna is a sweet and affectionate cat who loves cuddles and sunny windowsills. She\'s perfect for a quiet home.',
+      description:
+        "Luna is a sweet and affectionate cat who loves cuddles and sunny windowsills. She's perfect for a quiet home.",
       healthStatus: 'Healthy, all vaccinations current',
       vaccinated: true,
       spayedNeutered: true,
@@ -170,10 +173,10 @@ function getFallbackProfiles(): AdoptionProfile[] {
       personality: ['Affectionate', 'Calm', 'Independent', 'Quiet'],
       photos: [
         `https://picsum.photos/seed/luna-cat/800/600`,
-        `https://picsum.photos/seed/luna-cat-2/800/600`
+        `https://picsum.photos/seed/luna-cat-2/800/600`,
       ],
       contactEmail: 'adopt@felinefriends.org',
-      contactPhone: '503-555-0456'
+      contactPhone: '503-555-0456',
     },
     {
       _id: `adopt-${timestamp}-3`,
@@ -188,7 +191,8 @@ function getFallbackProfiles(): AdoptionProfile[] {
       shelterId: 'shelter-3',
       shelterName: 'Second Chance Pet Rescue',
       status: 'available',
-      description: 'Buddy is a gentle senior dog looking for a calm retirement home. He loves short walks and lots of belly rubs.',
+      description:
+        'Buddy is a gentle senior dog looking for a calm retirement home. He loves short walks and lots of belly rubs.',
       healthStatus: 'Minor arthritis, manageable with medication',
       vaccinated: true,
       spayedNeutered: true,
@@ -202,29 +206,31 @@ function getFallbackProfiles(): AdoptionProfile[] {
       photos: [
         `https://picsum.photos/seed/buddy-dog/800/600`,
         `https://picsum.photos/seed/buddy-dog-2/800/600`,
-        `https://picsum.photos/seed/buddy-dog-3/800/600`
+        `https://picsum.photos/seed/buddy-dog-3/800/600`,
       ],
       contactEmail: 'hello@secondchancepets.org',
-      contactPhone: '206-555-0789'
-    }
-  ]
+      contactPhone: '206-555-0789',
+    },
+  ];
 }
 
 export async function initializeAdoptionProfiles(): Promise<void> {
   try {
-    const existing = await storage.get<AdoptionProfile[]>('adoption-profiles')
+    const existing = await storage.get<AdoptionProfile[]>('adoption-profiles');
 
     if (!existing || existing.length === 0) {
-      logger.info('Generating adoption profiles', { action: 'initializeAdoptionProfiles' })
-      const profiles = await generateAdoptionProfiles(12)
-      await storage.set('adoption-profiles', profiles)
+      logger.info('Generating adoption profiles', { action: 'initializeAdoptionProfiles' });
+      const profiles = await generateAdoptionProfiles(12);
+      await storage.set('adoption-profiles', profiles);
       logger.info('Generated adoption profiles', {
         profilesCount: profiles.length,
         action: 'initializeAdoptionProfiles',
-      })
+      });
     }
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to initialize adoption profiles', err, { action: 'initializeAdoptionProfiles' })
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to initialize adoption profiles', err, {
+      action: 'initializeAdoptionProfiles',
+    });
   }
 }

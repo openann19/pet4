@@ -32,4 +32,3 @@ describe('useNotificationToast', () => {
     expect(typeof result.current.showSuccess).toBe('function')
   })
 })
-

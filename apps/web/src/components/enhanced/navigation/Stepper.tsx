@@ -1,28 +1,28 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import { Check, Circle } from 'lucide-react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import { Check, Circle } from 'lucide-react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface StepperStep {
-  id: string
-  label: string
-  description?: string
-  icon?: React.ReactNode
-  optional?: boolean
+  id: string;
+  label: string;
+  description?: string;
+  icon?: React.ReactNode;
+  optional?: boolean;
 }
 
 export interface StepperProps {
-  steps: StepperStep[]
-  currentStep: number
-  onStepClick?: (stepIndex: number) => void
-  orientation?: 'horizontal' | 'vertical'
-  className?: string
+  steps: StepperStep[];
+  currentStep: number;
+  onStepClick?: (stepIndex: number) => void;
+  orientation?: 'horizontal' | 'vertical';
+  className?: string;
 }
 
 export function Stepper({
@@ -32,35 +32,33 @@ export function Stepper({
   orientation = 'horizontal',
   className,
 }: StepperProps): React.JSX.Element {
-  const progressWidth = useSharedValue(0)
+  const progressWidth = useSharedValue(0);
 
   const progressStyle = useAnimatedStyle(() => ({
     width: `${progressWidth.value}%`,
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const handleStepClick = useCallback(
     (index: number) => {
       if (onStepClick && index <= currentStep) {
-        onStepClick(index)
-        haptics.selection()
+        onStepClick(index);
+        haptics.selection();
       }
     },
     [onStepClick, currentStep]
-  )
+  );
 
-  const progressPercentage = steps.length > 1
-    ? (currentStep / (steps.length - 1)) * 100
-    : 0
+  const progressPercentage = steps.length > 1 ? (currentStep / (steps.length - 1)) * 100 : 0;
 
-  progressWidth.value = withSpring(progressPercentage, springConfigs.smooth)
+  progressWidth.value = withSpring(progressPercentage, springConfigs.smooth);
 
   if (orientation === 'vertical') {
     return (
       <div className={cn('flex flex-col', className)}>
         {steps.map((step, index) => {
-          const isCompleted = index < currentStep
-          const isCurrent = index === currentStep
-          const isUpcoming = index > currentStep
+          const isCompleted = index < currentStep;
+          const isCurrent = index === currentStep;
+          const isUpcoming = index > currentStep;
 
           return (
             <div key={step.id} className="flex items-start gap-4">
@@ -98,10 +96,7 @@ export function Stepper({
                 <button
                   onClick={() => handleStepClick(index)}
                   disabled={isUpcoming}
-                  className={cn(
-                    'text-left',
-                    isUpcoming && 'cursor-not-allowed'
-                  )}
+                  className={cn('text-left', isUpcoming && 'cursor-not-allowed')}
                 >
                   <div
                     className={cn(
@@ -120,10 +115,10 @@ export function Stepper({
                 </button>
               </div>
             </div>
-          )
+          );
         })}
       </div>
-    )
+    );
   }
 
   return (
@@ -138,9 +133,9 @@ export function Stepper({
         <div className="absolute top-5 left-0 right-0 h-0.5 bg-muted" />
 
         {steps.map((step, index) => {
-          const isCompleted = index < currentStep
-          const isCurrent = index === currentStep
-          const isUpcoming = index > currentStep
+          const isCompleted = index < currentStep;
+          const isCurrent = index === currentStep;
+          const isUpcoming = index > currentStep;
 
           return (
             <div key={step.id} className="relative z-10 flex flex-col items-center flex-1">
@@ -151,7 +146,8 @@ export function Stepper({
                   'flex items-center justify-center rounded-full border-2 transition-all duration-200',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                   isCompleted && 'bg-primary border-primary text-primary-foreground',
-                  isCurrent && 'bg-primary border-primary text-primary-foreground scale-110 shadow-lg',
+                  isCurrent &&
+                    'bg-primary border-primary text-primary-foreground scale-110 shadow-lg',
                   isUpcoming && 'bg-muted border-muted-foreground text-muted-foreground',
                   isUpcoming && 'cursor-not-allowed',
                   'w-10 h-10'
@@ -177,9 +173,9 @@ export function Stepper({
                 )}
               </div>
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

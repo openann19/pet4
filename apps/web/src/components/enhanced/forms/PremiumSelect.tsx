@@ -1,43 +1,43 @@
-'use client'
+'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { Check, ChevronDown, X } from 'lucide-react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+} from '@/components/ui/select';
+import { Check, ChevronDown, X } from 'lucide-react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface PremiumSelectOption {
-  label: string
-  value: string
-  icon?: React.ReactNode
-  disabled?: boolean
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export interface PremiumSelectProps {
-  options: PremiumSelectOption[]
-  value?: string | string[]
-  onChange?: (value: string | string[]) => void
-  multiSelect?: boolean
-  label?: string
-  placeholder?: string
-  variant?: 'default' | 'filled' | 'outlined' | 'glass'
-  size?: 'sm' | 'md' | 'lg'
-  searchable?: boolean
-  error?: string
-  helperText?: string
-  disabled?: boolean
-  className?: string
-  'aria-label': string
+  options: PremiumSelectOption[];
+  value?: string | string[];
+  onChange?: (value: string | string[]) => void;
+  multiSelect?: boolean;
+  label?: string;
+  placeholder?: string;
+  variant?: 'default' | 'filled' | 'outlined' | 'glass';
+  size?: 'sm' | 'md' | 'lg';
+  searchable?: boolean;
+  error?: string;
+  helperText?: string;
+  disabled?: boolean;
+  className?: string;
+  'aria-label': string;
 }
 
 export function PremiumSelect({
@@ -56,88 +56,86 @@ export function PremiumSelect({
   className,
   'aria-label': ariaLabel,
 }: PremiumSelectProps): React.JSX.Element {
-  const [isOpen, setIsOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const selectedValues = Array.isArray(value) ? value : value ? [value] : []
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
 
-  const scale = useSharedValue(0.95)
-  const opacity = useSharedValue(0)
+  const scale = useSharedValue(0.95);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
     if (isOpen) {
-      scale.value = withSpring(1, springConfigs.smooth)
-      opacity.value = withTiming(1, { duration: 200 })
+      scale.value = withSpring(1, springConfigs.smooth);
+      opacity.value = withTiming(1, { duration: 200 });
     } else {
-      scale.value = withSpring(0.95, springConfigs.smooth)
-      opacity.value = withTiming(0, { duration: 150 })
+      scale.value = withSpring(0.95, springConfigs.smooth);
+      opacity.value = withTiming(0, { duration: 150 });
     }
-  }, [isOpen, scale, opacity])
+  }, [isOpen, scale, opacity]);
 
   const contentStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const filteredOptions = searchable
-    ? options.filter((opt) =>
-        opt.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : options
+    ? options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()))
+    : options;
 
   const handleSelect = useCallback(
     (optionValue: string) => {
       if (multiSelect) {
         const newValues = selectedValues.includes(optionValue)
           ? selectedValues.filter((v) => v !== optionValue)
-          : [...selectedValues, optionValue]
-        onChange?.(newValues)
-        haptics.selection()
+          : [...selectedValues, optionValue];
+        onChange?.(newValues);
+        haptics.selection();
       } else {
-        onChange?.(optionValue)
-        setIsOpen(false)
-        haptics.selection()
+        onChange?.(optionValue);
+        setIsOpen(false);
+        haptics.selection();
       }
     },
     [multiSelect, selectedValues, onChange]
-  )
+  );
 
   const handleRemove = useCallback(
     (optionValue: string) => {
-      const newValues = selectedValues.filter((v) => v !== optionValue)
-      onChange?.(newValues)
-      haptics.selection()
+      const newValues = selectedValues.filter((v) => v !== optionValue);
+      onChange?.(newValues);
+      haptics.selection();
     },
     [selectedValues, onChange]
-  )
+  );
 
   const variants = {
     default: 'bg-background border-input',
     filled: 'bg-muted/50 border-transparent',
     outlined: 'bg-transparent border-2 border-input',
     glass: 'glass-card border-border/50',
-  }
+  };
 
   const sizes = {
     sm: 'h-9 text-sm px-3',
     md: 'h-12 text-base px-4',
     lg: 'h-14 text-lg px-5',
-  }
+  };
 
   const displayValue = multiSelect
     ? selectedValues.length > 0
       ? `${selectedValues.length} selected`
       : placeholder
-    : options.find((opt) => opt.value === value)?.label || placeholder
+    : options.find((opt) => opt.value === value)?.label || placeholder;
 
   return (
     <div className={cn('relative w-full', className)}>
-      {label && (
-        <label className="block text-sm font-medium mb-2 text-foreground">
-          {label}
-        </label>
-      )}
+      {label && <label className="block text-sm font-medium mb-2 text-foreground">{label}</label>}
 
-      <Select open={isOpen} onOpenChange={setIsOpen} value={Array.isArray(value) ? value[0] : value}>
+      <Select
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        value={Array.isArray(value) ? value[0] : value}
+      >
         <SelectTrigger
           className={cn(
             'w-full rounded-xl transition-all duration-300',
@@ -154,7 +152,7 @@ export function PremiumSelect({
             {multiSelect && selectedValues.length > 0 ? (
               <div className="flex items-center gap-2 flex-wrap">
                 {selectedValues.slice(0, 2).map((val) => {
-                  const option = options.find((opt) => opt.value === val)
+                  const option = options.find((opt) => opt.value === val);
                   return (
                     <span
                       key={val}
@@ -164,15 +162,15 @@ export function PremiumSelect({
                       <button
                         type="button"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          handleRemove(val)
+                          e.stopPropagation();
+                          handleRemove(val);
                         }}
                         className="hover:bg-primary/20 rounded p-0.5"
                       >
                         <X size={12} />
                       </button>
                     </span>
-                  )
+                  );
                 })}
                 {selectedValues.length > 2 && (
                   <span className="text-sm text-muted-foreground">
@@ -213,27 +211,22 @@ export function PremiumSelect({
                 </div>
               ) : (
                 filteredOptions.map((option) => {
-                  const isSelected = selectedValues.includes(option.value)
+                  const isSelected = selectedValues.includes(option.value);
                   return (
                     <SelectItem
                       key={option.value}
                       value={option.value}
                       disabled={option.disabled}
                       onSelect={() => handleSelect(option.value)}
-                      className={cn(
-                        'cursor-pointer',
-                        isSelected && 'bg-accent'
-                      )}
+                      className={cn('cursor-pointer', isSelected && 'bg-accent')}
                     >
                       <div className="flex items-center gap-2">
                         {option.icon && <span>{option.icon}</span>}
                         <span>{option.label}</span>
-                        {isSelected && multiSelect && (
-                          <Check className="ml-auto h-4 w-4" />
-                        )}
+                        {isSelected && multiSelect && <Check className="ml-auto h-4 w-4" />}
                       </div>
                     </SelectItem>
-                  )
+                  );
                 })
               )}
             </div>
@@ -247,5 +240,5 @@ export function PremiumSelect({
         </div>
       )}
     </div>
-  )
+  );
 }

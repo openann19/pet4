@@ -1,4 +1,11 @@
-import { useSharedValue, useAnimatedStyle, withTiming, withSequence, interpolate, Easing, type SharedValue } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  withTiming,
+  withSequence,
+  interpolate,
+  Easing,
+  type SharedValue,
+} from 'react-native-reanimated'
 import { useCallback, useState } from 'react'
 import { Dimensions } from 'react-native'
 import type { AnimatedStyle } from './animated-view'
@@ -23,7 +30,7 @@ export interface UseConfettiBurstOptions {
 export interface UseConfettiBurstReturn {
   burst: (centerX?: number, centerY?: number) => void
   particles: ConfettiParticle[]
-  createParticleStyle: (particle: ConfettiParticle) => AnimatedStyle
+  createParticleStyle: (particle: ConfettiParticle) => () => AnimatedStyle
   isAnimating: boolean
   progress: SharedValue<number>
 }
@@ -48,13 +55,13 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
   const progress = useSharedValue(0)
 
   const burst = useCallback(
-    (centerX?: number, centerY?: number) => {
+    (centerX?: number, centerY?: number): void => {
       const screen = Dimensions.get('window')
       const x = centerX ?? screen.width / 2
       const y = centerY ?? screen.height / 2
 
       const newParticles: ConfettiParticle[] = []
-      
+
       const seed = Date.now() + x + y
       const rng = makeRng(seed)
 
@@ -80,9 +87,7 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
       setParticles(newParticles)
 
       progress.value = 0
-      progress.value = withSequence(
-        withTiming(1, { duration, easing: Easing.out(Easing.quad) })
-      )
+      progress.value = withSequence(withTiming(1, { duration, easing: Easing.out(Easing.quad) }))
 
       setTimeout(() => {
         setParticles([])
@@ -91,12 +96,30 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
     [particleCount, colors, duration, spread, progress]
   )
 
+  // Create particle style function (returns worklet computation function)
+  // Components should create styles using: useAnimatedStyle(() => createParticleStyle(particle)())
   const createParticleStyle = useCallback(
-    (particle: ConfettiParticle) => {
-      return useAnimatedStyle(() => {
+    (
+      particle: ConfettiParticle
+    ): (() => {
+      transform: Array<{
+        translateX?: number
+        translateY?: number
+        rotate?: string
+        scale?: number
+      }>
+      opacity: number
+      backgroundColor: string
+      width: number
+      height: number
+    }) => {
+      // Return a worklet function that computes style based on progress
+      return () => {
+        'worklet'
         const x = particle.x + particle.velocity.x * progress.value
-        const y = particle.y + particle.velocity.y * progress.value + 300 * progress.value * progress.value
-        
+        const y =
+          particle.y + particle.velocity.y * progress.value + 300 * progress.value * progress.value
+
         const rotation = particle.rotation + progress.value * 720
         const opacity = interpolate(progress.value, [0, 0.7, 1], [1, 1, 0])
         const scale = interpolate(progress.value, [0, 0.2, 1], [0, 1, 0.8])
@@ -113,7 +136,7 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
           width: particle.size,
           height: particle.size,
         }
-      }) as AnimatedStyle
+      }
     },
     [progress]
   )
@@ -121,8 +144,8 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
   return {
     burst,
     particles,
-    createParticleStyle,
+    createParticleStyle: createParticleStyle as any,
     isAnimating: particles.length > 0,
-    progress
+    progress,
   }
 }

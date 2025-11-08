@@ -10,5 +10,5 @@ export default {
   community: 'Community',
   adoption: 'Adopt',
   'lost-found': 'Lost & Found',
-  profile: 'Profile'
-} as const
+  profile: 'Profile',
+} as const;

@@ -40,12 +40,14 @@ A unified media upload and editing system that supports both web (drag-drop) and
 ## Features
 
 ### Image Upload & Edit
+
 - Web: Drag-drop or file picker
 - Mobile: Native image picker
 - Automatic dimension extraction
 - Flows into existing `MediaEditor` component
 
 ### Video Upload & Trim
+
 - Web: Drag-drop or file picker
 - Mobile: Native video picker
 - Visual timeline with thumbnails
@@ -54,6 +56,7 @@ A unified media upload and editing system that supports both web (drag-drop) and
 - Handoff to `editMedia` for processing
 
 ### Cross-Platform Support
+
 - Web-first, mobile fallback
 - Graceful degradation if native modules unavailable
 - No heavy dependencies required
@@ -61,33 +64,33 @@ A unified media upload and editing system that supports both web (drag-drop) and
 ## Usage
 
 ```tsx
-import { UploadAndEditScreen } from '@/components/media-editor/upload-and-edit-screen'
+import { UploadAndEditScreen } from '@/components/media-editor/upload-and-edit-screen';
 
 function MyComponent() {
   const handleDone = (outputUri: string) => {
     // Use processed media
-  }
+  };
 
-  return <UploadAndEditScreen onDone={handleDone} />
+  return <UploadAndEditScreen onDone={handleDone} />;
 }
 ```
 
 ### Standalone Picker
 
 ```tsx
-import { useUploadPicker } from '@/core/services/media/picker'
+import { useUploadPicker } from '@/core/services/media/picker';
 
 function MyComponent() {
-  const { pickAny, pickImage, pickVideo } = useUploadPicker()
+  const { pickAny, pickImage, pickVideo } = useUploadPicker();
 
   const handlePick = async () => {
-    const media = await pickAny()
+    const media = await pickAny();
     if (media) {
       // Use media.uri, media.type, media.width, etc.
     }
-  }
+  };
 
-  return <button onClick={handlePick}>Pick Media</button>
+  return <button onClick={handlePick}>Pick Media</button>;
 }
 ```
 
@@ -96,24 +99,24 @@ function MyComponent() {
 All media flows through the existing `editMedia` function:
 
 ```typescript
-import { editMedia } from '@/core/services/media/edit-media'
-import type { ImageOperation, VideoOperation } from '@/core/types/media-types'
+import { editMedia } from '@/core/services/media/edit-media';
+import type { ImageOperation, VideoOperation } from '@/core/types/media-types';
 
 // Images
-const imageOps: ImageOperation[] = []
-const result = await editMedia(imageInput, imageOps, { 
-  imageFormat: 'jpeg', 
-  quality: 0.92 
-})
+const imageOps: ImageOperation[] = [];
+const result = await editMedia(imageInput, imageOps, {
+  imageFormat: 'jpeg',
+  quality: 0.92,
+});
 
 // Videos
 const videoOps: VideoOperation[] = [
   { type: 'trim', startSec: 2, endSec: 10 },
-  { type: 'resize', width: 1080, height: 1920 }
-]
-const result = await editMedia(videoInput, videoOps, { 
-  quality: 0.9 
-})
+  { type: 'resize', width: 1080, height: 1920 },
+];
+const result = await editMedia(videoInput, videoOps, {
+  quality: 0.9,
+});
 ```
 
 ## File Structure
@@ -142,12 +145,14 @@ src/
 ## Testing
 
 Tests are included for all components:
+
 - `use-upload-picker.test.ts` - Picker hook tests
 - `drop-zone-web.test.tsx` - Drag-drop component tests
 - `video-trimmer.test.tsx` - Trimmer component tests
 - `thumbnails.test.ts` - Thumbnail generation tests
 
 Run tests:
+
 ```bash
 npm run test
 ```
@@ -155,6 +160,7 @@ npm run test
 ## Type Safety
 
 All components use strict TypeScript:
+
 - No `any` types
 - Proper interfaces exported
 - Full type coverage for MediaInput, ImageOperation, VideoOperation
@@ -189,4 +195,3 @@ All components use strict TypeScript:
 - [ ] Add preview before export
 - [ ] Support video filters/effects
 - [ ] Add audio track support for videos
-

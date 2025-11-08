@@ -3,11 +3,11 @@ import * as Haptics from 'expo-haptics'
 import React, { useEffect } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import Animated, {
-    runOnJS,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated'
 import type { Notification } from './types'
 
@@ -64,10 +64,7 @@ export function NotificationToast({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { translateY: translateY.value },
-        { scale: scale.value },
-      ],
+      transform: [{ translateY: translateY.value }, { scale: scale.value }],
       opacity: opacity.value,
     }
   })
@@ -91,9 +88,7 @@ export function NotificationToast({
       >
         <View style={styles.content}>
           <Text style={styles.title}>{notification.title}</Text>
-          {notification.message ? (
-            <Text style={styles.message}>{notification.message}</Text>
-          ) : null}
+          {notification.message ? <Text style={styles.message}>{notification.message}</Text> : null}
         </View>
         {notification.action ? (
           <Pressable
@@ -156,4 +151,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 })
-

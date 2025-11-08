@@ -1,11 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  View,
-  Image,
-  StyleSheet,
-  Text,
-  Pressable,
-} from 'react-native';
+import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -17,12 +11,12 @@ import { filterActiveStories } from '@petspark/shared';
 import type { Story } from '@petspark/shared';
 
 interface StoryRingProps {
-  stories: Story[]
-  petName: string
-  petPhoto: string
-  isOwn?: boolean
-  hasUnviewed?: boolean
-  onClick: () => void
+  stories: Story[];
+  petName: string;
+  petPhoto: string;
+  isOwn?: boolean;
+  hasUnviewed?: boolean;
+  onClick: () => void;
 }
 
 export const StoryRing: React.FC<StoryRingProps> = ({
@@ -72,12 +66,7 @@ export const StoryRing: React.FC<StoryRingProps> = ({
           </View>
         ) : (
           <>
-            <View
-              style={[
-                styles.ring,
-                hasUnviewed ? styles.ringUnviewed : styles.ringViewed,
-              ]}
-            >
+            <View style={[styles.ring, hasUnviewed ? styles.ringUnviewed : styles.ringViewed]}>
               <Image source={{ uri: petPhoto }} style={styles.avatar} />
             </View>
 

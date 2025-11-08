@@ -25,20 +25,20 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border
+    borderColor: colors.border,
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.textPrimary
+    color: colors.textPrimary,
   },
   subtitle: {
     marginTop: 4,
     fontSize: 14,
-    color: colors.textSecondary
+    color: colors.textSecondary,
   },
   content: {
     marginTop: 12,
-    gap: 12
-  }
+    gap: 12,
+  },
 })

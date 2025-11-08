@@ -1,6 +1,6 @@
 /**
  * Production-Grade API Client for Mobile App
- * 
+ *
  * Features:
  * - Authentication token injection
  * - Retry logic with exponential backoff + jitter
@@ -12,10 +12,12 @@
  * - Structured error handling
  * - Request deduplication
  * - TLS-only in production
- * 
+ *
  * Location: apps/mobile/src/utils/api-client.ts
  */
 
+import { Platform } from 'react-native'
+import Constants from 'expo-constants'
 import { createLogger } from './logger'
 import { cacheGet, cacheSet } from './offline-cache'
 import { getAuthToken } from './secure-storage'
@@ -23,23 +25,30 @@ import { telemetry } from './telemetry'
 
 const logger = createLogger('api-client')
 
-// Get API base URL from environment or use default
-const getApiBaseUrl = (): string => {
-  // Use environment variable if available (Expo/React Native)
-  if (typeof process !== 'undefined' && process.env?.['EXPO_PUBLIC_API_URL']) {
-    const url = process.env['EXPO_PUBLIC_API_URL'] as string
-    // Enforce TLS in production
-    const isDev = typeof __DEV__ !== 'undefined' && __DEV__
-    if (!isDev && url.startsWith('http://')) {
-      throw new Error('API URL must use HTTPS in production')
-    }
-    return url
+function resolveBaseUrl(): string {
+  const viaEnv = process.env['EXPO_PUBLIC_API_URL']
+  const viaExtra = (Constants?.expoConfig?.extra as Record<string, unknown> | undefined)?.[
+    'apiUrl'
+  ] as string | undefined
+
+  const url = (viaEnv || viaExtra || '').trim()
+
+  const isHttp = (v: string): boolean => /^https?:\/\//i.test(v)
+  if (url && isHttp(url)) return url.replace(/\/+$/, '')
+
+  if (process.env['NODE_ENV'] === 'production') {
+    throw new Error(
+      '[API] Missing EXPO_PUBLIC_API_URL (or app.config.ts extra.apiUrl). ' +
+        'Set it for production builds: https://docs.expo.dev/workflow/configuration/'
+    )
   }
-  // Default to localhost for development
-  return 'http://localhost:3000/api'
+
+  // Dev defaults for emulators
+  const host = Platform.OS === 'android' ? '10.0.2.2' : 'localhost'
+  return `http://${host}:3000/api`
 }
 
-const API_BASE_URL = getApiBaseUrl()
+const API_BASE_URL = resolveBaseUrl()
 
 // Circuit breaker state
 interface CircuitBreakerState {
@@ -196,7 +205,7 @@ class APIClient {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms))
+    return new Promise(resolve => setTimeout(resolve, ms))
   }
 
   private calculateRetryDelay(attempt: number, config: RetryConfig): number {
@@ -238,11 +247,7 @@ class APIClient {
     }
   }
 
-  private async setCachedResponse<T>(
-    cacheKey: string,
-    data: T,
-    etag?: string
-  ): Promise<void> {
+  private async setCachedResponse<T>(cacheKey: string, data: T, etag?: string): Promise<void> {
     try {
       await cacheSet(cacheKey, {
         data,
@@ -259,10 +264,7 @@ class APIClient {
     return `api:${endpoint}:${JSON.stringify(options.body ?? {})}`
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestOptions = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const {
       timeout = 30000,
       retries = DEFAULT_RETRY_CONFIG.maxRetries,
@@ -347,7 +349,9 @@ class APIClient {
         timeout,
         retries,
         endpoint,
-        ...(isGet && !skipCache ? { cacheKey: cacheKey ?? this.getCacheKey(endpoint, options) } : {}),
+        ...(isGet && !skipCache
+          ? { cacheKey: cacheKey ?? this.getCacheKey(endpoint, options) }
+          : {}),
       }
     )
 
@@ -430,12 +434,7 @@ class APIClient {
             // Ignore JSON parse errors
           }
 
-          const apiError = new APIError(
-            errorMessage,
-            errorType,
-            response.status,
-            config.endpoint
-          )
+          const apiError = new APIError(errorMessage, errorType, response.status, config.endpoint)
 
           // Don't retry on client errors (4xx) except 429
           if (response.status >= 400 && response.status < 500 && response.status !== 429) {
@@ -510,7 +509,7 @@ class APIClient {
     return this.request<T>(endpoint, { ...options, method: 'GET' })
   }
 
-  post<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {                                                                       
+  post<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
@@ -518,7 +517,7 @@ class APIClient {
     })
   }
 
-  patch<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {                                                                      
+  patch<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PATCH',
@@ -526,7 +525,7 @@ class APIClient {
     })
   }
 
-  put<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {                                                                        
+  put<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PUT',
@@ -612,7 +611,7 @@ export interface MatchingApiOptions {
 
 // API endpoints
 export const matchingApi = {
-  async getAvailablePets(options?: MatchingApiOptions): Promise<MatchingApiResponse> {                                                                          
+  async getAvailablePets(options?: MatchingApiOptions): Promise<MatchingApiResponse> {
     const params = new URLSearchParams()
     if (options?.limit) params.append('limit', String(options.limit))
     if (options?.cursor) params.append('cursor', options.cursor)

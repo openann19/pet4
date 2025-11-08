@@ -10,66 +10,28 @@ import { useUserStore } from '../store/user-store'
 import { queryKeys, mutationKeys } from '../lib/query-client'
 import type { ApiResponse, PaginatedResponse } from '../types/api'
 import type { Match, PetProfile } from '../types/pet'
-
-const API_BASE_URL = process.env['EXPO_PUBLIC_API_URL'] ?? 'https://api.petspark.app'
+import { apiClient } from '@/utils/api-client'
 
 /**
  * Fetch pets for matching
  */
-async function fetchPets(cursor?: string): Promise<PaginatedResponse<PetProfile>> {
-  const url = cursor
-    ? `${API_BASE_URL}/api/pets?cursor=${cursor}`
-    : `${API_BASE_URL}/api/pets`
-  
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch pets: ${response.statusText}`)
-  }
-
-  const data = await response.json()
-  return data as PaginatedResponse<PetProfile>
+function fetchPets(cursor?: string): Promise<PaginatedResponse<PetProfile>> {
+  const endpoint = cursor ? `/pets?cursor=${cursor}` : '/pets'
+  return apiClient.get<PaginatedResponse<PetProfile>>(endpoint)
 }
 
 /**
  * Like a pet (swipe right)
  */
-async function likePet(petId: string): Promise<ApiResponse<Match | null>> {
-  const response = await fetch(`${API_BASE_URL}/api/pets/${petId}/like`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to like pet: ${response.statusText}`)
-  }
-
-  return response.json()
+function likePet(petId: string): Promise<ApiResponse<Match | null>> {
+  return apiClient.post<ApiResponse<Match | null>>(`/pets/${petId}/like`)
 }
 
 /**
  * Dislike a pet (swipe left)
  */
-async function dislikePet(petId: string): Promise<ApiResponse<null>> {
-  const response = await fetch(`${API_BASE_URL}/api/pets/${petId}/dislike`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to dislike pet: ${response.statusText}`)
-  }
-
-  return response.json()
+function dislikePet(petId: string): Promise<ApiResponse<null>> {
+  return apiClient.post<ApiResponse<null>>(`/pets/${petId}/dislike`)
 }
 
 /**
@@ -87,7 +49,12 @@ export function usePets(cursor?: string): UseQueryResult<PaginatedResponse<PetPr
 /**
  * Hook to like a pet with optimistic updates
  */
-export function useLikePet(): UseMutationResult<ApiResponse<Match | null>, unknown, string, unknown> {
+export function useLikePet(): UseMutationResult<
+  ApiResponse<Match | null>,
+  unknown,
+  string,
+  unknown
+> {
   const queryClient = useQueryClient()
   const { addMatch } = useUserStore()
   const { markAsSwiped, markAsLiked } = usePetsStore()
@@ -103,13 +70,16 @@ export function useLikePet(): UseMutationResult<ApiResponse<Match | null>, unkno
       const previousPets = queryClient.getQueryData<PaginatedResponse<PetProfile>>(['pets'])
 
       // Optimistically update UI
-      queryClient.setQueryData<PaginatedResponse<PetProfile>>(['pets'], (old: PaginatedResponse<PetProfile> | undefined) => {
-        if (!old) return old
-        return {
-          ...old,
-          items: old.items.filter((p: PetProfile) => p.id !== petId),
+      queryClient.setQueryData<PaginatedResponse<PetProfile>>(
+        ['pets'],
+        (old: PaginatedResponse<PetProfile> | undefined) => {
+          if (!old) return old
+          return {
+            ...old,
+            items: old.items.filter((p: PetProfile) => p.id !== petId),
+          }
         }
-      })
+      )
 
       // Mark as swiped/liked in store
       markAsSwiped(petId)
@@ -117,7 +87,11 @@ export function useLikePet(): UseMutationResult<ApiResponse<Match | null>, unkno
 
       return previousPets ? { previousPets } : {}
     },
-    onError: (_err: unknown, _petId: string, context: { previousPets?: PaginatedResponse<PetProfile> } | undefined) => {
+    onError: (
+      _err: unknown,
+      _petId: string,
+      context: { previousPets?: PaginatedResponse<PetProfile> } | undefined
+    ) => {
       // Rollback on error
       if (context?.previousPets) {
         queryClient.setQueryData(['pets'], context.previousPets)
@@ -152,21 +126,28 @@ export function useDislikePet(): UseMutationResult<ApiResponse<null>, unknown, s
     onMutate: async (petId: string): Promise<{ previousPets?: PaginatedResponse<PetProfile> }> => {
       await queryClient.cancelQueries({ queryKey: ['pets'] })
 
-      const previousPets = queryClient.getQueryData<PaginatedResponse<PetProfile>>(['pets'])                                                                    
+      const previousPets = queryClient.getQueryData<PaginatedResponse<PetProfile>>(['pets'])
 
-      queryClient.setQueryData<PaginatedResponse<PetProfile>>(['pets'], (old: PaginatedResponse<PetProfile> | undefined) => {                                   
-        if (!old) return old
-        return {
-          ...old,
-          items: old.items.filter((p: PetProfile) => p.id !== petId),
+      queryClient.setQueryData<PaginatedResponse<PetProfile>>(
+        ['pets'],
+        (old: PaginatedResponse<PetProfile> | undefined) => {
+          if (!old) return old
+          return {
+            ...old,
+            items: old.items.filter((p: PetProfile) => p.id !== petId),
+          }
         }
-      })
+      )
 
       markAsSwiped(petId)
 
       return previousPets ? { previousPets } : {}
     },
-    onError: (_err: unknown, _petId: string, context: { previousPets?: PaginatedResponse<PetProfile> } | undefined) => {
+    onError: (
+      _err: unknown,
+      _petId: string,
+      context: { previousPets?: PaginatedResponse<PetProfile> } | undefined
+    ) => {
       if (context?.previousPets) {
         queryClient.setQueryData(['pets'], context.previousPets)
       }
@@ -177,4 +158,3 @@ export function useDislikePet(): UseMutationResult<ApiResponse<null>, unknown, s
     },
   })
 }
-

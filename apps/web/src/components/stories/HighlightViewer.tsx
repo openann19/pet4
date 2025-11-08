@@ -1,19 +1,19 @@
-import { Button } from '@/components/ui/button'
-import { useStorage } from '@/hooks/useStorage'
-import { haptics } from '@/lib/haptics'
-import type { StoryHighlight } from '@/lib/stories-types'
-import { PushPin, PushPinSlash, Trash, X } from '@phosphor-icons/react'
-import { motion } from '@petspark/motion'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import StoryViewer from './StoryViewer'
+import { Button } from '@/components/ui/button';
+import { useStorage } from '@/hooks/use-storage';
+import { haptics } from '@/lib/haptics';
+import type { StoryHighlight } from '@/lib/stories-types';
+import { PushPin, PushPinSlash, Trash, X } from '@phosphor-icons/react';
+import { motion } from '@petspark/motion';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import StoryViewer from './StoryViewer';
 
 interface HighlightViewerProps {
-  highlight: StoryHighlight
-  currentUserId: string
-  currentUserName: string
-  currentUserAvatar?: string
-  onClose: () => void
+  highlight: StoryHighlight;
+  currentUserId: string;
+  currentUserName: string;
+  currentUserAvatar?: string;
+  onClose: () => void;
 }
 
 export default function HighlightViewer({
@@ -21,42 +21,38 @@ export default function HighlightViewer({
   currentUserId,
   currentUserName,
   currentUserAvatar,
-  onClose
+  onClose,
 }: HighlightViewerProps) {
-  const [, setHighlights] = useStorage<StoryHighlight[]>('story-highlights', [])
-  const [showStoryViewer, setShowStoryViewer] = useState(false)
-  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0)
+  const [, setHighlights] = useStorage<StoryHighlight[]>('story-highlights', []);
+  const [showStoryViewer, setShowStoryViewer] = useState(false);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
 
-  const isOwner = highlight.userId === currentUserId
+  const isOwner = highlight.userId === currentUserId;
 
   const handleStoryClick = (index: number) => {
-    haptics.trigger('light')
-    setSelectedStoryIndex(index)
-    setShowStoryViewer(true)
-  }
+    haptics.trigger('light');
+    setSelectedStoryIndex(index);
+    setShowStoryViewer(true);
+  };
 
   const handleTogglePin = () => {
-    haptics.trigger('selection')
+    haptics.trigger('selection');
     setHighlights((current) =>
-      (current || []).map((h) =>
-        h.id === highlight.id ? { ...h, isPinned: !h.isPinned } : h
-      )
-    )
+      (current || []).map((h) => (h.id === highlight.id ? { ...h, isPinned: !h.isPinned } : h))
+    );
     toast.success(highlight.isPinned ? 'Unpinned' : 'Pinned', {
-      duration: 1500
-    })
-  }
+      duration: 1500,
+    });
+  };
 
   const handleDelete = () => {
-    haptics.trigger('warning')
-    setHighlights((current) =>
-      (current || []).filter((h) => h.id !== highlight.id)
-    )
+    haptics.trigger('warning');
+    setHighlights((current) => (current || []).filter((h) => h.id !== highlight.id));
     toast.success('Highlight deleted', {
-      duration: 2000
-    })
-    onClose()
-  }
+      duration: 2000,
+    });
+    onClose();
+  };
 
   if (showStoryViewer) {
     return (
@@ -68,7 +64,7 @@ export default function HighlightViewer({
         {...(currentUserAvatar !== undefined ? { currentUserAvatar } : {})}
         onClose={() => setShowStoryViewer(false)}
       />
-    )
+    );
   }
 
   return (
@@ -98,12 +94,7 @@ export default function HighlightViewer({
           <div className="flex items-center gap-2 ml-4">
             {isOwner && (
               <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleTogglePin}
-                  className="shrink-0"
-                >
+                <Button variant="ghost" size="icon" onClick={handleTogglePin} className="shrink-0">
                   {highlight.isPinned ? (
                     <PushPinSlash size={20} weight="fill" />
                   ) : (
@@ -122,12 +113,7 @@ export default function HighlightViewer({
               </>
             )}
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="shrink-0"
-            >
+            <Button variant="ghost" size="icon" onClick={onClose} className="shrink-0">
               <X size={24} weight="bold" />
             </Button>
           </div>
@@ -136,7 +122,8 @@ export default function HighlightViewer({
         <div className="flex-1 overflow-y-auto p-6">
           <div className="grid grid-cols-3 gap-3">
             {highlight.stories.map((story, index) => (
-              <MotionView as="button"
+              <MotionView
+                as="button"
                 key={story.id}
                 onClick={() => handleStoryClick(index)}
                 className="aspect-[9/16] rounded-2xl overflow-hidden relative group"
@@ -151,9 +138,9 @@ export default function HighlightViewer({
                   alt={story.caption || `Story ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
-                
+
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                
+
                 {story.caption && (
                   <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <p className="text-white text-xs line-clamp-2 font-medium drop-shadow-lg">
@@ -173,5 +160,5 @@ export default function HighlightViewer({
         </div>
       </MotionView>
     </MotionView>
-  )
+  );
 }

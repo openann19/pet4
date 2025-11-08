@@ -1,31 +1,31 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
+import { useCallback } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withSequence,
-  Easing
-} from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useUIConfig } from '@/hooks/useUIConfig'
+  Easing,
+} from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from '@/hooks/useUIConfig';
 
 export interface UseEmojiTrailOptions {
-  enabled?: boolean
+  enabled?: boolean;
 }
 
 export interface UseEmojiTrailReturn {
-  trigger: (x: number, y: number) => void
-  animatedStyle: AnimatedStyle
-  trailOpacity: ReturnType<typeof useSharedValue<number>>
+  trigger: (x: number, y: number) => void;
+  animatedStyle: AnimatedStyle;
+  trailOpacity: ReturnType<typeof useSharedValue<number>>;
 }
 
 /**
  * Emoji trail effect for reactions
- * 
+ *
  * Creates a trailing effect when emoji reactions are added
- * 
+ *
  * @example
  * ```tsx
  * const { trigger } = useEmojiTrail({ emoji: '❤️' })
@@ -34,56 +34,53 @@ export interface UseEmojiTrailReturn {
  * }
  * ```
  */
-export function useEmojiTrail(
-  options: UseEmojiTrailOptions = {}
-): UseEmojiTrailReturn {
-  const { enabled = true } = options
-  const { animation } = useUIConfig()
+export function useEmojiTrail(options: UseEmojiTrailOptions = {}): UseEmojiTrailReturn {
+  const { enabled = true } = options;
+  const { animation } = useUIConfig();
 
-  const trailOpacity = useSharedValue(0)
+  const trailOpacity = useSharedValue(0);
 
   const trigger = useCallback(
     (_x: number, _y: number): void => {
       if (!enabled || !animation.showTrails) {
-        return
+        return;
       }
 
       trailOpacity.value = withSequence(
         withTiming(1, {
           duration: 200,
-          easing: Easing.out(Easing.ease)
+          easing: Easing.out(Easing.ease),
         }),
         withTiming(0, {
           duration: 600,
-          easing: Easing.in(Easing.ease)
+          easing: Easing.in(Easing.ease),
         })
-      )
+      );
     },
     [enabled, animation.showTrails, trailOpacity]
-  )
+  );
 
   const animatedStyle = useAnimatedStyle(() => {
     if (!enabled || !animation.showTrails) {
-      return {}
+      return {};
     }
 
     return {
       opacity: trailOpacity.value,
       transform: [
         {
-          translateY: -trailOpacity.value * 30
+          translateY: -trailOpacity.value * 30,
         },
         {
-          scale: 0.5 + trailOpacity.value * 0.5
-        }
-      ]
-    }
-  }) as AnimatedStyle
+          scale: 0.5 + trailOpacity.value * 0.5,
+        },
+      ],
+    };
+  }) as AnimatedStyle;
 
   return {
     trigger,
     animatedStyle,
-    trailOpacity
-  }
+    trailOpacity,
+  };
 }
-

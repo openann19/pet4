@@ -64,9 +64,7 @@ const AnimatedPostItem: React.FC<AnimatedPostItemProps> = ({ item, index, onLike
           )}
           <View style={styles.authorInfo}>
             <Text style={styles.authorName}>{item.authorName}</Text>
-            <Text style={styles.postTime}>
-              {new Date(item.timestamp).toLocaleDateString()}
-            </Text>
+            <Text style={styles.postTime}>{new Date(item.timestamp).toLocaleDateString()}</Text>
           </View>
         </View>
 
@@ -79,9 +77,7 @@ const AnimatedPostItem: React.FC<AnimatedPostItemProps> = ({ item, index, onLike
         <View style={styles.postActions}>
           <TouchableOpacity style={styles.actionButton} onPress={handleLike}>
             <Animated.View style={likeAnimatedStyle}>
-              <Text style={[styles.actionIcon, item.likes > 0 && styles.actionIconLiked]}>
-                ♥
-              </Text>
+              <Text style={[styles.actionIcon, item.likes > 0 && styles.actionIconLiked]}>♥</Text>
             </Animated.View>
             <Text style={styles.actionText}>{item.likes}</Text>
           </TouchableOpacity>

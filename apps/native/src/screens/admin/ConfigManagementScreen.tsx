@@ -1,20 +1,18 @@
 /**
  * Config Management Screen (Mobile)
- * 
+ *
  * Mobile admin screen for managing all configuration types (Business, Matching, Map, API).
  */
 
 import React, { useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AnimatedCard } from '../components/AnimatedCard';
-import { FadeInView } from '../components/FadeInView';
+import { createLogger } from '../../utils/logger';
+import { mobileAdminApi } from '../../api/admin-api';
+import { AnimatedCard } from '../../components/AnimatedCard';
+import { FadeInView } from '../../components/FadeInView';
+
+const logger = createLogger('ConfigManagementScreen');
 
 type ConfigType = 'business' | 'matching' | 'map' | 'api';
 
@@ -59,10 +57,12 @@ export const ConfigManagementScreen: React.FC = () => {
   const handleBroadcast = async (configType: ConfigType) => {
     setBroadcasting(true);
     try {
-      // TODO: Implement broadcast API call
-      // await adminApi.broadcastConfig(configType, config);
+      const config: Record<string, unknown> = {};
+      await mobileAdminApi.broadcastConfig(configType, config);
+      setSelectedConfig(null);
     } catch (error) {
-      console.error('Failed to broadcast config:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to broadcast config', err, { context: 'handleBroadcast', configType });
     } finally {
       setBroadcasting(false);
     }
@@ -98,10 +98,7 @@ export const ConfigManagementScreen: React.FC = () => {
                   <Text style={styles.editButtonText}>Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[
-                    styles.broadcastButton,
-                    broadcasting && styles.broadcastButtonDisabled,
-                  ]}
+                  style={[styles.broadcastButton, broadcasting && styles.broadcastButtonDisabled]}
                   onPress={() => handleBroadcast(item.type)}
                   disabled={broadcasting}
                 >
@@ -212,4 +209,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

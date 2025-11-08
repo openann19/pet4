@@ -72,7 +72,7 @@ jobs:
   complexity-check:
     name: Code Complexity Check
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -202,7 +202,15 @@ jobs:
   all-checks-passed:
     name: All Checks Passed
     runs-on: ubuntu-latest
-    needs: [quality-gates, complexity-check, security-scan, accessibility-check, i18n-check, performance-budget]
+    needs:
+      [
+        quality-gates,
+        complexity-check,
+        security-scan,
+        accessibility-check,
+        i18n-check,
+        performance-budget,
+      ]
     if: always()
 
     steps:

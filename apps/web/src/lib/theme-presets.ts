@@ -1,4 +1,4 @@
-export type ThemePreset = 
+export type ThemePreset =
   | 'default-light'
   | 'default-dark'
   | 'ocean'
@@ -16,42 +16,42 @@ export type ThemePreset =
   | 'arctic-frost'
   | 'tropical-paradise'
   | 'volcanic-ember'
-  | 'cosmic-purple'
+  | 'cosmic-purple';
 
 export interface ThemeColors {
-  background: string
-  foreground: string
-  card: string
-  cardForeground: string
-  popover: string
-  popoverForeground: string
-  primary: string
-  primaryForeground: string
-  secondary: string
-  secondaryForeground: string
-  muted: string
-  mutedForeground: string
-  accent: string
-  accentForeground: string
-  destructive: string
-  destructiveForeground: string
-  border: string
-  input: string
-  ring: string
-  lavender?: string
+  background: string;
+  foreground: string;
+  card: string;
+  cardForeground: string;
+  popover: string;
+  popoverForeground: string;
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  muted: string;
+  mutedForeground: string;
+  accent: string;
+  accentForeground: string;
+  destructive: string;
+  destructiveForeground: string;
+  border: string;
+  input: string;
+  ring: string;
+  lavender?: string;
 }
 
 export interface ThemePresetConfig {
-  id: ThemePreset
-  name: string
-  description: string
-  mode: 'light' | 'dark'
-  colors: ThemeColors
+  id: ThemePreset;
+  name: string;
+  description: string;
+  mode: 'light' | 'dark';
+  colors: ThemeColors;
   preview: {
-    primary: string
-    secondary: string
-    accent: string
-  }
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
 }
 
 export const themePresets: ThemePresetConfig[] = [
@@ -649,53 +649,55 @@ export const themePresets: ThemePresetConfig[] = [
       accent: '#9850E8',
     },
   },
-]
+];
 
 export function getThemePreset(id: ThemePreset): ThemePresetConfig | undefined {
-  return themePresets.find(preset => preset.id === id)
+  return themePresets.find((preset) => preset.id === id);
 }
 
 export function applyThemePreset(preset: ThemePresetConfig) {
-  const root = document.documentElement
-  const colors = preset.colors
+  const root = document.documentElement;
+  const colors = preset.colors;
 
-  root.style.setProperty('--background', colors.background)
-  root.style.setProperty('--foreground', colors.foreground)
-  root.style.setProperty('--card', colors.card)
-  root.style.setProperty('--card-foreground', colors.cardForeground)
-  root.style.setProperty('--popover', colors.popover)
-  root.style.setProperty('--popover-foreground', colors.popoverForeground)
-  root.style.setProperty('--primary', colors.primary)
-  root.style.setProperty('--primary-foreground', colors.primaryForeground)
-  root.style.setProperty('--secondary', colors.secondary)
-  root.style.setProperty('--secondary-foreground', colors.secondaryForeground)
-  root.style.setProperty('--muted', colors.muted)
-  root.style.setProperty('--muted-foreground', colors.mutedForeground)
-  root.style.setProperty('--accent', colors.accent)
-  root.style.setProperty('--accent-foreground', colors.accentForeground)
-  root.style.setProperty('--destructive', colors.destructive)
-  root.style.setProperty('--destructive-foreground', colors.destructiveForeground)                                                                              
-  root.style.setProperty('--border', colors.border)
-  root.style.setProperty('--input', colors.input)
-  root.style.setProperty('--ring', colors.ring)
-  
+  root.style.setProperty('--background', colors.background);
+  root.style.setProperty('--foreground', colors.foreground);
+  root.style.setProperty('--card', colors.card);
+  root.style.setProperty('--card-foreground', colors.cardForeground);
+  root.style.setProperty('--popover', colors.popover);
+  root.style.setProperty('--popover-foreground', colors.popoverForeground);
+  root.style.setProperty('--primary', colors.primary);
+  root.style.setProperty('--primary-foreground', colors.primaryForeground);
+  root.style.setProperty('--secondary', colors.secondary);
+  root.style.setProperty('--secondary-foreground', colors.secondaryForeground);
+  root.style.setProperty('--muted', colors.muted);
+  root.style.setProperty('--muted-foreground', colors.mutedForeground);
+  root.style.setProperty('--accent', colors.accent);
+  root.style.setProperty('--accent-foreground', colors.accentForeground);
+  root.style.setProperty('--destructive', colors.destructive);
+  root.style.setProperty('--destructive-foreground', colors.destructiveForeground);
+  root.style.setProperty('--border', colors.border);
+  root.style.setProperty('--input', colors.input);
+  root.style.setProperty('--ring', colors.ring);
+
   if (colors.lavender) {
-    root.style.setProperty('--lavender', colors.lavender)
+    root.style.setProperty('--lavender', colors.lavender);
   }
 
   if (preset.mode === 'dark') {
-    root.classList.add('dark')
+    root.classList.add('dark');
   } else {
-    root.classList.remove('dark')
+    root.classList.remove('dark');
   }
 
   // Apply button tokens for this theme (dynamic import for code splitting)
   if (typeof window !== 'undefined') {
     // Use dynamic import to avoid blocking initial render
-    void import('@/core/tokens/button-tokens-theme-system').then(({ applyButtonTokensForTheme }) => {
-      applyButtonTokensForTheme(preset.id)
-    }).catch(() => {
-      // Silently fail if module not loaded yet
-    })
+    void import('@/core/tokens/button-tokens-theme-system')
+      .then(({ applyButtonTokensForTheme }) => {
+        applyButtonTokensForTheme(preset.id);
+      })
+      .catch(() => {
+        // Silently fail if module not loaded yet
+      });
   }
 }

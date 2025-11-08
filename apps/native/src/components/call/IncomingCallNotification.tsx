@@ -1,13 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  Pressable,
-  Image,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, Image, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -61,21 +53,13 @@ export const IncomingCallNotification: React.FC<IncomingCallNotificationProps> =
   if (!visible) return null;
 
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="slide"
-      statusBarTranslucent
-    >
+    <Modal visible={visible} transparent={true} animationType="slide" statusBarTranslucent>
       <View style={styles.container}>
         <View style={styles.content}>
           {/* Caller Photo */}
           <Animated.View style={[styles.photoContainer, animatedStyle]}>
             {caller.photo ? (
-              <Image
-                source={{ uri: caller.photo }}
-                style={styles.photo}
-              />
+              <Image source={{ uri: caller.photo }} style={styles.photo} />
             ) : (
               <View style={[styles.photo, styles.photoPlaceholder]}>
                 <Text style={styles.photoPlaceholderText}>
@@ -92,19 +76,13 @@ export const IncomingCallNotification: React.FC<IncomingCallNotificationProps> =
           {/* Action Buttons */}
           <View style={styles.buttonsContainer}>
             {/* Decline Button */}
-            <Pressable
-              style={[styles.actionButton, styles.declineButton]}
-              onPress={onDecline}
-            >
+            <Pressable style={[styles.actionButton, styles.declineButton]} onPress={onDecline}>
               <Text style={styles.buttonIcon}>✕</Text>
               <Text style={styles.buttonLabel}>Decline</Text>
             </Pressable>
 
             {/* Accept Button */}
-            <Pressable
-              style={[styles.actionButton, styles.acceptButton]}
-              onPress={onAccept}
-            >
+            <Pressable style={[styles.actionButton, styles.acceptButton]} onPress={onAccept}>
               <Text style={styles.buttonIcon}>📹</Text>
               <Text style={styles.buttonLabel}>Accept</Text>
             </Pressable>

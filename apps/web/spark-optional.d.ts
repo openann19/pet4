@@ -19,4 +19,3 @@ declare module '@github/spark/vitePhosphorIconProxyPlugin' {
   const plugin: () => PluginOption;
   export default plugin;
 }
-

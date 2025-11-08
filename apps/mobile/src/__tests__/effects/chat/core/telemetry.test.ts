@@ -1,16 +1,16 @@
 /**
  * Unit Tests for Telemetry
- * 
+ *
  * Location: apps/mobile/src/__tests__/effects/chat/core/telemetry.test.ts
  */
 
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
-    clearActiveEffects,
-    getActiveEffectsCount,
-    logEffectEnd,
-    logEffectError,
-    logEffectStart,
+  clearActiveEffects,
+  getActiveEffectsCount,
+  logEffectEnd,
+  logEffectError,
+  logEffectStart,
 } from '../../../../effects/chat/core/telemetry'
 
 describe('Telemetry', () => {
@@ -64,4 +64,3 @@ describe('Telemetry', () => {
     })
   })
 })
-

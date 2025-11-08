@@ -1,16 +1,16 @@
-export type Environment = 'dev' | 'staging' | 'prod'
+export type Environment = 'dev' | 'staging' | 'prod';
 
 export interface AppConfig {
-  ENV: Environment
-  API_BASE_URL: string
-  WS_URL: string
-  CDN_URL: string
-  MEDIA_UPLOAD_PROVIDER: 'simulated' | 'cloudinary' | 's3'
-  AUTH_ISSUER: string
-  SENTRY_DSN: string
-  FEATURE_FLAGS_ENDPOINT: string
-  BUILD_VERSION: string
-  COMMIT_SHA: string
+  ENV: Environment;
+  API_BASE_URL: string;
+  WS_URL: string;
+  CDN_URL: string;
+  MEDIA_UPLOAD_PROVIDER: 'simulated' | 'cloudinary' | 's3';
+  AUTH_ISSUER: string;
+  SENTRY_DSN: string;
+  FEATURE_FLAGS_ENDPOINT: string;
+  BUILD_VERSION: string;
+  COMMIT_SHA: string;
 }
 
 const ENV_CONFIGS: Record<Environment, AppConfig> = {
@@ -24,7 +24,7 @@ const ENV_CONFIGS: Record<Environment, AppConfig> = {
     SENTRY_DSN: '',
     FEATURE_FLAGS_ENDPOINT: 'http://localhost:3000/api/features',
     BUILD_VERSION: '1.0.0-dev',
-    COMMIT_SHA: 'local'
+    COMMIT_SHA: 'local',
   },
   staging: {
     ENV: 'staging',
@@ -36,7 +36,7 @@ const ENV_CONFIGS: Record<Environment, AppConfig> = {
     SENTRY_DSN: 'https://sentry.io/staging',
     FEATURE_FLAGS_ENDPOINT: 'https://api-staging.pawfectmatch.app/api/features',
     BUILD_VERSION: '1.0.0-rc',
-    COMMIT_SHA: import.meta.env['VITE_COMMIT_SHA'] || 'unknown'
+    COMMIT_SHA: import.meta.env['VITE_COMMIT_SHA'] || 'unknown',
   },
   prod: {
     ENV: 'prod',
@@ -48,32 +48,32 @@ const ENV_CONFIGS: Record<Environment, AppConfig> = {
     SENTRY_DSN: 'https://sentry.io/prod',
     FEATURE_FLAGS_ENDPOINT: 'https://api.pawfectmatch.app/api/features',
     BUILD_VERSION: '1.0.0',
-    COMMIT_SHA: import.meta.env['VITE_COMMIT_SHA'] || 'unknown'
-  }
-}
+    COMMIT_SHA: import.meta.env['VITE_COMMIT_SHA'] || 'unknown',
+  },
+};
 
 function detectEnvironment(): Environment {
-  const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
-  
-  if (hostname.includes('staging')) return 'staging'
-  if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) return 'dev'
-  return 'prod'
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+
+  if (hostname.includes('staging')) return 'staging';
+  if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) return 'dev';
+  return 'prod';
 }
 
-let currentConfig: AppConfig = ENV_CONFIGS[detectEnvironment()]
+let currentConfig: AppConfig = ENV_CONFIGS[detectEnvironment()];
 
 export function getConfig(): AppConfig {
-  return currentConfig
+  return currentConfig;
 }
 
 export function setEnvironment(env: Environment): void {
-  currentConfig = ENV_CONFIGS[env]
+  currentConfig = ENV_CONFIGS[env];
 }
 
 export const config = {
   get: getConfig,
   setEnv: setEnvironment,
   get current() {
-    return getConfig()
-  }
-}
+    return getConfig();
+  },
+};

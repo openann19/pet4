@@ -1,15 +1,15 @@
-import type { Species } from './species'
+import type { Species } from './species';
 
 export interface BreedDefinition {
-  id: string
-  species: Species
-  name: { en: string; bg: string }
-  synonyms: string[]
-  family?: string
-  sizeCategory: string
-  typicalWeight: { min: number; max: number }
-  temperamentTags: string[]
-  energyLevel: number
+  id: string;
+  species: Species;
+  name: { en: string; bg: string };
+  synonyms: string[];
+  family?: string;
+  sizeCategory: string;
+  typicalWeight: { min: number; max: number };
+  temperamentTags: string[];
+  energyLevel: number;
 }
 
 export const DOG_BREEDS: BreedDefinition[] = [
@@ -22,7 +22,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'large',
     typicalWeight: { min: 25, max: 34 },
     temperamentTags: ['friendly', 'intelligent', 'devoted', 'gentle'],
-    energyLevel: 4
+    energyLevel: 4,
   },
   {
     id: 'dog-labrador',
@@ -33,7 +33,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'large',
     typicalWeight: { min: 25, max: 36 },
     temperamentTags: ['friendly', 'outgoing', 'active', 'gentle'],
-    energyLevel: 5
+    energyLevel: 5,
   },
   {
     id: 'dog-german-shepherd',
@@ -44,7 +44,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'large',
     typicalWeight: { min: 22, max: 40 },
     temperamentTags: ['confident', 'courageous', 'intelligent', 'loyal'],
-    energyLevel: 5
+    energyLevel: 5,
   },
   {
     id: 'dog-french-bulldog',
@@ -55,7 +55,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'small',
     typicalWeight: { min: 8, max: 14 },
     temperamentTags: ['playful', 'adaptable', 'smart', 'affectionate'],
-    energyLevel: 2
+    energyLevel: 2,
   },
   {
     id: 'dog-beagle',
@@ -66,7 +66,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'small',
     typicalWeight: { min: 9, max: 11 },
     temperamentTags: ['friendly', 'curious', 'merry'],
-    energyLevel: 4
+    energyLevel: 4,
   },
   {
     id: 'dog-poodle',
@@ -77,7 +77,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'medium',
     typicalWeight: { min: 20, max: 32 },
     temperamentTags: ['intelligent', 'active', 'proud'],
-    energyLevel: 4
+    energyLevel: 4,
   },
   {
     id: 'dog-bulldog',
@@ -88,7 +88,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'medium',
     typicalWeight: { min: 18, max: 25 },
     temperamentTags: ['calm', 'courageous', 'friendly', 'dignified'],
-    energyLevel: 2
+    energyLevel: 2,
   },
   {
     id: 'dog-rottweiler',
@@ -99,7 +99,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'large',
     typicalWeight: { min: 35, max: 60 },
     temperamentTags: ['confident', 'loyal', 'protective', 'courageous'],
-    energyLevel: 4
+    energyLevel: 4,
   },
   {
     id: 'dog-siberian-husky',
@@ -110,7 +110,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'medium',
     typicalWeight: { min: 16, max: 27 },
     temperamentTags: ['outgoing', 'alert', 'gentle', 'friendly'],
-    energyLevel: 5
+    energyLevel: 5,
   },
   {
     id: 'dog-chihuahua',
@@ -121,7 +121,7 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'toy',
     typicalWeight: { min: 1.5, max: 3 },
     temperamentTags: ['charming', 'graceful', 'sassy'],
-    energyLevel: 3
+    energyLevel: 3,
   },
   {
     id: 'dog-mixed',
@@ -132,9 +132,9 @@ export const DOG_BREEDS: BreedDefinition[] = [
     sizeCategory: 'medium',
     typicalWeight: { min: 10, max: 30 },
     temperamentTags: ['friendly', 'adaptable'],
-    energyLevel: 3
-  }
-]
+    energyLevel: 3,
+  },
+];
 
 export const CAT_BREEDS: BreedDefinition[] = [
   {
@@ -145,7 +145,7 @@ export const CAT_BREEDS: BreedDefinition[] = [
     sizeCategory: 'medium',
     typicalWeight: { min: 3.5, max: 5.5 },
     temperamentTags: ['gentle', 'quiet', 'sweet'],
-    energyLevel: 2
+    energyLevel: 2,
   },
   {
     id: 'cat-maine-coon',
@@ -155,7 +155,7 @@ export const CAT_BREEDS: BreedDefinition[] = [
     sizeCategory: 'large',
     typicalWeight: { min: 5.5, max: 8 },
     temperamentTags: ['friendly', 'sociable', 'intelligent'],
-    energyLevel: 3
+    energyLevel: 3,
   },
   {
     id: 'cat-siamese',
@@ -165,7 +165,7 @@ export const CAT_BREEDS: BreedDefinition[] = [
     sizeCategory: 'small',
     typicalWeight: { min: 2.5, max: 4.5 },
     temperamentTags: ['vocal', 'social', 'intelligent', 'demanding'],
-    energyLevel: 4
+    energyLevel: 4,
   },
   {
     id: 'cat-british-shorthair',
@@ -175,7 +175,7 @@ export const CAT_BREEDS: BreedDefinition[] = [
     sizeCategory: 'medium',
     typicalWeight: { min: 4, max: 7 },
     temperamentTags: ['easygoing', 'calm', 'affectionate'],
-    energyLevel: 2
+    energyLevel: 2,
   },
   {
     id: 'cat-ragdoll',
@@ -185,7 +185,7 @@ export const CAT_BREEDS: BreedDefinition[] = [
     sizeCategory: 'large',
     typicalWeight: { min: 4.5, max: 9 },
     temperamentTags: ['docile', 'placid', 'affectionate'],
-    energyLevel: 2
+    energyLevel: 2,
   },
   {
     id: 'cat-bengal',
@@ -195,7 +195,7 @@ export const CAT_BREEDS: BreedDefinition[] = [
     sizeCategory: 'medium',
     typicalWeight: { min: 4, max: 7 },
     temperamentTags: ['active', 'intelligent', 'curious', 'playful'],
-    energyLevel: 5
+    energyLevel: 5,
   },
   {
     id: 'cat-russian-blue',
@@ -205,7 +205,7 @@ export const CAT_BREEDS: BreedDefinition[] = [
     sizeCategory: 'small',
     typicalWeight: { min: 3, max: 5.5 },
     temperamentTags: ['quiet', 'intelligent', 'shy'],
-    energyLevel: 3
+    energyLevel: 3,
   },
   {
     id: 'cat-sphynx',
@@ -215,7 +215,7 @@ export const CAT_BREEDS: BreedDefinition[] = [
     sizeCategory: 'medium',
     typicalWeight: { min: 3, max: 5 },
     temperamentTags: ['energetic', 'loyal', 'curious'],
-    energyLevel: 4
+    energyLevel: 4,
   },
   {
     id: 'cat-mixed',
@@ -225,23 +225,24 @@ export const CAT_BREEDS: BreedDefinition[] = [
     sizeCategory: 'medium',
     typicalWeight: { min: 3.5, max: 5.5 },
     temperamentTags: ['friendly', 'adaptable'],
-    energyLevel: 3
-  }
-]
+    energyLevel: 3,
+  },
+];
 
-export const ALL_BREEDS = [...DOG_BREEDS, ...CAT_BREEDS]
+export const ALL_BREEDS = [...DOG_BREEDS, ...CAT_BREEDS];
 
 export function findBreedByName(species: Species, breedName: string): BreedDefinition | undefined {
-  const normalized = breedName.toLowerCase().trim()
-  const breeds = species === 'dog' ? DOG_BREEDS : CAT_BREEDS
-  
-  return breeds.find(breed => 
-    breed.name.en.toLowerCase() === normalized ||
-    breed.name.bg.toLowerCase() === normalized ||
-    breed.synonyms.some(syn => syn.toLowerCase() === normalized)
-  )
+  const normalized = breedName.toLowerCase().trim();
+  const breeds = species === 'dog' ? DOG_BREEDS : CAT_BREEDS;
+
+  return breeds.find(
+    (breed) =>
+      breed.name.en.toLowerCase() === normalized ||
+      breed.name.bg.toLowerCase() === normalized ||
+      breed.synonyms.some((syn) => syn.toLowerCase() === normalized)
+  );
 }
 
 export function getBreedById(breedId: string): BreedDefinition | undefined {
-  return ALL_BREEDS.find(b => b.id === breedId)
+  return ALL_BREEDS.find((b) => b.id === breedId);
 }

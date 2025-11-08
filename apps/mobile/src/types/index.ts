@@ -3,19 +3,10 @@
  * Location: src/types/index.ts
  */
 
-export type {
-    Match, PetProfile, SwipeAction
-} from './pet'
+export type { Match, PetProfile, SwipeAction } from './pet'
 
-export type {
-    ApiError, ApiResponse, PaginatedResponse
-} from './api'
+export type { ApiError, ApiResponse, PaginatedResponse } from './api'
 
-export {
-    isMatch, isPetProfile
-} from './pet'
+export { isMatch, isPetProfile } from './pet'
 
-export {
-    isApiError, isApiResponse
-} from './api'
-
+export { isApiError, isApiResponse } from './api'

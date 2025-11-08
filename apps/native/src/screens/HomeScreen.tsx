@@ -10,12 +10,10 @@ export default function HomeScreen(): React.JSX.Element {
   return (
     <ScrollView style={styles.container}>
       <StatusBar style="auto" />
-      
+
       <View style={styles.header}>
         <Text style={styles.title}>Welcome to Pet3 Native</Text>
-        <Text style={styles.subtitle}>
-          A production-ready Expo app with monorepo support
-        </Text>
+        <Text style={styles.subtitle}>A production-ready Expo app with monorepo support</Text>
       </View>
 
       <View style={styles.card}>
@@ -57,9 +55,7 @@ export default function HomeScreen(): React.JSX.Element {
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          Built with ❤️ for iOS, Android, and Web
-        </Text>
+        <Text style={styles.footerText}>Built with ❤️ for iOS, Android, and Web</Text>
       </View>
     </ScrollView>
   );

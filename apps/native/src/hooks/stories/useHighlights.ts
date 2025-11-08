@@ -61,7 +61,11 @@ export const useHighlights = (userId: string) => {
         return { success: true, highlight: newHighlight };
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to create highlight', err, { context: 'createHighlight', userId, title });
+        logger.error('Failed to create highlight', err, {
+          context: 'createHighlight',
+          userId,
+          title,
+        });
         return { success: false, error: 'Failed to create highlight' };
       }
     },
@@ -72,16 +76,17 @@ export const useHighlights = (userId: string) => {
     async (highlightId: string, updates: Partial<Highlight>) => {
       try {
         const updatedHighlights = highlights.map((h) =>
-          h.id === highlightId
-            ? { ...h, ...updates, updatedAt: new Date().toISOString() }
-            : h
+          h.id === highlightId ? { ...h, ...updates, updatedAt: new Date().toISOString() } : h
         );
         await saveHighlights(updatedHighlights);
 
         return { success: true };
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to update highlight', err, { context: 'updateHighlight', highlightId });
+        logger.error('Failed to update highlight', err, {
+          context: 'updateHighlight',
+          highlightId,
+        });
         return { success: false, error: 'Failed to update highlight' };
       }
     },
@@ -97,7 +102,10 @@ export const useHighlights = (userId: string) => {
         return { success: true };
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to delete highlight', err, { context: 'deleteHighlight', highlightId });
+        logger.error('Failed to delete highlight', err, {
+          context: 'deleteHighlight',
+          highlightId,
+        });
         return { success: false, error: 'Failed to delete highlight' };
       }
     },
@@ -109,9 +117,7 @@ export const useHighlights = (userId: string) => {
       try {
         const updatedHighlights = highlights.map((h) => {
           if (h.id === highlightId) {
-            const uniqueStoryIds = Array.from(
-              new Set([...h.storyIds, ...storyIds])
-            );
+            const uniqueStoryIds = Array.from(new Set([...h.storyIds, ...storyIds]));
             return {
               ...h,
               storyIds: uniqueStoryIds,
@@ -125,7 +131,11 @@ export const useHighlights = (userId: string) => {
         return { success: true };
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to add stories to highlight', err, { context: 'addStoriesToHighlight', highlightId, storyIds });
+        logger.error('Failed to add stories to highlight', err, {
+          context: 'addStoriesToHighlight',
+          highlightId,
+          storyIds,
+        });
         return { success: false, error: 'Failed to add stories' };
       }
     },
@@ -150,7 +160,11 @@ export const useHighlights = (userId: string) => {
         return { success: true };
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to remove story from highlight', err, { context: 'removeStoryFromHighlight', highlightId, storyId });
+        logger.error('Failed to remove story from highlight', err, {
+          context: 'removeStoryFromHighlight',
+          highlightId,
+          storyId,
+        });
         return { success: false, error: 'Failed to remove story' };
       }
     },

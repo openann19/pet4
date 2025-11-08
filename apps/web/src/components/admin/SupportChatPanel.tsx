@@ -1,40 +1,46 @@
 /**
  * Support Chat Panel
- * 
+ *
  * Admin panel for managing support tickets and customer service interactions.
  */
 
-'use client'
+'use client';
 
-import { supportApi } from '@/api/support-api'
-import { adminApi } from '@/api/admin-api'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { supportApi } from '@/api/support-api';
+import { adminApi } from '@/api/admin-api';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
-import { useStorage } from '@/hooks/useStorage'
-import { createLogger } from '@/lib/logger'
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import { useStorage } from '@/hooks/use-storage';
+import { createLogger } from '@/lib/logger';
 import type {
   SupportTicket,
   SupportTicketMessage,
   SupportTicketFilter,
-  SupportTicketStats
-} from '@/lib/support-types'
-import type { User } from '@/lib/user-service'
+  SupportTicketStats,
+} from '@/lib/support-types';
+import type { User } from '@/lib/user-service';
 import {
   ChatCircle,
   CheckCircle,
@@ -44,196 +50,197 @@ import {
   PaperPlaneTilt,
   Plus,
   User as UserIcon,
-  XCircle
-} from '@phosphor-icons/react'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+  XCircle,
+} from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('SupportChatPanel')
+const logger = createLogger('SupportChatPanel');
 
 export default function SupportChatPanel() {
-  const [tickets, setTickets] = useState<SupportTicket[]>([])
-  const [stats, setStats] = useState<SupportTicketStats | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null)
-  const [messages, setMessages] = useState<SupportTicketMessage[]>([])
-  const [newMessage, setNewMessage] = useState('')
-  const [sendingMessage, setSendingMessage] = useState(false)
-  const [filter, setFilter] = useState<SupportTicketFilter>({})
-  const [createTicketOpen, setCreateTicketOpen] = useState(false)
-  const [currentUser] = useStorage<User | null>('current-user', null)
-  const [activeTab, setActiveTab] = useState<'all' | 'open' | 'in-progress' | 'resolved'>('all')
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [stats, setStats] = useState<SupportTicketStats | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
+  const [messages, setMessages] = useState<SupportTicketMessage[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const [filter, setFilter] = useState<SupportTicketFilter>({});
+  const [createTicketOpen, setCreateTicketOpen] = useState(false);
+  const [currentUser] = useStorage<User | null>('current-user', null);
+  const [activeTab, setActiveTab] = useState<'all' | 'open' | 'in-progress' | 'resolved'>('all');
 
   useEffect(() => {
-    loadTickets()
-    loadStats()
-  }, [filter, activeTab])
+    loadTickets();
+    loadStats();
+  }, [filter, activeTab]);
 
   useEffect(() => {
     if (selectedTicket) {
-      loadMessages(selectedTicket.id)
+      loadMessages(selectedTicket.id);
     }
-  }, [selectedTicket])
+  }, [selectedTicket]);
 
   const loadTickets = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const statusFilter: SupportTicket['status'][] = 
-        activeTab === 'all' ? [] :
-        activeTab === 'open' ? ['open'] :
-        activeTab === 'in-progress' ? ['in-progress'] :
-        ['resolved', 'closed']
+      const statusFilter: SupportTicket['status'][] =
+        activeTab === 'all'
+          ? []
+          : activeTab === 'open'
+            ? ['open']
+            : activeTab === 'in-progress'
+              ? ['in-progress']
+              : ['resolved', 'closed'];
 
       const ticketsData = await supportApi.getTickets({
         ...filter,
-        status: statusFilter.length > 0 ? statusFilter : filter.status
-      })
-      setTickets(ticketsData)
+        status: statusFilter.length > 0 ? statusFilter : filter.status,
+      });
+      setTickets(ticketsData);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load tickets', err)
-      toast.error('Failed to load support tickets')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load tickets', err);
+      toast.error('Failed to load support tickets');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadStats = async () => {
     try {
-      const statsData = await supportApi.getStats()
-      setStats(statsData)
+      const statsData = await supportApi.getStats();
+      setStats(statsData);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load stats', err)
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load stats', err);
     }
-  }
+  };
 
   const loadMessages = async (ticketId: string) => {
     try {
-      const messagesData = await supportApi.getTicketMessages(ticketId)
-      setMessages(messagesData.sort((a, b) => 
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      ))
+      const messagesData = await supportApi.getTicketMessages(ticketId);
+      setMessages(
+        messagesData.sort(
+          (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        )
+      );
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load messages', err)
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load messages', err);
     }
-  }
+  };
 
   const handleSelectTicket = async (ticket: SupportTicket) => {
-    setSelectedTicket(ticket)
-  }
+    setSelectedTicket(ticket);
+  };
 
   const handleSendMessage = async () => {
-    if (!selectedTicket || !newMessage.trim()) return
+    if (!selectedTicket || !newMessage.trim()) return;
 
     try {
-      setSendingMessage(true)
+      setSendingMessage(true);
       const message = await supportApi.addTicketMessage(selectedTicket.id, {
-        message: newMessage
-      })
-      setMessages([...messages, message])
-      setNewMessage('')
-      
+        message: newMessage,
+      });
+      setMessages([...messages, message]);
+      setNewMessage('');
+
       await adminApi.createAuditLog({
         adminId: currentUser?.id || 'admin',
         action: 'support_ticket_message',
         targetType: 'support_ticket',
         targetId: selectedTicket.id,
-        details: JSON.stringify({ messageId: message.id })
-      })
+        details: JSON.stringify({ messageId: message.id }),
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to send message', err)
-      toast.error('Failed to send message')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to send message', err);
+      toast.error('Failed to send message');
     } finally {
-      setSendingMessage(false)
+      setSendingMessage(false);
     }
-  }
+  };
 
   const handleUpdateStatus = async (status: SupportTicket['status']) => {
-    if (!selectedTicket) return
+    if (!selectedTicket) return;
 
     try {
-      const updated = await supportApi.updateTicketStatus(selectedTicket.id, status)
-      setSelectedTicket(updated)
-      setTickets(tickets.map(t => t.id === updated.id ? updated : t))
-      toast.success(`Ticket ${status}`)
-      
+      const updated = await supportApi.updateTicketStatus(selectedTicket.id, status);
+      setSelectedTicket(updated);
+      setTickets(tickets.map((t) => (t.id === updated.id ? updated : t)));
+      toast.success(`Ticket ${status}`);
+
       await adminApi.createAuditLog({
         adminId: currentUser?.id || 'admin',
         action: 'support_ticket_status_update',
         targetType: 'support_ticket',
         targetId: selectedTicket.id,
-        details: JSON.stringify({ status })
-      })
+        details: JSON.stringify({ status }),
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to update status', err)
-      toast.error('Failed to update ticket status')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to update status', err);
+      toast.error('Failed to update ticket status');
     }
-  }
+  };
 
   const handleAssignTicket = async (assignedTo: string) => {
-    if (!selectedTicket) return
+    if (!selectedTicket) return;
 
     try {
-      const updated = await supportApi.assignTicket(selectedTicket.id, assignedTo)
-      setSelectedTicket(updated)
-      setTickets(tickets.map(t => t.id === updated.id ? updated : t))
-      toast.success('Ticket assigned')
-      
+      const updated = await supportApi.assignTicket(selectedTicket.id, assignedTo);
+      setSelectedTicket(updated);
+      setTickets(tickets.map((t) => (t.id === updated.id ? updated : t)));
+      toast.success('Ticket assigned');
+
       await adminApi.createAuditLog({
         adminId: currentUser?.id || 'admin',
         action: 'support_ticket_assign',
         targetType: 'support_ticket',
         targetId: selectedTicket.id,
-        details: JSON.stringify({ assignedTo })
-      })
+        details: JSON.stringify({ assignedTo }),
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to assign ticket', err)
-      toast.error('Failed to assign ticket')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to assign ticket', err);
+      toast.error('Failed to assign ticket');
     }
-  }
+  };
 
   const getPriorityBadge = (priority: SupportTicket['priority']) => {
     const variants = {
       low: 'secondary',
       medium: 'default',
       high: 'destructive',
-      urgent: 'destructive'
-    } as const
+      urgent: 'destructive',
+    } as const;
 
-    return (
-      <Badge variant={variants[priority]}>
-        {priority.toUpperCase()}
-      </Badge>
-    )
-  }
+    return <Badge variant={variants[priority]}>{priority.toUpperCase()}</Badge>;
+  };
 
   const getStatusBadge = (status: SupportTicket['status']) => {
     const variants = {
       open: 'destructive',
       'in-progress': 'default',
       resolved: 'secondary',
-      closed: 'outline'
-    } as const
+      closed: 'outline',
+    } as const;
 
     const icons = {
       open: <Clock size={12} className="mr-1" />,
       'in-progress': <Clock size={12} className="mr-1" />,
       resolved: <CheckCircle size={12} className="mr-1" />,
-      closed: <XCircle size={12} className="mr-1" />
-    }
+      closed: <XCircle size={12} className="mr-1" />,
+    };
 
     return (
       <Badge variant={variants[status]}>
         {icons[status]}
         {status.replace('-', ' ').toUpperCase()}
       </Badge>
-    )
-  }
+    );
+  };
 
   return (
     <div className="flex-1 flex flex-col h-full">
@@ -241,9 +248,7 @@ export default function SupportChatPanel() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Support Tickets</h1>
-            <p className="text-muted-foreground">
-              Manage customer support requests and issues
-            </p>
+            <p className="text-muted-foreground">Manage customer support requests and issues</p>
           </div>
           <Button onClick={() => setCreateTicketOpen(true)}>
             <Plus size={16} className="mr-2" />
@@ -291,7 +296,10 @@ export default function SupportChatPanel() {
         <div className="w-1/3 border-r border-border flex flex-col">
           <div className="p-4 border-b border-border">
             <div className="relative">
-              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+              <MagnifyingGlass
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                size={16}
+              />
               <Input
                 placeholder="Search tickets..."
                 value={filter.search || ''}
@@ -301,11 +309,15 @@ export default function SupportChatPanel() {
             </div>
           </div>
 
-          <Tabs value={activeTab} onValueChange={(v) => {
-            if (v === 'all' || v === 'open' || v === 'in-progress' || v === 'resolved') {
-              setActiveTab(v)
-            }
-          }} className="flex-1 flex flex-col">
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) => {
+              if (v === 'all' || v === 'open' || v === 'in-progress' || v === 'resolved') {
+                setActiveTab(v);
+              }
+            }}
+            className="flex-1 flex flex-col"
+          >
             <TabsList className="mx-4 mt-4">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="open">Open</TabsTrigger>
@@ -371,8 +383,13 @@ export default function SupportChatPanel() {
                     <Select
                       value={selectedTicket.status}
                       onValueChange={(v) => {
-                        if (v === 'open' || v === 'in-progress' || v === 'resolved' || v === 'closed') {
-                          handleUpdateStatus(v)
+                        if (
+                          v === 'open' ||
+                          v === 'in-progress' ||
+                          v === 'resolved' ||
+                          v === 'closed'
+                        ) {
+                          handleUpdateStatus(v);
                         }
                       }}
                     >
@@ -406,7 +423,9 @@ export default function SupportChatPanel() {
                   {selectedTicket.assignedTo && (
                     <div>
                       <span className="text-muted-foreground">Assigned to:</span>{' '}
-                      <span className="font-medium">{selectedTicket.assignedToName || selectedTicket.assignedTo}</span>
+                      <span className="font-medium">
+                        {selectedTicket.assignedToName || selectedTicket.assignedTo}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -420,9 +439,7 @@ export default function SupportChatPanel() {
                   {messages.map((message) => (
                     <div
                       key={message.id}
-                      className={`flex gap-3 ${
-                        message.isAdmin ? 'flex-row-reverse' : ''
-                      }`}
+                      className={`flex gap-3 ${message.isAdmin ? 'flex-row-reverse' : ''}`}
                     >
                       <Avatar className="w-8 h-8">
                         <AvatarImage src={message.userAvatar} />
@@ -434,7 +451,9 @@ export default function SupportChatPanel() {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-semibold text-sm">{message.userName}</span>
                           {message.isAdmin && (
-                            <Badge variant="secondary" className="text-xs">Admin</Badge>
+                            <Badge variant="secondary" className="text-xs">
+                              Admin
+                            </Badge>
                           )}
                           <span className="text-xs text-muted-foreground">
                             {new Date(message.createdAt).toLocaleString()}
@@ -442,9 +461,7 @@ export default function SupportChatPanel() {
                         </div>
                         <div
                           className={`inline-block p-3 rounded-lg ${
-                            message.isAdmin
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted'
+                            message.isAdmin ? 'bg-primary text-primary-foreground' : 'bg-muted'
                           }`}
                         >
                           <p className="text-sm whitespace-pre-wrap">{message.message}</p>
@@ -464,7 +481,7 @@ export default function SupportChatPanel() {
                     className="flex-1 min-h-[80px]"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.metaKey) {
-                        handleSendMessage()
+                        handleSendMessage();
                       }
                     }}
                   />
@@ -497,9 +514,7 @@ export default function SupportChatPanel() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Create Support Ticket</DialogTitle>
-            <DialogDescription>
-              Create a new support ticket for a user
-            </DialogDescription>
+            <DialogDescription>Create a new support ticket for a user</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -538,6 +553,5 @@ export default function SupportChatPanel() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
-

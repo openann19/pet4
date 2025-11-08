@@ -1,100 +1,103 @@
 /**
  * Discover Swipe Hook
- * 
+ *
  * Manages swipe gestures and actions for discover view
  */
 
-import { useCallback } from 'react'
-import { useSwipe } from '@/hooks/useSwipe'
-import { useStorage } from '@/hooks/useStorage'
-import { useMatching } from '@/hooks/useMatching'
-import type { Pet, SwipeAction, Match } from '@/lib/types'
-import { haptics } from '@/lib/haptics'
-import { createLogger } from '@/lib/logger'
-import { toast } from 'sonner'
+import { useCallback } from 'react';
+import { useSwipe } from '@/hooks/useSwipe';
+import { useStorage } from '@/hooks/use-storage';
+import { useMatching } from '@/hooks/useMatching';
+import type { Pet, SwipeAction, Match } from '@/lib/types';
+import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
+import { toast } from 'sonner';
 
-const logger = createLogger('useDiscoverSwipe')
+const logger = createLogger('useDiscoverSwipe');
 
 export interface UseDiscoverSwipeOptions {
-  currentPet: Pet | null
-  currentIndex: number
-  onSwipeComplete: () => void
-  onMatch: (match: Match) => void
+  currentPet: Pet | null;
+  currentIndex: number;
+  onSwipeComplete: () => void;
+  onMatch: (match: Match) => void;
 }
 
 export interface UseDiscoverSwipeReturn {
-  swipeAnimatedStyle: unknown
-  likeOpacityStyle: unknown
-  passOpacityStyle: unknown
-  handleMouseDown: (e: React.MouseEvent) => void
-  handleMouseMove: (e: React.MouseEvent) => void
-  handleMouseUp: (e: React.MouseEvent) => void
-  handleTouchStart: (e: React.TouchEvent) => void
-  handleTouchMove: (e: React.TouchEvent) => void
-  handleTouchEnd: (e: React.TouchEvent) => void
-  handleSwipe: (action: 'like' | 'pass') => Promise<void>
-  reset: () => void
+  swipeAnimatedStyle: unknown;
+  likeOpacityStyle: unknown;
+  passOpacityStyle: unknown;
+  handleMouseDown: (e: React.MouseEvent) => void;
+  handleMouseMove: (e: React.MouseEvent) => void;
+  handleMouseUp: (e: React.MouseEvent) => void;
+  handleTouchStart: (e: React.TouchEvent) => void;
+  handleTouchMove: (e: React.TouchEvent) => void;
+  handleTouchEnd: (e: React.TouchEvent) => void;
+  handleSwipe: (action: 'like' | 'pass') => Promise<void>;
+  reset: () => void;
 }
 
 export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverSwipeReturn {
-  const { currentPet, currentIndex, onSwipeComplete, onMatch } = options
-  
-  const [swipeHistory, setSwipeHistory] = useStorage<SwipeAction[]>('swipe-history', [])
-  const [, setMatches] = useStorage<Match[]>('matches', [])
-  
-  const { performSwipe, checkMatch } = useMatching()
+  const { currentPet, currentIndex, onSwipeComplete, onMatch } = options;
 
-  const handleSwipe = useCallback(async (action: 'like' | 'pass'): Promise<void> => {
-    if (!currentPet) {
-      return
-    }
+  const [swipeHistory, setSwipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
+  const [, setMatches] = useStorage<Match[]>('matches', []);
 
-    try {
-      // Haptic feedback
-      haptics.impact(action === 'like' ? 'medium' : 'light')
+  const { performSwipe, checkMatch } = useMatching();
 
-      // Perform swipe
-      const swipeResult = await performSwipe({
-        targetPetId: currentPet.id,
-        action
-      })
-
-      // Save to history
-      const newSwipe: SwipeAction = {
-        id: `swipe-${Date.now()}`,
-        targetPetId: currentPet.id,
-        action,
-        timestamp: new Date().toISOString()
+  const handleSwipe = useCallback(
+    async (action: 'like' | 'pass'): Promise<void> => {
+      if (!currentPet) {
+        return;
       }
-      
-      setSwipeHistory(prev => [...(prev || []), newSwipe])
 
-      // Check for match
-      if (action === 'like' && swipeResult.compatibility >= 80) {
-        const matchResult = await checkMatch(currentPet.id)
-        
-        if (matchResult.isMatch) {
-          const match: Match = {
-            id: `match-${Date.now()}`,
-            petId: currentPet.id,
-            matchedAt: new Date().toISOString(),
-            compatibility: matchResult.compatibility || swipeResult.compatibility
+      try {
+        // Haptic feedback
+        haptics.impact(action === 'like' ? 'medium' : 'light');
+
+        // Perform swipe
+        const swipeResult = await performSwipe({
+          targetPetId: currentPet.id,
+          action,
+        });
+
+        // Save to history
+        const newSwipe: SwipeAction = {
+          id: `swipe-${Date.now()}`,
+          targetPetId: currentPet.id,
+          action,
+          timestamp: new Date().toISOString(),
+        };
+
+        setSwipeHistory((prev) => [...(prev || []), newSwipe]);
+
+        // Check for match
+        if (action === 'like' && swipeResult.compatibility >= 80) {
+          const matchResult = await checkMatch(currentPet.id);
+
+          if (matchResult.isMatch) {
+            const match: Match = {
+              id: `match-${Date.now()}`,
+              petId: currentPet.id,
+              matchedAt: new Date().toISOString(),
+              compatibility: matchResult.compatibility || swipeResult.compatibility,
+            };
+
+            setMatches((prev) => [...(prev || []), match]);
+            onMatch(match);
+            toast.success("It's a Match!");
           }
-          
-          setMatches(prev => [...(prev || []), match])
-          onMatch(match)
-          toast.success("It's a Match!")
         }
-      }
 
-      // Move to next pet
-      onSwipeComplete()
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Swipe failed', err, { petId: currentPet.id, action })
-      toast.error('Failed to process swipe. Please try again.')
-    }
-  }, [currentPet, performSwipe, checkMatch, setSwipeHistory, setMatches, onMatch, onSwipeComplete])
+        // Move to next pet
+        onSwipeComplete();
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Swipe failed', err, { petId: currentPet.id, action });
+        toast.error('Failed to process swipe. Please try again.');
+      }
+    },
+    [currentPet, performSwipe, checkMatch, setSwipeHistory, setMatches, onMatch, onSwipeComplete]
+  );
 
   const {
     animatedStyle: swipeAnimatedStyle,
@@ -106,12 +109,12 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
-    reset
+    reset,
   } = useSwipe({
     onSwipe: (dir) => {
-      handleSwipe(dir === 'right' ? 'like' : 'pass')
-    }
-  })
+      handleSwipe(dir === 'right' ? 'like' : 'pass');
+    },
+  });
 
   return {
     swipeAnimatedStyle,
@@ -124,6 +127,6 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
     handleTouchMove,
     handleTouchEnd,
     handleSwipe,
-    reset
-  }
+    reset,
+  };
 }

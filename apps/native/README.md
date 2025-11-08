@@ -7,6 +7,7 @@ Production-ready Expo-managed React Native app with **12 screens** mirroring all
 ## 🎯 Overview
 
 A complete pet social networking app for iOS, Android, and Web featuring:
+
 - Swipeable pet discovery with like/pass/superlike
 - Real-time chat messaging
 - Community social feed
@@ -17,11 +18,13 @@ A complete pet social networking app for iOS, Android, and Web featuring:
 ## 📱 All Screens (12 Total)
 
 ### Authentication (3 screens)
+
 - **Welcome** - Feature highlights and onboarding
 - **Login** - Email/password authentication
 - **Signup** - New user registration
 
 ### Main Features (9 screens)
+
 - **Discover** - Swipeable pet cards
 - **Pet Detail** - Full pet profiles
 - **Matches** - Compatibility scores
@@ -35,13 +38,17 @@ A complete pet social networking app for iOS, Android, and Web featuring:
 ## 🚀 Quick Start
 
 \`\`\`bash
+
 # Install all dependencies
+
 npm install
 
 # Build shared package (required)
+
 cd packages/shared && npm run build && cd ../..
 
 # Start native app
+
 cd apps/native
 npm start
 \`\`\`
@@ -59,7 +66,7 @@ npm start
 ✅ Sample data pre-loaded  
 ✅ AsyncStorage persistence  
 ✅ TypeScript throughout  
-✅ Production-ready  
+✅ Production-ready
 
 ## 📊 Technology
 
@@ -72,7 +79,9 @@ npm start
 ## 🔧 EAS Build
 
 \`\`\`bash
+
 # Production builds
+
 eas build --platform ios --profile production
 eas build --platform android --profile production
 \`\`\`

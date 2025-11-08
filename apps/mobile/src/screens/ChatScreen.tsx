@@ -1,16 +1,16 @@
 /**
  * ChatScreen Component
- * 
+ *
  * Premium chat screen integrating ultra-premium chat effects:
  * - ChatList with Layout Animations
  * - Message bubbles with send/receive effects
  * - Status ticks, reactions, typing indicators
  * - Scroll FAB with magnetic effect
- * 
+ *
  * Location: apps/mobile/src/screens/ChatScreen.tsx
  */
 import { ChatList, type Message } from '@mobile/components/chat'
-import HoloBackgroundNative from '@mobile/components/chrome/HoloBackground.native'
+import HoloBackgroundNative from '@mobile/components/chrome/HoloBackground'
 import { colors } from '@mobile/theme/colors'
 import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'

@@ -1,20 +1,20 @@
 /**
  * Sticker Button Component
- * 
+ *
  * Interactive sticker button with hover animations
  */
 
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation'
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
 
 export interface StickerButtonProps {
-  sticker: { id: string; emoji: string }
-  onSelect: (emoji: string) => void
+  sticker: { id: string; emoji: string };
+  onSelect: (emoji: string) => void;
 }
 
 export function StickerButton({ sticker, onSelect }: StickerButtonProps): JSX.Element {
-  const hover = useHoverAnimation({ scale: 1.2 })
-  
+  const hover = useHoverAnimation({ scale: 1.2 });
+
   return (
     <AnimatedView
       style={hover.animatedStyle}
@@ -27,5 +27,5 @@ export function StickerButton({ sticker, onSelect }: StickerButtonProps): JSX.El
     >
       {sticker.emoji}
     </AnimatedView>
-  )
+  );
 }

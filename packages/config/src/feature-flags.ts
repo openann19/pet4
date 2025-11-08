@@ -1,6 +1,6 @@
 /**
  * Feature Flags Configuration
- * 
+ *
  * Zod-validated feature flags with safe defaults.
  * Loads from server JSON with fallback defaults.
  * Invalid payloads are rejected.
@@ -8,14 +8,18 @@
 
 import { z } from 'zod'
 
-export const FlagsSchema = z.object({
-  chat: z.object({
-    confetti: z.boolean(),
-    reactionBurst: z.boolean(),
-    auroraRing: z.boolean(),
-    virtualization: z.boolean(),
-  }).strict(),
-}).strict()
+export const FlagsSchema = z
+  .object({
+    chat: z
+      .object({
+        confetti: z.boolean(),
+        reactionBurst: z.boolean(),
+        auroraRing: z.boolean(),
+        virtualization: z.boolean(),
+      })
+      .strict(),
+  })
+  .strict()
 
 export type Flags = z.infer<typeof FlagsSchema>
 
@@ -70,4 +74,3 @@ export function getFlag(key: keyof Flags['chat']): boolean {
 export function resetFlags(): void {
   FLAGS = DEFAULT_FLAGS
 }
-

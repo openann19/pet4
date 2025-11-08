@@ -1,6 +1,6 @@
 /**
  * Browser-only dynamic loader for NSFWJS + TFJS (avoids bundling Node deps)
- * 
+ *
  * Loads NSFWJS and TensorFlow.js from CDN at runtime to avoid bundling
  * Node-only dependencies like gif-encoder, @nsfw-filter/gif-frames, etc.
  */
@@ -52,9 +52,9 @@ function loadScript(src: string): Promise<void> {
 
 /**
  * Loads NSFWJS model once and returns a ready model instance.
- * 
+ *
  * Default uses bundled model from CDN; provide modelUrl to use a hosted model.
- * 
+ *
  * @param modelUrl - Optional URL to hosted model (e.g., '/nsfw-model/inception_v3/')
  * @param opts - Optional model options (e.g., { size: 299, type: 'graph' })
  * @returns Promise resolving to model with classify method
@@ -106,7 +106,7 @@ export async function loadNSFWModel(
 
 /**
  * Convenience wrapper to classify an image element
- * 
+ *
  * @param el - Image element to classify
  * @param topK - Number of top predictions to return (default: 5)
  * @returns Promise resolving to array of predictions
@@ -126,4 +126,3 @@ export async function classify(
 export function __resetForTests(): void {
   modelPromise = null;
 }
-

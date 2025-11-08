@@ -30,13 +30,13 @@
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(workspaceRoot, 'node_modules'),
-  path.resolve(workspaceRoot, 'apps/web/node_modules')  // ❌ This caused cross-contamination
+  path.resolve(workspaceRoot, 'apps/web/node_modules'), // ❌ This caused cross-contamination
 ]
 
 // AFTER (FIXED)
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
-  path.resolve(workspaceRoot, 'node_modules')
+  path.resolve(workspaceRoot, 'node_modules'),
 ]
 ```
 
@@ -82,12 +82,14 @@ pnpm install
 After reinstalling, verify both apps can run simultaneously:
 
 1. **Terminal 1** - Start web dev server:
+
    ```bash
    cd apps/web
    pnpm dev
    ```
 
 2. **Terminal 2** - Start mobile dev server:
+
    ```bash
    cd apps/mobile
    pnpm start
@@ -98,19 +100,22 @@ After reinstalling, verify both apps can run simultaneously:
 ### If You Still See Conflicts
 
 1. **Check Metro config**: Verify `apps/mobile/metro.config.js` does NOT include `apps/web/node_modules`
-2. **Verify React versions**: 
+2. **Verify React versions**:
+
    ```bash
    # Web should have React 19
    cat apps/web/node_modules/react/package.json | grep version
-   
+
    # Mobile should have React 18
    cat apps/mobile/node_modules/react/package.json | grep version
    ```
+
 3. **Clear caches**:
+
    ```bash
    # Clear Metro cache
    cd apps/mobile && pnpm start --clear
-   
+
    # Clear Vite cache
    cd apps/web && rm -rf node_modules/.vite
    ```
@@ -149,4 +154,3 @@ workspace/
 - `.npmrc` - pnpm configuration for dependency hoisting
 - `MONOREPO.md` - Monorepo documentation with troubleshooting guide
 - `pnpm-workspace.yaml` - Workspace configuration
-

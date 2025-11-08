@@ -1,7 +1,8 @@
-/**
- * Pull-to-Refresh Usage Examples
- * Location: src/components/PULL_TO_REFRESH_USAGE.md
- */
+/\*\*
+
+- Pull-to-Refresh Usage Examples
+- Location: src/components/PULL_TO_REFRESH_USAGE.md
+  \*/
 
 # Pull-to-Refresh Implementation
 
@@ -30,9 +31,7 @@ function MyScreen() {
         resistance: 2.5,
       }}
     >
-      <ScrollView>
-        {/* Your content */}
-      </ScrollView>
+      <ScrollView>{/* Your content */}</ScrollView>
     </PullableContainer>
   )
 }
@@ -56,7 +55,7 @@ function MyScreen() {
     {
       threshold: 80,
       haptics: true,
-      onPullProgress: (p) => {
+      onPullProgress: p => {
         // Optional: Custom progress handling
       },
     }
@@ -71,9 +70,7 @@ function MyScreen() {
           progress={progress}
           threshold={80}
         />
-        <ScrollView>
-          {/* Your content */}
-        </ScrollView>
+        <ScrollView>{/* Your content */}</ScrollView>
       </Animated.View>
     </GestureDetector>
   )
@@ -95,10 +92,12 @@ function MyScreen() {
 ### `usePullToRefresh(onRefresh, options?)`
 
 **Parameters:**
+
 - `onRefresh: () => Promise<void>` - Async refresh callback
 - `options?: UsePullToRefreshOptions`
 
 **Returns:**
+
 - `isRefreshing: boolean` - React state for UI
 - `refresh: () => Promise<void>` - Programmatic trigger
 - `translateY: SharedValue<number>` - Animated translate value
@@ -158,4 +157,3 @@ function MyScreen() {
 - Progress callbacks are throttled (>2% change)
 - Haptics are one-shot to prevent buzz-storms
 - Gesture cancels ongoing animations for smooth interaction
-

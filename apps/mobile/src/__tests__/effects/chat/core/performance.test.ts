@@ -1,6 +1,6 @@
 /**
  * Unit Tests for Performance Monitoring
- * 
+ *
  * Location: apps/mobile/src/__tests__/effects/chat/core/performance.test.ts
  */
 
@@ -41,4 +41,3 @@ describe('Performance Monitoring', () => {
     })
   })
 })
-

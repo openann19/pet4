@@ -1,9 +1,9 @@
 /**
  * Telemetry System for Chat Effects
- * 
+ *
  * Logs effect events with metadata: duration, dropped frames, deviceHz, reducedMotion, success.
  * Flags effects with >2 dropped frames in a 300ms window.
- * 
+ *
  * Location: apps/mobile/src/effects/chat/core/telemetry.ts
  */
 
@@ -61,7 +61,7 @@ const activeEffects = new Map<string, ActiveEffect>()
 
 /**
  * Start tracking an effect
- * 
+ *
  * @param effect - Effect name
  * @param metadata - Additional metadata
  * @returns Effect ID for tracking
@@ -103,14 +103,11 @@ export function logEffectStart(
 
 /**
  * End tracking an effect
- * 
+ *
  * @param effectId - Effect ID from logEffectStart
  * @param metadata - Additional metadata
  */
-export function logEffectEnd(
-  effectId: string,
-  metadata: Partial<EffectEventMetadata> = {}
-): void {
+export function logEffectEnd(effectId: string, metadata: Partial<EffectEventMetadata> = {}): void {
   const activeEffect = activeEffects.get(effectId)
 
   if (!activeEffect) {
@@ -251,4 +248,3 @@ export function getActiveEffectsCount(): number {
 export function clearActiveEffects(): void {
   activeEffects.clear()
 }
-

@@ -1,6 +1,10 @@
-import { useSharedValue, useAnimatedStyle, withSpring, withSequence, type SharedValue } from 'react-native-reanimated'
+/**
+ * Elastic Scale Animation
+ * Bouncy, elastic scale effect with overshoot for delightful interactions
+ */
+
+import { useSharedValue, useAnimatedStyle, withSpring, withSequence } from 'react-native-reanimated'
 import { useCallback } from 'react'
-import { springConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
 
 export interface UseElasticScaleOptions {
@@ -12,20 +16,13 @@ export interface UseElasticScaleOptions {
 }
 
 export interface UseElasticScaleReturn {
-  scale: SharedValue<number>
   animatedStyle: AnimatedStyle
   handlePressIn: () => void
   handlePressOut: () => void
 }
 
 export function useElasticScale(options: UseElasticScaleOptions = {}): UseElasticScaleReturn {
-  const {
-    scaleUp = 1.15,
-    scaleDown = 0.95,
-    damping = springConfigs.bouncy.damping ?? 12,
-    stiffness = springConfigs.bouncy.stiffness ?? 200,
-    mass = 0.8,
-  } = options
+  const { scaleUp = 1.15, scaleDown = 0.95, damping = 12, stiffness = 200, mass = 0.8 } = options
 
   const scale = useSharedValue(1)
 
@@ -57,7 +54,6 @@ export function useElasticScale(options: UseElasticScaleOptions = {}): UseElasti
   })) as AnimatedStyle
 
   return {
-    scale,
     animatedStyle,
     handlePressIn,
     handlePressOut,

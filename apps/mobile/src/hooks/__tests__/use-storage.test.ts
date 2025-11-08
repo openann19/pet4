@@ -83,7 +83,7 @@ describe('useStorage', () => {
     })
 
     await act(async () => {
-      await result.current[1]((prev) => prev + 1)
+      await result.current[1](prev => prev + 1)
     })
 
     expect(mockAsyncStorage.setItem).toHaveBeenCalledWith('test-key', JSON.stringify(6))
@@ -159,10 +159,9 @@ describe('useStorage', () => {
     const { result, rerender } = renderHook<
       [string, (value: string | ((prev: string) => string)) => Promise<void>, () => Promise<void>],
       { key: string }
-    >(
-      ({ key }: { key: string }) => useStorage<string>(key, 'default'),
-      { initialProps: { key: 'key1' } }
-    )
+    >(({ key }: { key: string }) => useStorage<string>(key, 'default'), {
+      initialProps: { key: 'key1' },
+    })
 
     await waitFor(() => {
       expect(result.current[0]).toBe('default')
@@ -177,4 +176,3 @@ describe('useStorage', () => {
     })
   })
 })
-

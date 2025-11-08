@@ -1,44 +1,27 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useModalAnimation } from '@/effects/reanimated/use-modal-animation'
-import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useStorage } from '@/hooks/useStorage'
-import { createLogger } from '@/lib/logger'
-import {
-  Badge
-} from '@/components/ui/badge'
-import {
-  Button
-} from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
-import {
-  ScrollArea
-} from '@/components/ui/scroll-area'
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from '@/components/ui/tabs'
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
+import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useStorage } from '@/hooks/use-storage';
+import { createLogger } from '@/lib/logger';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type {
   HealthRecord,
   PetHealthSummary,
   VaccinationRecord,
-  VetReminder
-} from '@/lib/health-types'
-import type { Pet } from '@/lib/types'
+  VetReminder,
+} from '@/lib/health-types';
+import type { Pet } from '@/lib/types';
 import {
   Bell,
   Calendar,
@@ -49,28 +32,28 @@ import {
   Plus,
   Syringe,
   Warning,
-  X
-} from '@phosphor-icons/react'
-import { differenceInDays, format, isPast } from 'date-fns'
-import { toast } from 'sonner'
+  X,
+} from '@phosphor-icons/react';
+import { differenceInDays, format, isPast } from 'date-fns';
+import { toast } from 'sonner';
 
-const logger = createLogger('PetHealthDashboard')
+const logger = createLogger('PetHealthDashboard');
 
 export interface PetHealthDashboardProps {
-  pet: Pet
-  onClose: () => void
+  pet: Pet;
+  onClose: () => void;
 }
 
 interface VaccinationItemProps {
-  vaccination: VaccinationRecord
-  index: number
+  vaccination: VaccinationRecord;
+  index: number;
 }
 
 function VaccinationItem({ vaccination, index }: VaccinationItemProps): JSX.Element {
   const staggeredAnimation = useStaggeredItem({
     index,
-    staggerDelay: 50
-  })
+    staggerDelay: 50,
+  });
 
   return (
     <AnimatedView
@@ -93,19 +76,19 @@ function VaccinationItem({ vaccination, index }: VaccinationItemProps): JSX.Elem
         )}
       </div>
     </AnimatedView>
-  )
+  );
 }
 
 interface HealthRecordItemProps {
-  record: HealthRecord
-  index: number
+  record: HealthRecord;
+  index: number;
 }
 
 function HealthRecordItem({ record, index }: HealthRecordItemProps): JSX.Element {
   const staggeredAnimation = useStaggeredItem({
     index,
-    staggerDelay: 50
-  })
+    staggerDelay: 50,
+  });
 
   return (
     <AnimatedView
@@ -127,26 +110,23 @@ function HealthRecordItem({ record, index }: HealthRecordItemProps): JSX.Element
         </p>
       )}
     </AnimatedView>
-  )
+  );
 }
 
 interface ReminderItemProps {
-  reminder: VetReminder
-  index: number
-  onComplete: (reminderId: string) => void
+  reminder: VetReminder;
+  index: number;
+  onComplete: (reminderId: string) => void;
 }
 
 function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.Element {
   const staggeredAnimation = useStaggeredItem({
     index,
-    staggerDelay: 50
-  })
+    staggerDelay: 50,
+  });
 
-  const isOverdue = isPast(new Date(reminder.dueDate))
-  const daysUntil = differenceInDays(
-    new Date(reminder.dueDate),
-    new Date()
-  )
+  const isOverdue = isPast(new Date(reminder.dueDate));
+  const daysUntil = differenceInDays(new Date(reminder.dueDate), new Date());
 
   return (
     <AnimatedView
@@ -160,16 +140,12 @@ function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.E
           reminder.completed
             ? 'bg-green-100 dark:bg-green-900/20'
             : isOverdue
-            ? 'bg-red-100 dark:bg-red-900/20'
-            : 'bg-yellow-100 dark:bg-yellow-900/20'
+              ? 'bg-red-100 dark:bg-red-900/20'
+              : 'bg-yellow-100 dark:bg-yellow-900/20'
         }`}
       >
         {reminder.completed ? (
-          <CheckCircle
-            size={20}
-            className="text-green-600"
-            weight="fill"
-          />
+          <CheckCircle size={20} className="text-green-600" weight="fill" />
         ) : isOverdue ? (
           <Warning size={20} className="text-red-600" weight="fill" />
         ) : (
@@ -184,157 +160,154 @@ function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.E
             (isOverdue
               ? ` • ${Math.abs(daysUntil)} days overdue`
               : daysUntil === 0
-              ? ' • Due today'
-              : ` • ${daysUntil} days away`)}
+                ? ' • Due today'
+                : ` • ${daysUntil} days away`)}
         </p>
-        {reminder.description && (
-          <p className="text-sm mt-1">{reminder.description}</p>
-        )}
+        {reminder.description && <p className="text-sm mt-1">{reminder.description}</p>}
       </div>
       {!reminder.completed && (
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={(): void => onComplete(reminder.id)}
-        >
+        <Button size="sm" variant="outline" onClick={(): void => onComplete(reminder.id)}>
           Complete
         </Button>
       )}
     </AnimatedView>
-  )
+  );
 }
 
 export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): JSX.Element {
   const [vaccinations, setVaccinations] = useStorage<VaccinationRecord[]>(
     `vaccinations-${pet.id}`,
     []
-  )
+  );
   const [healthRecords, setHealthRecords] = useStorage<HealthRecord[]>(
     `health-records-${pet.id}`,
     []
-  )
-  const [reminders, setReminders] = useStorage<VetReminder[]>(`reminders-${pet.id}`, [])
-  const [healthSummary, setHealthSummary] = useState<PetHealthSummary | null>(null)
-  const [isVisible, setIsVisible] = useState(true)
+  );
+  const [reminders, setReminders] = useStorage<VetReminder[]>(`reminders-${pet.id}`, []);
+  const [healthSummary, setHealthSummary] = useState<PetHealthSummary | null>(null);
+  const [isVisible, setIsVisible] = useState(true);
 
   const modalAnimation = useModalAnimation({
     isVisible,
-    duration: 300
-  })
+    duration: 300,
+  });
 
   const handleClose = useCallback((): void => {
-    setIsVisible(false)
+    setIsVisible(false);
     setTimeout(() => {
-      onClose()
-    }, 300)
-  }, [onClose])
+      onClose();
+    }, 300);
+  }, [onClose]);
 
   const closeButtonAnimation = useBounceOnTap({
     onPress: handleClose,
-    hapticFeedback: true
-  })
+    hapticFeedback: true,
+  });
 
   useEffect(() => {
-    setIsVisible(true)
+    setIsVisible(true);
     return () => {
-      setIsVisible(false)
-    }
-  }, [])
+      setIsVisible(false);
+    };
+  }, []);
 
   const generateHealthSummary = useCallback((): void => {
     try {
-      const today = new Date()
+      const today = new Date();
       const upcomingVaccinations = (vaccinations || []).filter((v): boolean => {
-        if (!v.nextDueDate) return false
-        const nextDate = new Date(v.nextDueDate)
-        if (isNaN(nextDate.getTime())) return false
-        const todayDate = new Date(today)
-        if (isNaN(todayDate.getTime())) return false
-        const daysUntil = differenceInDays(nextDate, todayDate)
-        return daysUntil >= 0 && daysUntil <= 90
-      })
+        if (!v.nextDueDate) return false;
+        const nextDate = new Date(v.nextDueDate);
+        if (isNaN(nextDate.getTime())) return false;
+        const todayDate = new Date(today);
+        if (isNaN(todayDate.getTime())) return false;
+        const daysUntil = differenceInDays(nextDate, todayDate);
+        return daysUntil >= 0 && daysUntil <= 90;
+      });
 
-      const activeReminders = (reminders || []).filter((r): boolean => !r.completed)
+      const activeReminders = (reminders || []).filter((r): boolean => !r.completed);
       const recentRecords = (healthRecords || [])
         .sort((a, b): number => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .slice(0, 5)
+        .slice(0, 5);
 
-      const checkups = (healthRecords || []).filter((r): boolean => r.type === 'checkup')
-      const firstCheckup = checkups[0]
-      const lastCheckup = firstCheckup?.date
+      const checkups = (healthRecords || []).filter((r): boolean => r.type === 'checkup');
+      const firstCheckup = checkups[0];
+      const lastCheckup = firstCheckup?.date;
 
       const overdueVaccinations = upcomingVaccinations.filter((v): boolean =>
         Boolean(v.nextDueDate && isPast(new Date(v.nextDueDate)))
-      )
+      );
       const dueSoonVaccinations = upcomingVaccinations.filter((v): boolean => {
-        if (!v.nextDueDate) return false
-        const daysUntil = differenceInDays(new Date(v.nextDueDate), new Date())
-        return daysUntil >= 0 && daysUntil <= 30
-      })
+        if (!v.nextDueDate) return false;
+        const daysUntil = differenceInDays(new Date(v.nextDueDate), new Date());
+        return daysUntil >= 0 && daysUntil <= 30;
+      });
 
       const vaccinationStatus: PetHealthSummary['vaccinationStatus'] =
         overdueVaccinations.length > 0
           ? 'overdue'
           : dueSoonVaccinations.length > 0
-          ? 'due-soon'
-          : 'up-to-date'
+            ? 'due-soon'
+            : 'up-to-date';
 
       const summary: PetHealthSummary = {
         petId: pet.id,
         upcomingVaccinations,
         activeReminders,
         recentRecords,
-        vaccinationStatus
-      }
+        vaccinationStatus,
+      };
       if (lastCheckup !== undefined) {
-        summary.lastCheckup = lastCheckup
+        summary.lastCheckup = lastCheckup;
       }
-      setHealthSummary(summary)
+      setHealthSummary(summary);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to generate health summary', err, { petId: pet.id })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to generate health summary', err, { petId: pet.id });
       toast.error('Failed to load health summary', {
-        description: 'Please try again later'
-      })
+        description: 'Please try again later',
+      });
     }
-  }, [vaccinations, healthRecords, reminders, pet.id])
+  }, [vaccinations, healthRecords, reminders, pet.id]);
 
   useEffect(() => {
-    generateHealthSummary()
-  }, [generateHealthSummary])
+    generateHealthSummary();
+  }, [generateHealthSummary]);
 
   const getStatusColor = useCallback((status: PetHealthSummary['vaccinationStatus']): string => {
     switch (status) {
       case 'up-to-date':
-        return 'text-green-600 bg-green-100 dark:bg-green-900/20'
+        return 'text-green-600 bg-green-100 dark:bg-green-900/20';
       case 'due-soon':
-        return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20'
+        return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20';
       case 'overdue':
-        return 'text-red-600 bg-red-100 dark:bg-red-900/20'
+        return 'text-red-600 bg-red-100 dark:bg-red-900/20';
     }
-  }, [])
+  }, []);
 
-  const getStatusIcon = useCallback((status: PetHealthSummary['vaccinationStatus']): JSX.Element => {
-    switch (status) {
-      case 'up-to-date':
-        return <CheckCircle size={20} weight="fill" />
-      case 'due-soon':
-        return <ClockCountdown size={20} weight="fill" />
-      case 'overdue':
-        return <Warning size={20} weight="fill" />
-    }
-  }, [])
+  const getStatusIcon = useCallback(
+    (status: PetHealthSummary['vaccinationStatus']): JSX.Element => {
+      switch (status) {
+        case 'up-to-date':
+          return <CheckCircle size={20} weight="fill" />;
+        case 'due-soon':
+          return <ClockCountdown size={20} weight="fill" />;
+        case 'overdue':
+          return <Warning size={20} weight="fill" />;
+      }
+    },
+    []
+  );
 
   const getStatusText = useCallback((status: PetHealthSummary['vaccinationStatus']): string => {
     switch (status) {
       case 'up-to-date':
-        return 'Up to Date'
+        return 'Up to Date';
       case 'due-soon':
-        return 'Due Soon'
+        return 'Due Soon';
       case 'overdue':
-        return 'Overdue'
+        return 'Overdue';
     }
-  }, [])
+  }, []);
 
   const handleAddVaccination = useCallback((): void => {
     try {
@@ -346,17 +319,19 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         date: new Date().toISOString().split('T')[0] ?? '',
         veterinarian: 'Dr. Smith',
         clinic: 'Happy Paws Veterinary',
-        createdAt: new Date().toISOString()
-      }
-      setVaccinations((current): VaccinationRecord[] => [...(current || []), newVaccination])
-      toast.success('Vaccination added', { description: 'Vaccination record created successfully' })
-      logger.info('Vaccination added', { petId: pet.id, vaccinationId: newVaccination.id })
+        createdAt: new Date().toISOString(),
+      };
+      setVaccinations((current): VaccinationRecord[] => [...(current || []), newVaccination]);
+      toast.success('Vaccination added', {
+        description: 'Vaccination record created successfully',
+      });
+      logger.info('Vaccination added', { petId: pet.id, vaccinationId: newVaccination.id });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to add vaccination', err, { petId: pet.id })
-      toast.error('Failed to add vaccination', { description: 'Please try again' })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to add vaccination', err, { petId: pet.id });
+      toast.error('Failed to add vaccination', { description: 'Please try again' });
     }
-  }, [pet.id, setVaccinations])
+  }, [pet.id, setVaccinations]);
 
   const handleAddHealthRecord = useCallback((): void => {
     try {
@@ -368,19 +343,19 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         date: new Date().toISOString().split('T')[0] ?? '',
         description: 'Routine annual health examination',
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-      setHealthRecords((current): HealthRecord[] => [...(current || []), newRecord])
+        updatedAt: new Date().toISOString(),
+      };
+      setHealthRecords((current): HealthRecord[] => [...(current || []), newRecord]);
       toast.success('Health record added', {
-        description: 'Health record created successfully'
-      })
-      logger.info('Health record added', { petId: pet.id, recordId: newRecord.id })
+        description: 'Health record created successfully',
+      });
+      logger.info('Health record added', { petId: pet.id, recordId: newRecord.id });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to add health record', err, { petId: pet.id })
-      toast.error('Failed to add health record', { description: 'Please try again' })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to add health record', err, { petId: pet.id });
+      toast.error('Failed to add health record', { description: 'Please try again' });
     }
-  }, [pet.id, setHealthRecords])
+  }, [pet.id, setHealthRecords]);
 
   const handleAddReminder = useCallback((): void => {
     try {
@@ -392,65 +367,69 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] ?? '',
         completed: false,
         notificationsSent: 0,
-        createdAt: new Date().toISOString()
-      }
-      setReminders((current): VetReminder[] => [...(current || []), newReminder])
-      toast.success('Reminder added', { description: 'Reminder created successfully' })
-      logger.info('Reminder added', { petId: pet.id, reminderId: newReminder.id })
+        createdAt: new Date().toISOString(),
+      };
+      setReminders((current): VetReminder[] => [...(current || []), newReminder]);
+      toast.success('Reminder added', { description: 'Reminder created successfully' });
+      logger.info('Reminder added', { petId: pet.id, reminderId: newReminder.id });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to add reminder', err, { petId: pet.id })
-      toast.error('Failed to add reminder', { description: 'Please try again' })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to add reminder', err, { petId: pet.id });
+      toast.error('Failed to add reminder', { description: 'Please try again' });
     }
-  }, [pet.id, setReminders])
+  }, [pet.id, setReminders]);
 
-  const handleCompleteReminder = useCallback((reminderId: string): void => {
-    try {
-      setReminders((current): VetReminder[] =>
-        (current || []).map((r): VetReminder =>
-          r.id === reminderId
-            ? { ...r, completed: true, completedAt: new Date().toISOString() }
-            : r
-        )
-      )
-      toast.success('Reminder completed', { description: 'Reminder marked as complete' })
-      logger.info('Reminder completed', { petId: pet.id, reminderId })
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to complete reminder', err, { petId: pet.id, reminderId })
-      toast.error('Failed to complete reminder', { description: 'Please try again' })
-    }
-  }, [pet.id, setReminders])
+  const handleCompleteReminder = useCallback(
+    (reminderId: string): void => {
+      try {
+        setReminders((current): VetReminder[] =>
+          (current || []).map(
+            (r): VetReminder =>
+              r.id === reminderId
+                ? { ...r, completed: true, completedAt: new Date().toISOString() }
+                : r
+          )
+        );
+        toast.success('Reminder completed', { description: 'Reminder marked as complete' });
+        logger.info('Reminder completed', { petId: pet.id, reminderId });
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to complete reminder', err, { petId: pet.id, reminderId });
+        toast.error('Failed to complete reminder', { description: 'Please try again' });
+      }
+    },
+    [pet.id, setReminders]
+  );
 
   const sortedVaccinations = useMemo((): VaccinationRecord[] => {
-    return (vaccinations || []).sort((a, b): number =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
-  }, [vaccinations])
+    return (vaccinations || []).sort(
+      (a, b): number => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }, [vaccinations]);
 
   const sortedHealthRecords = useMemo((): HealthRecord[] => {
-    return (healthRecords || []).sort((a, b): number =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
-  }, [healthRecords])
+    return (healthRecords || []).sort(
+      (a, b): number => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }, [healthRecords]);
 
   const sortedReminders = useMemo((): VetReminder[] => {
-    return (reminders || []).sort((a, b): number =>
-      new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-    )
-  }, [reminders])
+    return (reminders || []).sort(
+      (a, b): number => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+    );
+  }, [reminders]);
 
-  const backdropOpacity = useSharedValue(0)
+  const backdropOpacity = useSharedValue(0);
 
   useEffect(() => {
-    backdropOpacity.value = withTiming(1, timingConfigs.smooth)
-  }, [backdropOpacity])
+    backdropOpacity.value = withTiming(1, timingConfigs.smooth);
+  }, [backdropOpacity]);
 
   const backdropStyle = useAnimatedStyle(() => {
     return {
-      opacity: backdropOpacity.value
-    }
-  }) as AnimatedStyle
+      opacity: backdropOpacity.value,
+    };
+  }) as AnimatedStyle;
 
   return (
     <AnimatedView
@@ -485,7 +464,9 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Badge className={`${getStatusColor(healthSummary.vaccinationStatus)} flex items-center gap-1 w-fit`}>
+                <Badge
+                  className={`${getStatusColor(healthSummary.vaccinationStatus)} flex items-center gap-1 w-fit`}
+                >
                   {getStatusIcon(healthSummary.vaccinationStatus)}
                   {getStatusText(healthSummary.vaccinationStatus)}
                 </Badge>
@@ -530,9 +511,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
               <CardContent>
                 <p className="text-2xl font-bold">{healthSummary.activeReminders.length}</p>
                 <p className="text-xs text-muted-foreground">
-                  {healthSummary.activeReminders.length === 0
-                    ? 'All caught up!'
-                    : 'pending tasks'}
+                  {healthSummary.activeReminders.length === 0 ? 'All caught up!' : 'pending tasks'}
                 </p>
               </CardContent>
             </Card>
@@ -652,7 +631,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         </Tabs>
       </AnimatedView>
     </AnimatedView>
-  )
+  );
 }
 
-export default PetHealthDashboard
+export default PetHealthDashboard;

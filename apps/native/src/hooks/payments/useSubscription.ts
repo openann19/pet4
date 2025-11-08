@@ -93,10 +93,7 @@ export const useSubscription = () => {
 
   const saveSubscription = async (newSubscription: Subscription) => {
     try {
-      await AsyncStorage.setItem(
-        STORAGE_KEY_SUBSCRIPTION,
-        JSON.stringify(newSubscription)
-      );
+      await AsyncStorage.setItem(STORAGE_KEY_SUBSCRIPTION, JSON.stringify(newSubscription));
       setSubscription(newSubscription);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -140,7 +137,7 @@ export const useSubscription = () => {
         };
 
         await saveSubscription(newSubscription);
-        
+
         // Clear any billing issues
         await saveBillingIssue(null);
 
@@ -199,9 +196,7 @@ export const useSubscription = () => {
 
   const hasPremiumFeature = useCallback(
     (feature: string): boolean => {
-      return subscription.entitlements.some((e) =>
-        e.toLowerCase().includes(feature.toLowerCase())
-      );
+      return subscription.entitlements.some((e) => e.toLowerCase().includes(feature.toLowerCase()));
     },
     [subscription.entitlements]
   );

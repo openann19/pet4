@@ -1,14 +1,18 @@
-'use client'
+'use client';
 
-import React, { Suspense } from 'react'
+import React, { Suspense } from 'react';
 // Lazy load heavy visual effects to reduce main bundle size
-const ConfettiBurst = React.lazy(() => import('../ConfettiBurst').then(m => ({ default: m.ConfettiBurst })))
-const ReactionBurstParticles = React.lazy(() => import('../ReactionBurstParticles').then(m => ({ default: m.ReactionBurstParticles })))
+const ConfettiBurst = React.lazy(() =>
+  import('../ConfettiBurst').then((m) => ({ default: m.ConfettiBurst }))
+);
+const ReactionBurstParticles = React.lazy(() =>
+  import('../ReactionBurstParticles').then((m) => ({ default: m.ReactionBurstParticles }))
+);
 
 export interface OverlaysProps {
-  burstSeed: number
-  confettiSeed: number
-  roomId: string
+  burstSeed: number;
+  confettiSeed: number;
+  roomId: string;
 }
 
 export function Overlays({ burstSeed, confettiSeed, roomId }: OverlaysProps): JSX.Element {
@@ -35,6 +39,5 @@ export function Overlays({ burstSeed, confettiSeed, roomId }: OverlaysProps): JS
         </Suspense>
       )}
     </>
-  )
+  );
 }
-

@@ -1,6 +1,11 @@
 import type { AnimatedStyle } from './animated-view'
 import { useCallback } from 'react'
-import { useAnimatedStyle, useSharedValue, withSpring, type SharedValue } from 'react-native-reanimated'
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  type SharedValue,
+} from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { springConfigs } from './transitions'
 
@@ -37,14 +42,14 @@ export function useHoverTap(options: UseHoverTapOptions = {}): UseHoverTapReturn
     damping = springConfigs.snappy.damping ?? DEFAULT_DAMPING,
     stiffness = springConfigs.snappy.stiffness ?? DEFAULT_STIFFNESS,
     onPress,
-    hapticFeedback = true
+    hapticFeedback = true,
   } = options
 
   const scale = useSharedValue(1)
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }]
+      transform: [{ scale: scale.value }],
     }
   }) as AnimatedStyle
 
@@ -71,6 +76,6 @@ export function useHoverTap(options: UseHoverTapOptions = {}): UseHoverTapReturn
     animatedStyle,
     handlePressIn,
     handlePressOut,
-    handlePress
+    handlePress,
   }
 }

@@ -3,7 +3,14 @@
  * Flowing wave effect for backgrounds and decorative elements
  */
 
-import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, interpolate, Easing } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { useEffect } from 'react';
 
 export interface UseWaveAnimationOptions {
@@ -58,7 +65,7 @@ export function useWaveAnimation(options: UseWaveAnimationOptions = {}) {
   };
 }
 
-export function useMultiWave(waveCount: number = 3) {
+export function useMultiWave(waveCount = 3) {
   const progress = useSharedValue(0);
 
   useEffect(() => {
@@ -69,7 +76,7 @@ export function useMultiWave(waveCount: number = 3) {
     );
   }, []);
 
-  const createWaveStyle = (waveIndex: number, amplitude: number = 15) => {
+  const createWaveStyle = (waveIndex: number, amplitude = 15) => {
     return useAnimatedStyle(() => {
       const phaseOffset = (waveIndex * Math.PI * 2) / waveCount;
       const phase = progress.value * Math.PI * 2 + phaseOffset;

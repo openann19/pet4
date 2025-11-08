@@ -1,6 +1,16 @@
 export interface TrustBadge {
   id: string;
-  type: 'verified_owner' | 'vaccinated' | 'health_certified' | 'background_check' | 'experienced_owner' | 'trainer_approved' | 'rescue_supporter' | 'community_favorite' | 'active_member' | 'top_rated';
+  type:
+    | 'verified_owner'
+    | 'vaccinated'
+    | 'health_certified'
+    | 'background_check'
+    | 'experienced_owner'
+    | 'trainer_approved'
+    | 'rescue_supporter'
+    | 'community_favorite'
+    | 'active_member'
+    | 'top_rated';
   label: string;
   description: string;
   earnedAt: string;

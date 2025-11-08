@@ -77,30 +77,34 @@ cd apps/web && pnpm dev
 ### "NOTHING WORKS" / "Command not found"
 
 **Step 1: Verify you're in workspace root**
+
 ```bash
 cd /home/ben/Public/PETSPARK
 pwd  # Should show /home/ben/Public/PETSPARK
 ```
 
 **Step 2: Run diagnostic script**
+
 ```bash
 ./diagnose-workspace.sh
 ```
 
 **Step 3: Check package names**
+
 ```bash
 pnpm -r list --depth -1
 # Use EXACT names shown (petspark-mobile, spark-template)
 ```
 
 **Step 4: Test commands (these should work and stay running)**
+
 ```bash
 # Web dev server - should start and stay running
 pnpm web-dev
 # OR: cd apps/web && pnpm dev
 # Should see: "VITE v6.4.1 ready" and "Local: http://localhost:5173/"
 
-# Mobile dev server - should start and stay running  
+# Mobile dev server - should start and stay running
 pnpm mobile-start
 # OR: cd apps/mobile && pnpm start
 # Should see Expo QR code and Metro bundler
@@ -109,7 +113,7 @@ pnpm mobile-start
 ### "No projects matched the filters"
 
 - **Cause**: Using wrong package name or path, or not in workspace root
-- **Fix**: 
+- **Fix**:
   1. Ensure you're in `/home/ben/Public/PETSPARK`
   2. Use exact package name from `pnpm -r list --depth -1`
   3. ✅ Correct: `pnpm --filter petspark-mobile start`
@@ -120,7 +124,7 @@ pnpm mobile-start
 - **Vite**: Accepts next available port (5177 is fine)
 - **Expo**: Accepts next available port (8082 is fine)
 
-### Metro "__esModule/default" Warning
+### Metro "\_\_esModule/default" Warning
 
 - Metro config is correct (`.cjs` file with CommonJS exports)
 - Warning is harmless - Metro is parsing the config correctly
@@ -138,15 +142,18 @@ export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_
 ## 📝 Configuration Files
 
 ### Workspace Root
+
 - `pnpm-workspace.yaml` - Workspace package locations
 - `package.json` - Root scripts and shared dependencies
 
 ### Mobile App (`apps/mobile/`)
+
 - `metro.config.cjs` - Metro bundler config (workspace-aware)
 - `babel.config.js` - Babel config with Reanimated plugin ✅
 - `package.json` - Mobile dependencies (Expo SDK 51)
 
 ### Web App (`apps/web/`)
+
 - `vite.config.ts` - Vite configuration
 - `package.json` - Web dependencies
 
@@ -174,6 +181,7 @@ pnpm web-dev
 ## 🆘 Still Having Issues?
 
 Run the diagnostic:
+
 ```bash
 cd /home/ben/Public/PETSPARK
 ./diagnose-workspace.sh
@@ -190,4 +198,3 @@ This will show exactly what's working and what's not.
 - [x] Expo peer versions aligned
 - [x] Metro config verified
 - [x] Babel config has Reanimated plugin
-

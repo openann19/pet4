@@ -5,43 +5,43 @@
 
 export interface BundleBudget {
   /** Maximum initial bundle size in KB (gzipped) */
-  initial: number
+  initial: number;
   /** Maximum total bundle size in KB (gzipped) */
-  total: number
+  total: number;
   /** Maximum size for individual chunks in KB (gzipped) */
-  chunk: number
+  chunk: number;
   /** Maximum size for vendor chunks in KB (gzipped) */
-  vendor: number
+  vendor: number;
 }
 
 export interface LoadTimeBudget {
   /** First Contentful Paint - maximum time in ms */
-  fcp: number
+  fcp: number;
   /** Largest Contentful Paint - maximum time in ms */
-  lcp: number
+  lcp: number;
   /** Time to Interactive - maximum time in ms */
-  tti: number
+  tti: number;
   /** First Input Delay - maximum time in ms */
-  fid: number
+  fid: number;
   /** Cumulative Layout Shift - maximum score */
-  cls: number
+  cls: number;
 }
 
 export interface RuntimeBudget {
   /** Target FPS for animations */
-  fps: number
+  fps: number;
   /** Maximum frame time in ms (1000/fps) */
-  frameTime: number
+  frameTime: number;
   /** Maximum memory usage in MB */
-  memory: number
+  memory: number;
   /** Maximum JavaScript execution time per frame in ms */
-  jsExecutionTime: number
+  jsExecutionTime: number;
 }
 
 export interface PerformanceBudgetConfig {
-  bundles: BundleBudget
-  loadTimes: LoadTimeBudget
-  runtime: RuntimeBudget
+  bundles: BundleBudget;
+  loadTimes: LoadTimeBudget;
+  runtime: RuntimeBudget;
 }
 
 /**
@@ -68,7 +68,7 @@ export const DEFAULT_PERFORMANCE_BUDGET: PerformanceBudgetConfig = {
     memory: 100, // 100 MB max memory
     jsExecutionTime: 10, // 10ms max JS execution per frame
   },
-}
+};
 
 /**
  * Strict performance budget for production
@@ -94,7 +94,7 @@ export const STRICT_PERFORMANCE_BUDGET: PerformanceBudgetConfig = {
     memory: 80, // 80 MB max memory
     jsExecutionTime: 8, // 8ms max JS execution per frame
   },
-}
+};
 
 /**
  * Lenient performance budget for development
@@ -120,23 +120,22 @@ export const LENIENT_PERFORMANCE_BUDGET: PerformanceBudgetConfig = {
     memory: 150, // 150 MB max memory
     jsExecutionTime: 15, // 15ms max JS execution per frame
   },
-}
+};
 
 /**
  * Get performance budget based on environment
  */
 export function getPerformanceBudget(): PerformanceBudgetConfig {
-  const env = process.env.NODE_ENV || 'development'
-  const budgetMode = process.env.PERFORMANCE_BUDGET_MODE || 'default'
+  const env = process.env.NODE_ENV || 'development';
+  const budgetMode = process.env.PERFORMANCE_BUDGET_MODE || 'default';
 
   if (budgetMode === 'strict') {
-    return STRICT_PERFORMANCE_BUDGET
+    return STRICT_PERFORMANCE_BUDGET;
   }
 
   if (budgetMode === 'lenient' || env === 'development') {
-    return LENIENT_PERFORMANCE_BUDGET
+    return LENIENT_PERFORMANCE_BUDGET;
   }
 
-  return DEFAULT_PERFORMANCE_BUDGET
+  return DEFAULT_PERFORMANCE_BUDGET;
 }
-

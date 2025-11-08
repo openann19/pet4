@@ -1,54 +1,58 @@
-import { ENV } from '@/config/env'
-import { createLogger } from '@/lib/logger'
-import * as Sentry from '@sentry/browser'
+import { ENV } from '@/config/env';
+import { createLogger } from '@/lib/logger';
+import * as Sentry from '@sentry/browser';
 
-const logger = createLogger('Sentry')
+const logger = createLogger('Sentry');
 
 class SentryConfigImpl {
-  private initialized = false
+  private initialized = false;
 
   init(): void {
-    if (this.initialized || !ENV.VITE_SENTRY_DSN) return
+    if (this.initialized || !ENV.VITE_SENTRY_DSN) return;
 
     Sentry.init({
       dsn: ENV.VITE_SENTRY_DSN,
       environment: ENV.VITE_ENVIRONMENT,
       tracesSampleRate: ENV.VITE_SENTRY_TRACES_SAMPLE_RATE || 0.1,
-      
-      integrations: [
-        Sentry.browserTracingIntegration()
-      ],
 
-            // Performance monitoring
-      beforeSend: (event: Sentry.ErrorEvent, _hint?: Sentry.EventHint): Sentry.ErrorEvent | null => {
+      integrations: [Sentry.browserTracingIntegration()],
+
+      // Performance monitoring
+      beforeSend: (
+        event: Sentry.ErrorEvent,
+        _hint?: Sentry.EventHint
+      ): Sentry.ErrorEvent | null => {
         // Filter out non-critical errors in development
         if (ENV.VITE_ENVIRONMENT === 'development') {
           if (event.exception?.values?.[0]?.type === 'ChunkLoadError') {
-            return null // Don't report chunk load errors in dev
+            return null; // Don't report chunk load errors in dev
           }
         }
 
         // Scrub sensitive data
         if (event.request?.data) {
-          event.request.data = this.scrubSensitiveData(event.request.data) as Record<string, unknown>                                                           
+          event.request.data = this.scrubSensitiveData(event.request.data) as Record<
+            string,
+            unknown
+          >;
         }
 
-        return event
+        return event;
       },
 
       // Set user context
       initialScope: {
         tags: {
-          component: 'web-app'
-        }
-      }
-    })
+          component: 'web-app',
+        },
+      },
+    });
 
-    this.initialized = true
-    logger.info('Sentry initialized', { 
+    this.initialized = true;
+    logger.info('Sentry initialized', {
       environment: ENV.VITE_ENVIRONMENT,
-      dsn: ENV.VITE_SENTRY_DSN?.substring(0, 20) + '...'
-    })
+      dsn: ENV.VITE_SENTRY_DSN?.substring(0, 20) + '...',
+    });
   }
 
   setUser(user: { id: string; email?: string; username?: string }): void {
@@ -56,71 +60,76 @@ class SentryConfigImpl {
       id: user.id,
       ...(user.email ? { email: user.email } : {}),
       ...(user.username ? { username: user.username } : {}),
-    })
+    });
   }
 
   captureException(error: Error, context?: Record<string, unknown>): void {
     Sentry.withScope((scope: Sentry.Scope) => {
       if (context) {
         Object.entries(context).forEach(([key, value]) => {
-          scope.setTag(key, String(value))
-        })
+          scope.setTag(key, String(value));
+        });
       }
-      Sentry.captureException(error)
-    })
+      Sentry.captureException(error);
+    });
   }
 
   captureMessage(
-    message: string, 
+    message: string,
     level: 'debug' | 'info' | 'warning' | 'error' | 'fatal' = 'info',
     context?: Record<string, unknown>
   ): void {
     Sentry.withScope((scope: Sentry.Scope) => {
       if (context) {
         Object.entries(context).forEach(([key, value]) => {
-          scope.setContext(key, value as Record<string, unknown>)
-        })
+          scope.setContext(key, value as Record<string, unknown>);
+        });
       }
-      Sentry.captureMessage(message, level as Sentry.SeverityLevel)
-    })
+      Sentry.captureMessage(message, level as Sentry.SeverityLevel);
+    });
   }
 
   addBreadcrumb(breadcrumb: {
-    message: string
-    category?: string
-    level?: 'debug' | 'info' | 'warning' | 'error'
-    data?: Record<string, any>
+    message: string;
+    category?: string;
+    level?: 'debug' | 'info' | 'warning' | 'error';
+    data?: Record<string, any>;
   }): void {
-    Sentry.addBreadcrumb(breadcrumb)
+    Sentry.addBreadcrumb(breadcrumb);
   }
 
   startTransaction(name: string, op: string): { finish: () => void } {
     // Note: startTransaction is deprecated in newer Sentry versions
     // Returns a transaction interface for backward compatibility
     // Newer implementations should use Sentry.startSpan() instead
-    logger.debug('Transaction started', { name, op })
-    return { finish: () => logger.debug('Transaction finished', { name, op }) }
+    logger.debug('Transaction started', { name, op });
+    return { finish: () => logger.debug('Transaction finished', { name, op }) };
   }
 
   private scrubSensitiveData(data: unknown): unknown {
-    if (typeof data !== 'object' || !data) return data
+    if (typeof data !== 'object' || !data) return data;
 
-    const scrubbed = { ...(data as Record<string, unknown>) }
+    const scrubbed = { ...(data as Record<string, unknown>) };
     const sensitiveKeys = [
-      'password', 'token', 'key', 'secret', 'auth',
-      'credit_card', 'ssn', 'email', 'phone'
-    ]
+      'password',
+      'token',
+      'key',
+      'secret',
+      'auth',
+      'credit_card',
+      'ssn',
+      'email',
+      'phone',
+    ];
 
-    Object.keys(scrubbed).forEach(key => {
-      if (sensitiveKeys.some(sensitive => 
-        key.toLowerCase().includes(sensitive))) {
-        scrubbed[key] = '[Redacted]'
+    Object.keys(scrubbed).forEach((key) => {
+      if (sensitiveKeys.some((sensitive) => key.toLowerCase().includes(sensitive))) {
+        scrubbed[key] = '[Redacted]';
       }
-    })
+    });
 
-    return scrubbed
+    return scrubbed;
   }
 }
 
-export const sentryConfig = new SentryConfigImpl()
-
+export const sentryConfig = new SentryConfigImpl();

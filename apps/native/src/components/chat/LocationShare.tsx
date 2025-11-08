@@ -1,14 +1,6 @@
 import * as Location from 'expo-location';
 import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { createLogger } from '../../utils/logger';
 
 const logger = createLogger('LocationShare');
@@ -45,12 +37,9 @@ export const LocationShare: React.FC<LocationShareProps> = ({
     try {
       // Request permissions
       const { status } = await Location.requestForegroundPermissionsAsync();
-      
+
       if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'Location permission is needed to share your location.'
-        );
+        Alert.alert('Permission Required', 'Location permission is needed to share your location.');
         onClose();
         return;
       }
@@ -77,12 +66,7 @@ export const LocationShare: React.FC<LocationShareProps> = ({
         if (addresses.length > 0) {
           const addr = addresses[0];
           if (addr) {
-            const formattedAddress = [
-              addr.street,
-              addr.city,
-              addr.region,
-              addr.country,
-            ]
+            const formattedAddress = [addr.street, addr.city, addr.region, addr.country]
               .filter(Boolean)
               .join(', ');
             setAddress(formattedAddress);
@@ -92,7 +76,11 @@ export const LocationShare: React.FC<LocationShareProps> = ({
         }
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to get address', err, { context: 'reverseGeocode', latitude: position.coords.latitude, longitude: position.coords.longitude });
+        logger.error('Failed to get address', err, {
+          context: 'reverseGeocode',
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
       }
     } catch (error) {
       Alert.alert('Error', 'Failed to get your location');
@@ -110,12 +98,7 @@ export const LocationShare: React.FC<LocationShareProps> = ({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.container}>
           {/* Header */}
@@ -154,16 +137,10 @@ export const LocationShare: React.FC<LocationShareProps> = ({
 
               {/* Actions */}
               <View style={styles.actions}>
-                <Pressable
-                  style={styles.refreshButton}
-                  onPress={getCurrentLocation}
-                >
+                <Pressable style={styles.refreshButton} onPress={getCurrentLocation}>
                   <Text style={styles.refreshButtonText}>🔄 Refresh</Text>
                 </Pressable>
-                <Pressable
-                  style={styles.sendButton}
-                  onPress={handleSendLocation}
-                >
+                <Pressable style={styles.sendButton} onPress={handleSendLocation}>
                   <Text style={styles.sendButtonText}>Send Location</Text>
                 </Pressable>
               </View>
@@ -176,10 +153,7 @@ export const LocationShare: React.FC<LocationShareProps> = ({
           ) : (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>Failed to get location</Text>
-              <Pressable
-                style={styles.retryButton}
-                onPress={getCurrentLocation}
-              >
+              <Pressable style={styles.retryButton} onPress={getCurrentLocation}>
                 <Text style={styles.retryButtonText}>Try Again</Text>
               </Pressable>
             </View>

@@ -1,86 +1,86 @@
 /**
  * ABSOLUTE_MAX_UI_MODE - Global ultra-premium UI configuration
- * 
+ *
  * This configuration enforces premium animation, theme, and smoothness profile
  * across all visual components including GPU performance, blur layering, haptics,
  * and emotional color logic.
  */
 
-export type HapticStrength = 'light' | 'medium' | 'strong'
+export type HapticStrength = 'light' | 'medium' | 'strong';
 
-export type TapFeedback = 'spring' | 'scale' | 'none'
+export type TapFeedback = 'spring' | 'scale' | 'none';
 
-export type ThemeVariant = 'glass' | 'neon' | 'dark' | 'vibrant'
+export type ThemeVariant = 'glass' | 'neon' | 'dark' | 'vibrant';
 
 export interface SpringPhysics {
-  damping: number
-  stiffness: number
-  mass: number
+  damping: number;
+  stiffness: number;
+  mass: number;
 }
 
 export interface VisualConfig {
-  enableBlur: boolean
-  enableGlow: boolean
-  enableShadows: boolean
-  enableShimmer: boolean
-  enable3DTilt: boolean
-  backdropSaturation: number
-  maxElevation: number
-  borderRadius: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
-  highContrastText: boolean
+  enableBlur: boolean;
+  enableGlow: boolean;
+  enableShadows: boolean;
+  enableShimmer: boolean;
+  enable3DTilt: boolean;
+  backdropSaturation: number;
+  maxElevation: number;
+  borderRadius: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
+  highContrastText: boolean;
 }
 
 export interface AnimationConfig {
-  enableReanimated: boolean
-  smoothEntry: boolean
-  tapFeedback: TapFeedback
-  motionBlur: boolean
-  springPhysics: SpringPhysics
-  showParticles: boolean
-  showTrails: boolean
-  motionFPS: number
+  enableReanimated: boolean;
+  smoothEntry: boolean;
+  tapFeedback: TapFeedback;
+  motionBlur: boolean;
+  springPhysics: SpringPhysics;
+  showParticles: boolean;
+  showTrails: boolean;
+  motionFPS: number;
 }
 
 export interface PerformanceConfig {
-  runOnUIThread: boolean
-  skipReactRender: boolean
-  useSkiaWhereAvailable: boolean
-  flatListOptimized: boolean
-  layoutAwareAnimations: boolean
+  runOnUIThread: boolean;
+  skipReactRender: boolean;
+  useSkiaWhereAvailable: boolean;
+  flatListOptimized: boolean;
+  layoutAwareAnimations: boolean;
 }
 
 export interface FeedbackConfig {
-  haptics: boolean
-  hapticStrength: HapticStrength
-  sound: boolean
-  showTooltips: boolean
+  haptics: boolean;
+  hapticStrength: HapticStrength;
+  sound: boolean;
+  showTooltips: boolean;
 }
 
 export interface ThemeConfig {
-  adaptiveMood: boolean
-  gradientIntensity: number
-  themeVariants: ThemeVariant[]
-  avatarGlow: boolean
-  dynamicBackground: boolean
+  adaptiveMood: boolean;
+  gradientIntensity: number;
+  themeVariants: ThemeVariant[];
+  avatarGlow: boolean;
+  dynamicBackground: boolean;
 }
 
 export interface DebugConfig {
-  logFrameDrops: boolean
-  traceSharedValues: boolean
+  logFrameDrops: boolean;
+  traceSharedValues: boolean;
 }
 
 export interface AbsoluteMaxUIModeConfig {
-  visual: VisualConfig
-  animation: AnimationConfig
-  performance: PerformanceConfig
-  feedback: FeedbackConfig
-  theme: ThemeConfig
-  debug: DebugConfig
+  visual: VisualConfig;
+  animation: AnimationConfig;
+  performance: PerformanceConfig;
+  feedback: FeedbackConfig;
+  theme: ThemeConfig;
+  debug: DebugConfig;
 }
 
 /**
  * ABSOLUTE_MAX_UI_MODE - Global ultra-premium UI configuration
- * 
+ *
  * Apply globally to all visual components:
  * - Chat bubbles (BubbleWrapper)
  * - Buttons, dialogs, menus
@@ -102,7 +102,7 @@ export const ABSOLUTE_MAX_UI_MODE: AbsoluteMaxUIModeConfig = {
     backdropSaturation: 1.5,
     maxElevation: 24,
     borderRadius: '2xl',
-    highContrastText: true
+    highContrastText: true,
   },
   animation: {
     enableReanimated: true,
@@ -112,35 +112,34 @@ export const ABSOLUTE_MAX_UI_MODE: AbsoluteMaxUIModeConfig = {
     springPhysics: {
       damping: 15,
       stiffness: 250,
-      mass: 0.9
+      mass: 0.9,
     },
     showParticles: true,
     showTrails: true,
-    motionFPS: 60
+    motionFPS: 60,
   },
   performance: {
     runOnUIThread: true,
     skipReactRender: true,
     useSkiaWhereAvailable: true,
     flatListOptimized: true,
-    layoutAwareAnimations: true
+    layoutAwareAnimations: true,
   },
   feedback: {
     haptics: true,
     hapticStrength: 'strong',
     sound: true,
-    showTooltips: true
+    showTooltips: true,
   },
   theme: {
     adaptiveMood: true,
     gradientIntensity: 1.4,
     themeVariants: ['glass', 'neon', 'dark', 'vibrant'],
     avatarGlow: true,
-    dynamicBackground: true
+    dynamicBackground: true,
   },
   debug: {
     logFrameDrops: false,
-    traceSharedValues: false
-  }
-} as const
-
+    traceSharedValues: false,
+  },
+} as const;

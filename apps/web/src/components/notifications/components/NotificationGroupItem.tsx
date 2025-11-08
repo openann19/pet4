@@ -1,33 +1,33 @@
 /**
  * Notification Group Item Component
- * 
+ *
  * Displays a group of similar notifications
  */
 
-import { useState, useEffect } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Check, Archive } from '@phosphor-icons/react'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { formatDistanceToNow } from 'date-fns'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useHoverTap } from '@/effects/reanimated'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { cn } from '@/lib/utils'
-import type { NotificationGroup, PremiumNotification, NotificationPreferences } from '../types'
-import type { GetIconFunction, GetPriorityStylesFunction } from './NotificationItem'
+import { useState, useEffect } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Check, Archive } from '@phosphor-icons/react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { formatDistanceToNow } from 'date-fns';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useHoverTap } from '@/effects/reanimated';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { cn } from '@/lib/utils';
+import type { NotificationGroup, PremiumNotification, NotificationPreferences } from '../types';
+import type { GetIconFunction, GetPriorityStylesFunction } from './NotificationItem';
 
 export interface NotificationGroupItemProps {
-  group: NotificationGroup
-  index: number
-  onMarkAsRead: (groupId: string) => void
-  onArchive: (groupId: string) => void
-  onDelete: (groupId: string) => void
-  getIcon: GetIconFunction
-  getPriorityStyles: GetPriorityStylesFunction
-  preferences: NotificationPreferences | null
+  group: NotificationGroup;
+  index: number;
+  onMarkAsRead: (groupId: string) => void;
+  onArchive: (groupId: string) => void;
+  onDelete: (groupId: string) => void;
+  getIcon: GetIconFunction;
+  getPriorityStyles: GetPriorityStylesFunction;
+  preferences: NotificationPreferences | null;
 }
 
 export function NotificationGroupItem({
@@ -38,49 +38,46 @@ export function NotificationGroupItem({
   onDelete: _onDelete,
   getIcon,
   getPriorityStyles: _getPriorityStyles,
-  preferences: _preferences
+  preferences: _preferences,
 }: NotificationGroupItemProps): JSX.Element | null {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const latestNotification = group.notifications[0]
-  if (!latestNotification) return null
+  const [isExpanded, setIsExpanded] = useState(false);
+  const latestNotification = group.notifications[0];
+  if (!latestNotification) return null;
 
-  const itemOpacity = useSharedValue(0)
-  const itemTranslateY = useSharedValue(20)
+  const itemOpacity = useSharedValue(0);
+  const itemTranslateY = useSharedValue(20);
   const groupHover = useHoverTap({
     hoverScale: 1.005,
-    tapScale: 1
-  })
+    tapScale: 1,
+  });
   const iconHover = useHoverTap({
     hoverScale: 1.05,
-    tapScale: 1
-  })
+    tapScale: 1,
+  });
 
   useEffect(() => {
-    itemOpacity.value = withTiming(1, timingConfigs.smooth)
-    itemTranslateY.value = withSpring(0, springConfigs.smooth)
-  }, [itemOpacity, itemTranslateY])
+    itemOpacity.value = withTiming(1, timingConfigs.smooth);
+    itemTranslateY.value = withSpring(0, springConfigs.smooth);
+  }, [itemOpacity, itemTranslateY]);
 
   const itemStyle = useAnimatedStyle(() => ({
     opacity: itemOpacity.value,
-    transform: [
-      { translateY: itemTranslateY.value },
-      { scale: groupHover.scale.value }
-    ]
-  })) as AnimatedStyle
+    transform: [{ translateY: itemTranslateY.value }, { scale: groupHover.scale.value }],
+  })) as AnimatedStyle;
 
   const iconStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: iconHover.scale.value }]
-  })) as AnimatedStyle
+    transform: [{ scale: iconHover.scale.value }],
+  })) as AnimatedStyle;
 
-  const unreadDotScale = useSharedValue(group.read ? 0 : 1)
+  const unreadDotScale = useSharedValue(group.read ? 0 : 1);
 
   useEffect(() => {
-    unreadDotScale.value = withSpring(group.read ? 0 : 1, springConfigs.bouncy)
-  }, [group.read, unreadDotScale])
+    unreadDotScale.value = withSpring(group.read ? 0 : 1, springConfigs.bouncy);
+  }, [group.read, unreadDotScale]);
 
   const unreadDotStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: unreadDotScale.value }]
-  })) as AnimatedStyle
+    transform: [{ scale: unreadDotScale.value }],
+  })) as AnimatedStyle;
 
   return (
     <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
@@ -103,8 +100,8 @@ export function NotificationGroupItem({
             >
               {getIcon(group.type as PremiumNotification['type'], latestNotification.priority)}
               {group.notifications.length > 1 && (
-                <Badge 
-                  variant="destructive" 
+                <Badge
+                  variant="destructive"
                   className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full text-xs font-bold"
                 >
                   {group.notifications.length}
@@ -115,16 +112,17 @@ export function NotificationGroupItem({
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-sm leading-tight">
-                    {group.title}
-                  </h4>
+                  <h4 className="font-semibold text-sm leading-tight">{group.title}</h4>
                   <p className="text-sm mt-1 text-muted-foreground leading-relaxed">
                     {group.summary}
                   </p>
                 </div>
 
                 {!group.read && (
-                  <AnimatedView style={unreadDotStyle} className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1">
+                  <AnimatedView
+                    style={unreadDotStyle}
+                    className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1"
+                  >
                     {null}
                   </AnimatedView>
                 )}
@@ -146,7 +144,7 @@ export function NotificationGroupItem({
                       <Check size={16} />
                     </Button>
                   )}
-                  
+
                   <Button
                     variant="ghost"
                     size="icon"
@@ -162,11 +160,7 @@ export function NotificationGroupItem({
 
           {group.notifications.length > 1 && (
             <CollapsibleTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full mt-2 text-xs"
-              >
+              <Button variant="ghost" size="sm" className="w-full mt-2 text-xs">
                 {isExpanded ? 'Show less' : `Show ${group.notifications.length - 1} more`}
               </Button>
             </CollapsibleTrigger>
@@ -186,5 +180,5 @@ export function NotificationGroupItem({
         )}
       </AnimatedView>
     </Collapsible>
-  )
+  );
 }

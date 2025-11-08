@@ -3,7 +3,13 @@
  * Smooth morphing between shapes with border-radius interpolation
  */
 
-import { useSharedValue, useAnimatedStyle, withTiming, interpolate, Easing } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { useCallback } from 'react';
 
 export interface UseMorphShapeOptions {
@@ -31,7 +37,7 @@ export function useMorphShape(options: UseMorphShapeOptions = {}) {
   const morphTo = useCallback(
     (shapeIndex: number) => {
       if (shapeIndex < 0 || shapeIndex >= shapes.length) return;
-      
+
       currentShape.value = shapeIndex;
       progress.value = withTiming(shapeIndex, {
         duration,

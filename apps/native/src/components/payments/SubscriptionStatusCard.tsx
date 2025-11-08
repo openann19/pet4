@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { AnimatedCard } from '../AnimatedCard';
 
 interface Subscription {
@@ -71,23 +66,17 @@ export const SubscriptionStatusCard: React.FC<SubscriptionStatusCardProps> = ({
       <View style={styles.header}>
         <View style={styles.planBadgeContainer}>
           <View style={[styles.planBadge, { backgroundColor: planColor }]}>
-            <Text style={styles.planBadgeText}>
-              {PLAN_NAMES[subscription.plan]}
-            </Text>
+            <Text style={styles.planBadgeText}>{PLAN_NAMES[subscription.plan]}</Text>
           </View>
           <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
-            <Text style={styles.statusText}>
-              {STATUS_LABELS[subscription.status]}
-            </Text>
+            <Text style={styles.statusText}>{STATUS_LABELS[subscription.status]}</Text>
           </View>
         </View>
 
         {subscription.plan !== 'free' && subscription.nextBillingDate && (
           <View style={styles.billingInfo}>
             <Text style={styles.billingLabel}>Next billing</Text>
-            <Text style={styles.billingDate}>
-              {formatDate(subscription.nextBillingDate)}
-            </Text>
+            <Text style={styles.billingDate}>{formatDate(subscription.nextBillingDate)}</Text>
           </View>
         )}
       </View>
@@ -114,18 +103,10 @@ export const SubscriptionStatusCard: React.FC<SubscriptionStatusCardProps> = ({
         )}
         {subscription.plan !== 'free' && (
           <Pressable
-            style={[
-              styles.manageButton,
-              canUpgrade && styles.manageButtonSecondary,
-            ]}
+            style={[styles.manageButton, canUpgrade && styles.manageButtonSecondary]}
             onPress={onManage}
           >
-            <Text
-              style={[
-                styles.manageButtonText,
-                canUpgrade && styles.manageButtonTextSecondary,
-              ]}
-            >
+            <Text style={[styles.manageButtonText, canUpgrade && styles.manageButtonTextSecondary]}>
               Manage Subscription
             </Text>
           </Pressable>
@@ -151,8 +132,7 @@ export const SubscriptionStatusCard: React.FC<SubscriptionStatusCardProps> = ({
           <View style={styles.warningTextContainer}>
             <Text style={styles.warningTitle}>Subscription Cancelled</Text>
             <Text style={styles.warningText}>
-              You'll continue to have access until{' '}
-              {formatDate(subscription.nextBillingDate)}.
+              You'll continue to have access until {formatDate(subscription.nextBillingDate)}.
             </Text>
           </View>
         </View>

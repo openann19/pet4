@@ -6,55 +6,36 @@ interface StreamControlsProps {
   onShowViewers: () => void;
 }
 
-export const StreamControls: React.FC<StreamControlsProps> = ({
-  onEndStream,
-  onShowViewers,
-}) => {
+export const StreamControls: React.FC<StreamControlsProps> = ({ onEndStream, onShowViewers }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
 
   const handleEndStream = () => {
-    Alert.alert(
-      'End Live Stream',
-      'Are you sure you want to end this live stream?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'End Stream',
-          style: 'destructive',
-          onPress: onEndStream,
-        },
-      ]
-    );
+    Alert.alert('End Live Stream', 'Are you sure you want to end this live stream?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'End Stream',
+        style: 'destructive',
+        onPress: onEndStream,
+      },
+    ]);
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.controlButton}
-        onPress={() => setIsMuted(!isMuted)}
-      >
+      <TouchableOpacity style={styles.controlButton} onPress={() => setIsMuted(!isMuted)}>
         <Text style={styles.controlIcon}>{isMuted ? '🔇' : '🔊'}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.controlButton}
-        onPress={() => setIsCameraOff(!isCameraOff)}
-      >
+      <TouchableOpacity style={styles.controlButton} onPress={() => setIsCameraOff(!isCameraOff)}>
         <Text style={styles.controlIcon}>{isCameraOff ? '📷' : '📹'}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.controlButton}
-        onPress={onShowViewers}
-      >
+      <TouchableOpacity style={styles.controlButton} onPress={onShowViewers}>
         <Text style={styles.controlIcon}>👥</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.controlButton, styles.endButton]}
-        onPress={handleEndStream}
-      >
+      <TouchableOpacity style={[styles.controlButton, styles.endButton]} onPress={handleEndStream}>
         <Text style={styles.endIcon}>✕</Text>
       </TouchableOpacity>
     </View>

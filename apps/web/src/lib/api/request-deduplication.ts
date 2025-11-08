@@ -24,7 +24,7 @@ class RequestDeduplicator {
   async dedupe<T>(key: string, fetcher: () => Promise<T>): Promise<T> {
     // Check for existing pending request
     const existing = this.pendingRequests.get(key) as PendingRequest<T> | undefined;
-    
+
     if (existing) {
       const age = Date.now() - existing.timestamp;
       if (age < this.maxAge) {
@@ -95,9 +95,6 @@ class RequestDeduplicator {
 export const requestDeduplicator = new RequestDeduplicator();
 
 // Helper to create a deduplicated fetch function
-export function createDedupedFetch<T>(
-  key: string,
-  fetcher: () => Promise<T>
-): () => Promise<T> {
+export function createDedupedFetch<T>(key: string, fetcher: () => Promise<T>): () => Promise<T> {
   return () => requestDeduplicator.dedupe(key, fetcher);
 }

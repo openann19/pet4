@@ -20,12 +20,14 @@ export default function App() {
 ### BottomNavBar
 
 Custom bottom navigation bar with:
+
 - Haptic feedback on press
 - Badge support
 - Accessibility-friendly
 - Zero external dependencies (uses expo-haptics which is already installed)
 
 Tabs:
+
 - Community
 - Chat
 - Discover (Feed)
@@ -38,6 +40,7 @@ Tabs:
 ### FeedScreen
 
 Feed screen with Discovery/Map toggle:
+
 - **Discovery View**: List of pets with details
 - **Map View**: Optional map view (requires `react-native-maps`)
 
@@ -82,4 +85,3 @@ export default function App() {
 - All screens use existing components (SectionHeader, FeatureCard)
 - Uses existing theme colors from `@mobile/theme/colors`
 - Compatible with existing navigation patterns
-

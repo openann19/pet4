@@ -1,19 +1,25 @@
-import { ENV } from '@/config/env'
-import { createLogger } from '@/lib/logger'
+import { ENV } from '@/config/env';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('Security')
+type OptionalSecurityEnv = typeof ENV & {
+  VITE_CORS_ORIGIN?: string;
+  VITE_CSP_ENABLED?: boolean;
+};
+
+const optionalEnv = ENV as OptionalSecurityEnv;
+const logger = createLogger('Security');
 
 class SecurityConfigImpl {
   // CORS Configuration
   setupCORS(): void {
     // This would be configured in the backend, but we can validate origins
     const allowedOrigins = [
-      ENV.VITE_CORS_ORIGIN ?? 'https://pawfectmatch.com',
+      optionalEnv.VITE_CORS_ORIGIN ?? 'https://pawfectmatch.com',
       'https://pawfectmatch.com',
-      'https://*.pawfectmatch.com'
-    ].filter(Boolean)
+      'https://*.pawfectmatch.com',
+    ].filter(Boolean);
 
-    logger.info('CORS origins configured', { allowedOrigins })
+    logger.info('CORS origins configured', { allowedOrigins });
   }
 
   // Content Security Policy
@@ -29,24 +35,24 @@ class SecurityConfigImpl {
       "object-src 'none'",
       "frame-ancestors 'none'",
       "base-uri 'self'",
-      "form-action 'self'"
-    ].join('; ')
+      "form-action 'self'",
+    ].join('; ');
 
-    if (ENV.VITE_CSP_ENABLED) {
-      const meta = document.createElement('meta')
-      meta.httpEquiv = 'Content-Security-Policy'
-      meta.content = csp
-      document.head.appendChild(meta)
+    if (optionalEnv.VITE_CSP_ENABLED) {
+      const meta = document.createElement('meta');
+      meta.httpEquiv = 'Content-Security-Policy';
+      meta.content = csp;
+      document.head.appendChild(meta);
     }
 
-    return csp
+    return csp;
   }
 
   // XSS Protection
   sanitizeHTML(html: string): string {
-    const div = document.createElement('div')
-    div.textContent = html
-    return div.innerHTML
+    const div = document.createElement('div');
+    div.textContent = html;
+    return div.innerHTML;
   }
 
   sanitizeUserInput(input: string): string {
@@ -54,24 +60,24 @@ class SecurityConfigImpl {
       .replace(/[<>]/g, '') // Remove potential script tags
       .replace(/javascript:/gi, '') // Remove javascript: protocols
       .replace(/on\w+=/gi, '') // Remove event handlers
-      .trim()
+      .trim();
   }
 
   // API Key Security
   validateAPIKeys(): void {
     const keys = {
       stripe: ENV.VITE_STRIPE_PUBLIC_KEY,
-      mapbox: ENV.VITE_MAPBOX_TOKEN
-    }
+      mapbox: ENV.VITE_MAPBOX_TOKEN,
+    };
 
     Object.entries(keys).forEach(([service, key]) => {
       if (key && this.isKeyExposed(key)) {
         logger.error(`${service} API key appears to be a secret key - use public key only`, {
           service,
-          keyPrefix: key.substring(0, 10)
-        })
+          keyPrefix: key.substring(0, 10),
+        });
       }
-    })
+    });
   }
 
   private isKeyExposed(key: string): boolean {
@@ -81,45 +87,44 @@ class SecurityConfigImpl {
       /^rk_/, // Restricted keys
       /password/i,
       /secret/i,
-      /private/i
-    ]
+      /private/i,
+    ];
 
-    return secretPatterns.some(pattern => pattern.test(key))
+    return secretPatterns.some((pattern) => pattern.test(key));
   }
 
   // Rate Limiting (Client-side tracking)
-  private rateLimiters = new Map<string, {
-    requests: number[]
-    blocked: boolean
-  }>()
-
-  checkRateLimit(
-    identifier: string,
-    maxRequests: number = 100,
-    windowMs: number = 60000
-  ): boolean {
-    const now = Date.now()
-    const limiter = this.rateLimiters.get(identifier) || {
-      requests: [],
-      blocked: false
+  private rateLimiters = new Map<
+    string,
+    {
+      requests: number[];
+      blocked: boolean;
     }
+  >();
+
+  checkRateLimit(identifier: string, maxRequests = 100, windowMs = 60000): boolean {
+    const now = Date.now();
+    const limiter = this.rateLimiters.get(identifier) ?? {
+      requests: [],
+      blocked: false,
+    };
 
     // Clean old requests
-    limiter.requests = limiter.requests.filter(time => now - time < windowMs)
+    limiter.requests = limiter.requests.filter((time) => now - time < windowMs);
 
     // Check if rate limited
     if (limiter.requests.length >= maxRequests) {
-      limiter.blocked = true
-      logger.warn('Rate limit exceeded', { identifier, requests: limiter.requests.length })
-      return false
+      limiter.blocked = true;
+      logger.warn('Rate limit exceeded', { identifier, requests: limiter.requests.length });
+      return false;
     }
 
     // Add current request
-    limiter.requests.push(now)
-    limiter.blocked = false
-    this.rateLimiters.set(identifier, limiter)
+    limiter.requests.push(now);
+    limiter.blocked = false;
+    this.rateLimiters.set(identifier, limiter);
 
-    return true
+    return true;
   }
 
   // Secure Storage
@@ -127,87 +132,84 @@ class SecurityConfigImpl {
     try {
       // Use sessionStorage for sensitive data that shouldn't persist
       if (key.includes('token') || key.includes('secret')) {
-        sessionStorage.setItem(key, value)
+        sessionStorage.setItem(key, value);
       } else {
-        localStorage.setItem(key, value)
+        localStorage.setItem(key, value);
       }
     } catch (error) {
-      logger.error('Failed to store data securely', error, { key })
+      logger.error('Failed to store data securely', error, { key });
     }
   }
 
   secureRetrieve(key: string): string | null {
     try {
-      return sessionStorage.getItem(key) || localStorage.getItem(key)
+      return sessionStorage.getItem(key) ?? localStorage.getItem(key);
     } catch (error) {
-      logger.error('Failed to retrieve data securely', error, { key })
-      return null
+      logger.error('Failed to retrieve data securely', error, { key });
+      return null;
     }
   }
 
   secureClear(key: string): void {
     try {
-      sessionStorage.removeItem(key)
-      localStorage.removeItem(key)
+      sessionStorage.removeItem(key);
+      localStorage.removeItem(key);
     } catch (error) {
-      logger.error('Failed to clear data securely', error, { key })
+      logger.error('Failed to clear data securely', error, { key });
     }
   }
 
   // Privacy Controls
-  anonymizeData<T extends Record<string, unknown>>(
-    data: T,
-    fields: (keyof T)[]
-  ): T {
-    const anonymized = { ...data } as T
-    
-    fields.forEach(field => {
-      if (typeof anonymized[field] === 'string') {
-        anonymized[field] = '***REDACTED***' as T[keyof T]
-      } else {
-        delete anonymized[field]
-      }
-    })
+  anonymizeData<T extends Record<string, unknown>>(data: T, fields: (keyof T)[]): T {
+    const anonymized = { ...data };
 
-    return anonymized
+    fields.forEach((field) => {
+      if (typeof anonymized[field] === 'string') {
+        anonymized[field] = '***REDACTED***' as T[keyof T];
+      } else {
+        delete anonymized[field];
+      }
+    });
+
+    return anonymized;
   }
 
   // Input Validation
   validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email) && email.length <= 254
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) && email.length <= 254;
   }
 
   validatePassword(password: string): {
-    valid: boolean
-    errors: string[]
+    valid: boolean;
+    errors: string[];
   } {
-    const errors: string[] = []
+    const errors: string[] = [];
 
     if (password.length < 8) {
-      errors.push('Password must be at least 8 characters')
+      errors.push('Password must be at least 8 characters');
     }
 
     if (!/[A-Z]/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter')
+      errors.push('Password must contain at least one uppercase letter');
     }
 
     if (!/[a-z]/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter')
+      errors.push('Password must contain at least one lowercase letter');
     }
 
     if (!/\d/.test(password)) {
-      errors.push('Password must contain at least one number')
+      errors.push('Password must contain at least one number');
     }
 
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      errors.push('Password must contain at least one special character')
+      errors.push('Password must contain at least one special character');
     }
 
     return {
       valid: errors.length === 0,
-      errors
-    }
+      errors,
+    };
   }
 
   // GDPR Compliance
@@ -215,15 +217,15 @@ class SecurityConfigImpl {
     // This would call backend API to get all user data
     const response = await fetch(`/api/users/${userId}/export`, {
       headers: {
-        'Authorization': `Bearer ${this.secureRetrieve('access_token')}`
-      }
-    })
+        Authorization: `Bearer ${this.secureRetrieve('access_token')}`,
+      },
+    });
 
     if (!response.ok) {
-      throw new Error('Failed to export user data')
+      throw new Error('Failed to export user data');
     }
 
-    return response.blob()
+    return response.blob();
   }
 
   async deleteUserData(userId: string): Promise<void> {
@@ -231,24 +233,23 @@ class SecurityConfigImpl {
     const response = await fetch(`/api/users/${userId}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${this.secureRetrieve('access_token')}`
-      }
-    })
+        Authorization: `Bearer ${this.secureRetrieve('access_token')}`,
+      },
+    });
 
     if (!response.ok) {
-      throw new Error('Failed to delete user data')
+      throw new Error('Failed to delete user data');
     }
 
-    logger.info('User data deletion requested', { userId })
+    logger.info('User data deletion requested', { userId });
   }
 }
 
-export const securityConfig = new SecurityConfigImpl()
+export const securityConfig = new SecurityConfigImpl();
 
 // Initialize security on app load
 if (typeof window !== 'undefined') {
-  securityConfig.setupCORS()
-  securityConfig.generateCSP()
-  securityConfig.validateAPIKeys()
+  securityConfig.setupCORS();
+  securityConfig.generateCSP();
+  securityConfig.validateAPIKeys();
 }
-

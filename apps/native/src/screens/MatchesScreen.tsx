@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import type { Match } from '../types';
 import { useStorage } from '../hooks/useStorage';
 import { useNavigation } from '@react-navigation/native';
@@ -16,12 +9,15 @@ export default function MatchesScreen(): React.JSX.Element {
   const navigation = useNavigation();
 
   const handleVideoCall = (match: Match) => {
-    navigation.navigate('Call' as never, {
-      callId: `call_${match.id}_${Date.now()}`,
-      remoteUserId: match.id,
-      remoteName: match.matchedPetName,
-      remotePhoto: match.matchedPetPhoto,
-    } as never);
+    navigation.navigate(
+      'Call' as never,
+      {
+        callId: `call_${match.id}_${Date.now()}`,
+        remoteUserId: match.id,
+        remoteName: match.matchedPetName,
+        remotePhoto: match.matchedPetPhoto,
+      } as never
+    );
   };
 
   const renderMatch = ({ item }: { item: Match }) => (
@@ -37,25 +33,15 @@ export default function MatchesScreen(): React.JSX.Element {
         <View style={styles.matchInfo}>
           <Text style={styles.matchName}>{item.matchedPetName}</Text>
           <View style={styles.compatibilityBar}>
-            <View
-              style={[
-                styles.compatibilityFill,
-                { width: `${item.compatibilityScore}%` },
-              ]}
-            />
+            <View style={[styles.compatibilityFill, { width: `${item.compatibilityScore}%` }]} />
           </View>
-          <Text style={styles.compatibilityText}>
-            {item.compatibilityScore}% Compatible
-          </Text>
+          <Text style={styles.compatibilityText}>{item.compatibilityScore}% Compatible</Text>
           <Text style={styles.matchDate}>
             Matched {new Date(item.matchedAt).toLocaleDateString()}
           </Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.callButton}
-        onPress={() => handleVideoCall(item)}
-      >
+      <TouchableOpacity style={styles.callButton} onPress={() => handleVideoCall(item)}>
         <Text style={styles.callButtonText}>📹</Text>
       </TouchableOpacity>
     </View>
@@ -66,9 +52,7 @@ export default function MatchesScreen(): React.JSX.Element {
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyIcon}>💝</Text>
         <Text style={styles.emptyTitle}>No Matches Yet</Text>
-        <Text style={styles.emptyText}>
-          Keep swiping to find your perfect pet match!
-        </Text>
+        <Text style={styles.emptyText}>Keep swiping to find your perfect pet match!</Text>
       </View>
     );
   }

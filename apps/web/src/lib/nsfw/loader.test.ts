@@ -22,8 +22,11 @@ describe('nsfw loader', () => {
 
   it('throws error when called outside browser', async () => {
     const originalWindow = global.window;
-    // @ts-expect-error - intentionally removing window for test
-    delete global.window;
+    Object.defineProperty(global, 'window', {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    });
 
     await expect(loadNSFWModel()).rejects.toThrow('loadNSFWModel must run in the browser');
 
@@ -32,9 +35,7 @@ describe('nsfw loader', () => {
 
   it('returns a singleton model (no double-load)', async () => {
     const fakeModel = {
-      classify: vi.fn(async () => [
-        { className: 'Neutral', probability: 0.9 },
-      ]),
+      classify: vi.fn(async () => [{ className: 'Neutral', probability: 0.9 }]),
     };
 
     const loadFn = vi.fn(async () => fakeModel);
@@ -112,9 +113,7 @@ describe('nsfw loader', () => {
   });
 
   it('classify wrapper calls model.classify', async () => {
-    const classifyFn = vi.fn(async () => [
-      { className: 'Neutral', probability: 0.9 },
-    ]);
+    const classifyFn = vi.fn(async () => [{ className: 'Neutral', probability: 0.9 }]);
 
     const fakeModel = { classify: classifyFn };
 
@@ -139,4 +138,3 @@ describe('nsfw loader', () => {
     expect(result).toEqual([{ className: 'Neutral', probability: 0.9 }]);
   });
 });
-

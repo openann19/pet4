@@ -1,12 +1,21 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": ["ES2022"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "moduleDetection": "force",
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "@mobile/*": ["apps/mobile/src/*"],
+      "@mobile": ["apps/mobile/src/index.ts"],
+      "@pet/domain/*": ["apps/web/src/core/domain/*"],
+      "@petspark/shared": ["packages/shared/src/index.ts"],
+      "@shared/types": ["packages/shared/src/types/index.ts"],
+      "@shared/utils": ["packages/shared/src/utils/index.ts"],
+      "@ui-mobile": ["packages/ui-mobile/index.ts"],
+      "@ui-mobile/*": ["packages/ui-mobile/*"]
+    },
     "rootDirs": [],
     "jsx": "react-jsx",
     "resolveJsonModule": true,
@@ -35,8 +44,8 @@
     "strictBindCallApply": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "noImplicitReturns": true,
     "noImplicitOverride": true,
+    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -46,8 +55,8 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "preserveConstEnums": true,
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
+  "skipLibCheck": false,
+  "skipDefaultLibCheck": false,
     "declaration": false,
     "declarationMap": false,
     "emitDeclarationOnly": false,
@@ -70,10 +79,8 @@
     "android/**",
     "ios/**",
     "docs/**",
-    "logs/**"
+    "logs/**",
+    "apps/native/**"
   ],
-  "include": [
-    "**/*",
-    ".env.example"
-  ]
+  "include": ["**/*", ".env.example"]
 }

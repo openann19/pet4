@@ -1,33 +1,31 @@
-'use client'
+'use client';
 
-import {
-  useAnimatedStyle
-} from 'react-native-reanimated'
-import { useState, useCallback, useEffect } from 'react'
+import { useAnimatedStyle } from 'react-native-reanimated';
+import { useState, useCallback, useEffect } from 'react';
 import {
   spawnParticles,
   animateParticle,
   type Particle,
-  type ParticleConfig
-} from '@/effects/reanimated/particle-engine'
+  type ParticleConfig,
+} from '@/effects/reanimated/particle-engine';
 
 export interface UseParticleExplosionDeleteOptions {
-  originX?: number
-  originY?: number
-  colors?: string[]
-  particleCount?: number
-  enabled?: boolean
+  originX?: number;
+  originY?: number;
+  colors?: string[];
+  particleCount?: number;
+  enabled?: boolean;
 }
 
 export interface UseParticleExplosionDeleteReturn {
-  particles: Particle[]
-  triggerExplosion: (x: number, y: number, colors?: string[]) => void
-  clearParticles: () => void
-  getParticleStyle: (particle: Particle) => ReturnType<typeof useAnimatedStyle>
+  particles: Particle[];
+  triggerExplosion: (x: number, y: number, colors?: string[]) => void;
+  clearParticles: () => void;
+  getParticleStyle: (particle: Particle) => ReturnType<typeof useAnimatedStyle>;
 }
 
-const DEFAULT_PARTICLE_COUNT = 15
-const DEFAULT_ENABLED = true
+const DEFAULT_PARTICLE_COUNT = 15;
+const DEFAULT_ENABLED = true;
 const DEFAULT_EXPLOSION_COLORS = [
   '#FF6B6B',
   '#4ECDC4',
@@ -35,8 +33,8 @@ const DEFAULT_EXPLOSION_COLORS = [
   '#FFA07A',
   '#98D8C8',
   '#FFD93D',
-  '#FF6B35'
-]
+  '#FF6B35',
+];
 
 export function useParticleExplosionDelete(
   options: UseParticleExplosionDeleteOptions = {}
@@ -44,14 +42,14 @@ export function useParticleExplosionDelete(
   const {
     colors = DEFAULT_EXPLOSION_COLORS,
     particleCount = DEFAULT_PARTICLE_COUNT,
-    enabled = DEFAULT_ENABLED
-  } = options
+    enabled = DEFAULT_ENABLED,
+  } = options;
 
-  const [particles, setParticles] = useState<Particle[]>([])
+  const [particles, setParticles] = useState<Particle[]>([]);
 
   const triggerExplosion = useCallback(
     (x: number, y: number, explosionColors?: string[]) => {
-      if (!enabled) return
+      if (!enabled) return;
 
       const particleConfig: ParticleConfig = {
         count: particleCount,
@@ -64,10 +62,10 @@ export function useParticleExplosionDelete(
         maxVelocity: 400,
         gravity: 0.5,
         friction: 0.97,
-        spread: 360
-      }
+        spread: 360,
+      };
 
-      const newParticles = spawnParticles(x, y, particleConfig)
+      const newParticles = spawnParticles(x, y, particleConfig);
 
       newParticles.forEach((particle) => {
         animateParticle(particle, {
@@ -85,26 +83,22 @@ export function useParticleExplosionDelete(
           maxVelocity: particleConfig.maxVelocity ?? 400,
           gravity: particleConfig.gravity ?? 0.5,
           friction: particleConfig.friction ?? 0.97,
-          spread: particleConfig.spread ?? 360
-        })
-      })
+          spread: particleConfig.spread ?? 360,
+        });
+      });
 
-      setParticles(newParticles)
+      setParticles(newParticles);
 
       setTimeout(() => {
-        setParticles((prev) =>
-          prev.filter(
-            (p) => Date.now() - p.createdAt < (p.lifetime + 200)
-          )
-        )
-      }, 1200)
+        setParticles((prev) => prev.filter((p) => Date.now() - p.createdAt < p.lifetime + 200));
+      }, 1200);
     },
     [enabled, particleCount, colors]
-  )
+  );
 
   const clearParticles = useCallback(() => {
-    setParticles([])
-  }, [])
+    setParticles([]);
+  }, []);
 
   const getParticleStyle = useCallback(
     (particle: Particle): ReturnType<typeof useAnimatedStyle> => {
@@ -118,32 +112,27 @@ export function useParticleExplosionDelete(
           backgroundColor: particle.color,
           borderRadius: particle.size / 2,
           opacity: particle.opacity.value,
-          transform: [
-            { scale: particle.scale.value },
-            { rotate: `${particle.rotation.value}deg` }
-          ],
+          transform: [{ scale: particle.scale.value }, { rotate: `${particle.rotation.value}deg` }],
           pointerEvents: 'none' as const,
-          zIndex: 9999
-        }
-      })
+          zIndex: 9999,
+        };
+      });
     },
     []
-  )
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setParticles((prev) =>
-        prev.filter((p) => Date.now() - p.createdAt < (p.lifetime + 200))
-      )
-    }, 100)
+      setParticles((prev) => prev.filter((p) => Date.now() - p.createdAt < p.lifetime + 200));
+    }, 100);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   return {
     particles,
     triggerExplosion,
     clearParticles,
-    getParticleStyle
-  }
+    getParticleStyle,
+  };
 }

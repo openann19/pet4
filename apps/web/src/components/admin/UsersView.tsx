@@ -1,22 +1,23 @@
-import { adminApi } from '@/api/admin-api'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge, badgeVariants } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import { adminApi } from '@/api/admin-api';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import type { badgeVariants } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useStorage } from '@/hooks/useStorage'
-import type { Pet } from '@/lib/types'
-import type { Icon } from '@phosphor-icons/react'
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useStorage } from '@/hooks/use-storage';
+import type { Pet } from '@/lib/types';
+import type { Icon } from '@phosphor-icons/react';
 import {
   Calendar,
   CheckCircle,
@@ -26,48 +27,50 @@ import {
   MagnifyingGlass,
   Prohibit,
   User,
-  Warning
-} from '@phosphor-icons/react'
-import type { VariantProps } from 'class-variance-authority'
-import { Presence, MotionView } from '@petspark/motion'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+  Warning,
+} from '@phosphor-icons/react';
+import type { VariantProps } from 'class-variance-authority';
+import { Presence, MotionView } from '@petspark/motion';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-type BadgeVariant = VariantProps<typeof badgeVariants>['variant']
+type BadgeVariant = VariantProps<typeof badgeVariants>['variant'];
 
 interface UserData {
-  id: string
-  name: string
-  email: string
-  avatar?: string
-  role: 'user' | 'moderator' | 'admin'
-  status: 'active' | 'suspended' | 'banned'
-  joinedAt: string
-  lastActive: string
-  petsCount: number
-  matchesCount: number
-  reportsCount: number
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: 'user' | 'moderator' | 'admin';
+  status: 'active' | 'suspended' | 'banned';
+  joinedAt: string;
+  lastActive: string;
+  petsCount: number;
+  matchesCount: number;
+  reportsCount: number;
 }
 
 export default function UsersView() {
-  const [allPets] = useStorage<Pet[]>('all-pets', [])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedUser, setSelectedUser] = useState<UserData | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false)
-  const [resetPasswordMode, setResetPasswordMode] = useState<'email' | 'manual'>('email')
-  const [newPassword, setNewPassword] = useState('')
-  const [resettingPassword, setResettingPassword] = useState(false)
-  const [users, setUsers] = useState<UserData[]>([])
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'suspended' | 'banned'>('all')
+  const [allPets] = useStorage<Pet[]>('all-pets', []);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
+  const [resetPasswordMode, setResetPasswordMode] = useState<'email' | 'manual'>('email');
+  const [newPassword, setNewPassword] = useState('');
+  const [resettingPassword, setResettingPassword] = useState(false);
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'suspended' | 'banned'>(
+    'all'
+  );
 
   useEffect(() => {
     if (allPets && allPets.length > 0) {
-      const userMap = new Map<string, UserData>()
+      const userMap = new Map<string, UserData>();
 
       allPets.forEach((pet: Pet) => {
-        const ownerId = pet.ownerId || pet.ownerName || 'unknown'
-        const ownerName = pet.ownerName || 'Unknown User'
+        const ownerId = pet.ownerId || pet.ownerName || 'unknown';
+        const ownerName = pet.ownerName || 'Unknown User';
 
         if (!userMap.has(ownerId)) {
           userMap.set(ownerId, {
@@ -77,133 +80,136 @@ export default function UsersView() {
             role: 'user',
             status: 'active',
             joinedAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString(),
-            lastActive: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+            lastActive: new Date(
+              Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000
+            ).toISOString(),
             petsCount: 0,
             matchesCount: Math.floor(Math.random() * 10),
-            reportsCount: Math.floor(Math.random() * 3)
-          })
+            reportsCount: Math.floor(Math.random() * 3),
+          });
         }
 
-        const user = userMap.get(ownerId)!
-        user.petsCount++
-      })
+        const user = userMap.get(ownerId)!;
+        user.petsCount++;
+      });
 
-      setUsers(Array.from(userMap.values()))
+      setUsers(Array.from(userMap.values()));
     }
-  }, [allPets])
+  }, [allPets]);
 
   const handleViewUser = (user: UserData) => {
-    setSelectedUser(user)
-    setDialogOpen(true)
-  }
+    setSelectedUser(user);
+    setDialogOpen(true);
+  };
 
   const handleSuspendUser = async (userId: string) => {
-    const updatedUsers = users.map(u =>
+    const updatedUsers = users.map((u) =>
       u.id === userId ? { ...u, status: 'suspended' as const } : u
-    )
-    setUsers(updatedUsers)
-    setDialogOpen(false)
-    toast.success('User suspended')
+    );
+    setUsers(updatedUsers);
+    setDialogOpen(false);
+    toast.success('User suspended');
 
     const auditEntry = {
       adminId: 'admin-current',
       action: 'suspend_user',
       targetType: 'user',
       targetId: userId,
-      details: JSON.stringify({ duration: '7 days' })
-    }
+      details: JSON.stringify({ duration: '7 days' }),
+    };
 
-    await adminApi.createAuditLog(auditEntry)
-  }
+    await adminApi.createAuditLog(auditEntry);
+  };
 
   const handleBanUser = async (userId: string) => {
-    const updatedUsers = users.map(u =>
+    const updatedUsers = users.map((u) =>
       u.id === userId ? { ...u, status: 'banned' as const } : u
-    )
-    setUsers(updatedUsers)
-    setDialogOpen(false)
-    toast.success('User banned permanently')
+    );
+    setUsers(updatedUsers);
+    setDialogOpen(false);
+    toast.success('User banned permanently');
 
     const auditEntry = {
       adminId: 'admin-current',
       action: 'ban_user',
       targetType: 'user',
       targetId: userId,
-      details: JSON.stringify({ permanent: true })
-    }
+      details: JSON.stringify({ permanent: true }),
+    };
 
-    await adminApi.createAuditLog(auditEntry)
-  }
+    await adminApi.createAuditLog(auditEntry);
+  };
 
   const handleReactivateUser = async (userId: string) => {
-    const updatedUsers = users.map(u =>
+    const updatedUsers = users.map((u) =>
       u.id === userId ? { ...u, status: 'active' as const } : u
-    )
-    setUsers(updatedUsers)
-    setDialogOpen(false)
-    toast.success('User reactivated')
+    );
+    setUsers(updatedUsers);
+    setDialogOpen(false);
+    toast.success('User reactivated');
 
     const auditEntry = {
       adminId: 'admin-current',
       action: 'reactivate_user',
       targetType: 'user',
-      targetId: userId
-    }
+      targetId: userId,
+    };
 
-    await adminApi.createAuditLog(auditEntry)
-  }
+    await adminApi.createAuditLog(auditEntry);
+  };
 
   const handleResetPassword = async () => {
-    if (!selectedUser) return
+    if (!selectedUser) return;
 
     try {
-      setResettingPassword(true)
-      
+      setResettingPassword(true);
+
       const result = await adminApi.resetUserPassword(selectedUser.id, {
         sendEmail: resetPasswordMode === 'email',
-        ...(resetPasswordMode === 'manual' && newPassword ? { newPassword } : {})
-      })
+        ...(resetPasswordMode === 'manual' && newPassword ? { newPassword } : {}),
+      });
 
       if (result.success) {
-        toast.success(result.message || 'Password reset successful')
-        
+        toast.success(result.message || 'Password reset successful');
+
         const auditEntry = {
           adminId: 'admin-current',
           action: 'reset_user_password',
           targetType: 'user',
           targetId: selectedUser.id,
-          details: JSON.stringify({ mode: resetPasswordMode })
-        }
-        await adminApi.createAuditLog(auditEntry)
+          details: JSON.stringify({ mode: resetPasswordMode }),
+        };
+        await adminApi.createAuditLog(auditEntry);
 
-        setResetPasswordDialogOpen(false)
-        setNewPassword('')
-        setResetPasswordMode('email')
+        setResetPasswordDialogOpen(false);
+        setNewPassword('');
+        setResetPasswordMode('email');
       }
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      toast.error('Failed to reset password: ' + err.message)
+      const err = error instanceof Error ? error : new Error(String(error));
+      toast.error('Failed to reset password: ' + err.message);
     } finally {
-      setResettingPassword(false)
+      setResettingPassword(false);
     }
-  }
+  };
 
   const openResetPasswordDialog = () => {
-    setResetPasswordDialogOpen(true)
-    setResetPasswordMode('email')
-    setNewPassword('')
-  }
+    setResetPasswordDialogOpen(true);
+    setResetPasswordMode('email');
+    setNewPassword('');
+  };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = filterStatus === 'all' || user.status === filterStatus
-    return matchesSearch && matchesStatus
-  })
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
 
-  const activeCount = users.filter(u => u.status === 'active').length
-  const suspendedCount = users.filter(u => u.status === 'suspended').length
-  const bannedCount = users.filter(u => u.status === 'banned').length
+  const activeCount = users.filter((u) => u.status === 'active').length;
+  const suspendedCount = users.filter((u) => u.status === 'suspended').length;
+  const bannedCount = users.filter((u) => u.status === 'banned').length;
 
   return (
     <div className="flex-1 flex flex-col">
@@ -211,14 +217,15 @@ export default function UsersView() {
         <div className="space-y-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-            <p className="text-muted-foreground">
-              Manage users and their permissions
-            </p>
+            <p className="text-muted-foreground">Manage users and their permissions</p>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="relative flex-1 max-w-md">
-              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+              <MagnifyingGlass
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                size={20}
+              />
               <Input
                 placeholder="Search users by name or email..."
                 value={searchQuery}
@@ -231,24 +238,19 @@ export default function UsersView() {
       </div>
 
       <div className="p-6">
-        <Tabs value={filterStatus} onValueChange={(v: string) => {
-          if (v === 'all' || v === 'active' || v === 'suspended' || v === 'banned') {
-            setFilterStatus(v);
-          }
-        }}>
+        <Tabs
+          value={filterStatus}
+          onValueChange={(v: string) => {
+            if (v === 'all' || v === 'active' || v === 'suspended' || v === 'banned') {
+              setFilterStatus(v);
+            }
+          }}
+        >
           <TabsList>
-            <TabsTrigger value="all">
-              All ({users.length})
-            </TabsTrigger>
-            <TabsTrigger value="active">
-              Active ({activeCount})
-            </TabsTrigger>
-            <TabsTrigger value="suspended">
-              Suspended ({suspendedCount})
-            </TabsTrigger>
-            <TabsTrigger value="banned">
-              Banned ({bannedCount})
-            </TabsTrigger>
+            <TabsTrigger value="all">All ({users.length})</TabsTrigger>
+            <TabsTrigger value="active">Active ({activeCount})</TabsTrigger>
+            <TabsTrigger value="suspended">Suspended ({suspendedCount})</TabsTrigger>
+            <TabsTrigger value="banned">Banned ({bannedCount})</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -269,9 +271,7 @@ export default function UsersView() {
                     <div className="flex items-start gap-4">
                       <Avatar className="w-12 h-12">
                         <AvatarImage src={user.avatar} />
-                        <AvatarFallback>
-                          {user.name.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
+                        <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
                       </Avatar>
 
                       <div className="flex-1 min-w-0">
@@ -322,7 +322,9 @@ export default function UsersView() {
               <User size={48} className="mx-auto text-muted-foreground" />
               <h3 className="text-lg font-semibold">No users found</h3>
               <p className="text-sm text-muted-foreground">
-                {searchQuery ? 'Try adjusting your search query' : 'No users match the selected filters'}
+                {searchQuery
+                  ? 'Try adjusting your search query'
+                  : 'No users match the selected filters'}
               </p>
             </div>
           </Card>
@@ -333,9 +335,7 @@ export default function UsersView() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>User Details</DialogTitle>
-            <DialogDescription>
-              View and manage user information
-            </DialogDescription>
+            <DialogDescription>View and manage user information</DialogDescription>
           </DialogHeader>
 
           {selectedUser && (
@@ -376,21 +376,21 @@ export default function UsersView() {
                   value={selectedUser.reportsCount.toString()}
                   icon={Warning}
                 />
-                <InfoCard
-                  label="Account Role"
-                  value={selectedUser.role}
-                  icon={User}
-                />
+                <InfoCard label="Account Role" value={selectedUser.role} icon={User} />
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Joined:</span>
-                  <span className="font-medium">{new Date(selectedUser.joinedAt).toLocaleDateString()}</span>
+                  <span className="font-medium">
+                    {new Date(selectedUser.joinedAt).toLocaleDateString()}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Last Active:</span>
-                  <span className="font-medium">{new Date(selectedUser.lastActive).toLocaleDateString()}</span>
+                  <span className="font-medium">
+                    {new Date(selectedUser.lastActive).toLocaleDateString()}
+                  </span>
                 </div>
               </div>
             </div>
@@ -399,35 +399,23 @@ export default function UsersView() {
           <DialogFooter className="flex gap-2">
             {selectedUser?.status === 'active' && (
               <>
-                <Button
-                  variant="outline"
-                  onClick={() => handleSuspendUser(selectedUser.id)}
-                >
+                <Button variant="outline" onClick={() => handleSuspendUser(selectedUser.id)}>
                   <Warning size={16} className="mr-2" />
                   Suspend (7 days)
                 </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => handleBanUser(selectedUser.id)}
-                >
+                <Button variant="destructive" onClick={() => handleBanUser(selectedUser.id)}>
                   <Prohibit size={16} className="mr-2" />
                   Ban Permanently
                 </Button>
               </>
             )}
             {(selectedUser?.status === 'suspended' || selectedUser?.status === 'banned') && (
-              <Button
-                variant="default"
-                onClick={() => handleReactivateUser(selectedUser.id)}
-              >
+              <Button variant="default" onClick={() => handleReactivateUser(selectedUser.id)}>
                 <CheckCircle size={16} className="mr-2" />
                 Reactivate User
               </Button>
             )}
-            <Button
-              variant="outline"
-              onClick={openResetPasswordDialog}
-            >
+            <Button variant="outline" onClick={openResetPasswordDialog}>
               <Key size={16} className="mr-2" />
               Reset Password
             </Button>
@@ -484,8 +472,8 @@ export default function UsersView() {
             {resetPasswordMode === 'email' && (
               <div className="p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground">
-                  A password reset email will be sent to {selectedUser?.email}. 
-                  The user will receive a secure link to reset their password.
+                  A password reset email will be sent to {selectedUser?.email}. The user will
+                  receive a secure link to reset their password.
                 </p>
               </div>
             )}
@@ -495,15 +483,17 @@ export default function UsersView() {
             <Button
               variant="outline"
               onClick={() => {
-                setResetPasswordDialogOpen(false)
-                setNewPassword('')
+                setResetPasswordDialogOpen(false);
+                setNewPassword('');
               }}
             >
               Cancel
             </Button>
             <Button
               onClick={handleResetPassword}
-              disabled={resettingPassword || (resetPasswordMode === 'manual' && newPassword.length < 8)}
+              disabled={
+                resettingPassword || (resetPasswordMode === 'manual' && newPassword.length < 8)
+              }
             >
               {resettingPassword ? 'Resetting...' : 'Reset Password'}
             </Button>
@@ -511,7 +501,7 @@ export default function UsersView() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
 interface StatusVariant {
@@ -523,13 +513,13 @@ function StatusBadge({ status }: { status: string }) {
   const variants: Record<string, StatusVariant> = {
     active: { variant: 'default', label: 'Active' },
     suspended: { variant: 'secondary', label: 'Suspended' },
-    banned: { variant: 'destructive', label: 'Banned' }
-  }
+    banned: { variant: 'destructive', label: 'Banned' },
+  };
 
-  const config = variants[status] ?? variants['active']
-  if (!config) return null
+  const config = variants[status] ?? variants['active'];
+  if (!config) return null;
 
-  return <Badge variant={config.variant}>{config.label}</Badge>
+  return <Badge variant={config.variant}>{config.label}</Badge>;
 }
 
 interface InfoCardProps {
@@ -541,11 +531,11 @@ interface InfoCardProps {
 function InfoCard({ label, value, icon: Icon }: InfoCardProps) {
   return (
     <div className="p-4 bg-muted rounded-lg">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">                                                                              
+      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
         <Icon size={14} />
         {label}
       </div>
       <div className="text-2xl font-bold capitalize">{value}</div>
     </div>
-  )
+  );
 }

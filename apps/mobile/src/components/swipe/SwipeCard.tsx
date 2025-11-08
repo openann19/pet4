@@ -119,12 +119,7 @@ export function SwipeCard({
   })
 
   const likeOverlayStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      translateX.value,
-      [0, SWIPE_THRESHOLD],
-      [0, 1],
-      Extrapolation.CLAMP
-    )
+    const opacity = interpolate(translateX.value, [0, SWIPE_THRESHOLD], [0, 1], Extrapolation.CLAMP)
 
     return {
       opacity,
@@ -153,9 +148,7 @@ export function SwipeCard({
         </Animated.View>
 
         {/* Dislike overlay */}
-        <Animated.View
-          style={[styles.overlay, styles.dislikeOverlay, dislikeOverlayStyle]}
-        >
+        <Animated.View style={[styles.overlay, styles.dislikeOverlay, dislikeOverlayStyle]}>
           <Text style={styles.dislikeText}>NOPE</Text>
         </Animated.View>
 
@@ -253,4 +246,3 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 })
-

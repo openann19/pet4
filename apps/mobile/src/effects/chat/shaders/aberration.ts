@@ -1,9 +1,9 @@
 /**
  * Chromatic Aberration Shader for Chat Effects
- * 
+ *
  * Creates subtle RGB separation effect for send warp trail.
  * Shifts red/blue channels slightly for a chromatic aberration effect.
- * 
+ *
  * Location: apps/mobile/src/effects/chat/shaders/aberration.ts
  */
 
@@ -30,10 +30,10 @@ const DEFAULT_ABERRATION_CONFIG: AberrationConfig = {
 
 /**
  * Create a chromatic aberration shader
- * 
+ *
  * Chromatic aberration shifts red and blue channels in opposite directions
  * creating a subtle color separation effect
- * 
+ *
  * @param config - Aberration configuration
  * @returns Aberration shader
  */
@@ -47,7 +47,9 @@ export function createAberrationShader(config: Partial<AberrationConfig> = {}): 
   }
 
   if (finalConfig.intensity < 0 || finalConfig.intensity > 1) {
-    logger.warn('Invalid aberration intensity, clamping to 0-1', { intensity: finalConfig.intensity })
+    logger.warn('Invalid aberration intensity, clamping to 0-1', {
+      intensity: finalConfig.intensity,
+    })
     finalConfig.intensity = Math.max(0, Math.min(1, finalConfig.intensity))
   }
 
@@ -76,22 +78,22 @@ export function createAberrationShader(config: Partial<AberrationConfig> = {}): 
 
   // Create a runtime effect shader using Skia.RuntimeEffect
   // This compiles the shader source and applies the aberration configuration
-  
+
   try {
     const runtimeEffect = Skia.RuntimeEffect.Make(shaderSource)
-    
+
     if (runtimeEffect) {
-      const shader = runtimeEffect.makeShader([
-        finalConfig.amount,
-        finalConfig.intensity,
-      ])
-      
+      const shader = runtimeEffect.makeShader([finalConfig.amount, finalConfig.intensity])
+
       if (shader) {
         return shader
       }
     }
   } catch (error) {
-    logger.warn('Failed to create aberration runtime effect, using fallback', error instanceof Error ? error : new Error(String(error)))
+    logger.warn(
+      'Failed to create aberration runtime effect, using fallback',
+      error instanceof Error ? error : new Error(String(error))
+    )
   }
 
   // Fallback: return a color shader
@@ -108,7 +110,7 @@ export function getAberrationConfig(config: Partial<AberrationConfig> = {}): Abe
 
 /**
  * Apply chromatic aberration to coordinates
- * 
+ *
  * Used to calculate UV offsets for shader sampling
  */
 export function calculateAberrationOffset(
@@ -121,7 +123,7 @@ export function calculateAberrationOffset(
   b: { x: number; y: number }
 } {
   const centerX = 0.5
-  
+
   const offsetX = (uv.x - centerX) * amount * intensity
 
   return {
@@ -130,4 +132,3 @@ export function calculateAberrationOffset(
     b: { x: uv.x - offsetX, y: uv.y },
   }
 }
-

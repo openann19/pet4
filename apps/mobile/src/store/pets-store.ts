@@ -17,28 +17,28 @@ export interface PetsStore {
   reset: () => void
 }
 
-export const usePetsStore = create<PetsStore>((set) => ({
+export const usePetsStore = create<PetsStore>(set => ({
   availablePets: [],
   swipedPets: new Set(),
   likedPets: new Set(),
-  setAvailablePets: (pets) =>
+  setAvailablePets: pets =>
     set({
       availablePets: pets,
       swipedPets: new Set(),
       likedPets: new Set(),
     }),
-  addAvailablePet: (pet) =>
-    set((state) => ({
+  addAvailablePet: pet =>
+    set(state => ({
       availablePets: [...state.availablePets, pet],
     })),
-  markAsSwiped: (petId) =>
-    set((state) => {
+  markAsSwiped: petId =>
+    set(state => {
       const swipedPets = new Set(state.swipedPets)
       swipedPets.add(petId)
       return { swipedPets }
     }),
-  markAsLiked: (petId) =>
-    set((state) => {
+  markAsLiked: petId =>
+    set(state => {
       const likedPets = new Set(state.likedPets)
       likedPets.add(petId)
       return { likedPets }
@@ -50,4 +50,3 @@ export const usePetsStore = create<PetsStore>((set) => ({
       likedPets: new Set(),
     }),
 }))
-

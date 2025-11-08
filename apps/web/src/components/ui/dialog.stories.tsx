@@ -3,9 +3,9 @@
  * Location: apps/web/src/components/ui/dialog.stories.tsx
  */
 
-import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { Button } from './button'
+import type { Meta, StoryObj } from '@storybook/react';
+import { useState } from 'react';
+import { Button } from './button';
 import {
   Dialog,
   DialogTrigger,
@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from './dialog'
+} from './dialog';
 
 const meta: Meta<typeof Dialog> = {
   title: 'UI/Dialog',
@@ -24,20 +24,21 @@ const meta: Meta<typeof Dialog> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'A premium dialog component with Reanimated animations, design tokens, and full accessibility support.',
+        component:
+          'A premium dialog component with Reanimated animations, design tokens, and full accessibility support.',
       },
     },
   },
   tags: ['autodocs'],
-}
+};
 
-export default meta
-type Story = StoryObj<typeof Dialog>
+export default meta;
+type Story = StoryObj<typeof Dialog>;
 
 export const Default: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
-    
+    const [open, setOpen] = useState(false);
+
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
@@ -47,8 +48,8 @@ export const Default: Story = {
           <DialogHeader>
             <DialogTitle>Are you absolutely sure?</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
+              This action cannot be undone. This will permanently delete your account and remove
+              your data from our servers.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -59,14 +60,14 @@ export const Default: Story = {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    )
+    );
   },
-}
+};
 
 export const WithoutCloseButton: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
-    
+    const [open, setOpen] = useState(false);
+
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
@@ -75,23 +76,21 @@ export const WithoutCloseButton: Story = {
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Important Notice</DialogTitle>
-            <DialogDescription>
-              You must read this message before continuing.
-            </DialogDescription>
+            <DialogDescription>You must read this message before continuing.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button onClick={() => setOpen(false)}>I Understand</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    )
+    );
   },
-}
+};
 
 export const Simple: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
-    
+    const [open, setOpen] = useState(false);
+
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
@@ -104,15 +103,15 @@ export const Simple: Story = {
           </DialogDescription>
         </DialogContent>
       </Dialog>
-    )
+    );
   },
-}
+};
 
 export const WithForm: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
-    const [name, setName] = useState('')
-    
+    const [open, setOpen] = useState(false);
+    const [name, setName] = useState('');
+
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
@@ -121,9 +120,7 @@ export const WithForm: Story = {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Create Account</DialogTitle>
-            <DialogDescription>
-              Enter your information to create a new account.
-            </DialogDescription>
+            <DialogDescription>Enter your information to create a new account.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
@@ -145,14 +142,14 @@ export const WithForm: Story = {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    )
+    );
   },
-}
+};
 
 export const WithoutHapticFeedback: Story = {
   render: () => {
-    const [open, setOpen] = useState(false)
-    
+    const [open, setOpen] = useState(false);
+
     return (
       <Dialog open={open} onOpenChange={setOpen} hapticFeedback={false}>
         <DialogTrigger asChild>
@@ -161,9 +158,7 @@ export const WithoutHapticFeedback: Story = {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Dialog Without Haptics</DialogTitle>
-            <DialogDescription>
-              This dialog has haptic feedback disabled.
-            </DialogDescription>
+            <DialogDescription>This dialog has haptic feedback disabled.</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
@@ -172,7 +167,6 @@ export const WithoutHapticFeedback: Story = {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    )
+    );
   },
-}
-
+};

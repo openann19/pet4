@@ -22,7 +22,7 @@ export const samplePets: PetProfile[] = [
       specialNeeds: [],
       aggressionFlags: false,
       biteHistory: false,
-      attackHistory: false
+      attackHistory: false,
     },
     temperament: {
       energyLevel: 7,
@@ -30,13 +30,13 @@ export const samplePets: PetProfile[] = [
       playfulness: 8,
       calmness: 6,
       independence: 4,
-      traits: ['affectionate', 'outgoing', 'trainable']
+      traits: ['affectionate', 'outgoing', 'trainable'],
     },
     socialization: {
       comfortWithDogs: 8,
       comfortWithCats: 6,
       comfortWithKids: 9,
-      comfortWithStrangers: 8
+      comfortWithStrangers: 8,
     },
     intents: ['playdate', 'adoption'],
     location: {
@@ -45,7 +45,7 @@ export const samplePets: PetProfile[] = [
       roundedLng: -74.006,
       city: 'New York',
       country: 'US',
-      timezone: 'America/New_York'
+      timezone: 'America/New_York',
     },
     media: [
       {
@@ -53,15 +53,15 @@ export const samplePets: PetProfile[] = [
         url: 'https://example.com/pets/nova-1.jpg',
         status: 'approved',
         moderatedAt: '2024-10-07T12:00:00Z',
-        moderatedBy: 'mod-1'
-      }
+        moderatedBy: 'mod-1',
+      },
     ],
     aiHints: {
       breedInference: 'Labrador Retriever',
       breedConfidence: 0.92,
       sizeEstimate: 'medium',
       ageEstimateMonths: 46,
-      qualityScore: 0.88
+      qualityScore: 0.88,
     },
     vetVerified: true,
     kycVerified: true,
@@ -69,7 +69,7 @@ export const samplePets: PetProfile[] = [
     blocklist: [],
     isActive: true,
     createdAt: '2023-01-01T12:00:00Z',
-    updatedAt: '2024-11-05T09:30:00Z'
+    updatedAt: '2024-11-05T09:30:00Z',
   },
   {
     id: 'pet-bravo',
@@ -91,7 +91,7 @@ export const samplePets: PetProfile[] = [
       specialNeeds: ['daily agility training'],
       aggressionFlags: false,
       biteHistory: false,
-      attackHistory: false
+      attackHistory: false,
     },
     temperament: {
       energyLevel: 9,
@@ -99,13 +99,13 @@ export const samplePets: PetProfile[] = [
       playfulness: 9,
       calmness: 4,
       independence: 5,
-      traits: ['energetic', 'smart', 'loyal']
+      traits: ['energetic', 'smart', 'loyal'],
     },
     socialization: {
       comfortWithDogs: 7,
       comfortWithCats: 5,
       comfortWithKids: 8,
-      comfortWithStrangers: 7
+      comfortWithStrangers: 7,
     },
     intents: ['playdate', 'companionship'],
     location: {
@@ -114,7 +114,7 @@ export const samplePets: PetProfile[] = [
       roundedLng: -74.0015,
       city: 'New York',
       country: 'US',
-      timezone: 'America/New_York'
+      timezone: 'America/New_York',
     },
     media: [
       {
@@ -122,14 +122,14 @@ export const samplePets: PetProfile[] = [
         url: 'https://example.com/pets/atlas-1.jpg',
         status: 'approved',
         moderatedAt: '2024-10-12T15:20:00Z',
-        moderatedBy: 'mod-2'
-      }
+        moderatedBy: 'mod-2',
+      },
     ],
     aiHints: {
       breedInference: 'Australian Shepherd',
       breedConfidence: 0.89,
       coatColor: 'blue merle',
-      qualityScore: 0.9
+      qualityScore: 0.9,
     },
     vetVerified: true,
     kycVerified: true,
@@ -137,8 +137,8 @@ export const samplePets: PetProfile[] = [
     blocklist: [],
     isActive: true,
     createdAt: '2023-02-01T13:00:00Z',
-    updatedAt: '2024-11-04T08:10:00Z'
-  }
+    updatedAt: '2024-11-04T08:10:00Z',
+  },
 ]
 
 export const sampleOwnerPreferences: OwnerPreferences = {
@@ -153,14 +153,14 @@ export const sampleOwnerPreferences: OwnerPreferences = {
   requireVaccinations: true,
   scheduleWindows: [
     { day: 6, startHour: 9, endHour: 12 },
-    { day: 0, startHour: 14, endHour: 18 }
+    { day: 0, startHour: 14, endHour: 18 },
   ],
   globalSearch: false,
-  updatedAt: '2024-11-05T09:00:00Z'
+  updatedAt: '2024-11-05T09:00:00Z',
 }
 
 export const sampleMatchingWeights = DEFAULT_MATCHING_WEIGHTS
 export const sampleHardGates = {
   ...DEFAULT_HARD_GATES,
-  maxDistanceKm: 80
+  maxDistanceKm: 80,
 }

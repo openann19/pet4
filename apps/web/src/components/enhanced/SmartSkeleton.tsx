@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import { useMemo } from 'react'
-import { cn } from '@/lib/utils'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useShimmer } from '@/effects/reanimated/use-shimmer'
+import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useShimmer } from '@/effects/reanimated/use-shimmer';
 
 export interface SmartSkeletonProps {
-  variant?: 'text' | 'circular' | 'rectangular' | 'card' | 'avatar' | 'post'
-  width?: string | number
-  height?: string | number
-  className?: string
-  animate?: boolean
-  count?: number
+  variant?: 'text' | 'circular' | 'rectangular' | 'card' | 'avatar' | 'post';
+  width?: string | number;
+  height?: string | number;
+  className?: string;
+  animate?: boolean;
+  count?: number;
 }
 
 export function SmartSkeleton({
@@ -21,27 +21,24 @@ export function SmartSkeleton({
   height,
   className,
   animate = true,
-  count = 1
+  count = 1,
 }: SmartSkeletonProps) {
   const shimmer = useShimmer({
     enabled: animate,
-    duration: 2000
-  })
+    duration: 2000,
+  });
 
-  const baseClasses = cn(
-    'bg-muted relative overflow-hidden',
-    className
-  )
+  const baseClasses = cn('bg-muted relative overflow-hidden', className);
 
   const shimmerStyle = useMemo(() => {
-    if (!animate) return undefined
-    return shimmer.animatedStyle as AnimatedStyle
-  }, [animate, shimmer])
+    if (!animate) return undefined;
+    return shimmer.animatedStyle as AnimatedStyle;
+  }, [animate, shimmer]);
 
   const skeletonElement = () => {
     switch (variant) {
       case 'circular': {
-        const size = width ?? height ?? '40px'
+        const size = width ?? height ?? '40px';
         return (
           <div className={cn(baseClasses, 'rounded-full')} style={{ width: size, height: size }}>
             {animate && (
@@ -53,7 +50,7 @@ export function SmartSkeleton({
               </AnimatedView>
             )}
           </div>
-        )
+        );
       }
 
       case 'rectangular': {
@@ -62,7 +59,7 @@ export function SmartSkeleton({
             className={cn(baseClasses, 'rounded-md')}
             style={{
               width: width ?? '100%',
-              height: height ?? '200px'
+              height: height ?? '200px',
             }}
           >
             {animate && (
@@ -74,7 +71,7 @@ export function SmartSkeleton({
               </AnimatedView>
             )}
           </div>
-        )
+        );
       }
 
       case 'card': {
@@ -96,46 +93,46 @@ export function SmartSkeleton({
               <div className="h-8 bg-muted-foreground/10 rounded w-20" />
             </div>
           </div>
-        )
+        );
       }
 
       case 'avatar': {
         return (
           <div className="flex items-center gap-3">
-              <div className={cn(baseClasses, 'rounded-full w-10 h-10 relative')}>
+            <div className={cn(baseClasses, 'rounded-full w-10 h-10 relative')}>
+              {animate && (
+                <AnimatedView
+                  style={shimmerStyle}
+                  className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded-full"
+                >
+                  <div />
+                </AnimatedView>
+              )}
+            </div>
+            <div className="flex-1 space-y-2">
+              <div className={cn(baseClasses, 'h-4 rounded w-24 relative')}>
                 {animate && (
                   <AnimatedView
                     style={shimmerStyle}
-                    className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded-full"
+                    className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded"
                   >
                     <div />
                   </AnimatedView>
                 )}
               </div>
-              <div className="flex-1 space-y-2">
-                <div className={cn(baseClasses, 'h-4 rounded w-24 relative')}>
-                  {animate && (
-                    <AnimatedView
-                      style={shimmerStyle}
-                      className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded"
-                    >
-                      <div />
-                    </AnimatedView>
-                  )}
-                </div>
-                <div className={cn(baseClasses, 'h-3 rounded w-32 relative')}>
-                  {animate && (
-                    <AnimatedView
-                      style={shimmerStyle}
-                      className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded"
-                    >
-                      <div />
-                    </AnimatedView>
-                  )}
-                </div>
+              <div className={cn(baseClasses, 'h-3 rounded w-32 relative')}>
+                {animate && (
+                  <AnimatedView
+                    style={shimmerStyle}
+                    className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded"
+                  >
+                    <div />
+                  </AnimatedView>
+                )}
               </div>
+            </div>
           </div>
-        )
+        );
       }
 
       case 'post': {
@@ -167,7 +164,7 @@ export function SmartSkeleton({
               <div className="h-8 bg-muted-foreground/10 rounded w-16" />
             </div>
           </div>
-        )
+        );
       }
 
       default: {
@@ -176,7 +173,7 @@ export function SmartSkeleton({
             className={cn(baseClasses, 'rounded relative')}
             style={{
               width: width ?? '100%',
-              height: height ?? '1em'
+              height: height ?? '1em',
             }}
           >
             {animate && (
@@ -188,10 +185,10 @@ export function SmartSkeleton({
               </AnimatedView>
             )}
           </div>
-        )
+        );
       }
     }
-  }
+  };
 
   if (count > 1) {
     return (
@@ -200,14 +197,14 @@ export function SmartSkeleton({
           <div key={i}>{skeletonElement()}</div>
         ))}
       </div>
-    )
+    );
   }
 
-  return skeletonElement()
+  return skeletonElement();
 }
 
 export interface PostSkeletonProps {
-  count?: number
+  count?: number;
 }
 
 export function PostSkeleton({ count = 3 }: PostSkeletonProps) {
@@ -217,11 +214,11 @@ export function PostSkeleton({ count = 3 }: PostSkeletonProps) {
         <SmartSkeleton key={i} variant="post" />
       ))}
     </div>
-  )
+  );
 }
 
 export interface CardGridSkeletonProps {
-  count?: number
+  count?: number;
 }
 
 export function CardGridSkeleton({ count = 6 }: CardGridSkeletonProps) {
@@ -231,11 +228,11 @@ export function CardGridSkeleton({ count = 6 }: CardGridSkeletonProps) {
         <SmartSkeleton key={i} variant="card" />
       ))}
     </div>
-  )
+  );
 }
 
 export interface ListSkeletonProps {
-  count?: number
+  count?: number;
 }
 
 export function ListSkeleton({ count = 5 }: ListSkeletonProps) {
@@ -245,5 +242,5 @@ export function ListSkeleton({ count = 5 }: ListSkeletonProps) {
         <SmartSkeleton key={i} variant="avatar" />
       ))}
     </div>
-  )
+  );
 }

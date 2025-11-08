@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
-import { motion } from '@petspark/motion'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useState, useEffect } from 'react';
+import { motion } from '@/effects/reanimated/animated-view';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ChartLine,
   Clock,
@@ -15,57 +15,59 @@ import {
   CheckCircle,
   XCircle,
   ArrowUp,
-  ArrowDown
-} from '@phosphor-icons/react'
-import { getPerformanceMetrics, type PerformanceMetrics } from '@/lib/performance'
-import { getWebSocketManager } from '@/lib/websocket-manager'
+  ArrowDown,
+} from '@phosphor-icons/react';
+import { getPerformanceMetrics, type PerformanceMetrics } from '@/lib/performance';
+import { getWebSocketManager } from '@/lib/websocket-manager';
 
 interface SystemMetric {
-  label: string
-  value: string
-  change: number
-  status: 'good' | 'warning' | 'critical'
-  icon: React.ReactNode
+  label: string;
+  value: string;
+  change: number;
+  status: 'good' | 'warning' | 'critical';
+  icon: React.ReactNode;
 }
 
 export default function PerformanceMonitoring() {
-  const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null)
-  const [wsStatus, setWsStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected')
-  const [activeTab, setActiveTab] = useState('overview')
+  const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
+  const [wsStatus, setWsStatus] = useState<'connected' | 'disconnected' | 'connecting'>(
+    'disconnected'
+  );
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    updateMetrics()
-    const interval = setInterval(updateMetrics, 2000)
-    
-    const wsManager = getWebSocketManager()
+    updateMetrics();
+    const interval = setInterval(updateMetrics, 2000);
+
+    const wsManager = getWebSocketManager();
     const unsubscribe = wsManager.on('connection', (data: unknown) => {
       if (data && typeof data === 'object' && 'status' in data) {
-        const status = String(data.status)
+        const status = String(data.status);
         if (status === 'connected' || status === 'disconnected' || status === 'connecting') {
-          setWsStatus(status)
+          setWsStatus(status);
         }
       }
-    })
+    });
 
-    setWsStatus(wsManager.getState() === 'connected' ? 'connected' : 'disconnected')
+    setWsStatus(wsManager.getState() === 'connected' ? 'connected' : 'disconnected');
 
     return () => {
-      clearInterval(interval)
-      unsubscribe()
-    }
-  }, [])
+      clearInterval(interval);
+      unsubscribe();
+    };
+  }, []);
 
   const updateMetrics = () => {
-    const newMetrics = getPerformanceMetrics()
-    setMetrics(newMetrics)
-  }
+    const newMetrics = getPerformanceMetrics();
+    setMetrics(newMetrics);
+  };
 
   const getSystemMetrics = (): SystemMetric[] => {
-    if (!metrics) return []
+    if (!metrics) return [];
 
-    const pageLoadTime = metrics.pageLoadTime ?? 1500
-    const apiResponseTime = metrics.apiResponseTime ?? 250
-    const memoryUsage = metrics.memoryUsage ?? 75
+    const pageLoadTime = metrics.pageLoadTime ?? 1500;
+    const apiResponseTime = metrics.apiResponseTime ?? 250;
+    const memoryUsage = metrics.memoryUsage ?? 75;
 
     return [
       {
@@ -73,57 +75,92 @@ export default function PerformanceMonitoring() {
         value: `${pageLoadTime.toFixed(0)}ms`,
         change: -12,
         status: pageLoadTime < 2000 ? 'good' : pageLoadTime < 4000 ? 'warning' : 'critical',
-        icon: <Clock size={20} weight="fill" />
+        icon: <Clock size={20} weight="fill" />,
       },
       {
         label: 'API Response Time',
         value: `${apiResponseTime.toFixed(0)}ms`,
         change: 5,
         status: apiResponseTime < 300 ? 'good' : apiResponseTime < 1000 ? 'warning' : 'critical',
-        icon: <Database size={20} weight="fill" />
+        icon: <Database size={20} weight="fill" />,
       },
       {
         label: 'WebSocket Status',
-        value: wsStatus === 'connected' ? 'Connected' : wsStatus === 'connecting' ? 'Connecting' : 'Disconnected',
+        value:
+          wsStatus === 'connected'
+            ? 'Connected'
+            : wsStatus === 'connecting'
+              ? 'Connecting'
+              : 'Disconnected',
         change: 0,
-        status: wsStatus === 'connected' ? 'good' : wsStatus === 'connecting' ? 'warning' : 'critical',
-        icon: <ChartLine size={20} weight="fill" />
+        status:
+          wsStatus === 'connected' ? 'good' : wsStatus === 'connecting' ? 'warning' : 'critical',
+        icon: <ChartLine size={20} weight="fill" />,
       },
       {
         label: 'Memory Usage',
         value: `${memoryUsage.toFixed(1)} MB`,
         change: 8,
         status: memoryUsage < 100 ? 'good' : memoryUsage < 200 ? 'warning' : 'critical',
-        icon: <ChartLine size={20} weight="fill" />
-      }
-    ]
-  }
+        icon: <ChartLine size={20} weight="fill" />,
+      },
+    ];
+  };
 
   const getStatusColor = (status: 'good' | 'warning' | 'critical') => {
     switch (status) {
-      case 'good': return 'text-green-600 dark:text-green-400'
-      case 'warning': return 'text-yellow-600 dark:text-yellow-400'
-      case 'critical': return 'text-red-600 dark:text-red-400'
+      case 'good':
+        return 'text-green-600 dark:text-green-400';
+      case 'warning':
+        return 'text-yellow-600 dark:text-yellow-400';
+      case 'critical':
+        return 'text-red-600 dark:text-red-400';
     }
-  }
+  };
 
   const getStatusBadge = (status: 'good' | 'warning' | 'critical') => {
     switch (status) {
-      case 'good': 
-        return <Badge className="bg-green-500/10 text-green-600 border-green-500/20">Healthy</Badge>
-      case 'warning': 
-        return <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">Warning</Badge>
-      case 'critical': 
-        return <Badge className="bg-red-500/10 text-red-600 border-red-500/20">Critical</Badge>
+      case 'good':
+        return (
+          <Badge className="bg-green-500/10 text-green-600 border-green-500/20">Healthy</Badge>
+        );
+      case 'warning':
+        return (
+          <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">Warning</Badge>
+        );
+      case 'critical':
+        return <Badge className="bg-red-500/10 text-red-600 border-red-500/20">Critical</Badge>;
     }
-  }
+  };
 
-  const coreWebVitals = metrics ? [
-    { label: 'FCP', value: `${(metrics.fcp ?? 1200).toFixed(0)}ms`, target: '< 1800ms', status: (metrics.fcp ?? 1200) < 1800 ? 'good' : 'warning' },
-    { label: 'LCP', value: `${(metrics.lcp ?? 2000).toFixed(0)}ms`, target: '< 2500ms', status: (metrics.lcp ?? 2000) < 2500 ? 'good' : 'warning' },
-    { label: 'FID', value: `${(metrics.fid ?? 80).toFixed(0)}ms`, target: '< 100ms', status: (metrics.fid ?? 80) < 100 ? 'good' : 'warning' },
-    { label: 'CLS', value: (metrics.cls ?? 0.05).toFixed(3), target: '< 0.1', status: (metrics.cls ?? 0.05) < 0.1 ? 'good' : 'warning' },
-  ] : []
+  const coreWebVitals = metrics
+    ? [
+        {
+          label: 'FCP',
+          value: `${(metrics.fcp ?? 1200).toFixed(0)}ms`,
+          target: '< 1800ms',
+          status: (metrics.fcp ?? 1200) < 1800 ? 'good' : 'warning',
+        },
+        {
+          label: 'LCP',
+          value: `${(metrics.lcp ?? 2000).toFixed(0)}ms`,
+          target: '< 2500ms',
+          status: (metrics.lcp ?? 2000) < 2500 ? 'good' : 'warning',
+        },
+        {
+          label: 'FID',
+          value: `${(metrics.fid ?? 80).toFixed(0)}ms`,
+          target: '< 100ms',
+          status: (metrics.fid ?? 80) < 100 ? 'good' : 'warning',
+        },
+        {
+          label: 'CLS',
+          value: (metrics.cls ?? 0.05).toFixed(3),
+          target: '< 0.1',
+          status: (metrics.cls ?? 0.05) < 0.1 ? 'good' : 'warning',
+        },
+      ]
+    : [];
 
   if (!metrics) {
     return (
@@ -133,7 +170,7 @@ export default function PerformanceMonitoring() {
           <p className="text-muted-foreground">Loading performance metrics...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -151,31 +188,26 @@ export default function PerformanceMonitoring() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {getSystemMetrics().map((metric, index) => (
-          <MotionView
-            key={metric.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
+          <AnimatedView key={metric.label}>
             <Card className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className={getStatusColor(metric.status)}>
-                  {metric.icon}
-                </div>
+                <div className={getStatusColor(metric.status)}>{metric.icon}</div>
                 {getStatusBadge(metric.status)}
               </div>
               <p className="text-sm text-muted-foreground mb-1">{metric.label}</p>
               <div className="flex items-end gap-2">
                 <p className="text-2xl font-bold">{metric.value}</p>
                 {metric.change !== 0 && (
-                  <span className={`text-xs flex items-center ${metric.change > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                  <span
+                    className={`text-xs flex items-center ${metric.change > 0 ? 'text-red-500' : 'text-green-500'}`}
+                  >
                     {metric.change > 0 ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
                     {Math.abs(metric.change)}%
                   </span>
                 )}
               </div>
             </Card>
-          </MotionView>
+          </AnimatedView>
         ))}
       </div>
 
@@ -204,7 +236,9 @@ export default function PerformanceMonitoring() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">Memory Usage</span>
-                  <span className="text-sm text-muted-foreground">{(metrics.memoryUsage ?? 75).toFixed(1)} MB</span>
+                  <span className="text-sm text-muted-foreground">
+                    {(metrics.memoryUsage ?? 75).toFixed(1)} MB
+                  </span>
                 </div>
                 <Progress value={((metrics.memoryUsage ?? 75) / 500) * 100} className="h-2" />
               </div>
@@ -223,10 +257,26 @@ export default function PerformanceMonitoring() {
               <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
               <div className="space-y-3">
                 {[
-                  { icon: <CheckCircle size={16} weight="fill" className="text-green-500" />, text: 'System backup completed', time: '2 min ago' },
-                  { icon: <CloudArrowUp size={16} weight="fill" className="text-blue-500" />, text: 'Media upload successful', time: '5 min ago' },
-                  { icon: <Warning size={16} weight="fill" className="text-yellow-500" />, text: 'High API response time detected', time: '12 min ago' },
-                  { icon: <CheckCircle size={16} weight="fill" className="text-green-500" />, text: 'Database optimization complete', time: '20 min ago' },
+                  {
+                    icon: <CheckCircle size={16} weight="fill" className="text-green-500" />,
+                    text: 'System backup completed',
+                    time: '2 min ago',
+                  },
+                  {
+                    icon: <CloudArrowUp size={16} weight="fill" className="text-blue-500" />,
+                    text: 'Media upload successful',
+                    time: '5 min ago',
+                  },
+                  {
+                    icon: <Warning size={16} weight="fill" className="text-yellow-500" />,
+                    text: 'High API response time detected',
+                    time: '12 min ago',
+                  },
+                  {
+                    icon: <CheckCircle size={16} weight="fill" className="text-green-500" />,
+                    text: 'Database optimization complete',
+                    time: '20 min ago',
+                  },
                 ].map((activity, i) => (
                   <div key={i} className="flex items-start gap-3 text-sm">
                     <div className="mt-0.5">{activity.icon}</div>
@@ -286,10 +336,7 @@ export default function PerformanceMonitoring() {
                     <span className="text-3xl font-bold">{vital.value}</span>
                     <span className="text-sm text-muted-foreground">Target: {vital.target}</span>
                   </div>
-                  <Progress 
-                    value={vital.status === 'good' ? 100 : 60} 
-                    className="h-2"
-                  />
+                  <Progress value={vital.status === 'good' ? 100 : 60} className="h-2" />
                 </div>
               ))}
             </div>
@@ -302,21 +349,27 @@ export default function PerformanceMonitoring() {
                 <CheckCircle size={16} weight="fill" className="text-green-500 mt-1" />
                 <div>
                   <p className="text-sm font-medium">Image optimization enabled</p>
-                  <p className="text-xs text-muted-foreground">All images are being compressed and lazy-loaded</p>
+                  <p className="text-xs text-muted-foreground">
+                    All images are being compressed and lazy-loaded
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <CheckCircle size={16} weight="fill" className="text-green-500 mt-1" />
                 <div>
                   <p className="text-sm font-medium">Code splitting active</p>
-                  <p className="text-xs text-muted-foreground">Routes are loaded on-demand for better performance</p>
+                  <p className="text-xs text-muted-foreground">
+                    Routes are loaded on-demand for better performance
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <Warning size={16} weight="fill" className="text-yellow-500 mt-1" />
                 <div>
                   <p className="text-sm font-medium">Consider enabling service worker</p>
-                  <p className="text-xs text-muted-foreground">Offline caching could improve repeat visit performance</p>
+                  <p className="text-xs text-muted-foreground">
+                    Offline caching could improve repeat visit performance
+                  </p>
                 </div>
               </div>
             </div>
@@ -351,7 +404,9 @@ export default function PerformanceMonitoring() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">Average Response Time</span>
-                  <span className="text-sm font-semibold">{(metrics.apiResponseTime ?? 250).toFixed(0)}ms</span>
+                  <span className="text-sm font-semibold">
+                    {(metrics.apiResponseTime ?? 250).toFixed(0)}ms
+                  </span>
                 </div>
                 <Progress value={25} className="h-2" />
               </div>
@@ -405,5 +460,5 @@ export default function PerformanceMonitoring() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

@@ -29,4 +29,3 @@ export interface NotificationOptions {
   }
   icon?: string
 }
-

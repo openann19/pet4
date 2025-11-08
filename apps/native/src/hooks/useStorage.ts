@@ -22,14 +22,17 @@ export function useStorage<T>(key: string, initialValue: T): [T, (value: T) => P
     }
   };
 
-  const setValue = useCallback(async (value: T) => {
-    try {
-      setStoredValue(value);
-      await AsyncStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      // Error saving data
-    }
-  }, [key]);
+  const setValue = useCallback(
+    async (value: T) => {
+      try {
+        setStoredValue(value);
+        await AsyncStorage.setItem(key, JSON.stringify(value));
+      } catch (error) {
+        // Error saving data
+      }
+    },
+    [key]
+  );
 
   return [storedValue, setValue];
 }

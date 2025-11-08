@@ -1,44 +1,44 @@
 /**
  * ProtectedRoute tests
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 // Mock dependencies
-const mockNavigate = vi.fn()
-const mockLocation = { pathname: '/protected', state: null }
+const mockNavigate = vi.fn();
+const mockLocation = { pathname: '/protected', state: null };
 
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom')
+  const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
     useLocation: () => mockLocation,
-  }
-})
+  };
+});
 
 vi.mock('@/lib/kyc-service', () => ({
   getKYCStatus: vi.fn(),
-}))
+}));
 
 vi.mock('@/components/ui/spinner', () => ({
   Spinner: ({ size }: any) => <div data-testid={`spinner-${size}`}>Loading...</div>,
-}))
+}));
 
 describe('ProtectedRoute', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('should render children when authenticated', () => {
-    const { useAuth } = require('@/contexts/AuthContext')
+    const { useAuth } = require('@/contexts/AuthContext');
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'user-1', roles: ['user'] },
       isAuthenticated: true,
       isLoading: false,
-    })
+    });
 
     render(
       <MemoryRouter>
@@ -46,18 +46,18 @@ describe('ProtectedRoute', () => {
           <div data-testid="protected-content">Protected Content</div>
         </ProtectedRoute>
       </MemoryRouter>
-    )
+    );
 
-    expect(document.querySelector('[data-testid="protected-content"]')).toBeInTheDocument()
-  })
+    expect(document.querySelector('[data-testid="protected-content"]')).toBeInTheDocument();
+  });
 
   it('should redirect to login when not authenticated', () => {
-    const { useAuth } = require('@/contexts/AuthContext')
+    const { useAuth } = require('@/contexts/AuthContext');
     vi.mocked(useAuth).mockReturnValue({
       user: null,
       isAuthenticated: false,
       isLoading: false,
-    })
+    });
 
     render(
       <MemoryRouter>
@@ -65,7 +65,7 @@ describe('ProtectedRoute', () => {
           <div data-testid="protected-content">Protected Content</div>
         </ProtectedRoute>
       </MemoryRouter>
-    )
+    );
 
     expect(mockNavigate).toHaveBeenCalledWith(
       '/login',
@@ -73,16 +73,16 @@ describe('ProtectedRoute', () => {
         state: { returnTo: '/protected' },
         replace: true,
       })
-    )
-  })
+    );
+  });
 
   it('should show spinner when loading', () => {
-    const { useAuth } = require('@/contexts/AuthContext')
+    const { useAuth } = require('@/contexts/AuthContext');
     vi.mocked(useAuth).mockReturnValue({
       user: null,
       isAuthenticated: false,
       isLoading: true,
-    })
+    });
 
     const { getByTestId } = render(
       <MemoryRouter>
@@ -90,18 +90,18 @@ describe('ProtectedRoute', () => {
           <div data-testid="protected-content">Protected Content</div>
         </ProtectedRoute>
       </MemoryRouter>
-    )
+    );
 
-    expect(getByTestId('spinner-lg')).toBeInTheDocument()
-  })
+    expect(getByTestId('spinner-lg')).toBeInTheDocument();
+  });
 
   it('should redirect to unauthorized when adminOnly and user is not admin', () => {
-    const { useAuth } = require('@/contexts/AuthContext')
+    const { useAuth } = require('@/contexts/AuthContext');
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'user-1', roles: ['user'] },
       isAuthenticated: true,
       isLoading: false,
-    })
+    });
 
     render(
       <MemoryRouter>
@@ -109,18 +109,18 @@ describe('ProtectedRoute', () => {
           <div data-testid="protected-content">Protected Content</div>
         </ProtectedRoute>
       </MemoryRouter>
-    )
+    );
 
-    expect(mockNavigate).toHaveBeenCalledWith('/unauthorized', { replace: true })
-  })
+    expect(mockNavigate).toHaveBeenCalledWith('/unauthorized', { replace: true });
+  });
 
   it('should allow access when adminOnly and user is admin', () => {
-    const { useAuth } = require('@/contexts/AuthContext')
+    const { useAuth } = require('@/contexts/AuthContext');
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'admin-1', roles: ['admin'] },
       isAuthenticated: true,
       isLoading: false,
-    })
+    });
 
     render(
       <MemoryRouter>
@@ -128,18 +128,18 @@ describe('ProtectedRoute', () => {
           <div data-testid="protected-content">Protected Content</div>
         </ProtectedRoute>
       </MemoryRouter>
-    )
+    );
 
-    expect(document.querySelector('[data-testid="protected-content"]')).toBeInTheDocument()
-  })
+    expect(document.querySelector('[data-testid="protected-content"]')).toBeInTheDocument();
+  });
 
   it('should redirect to unauthorized when moderatorOnly and user is not moderator', () => {
-    const { useAuth } = require('@/contexts/AuthContext')
+    const { useAuth } = require('@/contexts/AuthContext');
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'user-1', roles: ['user'] },
       isAuthenticated: true,
       isLoading: false,
-    })
+    });
 
     render(
       <MemoryRouter>
@@ -147,18 +147,18 @@ describe('ProtectedRoute', () => {
           <div data-testid="protected-content">Protected Content</div>
         </ProtectedRoute>
       </MemoryRouter>
-    )
+    );
 
-    expect(mockNavigate).toHaveBeenCalledWith('/unauthorized', { replace: true })
-  })
+    expect(mockNavigate).toHaveBeenCalledWith('/unauthorized', { replace: true });
+  });
 
   it('should allow access when moderatorOnly and user is moderator', () => {
-    const { useAuth } = require('@/contexts/AuthContext')
+    const { useAuth } = require('@/contexts/AuthContext');
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'mod-1', roles: ['moderator'] },
       isAuthenticated: true,
       isLoading: false,
-    })
+    });
 
     render(
       <MemoryRouter>
@@ -166,18 +166,18 @@ describe('ProtectedRoute', () => {
           <div data-testid="protected-content">Protected Content</div>
         </ProtectedRoute>
       </MemoryRouter>
-    )
+    );
 
-    expect(document.querySelector('[data-testid="protected-content"]')).toBeInTheDocument()
-  })
+    expect(document.querySelector('[data-testid="protected-content"]')).toBeInTheDocument();
+  });
 
   it('should allow access when moderatorOnly and user is admin', () => {
-    const { useAuth } = require('@/contexts/AuthContext')
+    const { useAuth } = require('@/contexts/AuthContext');
     vi.mocked(useAuth).mockReturnValue({
       user: { id: 'admin-1', roles: ['admin'] },
       isAuthenticated: true,
       isLoading: false,
-    })
+    });
 
     render(
       <MemoryRouter>
@@ -185,14 +185,13 @@ describe('ProtectedRoute', () => {
           <div data-testid="protected-content">Protected Content</div>
         </ProtectedRoute>
       </MemoryRouter>
-    )
+    );
 
-    expect(document.querySelector('[data-testid="protected-content"]')).toBeInTheDocument()
-  })
-})
+    expect(document.querySelector('[data-testid="protected-content"]')).toBeInTheDocument();
+  });
+});
 
 // Mock AuthContext
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
-}))
-
+}));

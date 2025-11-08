@@ -9,6 +9,7 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 ## 📊 Current State vs Target State
 
 ### Current Mobile Native App
+
 - ✅ 17 screens implemented
 - ✅ Basic animations (6 components)
 - ✅ Core features only
@@ -16,6 +17,7 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 - ⚠️ Limited animation system
 
 ### Target Mobile Native App
+
 - ✅ 17+ screens with full functionality
 - ✅ Advanced animation system (25+ components)
 - ✅ All web features (50+ components)
@@ -29,6 +31,7 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 ## 🎯 Implementation Phases
 
 ### Phase 1: Critical Features (3 weeks)
+
 **Goal:** Implement revenue-critical and core engagement features
 
 - Video Calling (1-on-1)
@@ -40,6 +43,7 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 ---
 
 ### Phase 2: High-Priority Features (3 weeks)
+
 **Goal:** Complete social features and engagement tools
 
 - Enhanced Chat (reactions, stickers, voice, location)
@@ -51,6 +55,7 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 ---
 
 ### Phase 3: Premium Features (3 weeks)
+
 **Goal:** Implement advanced premium features
 
 - Live Streaming
@@ -62,6 +67,7 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 ---
 
 ### Phase 4: UI Enhancement (3 weeks)
+
 **Goal:** Match web app's visual quality and animations
 
 - Advanced Animation System
@@ -73,6 +79,7 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 ---
 
 ### Phase 5: Polish & Launch (1 week)
+
 **Goal:** Final integration, testing, and optimization
 
 - Component Integration
@@ -95,19 +102,24 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 **Goal:** Users can make video calls from matches and chat
 
 #### Day 1-2: Setup & Dependencies
+
 **Tasks:**
+
 1. Install packages:
+
    ```bash
    cd apps/native
    npm install react-native-webrtc@^124.0.0 @livekit/react-native@^2.0.0
    ```
 
 2. Configure iOS (ios/Podfile):
+
    ```ruby
    pod 'react-native-webrtc', :path => '../node_modules/react-native-webrtc'
    ```
 
 3. Configure Android (android/app/build.gradle):
+
    ```gradle
    implementation "com.facebook.react:react-native-webrtc:+"
    ```
@@ -121,9 +133,11 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 ---
 
 #### Day 3-4: Call Interface Component
+
 **File:** `apps/native/src/components/call/CallInterface.tsx`
 
 **Features:**
+
 - Video feed display (local + remote)
 - Control buttons (mute, camera toggle, end call)
 - Call duration timer
@@ -131,6 +145,7 @@ This document outlines the **step-by-step implementation plan** to achieve 100% 
 - Picture-in-picture mode
 
 **Code Structure:**
+
 ```typescript
 interface CallInterfaceProps {
   callId: string;
@@ -146,9 +161,9 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [duration, setDuration] = useState(0);
-  
+
   // WebRTC logic here
-  
+
   return (
     <View>
       {/* Remote video */}
@@ -165,15 +180,18 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
 ---
 
 #### Day 5: Incoming Call Notification
+
 **File:** `apps/native/src/components/call/IncomingCallNotification.tsx`
 
 **Features:**
+
 - Full-screen overlay
 - Caller info (name, photo)
 - Accept/Decline buttons
 - Ringtone integration
 
 **Code Structure:**
+
 ```typescript
 interface IncomingCallProps {
   caller: {
@@ -206,14 +224,17 @@ export const IncomingCallNotification: React.FC<IncomingCallProps> = ({
 ---
 
 #### Day 6: Video Quality Settings
+
 **File:** `apps/native/src/components/call/VideoQualitySettings.tsx`
 
 **Features:**
+
 - Quality presets (4K, 1080p, 720p, 480p)
 - Network-adaptive quality
 - Save preferences
 
 **Code Structure:**
+
 ```typescript
 const QUALITY_PRESETS = {
   '4K': { width: 3840, height: 2160, frameRate: 60 },
@@ -224,7 +245,7 @@ const QUALITY_PRESETS = {
 
 export const VideoQualitySettings: React.FC = () => {
   const [selectedQuality, setSelectedQuality] = useStorage('videoQuality', '1080p');
-  
+
   return (
     <View>
       {/* Quality options with radio buttons */}
@@ -240,7 +261,9 @@ export const VideoQualitySettings: React.FC = () => {
 ---
 
 #### Day 7: Integration & Testing
+
 **Tasks:**
+
 1. Add call button to MatchesScreen
 2. Add call button to ChatScreen
 3. Create CallScreen route
@@ -249,6 +272,7 @@ export const VideoQualitySettings: React.FC = () => {
 6. Fix bugs and polish
 
 **Files to update:**
+
 - `apps/native/src/screens/MatchesScreen.tsx`
 - `apps/native/src/screens/ChatScreen.tsx`
 - `apps/native/App.tsx` (add CallScreen route)
@@ -256,6 +280,7 @@ export const VideoQualitySettings: React.FC = () => {
 **Deliverable:** Working 1-on-1 video calls
 
 **Success Criteria:**
+
 - ✅ User can initiate call from match profile
 - ✅ User can initiate call from chat
 - ✅ Incoming calls show full-screen notification
@@ -271,8 +296,11 @@ export const VideoQualitySettings: React.FC = () => {
 **Goal:** Users can subscribe to Premium/Elite plans
 
 #### Day 1-2: Setup & Dependencies
+
 **Tasks:**
+
 1. Install packages:
+
    ```bash
    npm install react-native-iap@^12.0.0 @stripe/stripe-react-native@^0.38.0
    ```
@@ -292,9 +320,11 @@ export const VideoQualitySettings: React.FC = () => {
 ---
 
 #### Day 3: Pricing Modal
+
 **File:** `apps/native/src/components/payments/PricingModal.tsx`
 
 **Features:**
+
 - Three-tier comparison (Free, Premium, Elite)
 - Feature matrix with checkmarks
 - Animated transitions between plans
@@ -302,6 +332,7 @@ export const VideoQualitySettings: React.FC = () => {
 - Free trial badge
 
 **Code Structure:**
+
 ```typescript
 const PLANS = {
   free: {
@@ -323,7 +354,7 @@ const PLANS = {
 
 export const PricingModal: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState('premium');
-  
+
   return (
     <Modal>
       {/* Plan cards with animations */}
@@ -340,9 +371,11 @@ export const PricingModal: React.FC = () => {
 ---
 
 #### Day 4: Subscription Status Card
+
 **File:** `apps/native/src/components/payments/SubscriptionStatusCard.tsx`
 
 **Features:**
+
 - Current plan display
 - Active entitlements
 - Upgrade/downgrade buttons
@@ -350,6 +383,7 @@ export const PricingModal: React.FC = () => {
 - Cancel subscription option
 
 **Code Structure:**
+
 ```typescript
 interface SubscriptionStatusProps {
   subscription: {
@@ -379,15 +413,18 @@ export const SubscriptionStatusCard: React.FC<SubscriptionStatusProps> = ({
 ---
 
 #### Day 5: Billing Issue Banner
+
 **File:** `apps/native/src/components/payments/BillingIssueBanner.tsx`
 
 **Features:**
+
 - Payment failure alert
 - Grace period countdown
 - Update payment method CTA
 - Dismissible state
 
 **Code Structure:**
+
 ```typescript
 interface BillingIssueBannerProps {
   issue: {
@@ -420,7 +457,9 @@ export const BillingIssueBanner: React.FC<BillingIssueBannerProps> = ({
 ---
 
 #### Day 6-7: Integration & Testing
+
 **Tasks:**
+
 1. Add to ProfileScreen
 2. Implement purchase flow
 3. Add subscription gates throughout app
@@ -430,6 +469,7 @@ export const BillingIssueBanner: React.FC<BillingIssueBannerProps> = ({
 7. Add subscription admin to AdminConsoleScreen
 
 **Files to update:**
+
 - `apps/native/src/screens/ProfileScreen.tsx`
 - `apps/native/src/hooks/useSubscription.ts`
 - `apps/native/src/hooks/useInAppPurchase.ts`
@@ -438,6 +478,7 @@ export const BillingIssueBanner: React.FC<BillingIssueBannerProps> = ({
 **Deliverable:** Working subscription system
 
 **Success Criteria:**
+
 - ✅ User can view pricing plans
 - ✅ User can subscribe to Premium/Elite
 - ✅ Subscription status displays correctly
@@ -453,9 +494,11 @@ export const BillingIssueBanner: React.FC<BillingIssueBannerProps> = ({
 **Goal:** Users can create and view stories
 
 #### Day 1-2: Stories Bar Component
+
 **File:** `apps/native/src/components/stories/StoriesBar.tsx`
 
 **Features:**
+
 - Horizontal scrollable list
 - Story rings with gradient (unviewed)
 - Gray rings (viewed)
@@ -463,6 +506,7 @@ export const BillingIssueBanner: React.FC<BillingIssueBannerProps> = ({
 - "Add story" button
 
 **Code Structure:**
+
 ```typescript
 interface Story {
   id: string;
@@ -475,7 +519,7 @@ interface Story {
 
 export const StoriesBar: React.FC = () => {
   const [stories, setStories] = useStorage<Story[]>('stories', []);
-  
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {/* Add story button */}
@@ -492,15 +536,18 @@ export const StoriesBar: React.FC = () => {
 ---
 
 #### Day 3: Story Ring Component
+
 **File:** `apps/native/src/components/stories/StoryRing.tsx`
 
 **Features:**
+
 - Gradient ring for unviewed
 - Gray ring for viewed
 - Avatar with ring animation
 - Tap to view
 
 **Code Structure:**
+
 ```typescript
 interface StoryRingProps {
   story: Story;
@@ -510,7 +557,7 @@ interface StoryRingProps {
 export const StoryRing: React.FC<StoryRingProps> = ({ story, onPress }) => {
   const ringColor = story.hasViewed ? '#CCC' : 'linear-gradient(...)';
   const ringAnimation = useSharedValue(1);
-  
+
   return (
     <Pressable onPress={onPress}>
       <Animated.View style={[styles.ring, ringStyle]}>
@@ -527,9 +574,11 @@ export const StoryRing: React.FC<StoryRingProps> = ({ story, onPress }) => {
 ---
 
 #### Day 4-5: Story Viewer
+
 **File:** `apps/native/src/components/stories/StoryViewer.tsx`
 
 **Features:**
+
 - Full-screen viewer
 - Progress bars (one per story)
 - Tap left/right to navigate
@@ -538,6 +587,7 @@ export const StoryRing: React.FC<StoryRingProps> = ({ story, onPress }) => {
 - Auto-advance timer
 
 **Code Structure:**
+
 ```typescript
 interface StoryViewerProps {
   stories: StoryItem[];
@@ -552,10 +602,10 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const progress = useSharedValue(0);
-  
+
   // Auto-advance logic
   // Gesture handling (tap, hold, swipe)
-  
+
   return (
     <Modal visible animationType="fade">
       {/* Progress bars */}
@@ -572,9 +622,11 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
 ---
 
 #### Day 6: Create Story Dialog
+
 **File:** `apps/native/src/components/stories/CreateStoryDialog.tsx`
 
 **Features:**
+
 - Camera integration
 - Gallery picker
 - Text overlay
@@ -582,12 +634,13 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
 - Post button
 
 **Code Structure:**
+
 ```typescript
 export const CreateStoryDialog: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
   const [text, setText] = useState('');
   const [privacy, setPrivacy] = useState<'public' | 'friends' | 'private'>('public');
-  
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -599,7 +652,7 @@ export const CreateStoryDialog: React.FC = () => {
       setImage(result.assets[0].uri);
     }
   };
-  
+
   const takePhoto = async () => {
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
@@ -610,7 +663,7 @@ export const CreateStoryDialog: React.FC = () => {
       setImage(result.assets[0].uri);
     }
   };
-  
+
   return (
     <Modal>
       {/* Image preview */}
@@ -628,7 +681,9 @@ export const CreateStoryDialog: React.FC = () => {
 ---
 
 #### Day 7: Integration & Testing
+
 **Tasks:**
+
 1. Add StoriesBar to DiscoverScreen (top)
 2. Add "My Stories" to ProfileScreen
 3. Add story creation button
@@ -638,6 +693,7 @@ export const CreateStoryDialog: React.FC = () => {
 7. Test permissions (camera, photos)
 
 **Files to update:**
+
 - `apps/native/src/screens/DiscoverScreen.tsx`
 - `apps/native/src/screens/ProfileScreen.tsx`
 - `apps/native/src/hooks/useStories.ts`
@@ -645,6 +701,7 @@ export const CreateStoryDialog: React.FC = () => {
 **Deliverable:** Working stories system
 
 **Success Criteria:**
+
 - ✅ User can create stories from camera/gallery
 - ✅ Stories appear in horizontal bar
 - ✅ User can view stories (tap to advance)
@@ -659,6 +716,7 @@ export const CreateStoryDialog: React.FC = () => {
 ## 📊 Week 1-3 Summary
 
 **Deliverables:**
+
 - ✅ Video calling (1-on-1)
 - ✅ Payments & subscriptions
 - ✅ Stories system foundation
@@ -678,9 +736,11 @@ export const CreateStoryDialog: React.FC = () => {
 **Goal:** Add reactions, stickers, voice messages, and location sharing to chat
 
 #### Day 1-2: Message Reactions
+
 **File:** `apps/native/src/components/chat/MessageReactions.tsx`
 
 **Features:**
+
 - Long-press message to react
 - 12 emoji options (❤️ 😂 😮 😢 😡 👍 👎 🎉 🔥 💯 🙏 👀)
 - Reaction count display
@@ -688,6 +748,7 @@ export const CreateStoryDialog: React.FC = () => {
 - View who reacted
 
 **Code Structure:**
+
 ```typescript
 const REACTIONS = ['❤️', '😂', '😮', '😢', '😡', '👍', '👎', '🎉', '🔥', '💯', '🙏', '👀'];
 
@@ -719,9 +780,11 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
 ---
 
 #### Day 2-3: Sticker Picker
+
 **File:** `apps/native/src/components/chat/StickerPicker.tsx`
 
 **Features:**
+
 - Modal with sticker grid
 - 16 pet-themed stickers
 - Search stickers
@@ -729,6 +792,7 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
 - Send sticker to chat
 
 **Code Structure:**
+
 ```typescript
 const STICKERS = [
   { id: '1', name: 'happy_dog', url: '...' },
@@ -738,10 +802,10 @@ const STICKERS = [
 
 export const StickerPicker: React.FC = ({ onSelect }) => {
   const [search, setSearch] = useState('');
-  const filteredStickers = STICKERS.filter(s => 
+  const filteredStickers = STICKERS.filter(s =>
     s.name.includes(search.toLowerCase())
   );
-  
+
   return (
     <Modal>
       <TextInput placeholder="Search stickers" value={search} onChange={setSearch} />
@@ -764,9 +828,11 @@ export const StickerPicker: React.FC = ({ onSelect }) => {
 ---
 
 #### Day 4: Voice Messages
+
 **File:** `apps/native/src/components/chat/VoiceRecorder.tsx`
 
 **Features:**
+
 - Hold to record button
 - Waveform display
 - Playback controls
@@ -774,24 +840,25 @@ export const StickerPicker: React.FC = ({ onSelect }) => {
 - Cancel recording (swipe left)
 
 **Code Structure:**
+
 ```typescript
 export const VoiceRecorder: React.FC = ({ onSend }) => {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [duration, setDuration] = useState(0);
-  
+
   const startRecording = async () => {
     const { recording } = await Audio.Recording.createAsync(
       Audio.RecordingOptionsPresets.HIGH_QUALITY
     );
     setRecording(recording);
   };
-  
+
   const stopRecording = async () => {
     await recording.stopAndUnloadAsync();
     const uri = recording.getURI();
     onSend(uri);
   };
-  
+
   return (
     <View>
       {/* Hold to record button */}
@@ -808,19 +875,22 @@ export const VoiceRecorder: React.FC = ({ onSend }) => {
 ---
 
 #### Day 5: Location Sharing
+
 **File:** `apps/native/src/components/chat/LocationShare.tsx`
 
 **Features:**
+
 - Share current location
 - Map preview (static image)
 - Open in maps app
 - Location name/address
 
 **Code Structure:**
+
 ```typescript
 export const LocationShare: React.FC = ({ onSend }) => {
   const [location, setLocation] = useState<Location | null>(null);
-  
+
   const getCurrentLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status === 'granted') {
@@ -828,7 +898,7 @@ export const LocationShare: React.FC = ({ onSend }) => {
       setLocation(location);
     }
   };
-  
+
   return (
     <Modal>
       {/* Map preview */}
@@ -845,7 +915,9 @@ export const LocationShare: React.FC = ({ onSend }) => {
 ---
 
 #### Day 6-7: Integration & Testing
+
 **Tasks:**
+
 1. Update ChatScreen with new features
 2. Add reaction UI to messages
 3. Add sticker button to input
@@ -855,6 +927,7 @@ export const LocationShare: React.FC = ({ onSend }) => {
 7. Test on physical devices
 
 **Files to update:**
+
 - `apps/native/src/screens/ChatScreen.tsx`
 - Add reaction storage logic
 - Add sticker sending logic
@@ -863,6 +936,7 @@ export const LocationShare: React.FC = ({ onSend }) => {
 **Deliverable:** Enhanced chat features
 
 **Success Criteria:**
+
 - ✅ User can react to messages (long-press)
 - ✅ User can send stickers
 - ✅ User can record and send voice messages
@@ -877,9 +951,11 @@ export const LocationShare: React.FC = ({ onSend }) => {
 **Goal:** Users can schedule playdates with matches
 
 #### Day 1-3: Playdate Scheduler
+
 **File:** `apps/native/src/components/playdate/PlaydateScheduler.tsx`
 
 **Features:**
+
 - Date picker
 - Time picker
 - Match selector (from matches list)
@@ -888,6 +964,7 @@ export const LocationShare: React.FC = ({ onSend }) => {
 - RSVP tracking
 
 **Code Structure:**
+
 ```typescript
 interface PlaydateSchedulerProps {
   matchId?: string;
@@ -902,7 +979,7 @@ export const PlaydateScheduler: React.FC<PlaydateSchedulerProps> = ({
   const [time, setTime] = useState(new Date());
   const [selectedMatch, setSelectedMatch] = useState(matchId);
   const [location, setLocation] = useState<Location | null>(null);
-  
+
   return (
     <Modal>
       {/* Match selector */}
@@ -921,9 +998,11 @@ export const PlaydateScheduler: React.FC<PlaydateSchedulerProps> = ({
 ---
 
 #### Day 3-4: Location Picker
+
 **File:** `apps/native/src/components/playdate/LocationPicker.tsx`
 
 **Features:**
+
 - Map view with markers
 - Search nearby places
 - Filter (parks, cafes, pet stores)
@@ -931,16 +1010,17 @@ export const PlaydateScheduler: React.FC<PlaydateSchedulerProps> = ({
 - Save favorite locations
 
 **Code Structure:**
+
 ```typescript
 export const LocationPicker: React.FC = ({ onSelect }) => {
   const [search, setSearch] = useState('');
   const [nearbyPlaces, setNearbyPlaces] = useState<Place[]>([]);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
-  
+
   const searchPlaces = async (query: string) => {
     // Search API integration
   };
-  
+
   return (
     <Modal>
       {/* Search input */}
@@ -958,9 +1038,11 @@ export const LocationPicker: React.FC = ({ onSelect }) => {
 ---
 
 #### Day 5-6: Playdate Map & Management
+
 **File:** `apps/native/src/components/playdate/PlaydateMap.tsx`
 
 **Features:**
+
 - Show scheduled playdates
 - Filter by date
 - Navigation to venue
@@ -968,11 +1050,12 @@ export const LocationPicker: React.FC = ({ onSelect }) => {
 - Playdate history
 
 **Code Structure:**
+
 ```typescript
 export const PlaydateMap: React.FC = () => {
   const [playdates, setPlaydates] = useStorage<Playdate[]>('playdates', []);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  
+
   return (
     <View>
       {/* Date filter */}
@@ -990,7 +1073,9 @@ export const PlaydateMap: React.FC = () => {
 ---
 
 #### Day 7: Integration & Testing
+
 **Tasks:**
+
 1. Add "Schedule Playdate" button to MatchesScreen
 2. Add playdates to ProfileScreen
 3. Add notifications for playdate invites
@@ -999,6 +1084,7 @@ export const PlaydateMap: React.FC = () => {
 6. Test RSVP management
 
 **Files to update:**
+
 - `apps/native/src/screens/MatchesScreen.tsx`
 - `apps/native/src/screens/ProfileScreen.tsx`
 - `apps/native/src/hooks/usePlaydates.ts`
@@ -1006,6 +1092,7 @@ export const PlaydateMap: React.FC = () => {
 **Deliverable:** Working playdate features
 
 **Success Criteria:**
+
 - ✅ User can schedule playdates with matches
 - ✅ User can pick location on map
 - ✅ User receives playdate invitations
@@ -1020,9 +1107,11 @@ export const PlaydateMap: React.FC = () => {
 **Goal:** Complete stories system with highlights and templates
 
 #### Day 1-2: Highlights Bar
+
 **File:** `apps/native/src/components/stories/HighlightsBar.tsx`
 
 **Features:**
+
 - Show story highlights (permanent collections)
 - Add new highlight
 - Edit highlight
@@ -1033,9 +1122,11 @@ export const PlaydateMap: React.FC = () => {
 ---
 
 #### Day 3-4: Story Templates
+
 **File:** `apps/native/src/components/stories/StoryTemplateSelector.tsx`
 
 **Features:**
+
 - Pre-designed templates
 - Template preview
 - Apply template to story
@@ -1046,12 +1137,15 @@ export const PlaydateMap: React.FC = () => {
 ---
 
 #### Day 5-6: Highlight Management
+
 **Files:**
+
 - `apps/native/src/components/stories/HighlightViewer.tsx`
 - `apps/native/src/components/stories/SaveToHighlightDialog.tsx`
 - `apps/native/src/components/stories/CreateHighlightDialog.tsx`
 
 **Features:**
+
 - View highlight stories
 - Save story to highlight
 - Create new highlight
@@ -1062,7 +1156,9 @@ export const PlaydateMap: React.FC = () => {
 ---
 
 #### Day 7: Integration & Testing
+
 **Tasks:**
+
 1. Add highlights to ProfileScreen
 2. Add "Save to Highlight" option in story viewer
 3. Test highlight creation
@@ -1076,6 +1172,7 @@ export const PlaydateMap: React.FC = () => {
 ## 📊 Phase 1-2 Summary (6 Weeks)
 
 **Deliverables:**
+
 - ✅ Video calling (1-on-1)
 - ✅ Payments & subscriptions
 - ✅ Stories system (complete)
@@ -1093,6 +1190,7 @@ export const PlaydateMap: React.FC = () => {
 ## 🎯 Success Metrics
 
 ### Technical Metrics
+
 - [ ] 100% feature parity with web app
 - [ ] 60fps animations across all screens
 - [ ] Zero critical bugs
@@ -1100,12 +1198,14 @@ export const PlaydateMap: React.FC = () => {
 - [ ] < 100MB app size
 
 ### User Metrics
+
 - [ ] All web features accessible
 - [ ] No missing functionality
 - [ ] Smooth user experience
 - [ ] Production-ready quality
 
 ### Business Metrics
+
 - [ ] Monetization enabled (subscriptions)
 - [ ] Core engagement features (stories, playdates)
 - [ ] Premium features (video, streaming)
@@ -1125,14 +1225,14 @@ export const PlaydateMap: React.FC = () => {
 
 ## 🚀 Timeline Summary
 
-| Phase | Duration | Features | LOC |
-|-------|----------|----------|-----|
-| Phase 1 | 3 weeks | Video calls, Payments, Stories | 3,300 |
-| Phase 2 | 3 weeks | Chat features, Playdates | 4,200 |
-| Phase 3 | 3 weeks | Streaming, Group calls, KYC | 5,300 |
-| Phase 4 | 3 weeks | Animations, Enhanced UI | 4,500 |
-| Phase 5 | 1 week | Polish, Testing | 1,000 |
-| **Total** | **13 weeks** | **50+ components** | **22,000** |
+| Phase     | Duration     | Features                       | LOC        |
+| --------- | ------------ | ------------------------------ | ---------- |
+| Phase 1   | 3 weeks      | Video calls, Payments, Stories | 3,300      |
+| Phase 2   | 3 weeks      | Chat features, Playdates       | 4,200      |
+| Phase 3   | 3 weeks      | Streaming, Group calls, KYC    | 5,300      |
+| Phase 4   | 3 weeks      | Animations, Enhanced UI        | 4,500      |
+| Phase 5   | 1 week       | Polish, Testing                | 1,000      |
+| **Total** | **13 weeks** | **50+ components**             | **22,000** |
 
 ---
 

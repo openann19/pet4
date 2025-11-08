@@ -3,6 +3,7 @@
 ## Overview
 
 This document outlines the comprehensive migration plan to upgrade PETSPARK to v2 with:
+
 - Complete React Reanimated migration (removing Framer Motion)
 - Full mobile parity
 - React Query with offline persistence (replacing KV)
@@ -13,6 +14,7 @@ This document outlines the comprehensive migration plan to upgrade PETSPARK to v
 ## Phase 1: Enhanced Components Migration ✅
 
 ### Completed
+
 - ✅ PremiumInput (web + mobile)
 - ✅ PremiumSelect (web + mobile)
 - ✅ PremiumToggle (web + mobile)
@@ -30,6 +32,7 @@ This document outlines the comprehensive migration plan to upgrade PETSPARK to v
 - ✅ RippleEffect (web)
 
 ### Remaining Mobile Components
+
 - [ ] PremiumToast.native.tsx
 - [ ] RippleEffect.native.tsx
 - [ ] ShimmerEffect.native.tsx
@@ -92,14 +95,17 @@ const animatedStyle = useAnimatedStyle(() => ({
 ### Files Requiring Migration (100 files)
 
 **Priority 1 - Core Views:**
+
 - [ ] `apps/web/src/components/views/DiscoverView.tsx` (956 lines, ~20 motion usages)
 - [ ] `apps/web/src/components/views/CommunityView.tsx`
 - [ ] `apps/web/src/components/chat/AdvancedChatWindow.tsx`
 
 **Priority 2 - Enhanced Components:**
+
 - [ ] All components in `apps/web/src/components/enhanced/` using framer-motion
 
 **Priority 3 - Feature Components:**
+
 - [ ] Stories components
 - [ ] Playdate components
 - [ ] Admin components
@@ -109,6 +115,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 ## Phase 3: React Query Migration (Replacing KV)
 
 ### Current KV Usage
+
 - `useKV` hook in `apps/web/src/hooks/useStorage.ts`
 - Used in:
   - `PlaydateScheduler.tsx`
@@ -118,6 +125,7 @@ const animatedStyle = useAnimatedStyle(() => ({
 ### Migration Strategy
 
 1. **Create React Query hooks with offline persistence:**
+
 ```typescript
 // Before
 const [data, setData] = useKV<DataType>('key', defaultValue)
@@ -137,11 +145,13 @@ persistToStorage('key', newValue)
 ```
 
 2. **Implement offline persistence:**
+
 - Use `@tanstack/react-query-persist-client`
 - Configure with `localStorage` or `AsyncStorage` (mobile)
 - Enable `persistQueryClient` with proper serialization
 
 3. **Update API hooks:**
+
 - Complete `use-chat.ts` ✅
 - Complete `use-community.ts` ✅
 - Complete `use-adoption.ts` ✅
@@ -200,15 +210,15 @@ persistToStorage('key', newValue)
 ### Babel Configuration
 
 1. **Enable Reanimated Plugin:**
+
 ```json
 {
-  "plugins": [
-    "react-native-reanimated/plugin"
-  ]
+  "plugins": ["react-native-reanimated/plugin"]
 }
 ```
 
 2. **RN-Web Configuration:**
+
 - Ensure proper webpack config
 - Enable Reanimated web support
 - Configure aliases
@@ -216,11 +226,13 @@ persistToStorage('key', newValue)
 ### TypeScript Configuration
 
 1. **Strict Mode:**
+
 - `strict: true`
 - `noUncheckedIndexedAccess: true`
 - `exactOptionalPropertyTypes: true`
 
 2. **Path Aliases:**
+
 - `@/` → `apps/web/src/`
 - `@mobile/` → `apps/mobile/src/`
 - `@petspark/motion` → `packages/motion/src/`
@@ -264,6 +276,7 @@ persistToStorage('key', newValue)
 ## Implementation Checklist
 
 ### Week 1: Foundation
+
 - [x] Create missing mobile components
 - [ ] Migrate DiscoverView
 - [ ] Migrate CommunityView
@@ -271,18 +284,21 @@ persistToStorage('key', newValue)
 - [ ] Complete API hooks
 
 ### Week 2: Migration
+
 - [ ] Migrate all enhanced components
 - [ ] Migrate feature components (stories, playdate, etc.)
 - [ ] Migrate admin components
 - [ ] Remove framer-motion dependency
 
 ### Week 3: Optimization
+
 - [ ] Implement React Query offline persistence
 - [ ] Replace all KV usage
 - [ ] Apply micro-interactions
 - [ ] Wire page transitions
 
 ### Week 4: Polish
+
 - [ ] Performance optimization
 - [ ] Testing
 - [ ] Documentation
@@ -320,4 +336,3 @@ npx tsx scripts/migrate-framer-motion.ts apps/web/src
 - Keep framer-motion as dependency until all migrations complete
 - Use feature flags for gradual rollout if needed
 - Monitor performance metrics during migration
-

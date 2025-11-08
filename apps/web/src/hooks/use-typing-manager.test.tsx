@@ -1,31 +1,31 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
-import { useTypingManager } from './use-typing-manager'
-import type { RealtimeClient } from '@/lib/realtime'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { useTypingManager } from './use-typing-manager';
+import type { RealtimeClient } from '@/lib/realtime';
 
 describe('useTypingManager', () => {
-  let mockRealtimeClient: RealtimeClient
-  let mockEmit: ReturnType<typeof vi.fn>
-  let mockOn: ReturnType<typeof vi.fn>
-  let mockOff: ReturnType<typeof vi.fn>
+  let mockRealtimeClient: RealtimeClient;
+  let mockEmit: ReturnType<typeof vi.fn>;
+  let mockOn: ReturnType<typeof vi.fn>;
+  let mockOff: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    vi.useFakeTimers()
-    mockEmit = vi.fn().mockResolvedValue({ success: true })
-    mockOn = vi.fn()
-    mockOff = vi.fn()
+    vi.useFakeTimers();
+    mockEmit = vi.fn().mockResolvedValue({ success: true });
+    mockOn = vi.fn();
+    mockOff = vi.fn();
 
     mockRealtimeClient = {
       emit: mockEmit,
       on: mockOn,
-      off: mockOff
-    } as unknown as RealtimeClient
-  })
+      off: mockOff,
+    } as unknown as RealtimeClient;
+  });
 
   afterEach(() => {
-    vi.useRealTimers()
-    vi.clearAllMocks()
-  })
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
 
   it('initializes with empty typing users', () => {
     const { result } = renderHook(() =>
@@ -33,13 +33,13 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    expect(result.current.typingUsers).toEqual([])
-    expect(result.current.isTyping).toBe(false)
-  })
+    expect(result.current.typingUsers).toEqual([]);
+    expect(result.current.isTyping).toBe(false);
+  });
 
   it('emits typing_start when startTyping is called', async () => {
     const { result } = renderHook(() =>
@@ -47,20 +47,20 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    result.current.startTyping()
+    result.current.startTyping();
 
     await waitFor(() => {
       expect(mockEmit).toHaveBeenCalledWith('typing_start', {
         roomId: 'room1',
         userId: 'user1',
-        userName: 'User 1'
-      })
-    })
-  })
+        userName: 'User 1',
+      });
+    });
+  });
 
   it('emits typing_stop when stopTyping is called', async () => {
     const { result } = renderHook(() =>
@@ -68,20 +68,20 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    result.current.startTyping()
-    result.current.stopTyping()
+    result.current.startTyping();
+    result.current.stopTyping();
 
     await waitFor(() => {
       expect(mockEmit).toHaveBeenCalledWith('typing_stop', {
         roomId: 'room1',
-        userId: 'user1'
-      })
-    })
-  })
+        userId: 'user1',
+      });
+    });
+  });
 
   it('automatically stops typing after timeout', async () => {
     const { result } = renderHook(() =>
@@ -90,19 +90,19 @@ describe('useTypingManager', () => {
         currentUserId: 'user1',
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
-        typingTimeout: 1000
+        typingTimeout: 1000,
       })
-    )
+    );
 
-    result.current.startTyping()
-    expect(result.current.isTyping).toBe(true)
+    result.current.startTyping();
+    expect(result.current.isTyping).toBe(true);
 
-    vi.advanceTimersByTime(1000)
+    vi.advanceTimersByTime(1000);
 
     await waitFor(() => {
-      expect(result.current.isTyping).toBe(false)
-    })
-  })
+      expect(result.current.isTyping).toBe(false);
+    });
+  });
 
   it('handles input change and starts typing', async () => {
     const { result } = renderHook(() =>
@@ -111,18 +111,18 @@ describe('useTypingManager', () => {
         currentUserId: 'user1',
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
-        debounceDelay: 100
+        debounceDelay: 100,
       })
-    )
+    );
 
-    result.current.handleInputChange('Hello')
+    result.current.handleInputChange('Hello');
 
-    vi.advanceTimersByTime(100)
+    vi.advanceTimersByTime(100);
 
     await waitFor(() => {
-      expect(result.current.isTyping).toBe(true)
-    })
-  })
+      expect(result.current.isTyping).toBe(true);
+    });
+  });
 
   it('handles input change and stops typing when empty', async () => {
     const { result } = renderHook(() =>
@@ -130,17 +130,17 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    result.current.startTyping()
-    result.current.handleInputChange('')
+    result.current.startTyping();
+    result.current.handleInputChange('');
 
     await waitFor(() => {
-      expect(result.current.isTyping).toBe(false)
-    })
-  })
+      expect(result.current.isTyping).toBe(false);
+    });
+  });
 
   it('stops typing when message is sent', async () => {
     const { result } = renderHook(() =>
@@ -148,17 +148,17 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    result.current.startTyping()
-    result.current.handleMessageSend()
+    result.current.startTyping();
+    result.current.handleMessageSend();
 
     await waitFor(() => {
-      expect(result.current.isTyping).toBe(false)
-    })
-  })
+      expect(result.current.isTyping).toBe(false);
+    });
+  });
 
   it('adds typing user when typing_start event is received', async () => {
     const { result } = renderHook(() =>
@@ -166,28 +166,26 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    const typingStartHandler = mockOn.mock.calls.find(
-      (call) => call[0] === 'typing_start'
-    )?.[1]
+    const typingStartHandler = mockOn.mock.calls.find((call) => call[0] === 'typing_start')?.[1];
 
     if (typingStartHandler) {
       typingStartHandler({
         roomId: 'room1',
         userId: 'user2',
         userName: 'User 2',
-        startedAt: new Date().toISOString()
-      })
+        startedAt: new Date().toISOString(),
+      });
     }
 
     await waitFor(() => {
-      expect(result.current.typingUsers).toHaveLength(1)
-      expect(result.current.typingUsers[0]?.userId).toBe('user2')
-    })
-  })
+      expect(result.current.typingUsers).toHaveLength(1);
+      expect(result.current.typingUsers[0]?.userId).toBe('user2');
+    });
+  });
 
   it('removes typing user when typing_stop event is received', async () => {
     const { result } = renderHook(() =>
@@ -195,42 +193,38 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    const typingStartHandler = mockOn.mock.calls.find(
-      (call) => call[0] === 'typing_start'
-    )?.[1]
+    const typingStartHandler = mockOn.mock.calls.find((call) => call[0] === 'typing_start')?.[1];
 
-    const typingStopHandler = mockOn.mock.calls.find(
-      (call) => call[0] === 'typing_stop'
-    )?.[1]
+    const typingStopHandler = mockOn.mock.calls.find((call) => call[0] === 'typing_stop')?.[1];
 
     if (typingStartHandler) {
       typingStartHandler({
         roomId: 'room1',
         userId: 'user2',
         userName: 'User 2',
-        startedAt: new Date().toISOString()
-      })
+        startedAt: new Date().toISOString(),
+      });
     }
 
     await waitFor(() => {
-      expect(result.current.typingUsers).toHaveLength(1)
-    })
+      expect(result.current.typingUsers).toHaveLength(1);
+    });
 
     if (typingStopHandler) {
       typingStopHandler({
         roomId: 'room1',
-        userId: 'user2'
-      })
+        userId: 'user2',
+      });
     }
 
     await waitFor(() => {
-      expect(result.current.typingUsers).toHaveLength(0)
-    })
-  })
+      expect(result.current.typingUsers).toHaveLength(0);
+    });
+  });
 
   it('ignores typing events from current user', async () => {
     const { result } = renderHook(() =>
@@ -238,27 +232,25 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    const typingStartHandler = mockOn.mock.calls.find(
-      (call) => call[0] === 'typing_start'
-    )?.[1]
+    const typingStartHandler = mockOn.mock.calls.find((call) => call[0] === 'typing_start')?.[1];
 
     if (typingStartHandler) {
       typingStartHandler({
         roomId: 'room1',
         userId: 'user1',
         userName: 'User 1',
-        startedAt: new Date().toISOString()
-      })
+        startedAt: new Date().toISOString(),
+      });
     }
 
     await waitFor(() => {
-      expect(result.current.typingUsers).toHaveLength(0)
-    })
-  })
+      expect(result.current.typingUsers).toHaveLength(0);
+    });
+  });
 
   it('ignores typing events from different rooms', async () => {
     const { result } = renderHook(() =>
@@ -266,27 +258,25 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    const typingStartHandler = mockOn.mock.calls.find(
-      (call) => call[0] === 'typing_start'
-    )?.[1]
+    const typingStartHandler = mockOn.mock.calls.find((call) => call[0] === 'typing_start')?.[1];
 
     if (typingStartHandler) {
       typingStartHandler({
         roomId: 'room2',
         userId: 'user2',
         userName: 'User 2',
-        startedAt: new Date().toISOString()
-      })
+        startedAt: new Date().toISOString(),
+      });
     }
 
     await waitFor(() => {
-      expect(result.current.typingUsers).toHaveLength(0)
-    })
-  })
+      expect(result.current.typingUsers).toHaveLength(0);
+    });
+  });
 
   it('cleans up event listeners on unmount', () => {
     const { unmount } = renderHook(() =>
@@ -294,34 +284,34 @@ describe('useTypingManager', () => {
         roomId: 'room1',
         currentUserId: 'user1',
         currentUserName: 'User 1',
-        realtimeClient: mockRealtimeClient
+        realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
-    unmount()
+    unmount();
 
-    expect(mockOff).toHaveBeenCalledWith('typing_start', expect.any(Function))
-    expect(mockOff).toHaveBeenCalledWith('typing_stop', expect.any(Function))
-  })
+    expect(mockOff).toHaveBeenCalledWith('typing_start', expect.any(Function));
+    expect(mockOff).toHaveBeenCalledWith('typing_stop', expect.any(Function));
+  });
 
   it('works without realtime client', () => {
     const { result } = renderHook(() =>
       useTypingManager({
         roomId: 'room1',
         currentUserId: 'user1',
-        currentUserName: 'User 1'
+        currentUserName: 'User 1',
       })
-    )
+    );
 
-    expect(result.current.typingUsers).toEqual([])
-    expect(result.current.isTyping).toBe(false)
+    expect(result.current.typingUsers).toEqual([]);
+    expect(result.current.isTyping).toBe(false);
 
-    result.current.startTyping()
-    expect(result.current.isTyping).toBe(true)
+    result.current.startTyping();
+    expect(result.current.isTyping).toBe(true);
 
-    result.current.stopTyping()
-    expect(result.current.isTyping).toBe(false)
-  })
+    result.current.stopTyping();
+    expect(result.current.isTyping).toBe(false);
+  });
 
   it('debounces typing start', async () => {
     const { result } = renderHook(() =>
@@ -330,23 +320,22 @@ describe('useTypingManager', () => {
         currentUserId: 'user1',
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
-        debounceDelay: 500
+        debounceDelay: 500,
       })
-    )
+    );
 
-    result.current.handleInputChange('H')
-    vi.advanceTimersByTime(100)
-    result.current.handleInputChange('He')
-    vi.advanceTimersByTime(100)
-    result.current.handleInputChange('Hel')
+    result.current.handleInputChange('H');
+    vi.advanceTimersByTime(100);
+    result.current.handleInputChange('He');
+    vi.advanceTimersByTime(100);
+    result.current.handleInputChange('Hel');
 
-    expect(mockEmit).not.toHaveBeenCalled()
+    expect(mockEmit).not.toHaveBeenCalled();
 
-    vi.advanceTimersByTime(500)
+    vi.advanceTimersByTime(500);
 
     await waitFor(() => {
-      expect(mockEmit).toHaveBeenCalledTimes(1)
-    })
-  })
-})
-
+      expect(mockEmit).toHaveBeenCalledTimes(1);
+    });
+  });
+});

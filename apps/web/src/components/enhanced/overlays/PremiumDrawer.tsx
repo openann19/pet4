@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import { useEffect, useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
+import { useEffect, useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
 import {
   Sheet,
   SheetContent,
@@ -13,22 +13,22 @@ import {
   SheetTitle,
   SheetDescription,
   SheetFooter,
-} from '@/components/ui/sheet'
-import { X } from 'lucide-react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+} from '@/components/ui/sheet';
+import { X } from 'lucide-react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface PremiumDrawerProps {
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-  title?: string
-  description?: string
-  children?: React.ReactNode
-  footer?: React.ReactNode
-  side?: 'top' | 'right' | 'bottom' | 'left'
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-  showCloseButton?: boolean
-  closeOnOverlayClick?: boolean
-  className?: string
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  title?: string;
+  description?: string;
+  children?: React.ReactNode;
+  footer?: React.ReactNode;
+  side?: 'top' | 'right' | 'bottom' | 'left';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  showCloseButton?: boolean;
+  closeOnOverlayClick?: boolean;
+  className?: string;
 }
 
 const SIZE_CLASSES = {
@@ -36,7 +36,7 @@ const SIZE_CLASSES = {
   md: 'max-w-md',
   lg: 'max-w-lg',
   xl: 'max-w-xl',
-}
+};
 
 export function PremiumDrawer({
   open,
@@ -51,49 +51,46 @@ export function PremiumDrawer({
   closeOnOverlayClick = true,
   className,
 }: PremiumDrawerProps): React.JSX.Element {
-  const translateX = useSharedValue(side === 'right' ? 100 : side === 'left' ? -100 : 0)
-  const translateY = useSharedValue(side === 'top' ? -100 : side === 'bottom' ? 100 : 0)
-  const opacity = useSharedValue(0)
+  const translateX = useSharedValue(side === 'right' ? 100 : side === 'left' ? -100 : 0);
+  const translateY = useSharedValue(side === 'top' ? -100 : side === 'bottom' ? 100 : 0);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
     if (open) {
       if (side === 'right' || side === 'left') {
-        translateX.value = withSpring(0, springConfigs.smooth)
+        translateX.value = withSpring(0, springConfigs.smooth);
       } else {
-        translateY.value = withSpring(0, springConfigs.smooth)
+        translateY.value = withSpring(0, springConfigs.smooth);
       }
-      opacity.value = withTiming(1, { duration: 200 })
+      opacity.value = withTiming(1, { duration: 200 });
     } else {
       if (side === 'right') {
-        translateX.value = withSpring(100, springConfigs.smooth)
+        translateX.value = withSpring(100, springConfigs.smooth);
       } else if (side === 'left') {
-        translateX.value = withSpring(-100, springConfigs.smooth)
+        translateX.value = withSpring(-100, springConfigs.smooth);
       } else if (side === 'top') {
-        translateY.value = withSpring(-100, springConfigs.smooth)
+        translateY.value = withSpring(-100, springConfigs.smooth);
       } else {
-        translateY.value = withSpring(100, springConfigs.smooth)
+        translateY.value = withSpring(100, springConfigs.smooth);
       }
-      opacity.value = withTiming(0, { duration: 150 })
+      opacity.value = withTiming(0, { duration: 150 });
     }
-  }, [open, side, translateX, translateY, opacity])
+  }, [open, side, translateX, translateY, opacity]);
 
   const contentStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-    ],
+    transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
     opacity: opacity.value,
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const handleOpenChange = useCallback(
     (newOpen: boolean) => {
       if (!newOpen && closeOnOverlayClick) {
-        haptics.impact('light')
+        haptics.impact('light');
       }
-      onOpenChange?.(newOpen)
+      onOpenChange?.(newOpen);
     },
     [onOpenChange, closeOnOverlayClick]
-  )
+  );
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -122,5 +119,5 @@ export function PremiumDrawer({
         </AnimatedView>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

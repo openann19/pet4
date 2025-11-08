@@ -1,42 +1,40 @@
-import { generateULID } from './utils'
-import { api } from './api'
-import { realtime } from './realtime'
-import { storage } from './storage'
-import { hashPassword, verifyPassword } from './password-utils'
-import { log } from './logger'
-import type { User, UserRole, AuthTokens } from './contracts'
+import { generateULID } from './utils';
+import { api } from './api';
+import { realtime } from './realtime';
+import { storage } from './storage';
+import { hashPassword, verifyPassword } from './password-utils';
+import { log } from './logger';
+import type { User, UserRole, AuthTokens } from './contracts';
 
 interface LoginCredentials {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 interface SignupCredentials extends LoginCredentials {
-  displayName: string
+  displayName: string;
 }
 
 export class AuthService {
-  private currentUser: User | null = null
-  private accessToken: string | null = null
-  private refreshToken: string | null = null
-  private refreshAttempted: boolean = false
+  private currentUser: User | null = null;
+  private accessToken: string | null = null;
+  private refreshToken: string | null = null;
+  private refreshAttempted = false;
 
   getAccessToken(): string | null {
-    return this.accessToken
+    return this.accessToken;
   }
 
   async login(credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> {
-    const existingUsers = await storage.get<User[]>('all-users') || []
-    const user = existingUsers.find(
-      u => u.email === credentials.email && u.status === 'active'
-    )
+    const existingUsers = (await storage.get<User[]>('all-users')) || [];
+    const user = existingUsers.find((u) => u.email === credentials.email && u.status === 'active');
 
     if (!user) {
       throw {
         code: 'AUTH_001',
         message: 'Invalid credentials',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      };
     }
 
     // Verify password if password hash exists
@@ -45,42 +43,45 @@ export class AuthService {
         credentials.password,
         user.passwordHash,
         user.passwordSalt
-      )
+      );
 
       if (!isValid) {
         throw {
           code: 'AUTH_001',
           message: 'Invalid credentials',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        };
       }
     } else {
       // Legacy users without password hashes - allow login for migration
       // In production, you might want to require password reset
-      log.warn('User without password hash - allowing login for migration', { context: 'AuthService', userId: user.id })
+      log.warn('User without password hash - allowing login for migration', {
+        context: 'AuthService',
+        userId: user.id,
+      });
     }
 
-    const tokens = this.generateTokens(user)
-    await this.setSession(user, tokens)
+    const tokens = this.generateTokens(user);
+    await this.setSession(user, tokens);
 
-    return { user, tokens }
+    return { user, tokens };
   }
 
   async signup(credentials: SignupCredentials): Promise<{ user: User; tokens: AuthTokens }> {
-    const existingUsers = await storage.get<User[]>('all-users') || []
-    
-    if (existingUsers.some(u => u.email === credentials.email)) {
+    const existingUsers = (await storage.get<User[]>('all-users')) || [];
+
+    if (existingUsers.some((u) => u.email === credentials.email)) {
       throw {
         code: 'AUTH_008',
         message: 'Email already exists',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      };
     }
 
     // Hash the password
-    const { hash, salt } = await hashPassword(credentials.password)
+    const { hash, salt } = await hashPassword(credentials.password);
 
-    const now = new Date().toISOString()
+    const now = new Date().toISOString();
     const user: User = {
       id: generateULID(),
       email: credentials.email,
@@ -100,19 +101,19 @@ export class AuthService {
           email: true,
           matches: true,
           messages: true,
-          likes: true
+          likes: true,
         },
-        quietHours: null
-      }
-    }
+        quietHours: null,
+      },
+    };
 
-    existingUsers.push(user)
-    await storage.set('all-users', existingUsers)
+    existingUsers.push(user);
+    await storage.set('all-users', existingUsers);
 
-    const tokens = this.generateTokens(user)
-    await this.setSession(user, tokens)
+    const tokens = this.generateTokens(user);
+    await this.setSession(user, tokens);
 
-    return { user, tokens }
+    return { user, tokens };
   }
 
   /**
@@ -123,8 +124,8 @@ export class AuthService {
       throw {
         code: 'AUTH_007',
         message: 'Not authenticated',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      };
     }
 
     // Verify old password
@@ -133,166 +134,166 @@ export class AuthService {
         oldPassword,
         this.currentUser.passwordHash,
         this.currentUser.passwordSalt
-      )
+      );
 
       if (!isValid) {
         throw {
           code: 'AUTH_001',
           message: 'Invalid current password',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        };
       }
     }
 
     // Hash new password
-    const { hash, salt } = await hashPassword(newPassword)
+    const { hash, salt } = await hashPassword(newPassword);
 
     // Update user password
     await this.updateUser({
       passwordHash: hash,
-      passwordSalt: salt
-    })
+      passwordSalt: salt,
+    });
   }
 
   async logout(): Promise<void> {
-    this.currentUser = null
-    this.accessToken = null
-    this.refreshToken = null
-    this.refreshAttempted = false
-    
-    api.setAccessToken(null)
-    realtime.setAccessToken(null)
-    realtime.disconnect()
+    this.currentUser = null;
+    this.accessToken = null;
+    this.refreshToken = null;
+    this.refreshAttempted = false;
 
-    await storage.delete('current-user')
-    await storage.delete('access-token')
-    await storage.delete('refresh-token')
+    api.setAccessToken(null);
+    realtime.setAccessToken(null);
+    realtime.disconnect();
+
+    await storage.delete('current-user');
+    await storage.delete('access-token');
+    await storage.delete('refresh-token');
   }
 
   async refreshTokens(): Promise<AuthTokens | null> {
     if (this.refreshAttempted) {
-      return null
+      return null;
     }
 
-    this.refreshAttempted = true
+    this.refreshAttempted = true;
 
     try {
       if (!this.refreshToken || !this.currentUser) {
-        throw new Error('No refresh token available')
+        throw new Error('No refresh token available');
       }
 
-      const tokens = this.generateTokens(this.currentUser)
-      await this.setSession(this.currentUser, tokens)
-      this.refreshAttempted = false
+      const tokens = this.generateTokens(this.currentUser);
+      await this.setSession(this.currentUser, tokens);
+      this.refreshAttempted = false;
 
-      return tokens
+      return tokens;
     } catch {
-      await this.logout()
-      return null
+      await this.logout();
+      return null;
     }
   }
 
   async handleUnauthorized(): Promise<boolean> {
-    const tokens = await this.refreshTokens()
-    return tokens !== null
+    const tokens = await this.refreshTokens();
+    return tokens !== null;
   }
 
   private generateTokens(user: User): AuthTokens {
-    const accessToken = `access_${generateULID()}_${user.id}`
-    const refreshToken = `refresh_${generateULID()}_${user.id}`
-    
+    const accessToken = `access_${generateULID()}_${user.id}`;
+    const refreshToken = `refresh_${generateULID()}_${user.id}`;
+
     return {
       accessToken,
       refreshToken,
-      expiresIn: 900
-    }
+      expiresIn: 900,
+    };
   }
 
   private async setSession(user: User, tokens: AuthTokens) {
-    this.currentUser = user
-    this.accessToken = tokens.accessToken
-    this.refreshToken = tokens.refreshToken
+    this.currentUser = user;
+    this.accessToken = tokens.accessToken;
+    this.refreshToken = tokens.refreshToken;
 
-    api.setAccessToken(tokens.accessToken)
-    realtime.setAccessToken(tokens.accessToken)
-    realtime.connect()
+    api.setAccessToken(tokens.accessToken);
+    realtime.setAccessToken(tokens.accessToken);
+    realtime.connect();
 
-    await storage.set('current-user', user)
-    await storage.set('access-token', tokens.accessToken)
-    await storage.set('refresh-token', tokens.refreshToken)
+    await storage.set('current-user', user);
+    await storage.set('access-token', tokens.accessToken);
+    await storage.set('refresh-token', tokens.refreshToken);
   }
 
   async restoreSession(): Promise<User | null> {
-    const user = await storage.get<User>('current-user')
-    const accessToken = await storage.get<string>('access-token')
-    const refreshToken = await storage.get<string>('refresh-token')
+    const user = await storage.get<User>('current-user');
+    const accessToken = await storage.get<string>('access-token');
+    const refreshToken = await storage.get<string>('refresh-token');
 
     if (user && accessToken && refreshToken) {
-      this.currentUser = user
-      this.accessToken = accessToken
-      this.refreshToken = refreshToken
+      this.currentUser = user;
+      this.accessToken = accessToken;
+      this.refreshToken = refreshToken;
 
-      api.setAccessToken(accessToken)
-      realtime.setAccessToken(accessToken)
-      realtime.connect()
+      api.setAccessToken(accessToken);
+      realtime.setAccessToken(accessToken);
+      realtime.connect();
 
-      user.lastSeenAt = new Date().toISOString()
-      await this.updateUser(user)
+      user.lastSeenAt = new Date().toISOString();
+      await this.updateUser(user);
 
-      return user
+      return user;
     }
 
-    return null
+    return null;
   }
 
   getCurrentUser(): User | null {
-    return this.currentUser
+    return this.currentUser;
   }
 
   hasRole(role: UserRole): boolean {
-    return this.currentUser?.roles.includes(role) ?? false
+    return this.currentUser?.roles.includes(role) ?? false;
   }
 
   hasPermission(_action: string, _resource: string): boolean {
-    if (!this.currentUser) return false
+    if (!this.currentUser) return false;
 
-    const hasAdminRole = this.currentUser.roles.includes('admin')
-    if (hasAdminRole) return true
+    const hasAdminRole = this.currentUser.roles.includes('admin');
+    if (hasAdminRole) return true;
 
-    return true
+    return true;
   }
 
   async updateUser(updates: Partial<User>): Promise<User> {
     if (!this.currentUser) {
-      throw new Error('No user logged in')
+      throw new Error('No user logged in');
     }
 
     const updatedUser = {
       ...this.currentUser,
       ...updates,
-      updatedAt: new Date().toISOString()
-    }
+      updatedAt: new Date().toISOString(),
+    };
 
-    const allUsers = await storage.get<User[]>('all-users') || []
-    const userIndex = allUsers.findIndex(u => u.id === updatedUser.id)
-    
+    const allUsers = (await storage.get<User[]>('all-users')) || [];
+    const userIndex = allUsers.findIndex((u) => u.id === updatedUser.id);
+
     if (userIndex >= 0) {
-      allUsers[userIndex] = updatedUser
-      await storage.set('all-users', allUsers)
+      allUsers[userIndex] = updatedUser;
+      await storage.set('all-users', allUsers);
     }
 
-    this.currentUser = updatedUser
-    await storage.set('current-user', updatedUser)
+    this.currentUser = updatedUser;
+    await storage.set('current-user', updatedUser);
 
-    return updatedUser
+    return updatedUser;
   }
 
   async createDemoUsers(): Promise<void> {
-    const existingUsers = await storage.get<User[]>('all-users') || []
-    
-    if (existingUsers.length > 0) return
+    const existingUsers = (await storage.get<User[]>('all-users')) || [];
 
-    const now = new Date().toISOString()
+    if (existingUsers.length > 0) return;
+
+    const now = new Date().toISOString();
     const demoUsers: User[] = [
       {
         id: generateULID(),
@@ -311,10 +312,10 @@ export class AuthService {
             email: true,
             matches: true,
             messages: true,
-            likes: true
+            likes: true,
           },
-          quietHours: null
-        }
+          quietHours: null,
+        },
       },
       {
         id: generateULID(),
@@ -333,10 +334,10 @@ export class AuthService {
             email: true,
             matches: true,
             messages: true,
-            likes: true
+            likes: true,
           },
-          quietHours: null
-        }
+          quietHours: null,
+        },
       },
       {
         id: generateULID(),
@@ -355,15 +356,15 @@ export class AuthService {
             email: true,
             matches: true,
             messages: true,
-            likes: true
+            likes: true,
           },
-          quietHours: null
-        }
-      }
-    ]
+          quietHours: null,
+        },
+      },
+    ];
 
-    await storage.set('all-users', demoUsers)
+    await storage.set('all-users', demoUsers);
   }
 }
 
-export const authService = new AuthService()
+export const authService = new AuthService();

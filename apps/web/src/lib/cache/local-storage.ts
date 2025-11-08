@@ -48,11 +48,7 @@ export function getStorageItem<T>(key: string): T | null {
 /**
  * Set item in localStorage with optional TTL
  */
-export function setStorageItem<T>(
-  key: string,
-  value: T,
-  options: StorageOptions = {}
-): boolean {
+export function setStorageItem<T>(key: string, value: T, options: StorageOptions = {}): boolean {
   try {
     const entry: StorageEntry<T> = {
       value,

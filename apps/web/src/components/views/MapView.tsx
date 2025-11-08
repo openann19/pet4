@@ -18,9 +18,14 @@ import { Card } from '@/components/ui/card';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
 import { DEFAULT_LOCATION } from '@/lib/maps/config';
-import { calculateDistance, formatDistance, snapToGrid, getCurrentLocation } from '@/lib/maps/utils';
+import {
+  calculateDistance,
+  formatDistance,
+  snapToGrid,
+  getCurrentLocation,
+} from '@/lib/maps/utils';
 import type { Location, Place, MapMarker } from '@/lib/maps/types';
-import { useStorage } from '@/hooks/useStorage';
+import { useStorage } from '@/hooks/use-storage';
 import { toast } from 'sonner';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
 import { logger } from '@/lib/logger';
@@ -30,18 +35,26 @@ type MapViewMode = 'discover' | 'places' | 'playdate' | 'lost-pet' | 'matches';
 export default function MapView() {
   const { t } = useApp();
   const { mapSettings, PLACE_CATEGORIES } = useMapConfig();
-  
+
   const [_mode, _setMode] = useState<MapViewMode>('discover');
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [coarseLocation, setCoarseLocation] = useState<Location | null>(null);
-  const [preciseSharingEnabled, setPreciseSharingEnabled] = useStorage<boolean>('map-precise-sharing', false);
-  const [preciseSharingUntil, setPreciseSharingUntil] = useStorage<number | null>('map-precise-until', null);
+  const [preciseSharingEnabled, setPreciseSharingEnabled] = useStorage<boolean>(
+    'map-precise-sharing',
+    false
+  );
+  const [preciseSharingUntil, setPreciseSharingUntil] = useStorage<number | null>(
+    'map-precise-until',
+    null
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [radiusKm, _setRadiusKm] = useState(mapSettings.DEFAULT_RADIUS_KM);
   const [showList, setShowList] = useState(false);
   const [selectedMarker, setSelectedMarker] = useState<MapMarker | null>(null);
-  const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
+  const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'prompt'>(
+    'prompt'
+  );
   const [isLocating, setIsLocating] = useState(false);
   const [nearbyPlaces, setNearbyPlaces] = useState<Place[]>([]);
   const [savedPlaces, setSavedPlaces] = useStorage<string[]>('saved-places', []);
@@ -114,20 +127,20 @@ export default function MapView() {
   const generateDemoPlaces = (center: Location) => {
     const places: Place[] = [];
     const categories = PLACE_CATEGORIES;
-    
+
     for (let i = 0; i < 20; i++) {
       const category = categories[Math.floor(Math.random() * categories.length)];
-      if (!category) continue
+      if (!category) continue;
       const angle = (Math.PI * 2 * i) / 20;
       const dist = Math.random() * radiusKm;
       const deltaLat = (dist / 111) * Math.cos(angle);
-      const deltaLng = (dist / (111 * Math.cos(center.lat * Math.PI / 180))) * Math.sin(angle);
-      
+      const deltaLng = (dist / (111 * Math.cos((center.lat * Math.PI) / 180))) * Math.sin(angle);
+
       const location: Location = {
         lat: center.lat + deltaLat,
         lng: center.lng + deltaLng,
       };
-      
+
       places.push({
         id: `place-${i}`,
         name: `${category.name} ${i + 1}`,
@@ -148,7 +161,7 @@ export default function MapView() {
         moderationStatus: 'approved',
       });
     }
-    
+
     setNearbyPlaces(places.sort((a, b) => (a.distance || 0) - (b.distance || 0)));
   };
 
@@ -173,11 +186,11 @@ export default function MapView() {
 
   const filteredPlaces = useMemo(() => {
     let filtered = nearbyPlaces;
-    
+
     if (selectedCategory) {
       filtered = filtered.filter((place) => place.category === selectedCategory);
     }
-    
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -187,7 +200,7 @@ export default function MapView() {
           place.category.toLowerCase().includes(query)
       );
     }
-    
+
     return filtered;
   }, [nearbyPlaces, selectedCategory, searchQuery]);
 
@@ -223,39 +236,45 @@ export default function MapView() {
         </div>
 
         {/* Markers Visualization */}
-        {displayLocation && filteredPlaces.slice(0, 15).map((place, idx) => {
-          const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
-          return (
-            <MotionView
-              key={place.id}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: idx * 0.05, duration: 0.3 }}
-              className="absolute"
-              style={{
-                left: `${20 + (idx % 5) * 16}%`,
-                top: `${20 + Math.floor(idx / 5) * 25}%`,
-              }}
-            >
-              <button
-                onClick={() => {
-                  haptics.trigger('light');
-                  setSelectedMarker({ id: place.id, type: 'place', location: place.location, data: place });
-                  setShowList(false);
+        {displayLocation &&
+          filteredPlaces.slice(0, 15).map((place, idx) => {
+            const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
+            return (
+              <MotionView
+                key={place.id}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: idx * 0.05, duration: 0.3 }}
+                className="absolute"
+                style={{
+                  left: `${20 + (idx % 5) * 16}%`,
+                  top: `${20 + Math.floor(idx / 5) * 25}%`,
                 }}
-                className="relative group cursor-pointer transform transition-transform hover:scale-110 active:scale-95"
               >
-                <div
-                  className="w-10 h-10 rounded-full shadow-lg flex items-center justify-center text-xl backdrop-blur-sm border-2 border-white"
-                  style={{ backgroundColor: category?.color || '#ec4899' }}
+                <button
+                  onClick={() => {
+                    haptics.trigger('light');
+                    setSelectedMarker({
+                      id: place.id,
+                      type: 'place',
+                      location: place.location,
+                      data: place,
+                    });
+                    setShowList(false);
+                  }}
+                  className="relative group cursor-pointer transform transition-transform hover:scale-110 active:scale-95"
                 >
-                  {category?.icon || '📍'}
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-              </button>
-            </MotionView>
-          );
-        })}
+                  <div
+                    className="w-10 h-10 rounded-full shadow-lg flex items-center justify-center text-xl backdrop-blur-sm border-2 border-white"
+                    style={{ backgroundColor: category?.color || '#ec4899' }}
+                  >
+                    {category?.icon || '📍'}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                </button>
+              </MotionView>
+            );
+          })}
       </div>
 
       {/* Top Controls */}
@@ -364,7 +383,8 @@ export default function MapView() {
                   {t.map?.preciseEnabled || 'Precise location active'}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {t.map?.preciseExpires || `Expires in ${Math.ceil((preciseSharingUntil - Date.now()) / 60000)} minutes`}
+                  {t.map?.preciseExpires ||
+                    `Expires in ${Math.ceil((preciseSharingUntil - Date.now()) / 60000)} minutes`}
                 </p>
               </div>
               <Button
@@ -403,14 +423,19 @@ export default function MapView() {
               {filteredPlaces.map((place) => {
                 const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
                 const isSaved = (savedPlaces || []).includes(place.id);
-                
+
                 return (
                   <Card
                     key={place.id}
                     className="p-4 hover:shadow-lg transition-all cursor-pointer"
                     onClick={() => {
                       haptics.trigger('light');
-                      setSelectedMarker({ id: place.id, type: 'place', location: place.location, data: place });
+                      setSelectedMarker({
+                        id: place.id,
+                        type: 'place',
+                        location: place.location,
+                        data: place,
+                      });
                       setShowList(false);
                     }}
                   >
@@ -433,7 +458,11 @@ export default function MapView() {
                               handleSavePlace(place.id);
                             }}
                           >
-                            <Heart size={16} weight={isSaved ? 'fill' : 'regular'} className={isSaved ? 'text-red-500' : ''} />
+                            <Heart
+                              size={16}
+                              weight={isSaved ? 'fill' : 'regular'}
+                              className={isSaved ? 'text-red-500' : ''}
+                            />
                           </Button>
                         </div>
                         <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
@@ -464,7 +493,7 @@ export default function MapView() {
 
       {/* Selected Place Detail Sheet */}
       <Presence>
-        {selectedMarker && selectedMarker.type === 'place' && (
+        {selectedMarker?.type === 'place' && (
           <MotionView
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
@@ -476,7 +505,7 @@ export default function MapView() {
               const place = selectedMarker.data as Place;
               const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
               const isSaved = (savedPlaces || []).includes(place.id);
-              
+
               return (
                 <div className="p-6 space-y-4">
                   <div className="flex items-start justify-between">
@@ -492,23 +521,15 @@ export default function MapView() {
                         <p className="text-sm text-muted-foreground">{place.address}</p>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setSelectedMarker(null)}
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => setSelectedMarker(null)}>
                       <X size={20} />
                     </Button>
                   </div>
 
-                  {place.description && (
-                    <p className="text-foreground/80">{place.description}</p>
-                  )}
+                  {place.description && <p className="text-foreground/80">{place.description}</p>}
 
                   <div className="flex gap-2 flex-wrap">
-                    <Badge variant="secondary">
-                      📏 {formatDistance(place.distance || 0)}
-                    </Badge>
+                    <Badge variant="secondary">📏 {formatDistance(place.distance || 0)}</Badge>
                     <Badge variant="secondary">
                       ⭐ {place.rating.toFixed(1)} ({place.reviewCount})
                     </Badge>

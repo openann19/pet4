@@ -1,11 +1,11 @@
 /**
  * Button Color Tokens
- * 
+ *
  * All colors verified for WCAG AA compliance (3:1 minimum contrast for UI components)
  * No opacity or blend modes - solid colors only
  */
 
-import type { ButtonTokenSet } from '../types/button-tokens'
+import type { ButtonTokenSet } from '../types/button-tokens';
 
 /**
  * Button color tokens for dark theme (English)
@@ -112,13 +112,13 @@ const darkEN: ButtonTokenSet['dark']['en'] = {
     },
     focusRing: '#60A5FA',
   },
-}
+};
 
 /**
  * Button color tokens for dark theme (Bulgarian)
  * Same as English for consistency, can be customized if needed
  */
-const darkBG: ButtonTokenSet['dark']['bg'] = darkEN
+const darkBG: ButtonTokenSet['dark']['bg'] = darkEN;
 
 /**
  * Button color tokens for light theme (English)
@@ -223,13 +223,13 @@ const lightEN: ButtonTokenSet['light']['en'] = {
     },
     focusRing: '#3B82F6', // blue-9
   },
-}
+};
 
 /**
  * Button color tokens for light theme (Bulgarian)
  * Same as English for consistency
  */
-const lightBG: ButtonTokenSet['light']['bg'] = lightEN
+const lightBG: ButtonTokenSet['light']['bg'] = lightEN;
 
 /**
  * Complete button token set
@@ -243,14 +243,11 @@ export const buttonTokens: ButtonTokenSet = {
     en: lightEN,
     bg: lightBG,
   },
-}
+};
 
 /**
  * Get button tokens for current theme and locale
  */
-export function getButtonTokens(
-  theme: 'dark' | 'light',
-  locale: 'en' | 'bg' = 'en'
-) {
-  return buttonTokens[theme][locale]
+export function getButtonTokens(theme: 'dark' | 'light', locale: 'en' | 'bg' = 'en') {
+  return buttonTokens[theme][locale];
 }

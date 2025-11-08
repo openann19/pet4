@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -40,11 +35,7 @@ export const BillingIssueBanner: React.FC<BillingIssueBannerProps> = ({
 
   useEffect(() => {
     // Pulse animation for urgency
-    pulseAnimation.value = withRepeat(
-      withTiming(1.05, { duration: 1000 }),
-      -1,
-      true
-    );
+    pulseAnimation.value = withRepeat(withTiming(1.05, { duration: 1000 }), -1, true);
   }, [pulseAnimation]);
 
   useEffect(() => {

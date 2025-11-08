@@ -1,48 +1,46 @@
-'use client'
+'use client';
 
-import { makeRng } from '@petspark/shared'
+import { makeRng } from '@petspark/shared';
 import {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withSequence,
   withTiming,
-  type SharedValue
-} from 'react-native-reanimated'
+  type SharedValue,
+} from 'react-native-reanimated';
 
 export interface Particle {
-  id: string
-  x: SharedValue<number>
-  y: SharedValue<number>
-  scale: SharedValue<number>
-  opacity: SharedValue<number>
-  rotation: SharedValue<number>
-  vx: number
-  vy: number
-  color: string
-  size: number
-  lifetime: number
-  createdAt: number
+  id: string;
+  x: SharedValue<number>;
+  y: SharedValue<number>;
+  scale: SharedValue<number>;
+  opacity: SharedValue<number>;
+  rotation: SharedValue<number>;
+  vx: number;
+  vy: number;
+  color: string;
+  size: number;
+  lifetime: number;
+  createdAt: number;
 }
 
 export interface ParticleConfig {
-  count?: number
-  colors?: string[]
-  size?: number
-  minSize?: number
-  maxSize?: number
-  lifetime?: number
-  minLifetime?: number
-  maxLifetime?: number
-  velocity?: number
-  minVelocity?: number
-  maxVelocity?: number
-  gravity?: number
-  friction?: number
-  spread?: number
+  count?: number;
+  colors?: string[];
+  size?: number;
+  minSize?: number;
+  maxSize?: number;
+  lifetime?: number;
+  minLifetime?: number;
+  maxLifetime?: number;
+  velocity?: number;
+  minVelocity?: number;
+  maxVelocity?: number;
+  gravity?: number;
+  friction?: number;
+  spread?: number;
 }
-
-
 
 export const DEFAULT_CONFIG: Required<ParticleConfig> = {
   count: 10,
@@ -58,8 +56,8 @@ export const DEFAULT_CONFIG: Required<ParticleConfig> = {
   maxVelocity: 300,
   gravity: 0.3,
   friction: 0.98,
-  spread: 360
-}
+  spread: 360,
+};
 
 export function createParticle(
   startX: number,
@@ -68,17 +66,17 @@ export function createParticle(
   config: Required<ParticleConfig>,
   seed?: number
 ): Particle {
-  const rng = makeRng(seed ?? Date.now())
-  const id = `${Date.now()}-${rng()}`
-  const velocity = config.minVelocity + rng() * (config.maxVelocity - config.minVelocity)
-  const lifetime = config.minLifetime + rng() * (config.maxLifetime - config.minLifetime)
-  const size = config.minSize + rng() * (config.maxSize - config.minSize)
-  const colorIndex = Math.floor(rng() * config.colors.length)
-  const color = config.colors[colorIndex] ?? config.colors[0] ?? '#FF6B6B'
-  const radians = (angle * Math.PI) / 180
+  const rng = makeRng(seed ?? Date.now());
+  const id = `${Date.now()}-${rng()}`;
+  const velocity = config.minVelocity + rng() * (config.maxVelocity - config.minVelocity);
+  const lifetime = config.minLifetime + rng() * (config.maxLifetime - config.minLifetime);
+  const size = config.minSize + rng() * (config.maxSize - config.minSize);
+  const colorIndex = Math.floor(rng() * config.colors.length);
+  const color = config.colors[colorIndex] ?? config.colors[0] ?? '#FF6B6B';
+  const radians = (angle * Math.PI) / 180;
 
-  const vx = Math.cos(radians) * velocity
-  const vy = Math.sin(radians) * velocity
+  const vx = Math.cos(radians) * velocity;
+  const vy = Math.sin(radians) * velocity;
 
   return {
     id,
@@ -92,8 +90,8 @@ export function createParticle(
     color,
     size,
     lifetime,
-    createdAt: Date.now()
-  }
+    createdAt: Date.now(),
+  };
 }
 
 export function spawnParticles(
@@ -104,78 +102,79 @@ export function spawnParticles(
 ): Particle[] {
   const fullConfig: Required<ParticleConfig> = {
     ...DEFAULT_CONFIG,
-    ...config
-  }
+    ...config,
+  };
 
-  const particles: Particle[] = []
-  const angleStep = fullConfig.spread / fullConfig.count
-  const rng = makeRng(seed ?? Date.now())
+  const particles: Particle[] = [];
+  const angleStep = fullConfig.spread / fullConfig.count;
+  const rng = makeRng(seed ?? Date.now());
 
   for (let i = 0; i < fullConfig.count; i++) {
-    const angle = -fullConfig.spread / 2 + i * angleStep + (rng() - 0.5) * 20
-    const particle = createParticle(originX, originY, angle, fullConfig, seed)
-    particles.push(particle)
+    const angle = -fullConfig.spread / 2 + i * angleStep + (rng() - 0.5) * 20;
+    const particle = createParticle(originX, originY, angle, fullConfig, seed);
+    particles.push(particle);
   }
 
-  return particles
+  return particles;
 }
 
 export function animateParticle(particle: Particle, config: Required<ParticleConfig>): void {
-  const endX = particle.x.value + particle.vx * (particle.lifetime / 1000)
-  const endY = particle.y.value + particle.vy * (particle.lifetime / 1000) + 
-    (config.gravity * particle.lifetime * particle.lifetime) / 2000
+  const endX = particle.x.value + particle.vx * (particle.lifetime / 1000);
+  const endY =
+    particle.y.value +
+    particle.vy * (particle.lifetime / 1000) +
+    (config.gravity * particle.lifetime * particle.lifetime) / 2000;
 
   particle.x.value = withTiming(endX, {
     duration: particle.lifetime,
-    easing: Easing.out(Easing.quad)
-  })
+    easing: Easing.out(Easing.quad),
+  });
 
   particle.y.value = withTiming(endY, {
     duration: particle.lifetime,
-    easing: Easing.out(Easing.quad)
-  })
+    easing: Easing.out(Easing.quad),
+  });
 
   particle.scale.value = withSequence(
     withTiming(1, {
       duration: particle.lifetime * 0.2,
-      easing: Easing.out(Easing.back(1.5))
+      easing: Easing.out(Easing.back(1.5)),
     }),
     withTiming(0.8, {
       duration: particle.lifetime * 0.6,
-      easing: Easing.inOut(Easing.ease)
+      easing: Easing.inOut(Easing.ease),
     }),
     withTiming(0, {
       duration: particle.lifetime * 0.2,
-      easing: Easing.in(Easing.ease)
+      easing: Easing.in(Easing.ease),
     })
-  )
+  );
 
   particle.opacity.value = withSequence(
     withTiming(1, {
       duration: particle.lifetime * 0.1,
-      easing: Easing.out(Easing.ease)
+      easing: Easing.out(Easing.ease),
     }),
     withTiming(0.9, {
       duration: particle.lifetime * 0.7,
-      easing: Easing.inOut(Easing.ease)
+      easing: Easing.inOut(Easing.ease),
     }),
     withTiming(0, {
       duration: particle.lifetime * 0.2,
-      easing: Easing.in(Easing.ease)
+      easing: Easing.in(Easing.ease),
     })
-  )
+  );
 
-  const rotationRng = makeRng(particle.createdAt)
-  particle.rotation.value = withTiming(
-    rotationRng() * 360,
-    {
-      duration: particle.lifetime,
-      easing: Easing.linear
-    }
-  )
+  const rotationRng = makeRng(particle.createdAt);
+  particle.rotation.value = withTiming(rotationRng() * 360, {
+    duration: particle.lifetime,
+    easing: Easing.linear,
+  });
 }
 
-export function createParticleAnimatedStyle(particle: Particle): ReturnType<typeof useAnimatedStyle> {
+export function createParticleAnimatedStyle(
+  particle: Particle
+): ReturnType<typeof useAnimatedStyle> {
   return useAnimatedStyle(() => {
     return {
       position: 'absolute',
@@ -186,10 +185,7 @@ export function createParticleAnimatedStyle(particle: Particle): ReturnType<type
       backgroundColor: particle.color,
       borderRadius: particle.size / 2,
       opacity: particle.opacity.value,
-      transform: [
-        { scale: particle.scale.value },
-        { rotate: `${particle.rotation.value}deg` }
-      ]
-    }
-  })
+      transform: [{ scale: particle.scale.value }, { rotate: `${particle.rotation.value}deg` }],
+    };
+  });
 }

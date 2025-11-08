@@ -33,7 +33,14 @@ export interface UserStore {
 
 export const useUserStore = create<UserStore>()(
   persist(
-    ((set: (partial: UserStore | Partial<UserStore> | ((state: UserStore) => UserStore | Partial<UserStore>)) => void) => ({
+    ((
+      set: (
+        partial:
+          | UserStore
+          | Partial<UserStore>
+          | ((state: UserStore) => UserStore | Partial<UserStore>)
+      ) => void
+    ) => ({
       user: null,
       isAuthenticated: false,
       setUser: (user: User) =>
@@ -117,4 +124,3 @@ export const useUserStore = create<UserStore>()(
     }
   )
 )
-

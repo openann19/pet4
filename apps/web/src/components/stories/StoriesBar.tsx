@@ -1,25 +1,23 @@
-import { useState } from 'react'
-import { motion } from '@petspark/motion'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import StoryRing from './StoryRing'
-import StoryViewer from './StoryViewer'
-import CreateStoryDialog from './CreateStoryDialog'
-import { groupStoriesByUser, filterActiveStories } from '@petspark/shared'
-import type { Story } from '@petspark/shared'
-
+import { useState } from 'react';
+import { motion } from '@petspark/motion';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import StoryRing from './StoryRing';
+import StoryViewer from './StoryViewer';
+import CreateStoryDialog from './CreateStoryDialog';
+import { groupStoriesByUser, filterActiveStories } from '@petspark/shared';
+import type { Story } from '@petspark/shared';
 
 interface StoriesBarProps {
-  allStories: Story[]
-  currentUserId: string
-  currentUserName: string
-  currentUserPetId: string
-  currentUserPetName: string
-  currentUserPetPhoto: string
-  currentUserAvatar?: string
-  onStoryCreated: (story: Story) => void
-  onStoryUpdate: (story: Story) => void
+  allStories: Story[];
+  currentUserId: string;
+  currentUserName: string;
+  currentUserPetId: string;
+  currentUserPetName: string;
+  currentUserPetPhoto: string;
+  currentUserAvatar?: string;
+  onStoryCreated: (story: Story) => void;
+  onStoryUpdate: (story: Story) => void;
 }
-
 
 export default function StoriesBar({
   allStories,
@@ -30,35 +28,31 @@ export default function StoriesBar({
   currentUserPetPhoto,
   currentUserAvatar,
   onStoryCreated,
-  onStoryUpdate
+  onStoryUpdate,
 }: StoriesBarProps) {
-  const [viewingStories, setViewingStories] = useState<Story[] | null>(null)
-  const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [viewingStories, setViewingStories] = useState<Story[] | null>(null);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
+  const activeStories = filterActiveStories(allStories);
+  const storiesByUser = groupStoriesByUser(activeStories);
 
-  const activeStories = filterActiveStories(allStories)
-  const storiesByUser = groupStoriesByUser(activeStories)
-  
-  const ownStories = activeStories.filter(s => s.userId === currentUserId)
-  const otherStories = activeStories.filter(s => s.userId !== currentUserId)
-
+  const ownStories = activeStories.filter((s) => s.userId === currentUserId);
+  const otherStories = activeStories.filter((s) => s.userId !== currentUserId);
 
   const handleStoryRingClick = (userId: string) => {
-    const userStories = storiesByUser.get(userId)
+    const userStories = storiesByUser.get(userId);
     if (userStories && userStories.length > 0) {
-      setViewingStories(userStories)
+      setViewingStories(userStories);
     }
-  }
-
+  };
 
   const handleOwnStoryClick = () => {
     if (ownStories.length > 0) {
-      setViewingStories(ownStories)
+      setViewingStories(ownStories);
     } else {
-      setShowCreateDialog(true)
+      setShowCreateDialog(true);
     }
-  }
-
+  };
 
   if (activeStories.length === 0 && ownStories.length === 0) {
     return (
@@ -71,9 +65,7 @@ export default function StoriesBar({
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold">Share Your Story</h3>
-              <p className="text-sm text-muted-foreground">
-                Be the first to share a story!
-              </p>
+              <p className="text-sm text-muted-foreground">Be the first to share a story!</p>
             </div>
             <button
               onClick={() => setShowCreateDialog(true)}
@@ -83,7 +75,6 @@ export default function StoriesBar({
             </button>
           </div>
         </MotionView>
-
 
         <CreateStoryDialog
           open={showCreateDialog}
@@ -97,14 +88,10 @@ export default function StoriesBar({
           onStoryCreated={onStoryCreated}
         />
       </>
-    )
+    );
   }
 
-
-  const uniqueUserIds = Array.from(new Set([
-    ...otherStories.map(s => s.userId)
-  ]))
-
+  const uniqueUserIds = Array.from(new Set([...otherStories.map((s) => s.userId)]));
 
   return (
     <>
@@ -123,14 +110,12 @@ export default function StoriesBar({
               onClick={handleOwnStoryClick}
             />
 
+            {uniqueUserIds.map((userId) => {
+              const userStories = storiesByUser.get(userId);
 
-            {uniqueUserIds.map(userId => {
-              const userStories = storiesByUser.get(userId)
-              
-              if (!userStories || userStories.length === 0) return null
-              
-              const firstStory = userStories[0]
+              if (!userStories || userStories.length === 0) return null;
 
+              const firstStory = userStories[0];
 
               return (
                 <StoryRing
@@ -138,17 +123,19 @@ export default function StoriesBar({
                   stories={userStories}
                   petName={firstStory.petName}
                   petPhoto={firstStory.petPhoto}
-                  hasUnviewed={!userStories.some(s => 
-                    Array.isArray(s.views) && s.views.some(v => v.userId === currentUserId)
-                  )}
+                  hasUnviewed={
+                    !userStories.some(
+                      (s) =>
+                        Array.isArray(s.views) && s.views.some((v) => v.userId === currentUserId)
+                    )
+                  }
                   onClick={() => handleStoryRingClick(userId)}
                 />
-              )
+              );
             })}
           </div>
         </ScrollArea>
       </MotionView>
-
 
       {viewingStories && (
         <StoryViewer
@@ -160,7 +147,6 @@ export default function StoriesBar({
           onStoryUpdate={onStoryUpdate}
         />
       )}
-
 
       <CreateStoryDialog
         open={showCreateDialog}
@@ -174,5 +160,5 @@ export default function StoriesBar({
         onStoryCreated={onStoryCreated}
       />
     </>
-  )
+  );
 }

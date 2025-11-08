@@ -67,4 +67,3 @@ export function isMatch(data: unknown): data is Match {
     typeof (data as Match).status === 'string'
   )
 }
-

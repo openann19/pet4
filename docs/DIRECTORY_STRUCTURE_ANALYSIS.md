@@ -86,26 +86,26 @@ The current codebase is a **single-package application** but the system prompt e
 
 ### Critical Missing Elements
 
-| Component | Expected | Current | Status |
-|-----------|----------|---------|--------|
-| **Monorepo Config** | `pnpm-workspace.yaml` | ❌ Missing | 🔴 CRITICAL |
-| **Apps Directory** | `apps/{mobile,web,admin,video-render}` | ❌ Missing | 🔴 CRITICAL |
-| **Packages Directory** | `packages/{core,ui,types,validation,analytics,design-tokens}` | ❌ Missing | 🔴 CRITICAL |
-| **Services Directory** | `services/{backend,ai-service}` | ❌ Missing | 🔴 CRITICAL |
-| **Infra Directory** | `infra/{docker,k8s,terraform,helm}` | ❌ Missing | 🔴 CRITICAL |
-| **CI Workflows** | Multiple workflows per app/service | ⚠️ Only 1 workflow | 🟡 PARTIAL |
+| Component              | Expected                                                      | Current            | Status      |
+| ---------------------- | ------------------------------------------------------------- | ------------------ | ----------- |
+| **Monorepo Config**    | `pnpm-workspace.yaml`                                         | ❌ Missing         | 🔴 CRITICAL |
+| **Apps Directory**     | `apps/{mobile,web,admin,video-render}`                        | ❌ Missing         | 🔴 CRITICAL |
+| **Packages Directory** | `packages/{core,ui,types,validation,analytics,design-tokens}` | ❌ Missing         | 🔴 CRITICAL |
+| **Services Directory** | `services/{backend,ai-service}`                               | ❌ Missing         | 🔴 CRITICAL |
+| **Infra Directory**    | `infra/{docker,k8s,terraform,helm}`                           | ❌ Missing         | 🔴 CRITICAL |
+| **CI Workflows**       | Multiple workflows per app/service                            | ⚠️ Only 1 workflow | 🟡 PARTIAL  |
 
 ### Current State Mapping
 
-| Current Location | Equivalent Monorepo Location | Migration Complexity |
-|-----------------|------------------------------|---------------------|
-| `pawfectmatch-premium-main/src/core/` | `packages/core/src/` | 🟡 Medium |
-| `pawfectmatch-premium-main/src/components/ui/` | `packages/ui/src/` | 🟡 Medium |
-| `pawfectmatch-premium-main/src/types/` | `packages/types/src/` | 🟢 Low |
-| `pawfectmatch-premium-main/src/api/` | `apps/web/src/api/` OR `packages/core/src/api/` | 🟡 Medium |
-| `pawfectmatch-premium-main/src/components/` | `apps/web/src/components/` | 🟡 Medium |
-| `pawfectmatch-premium-main/design-system/` | `packages/design-tokens/` | 🟢 Low |
-| `pawfectmatch-premium-main/.github/workflows/ci.yml` | `.github/workflows/ci-web.yml` | 🟢 Low |
+| Current Location                                     | Equivalent Monorepo Location                    | Migration Complexity |
+| ---------------------------------------------------- | ----------------------------------------------- | -------------------- |
+| `pawfectmatch-premium-main/src/core/`                | `packages/core/src/`                            | 🟡 Medium            |
+| `pawfectmatch-premium-main/src/components/ui/`       | `packages/ui/src/`                              | 🟡 Medium            |
+| `pawfectmatch-premium-main/src/types/`               | `packages/types/src/`                           | 🟢 Low               |
+| `pawfectmatch-premium-main/src/api/`                 | `apps/web/src/api/` OR `packages/core/src/api/` | 🟡 Medium            |
+| `pawfectmatch-premium-main/src/components/`          | `apps/web/src/components/`                      | 🟡 Medium            |
+| `pawfectmatch-premium-main/design-system/`           | `packages/design-tokens/`                       | 🟢 Low               |
+| `pawfectmatch-premium-main/.github/workflows/ci.yml` | `.github/workflows/ci-web.yml`                  | 🟢 Low               |
 
 ---
 
@@ -114,12 +114,14 @@ The current codebase is a **single-package application** but the system prompt e
 ### Option 1: Restructure to Monorepo (Recommended)
 
 **Pros:**
+
 - ✅ Matches system prompt expectations
 - ✅ Enables code sharing across apps
 - ✅ Proper separation of concerns
 - ✅ Scalable for multiple apps/services
 
 **Cons:**
+
 - ❌ Requires significant refactoring
 - ❌ Migration effort for existing code
 - ❌ Need to update all imports
@@ -128,6 +130,7 @@ The current codebase is a **single-package application** but the system prompt e
 **Effort:** High (2-3 days)
 
 **Steps:**
+
 1. Create `pnpm-workspace.yaml`
 2. Create directory structure (`apps/`, `packages/`, `services/`, `infra/`)
 3. Migrate code to appropriate locations
@@ -138,11 +141,13 @@ The current codebase is a **single-package application** but the system prompt e
 ### Option 2: Keep Current Structure, Document Gap
 
 **Pros:**
+
 - ✅ No migration effort
 - ✅ Current code continues working
 - ✅ Can adopt monorepo incrementally
 
 **Cons:**
+
 - ❌ Doesn't match system prompt
 - ❌ Limited code sharing
 - ❌ Harder to scale
@@ -152,17 +157,20 @@ The current codebase is a **single-package application** but the system prompt e
 ### Option 3: Hybrid Approach (Incremental Migration)
 
 **Pros:**
+
 - ✅ Incremental migration
 - ✅ Low risk
 - ✅ Can test each step
 
 **Cons:**
+
 - ❌ Temporary inconsistency
 - ❌ Need careful import management
 
 **Effort:** Medium (1-2 weeks, incremental)
 
 **Steps:**
+
 1. Create `pnpm-workspace.yaml` and base structure
 2. Migrate shared code to `packages/` first
 3. Create `apps/web/` and migrate gradually
@@ -195,6 +203,7 @@ The current codebase is a **single-package application** but the system prompt e
 ### Code Quality Gates (Current State)
 
 ✅ **Working:**
+
 - TypeScript strict mode
 - ESLint configuration
 - Vitest tests
@@ -202,6 +211,7 @@ The current codebase is a **single-package application** but the system prompt e
 - CI workflow (single app)
 
 ⚠️ **Missing for Monorepo:**
+
 - Workspace-level scripts (`pnpm -w type-check`, `pnpm -w lint`)
 - Per-app/service CI workflows
 - Shared package dependencies
@@ -243,4 +253,3 @@ After alignment (if Option 1 or 3):
 - `ARCHITECTURE.md` - Current architecture documentation
 - `docs/PROJECT_CONTEXT.md` - Project context (if exists)
 - `docs/ARCHITECTURE_OVERVIEW.md` - Architecture overview (if exists)
-

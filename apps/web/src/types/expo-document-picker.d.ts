@@ -5,33 +5,32 @@
 
 declare module 'expo-document-picker' {
   export interface DocumentPickerOptions {
-    type?: string | string[]
-    copyToCacheDirectory?: boolean
-    multiple?: boolean
+    type?: string | string[];
+    copyToCacheDirectory?: boolean;
+    multiple?: boolean;
   }
 
   export interface DocumentPickerResult {
-    type: 'success' | 'cancel'
-    uri?: string
-    name?: string
-    mimeType?: string
-    size?: number
-    file?: File
-    output?: File[] | null
+    type: 'success' | 'cancel';
+    uri?: string;
+    name?: string;
+    mimeType?: string;
+    size?: number;
+    file?: File;
+    output?: File[] | null;
   }
 
   export interface PermissionResponse {
-    status: 'granted' | 'denied' | 'undetermined'
-    granted: boolean
-    expires: 'never' | number
-    canAskAgain: boolean
+    status: 'granted' | 'denied' | 'undetermined';
+    granted: boolean;
+    expires: 'never' | number;
+    canAskAgain: boolean;
   }
 
   export async function getDocumentAsync(
     options?: DocumentPickerOptions
-  ): Promise<DocumentPickerResult>
+  ): Promise<DocumentPickerResult>;
 
-  export async function requestPermissionsAsync(): Promise<PermissionResponse>
-  export async function getPermissionsAsync(): Promise<PermissionResponse>
+  export async function requestPermissionsAsync(): Promise<PermissionResponse>;
+  export async function getPermissionsAsync(): Promise<PermissionResponse>;
 }
-

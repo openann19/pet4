@@ -2,22 +2,27 @@
  * Utility functions for handling LLM operations and errors
  */
 
-import { createLogger } from './logger'
+import { createLogger } from './logger';
 
 export interface LLMErrorInfo {
-  isBudgetLimit: boolean
-  isRateLimit: boolean
-  isNetworkError: boolean
-  userMessage: string
-  technicalMessage: string
+  isBudgetLimit: boolean;
+  isRateLimit: boolean;
+  isNetworkError: boolean;
+  userMessage: string;
+  technicalMessage: string;
 }
 
 /**
  * Parse LLM error and provide user-friendly messaging
  */
 export function parseLLMError(error: unknown): LLMErrorInfo {
-  const errorMessage = (error instanceof Error ? error.message : (typeof error === 'object' && error !== null && 'message' in error ? String(error.message) : String(error)))
-  const errorString = errorMessage.toLowerCase()
+  const errorMessage =
+    error instanceof Error
+      ? error.message
+      : typeof error === 'object' && error !== null && 'message' in error
+        ? String(error.message)
+        : String(error);
+  const errorString = errorMessage.toLowerCase();
 
   // Check for budget limit errors
   if (errorString.includes('budget limit') || errorString.includes('quota exceeded')) {
@@ -25,9 +30,10 @@ export function parseLLMError(error: unknown): LLMErrorInfo {
       isBudgetLimit: true,
       isRateLimit: false,
       isNetworkError: false,
-      userMessage: 'AI features are temporarily unavailable due to usage limits. Using fallback data instead.',
-      technicalMessage: 'LLM budget limit reached: ' + errorMessage
-    }
+      userMessage:
+        'AI features are temporarily unavailable due to usage limits. Using fallback data instead.',
+      technicalMessage: 'LLM budget limit reached: ' + errorMessage,
+    };
   }
 
   // Check for rate limit errors
@@ -37,19 +43,23 @@ export function parseLLMError(error: unknown): LLMErrorInfo {
       isRateLimit: true,
       isNetworkError: false,
       userMessage: 'AI service is temporarily busy. Please try again in a moment.',
-      technicalMessage: 'LLM rate limit hit: ' + errorMessage
-    }
+      technicalMessage: 'LLM rate limit hit: ' + errorMessage,
+    };
   }
 
   // Check for network errors
-  if (errorString.includes('network') || errorString.includes('fetch') || errorString.includes('timeout')) {
+  if (
+    errorString.includes('network') ||
+    errorString.includes('fetch') ||
+    errorString.includes('timeout')
+  ) {
     return {
       isBudgetLimit: false,
       isRateLimit: false,
       isNetworkError: true,
       userMessage: 'Unable to connect to AI service. Using fallback data instead.',
-      technicalMessage: 'LLM network error: ' + errorMessage
-    }
+      technicalMessage: 'LLM network error: ' + errorMessage,
+    };
   }
 
   // Generic error
@@ -58,8 +68,8 @@ export function parseLLMError(error: unknown): LLMErrorInfo {
     isRateLimit: false,
     isNetworkError: false,
     userMessage: 'AI service temporarily unavailable. Using fallback data instead.',
-    technicalMessage: 'LLM error: ' + errorMessage
-  }
+    technicalMessage: 'LLM error: ' + errorMessage,
+  };
 }
 
 /**
@@ -67,17 +77,19 @@ export function parseLLMError(error: unknown): LLMErrorInfo {
  */
 export async function callLLM(
   prompt: string,
-  modelName: string = 'gpt-4o',
-  jsonMode: boolean = false
+  modelName = 'gpt-4o',
+  jsonMode = false
 ): Promise<{ success: boolean; data?: string; error?: LLMErrorInfo }> {
   try {
-    const { llmService } = await import('./llm-service')
-    const result = await llmService.llm(prompt, modelName, jsonMode)
-    return { success: true, data: result }
+    const { llmService } = await import('./llm-service');
+    const result = await llmService.llm(prompt, modelName, jsonMode);
+    return { success: true, data: result };
   } catch (error) {
-    const errorInfo = parseLLMError(error)
-    const logger = createLogger('llm-utils')
-    logger.error('LLM call failed', error instanceof Error ? error : new Error(String(error)), { technicalMessage: errorInfo.technicalMessage })
-    return { success: false, error: errorInfo }
+    const errorInfo = parseLLMError(error);
+    const logger = createLogger('llm-utils');
+    logger.error('LLM call failed', error instanceof Error ? error : new Error(String(error)), {
+      technicalMessage: errorInfo.technicalMessage,
+    });
+    return { success: false, error: errorInfo };
   }
 }

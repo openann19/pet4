@@ -41,11 +41,11 @@ This runbook provides operational guidance for PawfectMatch administrators and m
 
 ### Role-Based Access
 
-| Role | Dashboard | Reports | Users | Content | Audit Log | Settings |
-|------|-----------|---------|-------|---------|-----------|----------|
-| User | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Moderator | ✅ | ✅ | ✅ (view) | ✅ | ✅ (own) | ❌ |
-| Admin | ✅ | ✅ | ✅ (full) | ✅ | ✅ (all) | ✅ |
+| Role      | Dashboard | Reports | Users     | Content | Audit Log | Settings |
+| --------- | --------- | ------- | --------- | ------- | --------- | -------- |
+| User      | ❌        | ❌      | ❌        | ❌      | ❌        | ❌       |
+| Moderator | ✅        | ✅      | ✅ (view) | ✅      | ✅ (own)  | ❌       |
+| Admin     | ✅        | ✅      | ✅ (full) | ✅      | ✅ (all)  | ✅       |
 
 ### Navigation
 
@@ -65,6 +65,7 @@ This runbook provides operational guidance for PawfectMatch administrators and m
 **Purpose**: Address user-reported content violations
 
 **Steps**:
+
 1. Navigate to **Reports** tab
 2. Filter by status: `pending`, `investigating`, `resolved`, `dismissed`
 3. Select a report to view details
@@ -89,6 +90,7 @@ This runbook provides operational guidance for PawfectMatch administrators and m
 **Purpose**: Review and approve pet profiles and media before public visibility
 
 **Steps**:
+
 1. Navigate to **Content** tab
 2. View queues:
    - **New Photos**: First-time uploads
@@ -106,6 +108,7 @@ This runbook provides operational guidance for PawfectMatch administrators and m
    - **Escalate**: Flag for admin review
 
 **Guidelines**:
+
 - Profile photos must clearly show the pet
 - No inappropriate, violent, or misleading content
 - Breeds must be accurately represented
@@ -116,6 +119,7 @@ This runbook provides operational guidance for PawfectMatch administrators and m
 **Purpose**: Manage user accounts and enforce community guidelines
 
 **Viewing Users**:
+
 1. Navigate to **Users** tab
 2. Search by email, name, or user ID
 3. View user profile and statistics:
@@ -126,12 +130,14 @@ This runbook provides operational guidance for PawfectMatch administrators and m
    - Previous moderation actions
 
 **Actions**:
+
 - **Suspend**: Temporary restriction (specify duration and reason)
 - **Ban**: Permanent account closure
 - **Reactivate**: Restore suspended account
 - **View History**: See all moderation actions
 
 **Suspension Durations**:
+
 - First offense: 7 days
 - Second offense: 30 days
 - Third offense: Permanent ban
@@ -141,6 +147,7 @@ This runbook provides operational guidance for PawfectMatch administrators and m
 **Purpose**: Control feature rollouts and emergency toggles
 
 **Steps**:
+
 1. Navigate to **Settings** → **Feature Flags**
 2. View all flags with current status
 3. Toggle features on/off
@@ -149,6 +156,7 @@ This runbook provides operational guidance for PawfectMatch administrators and m
 6. Changes take effect immediately
 
 **Common Flags**:
+
 - `stories-enabled`: Instagram-style stories
 - `voice-messages`: Voice messaging in chat
 - `video-chat`: Real-time video calls
@@ -157,6 +165,7 @@ This runbook provides operational guidance for PawfectMatch administrators and m
 
 **Emergency Kill Switches**:
 If a feature is causing issues:
+
 1. Set flag to `disabled`
 2. Clear rollout percentage
 3. Monitor error rates
@@ -168,12 +177,12 @@ If a feature is causing issues:
 
 ### Incident Severity Levels
 
-| Level | Description | Response Time | Escalation |
-|-------|-------------|---------------|------------|
-| P0 - Critical | Complete service outage | Immediate | All hands on deck |
-| P1 - High | Major feature down, data loss | 15 minutes | On-call engineer + manager |
-| P2 - Medium | Non-critical feature degraded | 1 hour | On-call engineer |
-| P3 - Low | Minor issues, cosmetic bugs | Next business day | Standard ticket |
+| Level         | Description                   | Response Time     | Escalation                 |
+| ------------- | ----------------------------- | ----------------- | -------------------------- |
+| P0 - Critical | Complete service outage       | Immediate         | All hands on deck          |
+| P1 - High     | Major feature down, data loss | 15 minutes        | On-call engineer + manager |
+| P2 - Medium   | Non-critical feature degraded | 1 hour            | On-call engineer           |
+| P3 - Low      | Minor issues, cosmetic bugs   | Next business day | Standard ticket            |
 
 ### Response Workflow
 
@@ -205,6 +214,7 @@ If a feature is causing issues:
 ### Common Incidents
 
 #### Service Outage
+
 ```
 Symptoms: 5xx errors, unable to load app
 Check: Server status, database connectivity
@@ -213,6 +223,7 @@ Contact: Infrastructure team
 ```
 
 #### High Error Rate
+
 ```
 Symptoms: Spike in error dashboard
 Check: Recent code changes, external service status
@@ -221,6 +232,7 @@ Contact: Engineering lead
 ```
 
 #### Data Integrity Issue
+
 ```
 Symptoms: Users report missing or incorrect data
 Check: Database queries, recent migrations
@@ -229,6 +241,7 @@ Contact: DBA, Engineering lead
 ```
 
 #### Security Breach
+
 ```
 Symptoms: Suspicious activity, unauthorized access
 Check: Audit logs, authentication logs
@@ -243,31 +256,34 @@ Contact: Security team, Legal team
 ### Key Metrics
 
 **System Health**:
+
 - API response time (P50, P95, P99)
 - Error rate (target: < 0.1%)
 - WebSocket connection stability
 - Database query performance
 
 **User Activity**:
+
 - Daily Active Users (DAU)
 - Sign-ups per day
 - Match rate
 - Message delivery latency
 
 **Content**:
+
 - Reports pending (SLA: < 24h)
 - Stories posted per day
 - Media upload success rate
 
 ### Alert Thresholds
 
-| Metric | Warning | Critical |
-|--------|---------|----------|
-| Error rate | > 0.5% | > 1% |
-| API P95 latency | > 500ms | > 1000ms |
-| Memory usage | > 80% | > 95% |
-| Pending reports | > 100 | > 500 |
-| Failed logins | > 10/min | > 50/min |
+| Metric          | Warning  | Critical |
+| --------------- | -------- | -------- |
+| Error rate      | > 0.5%   | > 1%     |
+| API P95 latency | > 500ms  | > 1000ms |
+| Memory usage    | > 80%    | > 95%    |
+| Pending reports | > 100    | > 500    |
+| Failed logins   | > 10/min | > 50/min |
 
 ### Dashboard Access
 
@@ -293,6 +309,7 @@ Contact: Security team, Legal team
 ### Database Emergency
 
 **Backup Restoration**:
+
 ```bash
 # Connect to backup system
 # Restore from most recent backup
@@ -301,6 +318,7 @@ Contact: Security team, Legal team
 ```
 
 **Data Corruption**:
+
 ```bash
 # Stop writes immediately
 # Snapshot current state
@@ -376,29 +394,32 @@ Notes:
 ### Useful Commands
 
 **Check service status**:
+
 ```bash
 curl https://api.pawfectmatch.com/health
 ```
 
 **View recent errors**:
+
 ```bash
 # Via logging service
 # Filter by time range and error level
 ```
 
 **Feature flag status**:
+
 ```bash
 # Via Admin Console → Settings → Feature Flags
 ```
 
 ### Contact Information
 
-| Role | Name | Email | Phone |
-|------|------|-------|-------|
-| Engineering Lead | TBD | eng@pawfectmatch.com | TBD |
-| DevOps Lead | TBD | devops@pawfectmatch.com | TBD |
-| Security Team | TBD | security@pawfectmatch.com | TBD |
-| Product Manager | TBD | product@pawfectmatch.com | TBD |
+| Role             | Name | Email                     | Phone |
+| ---------------- | ---- | ------------------------- | ----- |
+| Engineering Lead | TBD  | eng@pawfectmatch.com      | TBD   |
+| DevOps Lead      | TBD  | devops@pawfectmatch.com   | TBD   |
+| Security Team    | TBD  | security@pawfectmatch.com | TBD   |
+| Product Manager  | TBD  | product@pawfectmatch.com  | TBD   |
 
 ### External Services
 

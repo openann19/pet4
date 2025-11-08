@@ -1,121 +1,121 @@
 /**
  * Payments API Service
- * 
+ *
  * Handles entitlements, subscriptions, consumables, and billing through backend API.
  */
 
-import type { UsageCounter } from '@/core/domain/business'
-import { APIClient } from '@/lib/api-client'
-import { ENDPOINTS } from '@/lib/endpoints'
-import { createLogger } from '@/lib/logger'
+import type { UsageCounter } from '@/core/domain/business';
+import { APIClient } from '@/lib/api-client';
+import { ENDPOINTS } from '@/lib/endpoints';
+import { createLogger } from '@/lib/logger';
 import type {
-    AuditLogEntry,
-    BillingIssue,
-    ConsumableKey,
-    PlanTier,
-    PlatformStore,
-    RevenueMetrics,
-    Subscription,
-    UserEntitlements,
-} from '@/lib/payments-types'
+  AuditLogEntry,
+  BillingIssue,
+  ConsumableKey,
+  PlanTier,
+  PlatformStore,
+  RevenueMetrics,
+  Subscription,
+  UserEntitlements,
+} from '@/lib/payments-types';
 
-const logger = createLogger('PaymentsApi')
+const logger = createLogger('PaymentsApi');
 
 export interface GetEntitlementsResponse {
-  entitlements: UserEntitlements
+  entitlements: UserEntitlements;
 }
 
 export interface UpdateEntitlementsRequest {
-  planTier: PlanTier
-  reason?: string
-  actorUserId?: string
+  planTier: PlanTier;
+  reason?: string;
+  actorUserId?: string;
 }
 
 export interface UpdateEntitlementsResponse {
-  entitlements: UserEntitlements
+  entitlements: UserEntitlements;
 }
 
 export interface GetSubscriptionResponse {
-  subscription: Subscription | null
+  subscription: Subscription | null;
 }
 
 export interface CreateSubscriptionRequest {
-  planId: string
-  store: PlatformStore
-  metadata?: Record<string, unknown>
+  planId: string;
+  store: PlatformStore;
+  metadata?: Record<string, unknown>;
 }
 
 export interface CreateSubscriptionResponse {
-  subscription: Subscription
+  subscription: Subscription;
 }
 
 export interface UpdateSubscriptionRequest {
-  status?: Subscription['status']
-  cancelAtPeriodEnd?: boolean
+  status?: Subscription['status'];
+  cancelAtPeriodEnd?: boolean;
 }
 
 export interface UpdateSubscriptionResponse {
-  subscription: Subscription
+  subscription: Subscription;
 }
 
 export interface AddConsumableRequest {
-  consumableKey: ConsumableKey
-  quantity: number
-  actorUserId?: string
+  consumableKey: ConsumableKey;
+  quantity: number;
+  actorUserId?: string;
 }
 
 export interface AddConsumableResponse {
-  entitlements: UserEntitlements
+  entitlements: UserEntitlements;
 }
 
 export interface RedeemConsumableRequest {
-  consumableKey: ConsumableKey
-  idempotencyKey: string
+  consumableKey: ConsumableKey;
+  idempotencyKey: string;
 }
 
 export interface RedeemConsumableResponse {
-  success: boolean
-  remaining: number
+  success: boolean;
+  remaining: number;
 }
 
 export interface GetBillingIssueResponse {
-  issue: BillingIssue | null
+  issue: BillingIssue | null;
 }
 
 export interface CreateBillingIssueRequest {
-  subscriptionId: string
-  type: 'payment_failed' | 'card_expired' | 'insufficient_funds'
+  subscriptionId: string;
+  type: 'payment_failed' | 'card_expired' | 'insufficient_funds';
 }
 
 export interface CreateBillingIssueResponse {
-  issue: BillingIssue
+  issue: BillingIssue;
 }
 
 export interface GetAuditLogsResponse {
-  logs: AuditLogEntry[]
+  logs: AuditLogEntry[];
 }
 
 export interface GetAllSubscriptionsResponse {
-  subscriptions: Subscription[]
+  subscriptions: Subscription[];
 }
 
 export interface GetRevenueMetricsResponse {
-  metrics: RevenueMetrics
+  metrics: RevenueMetrics;
 }
 
 export interface GetUsageCounterResponse {
-  usageCounter: UsageCounter
+  usageCounter: UsageCounter;
 }
 
 export interface IncrementUsageRequest {
-  type: 'swipe' | 'super_like' | 'boost'
-  operationId?: string
+  type: 'swipe' | 'super_like' | 'boost';
+  operationId?: string;
 }
 
 export interface IncrementUsageResponse {
-  success: boolean
-  remaining?: number
-  limit?: number
+  success: boolean;
+  remaining?: number;
+  limit?: number;
 }
 
 class PaymentsApiImpl {
@@ -127,12 +127,12 @@ class PaymentsApiImpl {
     try {
       const response = await APIClient.get<GetEntitlementsResponse>(
         `${ENDPOINTS.PAYMENTS.ENTITLEMENTS}?userId=${userId}`
-      )
-      return response.data.entitlements
+      );
+      return response.data.entitlements;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get user entitlements', err, { userId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get user entitlements', err, { userId });
+      throw err;
     }
   }
 
@@ -150,18 +150,18 @@ class PaymentsApiImpl {
       const request: UpdateEntitlementsRequest = {
         planTier,
         ...(reason !== undefined && { reason }),
-        ...(actorUserId !== undefined && { actorUserId })
-      }
+        ...(actorUserId !== undefined && { actorUserId }),
+      };
 
       const response = await APIClient.put<UpdateEntitlementsResponse>(
         `${ENDPOINTS.PAYMENTS.UPDATE_ENTITLEMENTS}?userId=${userId}`,
         request
-      )
-      return response.data.entitlements
+      );
+      return response.data.entitlements;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to update entitlements', err, { userId, planTier })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to update entitlements', err, { userId, planTier });
+      throw err;
     }
   }
 
@@ -173,12 +173,12 @@ class PaymentsApiImpl {
     try {
       const response = await APIClient.get<GetSubscriptionResponse>(
         `${ENDPOINTS.PAYMENTS.SUBSCRIPTION}?userId=${userId}`
-      )
-      return response.data.subscription
+      );
+      return response.data.subscription;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get user subscription', err, { userId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get user subscription', err, { userId });
+      throw err;
     }
   }
 
@@ -196,18 +196,18 @@ class PaymentsApiImpl {
       const request: CreateSubscriptionRequest = {
         planId,
         store,
-        metadata
-      }
+        metadata,
+      };
 
       const response = await APIClient.post<CreateSubscriptionResponse>(
         `${ENDPOINTS.PAYMENTS.CREATE_SUBSCRIPTION}?userId=${userId}`,
         request
-      )
-      return response.data.subscription
+      );
+      return response.data.subscription;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to create subscription', err, { userId, planId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to create subscription', err, { userId, planId });
+      throw err;
     }
   }
 
@@ -223,12 +223,12 @@ class PaymentsApiImpl {
       const response = await APIClient.patch<UpdateSubscriptionResponse>(
         ENDPOINTS.PAYMENTS.UPDATE_SUBSCRIPTION(subscriptionId),
         data
-      )
-      return response.data.subscription
+      );
+      return response.data.subscription;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to update subscription', err, { subscriptionId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to update subscription', err, { subscriptionId });
+      throw err;
     }
   }
 
@@ -246,18 +246,18 @@ class PaymentsApiImpl {
       const request: AddConsumableRequest = {
         consumableKey,
         quantity,
-        ...(actorUserId !== undefined && { actorUserId })
-      }
+        ...(actorUserId !== undefined && { actorUserId }),
+      };
 
       const response = await APIClient.post<AddConsumableResponse>(
         `${ENDPOINTS.PAYMENTS.CONSUMABLES}?userId=${userId}`,
         request
-      )
-      return response.data.entitlements
+      );
+      return response.data.entitlements;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to add consumable', err, { userId, consumableKey })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to add consumable', err, { userId, consumableKey });
+      throw err;
     }
   }
 
@@ -273,18 +273,18 @@ class PaymentsApiImpl {
     try {
       const request: RedeemConsumableRequest = {
         consumableKey,
-        idempotencyKey
-      }
+        idempotencyKey,
+      };
 
       const response = await APIClient.post<RedeemConsumableResponse>(
         `${ENDPOINTS.PAYMENTS.CONSUMABLES}/redeem?userId=${userId}`,
         request
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to redeem consumable', err, { userId, consumableKey })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to redeem consumable', err, { userId, consumableKey });
+      throw err;
     }
   }
 
@@ -296,12 +296,12 @@ class PaymentsApiImpl {
     try {
       const response = await APIClient.get<GetBillingIssueResponse>(
         `/payments/billing-issue?userId=${userId}`
-      )
-      return response.data.issue
+      );
+      return response.data.issue;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get billing issue', err, { userId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get billing issue', err, { userId });
+      throw err;
     }
   }
 
@@ -317,18 +317,18 @@ class PaymentsApiImpl {
     try {
       const request: CreateBillingIssueRequest = {
         subscriptionId,
-        type
-      }
+        type,
+      };
 
       const response = await APIClient.post<CreateBillingIssueResponse>(
         `/payments/billing-issue?userId=${userId}`,
         request
-      )
-      return response.data.issue
+      );
+      return response.data.issue;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to create billing issue', err, { userId, subscriptionId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to create billing issue', err, { userId, subscriptionId });
+      throw err;
     }
   }
 
@@ -338,11 +338,11 @@ class PaymentsApiImpl {
    */
   async resolveBillingIssue(issueId: string): Promise<void> {
     try {
-      await APIClient.post(`/payments/billing-issue/${issueId}/resolve`)
+      await APIClient.post(`/payments/billing-issue/${issueId}/resolve`);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to resolve billing issue', err, { issueId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to resolve billing issue', err, { issueId });
+      throw err;
     }
   }
 
@@ -350,16 +350,16 @@ class PaymentsApiImpl {
    * GET /payments/audit-logs
    * Get audit logs
    */
-  async getAuditLogs(limit: number = 50): Promise<AuditLogEntry[]> {
+  async getAuditLogs(limit = 50): Promise<AuditLogEntry[]> {
     try {
       const response = await APIClient.get<GetAuditLogsResponse>(
         `/payments/audit-logs?limit=${limit}`
-      )
-      return response.data.logs
+      );
+      return response.data.logs;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get audit logs', err)
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get audit logs', err);
+      throw err;
     }
   }
 
@@ -371,12 +371,12 @@ class PaymentsApiImpl {
     try {
       const response = await APIClient.get<GetAllSubscriptionsResponse>(
         '/payments/subscriptions/all'
-      )
-      return response.data.subscriptions
+      );
+      return response.data.subscriptions;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get all subscriptions', err)
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get all subscriptions', err);
+      throw err;
     }
   }
 
@@ -386,14 +386,12 @@ class PaymentsApiImpl {
    */
   async getRevenueMetrics(): Promise<RevenueMetrics> {
     try {
-      const response = await APIClient.get<GetRevenueMetricsResponse>(
-        '/payments/revenue-metrics'
-      )
-      return response.data.metrics
+      const response = await APIClient.get<GetRevenueMetricsResponse>('/payments/revenue-metrics');
+      return response.data.metrics;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get revenue metrics', err)
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get revenue metrics', err);
+      throw err;
     }
   }
 
@@ -403,20 +401,20 @@ class PaymentsApiImpl {
    */
   async getUsageCounter(userId: string, date?: string): Promise<UsageCounter> {
     try {
-      const queryParams = new URLSearchParams()
-      queryParams.append('userId', userId)
+      const queryParams = new URLSearchParams();
+      queryParams.append('userId', userId);
       if (date) {
-        queryParams.append('date', date)
+        queryParams.append('date', date);
       }
 
       const response = await APIClient.get<GetUsageCounterResponse>(
         `/payments/usage-counter?${queryParams.toString()}`
-      )
-      return response.data.usageCounter
+      );
+      return response.data.usageCounter;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get usage counter', err, { userId, date })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get usage counter', err, { userId, date });
+      throw err;
     }
   }
 
@@ -432,21 +430,20 @@ class PaymentsApiImpl {
     try {
       const request: IncrementUsageRequest = {
         type,
-        ...(operationId ? { operationId } : {})
-      }
+        ...(operationId ? { operationId } : {}),
+      };
 
       const response = await APIClient.post<IncrementUsageResponse>(
         `/payments/usage-counter/increment?userId=${userId}`,
         request
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to increment usage', err, { userId, type, operationId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to increment usage', err, { userId, type, operationId });
+      throw err;
     }
   }
 }
 
-export const paymentsApi = new PaymentsApiImpl()
-
+export const paymentsApi = new PaymentsApiImpl();

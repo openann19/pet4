@@ -1,6 +1,6 @@
 /**
  * Media Stream Manager
- * 
+ *
  * Manages media streams for WebRTC:
  * - getUserMedia for camera/microphone
  * - getDisplayMedia for screen sharing
@@ -8,14 +8,26 @@
  * - Track management
  */
 
-import { createLogger } from '@/lib/logger'
-import type { MediaStream, MediaStreamConstraints } from './webrtc-types'
+import { createLogger } from '@/lib/logger';
+import type {
+  DisplayMediaStreamOptions,
+  MediaStream,
+  MediaStreamConstraints,
+} from './webrtc-types';
 
-const logger = createLogger('MediaStreamManager')
+const logger = createLogger('MediaStreamManager');
+
+const normalizeError = (value: unknown): Error =>
+  value instanceof Error ? value : new Error(String(value));
 
 export interface MediaStreamOptions {
-  audio?: boolean | MediaTrackConstraints
-  video?: boolean | MediaTrackConstraints
+  audio?: MediaStreamConstraints['audio'];
+  video?: MediaStreamConstraints['video'];
+}
+
+export interface DisplayMediaOptions {
+  video?: DisplayMediaStreamOptions['video'];
+  audio?: DisplayMediaStreamOptions['audio'];
 }
 
 export class MediaStreamManager {
@@ -24,47 +36,54 @@ export class MediaStreamManager {
    */
   async getUserMedia(options: MediaStreamOptions = {}): Promise<MediaStream> {
     try {
-      const constraints: MediaStreamConstraints = {
-        audio: options.audio ?? true,
-        video: options.video ?? true
+      const mediaDevices = navigator.mediaDevices;
+      if (!mediaDevices?.getUserMedia) {
+        throw new Error('MediaDevices.getUserMedia is not available in this environment');
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
+      const constraints: MediaStreamConstraints = {
+        audio: options.audio ?? true,
+        video: options.video ?? true,
+      };
+
+      const stream = await mediaDevices.getUserMedia(constraints);
       logger.info('Got user media', {
         audioTracks: stream.getAudioTracks().length,
-        videoTracks: stream.getVideoTracks().length
-      })
-      return stream
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get user media', err, { options })
-      throw err
+        videoTracks: stream.getVideoTracks().length,
+      });
+      return stream;
+    } catch (error: unknown) {
+      const err = normalizeError(error);
+      logger.error('Failed to get user media', err);
+      throw err;
     }
   }
 
   /**
    * Get display media (screen sharing)
    */
-  async getDisplayMedia(options: {
-    video?: boolean | MediaTrackConstraints
-    audio?: boolean | MediaTrackConstraints
-  } = {}): Promise<MediaStream> {
+  async getDisplayMedia(options: DisplayMediaOptions = {}): Promise<MediaStream> {
     try {
-      const constraints: MediaStreamConstraints = {
-        video: options.video ?? true,
-        audio: options.audio ?? false
+      const mediaDevices = navigator.mediaDevices;
+      if (!mediaDevices?.getDisplayMedia) {
+        throw new Error('MediaDevices.getDisplayMedia is not available in this environment');
       }
 
-      const stream = await navigator.mediaDevices.getDisplayMedia(constraints)
+      const constraints: DisplayMediaStreamOptions = {
+        video: options.video ?? true,
+        audio: options.audio ?? false,
+      };
+
+      const stream = await mediaDevices.getDisplayMedia(constraints);
       logger.info('Got display media', {
         audioTracks: stream.getAudioTracks().length,
-        videoTracks: stream.getVideoTracks().length
-      })
-      return stream
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get display media', err, { options })
-      throw err
+        videoTracks: stream.getVideoTracks().length,
+      });
+      return stream;
+    } catch (error: unknown) {
+      const err = normalizeError(error);
+      logger.error('Failed to get display media', err);
+      throw err;
     }
   }
 
@@ -73,12 +92,12 @@ export class MediaStreamManager {
    */
   stopStream(stream: MediaStream | null): void {
     if (!stream) {
-      return
+      return;
     }
 
     for (const track of stream.getTracks()) {
-      track.stop()
-      logger.debug('Stopped track', { kind: track.kind, trackId: track.id })
+      track.stop();
+      logger.debug('Stopped track', { kind: track.kind, trackId: track.id });
     }
   }
 
@@ -87,8 +106,8 @@ export class MediaStreamManager {
    */
   setAudioEnabled(stream: MediaStream, enabled: boolean): void {
     for (const track of stream.getAudioTracks()) {
-      track.enabled = enabled
-      logger.debug('Audio track enabled state changed', { enabled, trackId: track.id })
+      track.enabled = enabled;
+      logger.debug('Audio track enabled state changed', { enabled, trackId: track.id });
     }
   }
 
@@ -97,8 +116,8 @@ export class MediaStreamManager {
    */
   setVideoEnabled(stream: MediaStream, enabled: boolean): void {
     for (const track of stream.getVideoTracks()) {
-      track.enabled = enabled
-      logger.debug('Video track enabled state changed', { enabled, trackId: track.id })
+      track.enabled = enabled;
+      logger.debug('Video track enabled state changed', { enabled, trackId: track.id });
     }
   }
 
@@ -107,10 +126,10 @@ export class MediaStreamManager {
    */
   async hasCamera(): Promise<boolean> {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices()
-      return devices.some(device => device.kind === 'videoinput')
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      return devices.some((device) => device.kind === 'videoinput');
     } catch {
-      return false
+      return false;
     }
   }
 
@@ -119,12 +138,12 @@ export class MediaStreamManager {
    */
   async hasMicrophone(): Promise<boolean> {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices()
-      return devices.some(device => device.kind === 'audioinput')
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      return devices.some((device) => device.kind === 'audioinput');
     } catch {
-      return false
+      return false;
     }
   }
 }
 
-export const mediaStreamManager = new MediaStreamManager()
+export const mediaStreamManager = new MediaStreamManager();

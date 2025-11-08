@@ -64,6 +64,7 @@ Migrating 101 files from framer-motion to React Native Reanimated for better per
 ## Migration Patterns
 
 ### Pattern 1: Entry Animations
+
 ```typescript
 // Before (framer-motion)
 <motion.div
@@ -81,6 +82,7 @@ const animation = useEntryAnimation({ initialY: 20, delay: 0 })
 ```
 
 ### Pattern 2: Hover/Tap Interactions
+
 ```typescript
 // Before (framer-motion)
 <motion.button
@@ -104,6 +106,7 @@ const hover = useHoverAnimation({ scale: 1.02 })
 ```
 
 ### Pattern 3: Conditional Rendering (AnimatePresence)
+
 ```typescript
 // Before (framer-motion)
 <AnimatePresence>
@@ -131,6 +134,7 @@ const hover = useHoverAnimation({ scale: 1.02 })
 ## Remaining Files (97 files)
 
 ### Priority 1: Critical User-Facing Components
+
 - [ ] `apps/web/src/components/community/PostComposer.tsx` (767 lines)
 - [ ] `apps/web/src/components/chat/WebBubbleWrapper.tsx`
 - [ ] `apps/web/src/components/views/MatchesView.tsx`
@@ -139,10 +143,12 @@ const hover = useHoverAnimation({ scale: 1.02 })
 - [ ] `apps/web/src/components/views/NotificationsView.tsx`
 
 ### Priority 2: Enhanced Components
+
 - [ ] `apps/web/src/components/enhanced/EnhancedCarousel.tsx` (already partially migrated)
 - [ ] `apps/web/src/components/enhanced/DetailedPetAnalytics.tsx` (no framer-motion import found)
 
 ### Priority 3: Admin Components
+
 - [ ] `apps/web/src/components/admin/DashboardView.tsx`
 - [ ] `apps/web/src/components/admin/KYCManagement.tsx`
 - [ ] `apps/web/src/components/admin/ContentView.tsx`
@@ -150,6 +156,7 @@ const hover = useHoverAnimation({ scale: 1.02 })
 - [ ] `apps/web/src/components/admin/ContentModerationQueue.tsx`
 
 ### Priority 4: Stories & Playdate Features
+
 - [ ] `apps/web/src/components/stories/StoryViewer.tsx`
 - [ ] `apps/web/src/components/stories/StoryRing.tsx`
 - [ ] `apps/web/src/components/stories/StoriesBar.tsx`
@@ -157,6 +164,7 @@ const hover = useHoverAnimation({ scale: 1.02 })
 - [ ] `apps/web/src/components/playdate/PlaydateMap.tsx`
 
 ### Priority 5: Other Components
+
 - [ ] All remaining view components
 - [ ] Form components
 - [ ] UI components
@@ -165,6 +173,7 @@ const hover = useHoverAnimation({ scale: 1.02 })
 ## Mobile Parity Checklist
 
 For each migrated component, ensure:
+
 - [ ] Web version uses Reanimated
 - [ ] Mobile version exists (`.native.tsx`)
 - [ ] Mobile version uses Reanimated (not framer-motion)
@@ -184,4 +193,3 @@ For each migrated component, ensure:
 - Use helper hooks (`useEntryAnimation`, `useHoverAnimation`) for consistency
 - Extract complex animations into separate components
 - Test on both web and mobile after migration
-

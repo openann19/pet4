@@ -1,4 +1,11 @@
-import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, type SharedValue } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  Easing,
+  type SharedValue,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
@@ -26,7 +33,7 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
     duration = DEFAULT_DURATION,
     delay = DEFAULT_DELAY,
     shimmerWidth = DEFAULT_SHIMMER_WIDTH,
-    enabled = true
+    enabled = true,
   } = options
 
   const translateX = useSharedValue(-shimmerWidth)
@@ -35,7 +42,7 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: translateX.value }],
-      opacity: opacity.value
+      opacity: opacity.value,
     }
   }) as AnimatedStyle
 
@@ -43,7 +50,7 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
     translateX.value = withRepeat(
       withTiming(shimmerWidth, {
         duration,
-        easing: Easing.linear
+        easing: Easing.linear,
       }),
       -1,
       false
@@ -51,7 +58,7 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
     opacity.value = withRepeat(
       withTiming(0.3, {
         duration: duration / 2,
-        easing: Easing.inOut(Easing.ease)
+        easing: Easing.inOut(Easing.ease),
       }),
       -1,
       true
@@ -74,7 +81,7 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
       }
     } else {
       stop()
-      return undefined
+      return
     }
   }, [enabled, delay, duration, shimmerWidth])
 
@@ -83,6 +90,6 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
     opacity,
     animatedStyle,
     start,
-    stop
+    stop,
   }
 }

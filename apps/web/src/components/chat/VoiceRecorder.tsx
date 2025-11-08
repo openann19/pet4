@@ -1,190 +1,193 @@
-import { useState, useEffect, useRef } from 'react'
-import { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence } from 'react-native-reanimated'
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { Microphone, X, Check } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { toast } from 'sonner'
+import { useState, useEffect, useRef } from 'react';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+} from 'react-native-reanimated';
+import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { Microphone, X, Check } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { toast } from 'sonner';
 
 interface VoiceRecorderProps {
-  onRecorded: (audioBlob: Blob, duration: number, waveform: number[]) => void
-  onCancel: () => void
-  maxDuration?: number
+  onRecorded: (audioBlob: Blob, duration: number, waveform: number[]) => void;
+  onCancel: () => void;
+  maxDuration?: number;
 }
 
-export default function VoiceRecorder({ 
-  onRecorded, 
+export default function VoiceRecorder({
+  onRecorded,
   onCancel,
-  maxDuration = 120 
+  maxDuration = 120,
 }: VoiceRecorderProps) {
-  const [duration, setDuration] = useState(0)
-  const [waveform, setWaveform] = useState<number[]>([])
-  
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const audioChunksRef = useRef<Blob[]>([])
-  const animationFrameRef = useRef<number | undefined>(undefined)
-  const audioContextRef = useRef<AudioContext | undefined>(undefined)
-  const analyserRef = useRef<AnalyserNode | undefined>(undefined)
-  const timerRef = useRef<number | undefined>(undefined)
+  const [duration, setDuration] = useState(0);
+  const [waveform, setWaveform] = useState<number[]>([]);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const animationFrameRef = useRef<number | undefined>(undefined);
+  const audioContextRef = useRef<AudioContext | undefined>(undefined);
+  const analyserRef = useRef<AnalyserNode | undefined>(undefined);
+  const timerRef = useRef<number | undefined>(undefined);
 
   // Animation values
-  const containerOpacity = useSharedValue(0)
-  const containerScale = useSharedValue(0.9)
-  const micScale = useSharedValue(1)
+  const containerOpacity = useSharedValue(0);
+  const containerScale = useSharedValue(0.9);
+  const micScale = useSharedValue(1);
 
   useEffect(() => {
-    startRecording()
-    
+    startRecording();
+
     // Animate container in
-    containerOpacity.value = withTiming(1, { duration: 300 })
-    containerScale.value = withTiming(1, { duration: 300 })
-    
+    containerOpacity.value = withTiming(1, { duration: 300 });
+    containerScale.value = withTiming(1, { duration: 300 });
+
     // Animate microphone icon
     micScale.value = withRepeat(
-      withSequence(
-        withTiming(1.2, { duration: 750 }),
-        withTiming(1, { duration: 750 })
-      ),
+      withSequence(withTiming(1.2, { duration: 750 }), withTiming(1, { duration: 750 })),
       -1,
       true
-    )
-    
+    );
+
     return () => {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop()
-        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop())
+        mediaRecorderRef.current.stop();
+        mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
       }
       if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
+        cancelAnimationFrame(animationFrameRef.current);
       }
       if (timerRef.current) {
-        clearInterval(timerRef.current)
+        clearInterval(timerRef.current);
       }
       if (audioContextRef.current) {
-        audioContextRef.current.close()
+        audioContextRef.current.close();
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      
-      const mediaRecorder = new MediaRecorder(stream)
-      mediaRecorderRef.current = mediaRecorder
-      audioChunksRef.current = []
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      const audioContext = new AudioContext()
-      const source = audioContext.createMediaStreamSource(stream)
-      const analyser = audioContext.createAnalyser()
-      analyser.fftSize = 256
-      source.connect(analyser)
-      
-      audioContextRef.current = audioContext
-      analyserRef.current = analyser
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      const audioContext = new AudioContext();
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
 
       mediaRecorder.addEventListener('dataavailable', (event) => {
-        audioChunksRef.current.push(event.data)
-      })
+        audioChunksRef.current.push(event.data);
+      });
 
-      mediaRecorder.start()
-      visualize()
+      mediaRecorder.start();
+      visualize();
 
       timerRef.current = window.setInterval(() => {
-        setDuration(prev => {
+        setDuration((prev) => {
           if (prev >= maxDuration) {
-            handleStopAndSend()
-            return prev
+            handleStopAndSend();
+            return prev;
           }
-          return prev + 1
-        })
-      }, 1000)
-
+          return prev + 1;
+        });
+      }, 1000);
     } catch {
-      toast.error('Unable to access microphone')
-      onCancel()
+      toast.error('Unable to access microphone');
+      onCancel();
     }
-  }
+  };
 
   const visualize = () => {
-    if (!analyserRef.current) return
+    if (!analyserRef.current) return;
 
-    const bufferLength = analyserRef.current.frequencyBinCount
-    const dataArray = new Uint8Array(bufferLength)
-    
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
     const updateWaveform = () => {
-      if (!analyserRef.current) return
-      
-      analyserRef.current.getByteFrequencyData(dataArray)
-      
-      const average = dataArray.reduce((a, b) => a + b) / bufferLength
-      const normalized = Math.min(average / 128, 1)
-      
-      setWaveform(prev => {
-        const newWaveform = [...prev, normalized]
-        return newWaveform.slice(-50)
-      })
+      if (!analyserRef.current) return;
 
-      animationFrameRef.current = requestAnimationFrame(updateWaveform)
-    }
+      analyserRef.current.getByteFrequencyData(dataArray);
 
-    updateWaveform()
-  }
+      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+      const normalized = Math.min(average / 128, 1);
+
+      setWaveform((prev) => {
+        const newWaveform = [...prev, normalized];
+        return newWaveform.slice(-50);
+      });
+
+      animationFrameRef.current = requestAnimationFrame(updateWaveform);
+    };
+
+    updateWaveform();
+  };
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop()
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop())
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
     }
     if (timerRef.current) {
-      clearInterval(timerRef.current)
+      clearInterval(timerRef.current);
     }
-  }
+  };
 
   const handleStopAndSend = () => {
-    stopRecording()
+    stopRecording();
 
     if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.addEventListener('stop', () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
-        onRecorded(audioBlob, duration, waveform)
-      }, { once: true })
+      mediaRecorderRef.current.addEventListener(
+        'stop',
+        () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+          onRecorded(audioBlob, duration, waveform);
+        },
+        { once: true }
+      );
     }
-  }
+  };
 
   const handleCancel = () => {
-    stopRecording()
-    onCancel()
-  }
+    stopRecording();
+    onCancel();
+  };
 
   const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const containerStyle = useAnimatedStyle(() => ({
     opacity: containerOpacity.value,
     transform: [{ scale: containerScale.value }],
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const micStyle = useAnimatedStyle(() => ({
     transform: [{ scale: micScale.value }],
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
-  const containerStyleValue = useAnimatedStyleValue(containerStyle)
-  const micStyleValue = useAnimatedStyleValue(micStyle)
+  const containerStyleValue = useAnimatedStyleValue(containerStyle);
+  const micStyleValue = useAnimatedStyleValue(micStyle);
 
   return (
     <div
       style={containerStyleValue}
       className="flex-1 flex items-center gap-3 glass-effect rounded-2xl p-3"
     >
-      <div
-        style={micStyleValue}
-        className="shrink-0"
-      >
+      <div style={micStyleValue} className="shrink-0">
         <Microphone size={24} weight="fill" className="text-red-500" />
       </div>
 
@@ -198,7 +201,7 @@ export default function VoiceRecorder({
             </span>
           )}
         </div>
-        
+
         <div className="flex items-center gap-0.5 h-6">
           {waveform.map((value, idx) => (
             <WaveformBar key={idx} value={value} />
@@ -206,12 +209,7 @@ export default function VoiceRecorder({
         </div>
       </div>
 
-      <Button
-        size="icon"
-        variant="ghost"
-        onClick={handleCancel}
-        className="shrink-0"
-      >
+      <Button size="icon" variant="ghost" onClick={handleCancel} className="shrink-0">
         <X size={20} />
       </Button>
 
@@ -223,26 +221,23 @@ export default function VoiceRecorder({
         <Check size={20} weight="bold" />
       </Button>
     </div>
-  )
+  );
 }
 
 function WaveformBar({ value }: { value: number }) {
-  const height = useSharedValue(0)
+  const height = useSharedValue(0);
 
   useEffect(() => {
-    height.value = withTiming(value * 100, { duration: 100 })
-  }, [value, height])
+    height.value = withTiming(value * 100, { duration: 100 });
+  }, [value, height]);
 
   const barStyle = useAnimatedStyle(() => ({
     height: `${height.value}%`,
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   return (
-    <AnimatedView
-      style={barStyle}
-      className="flex-1 bg-primary rounded-full"
-    >
+    <AnimatedView style={barStyle} className="flex-1 bg-primary rounded-full">
       <div />
     </AnimatedView>
-  )
+  );
 }

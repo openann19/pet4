@@ -12,17 +12,23 @@ import type { Pet } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-export default function PetDetailScreen({ route }: { route: { params: { pet: Pet } } }): React.JSX.Element {
+export default function PetDetailScreen({
+  route,
+}: {
+  route: { params: { pet: Pet } };
+}): React.JSX.Element {
   const { pet } = route.params;
 
   return (
     <ScrollView style={styles.container}>
       <Image source={{ uri: pet.photo }} style={styles.mainImage} />
-      
+
       <View style={styles.content}>
         <View style={styles.header}>
           <View>
-            <Text style={styles.name}>{pet.name}, {pet.age}</Text>
+            <Text style={styles.name}>
+              {pet.name}, {pet.age}
+            </Text>
             <Text style={styles.breed}>{pet.breed}</Text>
           </View>
           {pet.verified && (
@@ -33,9 +39,7 @@ export default function PetDetailScreen({ route }: { route: { params: { pet: Pet
         </View>
 
         <Text style={styles.location}>📍 {pet.location}</Text>
-        {pet.distance && (
-          <Text style={styles.distance}>{pet.distance} miles away</Text>
-        )}
+        {pet.distance && <Text style={styles.distance}>{pet.distance} miles away</Text>}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>

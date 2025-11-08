@@ -5,9 +5,14 @@
   "type": "module",
   "scripts": {
     "install:all": "pnpm install",
-    "typecheck": "pnpm --filter ./packages/shared typecheck",
-    "lint": "pnpm --filter ./packages/shared lint",
-    "test": "pnpm --filter ./packages/shared test:run",
+    "typecheck": "pnpm -r --filter './apps/web' --filter './apps/mobile' --filter './packages/core' --filter './packages/chat-core' --filter './packages/shared' --filter './packages/config' exec tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --max-warnings=0 --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
+    "validate": "pnpm typecheck && pnpm lint && pnpm test",
+    "depcheck": "pnpm -r --filter './apps/*' --filter './packages/*' exec depcheck || true",
+    "test": "pnpm -r --filter './apps/*' --filter './packages/*' exec pnpm test:run || pnpm -r --filter './apps/*' --filter './packages/*' exec vitest run || true",
     "dev:single": "pnpm --filter ./packages/shared dev",
     "test:single": "pnpm --filter ./packages/shared test:run",
     "web-dev": "pnpm --filter spark-template dev",
@@ -22,12 +27,31 @@
     "e2e:smoke": "pnpm --filter ./apps/web e2e:smoke"
   },
   "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@types/node": "^22.13.5",
+    "depcheck": "^1.4.7",
+    "eslint": "^9.28.0",
+    "eslint-import-resolver-typescript": "^3.10.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "globby": "^14.0.0",
+    "prettier": "^3.4.2",
+    "ts-morph": "^23.0.0",
+    "ts-prune": "^0.10.3",
     "tsx": "^4.20.6",
     "typescript": "~5.7.2",
-    "ts-morph": "^23.0.0",
-    "globby": "^14.0.0"
+    "typescript-eslint": "^8.38.0"
   },
   "packageManager": "pnpm@10.18.3",
+  "pnpm": {
+    "overrides": {
+      "vite": "6.4.1"
+    }
+  },
   "engines": {
     "node": ">=18",
     "pnpm": ">=8"

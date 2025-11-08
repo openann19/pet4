@@ -1,6 +1,8 @@
 // Shared feature flags for visual enhancements across web and mobile
 // Toggle via env if desired; defaults are conservative true for demo
 
+import { getEnvVar } from '../types/process'
+
 export type FeatureFlags = {
   readonly HOLO_BACKGROUND: boolean
   readonly GLOW_TRAIL: boolean
@@ -10,13 +12,7 @@ export type FeatureFlags = {
 }
 
 const env = (name: string, fallback: boolean): boolean => {
-  const proc: any = (globalThis as any).process
-  const val = proc?.env?.[name]
-  if (typeof val !== 'undefined') {
-    const v = String(val).toLowerCase()
-    return v === '1' || v === 'true' || v === 'on'
-  }
-  return fallback
+  return getEnvVar(name, fallback)
 }
 
 export const FLAGS: FeatureFlags = {

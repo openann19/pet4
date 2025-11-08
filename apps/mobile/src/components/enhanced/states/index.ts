@@ -1,3 +1,2 @@
-export { PremiumEmptyState, type PremiumEmptyStateProps } from './PremiumEmptyState.native'
-export { PremiumErrorState, type PremiumErrorStateProps } from './PremiumErrorState.native'
-
+export { PremiumEmptyState, type PremiumEmptyStateProps } from './PremiumEmptyState'
+export { PremiumErrorState, type PremiumErrorStateProps } from './PremiumErrorState'

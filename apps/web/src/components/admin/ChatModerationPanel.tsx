@@ -1,133 +1,125 @@
 /**
  * Chat Moderation Panel
- * 
+ *
  * Admin panel for reviewing reported messages and taking moderation actions.
  */
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useStorage } from '@/hooks/useStorage'
-import type { MessageReport } from '@/lib/chat-types'
-import { createLogger } from '@/lib/logger'
-import type { User } from '@/lib/user-service'
-import { Check, Eye, Flag, X } from '@phosphor-icons/react'
-import { motion } from '@petspark/motion'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { MessageReport } from '@/lib/chat-types';
+import { adminModerationApi } from '@/lib/api/admin';
+import { createLogger } from '@/lib/logger';
+import { Check, Eye, Flag, X } from '@phosphor-icons/react';
+import { MotionView } from '@petspark/motion';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('ChatModerationPanel')
+const logger = createLogger('ChatModerationPanel');
 
 export default function ChatModerationPanel() {
-  const [reports, setReports] = useState<MessageReport[]>([])
-  const [loading, setLoading] = useState(false)
-  const [selectedReport, setSelectedReport] = useState<MessageReport | null>(null)
-  const [action, setAction] = useState<'warning' | 'mute' | 'suspend' | 'no_action'>('no_action')
-  const [currentUser] = useStorage<User | null>('current-user', null)
+  const [reports, setReports] = useState<MessageReport[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<MessageReport | null>(null);
+  const [action, setAction] = useState<'warning' | 'mute' | 'suspend' | 'no_action'>('no_action');
+  const [actionInFlight, setActionInFlight] = useState(false);
 
   useEffect(() => {
-    loadReports()
-  }, [])
+    loadReports();
+  }, []);
 
   const loadReports = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      // Load reported messages from storage
-      const { storage } = await import('@/lib/storage')
-      const allReports = await storage.get<MessageReport[]>('message-reports') || []
-      setReports(allReports.sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      ))
+      const allReports = await adminModerationApi.listReports();
+      setReports(
+        allReports.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      );
     } catch (error) {
-      logger.error('Load reports error', error instanceof Error ? error : new Error(String(error)))
-      toast.error('Failed to load reports')
+      logger.error('Load reports error', error instanceof Error ? error : new Error(String(error)));
+      toast.error('Failed to load reports');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleReview = async () => {
-    if (!selectedReport || !currentUser) return
+    if (!selectedReport) return;
+
+    setActionInFlight(true);
 
     try {
-      // Update report status
-      const updatedReports = reports.map(r => 
-        r.id === selectedReport.id
-          ? {
-              ...r,
-              status: 'reviewed' as const,
-              reviewedBy: currentUser.id || 'admin',
-              reviewedAt: new Date().toISOString(),
-              action,
-            }
-          : r
-      )
+      let updatedReport: MessageReport;
 
-      const { storage } = await import('@/lib/storage')
-      await storage.set('message-reports', updatedReports)
-      setReports(updatedReports)
+      const note = action === 'no_action' ? undefined : `Action: ${action}`;
 
-      // Take action based on decision
-      if (action === 'suspend' || action === 'mute') {
-        // Update user status
-        const userKey = `users:${selectedReport.reportedUserId}`
-        const user = await storage.get<Record<string, unknown>>(userKey)
-        if (user) {
-          const updatedUser: Record<string, unknown> = {
-            ...user,
-            ['moderationStatus']: action === 'suspend' ? 'suspended' : 'muted'
-          }
-          await storage.set(userKey, updatedUser)
-        }
+      if (action === 'no_action') {
+        updatedReport = await adminModerationApi.dismissReport(selectedReport.id);
+      } else {
+        updatedReport = await adminModerationApi.resolveReport(selectedReport.id, note);
       }
 
-      toast.success(`Action taken: ${action}`)
-      setSelectedReport(null)
-      setAction('no_action')
+      setReports((prev) => prev.map((r) => (r.id === selectedReport.id ? updatedReport : r)));
+
+      toast.success(`Action taken: ${action}`);
+      setSelectedReport(null);
+      setAction('no_action');
     } catch (error) {
-      logger.error('Review error', error instanceof Error ? error : new Error(String(error)))
-      toast.error('Failed to review report')
+      logger.error('Review error', error instanceof Error ? error : new Error(String(error)));
+      toast.error('Failed to review report');
+    } finally {
+      setActionInFlight(false);
     }
-  }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="destructive">Pending</Badge>
+        return <Badge variant="destructive">Pending</Badge>;
       case 'reviewed':
-        return <Badge variant="secondary">Reviewed</Badge>
+        return <Badge variant="secondary">Reviewed</Badge>;
       case 'resolved':
-        return <Badge variant="default">Resolved</Badge>
+        return <Badge variant="default">Resolved</Badge>;
       default:
-        return <Badge variant="outline">Dismissed</Badge>
+        return <Badge variant="outline">Dismissed</Badge>;
     }
-  }
+  };
 
   const getReasonBadge = (reason: string) => {
     switch (reason) {
       case 'spam':
-        return <Badge variant="destructive">Spam</Badge>
+        return <Badge variant="destructive">Spam</Badge>;
       case 'harassment':
-        return <Badge variant="destructive">Harassment</Badge>
+        return <Badge variant="destructive">Harassment</Badge>;
       case 'inappropriate':
-        return <Badge variant="destructive">Inappropriate</Badge>
+        return <Badge variant="destructive">Inappropriate</Badge>;
       default:
-        return <Badge variant="outline">Other</Badge>
+        return <Badge variant="outline">Other</Badge>;
     }
-  }
+  };
 
-  const pendingReports = reports.filter(r => r.status === 'pending')
-  const reviewedReports = reports.filter(r => r.status === 'reviewed' || r.status === 'resolved')
+  const pendingReports = reports.filter(
+    (r) => r && typeof r.status === 'string' && r.status === 'pending'
+  );
+  const reviewedReports = reports.filter(
+    (r) => r && typeof r.status === 'string' && (r.status === 'reviewed' || r.status === 'resolved')
+  );
 
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-muted-foreground">Loading reports...</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -178,22 +170,16 @@ export default function ChatModerationPanel() {
                           {new Date(report.createdAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-sm font-medium mb-1">
-                        Reported by: {report.reportedBy}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Reason: {report.reason}
-                      </p>
-                      {report.description && (
-                        <p className="text-sm mt-2">{report.description}</p>
-                      )}
+                      <p className="text-sm font-medium mb-1">Reported by: {report.reportedBy}</p>
+                      <p className="text-sm text-muted-foreground">Reason: {report.reason}</p>
+                      {report.description && <p className="text-sm mt-2">{report.description}</p>}
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={(e) => {
-                        e.stopPropagation()
-                        setSelectedReport(report)
+                        e.stopPropagation();
+                        setSelectedReport(report);
                       }}
                     >
                       <Eye size={16} className="mr-2" />
@@ -220,12 +206,11 @@ export default function ChatModerationPanel() {
                       <div className="flex items-center gap-2 mb-2">
                         {getStatusBadge(report.status)}
                         {getReasonBadge(report.reason)}
-                        {report.action && (
-                          <Badge variant="outline">{report.action}</Badge>
-                        )}
+                        {report.action && <Badge variant="outline">{report.action}</Badge>}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Reviewed by: {report.reviewedBy} on {report.reviewedAt && new Date(report.reviewedAt).toLocaleDateString()}
+                        Reviewed by: {report.reviewedBy} on{' '}
+                        {report.reviewedAt && new Date(report.reviewedAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -243,17 +228,10 @@ export default function ChatModerationPanel() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/95 backdrop-blur-sm"
           onClick={() => setSelectedReport(null)}
         >
-          <Card
-            className="max-w-2xl w-full p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <Card className="max-w-2xl w-full p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">Report Details</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSelectedReport(null)}
-              >
+              <Button variant="ghost" size="icon" onClick={() => setSelectedReport(null)}>
                 <X size={20} />
               </Button>
             </div>
@@ -287,12 +265,16 @@ export default function ChatModerationPanel() {
               </div>
 
               <div className="flex gap-2 pt-4">
-                <Button variant="outline" onClick={() => setSelectedReport(null)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedReport(null)}
+                  disabled={actionInFlight}
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleReview}>
+                <Button onClick={handleReview} disabled={actionInFlight}>
                   <Check size={16} className="mr-2" />
-                  Take Action
+                  {actionInFlight ? 'Processing…' : 'Take Action'}
                 </Button>
               </div>
             </div>
@@ -300,6 +282,5 @@ export default function ChatModerationPanel() {
         </MotionView>
       )}
     </div>
-  )
+  );
 }
-

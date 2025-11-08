@@ -1,87 +1,71 @@
-import { z } from 'zod'
+import { z } from 'zod';
+import { createLogger } from '@/lib/logger';
 
-// Environment variable schema with validation
-const envSchema = z.object({
-  // API Configuration
-  VITE_API_URL: z.string().url('Invalid API URL'),
-  VITE_WS_URL: z.string().url('Invalid WebSocket URL'),
-  VITE_API_TIMEOUT: z.coerce.number().positive().default(30000),
+const logger = createLogger('env');
 
-  // Authentication
-  VITE_JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 characters'),
-  VITE_JWT_EXPIRY: z.string().default('7d'),
-  VITE_REFRESH_TOKEN_EXPIRY: z.string().default('30d'),
+const isProd = import.meta.env.PROD === true;
 
-  // Mock Control (CRITICAL)
-  VITE_USE_MOCKS: z.enum(['true', 'false']).default('false'),
-
-  // Feature Flags
-  VITE_ENABLE_KYC: z.coerce.boolean().default(true),
-  VITE_ENABLE_PAYMENTS: z.coerce.boolean().default(true),
-  VITE_ENABLE_LIVE_STREAMING: z.coerce.boolean().default(true),
-
-  // External Services
-  VITE_MAPBOX_TOKEN: z.string().startsWith('pk.', 'Invalid Mapbox token'),
-  VITE_STRIPE_PUBLIC_KEY: z.string().startsWith('pk_', 'Invalid Stripe public key'),
-  VITE_SENTRY_DSN: z.preprocess(
-    (val) => {
-      const str = String(val || '').trim();
-      return str === '' ? undefined : str;
-    },
-    z.string().url('Invalid Sentry DSN').optional()
-  ),
-  VITE_SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).default(0.1),
-
-  // Security
-  VITE_CORS_ORIGIN: z.string().optional(),
-  VITE_CSP_ENABLED: z.coerce.boolean().default(true),
-
-  // Optional
-  VITE_APP_VERSION: z.string().default('1.0.0'),
-  VITE_ENVIRONMENT: z.enum(['development', 'staging', 'production']).default('development')
-})
-
-// Parse and validate environment
-function parseEnv() {
-  try {
-    return envSchema.parse(import.meta.env)
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const issues = error.issues.map(issue =>
-        `❌ ${issue.path.join('.')}: ${issue.message}`
-      ).join('\n')
-
-      throw new Error(`
-❌ ENVIRONMENT VALIDATION FAILED
-
-${issues}
-
-Required environment variables are missing or invalid.
-See apps/web/.env.example for the complete configuration.
-`)
+/**
+ * Only validate *public* client vars (VITE_*). Never reference server secrets here.
+ * Any server-only secret must live in server code (not in /src/config/env.ts).
+ */
+const httpsUrl = z
+  .string()
+  .url('Invalid URL')
+  .superRefine((value, ctx) => {
+    if (isProd && !value.startsWith('https://')) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Must be https:// in production' });
     }
-    throw error
+  });
+
+const wssUrl = z
+  .string()
+  .url('Invalid WebSocket URL')
+  .superRefine((value, ctx) => {
+    if (isProd && !value.startsWith('wss://')) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Must be wss:// in production' });
+    }
+  });
+
+const schema = z
+  .object({
+    VITE_API_URL: httpsUrl,
+    VITE_WS_URL: wssUrl.optional(),
+    VITE_API_TIMEOUT: z.coerce.number().positive().default(30000),
+    VITE_USE_MOCKS: z.enum(['true', 'false']).default('false'),
+    VITE_ENABLE_MAPS: z.coerce.boolean().default(false),
+    VITE_MAPBOX_TOKEN: z.string().optional(), // public token; optional unless maps enabled in prod
+  })
+  .superRefine((vals, ctx) => {
+    if (isProd && vals.VITE_ENABLE_MAPS && !vals.VITE_MAPBOX_TOKEN) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'VITE_MAPBOX_TOKEN is required in production when VITE_ENABLE_MAPS=true.',
+        path: ['VITE_MAPBOX_TOKEN'],
+      });
+    }
+  });
+
+const parsed = schema.safeParse(import.meta.env);
+
+if (!parsed.success) {
+  if (isProd) {
+    logger.error('Invalid web env', new Error('Web environment validation failed'), {
+      errors: parsed.error.flatten(),
+    });
+    throw new Error('Web environment validation failed.');
   }
+  logger.warn('Dev env warnings', { errors: parsed.error.flatten() });
 }
 
-export const ENV = parseEnv()
+type Env = z.infer<typeof schema>;
 
-// Production validation
-if (ENV.VITE_ENVIRONMENT === 'production') {
-  if (ENV.VITE_USE_MOCKS === 'true') {
-    throw new Error('❌ PRODUCTION BLOCKER: VITE_USE_MOCKS must be false in production')
-  }
+export type Environment = Env;
 
-  // Validate required production services
-  const requiredInProd = [
-    ENV.VITE_MAPBOX_TOKEN,
-    ENV.VITE_STRIPE_PUBLIC_KEY,
-    ENV.VITE_SENTRY_DSN
-  ]
+export const env = schema.parse(import.meta.env);
+export const ENV = env;
 
-  if (requiredInProd.some(val => !val)) {
-    throw new Error('❌ PRODUCTION BLOCKER: Missing required service credentials')
-  }
-}
-
-export type Environment = typeof ENV
+export const flags = {
+  mocks: env.VITE_USE_MOCKS === 'true',
+  maps: Boolean(env.VITE_ENABLE_MAPS),
+} as const;
