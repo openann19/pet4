@@ -21,11 +21,11 @@ interface LiveStreamInterfaceProps {
 export const LiveStreamInterface: React.FC<LiveStreamInterfaceProps> = ({
   streamId,
   hostName,
-  hostPhoto,
+  hostPhoto: _hostPhoto,
   isHost,
   onEndStream,
 }) => {
-  const [viewersCount, setViewersCount] = useState(1);
+  const [viewersCount] = useState(1);
   const [duration, setDuration] = useState(0);
   const [showViewersList, setShowViewersList] = useState(false);
 

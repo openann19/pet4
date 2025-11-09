@@ -113,7 +113,7 @@ function normalizeError(
 }
 
 function generateCorrelationId(): string {
-  // eslint-disable-next-line no-restricted-syntax -- Math.random() acceptable for correlation IDs (uniqueness only)
+   
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
 }
 

@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
+import {
   useSharedValue,
   withSpring,
-  withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import type { Pet, SwipeAction, UserProfile } from '../types';
@@ -22,7 +19,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function DiscoverScreen(): React.JSX.Element {
   const navigation = useNavigation();
-  const [pets, setPets] = useStorage<Pet[]>('available-pets', []);
+  const [pets] = useStorage<Pet[]>('available-pets', []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeHistory, setSwipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
   const [userProfile] = useStorage<UserProfile>('user-profile', {
@@ -79,7 +76,7 @@ export default function DiscoverScreen(): React.JSX.Element {
     setCurrentIndex(currentIndex + 1);
   };
 
-  const animateButton = (index: number) => {
+  const animateButton = (_index: number) => {
     buttonScale.value = withSpring(1.2, SpringConfig.bouncy, () => {
       buttonScale.value = withSpring(1, SpringConfig.snappy);
     });

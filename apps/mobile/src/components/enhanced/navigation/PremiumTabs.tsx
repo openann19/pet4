@@ -50,7 +50,8 @@ export function PremiumTabs({
   children,
 }: PremiumTabsProps): React.JSX.Element {
   const containerRef = useRef<View>(null)
-  const tabRefs = useRef<(View | null)[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tabRefs = useRef<Array<any>>([])
   const indicatorPosition = useSharedValue(0)
   const indicatorWidth = useSharedValue(0)
   const reducedMotion = useReducedMotionSV()
@@ -58,14 +59,13 @@ export function PremiumTabs({
 
   const updateIndicator = useCallback(() => {
     const activeIndex = tabs.findIndex(tab => tab.value === activeTab)
-    if (activeIndex >= 0 && tabRefs.current[activeIndex]) {
+    if (activeIndex >= 0 && activeIndex < tabRefs.current.length) {
       const tabRef = tabRefs.current[activeIndex]
-      // For Animated refs, getNode() returns the underlying component
-      const node = (tabRef as any)?.getNode ? (tabRef as any).getNode() : tabRef
-      if (node) {
+      if (tabRef) {
         runOnUI(() => {
           'worklet'
-          const measurements = measure(node)
+          // measure function accepts animated refs
+          const measurements = measure(tabRef)
           if (measurements) {
             indicatorPosition.value = reducedMotion.value
               ? withTiming(measurements.pageX, { duration: 200 })
@@ -125,8 +125,10 @@ export function PremiumTabs({
           return (
             <AnimatedPressable
               key={tab.value}
-              ref={ref => {
-                tabRefs.current[index] = ref
+              ref={(ref) => {
+                if (ref) {
+                  tabRefs.current[index] = ref
+                }
               }}
               onPress={() => handleTabPress(tab.value)}
               disabled={tab.disabled}

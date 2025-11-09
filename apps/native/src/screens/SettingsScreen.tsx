@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ export default function SettingsScreen() {
   const [vibrationEnabled, setVibrationEnabled] = useStorage('vibrationEnabled', true);
   const [locationSharing, setLocationSharing] = useStorage('locationSharing', false);
   const [darkMode, setDarkMode] = useStorage('darkMode', false);
-  const [language, setLanguage] = useStorage('language', 'en');
+  const [language] = useStorage('language', 'en');
 
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [

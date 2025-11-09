@@ -21,6 +21,16 @@ for(const f of walk(SRC)){
 
 const dv = join(SRC,"components","views","DiscoverView.tsx");
 
-try{ const s=readFileSync(dv,"utf8"); if(!/Map/.test(s) || !/Discover/.test(s)) ERR.push(`[PARITY] DiscoverView lacks Discover/Map segments`);}catch{}
+try {
+  const s = readFileSync(dv, 'utf8');
+  if (!/Map/.test(s) || !/Discover/.test(s)) {
+    ERR.push(`[PARITY] DiscoverView lacks Discover/Map segments`);
+  }
+} catch {
+  // File might not exist - skip check
+  // Error intentionally ignored as this is a verification script
+  // No-op to satisfy ESLint no-empty rule
+  void 0
+}
 
 if(ERR.length){ console.error(ERR.join("\n")); process.exit(1); } else { console.log("✅ ultra effects verified"); }

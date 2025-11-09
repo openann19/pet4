@@ -30,7 +30,7 @@ class OfflineQueueManager {
     window.addEventListener('online', () => {
       this.isOnline = true;
       this.notifyListeners(true);
-      this.processQueue();
+      void this.processQueue();
     });
 
     window.addEventListener('offline', () => {
@@ -60,18 +60,18 @@ class OfflineQueueManager {
       status: 'pending',
     };
 
-    const currentQueue = await this.getQueue();
+    const currentQueue = this.getQueue();
     currentQueue.actions.push(queuedAction);
-    await this.saveQueue(currentQueue);
+    this.saveQueue(currentQueue);
 
     if (this.isOnline) {
-      this.processQueue();
+      void this.processQueue();
     }
 
     return id;
   }
 
-  private async getQueue(): Promise<OfflineQueueState> {
+  private getQueue(): OfflineQueueState {
     const stored = localStorage.getItem('offline_queue');
     if (!stored) {
       return { actions: [], processing: false };
@@ -79,18 +79,18 @@ class OfflineQueueManager {
     return JSON.parse(stored);
   }
 
-  private async saveQueue(state: OfflineQueueState): Promise<void> {
+  private saveQueue(state: OfflineQueueState): void {
     localStorage.setItem('offline_queue', JSON.stringify(state));
   }
 
   async processQueue() {
     if (!this.isOnline) return;
 
-    const queue = await this.getQueue();
+    const queue = this.getQueue();
     if (queue.processing || queue.actions.length === 0) return;
 
     queue.processing = true;
-    await this.saveQueue(queue);
+    this.saveQueue(queue);
 
     const pendingActions = queue.actions.filter(
       (a) => a.status === 'pending' || a.status === 'failed'
@@ -99,7 +99,7 @@ class OfflineQueueManager {
     for (const action of pendingActions) {
       try {
         action.status = 'processing';
-        await this.saveQueue(queue);
+        this.saveQueue(queue);
 
         await this.executeAction(action);
 
@@ -118,11 +118,11 @@ class OfflineQueueManager {
         );
       }
 
-      await this.saveQueue(queue);
+      this.saveQueue(queue);
     }
 
     queue.processing = false;
-    await this.saveQueue(queue);
+    this.saveQueue(queue);
   }
 
   private async executeAction(action: QueuedAction): Promise<void> {
@@ -134,8 +134,8 @@ class OfflineQueueManager {
     });
   }
 
-  async getQueueStatus(): Promise<{ pending: number; failed: number; total: number }> {
-    const queue = await this.getQueue();
+  getQueueStatus(): { pending: number; failed: number; total: number } {
+    const queue = this.getQueue();
     const pending = queue.actions.filter(
       (a) => a.status === 'pending' || a.status === 'processing'
     ).length;
@@ -144,19 +144,19 @@ class OfflineQueueManager {
   }
 
   async retryFailed(): Promise<void> {
-    const queue = await this.getQueue();
+    const queue = this.getQueue();
     queue.actions.forEach((action) => {
       if (action.status === 'failed') {
         action.status = 'pending';
         action.retries = 0;
       }
     });
-    await this.saveQueue(queue);
+    this.saveQueue(queue);
     await this.processQueue();
   }
 
-  async clearQueue(): Promise<void> {
-    await this.saveQueue({ actions: [], processing: false });
+  clearQueue(): void {
+    this.saveQueue({ actions: [], processing: false });
   }
 
   isConnected(): boolean {
@@ -181,7 +181,7 @@ export const useOfflineQueue = () => {
     return offlineQueue.retryFailed();
   };
 
-  const getStatus = async () => {
+  const getStatus = () => {
     return offlineQueue.getQueueStatus();
   };
 
@@ -190,7 +190,9 @@ export const useOfflineQueue = () => {
     enqueueAction,
     retryFailed,
     getStatus,
-    processQueue: () => offlineQueue.processQueue(),
+    processQueue: () => {
+      void offlineQueue.processQueue();
+    },
     clearQueue: () => offlineQueue.clearQueue(),
   };
 };

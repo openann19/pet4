@@ -64,11 +64,11 @@ class Logger {
           console.info(message, entry.data ?? '')
           break
         case LogLevel.WARN:
-          // eslint-disable-next-line no-console
+           
           console.warn(message, entry.data ?? '')
           break
         case LogLevel.ERROR:
-          // eslint-disable-next-line no-console
+           
           console.error(message, entry.error ?? entry.data ?? '')
           break
         default:

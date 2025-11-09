@@ -31,7 +31,7 @@ class SurfaceCache {
   private cache: Map<string, CachedSurface> = new Map()
   private maxCacheSize: number = 10 // Maximum number of cached surfaces
   private maxAgeMs: number = 60000 // 60 seconds max age
-  private cleanupInterval: number | null = null
+  private cleanupInterval: ReturnType<typeof setInterval> | null = null
 
   constructor() {
     // Start cleanup interval (clean up every 10 seconds)
@@ -148,7 +148,7 @@ class SurfaceCache {
     // Clean up every 10 seconds
     this.cleanupInterval = setInterval(() => {
       this.cleanupOldSurfaces()
-    }, 10000) as unknown as number
+    }, 10000)
   }
 
   /**

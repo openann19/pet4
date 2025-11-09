@@ -178,7 +178,7 @@ vi.mock('@/components/community/PostComposer', () => ({
 }));
 
 vi.mock('@/components/community/RankingSkeleton', () => ({
-  default: () => <div data-testid="ranking-skeleton">Loading...</div>,
+  RankingSkeleton: () => <div data-testid="ranking-skeleton">Loading...</div>,
 }));
 
 vi.mock('@/components/lost-found/CreateLostAlertDialog', () => ({

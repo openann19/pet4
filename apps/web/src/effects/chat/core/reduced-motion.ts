@@ -19,7 +19,7 @@ interface AccessibilityInfoType {
 
 // Web version - React Native AccessibilityInfo is not available
 // Web uses matchMedia API instead
-let AccessibilityInfo: AccessibilityInfoType | null = null;
+const AccessibilityInfo: AccessibilityInfoType | null = null;
 
 const MEDIA_QUERY = '(prefers-reduced-motion: reduce)';
 

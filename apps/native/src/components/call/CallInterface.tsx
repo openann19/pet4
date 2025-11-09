@@ -13,10 +13,10 @@ interface CallInterfaceProps {
 }
 
 export const CallInterface: React.FC<CallInterfaceProps> = ({
-  callId,
-  remoteUserId,
+  callId: _callId,
+  remoteUserId: _remoteUserId,
   remoteName,
-  remotePhoto,
+  remotePhoto: _remotePhoto,
   onEndCall,
 }) => {
   const [isMuted, setIsMuted] = useState(false);

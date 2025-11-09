@@ -51,10 +51,6 @@ export const StoryRing: React.FC<StoryRingProps> = ({
     transform: [{ scale: pulseAnimation.value }],
   }));
 
-  const getInitial = (name: string): string => {
-    return name.charAt(0).toUpperCase();
-  };
-
   return (
     <Pressable onPress={onClick} style={styles.container}>
       <Animated.View style={animatedStyle}>

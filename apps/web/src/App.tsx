@@ -36,7 +36,7 @@ import { useStorage } from '@/hooks/use-storage';
 import { haptics } from '@/lib/haptics';
 import type { Playdate } from '@/lib/playdate-types';
 import '@/lib/profile-generator-helper'; // Expose generateProfiles to window
-import type { Match, Pet, SwipeAction } from '@/lib/types';
+import type { Match, SwipeAction } from '@/lib/types';
 import HoloBackground from '@/components/chrome/HoloBackground';
 import GlowTrail from '@/effects/cursor/GlowTrail';
 
@@ -133,7 +133,7 @@ function App(): JSX.Element {
   const { isAuthenticated } = useAuth();
   const [hasSeenWelcome, setHasSeenWelcome] = useStorage<boolean>('has-seen-welcome-v2', false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [_userPets] = useStorage<Pet[]>('user-pets', []);
+  // User pets available via useStorage if needed: useStorage<Pet[]>('user-pets', [])
   const [matches] = useStorage<Match[]>('matches', []);
   const [swipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
   const [playdates] = useStorage<Playdate[]>('playdates', []);
@@ -270,8 +270,12 @@ function App(): JSX.Element {
   useEffect(() => {
     // Initialize performance monitoring in production
     if (import.meta.env['NODE_ENV'] === 'production') {
-      void Promise.all([import('@/lib/monitoring/performance'), import('@/lib/logger')])
-        .then(([{ initPerformanceMonitoring }, { createLogger }]) => {
+      void (async () => {
+        try {
+          const [{ initPerformanceMonitoring }, { createLogger }] = await Promise.all([
+            import('@/lib/monitoring/performance'),
+            import('@/lib/logger')
+          ]);
           const logger = createLogger('PerformanceMonitoring');
           initPerformanceMonitoring((metric) => {
             // Log performance metrics (could send to analytics service)
@@ -279,11 +283,11 @@ function App(): JSX.Element {
               logger.warn(`Poor ${metric.name}: ${metric.value}ms`, { metric });
             }
           });
-        })
-        .catch(() => {
+        } catch {
           // Silently fail performance monitoring initialization
           // Error is intentionally swallowed as monitoring is non-critical
-        });
+        }
+      })();
     }
   }, []);
 
@@ -298,19 +302,19 @@ function App(): JSX.Element {
   }, [hasSeenWelcome, isAuthenticated]);
 
   const handleWelcomeGetStarted = () => {
-    setHasSeenWelcome(true);
+    void setHasSeenWelcome(true);
     setAuthMode('signup');
     setAppState('auth');
   };
 
   const handleWelcomeSignIn = () => {
-    setHasSeenWelcome(true);
+    void setHasSeenWelcome(true);
     setAuthMode('signin');
     setAppState('auth');
   };
 
   const handleWelcomeExplore = () => {
-    setHasSeenWelcome(true);
+    void setHasSeenWelcome(true);
     setAppState('main');
   };
 
@@ -640,11 +644,10 @@ function App(): JSX.Element {
                         />
 
                         <AnimatedView
-                          className={`${NAV_BUTTON_BASE_CLASSES} relative cursor-pointer ${
-                            currentView === 'lost-found'
-                              ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
-                              : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
-                          }`}
+                          className={`${NAV_BUTTON_BASE_CLASSES} relative cursor-pointer ${currentView === 'lost-found'
+                            ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                            }`}
                           style={lostFoundAnimation.buttonStyle}
                           onMouseEnter={lostFoundAnimation.handleHover}
                           onMouseLeave={lostFoundAnimation.handleLeave}

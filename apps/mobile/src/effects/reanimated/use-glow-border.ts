@@ -34,7 +34,6 @@ export function useGlowBorder(options: UseGlowBorderOptions = {}): UseGlowBorder
     intensity = 20,
     speed = 2000,
     enabled = true,
-    pulseSize: _pulseSize = 8,
   } = options
 
   const progress = useSharedValue(0)

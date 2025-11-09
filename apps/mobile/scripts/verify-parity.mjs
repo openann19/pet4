@@ -11,8 +11,6 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 const ROOT = join(__dirname, '..', '..', '..')
-const MOBILE_EFFECTS = join(ROOT, 'apps/mobile/src/effects')
-const WEB_EFFECTS = join(ROOT, 'apps/web/src/effects')
 
 const chatEffects = [
   'bubbles',
@@ -94,4 +92,3 @@ if (ERROR === 0) {
 } else {
   process.exit(1)
 }
-

@@ -11,7 +11,7 @@ import { adminApi } from '@/api/admin-api';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -45,11 +45,9 @@ import {
   ChatCircle,
   CheckCircle,
   Clock,
-  Envelope,
   MagnifyingGlass,
   PaperPlaneTilt,
   Plus,
-  User as UserIcon,
   XCircle,
 } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
@@ -131,7 +129,7 @@ export default function SupportChatPanel() {
     }
   };
 
-  const handleSelectTicket = async (ticket: SupportTicket) => {
+  const handleSelectTicket = (ticket: SupportTicket) => {
     setSelectedTicket(ticket);
   };
 
@@ -185,11 +183,11 @@ export default function SupportChatPanel() {
     }
   };
 
-  const handleAssignTicket = async (assignedTo: string) => {
+  const _handleAssignTicket = async (_assignedTo: string) => {
     if (!selectedTicket) return;
 
     try {
-      const updated = await supportApi.assignTicket(selectedTicket.id, assignedTo);
+      const updated = await supportApi.assignTicket(selectedTicket.id, _assignedTo);
       setSelectedTicket(updated);
       setTickets(tickets.map((t) => (t.id === updated.id ? updated : t)));
       toast.success('Ticket assigned');
@@ -199,7 +197,7 @@ export default function SupportChatPanel() {
         action: 'support_ticket_assign',
         targetType: 'support_ticket',
         targetId: selectedTicket.id,
-        details: JSON.stringify({ assignedTo }),
+        details: JSON.stringify({ assignedTo: _assignedTo }),
       });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -336,9 +334,8 @@ export default function SupportChatPanel() {
                     tickets.map((ticket) => (
                       <Card
                         key={ticket.id}
-                        className={`cursor-pointer hover:bg-muted transition-colors ${
-                          selectedTicket?.id === ticket.id ? 'ring-2 ring-primary' : ''
-                        }`}
+                        className={`cursor-pointer hover:bg-muted transition-colors ${selectedTicket?.id === ticket.id ? 'ring-2 ring-primary' : ''
+                          }`}
                         onClick={() => handleSelectTicket(ticket)}
                       >
                         <CardContent className="p-4">
@@ -460,9 +457,8 @@ export default function SupportChatPanel() {
                           </span>
                         </div>
                         <div
-                          className={`inline-block p-3 rounded-lg ${
-                            message.isAdmin ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                          }`}
+                          className={`inline-block p-3 rounded-lg ${message.isAdmin ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                            }`}
                         >
                           <p className="text-sm whitespace-pre-wrap">{message.message}</p>
                         </div>

@@ -11,13 +11,29 @@ vi.mock('@/contexts/AppContext', () => ({
   useApp: () => ({
     t: {
       auth: {
+        email: 'Email',
         emailRequired: 'Email is required',
         emailInvalid: 'Please enter a valid email',
+        emailPlaceholder: 'you@example.com',
+        password: 'Password',
         passwordRequired: 'Password is required',
         passwordTooShort: 'Password must be at least 6 characters',
+        passwordPlaceholder: '••••••••',
+        signIn: 'Sign In',
+        signInTitle: 'Welcome Back',
+        signInSubtitle: 'Sign in to continue to PawfectMatch',
         signInSuccess: 'Welcome back!',
         signInError: 'Failed to sign in. Please try again.',
+        forgotPassword: 'Forgot password?',
         forgotPasswordInfo: 'Password reset link would be sent to your email',
+      },
+      common: {
+        loading: 'Loading...',
+        cancel: 'Cancel',
+        close: 'Close',
+        confirm: 'Confirm',
+        save: 'Save',
+        error: 'Error',
       },
     },
   }),
@@ -120,10 +136,11 @@ describe('SignInForm', () => {
     const user = userEvent.setup();
     render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />);
 
-    const passwordInput = screen.getByLabelText(/password/i);
+    const passwordInput = screen.getByLabelText(/password/i) as HTMLInputElement;
     await user.type(passwordInput, 'password123');
 
-    const toggleButton = screen.getByRole('button', { name: /toggle password/i });
+    // Button has aria-label "Show password" or "Hide password"
+    const toggleButton = screen.getByRole('button', { name: /show password/i });
     await user.click(toggleButton);
 
     expect(passwordInput.type).toBe('text');

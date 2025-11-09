@@ -39,7 +39,7 @@ export interface UseOutboxReturn {
  * not cryptographic security or determinism
  */
 function generateIdempotencyKey(): string {
-  // eslint-disable-next-line no-restricted-syntax -- Math.random() acceptable for idempotency keys (uniqueness only)
+   
   return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
 }
 
@@ -51,7 +51,7 @@ function calculateExponentialBackoff(
 ): number {
   const exponentialDelay = Math.min(2 ** attempt * baseDelay, maxDelay)
   if (jitter) {
-    // eslint-disable-next-line no-restricted-syntax -- Math.random() acceptable for jitter (non-deterministic backoff)
+     
     const jitterAmount = exponentialDelay * 0.1 * Math.random()
     return Math.floor(exponentialDelay + jitterAmount)
   }
@@ -226,7 +226,7 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
           }
 
           // Check if message was successfully sent or permanently failed
-          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions -- Optional booleans need explicit checks
+           
           if (result.value.success || result.value.failed) {
             return null
           }

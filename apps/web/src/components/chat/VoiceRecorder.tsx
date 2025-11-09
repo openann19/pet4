@@ -40,7 +40,7 @@ export default function VoiceRecorder({
   const micScale = useSharedValue(1);
 
   useEffect(() => {
-    startRecording();
+    void startRecording();
 
     // Animate container in
     containerOpacity.value = withTiming(1, { duration: 300 });

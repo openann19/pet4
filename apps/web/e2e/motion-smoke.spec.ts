@@ -15,15 +15,7 @@ test.describe('AdvancedChatWindow Performance', () => {
     // Wait for chat window to load (adjust selector as needed)
     await page.waitForSelector('textarea, input[type="text"]', { timeout: 5000 });
 
-    // Start performance monitoring
-    const frameTimes: number[] = [];
-    let lastFrameTime = performance.now();
-    let frameCount = 0;
-    let droppedFrames = 0;
-
-    // Monitor frame times for 5 seconds
-    const monitorDuration = 5000; // 5 seconds
-    const startTime = Date.now();
+    // Performance monitoring is done via page.evaluate()
 
     // Set up RAF monitoring
     await page.evaluate(() => {

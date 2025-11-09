@@ -25,7 +25,7 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('CommunityApi');
 
-export interface GetFeedRequest extends FeedOptions {}
+export type GetFeedRequest = FeedOptions
 
 export interface CreatePostRequest {
   kind: PostKind;

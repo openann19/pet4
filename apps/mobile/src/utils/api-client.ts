@@ -128,7 +128,7 @@ class APIClient {
     state: 'closed',
   }
   private requestCache = new Map<string, RequestCacheEntry>()
-  private cacheCleanupInterval: NodeJS.Timeout | null = null
+  private cacheCleanupInterval: ReturnType<typeof setInterval> | null = null
 
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl
@@ -146,7 +146,7 @@ class APIClient {
           this.requestCache.delete(key)
         }
       }
-    }, 300000) as unknown as NodeJS.Timeout
+    }, 300000)
   }
 
   private classifyError(error: unknown, statusCode?: number): APIErrorType {

@@ -78,35 +78,10 @@ export function StickerMessage({
     }
   })
 
-  const combinedStyle = useAnimatedStyle(() => {
-    type TransformStyle = {
-      transform?: Array<{
-        scale?: number
-        translateX?: number
-        translateY?: number
-        rotate?: string
-      }>
-    }
-    const stickerStyle = stickerAnimation.animatedStyle as TransformStyle
-    const pressTransform: Array<{ scale: number }> = [{ scale: pressScale.value }]
-    const stickerTransform = stickerStyle?.transform
-
-    const transforms: Array<{
-      scale?: number
-      translateX?: number
-      translateY?: number
-      rotate?: string
-    }> = []
-
-    transforms.push(...pressTransform)
-    if (stickerTransform) {
-      transforms.push(...stickerTransform)
-    }
-
+  const pressStyle = useAnimatedStyle(() => {
     return {
-      ...stickerStyle,
-      transform: transforms,
-    } as any
+      transform: [{ scale: pressScale.value }],
+    }
   })
 
   return (
@@ -128,7 +103,8 @@ export function StickerMessage({
         style={[
           styles.stickerContainer,
           isPressed && styles.stickerContainerPressed,
-          combinedStyle,
+          stickerAnimation.animatedStyle,
+          pressStyle,
         ]}
         testID={`${testID}-sticker`}
       >

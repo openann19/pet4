@@ -12,22 +12,22 @@ export interface SwipeAction {
 }
 
 export interface OfflineSwipeQueue {
-  enqueue(action: SwipeAction): Promise<void>;
-  dequeue(): Promise<SwipeAction | null>;
-  peek(): Promise<SwipeAction | null>;
-  clear(): Promise<void>;
-  size(): Promise<number>;
-  isEmpty(): Promise<boolean>;
+  enqueue(action: SwipeAction): void;
+  dequeue(): SwipeAction | null;
+  peek(): SwipeAction | null;
+  clear(): void;
+  size(): number;
+  isEmpty(): boolean;
 }
 
 class LocalStorageSwipeQueue implements OfflineSwipeQueue {
   private readonly storageKey = 'swipe-offline-queue';
 
-  async enqueue(action: SwipeAction): Promise<void> {
+  enqueue(action: SwipeAction): void {
     try {
-      const queue = await this.getQueue();
+      const queue = this.getQueue();
       queue.push(action);
-      await this.saveQueue(queue);
+      this.saveQueue(queue);
     } catch (error) {
       logger.error(
         'Failed to enqueue swipe action',
@@ -37,14 +37,14 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
     }
   }
 
-  async dequeue(): Promise<SwipeAction | null> {
+  dequeue(): SwipeAction | null {
     try {
-      const queue = await this.getQueue();
+      const queue = this.getQueue();
       if (queue.length === 0) {
         return null;
       }
       const action = queue.shift();
-      await this.saveQueue(queue);
+      this.saveQueue(queue);
       return action ? action : null;
     } catch (error) {
       logger.error(
@@ -55,9 +55,9 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
     }
   }
 
-  async peek(): Promise<SwipeAction | null> {
+  peek(): SwipeAction | null {
     try {
-      const queue = await this.getQueue();
+      const queue = this.getQueue();
       return queue.length > 0 ? queue[0]! : null;
     } catch (error) {
       logger.error(
@@ -68,7 +68,7 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
     }
   }
 
-  async clear(): Promise<void> {
+  clear(): void {
     try {
       localStorage.removeItem(this.storageKey);
     } catch (error) {
@@ -79,9 +79,9 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
     }
   }
 
-  async size(): Promise<number> {
+  size(): number {
     try {
-      const queue = await this.getQueue();
+      const queue = this.getQueue();
       return queue.length;
     } catch (error) {
       logger.error(
@@ -92,12 +92,12 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
     }
   }
 
-  async isEmpty(): Promise<boolean> {
-    const size = await this.size();
-    return size === 0;
+  isEmpty(): boolean {
+    const queueSize = this.size();
+    return queueSize === 0;
   }
 
-  private async getQueue(): Promise<SwipeAction[]> {
+  private getQueue(): SwipeAction[] {
     try {
       const stored = localStorage.getItem(this.storageKey);
       if (!stored) {
@@ -114,7 +114,7 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
     }
   }
 
-  private async saveQueue(queue: SwipeAction[]): Promise<void> {
+  private saveQueue(queue: SwipeAction[]): void {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(queue));
     } catch (error) {

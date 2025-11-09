@@ -1,5 +1,3 @@
-/// <reference path="../../types/vendor/expo-haptics.d.ts" />
-
 import { Platform } from 'react-native'
 import { isReduceMotionEnabled } from '../reduced-motion'
 
@@ -29,7 +27,7 @@ async function loadExpoHaptics(): Promise<ExpoHaptics | null> {
   if (hapticsLoadPromise) return hapticsLoadPromise
 
   // Dynamic import with type assertion - module may not be available
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+   
   hapticsLoadPromise = (import('expo-haptics') as Promise<{ default?: ExpoHaptics; impactAsync?: ExpoHaptics['impactAsync']; ImpactFeedbackStyle?: ExpoHaptics['ImpactFeedbackStyle'] }>)
     .then(module => {
       const defaultExport = module.default ?? module
@@ -47,7 +45,7 @@ async function loadExpoHaptics(): Promise<ExpoHaptics | null> {
 }
 
 // Initialize on module load (non-blocking)
-loadExpoHaptics().catch(() => {
+void loadExpoHaptics().catch(() => {
   // Expected on web or when expo-haptics is not available
 })
 
@@ -74,17 +72,17 @@ function shouldTriggerHaptic(): boolean {
 export const haptic = {
   light(): void {
     if (Platform.OS !== 'web' && Haptics?.impactAsync && shouldTriggerHaptic()) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle?.Light ?? 0)
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle?.Light ?? 0)
     }
   },
   medium(): void {
     if (Platform.OS !== 'web' && Haptics?.impactAsync && shouldTriggerHaptic()) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle?.Medium ?? 1)
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle?.Medium ?? 1)
     }
   },
   heavy(): void {
     if (Platform.OS !== 'web' && Haptics?.impactAsync && shouldTriggerHaptic()) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle?.Heavy ?? 2)
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle?.Heavy ?? 2)
     }
   },
 }

@@ -8,7 +8,7 @@ export interface CallState {
   error: string | null;
 }
 
-export const useWebRTC = (callId: string, remoteUserId: string) => {
+export const useWebRTC = (_callId: string, _remoteUserId: string) => {
   const [callState, setCallState] = useState<CallState>({
     isConnecting: true,
     isConnected: false,

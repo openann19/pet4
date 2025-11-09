@@ -8,7 +8,64 @@ import { URL } from 'node:url';
 import { streamingApi } from '@/api/streaming-api';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
+// Mock APIClient - use closure to get port at runtime
+let testServerPortForMock = 0;
+
+const createAPIClientMock = () => {
+  const makeRequest = async (endpoint: string, method: string, data?: unknown) => {
+    // Read port dynamically at request time
+    const port = testServerPortForMock;
+    if (port === 0) {
+      throw new Error('Test server not initialized. Port is 0.');
+    }
+
+    const testUrl = `http://localhost:${port}${endpoint}`;
+    const response = await fetch(testUrl, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: data ? JSON.stringify(data) : undefined,
+    });
+
+    if (!response.ok) {
+      const error = new Error(`HTTP ${response.status}: ${response.statusText}`) as Error & { status: number };
+      error.status = response.status;
+      throw error;
+    }
+
+    // Handle empty responses (e.g., 204 No Content)
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      return { data: {} };
+    }
+
+    const text = await response.text();
+    if (!text) {
+      return { data: {} };
+    }
+
+    try {
+      const json = JSON.parse(text);
+      return { data: json.data || json };
+    } catch {
+      return { data: {} };
+    }
+  };
+
+  return {
+    get: (endpoint: string) => makeRequest(endpoint, 'GET'),
+    post: (endpoint: string, data?: unknown) => makeRequest(endpoint, 'POST', data),
+    put: (endpoint: string, data?: unknown) => makeRequest(endpoint, 'PUT', data),
+    patch: (endpoint: string, data?: unknown) => makeRequest(endpoint, 'PATCH', data),
+    delete: (endpoint: string) => makeRequest(endpoint, 'DELETE'),
+  };
+};
+
+vi.mock('@/lib/api-client', () => ({
+  APIClient: createAPIClientMock(),
+}));
+
 let server: ReturnType<typeof createServer>;
+let testServerPort: number;
 
 async function readJson<T>(req: IncomingMessage): Promise<T> {
   const chunks: Buffer[] = [];
@@ -27,7 +84,7 @@ beforeAll(async () => {
       return;
     }
 
-    const url = new URL(req.url, 'http://localhost:8080');
+    const url = new URL(req.url, `http://localhost`);
 
     if (req.method === 'POST' && url.pathname === '/streaming/token-verify') {
       const payload = await readJson<{ token: string }>(req);
@@ -83,7 +140,9 @@ beforeAll(async () => {
     server.listen(0, () => {
       const address = server.address();
       if (address && typeof address === 'object') {
-        process.env['TEST_API_PORT'] = String(address.port);
+        testServerPort = address.port;
+        testServerPortForMock = testServerPort;
+        process.env['TEST_API_PORT'] = String(testServerPort);
       }
       resolve();
     });
@@ -91,7 +150,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await new Promise<void>((resolve) => server.close(() => resolve()));
+  await new Promise<void>((resolve) => {
+    server.close(() => {
+      testServerPortForMock = 0;
+      resolve();
+    });
+  });
 });
 
 afterEach(() => {

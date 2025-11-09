@@ -11,7 +11,7 @@ vi.mock('react-native-reanimated', () => ({
   useAnimatedStyle: vi.fn(() => ({})),
 }));
 vi.mock('@/effects/reanimated/animated-view', () => ({
-  AnimatedView: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+  AnimatedView: ({ children, ...props }: { children: React.ReactNode;[key: string]: unknown }) => (
     <div data-testid="animated-view" {...props}>
       {children}
     </div>
@@ -161,7 +161,9 @@ describe('SmartToast', () => {
       />
     );
 
-    vi.advanceTimersByTime(5000);
+    // Advance timers and flush promises
+    await vi.advanceTimersByTimeAsync(5000);
+    await vi.advanceTimersByTimeAsync(200); // Animation delay
 
     await waitFor(() => {
       expect(mockOnDismiss).toHaveBeenCalledWith('toast1');
@@ -171,10 +173,12 @@ describe('SmartToast', () => {
   it('uses default duration when not provided', async () => {
     render(<SmartToast id="toast1" type="success" title="Success!" onDismiss={mockOnDismiss} />);
 
-    vi.advanceTimersByTime(5000);
+    // Advance timers and flush promises
+    await vi.advanceTimersByTimeAsync(5000);
+    await vi.advanceTimersByTimeAsync(200); // Animation delay
 
     await waitFor(() => {
-      expect(mockOnDismiss).toHaveBeenCalled();
+      expect(mockOnDismiss).toHaveBeenCalledWith('toast1');
     });
   });
 

@@ -33,7 +33,7 @@ interface CustomHaptics {
 
 // Web environment - haptics not available natively
 // Haptics will be null on web, which is expected
-let Haptics: ExpoHaptics | null = null;
+const Haptics: ExpoHaptics | null = null;
 
 async function loadExpoHaptics(): Promise<ExpoHaptics | null> {
   // On web, expo-haptics is never available

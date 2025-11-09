@@ -38,9 +38,9 @@ const useApp = () => ({
   },
 })
 
-const haptics = { trigger: (_: string) => {} }
-const analytics = { track: (_: string, _p?: Record<string, unknown>) => {} }
-const toast = { success: (_: string) => {}, error: (_: string) => {}, info: (_: string) => {} }
+const haptics = { trigger: (_: string) => { } }
+const analytics = { track: (_: string, _p?: Record<string, unknown>) => { } }
+const toast = { success: (_: string) => { }, error: (_: string) => { }, info: (_: string) => { } }
 
 export type SignInFormProps = {
   onSuccess: () => void
@@ -111,7 +111,7 @@ export default function SignInForm({
       toast.success(t.auth?.signInSuccess || 'Welcome back!')
       haptics.trigger('success')
       onSuccess()
-    } catch (_error) {
+    } catch {
       toast.error(t.auth?.signInError || 'Failed to sign in. Please try again.')
       haptics.trigger('error')
     } finally {

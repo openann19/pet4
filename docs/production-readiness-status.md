@@ -1,36 +1,42 @@
-# Production Readiness Status – 2025-11-07
+# Production Readiness Status – 2025-11-09
 
 This canonical report supersedes prior status documents. Update this file for all future readiness changes so teams and auditors have a single source of truth.
 
 ## Executive Summary
 
-- **Overall status:** 🟡 Critical blockers resolved; production readiness improving. Admin moderation migrated to real APIs, build working, quality gates partially restored.
-- **Primary blockers:** Remaining TypeScript type errors (mostly non-blocking), some test failures, security vulnerabilities need review.
-- **Next checkpoint:** Address remaining type errors incrementally, fix test failures, review and remediate security vulnerabilities.
+- **Overall status:** 🟡 Significant progress on type safety; root typecheck passes. Critical blockers: tsconfig composite issues blocking app builds, lint errors in scripts/, test infrastructure gaps, security vulnerabilities.
+- **Primary blockers:** TypeScript composite project configuration errors (web/mobile), 5047 lint problems (mostly in scripts/), missing test scripts, 2 critical security vulnerabilities.
+- **Next checkpoint:** Fix tsconfig composite project setup, clean up lint errors in scripts/, restore test infrastructure, remediate critical security vulnerabilities.
 
-## KPI Dashboard (Last run: 2025-01-XX)
+## KPI Dashboard (Last run: 2025-11-09)
 
 | Area       | Status | Metric (last observed)                                                                   | Command          | Supporting Log |
 | ---------- | ------ | ---------------------------------------------------------------------------------------- | ---------------- | -------------- |
-| Lint       | 🟡     | ESLint runs successfully; remaining errors are code quality issues, not config errors    | `pnpm lint`      | -              |
-| Type-Check | 🟡     | Build works; ~1500 type errors remain (mostly non-blocking type mismatches, unused vars) | `pnpm typecheck` | -              |
-| Tests      | 🟡     | Tests run; some failures remain (API mocking, React act warnings)                        | `pnpm test`      | -              |
-| Security   | 🟡     | Audit works; pnpm-lock.yaml exists; vulnerabilities need review                          | `pnpm audit`     | -              |
-| Build      | 🟢     | Build completes successfully                                                             | `pnpm build`     | -              |
+| Lint       | 🔴     | 5047 problems (3007 errors, 2031 warnings); mostly in scripts/, some in packages        | `pnpm lint`      | `logs/web-lint-baseline.log` |
+| Type-Check (Root) | 🟢 | 0 errors - **MAJOR IMPROVEMENT** from ~1500 errors                                     | `pnpm typecheck` | -              |
+| Type-Check (Web)  | 🔴 | Composite project config errors (TS6304, TS6310, TS6377)                                | `pnpm --filter web typecheck` | -              |
+| Type-Check (Mobile)| 🔴 | Composite project config errors (TS6304, TS6310, TS6377)                               | `pnpm --filter mobile typecheck` | -              |
+| Tests      | 🔴     | Missing test:run scripts in some packages; vitest not found in config package           | `pnpm test`      | -              |
+| Security   | 🔴     | 2 critical, 1 high, 3 moderate, 1 low (form-data, @react-native-community/cli)         | `pnpm audit --prod` | -              |
+| Build (Web) | 🔴   | Failing due to tsconfig composite project errors                                        | `pnpm --filter web build` | -              |
 
-> ✅ **Progress:** Admin moderation migrated to real APIs, ESLint config fixed, build blocking errors resolved, build works.
-> 🔁 **Action:** Continue incremental fixes for type errors, test failures, and security vulnerabilities.
+> ✅ **Progress:** Root TypeScript typecheck passes with 0 errors (down from ~1500). Admin moderation migrated to real APIs.
+> 🔁 **Action:** Fix tsconfig composite project configuration, clean up lint errors (prioritize scripts/), restore test infrastructure, remediate critical security vulnerabilities.
 
 ## Release Blockers
 
 1. ~~**Admin moderation mocks:** ReportsView and ChatModerationPanel used IndexedDB mocks~~ ✅ **RESOLVED**: Migrated to real admin APIs (`adminReportsApi`, `adminModerationApi`).
-2. **Backend integration:** Some API modules may still use mocks; needs audit.
-3. **Persistence layer missing:** No PostgreSQL connectivity, migrations, or transaction handling implemented.
-4. **Authentication incomplete:** Token lifecycle, session wiring, and auth contexts are not connected to real services.
-5. **Environment configuration gap:** `.env` scaffolding and runtime secrets are undefined; deployments cannot target real infrastructure.
-6. **Quality gates:** Build works, but type errors and test failures remain; needs incremental fixes.
+2. ~~**Root TypeScript errors:** ~1500 type errors blocking production~~ ✅ **RESOLVED**: Root typecheck now passes with 0 errors.
+3. **TypeScript composite project configuration:** Web and mobile apps have tsconfig composite project errors (TS6304, TS6310, TS6377) blocking builds.
+4. **Lint errors:** 5047 problems (3007 errors, 2031 warnings) - primarily in scripts/ folder, some in packages.
+5. **Test infrastructure:** Missing test:run scripts in some packages; vitest dependencies missing.
+6. **Security vulnerabilities:** 2 critical vulnerabilities (form-data, @react-native-community/cli) requiring updates.
+7. **Backend integration:** Some API modules may still use mocks; needs audit.
+8. **Persistence layer missing:** No PostgreSQL connectivity, migrations, or transaction handling implemented.
+9. **Authentication incomplete:** Token lifecycle, session wiring, and auth contexts are not connected to real services.
+10. **Environment configuration gap:** `.env` scaffolding and runtime secrets are undefined; deployments cannot target real infrastructure.
 
-## Platform Readiness Overview (Traffic-Light as of 2025-11-07)
+## Platform Readiness Overview (Traffic-Light as of 2025-11-09)
 
 ### Web Client
 
@@ -40,7 +46,7 @@ This canonical report supersedes prior status documents. Update this file for al
 | Data integration | 🟡     | Admin moderation migrated to real APIs; other services may still use mocks—needs audit.             |
 | Authentication   | 🔴     | Login/refresh logic stubbed only; API client not wired to auth context.                             |
 | Maps & realtime  | 🟠     | Architecture defined; provider hookup, geocoding, and websocket wiring pending.                     |
-| Deployment       | 🟡     | Build works; env configuration and quality gates need completion.                                   |
+| Deployment       | 🔴     | Build failing due to tsconfig composite project errors; env configuration and quality gates need completion. |
 | Admin moderation | 🟢     | ReportsView and ChatModerationPanel use real backend APIs.                                          |
 
 ### Mobile Clients (iOS & Android)
@@ -71,6 +77,12 @@ This canonical report supersedes prior status documents. Update this file for al
 
 - Baseline logs: `logs/web-lint-baseline.log`, `logs/web-type-baseline.log`, `logs/web-test-baseline.json`, `logs/security-audit-baseline.json`.
 - Architecture references: legacy reports archived in `docs/archive/2025-11-05-production-readiness/`.
+- **2025-11-09 Update:**
+  - Root typecheck: 0 errors (improved from ~1500 errors)
+  - Web typecheck: Composite project configuration errors
+  - Mobile typecheck: Composite project configuration errors
+  - Lint: 5047 problems (3007 errors, 2031 warnings)
+  - Security: 2 critical, 1 high, 3 moderate, 1 low vulnerabilities
 - Future updates must append new log links and summarize deltas in this section for traceability.
 
 ## Update Guidance

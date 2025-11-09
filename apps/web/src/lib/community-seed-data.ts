@@ -2,7 +2,7 @@ import type { CommunityPost } from './community-types';
 import { generateULID } from './utils';
 import { logger } from './logger';
 
-export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
+export function generateCommunitySeedData(): CommunityPost[] {
   const samplePosts: CommunityPost[] = [
     {
       id: generateULID(),
@@ -446,7 +446,7 @@ export async function initializeCommunityData(): Promise<void> {
   ).spark?.kv?.get<CommunityPost[]>('community:posts');
 
   if (!existingPosts || existingPosts.length === 0) {
-    const seedPosts = await generateCommunitySeedData();
+    const seedPosts = generateCommunitySeedData();
     await (
       window as Window & { spark?: { kv?: { set: <T>(key: string, value: T) => Promise<void> } } }
     ).spark?.kv?.set('community:posts', seedPosts);

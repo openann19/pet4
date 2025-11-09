@@ -11,12 +11,25 @@ vi.mock('@/contexts/AppContext', () => ({
   useApp: () => ({
     t: {
       auth: {
+        birthDate: 'Date of Birth',
         birthDateRequired: 'Please enter your birth date',
         ageTooYoung: 'You must be at least 18 years old to use this app',
         verificationError: 'Verification failed. Please try again.',
+        verify: 'Verify',
         verifyAge: 'Verify Age',
         enterBirthDate: 'Enter your birth date',
-        country: 'Country (optional)',
+        country: 'Country (Optional)',
+        countryPlaceholder: 'e.g., United States',
+        ageVerificationTitle: 'Age Verification',
+        ageVerificationDesc: 'You must be at least 18 years old to use PawfectMatch.',
+      },
+      common: {
+        cancel: 'Cancel',
+        close: 'Close',
+        confirm: 'Confirm',
+        save: 'Save',
+        loading: 'Loading...',
+        error: 'Error',
       },
     },
   }),
@@ -32,8 +45,9 @@ vi.mock('@/lib/kyc-service', () => ({
   recordAgeVerification: vi.fn().mockResolvedValue({}),
 }));
 
-vi.mock('@/hooks/useStorage', () => ({
-  useStorage: vi.fn(() => ['user-1']),
+// Mock useStorage hook
+vi.mock('@/hooks/use-storage', () => ({
+  useStorage: vi.fn(() => ['user-1', vi.fn(), vi.fn()]),
 }));
 
 vi.mock('framer-motion', () => ({
@@ -164,7 +178,8 @@ describe('AgeGateModal', () => {
     const user = userEvent.setup();
     render(<AgeGateModal open={true} onVerified={mockOnVerified} onClose={mockOnClose} />);
 
-    const closeButton = screen.getByRole('button', { name: /close/i });
+    // The close button uses t.common.cancel which is 'Cancel'
+    const closeButton = screen.getByRole('button', { name: /cancel/i });
     await user.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalled();

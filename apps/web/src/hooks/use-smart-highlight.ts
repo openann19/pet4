@@ -48,12 +48,6 @@ export function useSmartHighlight(options: UseSmartHighlightOptions = {}): UseSm
   const glowOpacity = useSharedValue(0);
   const glowRadiusValue = useSharedValue(0);
 
-  useEffect(() => {
-    if (isHighlighted) {
-      trigger();
-    }
-  }, [isHighlighted]);
-
   const trigger = useCallback(() => {
     backgroundOpacity.value = withSequence(
       withTiming(1, timingConfigs.fast),
@@ -70,6 +64,12 @@ export function useSmartHighlight(options: UseSmartHighlightOptions = {}): UseSm
       withDelay(300, withTiming(0, timingConfigs.fast))
     );
   }, [backgroundOpacity, glowOpacity, glowRadiusValue, duration, glowRadius]);
+
+  useEffect(() => {
+    if (isHighlighted) {
+      trigger();
+    }
+  }, [isHighlighted, trigger]);
 
   const backgroundStyle = useAnimatedStyle(() => {
     return {

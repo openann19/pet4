@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Framer Motion Migration Tracker
- * 
+ *
  * Audits all files using Framer Motion or @petspark/motion
  * Categorizes them and generates migration status report
  */
@@ -13,23 +13,6 @@ import { dirname } from 'path'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-
-interface FileInfo {
-  path: string
-  imports: string[]
-  usageCount: number
-  category: string
-  priority: number
-  status: 'migrated' | 'pending'
-  dependencies: string[]
-}
-
-interface CategoryStats {
-  total: number
-  migrated: number
-  pending: number
-  progress: number
-}
 
 const MIGRATED_FILES = new Set([
   'apps/web/src/App.tsx',
@@ -43,7 +26,7 @@ const MIGRATED_FILES = new Set([
   'apps/web/src/components/enhanced/ProgressiveImage.tsx',
 ])
 
-const CATEGORY_PATTERNS: Record<string, RegExp[]> = {
+const CATEGORY_PATTERNS = {
   'Core Views': [
     /\/views\/(Matches|Adoption|LostFound|Map|Notifications|SavedPosts|UserPosts|AdoptionMarketplace)View\.tsx$/,
   ],
@@ -88,7 +71,7 @@ const CATEGORY_PATTERNS: Record<string, RegExp[]> = {
   ],
 }
 
-const PRIORITY_MAP: Record<string, number> = {
+const PRIORITY_MAP = {
   'Core Views': 1,
   'Chat Components': 2,
   'Enhanced Components': 3,
@@ -104,16 +87,16 @@ const PRIORITY_MAP: Record<string, number> = {
   'Other Components': 13,
 }
 
-function findFiles(dir: string, extensions: string[] = ['.tsx', '.ts']): string[] {
-  const files: string[] = []
-  
+function findFiles(dir, extensions = ['.tsx', '.ts']) {
+  const files = []
+
   try {
     const entries = readdirSync(dir)
-    
+
     for (const entry of entries) {
       const fullPath = join(dir, entry)
       const stat = statSync(fullPath)
-      
+
       if (stat.isDirectory()) {
         // Skip node_modules and other ignored directories
         if (['node_modules', '.git', 'dist', 'build', '.next'].includes(entry)) {
@@ -130,40 +113,40 @@ function findFiles(dir: string, extensions: string[] = ['.tsx', '.ts']): string[
   } catch (error) {
     // Skip directories we can't read
   }
-  
+
   return files
 }
 
-function analyzeFile(filePath: string): FileInfo | null {
+function analyzeFile(filePath) {
   try {
     const content = readFileSync(filePath, 'utf-8')
     const relativePath = relative(process.cwd(), filePath).replace(/\\/g, '/')
-    
+
     // Check for Framer Motion imports
     const framerMotionPattern = /from\s+['"]framer-motion['"]|import\s+.*\s+from\s+['"]framer-motion['"]/g
     const petsparkMotionPattern = /from\s+['"]@petspark\/motion['"]|import\s+.*\s+from\s+['"]@petspark\/motion['"]/g
-    
+
     const hasFramerMotion = framerMotionPattern.test(content)
     const hasPetsparkMotion = petsparkMotionPattern.test(content)
-    
+
     if (!hasFramerMotion && !hasPetsparkMotion) {
       return null
     }
-    
+
     // Extract imports
-    const imports: string[] = []
+    const imports = []
     const importMatches = [
       ...content.matchAll(/import\s+{([^}]+)}\s+from\s+['"](framer-motion|@petspark\/motion)['"]/g),
       ...content.matchAll(/import\s+(\w+)\s+from\s+['"](framer-motion|@petspark\/motion)['"]/g),
     ]
-    
+
     for (const match of importMatches) {
       if (match[1]) {
         const imported = match[1].split(',').map(s => s.trim())
         imports.push(...imported)
       }
     }
-    
+
     // Count usage
     const motionUsagePatterns = [
       /<MotionView/g,
@@ -176,7 +159,7 @@ function analyzeFile(filePath: string): FileInfo | null {
       /Presence/g,
       /motion\./g,
     ]
-    
+
     let usageCount = 0
     for (const pattern of motionUsagePatterns) {
       const matches = content.match(new RegExp(pattern.source, 'g'))
@@ -184,7 +167,7 @@ function analyzeFile(filePath: string): FileInfo | null {
         usageCount += matches.length
       }
     }
-    
+
     // Determine category
     let category = 'Other Components'
     for (const [cat, patterns] of Object.entries(CATEGORY_PATTERNS)) {
@@ -199,18 +182,18 @@ function analyzeFile(filePath: string): FileInfo | null {
       }
       if (category !== 'Other Components') break
     }
-    
+
     // Check if migrated (uses Reanimated)
     const hasReanimated = /from\s+['"]@\/effects\/reanimated|from\s+['"]react-native-reanimated['"]/g.test(content)
     const status = hasReanimated && !hasFramerMotion && !hasPetsparkMotion ? 'migrated' : 'pending'
-    
+
     // Extract dependencies (simplified - look for component imports)
-    const dependencies: string[] = []
+    const dependencies = []
     const componentImports = content.matchAll(/import\s+.*\s+from\s+['"](\.\.?\/.*)['"]/g)
     for (const match of componentImports) {
       dependencies.push(match[1])
     }
-    
+
     return {
       path: relativePath,
       imports: [...new Set(imports)],
@@ -220,59 +203,62 @@ function analyzeFile(filePath: string): FileInfo | null {
       status: MIGRATED_FILES.has(relativePath) || status === 'migrated' ? 'migrated' : 'pending',
       dependencies,
     }
-  } catch (error) {
+  } catch {
     return null
   }
 }
 
-function categorizeFiles(files: FileInfo[]): Map<string, FileInfo[]> {
-  const categorized = new Map<string, FileInfo[]>()
-  
+function categorizeFiles(files) {
+  const categorized = new Map()
+
   for (const file of files) {
     if (!categorized.has(file.category)) {
       categorized.set(file.category, [])
     }
-    categorized.get(file.category)!.push(file)
+    const categoryFiles = categorized.get(file.category)
+    if (categoryFiles) {
+      categoryFiles.push(file)
+    }
   }
-  
+
   return categorized
 }
 
-function calculateStats(files: FileInfo[]): CategoryStats {
+function calculateStats(files) {
   const total = files.length
   const migrated = files.filter(f => f.status === 'migrated').length
   const pending = total - migrated
   const progress = total > 0 ? Math.round((migrated / total) * 100) : 0
-  
+
   return { total, migrated, pending, progress }
 }
 
-function generateReport(files: FileInfo[]): string {
+function generateReport(files) {
   const categorized = categorizeFiles(files)
   const overallStats = calculateStats(files)
-  
+
   let report = '# Framer Motion Migration Status Report\n\n'
   report += `**Generated**: ${new Date().toISOString()}\n\n`
   report += `## Overall Progress\n\n`
   report += `- **Total Files**: ${overallStats.total}\n`
   report += `- **Migrated**: ${overallStats.migrated} (${overallStats.progress}%)\n`
   report += `- **Pending**: ${overallStats.pending} (${100 - overallStats.progress}%)\n\n`
-  
+
   report += `## Breakdown by Category\n\n`
   report += `| Category | Total | Migrated | Pending | Progress |\n`
   report += `|----------|-------|----------|---------|----------|\n`
-  
+
   const sortedCategories = Array.from(categorized.entries()).sort(
     (a, b) => PRIORITY_MAP[a[0]] - PRIORITY_MAP[b[0]]
   )
-  
+
   for (const [category, categoryFiles] of sortedCategories) {
     const stats = calculateStats(categoryFiles)
     report += `| ${category} | ${stats.total} | ${stats.migrated} | ${stats.pending} | ${stats.progress}% |\n`
   }
-  
+
   report += `\n## Detailed File List\n\n`
-  
+
   for (const [category, categoryFiles] of sortedCategories) {
     const sortedFiles = categoryFiles.sort((a, b) => {
       if (a.status !== b.status) {
@@ -280,9 +266,9 @@ function generateReport(files: FileInfo[]): string {
       }
       return a.priority - b.priority
     })
-    
+
     report += `### ${category}\n\n`
-    
+
     for (const file of sortedFiles) {
       const statusIcon = file.status === 'migrated' ? '✅' : '⏳'
       report += `- ${statusIcon} **${file.path}**\n`
@@ -296,36 +282,36 @@ function generateReport(files: FileInfo[]): string {
       report += `\n`
     }
   }
-  
+
   report += `\n## Migration Checklist\n\n`
-  
+
   const pendingFiles = files.filter(f => f.status === 'pending')
   report += `### High Priority Files (${pendingFiles.filter(f => f.priority <= 3).length} files)\n\n`
   for (const file of pendingFiles.filter(f => f.priority <= 3).slice(0, 10)) {
     report += `- [ ] ${file.path}\n`
   }
-  
+
   report += `\n### All Pending Files\n\n`
   for (const file of pendingFiles) {
     report += `- [ ] ${file.path}\n`
   }
-  
+
   return report
 }
 
-function main(): void {
+function main() {
   const srcDir = join(process.cwd(), 'apps/web/src')
   const files = findFiles(srcDir)
-  
-  const fileInfos: FileInfo[] = []
-  
+
+  const fileInfos = []
+
   for (const file of files) {
     const info = analyzeFile(file)
     if (info) {
       fileInfos.push(info)
     }
   }
-  
+
   // Sort by priority and status
   fileInfos.sort((a, b) => {
     if (a.status !== b.status) {
@@ -336,16 +322,16 @@ function main(): void {
     }
     return a.path.localeCompare(b.path)
   })
-  
+
   const report = generateReport(fileInfos)
-  
+
   console.log(report)
-  
+
   // Write to file
   const reportPath = join(process.cwd(), 'MIGRATION_STATUS_REPORT.md')
   require('fs').writeFileSync(reportPath, report, 'utf-8')
   console.log(`\n✅ Report written to: ${reportPath}`)
-  
+
   // Summary
   const stats = calculateStats(fileInfos)
   console.log(`\n📊 Summary:`)
@@ -355,4 +341,3 @@ function main(): void {
 }
 
 main()
-

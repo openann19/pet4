@@ -151,8 +151,28 @@ vi.mock('react-native-gesture-handler', () => ({
 
 // Reanimated mock (stable across tests)
 vi.mock('react-native-reanimated', () => {
-  const mockSharedValue = (initial: number) => {
-    const value = { value: initial };
+  const createMockSharedValueReanimated = (initial: number) => {
+    let currentValue = initial;
+    const value = {
+      get value() {
+        return currentValue;
+      },
+      set value(newValue: number) {
+        // When animations are assigned, update the value immediately in tests
+        // In real Reanimated, this would happen on the UI thread over time
+        if (typeof newValue === 'number') {
+          currentValue = newValue;
+        } else {
+          // If it's an animation object, extract the target value
+          // For mocks, we just use the value directly
+          currentValue = typeof newValue === 'number' ? newValue : currentValue;
+        }
+      },
+      get: () => currentValue,
+      set: vi.fn((val: number) => {
+        currentValue = val;
+      }),
+    };
     return value;
   };
 
@@ -198,12 +218,12 @@ vi.mock('react-native-reanimated', () => {
   return {
     default: AnimatedComponent,
     Animated: AnimatedNamespace,
-    useSharedValue: vi.fn((initial: number) => mockSharedValue(initial)),
+    useSharedValue: vi.fn((initial: number) => createMockSharedValueReanimated(initial)),
     useDerivedValue: vi.fn((fn: () => number) => {
       try {
-        return mockSharedValue(fn());
+        return createMockSharedValueReanimated(fn());
       } catch {
-        return mockSharedValue(0);
+        return createMockSharedValueReanimated(0);
       }
     }),
     useAnimatedStyle: vi.fn((fn: () => Record<string, unknown>) => {
@@ -213,10 +233,27 @@ vi.mock('react-native-reanimated', () => {
         return {};
       }
     }),
-    withSpring: vi.fn((toValue: number) => toValue),
-    withTiming: vi.fn((toValue: number) => toValue),
-    withDelay: vi.fn((_delay: number, animation: number) => animation),
-    withSequence: vi.fn((...animations: number[]) => animations[animations.length - 1]),
+    withSpring: vi.fn((toValue: number, _config?: unknown) => {
+      // Return a marker object that can be detected by the setter
+      // In real Reanimated, this would be a worklet animation object
+      return toValue;
+    }),
+    withTiming: vi.fn((toValue: number, _config?: unknown) => {
+      return toValue;
+    }),
+    withDelay: vi.fn((delay: number, animation: unknown) => {
+      // If delay > 0, preserve current value (animation will run later)
+      // For tests, we return the animation value directly if delay is 0
+      if (delay === 0) {
+        return animation;
+      }
+      // For non-zero delays, return the animation (tests can use fake timers)
+      return animation;
+    }),
+    withSequence: vi.fn((...animations: unknown[]) => {
+      // Return the last animation value in the sequence
+      return animations[animations.length - 1];
+    }),
     withRepeat: vi.fn((animation: number) => animation),
     interpolate: vi.fn((value: number, inputRange: number[], outputRange: number[]) => {
       if (!inputRange || inputRange.length === 0 || !outputRange || outputRange.length === 0) {
@@ -269,8 +306,8 @@ vi.mock('react-native-reanimated', () => {
     useAnimatedRef: vi.fn(() => ({ current: null })),
     createAnimatedComponent: vi.fn((component: unknown) => component),
     withClamp: vi.fn((animation: number) => animation),
-    makeMutable: vi.fn((initial: number) => mockSharedValue(initial)),
-    makeRemote: vi.fn((initial: number) => mockSharedValue(initial)),
+    makeMutable: vi.fn((initial: number) => createMockSharedValueReanimated(initial)),
+    makeRemote: vi.fn((initial: number) => createMockSharedValueReanimated(initial)),
   };
 });
 
@@ -290,6 +327,86 @@ Object.defineProperty(window, 'matchMedia', {
 
 global.IntersectionObserver = createMockIntersectionObserver();
 global.ResizeObserver = createMockResizeObserver();
+
+// TouchEvent polyfill for jsdom (doesn't support TouchEvent by default)
+if (typeof TouchEvent === 'undefined') {
+  (global as typeof globalThis & { TouchEvent: typeof TouchEvent }).TouchEvent = class TouchEvent extends Event {
+    readonly touches: TouchList;
+    readonly targetTouches: TouchList;
+    readonly changedTouches: TouchList;
+    readonly altKey: boolean;
+    readonly metaKey: boolean;
+    readonly ctrlKey: boolean;
+    readonly shiftKey: boolean;
+
+    constructor(type: string, eventInitDict?: TouchEventInit) {
+      super(type, eventInitDict);
+
+      // Create TouchList from touches array if provided
+      const touchesArray = (eventInitDict?.touches as Touch[]) || [];
+      const targetTouchesArray = (eventInitDict?.targetTouches as Touch[]) || [];
+      const changedTouchesArray = (eventInitDict?.changedTouches as Touch[]) || [];
+
+      // Create TouchList objects
+      const createTouchList = (touches: Touch[]): TouchList => {
+        const list = touches as unknown as TouchList;
+        list.item = (index: number) => touches[index] || null;
+        return list;
+      };
+
+      this.touches = createTouchList(touchesArray);
+      this.targetTouches = createTouchList(targetTouchesArray);
+      this.changedTouches = createTouchList(changedTouchesArray);
+      this.altKey = eventInitDict?.altKey || false;
+      this.metaKey = eventInitDict?.metaKey || false;
+      this.ctrlKey = eventInitDict?.ctrlKey || false;
+      this.shiftKey = eventInitDict?.shiftKey || false;
+    }
+  } as typeof TouchEvent;
+
+  // Touch polyfill
+  if (typeof Touch === 'undefined') {
+    (global as typeof globalThis & { Touch: typeof Touch }).Touch = class Touch {
+      readonly identifier: number;
+      readonly target: EventTarget;
+      readonly clientX: number;
+      readonly clientY: number;
+      readonly pageX: number;
+      readonly pageY: number;
+      readonly screenX: number;
+      readonly screenY: number;
+      readonly radiusX: number;
+      readonly radiusY: number;
+      readonly rotationAngle: number;
+      readonly force: number;
+
+      constructor(touchInitDict: TouchInit | Partial<Touch>) {
+        const init = touchInitDict as TouchInit & Partial<Touch>;
+        this.identifier = init.identifier ?? 0;
+        this.target = init.target ?? ({} as EventTarget);
+        this.clientX = init.clientX ?? 0;
+        this.clientY = init.clientY ?? 0;
+        this.pageX = init.pageX ?? init.clientX ?? 0;
+        this.pageY = init.pageY ?? init.clientY ?? 0;
+        this.screenX = init.screenX ?? init.clientX ?? 0;
+        this.screenY = init.screenY ?? init.clientY ?? 0;
+        this.radiusX = init.radiusX ?? 0;
+        this.radiusY = init.radiusY ?? 0;
+        this.rotationAngle = init.rotationAngle ?? 0;
+        this.force = init.force ?? 0;
+      }
+    } as typeof Touch;
+  }
+
+  // TouchList polyfill
+  if (typeof TouchList === 'undefined') {
+    (global as typeof globalThis & { TouchList: typeof TouchList }).TouchList = class TouchList extends Array<Touch> {
+      item(index: number): Touch | null {
+        return this[index] || null;
+      }
+    } as typeof TouchList;
+  }
+}
 
 // Setup storage mocks (IndexedDB, localStorage)
 setupStorageMocks();
@@ -362,17 +479,68 @@ vi.mock('@/lib/storage', () => {
 });
 
 // Mock realtime service
-vi.mock('@/lib/realtime', () => ({
-  realtime: {
-    connect: vi.fn(),
-    disconnect: vi.fn(),
-    subscribe: vi.fn(),
-    unsubscribe: vi.fn(),
-    publish: vi.fn(),
-    on: vi.fn(),
-    off: vi.fn(),
-  },
-}));
+vi.mock('@/lib/realtime', () => {
+  // Create a mock RealtimeClient class
+  class RealtimeClient {
+    private listeners = new Map<string, Set<(data: unknown) => void>>();
+    private connected = false;
+    private accessToken: string | null = null;
+
+    setAccessToken = vi.fn((token: string | null) => {
+      this.accessToken = token;
+    });
+
+    connect = vi.fn(() => {
+      this.connected = true;
+    });
+
+    disconnect = vi.fn(() => {
+      this.connected = false;
+    });
+
+    on = vi.fn((event: string, callback: (data: unknown) => void) => {
+      if (!this.listeners.has(event)) {
+        this.listeners.set(event, new Set());
+      }
+      this.listeners.get(event)!.add(callback);
+    });
+
+    off = vi.fn((event: string, callback: (data: unknown) => void) => {
+      const callbacks = this.listeners.get(event);
+      if (callbacks) {
+        callbacks.delete(callback);
+      }
+    });
+
+    emit = vi.fn((event: string, data: unknown): Promise<{ success: boolean; error?: string }> => {
+      return Promise.resolve({ success: this.connected });
+    });
+
+    trigger = vi.fn((event: string, data: unknown) => {
+      const callbacks = this.listeners.get(event);
+      if (callbacks) {
+        callbacks.forEach((callback) => {
+          try {
+            callback(data);
+          } catch (error) {
+            // Ignore errors in test
+          }
+        });
+      }
+    });
+
+    subscribe = vi.fn();
+    unsubscribe = vi.fn();
+    publish = vi.fn();
+  }
+
+  const realtimeInstance = new RealtimeClient();
+
+  return {
+    RealtimeClient,
+    realtime: realtimeInstance,
+  };
+});
 
 // Mock websocket manager
 vi.mock('@/lib/websocket-manager', () => ({
@@ -412,13 +580,21 @@ vi.mock('@tanstack/react-query', async () => {
 // Mock @petspark/motion
 vi.mock('@petspark/motion', () => {
   // Import mocked Reanimated functions
-  const mockSharedValue = (initial: number) => ({
-    value: initial,
-    get: () => initial,
-    set: vi.fn((value: number) => {
-      mockSharedValue.value = value;
-    }),
-  });
+  const createMockSharedValue = (initial: number) => {
+    let currentValue = initial;
+    return {
+      get value() {
+        return currentValue;
+      },
+      set value(newValue: number) {
+        currentValue = newValue;
+      },
+      get: () => currentValue,
+      set: vi.fn((value: number) => {
+        currentValue = value;
+      }),
+    };
+  };
 
   const mockUseAnimatedStyle = vi.fn((fn: () => Record<string, unknown>) => {
     try {
@@ -428,7 +604,31 @@ vi.mock('@petspark/motion', () => {
     }
   });
 
+  // Create Animated namespace matching react-native-reanimated mock
+  const AnimatedComponent = ({
+    children,
+    style,
+    ...props
+  }: {
+    children?: React.ReactNode;
+    style?: Record<string, unknown>;
+    [key: string]: unknown;
+  }) => {
+    return React.createElement('div', { style, ...props }, children);
+  };
+
+  const AnimatedNamespace = {
+    View: AnimatedComponent,
+    Text: AnimatedComponent,
+    Image: AnimatedComponent,
+    ScrollView: AnimatedComponent,
+    div: AnimatedComponent,
+    a: AnimatedComponent,
+  };
+
   return {
+    // Export Animated as named export (matches motion package exports)
+    Animated: AnimatedNamespace,
     motion: {
       div: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
         React.createElement('div', props, children),
@@ -438,6 +638,10 @@ vi.mock('@petspark/motion', () => {
         React.createElement('button', props, children),
     },
     MotionView: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
+      React.createElement('div', props, children),
+    MotionText: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
+      React.createElement('span', props, children),
+    MotionScrollView: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
       React.createElement('div', props, children),
     AnimatePresence: ({ children }: { children?: React.ReactNode }) => children,
     Presence: ({ children }: { children?: React.ReactNode }) => children,
@@ -457,5 +661,50 @@ vi.mock('@petspark/motion', () => {
         animatedStyle: mockStyle,
       };
     }),
+    useSharedValue: vi.fn((initial: number) => createMockSharedValue(initial)),
+    useAnimatedStyle: mockUseAnimatedStyle,
+    useAnimatedProps: vi.fn((fn: () => Record<string, unknown>) => {
+      try {
+        return fn();
+      } catch {
+        return {};
+      }
+    }),
+    withSpring: vi.fn((toValue: number) => toValue),
+    withTiming: vi.fn((toValue: number) => toValue),
+    withRepeat: vi.fn((animation: unknown) => animation),
+    withSequence: vi.fn((...args: unknown[]) => args[args.length - 1]),
+    withDelay: vi.fn((_delay: number, animation: unknown) => animation),
+    usePressBounce: vi.fn(() => ({
+      onPressIn: vi.fn(),
+      onPressOut: vi.fn(),
+      animatedStyle: {},
+    })),
+    useMagnetic: vi.fn(() => ({
+      onMouseMove: vi.fn(),
+      animatedStyle: {},
+    })),
+    useParallax: vi.fn(() => ({
+      onMouseMove: vi.fn(),
+      animatedStyle: {},
+    })),
+    useShimmer: vi.fn(() => ({
+      animatedStyle: {},
+    })),
+    useRipple: vi.fn(() => ({
+      onPress: vi.fn(),
+      animatedStyle: {},
+    })),
+    useReducedMotion: vi.fn(() => false),
+    useReducedMotionSV: vi.fn(() => createMockSharedValue(0)),
+    isReduceMotionEnabled: vi.fn(() => false),
+    getReducedMotionDuration: vi.fn((duration: number) => duration),
+    getReducedMotionMultiplier: vi.fn(() => 1),
+    usePerfBudget: vi.fn(() => ({ withinBudget: true, frameTime: 16 })),
+    haptic: vi.fn(),
+    usePageTransitions: vi.fn(() => ({
+      transition: {},
+      animatedStyle: {},
+    })),
   };
 });

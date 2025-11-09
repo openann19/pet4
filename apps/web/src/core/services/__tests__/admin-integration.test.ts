@@ -10,12 +10,19 @@ import { configBroadcastService } from '@/core/services/config-broadcast-service
 import { RealtimeClient } from '@/lib/realtime';
 import type { AdminSyncEvent, AdminSyncListener } from '@/core/services/admin-sync-service';
 
+// The RealtimeClient mock is already set up in test/setup.ts
+// We can use it directly or create a new instance (mock will be used)
+
 describe('Admin Integration Tests', () => {
   let realtimeClient: RealtimeClient;
   let mockListener: AdminSyncListener;
 
   beforeEach(() => {
+    // Create new instance - the mock from setup.ts will be used
     realtimeClient = new RealtimeClient();
+    realtimeClient.setAccessToken('test-token');
+    realtimeClient.connect();
+
     mockListener = {
       onAdminAction: vi.fn() as (event: AdminSyncEvent) => void,
     };

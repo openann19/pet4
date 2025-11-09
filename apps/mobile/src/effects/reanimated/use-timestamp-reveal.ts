@@ -32,7 +32,7 @@ export function useTimestampReveal(
 
   const opacity = useSharedValue(0)
   const translateY = useSharedValue(10)
-  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const show = useCallback(() => {
     if (!enabled) {
@@ -41,7 +41,7 @@ export function useTimestampReveal(
 
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current)
-      hideTimeoutRef.current = undefined as unknown as ReturnType<typeof setTimeout>
+      hideTimeoutRef.current = null
     }
 
     opacity.value = withSpring(1, springConfigs.smooth)
@@ -56,7 +56,7 @@ export function useTimestampReveal(
   const hide = useCallback(() => {
     if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current)
-      hideTimeoutRef.current = undefined as unknown as ReturnType<typeof setTimeout>
+      hideTimeoutRef.current = null
     }
 
     opacity.value = withTiming(0, timingConfigs.fast)

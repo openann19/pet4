@@ -102,7 +102,7 @@ export default function CommunityScreen(): React.JSX.Element {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [newPostContent, setNewPostContent] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  // Loading state handled by refresh state
 
   const modalScale = useSharedValue(0);
 

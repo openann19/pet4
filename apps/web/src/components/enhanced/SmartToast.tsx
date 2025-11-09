@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useSharedValue, withSpring, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { Presence } from '@petspark/motion';
@@ -53,7 +53,7 @@ export function SmartToast({
   title,
   description,
   action,
-  duration: _duration = 5000,
+  duration = 5000,
   onDismiss,
   position = 'top',
 }: SmartToastProps) {
@@ -63,11 +63,32 @@ export function SmartToast({
   const translateX = useSharedValue(0);
   const scale = useSharedValue(0.95);
 
+  const handleDismiss = useCallback(() => {
+    opacity.value = withTiming(0, { duration: 200 });
+    translateX.value = withTiming(300, { duration: 200 });
+    scale.value = withTiming(0.9, { duration: 200 });
+    setTimeout(() => onDismiss(id), 200);
+  }, [id, onDismiss, opacity, translateX, scale]);
+
   useEffect(() => {
     opacity.value = withSpring(1, springConfigs.smooth);
     translateY.value = withSpring(0, springConfigs.smooth);
     scale.value = withSpring(1, springConfigs.smooth);
   }, [opacity, translateY, scale]);
+
+  // Auto-dismiss after duration
+  useEffect(() => {
+    if (duration > 0) {
+      const timer = setTimeout(() => {
+        handleDismiss();
+      }, duration);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+    return undefined;
+  }, [duration, handleDismiss]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -77,13 +98,6 @@ export function SmartToast({
       { scale: scale.value },
     ],
   })) as AnimatedStyle;
-
-  const handleDismiss = () => {
-    opacity.value = withTiming(0, { duration: 200 });
-    translateX.value = withTiming(300, { duration: 200 });
-    scale.value = withTiming(0.9, { duration: 200 });
-    setTimeout(() => onDismiss(id), 200);
-  };
 
   return (
     <AnimatedView

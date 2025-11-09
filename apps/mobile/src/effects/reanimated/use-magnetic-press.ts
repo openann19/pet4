@@ -4,7 +4,7 @@ import {
   withSpring,
   type SharedValue,
 } from 'react-native-reanimated'
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import type { LayoutChangeEvent } from 'react-native'
 import { springConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
@@ -30,23 +30,14 @@ export interface UseMagneticPressReturn {
 
 export function useMagneticPress(options: UseMagneticPressOptions = {}): UseMagneticPressReturn {
   const {
-    strength: _strength = 0.3,
     damping = springConfigs.smooth.damping ?? 20,
     stiffness = springConfigs.smooth.stiffness ?? 150,
-    maxDistance: _maxDistance = 50,
     enabled = true,
-    hapticFeedback: _hapticFeedback = false,
   } = options
 
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
   const scale = useSharedValue(1)
-  const [_elementLayout, setElementLayout] = useState<{
-    width: number
-    height: number
-    x: number
-    y: number
-  } | null>(null)
 
   const handlePressIn = useCallback(() => {
     if (!enabled) return
@@ -60,9 +51,8 @@ export function useMagneticPress(options: UseMagneticPressOptions = {}): UseMagn
     scale.value = withSpring(1, { damping, stiffness })
   }, [enabled, damping, stiffness, translateX, translateY, scale])
 
-  const handleLayout = useCallback((event: LayoutChangeEvent) => {
-    const { width, height, x, y } = event.nativeEvent.layout
-    setElementLayout({ width, height, x, y })
+  const handleLayout = useCallback((_event: LayoutChangeEvent) => {
+    // Layout tracking removed - not currently used
   }, [])
 
   const animatedStyle = useAnimatedStyle(() => ({

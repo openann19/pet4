@@ -2,6 +2,19 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { usePinchZoom } from '../usePinchZoom';
 
+// Helper to create TouchEventInit with touches array (polyfill accepts arrays and converts to TouchList)
+function createTouchEventInit(
+  touches: Touch[],
+  changedTouches?: Touch[]
+): TouchEventInit {
+  // Polyfill accepts Touch[] arrays and converts them internally
+  return {
+    touches: touches as unknown as TouchList,
+    changedTouches: changedTouches ? (changedTouches as unknown as TouchList) : undefined,
+    bubbles: true,
+  } as unknown as TouchEventInit;
+}
+
 describe('usePinchZoom', () => {
   let mockElement: HTMLDivElement;
 
@@ -21,92 +34,211 @@ describe('usePinchZoom', () => {
     expect(result.current.current).toBeNull();
   });
 
-  it('attaches ref to element', () => {
+  it('attaches ref to element', async () => {
     const { result } = renderHook(() => usePinchZoom());
 
-    act(() => {
-      if (result.current.current === null) {
-        result.current.current = mockElement;
-      }
+    await act(async () => {
+      (result.current as { current: HTMLDivElement | null }).current = mockElement;
     });
 
     expect(result.current.current).toBe(mockElement);
   });
 
-  it('calls onPinchStart when pinch starts', () => {
+  it('calls onPinchStart when pinch starts', async () => {
     const mockOnPinchStart = vi.fn();
     const { result } = renderHook(() => usePinchZoom({ onPinchStart: mockOnPinchStart }));
 
-    act(() => {
-      result.current.current = mockElement;
+    await act(async () => {
+      (result.current as { current: HTMLDivElement | null }).current = mockElement;
     });
 
-    const touchStartEvent = new TouchEvent('touchstart', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch, { clientX: 100, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch1 = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touch2 = new Touch({
+        identifier: 1,
+        target: mockElement,
+        clientX: 100,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchStartEvent = new TouchEvent('touchstart', createTouchEventInit([touch1, touch2]));
+      mockElement.dispatchEvent(touchStartEvent);
     });
-
-    mockElement.dispatchEvent(touchStartEvent);
 
     expect(mockOnPinchStart).toHaveBeenCalled();
   });
 
-  it('calls onPinch with scale during pinch', () => {
+  it('calls onPinch with scale during pinch', async () => {
     const mockOnPinch = vi.fn();
     const { result } = renderHook(() => usePinchZoom({ onPinch: mockOnPinch }));
 
-    act(() => {
-      result.current.current = mockElement;
+    await act(async () => {
+      (result.current as { current: HTMLDivElement | null }).current = mockElement;
     });
 
-    const touchStartEvent = new TouchEvent('touchstart', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch, { clientX: 100, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch1 = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touch2 = new Touch({
+        identifier: 1,
+        target: mockElement,
+        clientX: 100,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchStartEvent = new TouchEvent('touchstart', createTouchEventInit([touch1, touch2]));
+      mockElement.dispatchEvent(touchStartEvent);
     });
-    mockElement.dispatchEvent(touchStartEvent);
 
-    const touchMoveEvent = new TouchEvent('touchmove', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch, { clientX: 200, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch1 = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touch2 = new Touch({
+        identifier: 1,
+        target: mockElement,
+        clientX: 200,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchMoveEvent = new TouchEvent('touchmove', createTouchEventInit([touch1, touch2]));
+      mockElement.dispatchEvent(touchMoveEvent);
     });
-    mockElement.dispatchEvent(touchMoveEvent);
 
     expect(mockOnPinch).toHaveBeenCalled();
   });
 
-  it('calls onPinchEnd when pinch ends', () => {
+  it('calls onPinchEnd when pinch ends', async () => {
     const mockOnPinchEnd = vi.fn();
     const { result } = renderHook(() => usePinchZoom({ onPinchEnd: mockOnPinchEnd }));
 
-    act(() => {
-      result.current.current = mockElement;
+    await act(async () => {
+      (result.current as { current: HTMLDivElement | null }).current = mockElement;
     });
 
-    const touchStartEvent = new TouchEvent('touchstart', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch, { clientX: 100, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch1 = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touch2 = new Touch({
+        identifier: 1,
+        target: mockElement,
+        clientX: 100,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchStartEvent = new TouchEvent('touchstart', createTouchEventInit([touch1, touch2]));
+      mockElement.dispatchEvent(touchStartEvent);
     });
-    mockElement.dispatchEvent(touchStartEvent);
 
-    const touchEndEvent = new TouchEvent('touchend');
-    mockElement.dispatchEvent(touchEndEvent);
+    await act(async () => {
+      const touchEndEvent = new TouchEvent('touchend', createTouchEventInit([]));
+      mockElement.dispatchEvent(touchEndEvent);
+    });
 
     expect(mockOnPinchEnd).toHaveBeenCalled();
   });
 
-  it('respects minScale option', () => {
+  it('respects minScale option', async () => {
     const mockOnPinch = vi.fn();
     const { result } = renderHook(() => usePinchZoom({ onPinch: mockOnPinch }, { minScale: 0.8 }));
 
-    act(() => {
-      result.current.current = mockElement;
+    await act(async () => {
+      (result.current as { current: HTMLDivElement | null }).current = mockElement;
     });
 
-    const touchStartEvent = new TouchEvent('touchstart', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch, { clientX: 100, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch1 = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touch2 = new Touch({
+        identifier: 1,
+        target: mockElement,
+        clientX: 100,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchStartEvent = new TouchEvent('touchstart', createTouchEventInit([touch1, touch2]));
+      mockElement.dispatchEvent(touchStartEvent);
     });
-    mockElement.dispatchEvent(touchStartEvent);
 
-    const touchMoveEvent = new TouchEvent('touchmove', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch, { clientX: 50, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch1 = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touch2 = new Touch({
+        identifier: 1,
+        target: mockElement,
+        clientX: 50,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchMoveEvent = new TouchEvent('touchmove', createTouchEventInit([touch1, touch2]));
+      mockElement.dispatchEvent(touchMoveEvent);
     });
-    mockElement.dispatchEvent(touchMoveEvent);
 
     const lastCall = mockOnPinch.mock.calls[mockOnPinch.mock.calls.length - 1];
     if (lastCall) {
@@ -114,23 +246,63 @@ describe('usePinchZoom', () => {
     }
   });
 
-  it('respects maxScale option', () => {
+  it('respects maxScale option', async () => {
     const mockOnPinch = vi.fn();
     const { result } = renderHook(() => usePinchZoom({ onPinch: mockOnPinch }, { maxScale: 2 }));
 
-    act(() => {
-      result.current.current = mockElement;
+    await act(async () => {
+      (result.current as { current: HTMLDivElement | null }).current = mockElement;
     });
 
-    const touchStartEvent = new TouchEvent('touchstart', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch, { clientX: 100, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch1 = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touch2 = new Touch({
+        identifier: 1,
+        target: mockElement,
+        clientX: 100,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchStartEvent = new TouchEvent('touchstart', createTouchEventInit([touch1, touch2]));
+      mockElement.dispatchEvent(touchStartEvent);
     });
-    mockElement.dispatchEvent(touchStartEvent);
 
-    const touchMoveEvent = new TouchEvent('touchmove', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch, { clientX: 500, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch1 = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touch2 = new Touch({
+        identifier: 1,
+        target: mockElement,
+        clientX: 500,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchMoveEvent = new TouchEvent('touchmove', createTouchEventInit([touch1, touch2]));
+      mockElement.dispatchEvent(touchMoveEvent);
     });
-    mockElement.dispatchEvent(touchMoveEvent);
 
     const lastCall = mockOnPinch.mock.calls[mockOnPinch.mock.calls.length - 1];
     if (lastCall) {
@@ -138,46 +310,76 @@ describe('usePinchZoom', () => {
     }
   });
 
-  it('does not handle pinch when disabled', () => {
+  it('does not handle pinch when disabled', async () => {
     const mockOnPinchStart = vi.fn();
     const { result } = renderHook(() =>
       usePinchZoom({ onPinchStart: mockOnPinchStart }, { enabled: false })
     );
 
-    act(() => {
-      result.current.current = mockElement;
+    await act(async () => {
+      (result.current as { current: HTMLDivElement | null }).current = mockElement;
     });
 
-    const touchStartEvent = new TouchEvent('touchstart', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch, { clientX: 100, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch1 = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touch2 = new Touch({
+        identifier: 1,
+        target: mockElement,
+        clientX: 100,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchStartEvent = new TouchEvent('touchstart', createTouchEventInit([touch1, touch2]));
+      mockElement.dispatchEvent(touchStartEvent);
     });
-    mockElement.dispatchEvent(touchStartEvent);
 
     expect(mockOnPinchStart).not.toHaveBeenCalled();
   });
 
-  it('ignores single touch', () => {
+  it('ignores single touch', async () => {
     const mockOnPinchStart = vi.fn();
     const { result } = renderHook(() => usePinchZoom({ onPinchStart: mockOnPinchStart }));
 
-    act(() => {
-      result.current.current = mockElement;
+    await act(async () => {
+      (result.current as { current: HTMLDivElement | null }).current = mockElement;
     });
 
-    const touchStartEvent = new TouchEvent('touchstart', {
-      touches: [{ clientX: 0, clientY: 0 } as Touch],
+    await act(async () => {
+      const touch = new Touch({
+        identifier: 0,
+        target: mockElement,
+        clientX: 0,
+        clientY: 0,
+        radiusX: 0,
+        radiusY: 0,
+        rotationAngle: 0,
+        force: 0,
+      });
+      const touchStartEvent = new TouchEvent('touchstart', createTouchEventInit([touch]));
+      mockElement.dispatchEvent(touchStartEvent);
     });
-    mockElement.dispatchEvent(touchStartEvent);
 
     expect(mockOnPinchStart).not.toHaveBeenCalled();
   });
 
-  it('cleans up event listeners on unmount', () => {
+  it('cleans up event listeners on unmount', async () => {
     const removeEventListenerSpy = vi.spyOn(mockElement, 'removeEventListener');
     const { result, unmount } = renderHook(() => usePinchZoom());
 
-    act(() => {
-      result.current.current = mockElement;
+    await act(async () => {
+      (result.current as { current: HTMLDivElement | null }).current = mockElement;
     });
 
     unmount();

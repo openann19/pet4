@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
-  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createLogger } from '@petspark/shared/core/logger';
@@ -34,7 +33,6 @@ interface SupportTicket {
 export const SupportChatScreen: React.FC = () => {
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [filter, setFilter] = useState<'all' | 'open' | 'in-progress' | 'resolved'>('all');
 
   useEffect(() => {
@@ -125,7 +123,7 @@ export const SupportChatScreen: React.FC = () => {
         ) : (
           filteredTickets.map((ticket, index) => (
             <FadeInView key={ticket.id} delay={index * 50}>
-              <TouchableOpacity onPress={() => setSelectedTicket(ticket)} activeOpacity={0.7}>
+              <TouchableOpacity activeOpacity={0.7}>
                 <AnimatedCard style={styles.ticketCard}>
                   <View style={styles.ticketHeader}>
                     <View style={styles.ticketInfo}>

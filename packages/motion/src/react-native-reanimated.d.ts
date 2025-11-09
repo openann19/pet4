@@ -17,7 +17,7 @@ declare module 'react-native-reanimated' {
   export function useAnimatedProps<T extends object>(factory: () => T): any;
   export function useAnimatedReaction(...args: any[]): void;
   export function useAnimatedGestureHandler(...args: any[]): any;
-  export function useAnimatedRef<T = any>(): any;
+  export function useAnimatedRef<T = unknown>(): any;
 
   export function withSpring(toValue: number, config?: any, callback?: (finished?: boolean) => void): any;
   export function withTiming(toValue: number, config?: any, callback?: (finished?: boolean) => void): any;
@@ -26,7 +26,7 @@ declare module 'react-native-reanimated' {
   export function withDelay(...args: any[]): any;
   export function withDecay(...args: any[]): any;
   export function cancelAnimation(...args: any[]): void;
-  export function runOnJS<T extends (...args: any[]) => any>(fn: T): T;
+  export function runOnJS<T extends (...args: never[]) => unknown>(fn: T): T;
   export function runOnUI(...args: any[]): any;
 
   export const Easing: {

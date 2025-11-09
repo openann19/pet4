@@ -83,19 +83,31 @@ describe('MicroInteractions', () => {
   });
 
   describe('countUp', () => {
-    it('should update element text content', () => {
+    it('should update element text content', async () => {
       const element = document.createElement('div');
       document.body.appendChild(element);
 
       vi.useFakeTimers();
+
+      // Mock requestAnimationFrame to work with fake timers
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+        setTimeout(callback, 16); // Approximate 60fps
+        return 1;
+      });
+
       MicroInteractions.countUp(element, 0, 100, 1000);
 
-      vi.advanceTimersByTime(500);
+      // Advance timers to trigger requestAnimationFrame callbacks
+      await vi.advanceTimersByTimeAsync(500);
+      // Process any pending requestAnimationFrame callbacks
+      await vi.runAllTimersAsync();
       expect(element.textContent).not.toBe('100');
 
-      vi.advanceTimersByTime(600);
+      await vi.advanceTimersByTimeAsync(600);
+      await vi.runAllTimersAsync();
       expect(element.textContent).toBe('100');
 
+      rafSpy.mockRestore();
       vi.useRealTimers();
     });
   });

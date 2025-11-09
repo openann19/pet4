@@ -200,6 +200,26 @@ export default function ChatWindow({
     height: templatesHeight.value * 300,
   })) as AnimatedStyle;
 
+  // Static animated styles for message groups and items (used in render)
+  const dateGroupStyle = useAnimatedStyle(() => ({
+    opacity: 1,
+    transform: [{ scale: 1 }],
+  })) as AnimatedStyle;
+
+  const messageItemStyle = useAnimatedStyle(() => ({
+    opacity: 1,
+    transform: [{ translateY: 0 }, { scale: 1 }],
+  })) as AnimatedStyle;
+
+  const reactionContainerStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 }],
+  })) as AnimatedStyle;
+
+  const typingIndicatorStyle = useAnimatedStyle(() => ({
+    opacity: 1,
+    transform: [{ translateY: 0 }],
+  })) as AnimatedStyle;
+
   const {
     activeCall,
     incomingCall,
@@ -259,7 +279,16 @@ export default function ChatWindow({
 
     haptics.trigger('light');
 
-    const newMessage = sendChatMessage(content);
+    // sendChatMessage returns ChatMessage | null, not a promise
+    // Type definition says Promise<void> but implementation returns value
+    // Cast to unknown first to avoid type mismatch
+    const newMessage = sendChatMessage(content) as ChatMessage | null | Promise<void>;
+    if (newMessage instanceof Promise) {
+      void newMessage.catch(() => {
+        // Silently handle errors - error handling is done in the hook
+      });
+      return;
+    }
     if (!newMessage) return;
 
     setInputValue('');
@@ -281,7 +310,9 @@ export default function ChatWindow({
 
   const handleReaction = (messageId: string, emoji: string) => {
     haptics.trigger('selection');
-    addChatReaction(messageId, emoji as ReactionType);
+    void addChatReaction(messageId, emoji as ReactionType).catch(() => {
+      // Silently handle errors - error handling is done in the hook
+    });
     setShowReactions(null);
   };
 
@@ -291,7 +322,7 @@ export default function ChatWindow({
     inputRef.current?.focus();
   };
 
-  const handleVoiceRecorded = async (audioBlob: Blob, duration: number, waveform: number[]) => {
+  const handleVoiceRecorded = (audioBlob: Blob, duration: number, waveform: number[]) => {
     const messageId = generateMessageId();
 
     const reader = new FileReader();
@@ -361,7 +392,9 @@ export default function ChatWindow({
       setPlayingVoice(null);
       audioRef.current = null;
     };
-    audio.play();
+    void audio.play().catch(() => {
+      // Silently handle audio play errors
+    });
     audioRef.current = audio;
     setPlayingVoice(messageId);
   };
@@ -369,7 +402,9 @@ export default function ChatWindow({
   const markMessagesAsRead = () => {
     const lastMsg = messages && messages.length > 0 ? messages[messages.length - 1] : null;
     if (lastMsg?.id) {
-      markChatAsRead(lastMsg.id);
+      void markChatAsRead(lastMsg.id).catch(() => {
+        // Silently handle errors - error handling is done in the hook
+      });
     }
   };
 
@@ -394,7 +429,9 @@ export default function ChatWindow({
     const petId = room.matchedPetId;
     const petName = room.matchedPetName;
     if (petId && petName) {
-      initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'voice');
+      void initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'voice').catch(() => {
+        // Silently handle errors - error handling is done in the hook
+      });
       toast.info('Starting voice call...');
     }
   };
@@ -404,7 +441,9 @@ export default function ChatWindow({
     const petId = room.matchedPetId;
     const petName = room.matchedPetName;
     if (petId && petName) {
-      initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'video');
+      void initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'video').catch(() => {
+        // Silently handle errors - error handling is done in the hook
+      });
       toast.info('Starting video call...');
     }
   };
@@ -524,7 +563,7 @@ export default function ChatWindow({
             currentUserId={currentUserId}
             typingUsers={typingUsers}
             onReaction={handleReaction}
-            onTranslate={() => {}}
+            onTranslate={() => { }}
           />
         ) : (
           <>
@@ -533,12 +572,7 @@ export default function ChatWindow({
                 <div key={group.date} className="space-y-4">
                   <AnimatedView
                     className="flex justify-center"
-                    style={
-                      useAnimatedStyle(() => ({
-                        opacity: 1,
-                        transform: [{ scale: 1 }],
-                      })) as AnimatedStyle
-                    }
+                    style={dateGroupStyle}
                   >
                     <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
                       {group.date}
@@ -552,12 +586,7 @@ export default function ChatWindow({
                       <AnimatedView
                         key={message.id}
                         className={`flex items-end gap-2 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'}`}
-                        style={
-                          useAnimatedStyle(() => ({
-                            opacity: 1,
-                            transform: [{ translateY: 0 }, { scale: 1 }],
-                          })) as AnimatedStyle
-                        }
+                        style={messageItemStyle}
                       >
                         {!isCurrentUser && (
                           <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
@@ -578,13 +607,11 @@ export default function ChatWindow({
                             style={messageBubbleHover.animatedStyle}
                             onMouseEnter={messageBubbleHover.handleEnter}
                             onMouseLeave={messageBubbleHover.handleLeave}
-                            className={`relative group ${
-                              message.type === 'sticker' ? 'p-0' : 'p-3'
-                            } rounded-2xl shadow-lg ${
-                              isCurrentUser
+                            className={`relative group ${message.type === 'sticker' ? 'p-0' : 'p-3'
+                              } rounded-2xl shadow-lg ${isCurrentUser
                                 ? 'bg-linear-to-br from-primary to-accent text-white'
                                 : 'glass-strong backdrop-blur-xl border border-white/20'
-                            }`}
+                              }`}
                           >
                             {message.type === 'text' && (
                               <p className="text-sm wrap-break-word">{message.content}</p>
@@ -640,7 +667,7 @@ export default function ChatWindow({
                               <PopoverTrigger asChild>
                                 <AnimatedView
                                   style={reactionButtonTap.animatedStyle}
-                                  onClick={() => {}}
+                                  onClick={() => { }}
                                   className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                   onMouseEnter={reactionButtonHover.handleEnter}
                                   onMouseLeave={reactionButtonHover.handleLeave}
@@ -676,11 +703,7 @@ export default function ChatWindow({
                               reactionsArray.length > 0 && (
                                 <AnimatedView
                                   className="flex gap-1 mt-1 px-2"
-                                  style={
-                                    useAnimatedStyle(() => ({
-                                      transform: [{ scale: 1 }],
-                                    })) as AnimatedStyle
-                                  }
+                                  style={reactionContainerStyle}
                                 >
                                   {reactionsArray.map((reaction: MessageReaction, idx: number) => (
                                     <AnimatedView
@@ -725,12 +748,7 @@ export default function ChatWindow({
               <AnimatedView
                 key="typing-indicators"
                 className="flex items-end gap-2 flex-row p-4"
-                style={
-                  useAnimatedStyle(() => ({
-                    opacity: 1,
-                    transform: [{ translateY: 0 }],
-                  })) as AnimatedStyle
-                }
+                style={typingIndicatorStyle}
               >
                 <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
                   <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">

@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SpringConfig } from '../animations/springConfigs';
@@ -21,7 +21,7 @@ import { SupportChatScreen } from './admin/SupportChatScreen';
 import { UserManagementScreen } from './admin/UserManagementScreen';
 import type { AdminView } from '@petspark/shared';
 
-const { width } = Dimensions.get('window');
+// Screen width available if needed: Dimensions.get('window').width
 
 interface MenuItem {
   id: AdminView;

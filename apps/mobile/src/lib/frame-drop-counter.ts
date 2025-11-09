@@ -79,24 +79,24 @@ export function startFrameTracking(): () => FrameMetrics {
     // Log if significant frame drops detected
     if (dropped > 2 && duration < 300) {
       // Send to telemetry if available
-      if ((import.meta as any).env?.PROD) {
+      const isProduction = process.env['NODE_ENV'] === 'production'
+      const telemetryEndpoint = process.env['EXPO_PUBLIC_TELEMETRY_ENDPOINT']
+
+      if (isProduction && telemetryEndpoint) {
         try {
-          const endpoint = (import.meta as any).env.VITE_TELEMETRY_ENDPOINT
-          if (endpoint) {
-            void fetch(endpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                type: 'frame-drop',
-                ...result,
-                duration,
-                frameRate: total > 0 ? ((total - dropped) / total) * 60 : 60,
-              }),
-              keepalive: true,
-            }).catch(() => {
-              // Silently fail if telemetry is unavailable
-            })
-          }
+          void fetch(telemetryEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'frame-drop',
+              ...result,
+              duration,
+              frameRate: total > 0 ? ((total - dropped) / total) * 60 : 60,
+            }),
+            keepalive: true,
+          }).catch(() => {
+            // Silently fail if telemetry is unavailable
+          })
         } catch {
           // Silently fail
         }

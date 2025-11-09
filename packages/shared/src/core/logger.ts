@@ -31,12 +31,14 @@ class ConsoleLogger implements Logger {
 
   debug(message: string, context?: LogContext): void {
     if (this.shouldLog('debug')) {
+      // eslint-disable-next-line no-console
       console.debug(`[${this.name}] ${message}`, context ?? '')
     }
   }
 
   info(message: string, context?: LogContext): void {
     if (this.shouldLog('info')) {
+      // eslint-disable-next-line no-console
       console.info(`[${this.name}] ${message}`, context ?? '')
     }
   }

@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function useStorage<T>(key: string, initialValue: T): [T, (value: T) => Promise<void>] {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadStoredValue();
@@ -15,10 +14,8 @@ export function useStorage<T>(key: string, initialValue: T): [T, (value: T) => P
       if (item !== null) {
         setStoredValue(JSON.parse(item));
       }
-    } catch (error) {
-      // Error loading data
-    } finally {
-      setIsLoading(false);
+    } catch {
+      // Error loading data - silently fail
     }
   };
 
@@ -27,8 +24,8 @@ export function useStorage<T>(key: string, initialValue: T): [T, (value: T) => P
       try {
         setStoredValue(value);
         await AsyncStorage.setItem(key, JSON.stringify(value));
-      } catch (error) {
-        // Error saving data
+      } catch {
+        // Error saving data - silently fail
       }
     },
     [key]

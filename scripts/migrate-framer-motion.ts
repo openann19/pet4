@@ -6,7 +6,7 @@
  * by identifying patterns and suggesting replacements.
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs'
+import { readFileSync, readdirSync, statSync } from 'fs'
 import { join, extname } from 'path'
 
 interface MigrationPattern {

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect } from 'react'
+import React, { useCallback, useRef, useEffect, useMemo } from 'react'
 import { Pressable, Text, StyleSheet, View, type ViewStyle } from 'react-native'
 import Animated, {
   useSharedValue,
@@ -33,6 +33,7 @@ export interface SegmentedControlProps {
 }
 
 const SPRING_CONFIG = { stiffness: 400, damping: 20 }
+const MAX_SEGMENTS = 10 // Maximum expected segments
 
 export function SegmentedControl({
   options,
@@ -45,13 +46,28 @@ export function SegmentedControl({
   accessibilityLabel,
 }: SegmentedControlProps): React.JSX.Element {
   const containerRef = useRef<View>(null)
-  const buttonRefs = options.map(() =>
-    useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
-  )
+  // Create refs for maximum expected segments at top level (hooks rules compliance)
+  // Only use the refs we need based on options.length
+  const ref0 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+  const ref1 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+  const ref2 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+  const ref3 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+  const ref4 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+  const ref5 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+  const ref6 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+  const ref7 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+  const ref8 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+  const ref9 = useAnimatedRef<React.ComponentRef<typeof AnimatedPressable>>()
+
+  const allRefs = [ref0, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9]
+  const buttonRefs = allRefs.slice(0, Math.min(options.length, MAX_SEGMENTS))
   const indicatorPosition = useSharedValue(0)
   const indicatorWidth = useSharedValue(0)
   const reducedMotion = useReducedMotionSV()
-  const selectedValues = Array.isArray(value) ? value : value ? [value] : []
+  const selectedValues = useMemo(
+    () => (Array.isArray(value) ? value : value ? [value] : []),
+    [value]
+  )
 
   const updateIndicator = useCallback(() => {
     const selectedIndex = options.findIndex(opt => selectedValues.includes(opt.value))
@@ -72,7 +88,7 @@ export function SegmentedControl({
         })()
       }
     }
-  }, [options, selectedValues, indicatorPosition, indicatorWidth, reducedMotion])
+  }, [options, selectedValues, indicatorPosition, indicatorWidth, reducedMotion, buttonRefs])
 
   useEffect(() => {
     updateIndicator()

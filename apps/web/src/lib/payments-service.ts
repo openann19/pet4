@@ -16,7 +16,7 @@ import { createLogger } from './logger';
 const logger = createLogger('PaymentsService');
 
 export class PaymentsService {
-  static async getCatalog() {
+  static getCatalog() {
     return PRODUCT_CATALOG;
   }
 
@@ -194,12 +194,12 @@ export class PaymentsService {
     }
   }
 
-  static async createSubscriptionEvent(event: {
+  static createSubscriptionEvent(event: {
     subscriptionId: string;
     userId: string;
     type: SubscriptionEvent['type'];
     metadata: Record<string, unknown>;
-  }): Promise<SubscriptionEvent> {
+  }): SubscriptionEvent {
     // Subscription events are typically created by the backend
     // This method is kept for backward compatibility
     logger.warn('createSubscriptionEvent should be handled by backend', { event });
@@ -210,14 +210,14 @@ export class PaymentsService {
     };
   }
 
-  static async logAudit(entry: {
+  static logAudit(entry: {
     actorUserId: string;
     action: string;
     targetUserId?: string;
     targetSubscriptionId?: string;
     details: Record<string, unknown>;
     reason?: string;
-  }): Promise<AuditLogEntry> {
+  }): AuditLogEntry {
     // Audit logs are typically handled by the backend
     // This method is kept for backward compatibility
     logger.warn('logAudit should be handled by backend', { entry });

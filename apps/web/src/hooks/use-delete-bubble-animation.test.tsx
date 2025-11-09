@@ -23,89 +23,75 @@ describe('useDeleteBubbleAnimation', () => {
     expect(result.current.rotation.value).toBe(0);
   });
 
-  it('should trigger self-delete animation', () => {
+  it('should trigger self-delete animation', async () => {
     const { result } = renderHook(() => useDeleteBubbleAnimation({ context: 'self-delete' }));
 
-    act(() => {
+    await act(async () => {
       result.current.triggerDelete();
-    });
-
-    act(() => {
-      vi.advanceTimersByTime(100);
+      await vi.advanceTimersByTimeAsync(100);
     });
 
     expect(result.current.scale.value).toBeGreaterThan(1);
     expect(result.current.translateY.value).toBeLessThan(0);
   });
 
-  it('should trigger admin-delete animation', () => {
+  it('should trigger admin-delete animation', async () => {
     const { result } = renderHook(() => useDeleteBubbleAnimation({ context: 'admin-delete' }));
 
-    act(() => {
+    await act(async () => {
       result.current.triggerDelete();
-    });
-
-    act(() => {
-      vi.advanceTimersByTime(100);
+      await vi.advanceTimersByTimeAsync(100);
     });
 
     expect(result.current.scale.value).toBeGreaterThan(1);
     expect(result.current.opacity.value).toBeLessThan(1);
   });
 
-  it('should trigger emoji-media delete animation', () => {
+  it('should trigger emoji-media delete animation', async () => {
     const { result } = renderHook(() => useDeleteBubbleAnimation({ context: 'emoji-media' }));
 
-    act(() => {
+    await act(async () => {
       result.current.triggerDelete();
-    });
-
-    act(() => {
-      vi.advanceTimersByTime(100);
+      await vi.advanceTimersByTimeAsync(100);
     });
 
     expect(result.current.scale.value).toBeGreaterThan(1);
     expect(result.current.rotation.value).not.toBe(0);
   });
 
-  it('should trigger group-chat delete animation', () => {
+  it('should trigger group-chat delete animation', async () => {
     const { result } = renderHook(() => useDeleteBubbleAnimation({ context: 'group-chat' }));
 
-    act(() => {
+    await act(async () => {
       result.current.triggerDelete();
-    });
-
-    act(() => {
-      vi.advanceTimersByTime(100);
+      await vi.advanceTimersByTimeAsync(100);
     });
 
     expect(result.current.scale.value).toBeLessThan(1);
     expect(result.current.opacity.value).toBeLessThan(1);
   });
 
-  it('should call onFinish callback after animation', () => {
+  it('should call onFinish callback after animation', async () => {
     const onFinish = vi.fn();
     const { result } = renderHook(() => useDeleteBubbleAnimation({ onFinish, duration: 300 }));
 
-    act(() => {
+    await act(async () => {
       result.current.triggerDelete();
-    });
-
-    act(() => {
-      vi.advanceTimersByTime(350);
+      await vi.advanceTimersByTimeAsync(350);
     });
 
     expect(onFinish).toHaveBeenCalledTimes(1);
   });
 
-  it('should reset animation', () => {
+  it('should reset animation', async () => {
     const { result } = renderHook(() => useDeleteBubbleAnimation());
 
-    act(() => {
+    await act(async () => {
       result.current.triggerDelete();
+      await vi.advanceTimersByTimeAsync(50);
     });
 
-    act(() => {
+    await act(async () => {
       result.current.reset();
     });
 
@@ -123,38 +109,36 @@ describe('useDeleteBubbleAnimation', () => {
     expect(result.current.animatedStyle).toBeDefined();
   });
 
-  it('should respect custom duration', () => {
+  it('should respect custom duration', async () => {
     const onFinish = vi.fn();
     const { result } = renderHook(() => useDeleteBubbleAnimation({ onFinish, duration: 500 }));
 
-    act(() => {
+    await act(async () => {
       result.current.triggerDelete();
-    });
-
-    act(() => {
-      vi.advanceTimersByTime(300);
+      await vi.advanceTimersByTimeAsync(300);
     });
 
     expect(onFinish).not.toHaveBeenCalled();
 
-    act(() => {
-      vi.advanceTimersByTime(250);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(250);
     });
 
     expect(onFinish).toHaveBeenCalledTimes(1);
   });
 
-  it('should work without haptic feedback', () => {
+  it('should work without haptic feedback', async () => {
     const { result } = renderHook(() => useDeleteBubbleAnimation({ hapticFeedback: false }));
 
-    expect(() => {
-      act(() => {
-        result.current.triggerDelete();
-      });
-    }).not.toThrow();
+    await act(async () => {
+      result.current.triggerDelete();
+      await vi.advanceTimersByTimeAsync(50);
+    });
+
+    expect(result.current.opacity.value).toBeLessThan(1);
   });
 
-  it('should handle all animation contexts', () => {
+  it('should handle all animation contexts', async () => {
     const contexts: ('self-delete' | 'admin-delete' | 'emoji-media' | 'group-chat')[] = [
       'self-delete',
       'admin-delete',
@@ -162,14 +146,16 @@ describe('useDeleteBubbleAnimation', () => {
       'group-chat',
     ];
 
-    contexts.forEach((context) => {
+    for (const context of contexts) {
       const { result } = renderHook(() => useDeleteBubbleAnimation({ context }));
 
-      expect(() => {
-        act(() => {
-          result.current.triggerDelete();
-        });
-      }).not.toThrow();
-    });
+      await act(async () => {
+        result.current.triggerDelete();
+        await vi.advanceTimersByTimeAsync(50);
+      });
+
+      expect(result.current.opacity.value).toBeDefined();
+      expect(result.current.scale.value).toBeDefined();
+    }
   });
 });

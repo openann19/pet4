@@ -62,7 +62,7 @@ export function ChatInputBar({
   const internalInputRef = useRef<TextInput>(null)
   const inputRef = externalInputRef ?? internalInputRef
   const [stickerTab, setStickerTab] = useState<'stickers' | 'reactions'>('stickers')
-  const [_isTyping, setIsTyping] = useState(false)
+  const [, setIsTyping] = useState(false)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const sendButtonScale = useSharedValue(1)

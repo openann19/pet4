@@ -2,10 +2,21 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PremiumNotificationBell } from '../PremiumNotificationBell';
-import type { PremiumNotification } from '../PremiumNotificationCenter';
-import { useStorage } from '@/hooks/use-storage';
+import type { PremiumNotification } from '../types';
 
-vi.mock('@/hooks/useStorage');
+// Mock useStorage - use a closure to allow mutation
+const storageMock = {
+  impl: (key: string, defaultValue: unknown): [unknown, () => Promise<void>, () => Promise<void>] => {
+    const setter = async () => { };
+    const clear = async () => { };
+    return [defaultValue, setter, clear];
+  },
+};
+
+vi.mock('@/hooks/use-storage', () => ({
+  useStorage: (key: string, defaultValue: unknown) => storageMock.impl(key, defaultValue),
+}));
+
 vi.mock('@/lib/haptics', () => ({
   haptics: {
     medium: vi.fn(),
@@ -27,8 +38,6 @@ vi.mock('../PremiumNotificationCenter', () => ({
     </div>
   ),
 }));
-
-const mockUseStorage = vi.mocked(useStorage);
 
 const mockNotifications: PremiumNotification[] = [
   {
@@ -57,9 +66,9 @@ describe('PremiumNotificationBell', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
-    mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
-      const setter = vi.fn();
-      const clear = vi.fn();
+    storageMock.impl = (key: string, defaultValue: unknown) => {
+      const setter = vi.fn(async () => { });
+      const clear = vi.fn(async () => { });
       if (key === 'premium-notifications') {
         return [mockNotifications, setter, clear];
       }
@@ -67,7 +76,7 @@ describe('PremiumNotificationBell', () => {
         return [Date.now() - 5000, setter, clear];
       }
       return [defaultValue, setter, clear];
-    });
+    };
   });
 
   afterEach(() => {
@@ -143,7 +152,7 @@ describe('PremiumNotificationBell', () => {
       priority: 'normal',
     }));
 
-    mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+    storageMock.impl = (key: string, defaultValue: unknown) => {
       const setter = vi.fn();
       const clear = vi.fn();
       if (key === 'premium-notifications') {
@@ -153,7 +162,7 @@ describe('PremiumNotificationBell', () => {
         return [Date.now() - 5000, setter, clear];
       }
       return [defaultValue, setter, clear];
-    });
+    };
 
     render(<PremiumNotificationBell />);
     const badge = screen.getByLabelText(/unread notification/i);
@@ -180,7 +189,7 @@ describe('PremiumNotificationBell', () => {
       },
     ];
 
-    mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+    storageMock.impl = (key: string, defaultValue: unknown) => {
       const setter = vi.fn();
       const clear = vi.fn();
       if (key === 'premium-notifications') {
@@ -190,7 +199,7 @@ describe('PremiumNotificationBell', () => {
         return [Date.now() - 5000, setter, clear];
       }
       return [defaultValue, setter, clear];
-    });
+    };
 
     render(<PremiumNotificationBell />);
     const badge = screen.getByLabelText(/unread notification/i);
@@ -211,7 +220,7 @@ describe('PremiumNotificationBell', () => {
       },
     ];
 
-    mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+    storageMock.impl = (key: string, defaultValue: unknown) => {
       const setter = vi.fn();
       const clear = vi.fn();
       if (key === 'premium-notifications') {
@@ -221,7 +230,7 @@ describe('PremiumNotificationBell', () => {
         return [Date.now() - 5000, setter, clear];
       }
       return [defaultValue, setter, clear];
-    });
+    };
 
     render(<PremiumNotificationBell />);
     const badge = screen.queryByLabelText(/unread notification/i);
@@ -242,7 +251,7 @@ describe('PremiumNotificationBell', () => {
       },
     ];
 
-    mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+    storageMock.impl = (key: string, defaultValue: unknown) => {
       const setter = vi.fn();
       const clear = vi.fn();
       if (key === 'premium-notifications') {
@@ -252,7 +261,7 @@ describe('PremiumNotificationBell', () => {
         return [Date.now() - 5000, setter, clear];
       }
       return [defaultValue, setter, clear];
-    });
+    };
 
     render(<PremiumNotificationBell />);
     const badge = screen.queryByLabelText(/unread notification/i);
@@ -282,7 +291,7 @@ describe('PremiumNotificationBell', () => {
   });
 
   it('should handle empty notifications array', () => {
-    mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+    storageMock.impl = (key: string, defaultValue: unknown) => {
       const setter = vi.fn();
       const clear = vi.fn();
       if (key === 'premium-notifications') {
@@ -292,7 +301,7 @@ describe('PremiumNotificationBell', () => {
         return [Date.now() - 5000, setter, clear];
       }
       return [defaultValue, setter, clear];
-    });
+    };
 
     render(<PremiumNotificationBell />);
     const button = screen.getByRole('button');
@@ -300,7 +309,7 @@ describe('PremiumNotificationBell', () => {
   });
 
   it('should handle null notifications', () => {
-    mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+    storageMock.impl = (key: string, defaultValue: unknown) => {
       const setter = vi.fn();
       const clear = vi.fn();
       if (key === 'premium-notifications') {
@@ -310,7 +319,7 @@ describe('PremiumNotificationBell', () => {
         return [Date.now() - 5000, setter, clear];
       }
       return [defaultValue, setter, clear];
-    });
+    };
 
     render(<PremiumNotificationBell />);
     const button = screen.getByRole('button');
@@ -329,7 +338,7 @@ describe('PremiumNotificationBell', () => {
   });
 
   it('should show bell icon when no new notifications', () => {
-    mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+    storageMock.impl = (key: string, defaultValue: unknown) => {
       const setter = vi.fn();
       const clear = vi.fn();
       if (key === 'premium-notifications') {
@@ -339,7 +348,7 @@ describe('PremiumNotificationBell', () => {
         return [Date.now(), setter, clear];
       }
       return [defaultValue, setter, clear];
-    });
+    };
 
     render(<PremiumNotificationBell />);
     const button = screen.getByRole('button');
@@ -361,7 +370,7 @@ describe('PremiumNotificationBell', () => {
       },
     ];
 
-    mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+    storageMock.impl = (key: string, defaultValue: unknown) => {
       const setter = vi.fn();
       const clear = vi.fn();
       if (key === 'premium-notifications') {
@@ -371,7 +380,7 @@ describe('PremiumNotificationBell', () => {
         return [Date.now() - 5000, setter, clear];
       }
       return [defaultValue, setter, clear];
-    });
+    };
 
     render(<PremiumNotificationBell />);
     const button = screen.getByRole('button');

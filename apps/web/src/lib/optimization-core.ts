@@ -127,11 +127,16 @@ export function useAsyncEffect(
   useEffect(() => {
     let cleanup: void | (() => void);
 
-    effect().then((cleanupFn) => {
-      if (isMounted()) {
-        cleanup = cleanupFn;
-      }
-    });
+    void effect()
+      .then((cleanupFn) => {
+        if (isMounted()) {
+          cleanup = cleanupFn;
+        }
+      })
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Async effect failed', err);
+      });
 
     return () => {
       if (cleanup && typeof cleanup === 'function') {

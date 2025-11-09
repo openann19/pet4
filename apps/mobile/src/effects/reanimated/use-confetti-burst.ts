@@ -8,7 +8,6 @@ import {
 } from 'react-native-reanimated'
 import { useCallback, useState } from 'react'
 import { Dimensions } from 'react-native'
-import type { AnimatedStyle } from './animated-view'
 
 export interface ConfettiParticle {
   id: number
@@ -30,7 +29,20 @@ export interface UseConfettiBurstOptions {
 export interface UseConfettiBurstReturn {
   burst: (centerX?: number, centerY?: number) => void
   particles: ConfettiParticle[]
-  createParticleStyle: (particle: ConfettiParticle) => () => AnimatedStyle
+  createParticleStyle: (
+    particle: ConfettiParticle
+  ) => () => {
+    transform: Array<{
+      translateX?: number
+      translateY?: number
+      rotate?: string
+      scale?: number
+    }>
+    opacity: number
+    backgroundColor: string
+    width: number
+    height: number
+  }
   isAnimating: boolean
   progress: SharedValue<number>
 }
@@ -144,7 +156,7 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
   return {
     burst,
     particles,
-    createParticleStyle: createParticleStyle as any,
+    createParticleStyle,
     isAnimating: particles.length > 0,
     progress,
   }

@@ -48,14 +48,7 @@ function getGzippedSize(filePath) {
   }
 }
 
-function getFileSize(filePath) {
-  try {
-    const stats = statSync(filePath)
-    return Math.round(stats.size / 1024) // Convert to KB
-  } catch {
-    return 0
-  }
-}
+// File size calculation removed - not used in this script
 
 function analyzeBundles() {
   /** @type {Record<string, number>} */
@@ -188,4 +181,3 @@ function checkPerformanceBudget() {
 
 // Run the check
 checkPerformanceBudget()
-

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { supportsWebP, supportsAVIF } from '@/lib/image-loader';
 
@@ -32,31 +32,31 @@ export function OptimizedImage({
   const [optimizedSrc, setOptimizedSrc] = useState(src);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const getOptimizedSrc = (
-    originalSrc: string,
-    imgFormat: 'webp' | 'avif' | 'original'
-  ): string => {
-    if (imgFormat === 'original') return originalSrc;
+  const getOptimizedSrc = useCallback(
+    (originalSrc: string, imgFormat: 'webp' | 'avif' | 'original'): string => {
+      if (imgFormat === 'original') return originalSrc;
 
-    try {
-      const url = new URL(originalSrc, window.location.origin);
-      const params = new URLSearchParams(url.search);
+      try {
+        const url = new URL(originalSrc, window.location.origin);
+        const params = new URLSearchParams(url.search);
 
-      if (width) params.set('w', width.toString());
-      if (height) params.set('h', height.toString());
-      if (quality) params.set('q', quality.toString());
-      params.set('fm', imgFormat);
+        if (width) params.set('w', width.toString());
+        if (height) params.set('h', height.toString());
+        if (quality) params.set('q', quality.toString());
+        params.set('fm', imgFormat);
 
-      return `${url.pathname}?${params.toString()}`;
-    } catch {
-      return originalSrc;
-    }
-  };
+        return `${url.pathname}?${params.toString()}`;
+      } catch {
+        return originalSrc;
+      }
+    },
+    [width, height, quality]
+  );
 
   // Detect and set best format
   useEffect(() => {
     if (format === 'auto') {
-      supportsAVIF().then((avifSupported) => {
+      void supportsAVIF().then((avifSupported) => {
         if (avifSupported) {
           setOptimizedSrc(getOptimizedSrc(src, 'avif'));
         } else if (supportsWebP()) {
@@ -68,7 +68,7 @@ export function OptimizedImage({
     } else {
       setOptimizedSrc(getOptimizedSrc(src, format));
     }
-  }, [src, format, width, height, quality]);
+  }, [src, format, getOptimizedSrc]);
 
   useEffect(() => {
     if (!imgRef.current) return;

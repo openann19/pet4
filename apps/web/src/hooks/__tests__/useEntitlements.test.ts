@@ -76,12 +76,6 @@ describe('useEntitlements', () => {
   });
 
   it('returns 0 for missing consumables', async () => {
-    const { result } = renderHook(() => useEntitlements());
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
     const customEntitlements = {
       entitlements: ['premium'] as const,
       consumables: {
@@ -92,9 +86,15 @@ describe('useEntitlements', () => {
 
     mockPaymentsService.getUserEntitlements.mockResolvedValue(customEntitlements as never);
 
-    await result.current.refresh();
+    const { result } = renderHook(() => useEntitlements());
 
-    expect(result.current.getConsumableCount('super_likes')).toBe(0);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    await waitFor(() => {
+      expect(result.current.getConsumableCount('super_likes')).toBe(0);
+    });
   });
 
   it('handles loading error', async () => {

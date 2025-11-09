@@ -181,3 +181,4 @@ prettier.config.*.old
 *.config.old
 *.config.tmp
 *.config.temp
+.cache/

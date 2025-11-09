@@ -5,13 +5,27 @@ self.addEventListener('sync', (e) => {
   if (e.tag === 'upload-sync') e.waitUntil(flushQueue());
 });
 self.addEventListener('notificationclick', (e) => {
-  const a = e.action;
-  n = e.notification;
-  n.close();
-  if (a === 'reply') {
-    clients.openWindow('/chat?reply=' + encodeURIComponent(n.data?.mid || ''));
+  const action = e.action;
+  const notification = e.notification;
+  notification.close();
+  if (action === 'reply') {
+    e.waitUntil(
+      self.clients.matchAll().then((clientList) => {
+        if (clientList.length > 0) {
+          return clientList[0].focus();
+        }
+        return self.clients.openWindow('/chat?reply=' + encodeURIComponent(notification.data?.mid || ''));
+      })
+    );
   } else {
-    clients.openWindow('/chat');
+    e.waitUntil(
+      self.clients.matchAll().then((clientList) => {
+        if (clientList.length > 0) {
+          return clientList[0].focus();
+        }
+        return self.clients.openWindow('/chat');
+      })
+    );
   }
 });
 self.addEventListener('fetch', (e) => {

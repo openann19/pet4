@@ -51,7 +51,6 @@ const configItems: ConfigItem[] = [
 ];
 
 export const ConfigManagementScreen: React.FC = () => {
-  const [selectedConfig, setSelectedConfig] = useState<ConfigType | null>(null);
   const [broadcasting, setBroadcasting] = useState(false);
 
   const handleBroadcast = async (configType: ConfigType) => {
@@ -59,7 +58,6 @@ export const ConfigManagementScreen: React.FC = () => {
     try {
       const config: Record<string, unknown> = {};
       await mobileAdminApi.broadcastConfig(configType, config);
-      setSelectedConfig(null);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to broadcast config', err, { context: 'handleBroadcast', configType });
@@ -93,7 +91,7 @@ export const ConfigManagementScreen: React.FC = () => {
               <View style={styles.configActions}>
                 <TouchableOpacity
                   style={styles.editButton}
-                  onPress={() => setSelectedConfig(item.type)}
+                  onPress={() => undefined}
                 >
                   <Text style={styles.editButtonText}>Edit</Text>
                 </TouchableOpacity>

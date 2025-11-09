@@ -5,7 +5,7 @@ import {
   withSpring,
   type SharedValue,
 } from 'react-native-reanimated'
-import { springConfigs, timingConfigs } from './transitions'
+import { springConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
 
 export interface UseEntryAnimationOptions {
@@ -27,7 +27,6 @@ export interface UseEntryAnimationReturn {
 export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEntryAnimationReturn {
   const {
     delay = 0,
-    duration: _duration = timingConfigs.smooth.duration ?? 250,
     initialY = 20,
     initialOpacity = 0,
     initialScale = 0.95,

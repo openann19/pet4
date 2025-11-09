@@ -273,8 +273,8 @@ interface CreatePetDialogProps {
 }
 
 export default function CreatePetDialog({ open, onOpenChange, editingPet }: CreatePetDialogProps) {
-  const [_userPets, setUserPets] = useStorage<Pet[]>('user-pets', []);
-  const [_allPets, setAllPets] = useStorage<Pet[]>('all-pets', []);
+  const [, setUserPets] = useStorage<Pet[]>('user-pets', []);
+  const [, setAllPets] = useStorage<Pet[]>('all-pets', []);
 
   const [currentStep, setCurrentStep] = useState<Step>('type');
   const [petType, setPetType] = useState<PetType>('dog');
@@ -316,6 +316,11 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
 
   const emojiStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${emojiRotation.value}deg` }],
+  })) as AnimatedStyle;
+
+  // Static animated style for pet type selection indicator (used in render)
+  const petTypeIndicatorStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 }],
   })) as AnimatedStyle;
 
   // Presence hooks for conditional rendering
@@ -496,15 +501,15 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
     };
 
     if (editingPet) {
-      setUserPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
-      setAllPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
+      void setUserPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
+      void setAllPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
 
       toast.success('Pet profile updated!', {
         description: `${name}'s profile has been updated successfully.`,
       });
     } else {
-      setUserPets((current) => [...(current || []), petData]);
-      setAllPets((current) => [...(current || []), petData]);
+      void setUserPets((current) => [...(current || []), petData]);
+      void setAllPets((current) => [...(current || []), petData]);
       toast.success('Pet profile created! 🎉', {
         description: `${name} is ready to find perfect companions!`,
       });
@@ -536,11 +541,10 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
                       setPetType(type.value);
                       setTimeout(() => handleNext(), 400);
                     }}
-                    className={`relative p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
-                      petType === type.value
+                    className={`relative p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${petType === type.value
                         ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                         : 'border-border bg-card hover:border-primary/50 hover:bg-card/80'
-                    }`}
+                      }`}
                     onMouseEnter={petTypeButtonHover.handleEnter}
                     onMouseLeave={petTypeButtonHover.handleLeave}
                   >
@@ -553,11 +557,7 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
                     </AnimatedView>
                     {petType === type.value && (
                       <AnimatedView
-                        style={
-                          useAnimatedStyle(() => ({
-                            transform: [{ scale: 1 }],
-                          })) as AnimatedStyle
-                        }
+                        style={petTypeIndicatorStyle}
                         className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1"
                       >
                         <Check size={16} weight="bold" />
@@ -589,11 +589,10 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
                     applyTemplate(template);
                     setTimeout(() => handleNext(), 300);
                   }}
-                  className={`relative p-4 rounded-xl border-2 text-left transition-all duration-300 ${
-                    selectedTemplate?.id === template.id
+                  className={`relative p-4 rounded-xl border-2 text-left transition-all duration-300 ${selectedTemplate?.id === template.id
                       ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
                       : 'border-border bg-card hover:border-primary/50 hover:bg-card/80'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-3xl shrink-0">{template.emoji}</span>

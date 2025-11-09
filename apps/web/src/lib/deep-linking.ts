@@ -232,42 +232,46 @@ class DeepLinkManager {
 
 // Common route handlers
 export const createChatRouteHandler = (onNavigate: (chatId: string) => void): DeepLinkHandler => {
-  return async (route: DeepLinkRoute): Promise<void> => {
+  return (route: DeepLinkRoute): Promise<void> => {
     const chatId = route.params['id'] || route.query['chatId'];
     if (chatId) {
       onNavigate(chatId);
     }
+    return Promise.resolve();
   };
 };
 
 export const createMatchRouteHandler = (onNavigate: (matchId: string) => void): DeepLinkHandler => {
-  return async (route: DeepLinkRoute): Promise<void> => {
+  return (route: DeepLinkRoute): Promise<void> => {
     const matchId = route.params['id'] || route.query['matchId'];
     if (matchId) {
       onNavigate(matchId);
     }
+    return Promise.resolve();
   };
 };
 
 export const createProfileRouteHandler = (
   onNavigate: (profileId: string) => void
 ): DeepLinkHandler => {
-  return async (route: DeepLinkRoute): Promise<void> => {
+  return (route: DeepLinkRoute): Promise<void> => {
     const profileId = route.params['id'] || route.query['profileId'];
     if (profileId) {
       onNavigate(profileId);
     }
+    return Promise.resolve();
   };
 };
 
 export const createAdoptionRouteHandler = (
   onNavigate: (listingId: string) => void
 ): DeepLinkHandler => {
-  return async (route: DeepLinkRoute): Promise<void> => {
+  return (route: DeepLinkRoute): Promise<void> => {
     const listingId = route.params['id'] || route.query['listingId'];
     if (listingId) {
       onNavigate(listingId);
     }
+    return Promise.resolve();
   };
 };
 

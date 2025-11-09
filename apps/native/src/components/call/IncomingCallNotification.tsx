@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, Pressable, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, Image } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,8 +7,6 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-
-const { width } = Dimensions.get('window');
 
 interface Caller {
   id: string;

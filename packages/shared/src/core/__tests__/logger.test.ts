@@ -25,6 +25,7 @@ describe('Logger', () => {
   it('should log info messages', () => {
     const logger = createLogger('test', 'info')
     logger.info('test message', { key: 'value' })
+     
     expect(console.info).toHaveBeenCalledWith('[test] test message', { key: 'value' })
   })
 
@@ -39,7 +40,9 @@ describe('Logger', () => {
     const logger = createLogger('test', 'error')
     logger.debug('debug message')
     logger.info('info message')
+     
     expect(console.debug).not.toHaveBeenCalled()
+     
     expect(console.info).not.toHaveBeenCalled()
   })
 

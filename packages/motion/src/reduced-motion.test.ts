@@ -2,8 +2,8 @@
  * Unit tests for reduced motion hooks
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { renderHook, waitFor } from '@testing-library/react'
 import {
   useReducedMotion,
   useReducedMotionSV,
@@ -25,7 +25,7 @@ describe('useReducedMotion', () => {
     }))
 
     const { result } = renderHook(() => useReducedMotion())
-    
+
     await waitFor(() => {
       expect(result.current).toBe(false)
     })
@@ -40,7 +40,7 @@ describe('useReducedMotion', () => {
     }))
 
     const { result } = renderHook(() => useReducedMotion())
-    
+
     await waitFor(() => {
       expect(result.current).toBe(true)
     })
@@ -93,7 +93,7 @@ describe('useReducedMotionSV', () => {
     }))
 
     const { result } = renderHook(() => useReducedMotionSV())
-    
+
     await waitFor(() => {
       expect(result.current).toBeDefined()
       expect(result.current.value).toBe(false)

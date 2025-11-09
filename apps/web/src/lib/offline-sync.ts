@@ -54,7 +54,7 @@ class OfflineSyncManager {
       logger.info('Online - starting sync');
       this.isOnline = true;
       this.notifyListeners();
-      this.syncPendingActions();
+      void this.syncPendingActions();
     });
 
     window.addEventListener('offline', () => {
@@ -73,7 +73,7 @@ class OfflineSyncManager {
           logger.info('Loaded pending actions from API', { count: this.syncQueue.length });
 
           if (this.isOnline && this.syncQueue.length > 0) {
-            this.syncPendingActions();
+            void this.syncPendingActions();
           }
           return;
         }
@@ -89,7 +89,7 @@ class OfflineSyncManager {
         logger.info('Loaded pending actions from storage', { count: this.syncQueue.length });
 
         if (this.isOnline && this.syncQueue.length > 0) {
-          this.syncPendingActions();
+          void this.syncPendingActions();
         }
       }
     } catch (error) {
@@ -137,7 +137,7 @@ class OfflineSyncManager {
     logger.debug('Queued action', { action, actionId: pendingAction.id });
 
     if (this.isOnline) {
-      this.syncPendingActions();
+      void this.syncPendingActions();
     }
 
     return pendingAction.id;
@@ -340,7 +340,7 @@ class OfflineSyncManager {
     this.notifyListeners();
 
     if (this.isOnline) {
-      this.syncPendingActions();
+      void this.syncPendingActions();
     }
   }
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useOnlineStatus } from '../useOnlineStatus';
 
 describe('useOnlineStatus', () => {
@@ -39,44 +39,64 @@ describe('useOnlineStatus', () => {
     expect(result.current).toBe(false);
   });
 
-  it('updates when online event is fired', () => {
+  it('updates when online event is fired', async () => {
     mockNavigator.onLine = false;
     const { result } = renderHook(() => useOnlineStatus());
 
     expect(result.current).toBe(false);
 
-    const onlineEvent = new Event('online');
-    window.dispatchEvent(onlineEvent);
+    act(() => {
+      const onlineEvent = new Event('online');
+      window.dispatchEvent(onlineEvent);
+    });
 
-    expect(result.current).toBe(true);
+    await waitFor(() => {
+      expect(result.current).toBe(true);
+    });
   });
 
-  it('updates when offline event is fired', () => {
+  it('updates when offline event is fired', async () => {
     mockNavigator.onLine = true;
     const { result } = renderHook(() => useOnlineStatus());
 
     expect(result.current).toBe(true);
 
-    const offlineEvent = new Event('offline');
-    window.dispatchEvent(offlineEvent);
+    act(() => {
+      const offlineEvent = new Event('offline');
+      window.dispatchEvent(offlineEvent);
+    });
 
-    expect(result.current).toBe(false);
+    await waitFor(() => {
+      expect(result.current).toBe(false);
+    });
   });
 
-  it('handles multiple online/offline events', () => {
+  it('handles multiple online/offline events', async () => {
     mockNavigator.onLine = true;
     const { result } = renderHook(() => useOnlineStatus());
 
     expect(result.current).toBe(true);
 
-    window.dispatchEvent(new Event('offline'));
-    expect(result.current).toBe(false);
+    act(() => {
+      window.dispatchEvent(new Event('offline'));
+    });
+    await waitFor(() => {
+      expect(result.current).toBe(false);
+    });
 
-    window.dispatchEvent(new Event('online'));
-    expect(result.current).toBe(true);
+    act(() => {
+      window.dispatchEvent(new Event('online'));
+    });
+    await waitFor(() => {
+      expect(result.current).toBe(true);
+    });
 
-    window.dispatchEvent(new Event('offline'));
-    expect(result.current).toBe(false);
+    act(() => {
+      window.dispatchEvent(new Event('offline'));
+    });
+    await waitFor(() => {
+      expect(result.current).toBe(false);
+    });
   });
 
   it('cleans up event listeners on unmount', () => {
@@ -113,15 +133,19 @@ describe('useOnlineStatus', () => {
     expect(result.current).toBe(true);
   });
 
-  it('handles rapid online/offline transitions', () => {
+  it('handles rapid online/offline transitions', async () => {
     mockNavigator.onLine = true;
     const { result } = renderHook(() => useOnlineStatus());
 
-    window.dispatchEvent(new Event('offline'));
-    window.dispatchEvent(new Event('online'));
-    window.dispatchEvent(new Event('offline'));
-    window.dispatchEvent(new Event('online'));
+    act(() => {
+      window.dispatchEvent(new Event('offline'));
+      window.dispatchEvent(new Event('online'));
+      window.dispatchEvent(new Event('offline'));
+      window.dispatchEvent(new Event('online'));
+    });
 
-    expect(result.current).toBe(true);
+    await waitFor(() => {
+      expect(result.current).toBe(true);
+    });
   });
 });

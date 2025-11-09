@@ -125,8 +125,8 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
         'message' in err
           ? err.message
           : (err as APIError).message ||
-            t.auth?.signUpError ||
-            'Failed to create account. Please try again.';
+          t.auth?.signUpError ||
+          'Failed to create account. Please try again.';
       toast.error(errorMessage);
       haptics.trigger('error');
     } finally {
@@ -134,7 +134,7 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
     }
   };
 
-  const handleAgeVerified = async (_country?: string) => {
+  const handleAgeVerified = (_country?: string) => {
     setAgeVerified(true);
     setShowAgeGate(false);
     // Continue with sign-up
@@ -144,7 +144,7 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
     }
   };
 
-  const handleOAuthSuccess = async (provider: 'google' | 'apple') => {
+  const handleOAuthSuccess = (provider: 'google' | 'apple') => {
     try {
       haptics.trigger('light');
       analytics.track('oauth_success', { provider });

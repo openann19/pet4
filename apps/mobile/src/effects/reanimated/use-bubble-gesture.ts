@@ -55,7 +55,7 @@ export function useBubbleGesture(options: UseBubbleGestureOptions = {}): UseBubb
   const reactionMenuScale = useSharedValue(0.9)
   const reactionMenuTranslateY = useSharedValue(10)
 
-  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isPressedRef = useRef(false)
 
   const triggerHaptic = useCallback(() => {
@@ -106,7 +106,7 @@ export function useBubbleGesture(options: UseBubbleGestureOptions = {}): UseBubb
 
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current)
-      longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>
+      longPressTimerRef.current = null
     }
 
     scale.value = withSpring(1, springConfigs.smooth)

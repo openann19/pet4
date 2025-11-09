@@ -8,13 +8,12 @@ import {
   Image,
   Dimensions,
   SafeAreaView,
-  Animated,
 } from 'react-native';
-import AnimatedReanimated, {
+import Animated, {
   useSharedValue,
-  useAnimatedStyle,
   withTiming,
   runOnJS,
+  useAnimatedStyle,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import type { Story } from '@petspark/shared';
@@ -36,20 +35,19 @@ interface StoryViewerProps {
 export const StoryViewer: React.FC<StoryViewerProps> = ({
   stories,
   initialIndex = 0,
-  currentUserId,
-  currentUserName,
-  currentUserAvatar,
+  currentUserId: _currentUserId,
+  currentUserName: _currentUserName,
+  currentUserAvatar: _currentUserAvatar,
   onClose,
   onComplete,
-  onStoryUpdate,
+  onStoryUpdate: _onStoryUpdate,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isPaused, setIsPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [, setProgress] = useState(0);
 
   const progressAnimation = useSharedValue(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const startTimeRef = useRef<number>(Date.now());
 
   const currentStory = stories[currentIndex];
 
@@ -151,7 +149,7 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
                   ]}
                 >
                   {index === currentIndex && (
-                    <AnimatedReanimated.View style={[styles.progressBarFill, progressBarStyle]} />
+                    <Animated.View style={[styles.progressBarFill, progressBarStyle]} />
                   )}
                 </View>
               </View>

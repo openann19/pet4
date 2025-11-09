@@ -6,13 +6,11 @@ import {
   Modal,
   Pressable,
   TextInput,
-  Dimensions,
   SafeAreaView,
   Alert,
 } from 'react-native';
 import type { StoryTemplate } from './StoryTemplates';
 
-const { width, height } = Dimensions.get('window');
 
 interface TemplateEditorProps {
   visible: boolean;

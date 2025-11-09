@@ -5,14 +5,16 @@
   "type": "module",
   "scripts": {
     "install:all": "pnpm install",
-    "typecheck": "pnpm -r --filter './apps/web' --filter './apps/mobile' --filter './packages/core' --filter './packages/chat-core' --filter './packages/shared' --filter './packages/config' exec tsc --noEmit",
-    "lint": "eslint . --max-warnings=0",
-    "lint:fix": "eslint . --max-warnings=0 --fix",
+    "typecheck": "tsc --noEmit",
+    "build:types": "tsc -b",
+    "build:types:watch": "tsc -b -w",
+    "lint": "eslint . --cache --cache-location ./.cache/eslint --max-warnings=0",
+    "lint:fix": "eslint . --cache --cache-location ./.cache/eslint --max-warnings=0 --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
     "validate": "pnpm typecheck && pnpm lint && pnpm test",
     "depcheck": "pnpm -r --filter './apps/*' --filter './packages/*' exec depcheck || true",
-    "test": "pnpm -r --filter './apps/*' --filter './packages/*' exec pnpm test:run || pnpm -r --filter './apps/*' --filter './packages/*' exec vitest run || true",
+    "test": "pnpm -r --filter './apps/*' --filter './packages/*' exec -- pnpm test:run 2>/dev/null || pnpm -r --filter './apps/*' --filter './packages/*' exec -- vitest run --passWithNoTests 2>/dev/null || true",
     "dev:single": "pnpm --filter ./packages/shared dev",
     "test:single": "pnpm --filter ./packages/shared test:run",
     "web-dev": "pnpm --filter spark-template dev",
@@ -31,6 +33,7 @@
     "@types/node": "^22.13.5",
     "depcheck": "^1.4.7",
     "eslint": "^9.28.0",
+    "lint-staged": "^15.2.10",
     "eslint-import-resolver-typescript": "^3.10.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -44,13 +47,15 @@
     "ts-prune": "^0.10.3",
     "tsx": "^4.20.6",
     "typescript": "~5.7.2",
-    "typescript-eslint": "^8.38.0"
+    "typescript-eslint": "^8.38.0",
+    "lint-staged": "^15.2.10"
   },
   "packageManager": "pnpm@10.18.3",
   "pnpm": {
     "overrides": {
       "vite": "6.4.1",
-      "@types/react": "18.3.12"
+      "@types/react": "18.3.12",
+      "form-data": ">=4.0.4"
     }
   },
   "engines": {

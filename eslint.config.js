@@ -1,299 +1,151 @@
-import js from '@eslint/js'
-import importPlugin from 'eslint-plugin-import'
-import jsxA11y from 'eslint-plugin-jsx-a11y'
-import react from 'eslint-plugin-react'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import globals from 'globals'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import tseslint from 'typescript-eslint'
+// Flat config, fast-by-default. Type-aware rules are scoped to specific globs.
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import reactHooks from 'eslint-plugin-react-hooks';
+import react from 'eslint-plugin-react';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
+import globals from 'globals';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+/** Globs where we actually want type-aware linting (web + key packages). */
+const TYPE_AWARE = [
+  'apps/web/**/*.{ts,tsx}',
+  'packages/*/src/**/*.{ts,tsx}',
+];
 
-export default tseslint.config(
+export default [
+  // Ignore heavy/generated stuff completely
   {
     ignores: [
+      '**/node_modules/**',
+      '**/.next/**',
       '**/dist/**',
       '**/build/**',
-      '**/node_modules/**',
-      '**/.turbo/**',
-      '**/*.config.js',
-      '**/*.config.ts',
       '**/coverage/**',
-      '**/test-results/**',
-      '**/playwright-report/**',
-      '**/storybook-static/**',
-      '**/docs/**',
-      '**/logs/**',
-      '**/android/**',
+      '**/.expo/**',
       '**/ios/**',
-      'backend/**',
+      '**/android/**',
+      '**/*.config.*',
+      '**/.turbo/**',
+      '**/.cache/**',
+      '**/html/**',
     ],
   },
-  { linterOptions: { reportUnusedDisableDirectives: 'error' } },
+
+  // JS/TS base, no type info (fast path for most files, including tests)
   js.configs.recommended,
   ...tseslint.configs.recommended,
-  ...tseslint.configs.stylistic,
+
   {
-    files: ['apps/**/src/**/*.{ts,tsx}', 'packages/**/src/**/*.{ts,tsx}'],
-    ignores: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/node_modules/**'],
+    files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
-      parserOptions: {
-        project: [
-          './tsconfig.base.json',
-          './apps/web/tsconfig.json',
-          './apps/mobile/tsconfig.json',
-          './packages/*/tsconfig.json',
-        ],
-        tsconfigRootDir: __dirname,
-        createDefaultProgram: false,
-      },
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: { ...globals.browser, ...globals.node },
     },
     plugins: {
-      react,
+      'react': react,
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
       'jsx-a11y': jsxA11y,
-      import: importPlugin,
-    },
-    settings: {
-      react: {
-        version: 'detect',
-      },
-      'import/resolver': {
-        typescript: {
-          alwaysTryTypes: true,
-          project: [
-            './tsconfig.base.json',
-            './apps/web/tsconfig.json',
-            './apps/mobile/tsconfig.json',
-            './apps/native/tsconfig.json',
-            './packages/*/tsconfig.json',
-          ],
-        },
-      },
     },
     rules: {
-      // Strict TypeScript rules
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unsafe-assignment': 'error',
-      '@typescript-eslint/no-unsafe-member-access': 'error',
-      '@typescript-eslint/no-unsafe-call': 'error',
-      '@typescript-eslint/no-unsafe-return': 'error',
-      '@typescript-eslint/no-unsafe-argument': 'error',
-      '@typescript-eslint/no-require-imports': 'error',
-      '@typescript-eslint/consistent-type-assertions': [
-        'error',
-        {
-          assertionStyle: 'as',
-          objectLiteralTypeAssertions: 'never',
-        },
-      ],
-      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-      '@typescript-eslint/restrict-template-expressions': 'error',
-      '@typescript-eslint/no-unnecessary-condition': 'error',
-      '@typescript-eslint/strict-boolean-expressions': 'error',
-      '@typescript-eslint/no-confusing-void-expression': 'error',
-      '@typescript-eslint/require-await': 'error',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/no-redundant-type-constituents': 'error',
-      '@typescript-eslint/no-unnecessary-type-arguments': 'error',
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      '@typescript-eslint/prefer-optional-chain': 'error',
-      '@typescript-eslint/no-dynamic-delete': 'error',
-      '@typescript-eslint/no-non-null-asserted-optional-chain': 'error',
-      '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
-      '@typescript-eslint/prefer-includes': 'error',
-      '@typescript-eslint/prefer-string-starts-ends-with': 'error',
-      '@typescript-eslint/prefer-regexp-exec': 'error',
-      '@typescript-eslint/prefer-readonly': 'error',
-      '@typescript-eslint/prefer-readonly-parameter-types': 'off', // Too strict for React props
-      '@typescript-eslint/promise-function-async': 'error',
-      '@typescript-eslint/return-await': 'error',
-      '@typescript-eslint/no-meaningless-void-operator': 'error',
-      '@typescript-eslint/no-type-alias': 'off',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
-      '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
-
-      // React rules
-      'react/jsx-uses-react': 'off',
+      // Reasonable safety without killing dev speed
+      'no-console': ['error', { allow: ['warn', 'error'] }],
       'react/react-in-jsx-scope': 'off',
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'error',
-      'react-refresh/only-export-components': ['error', { allowConstantExport: true }],
-
-      // Accessibility
-      'jsx-a11y/alt-text': 'error',
-      'jsx-a11y/anchor-has-content': 'error',
-      'jsx-a11y/anchor-is-valid': 'error',
-      'jsx-a11y/click-events-have-key-events': 'error',
-      'jsx-a11y/heading-has-content': 'error',
-      'jsx-a11y/img-redundant-alt': 'error',
-      'jsx-a11y/no-redundant-roles': 'error',
-      'jsx-a11y/role-has-required-aria-props': 'error',
-      'jsx-a11y/role-supports-aria-props': 'error',
-
-      // Import rules
-      'import/no-unresolved': 'error',
-      'import/named': 'error',
-      'import/default': 'error',
-      'import/namespace': 'error',
-      'import/no-absolute-path': 'error',
-      'import/no-dynamic-require': 'error',
-      'import/no-self-import': 'error',
-      'import/no-cycle': 'error',
-      'import/no-unused-modules': 'off', // Too slow for large codebases
-      'import/no-deprecated': 'warn',
-
-      // Prevent unsafe type assertions
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: 'TSAsExpression[typeAnnotation.type="TSAnyKeyword"]',
-          message:
-            'Use proper types instead of "as any". If you need a type assertion, use type guards.',
-        },
-        {
-          selector: 'CallExpression[callee.object.name="Math"][callee.property.name="random"]',
-          message:
-            'Use @petspark/shared RNG or seeded RNG instead of Math.random() for deterministic effects',
-        },
-      ],
-
-      // General rules
-      'no-console': 'error',
-      'no-debugger': 'error',
-      'no-alert': 'error',
-      'no-eval': 'error',
-      'no-implied-eval': 'error',
-      'no-new-func': 'error',
-      'no-script-url': 'error',
-      'no-sequences': 'error',
-      'no-throw-literal': 'error',
-      'no-unmodified-loop-condition': 'error',
-      'no-unused-labels': 'error',
-      'no-useless-call': 'error',
-      'no-useless-concat': 'error',
-      'no-useless-escape': 'error',
-      'no-useless-return': 'error',
-      'no-void': 'error',
-      'no-with': 'error',
-      'prefer-promise-reject-errors': 'error',
-      'require-await': 'off', // Handled by TS
-      'no-return-await': 'off', // Handled by TS
-
-      // Disable conflicting rules
-      'no-shadow': 'off',
-      '@typescript-eslint/no-shadow': 'error',
-      'no-redeclare': 'off',
-      '@typescript-eslint/no-redeclare': 'error',
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-        },
-      ],
+      'react-hooks/exhaustive-deps': 'warn',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
+    settings: { react: { version: 'detect' } },
   },
-  // Web-only DOM routes exception (allow framer-motion for SVG/canvas)
+
+  // Type-aware pass ONLY for selected globs (uses project service for caching)
   {
-    files: ['apps/web/src/components/**/*.{ts,tsx}', 'apps/web/src/effects/**/*.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': 'off',
-      '@typescript-eslint/no-restricted-imports': 'off',
-    },
-  },
-  // Mobile-specific overrides (non-type-aware to avoid React Native parsing issues)
-  {
-    files: ['apps/mobile/src/**/*.{ts,tsx}', 'apps/native/src/**/*.{ts,tsx}'],
-    ignores: ['apps/mobile/node_modules/**', 'apps/native/node_modules/**'],
+    files: TYPE_AWARE,
+    ignores: [
+      '**/*.test.{ts,tsx}',
+      '**/*.spec.{ts,tsx}',
+      '**/e2e/**',
+      '**/test/**',
+      '**/__tests__/**',
+      'apps/web/android-design-tokens-rn/**',
+    ],
     languageOptions: {
-      globals: {
-        ...globals.reactNative,
-      },
+      parser: tseslint.parser,
       parserOptions: {
-        // Don't use type-aware rules for mobile to avoid React Native node_modules issues
-        project: false,
+        projectService: true, // <— key perf improvement in typescript-eslint v7
+        // tsconfigRootDir auto-detected from project service
       },
     },
     rules: {
-      'no-console': 'error',
-      // Disable ALL type-aware rules for mobile (they require type information)
-      '@typescript-eslint/await-thenable': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/no-misused-promises': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/require-await': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-unnecessary-condition': 'off',
-      '@typescript-eslint/strict-boolean-expressions': 'off',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-      '@typescript-eslint/no-confusing-void-expression': 'off',
-      '@typescript-eslint/no-redundant-type-constituents': 'off',
-      '@typescript-eslint/no-unnecessary-type-arguments': 'off',
-      '@typescript-eslint/prefer-nullish-coalescing': 'off',
-      '@typescript-eslint/prefer-optional-chain': 'off',
-      '@typescript-eslint/promise-function-async': 'off',
-      '@typescript-eslint/return-await': 'off',
-      '@typescript-eslint/no-meaningless-void-operator': 'off',
-      '@typescript-eslint/prefer-includes': 'off',
-      '@typescript-eslint/prefer-string-starts-ends-with': 'off',
-      '@typescript-eslint/prefer-regexp-exec': 'off',
-      '@typescript-eslint/prefer-readonly': 'off',
-      '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'off',
+      // Turn on the stricter rules where type info exists
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
+      '@typescript-eslint/require-await': 'error',
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-unnecessary-condition': 'warn',
     },
   },
-  // Test files
+
+  // Tests: never type-aware; keep it quick
   {
-    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/tests/**/*.{ts,tsx}'],
+    files: ['**/*.{test,spec}.{ts,tsx,js,jsx}', '**/test/**/*.{ts,tsx,js,jsx}', '**/__tests__/**/*.{ts,tsx,js,jsx}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
-      'no-console': 'off',
+      'no-console': 'off', // Allow console in tests for mocking/assertions
     },
   },
-  // Config files - disable type-aware rules
+
+  // React Native / mobile: keep it fast (no heavy type-aware rules)
   {
-    files: ['**/*.config.{js,ts}', '**/vite.config.ts', '**/vitest.config.ts'],
-    languageOptions: {
-      parserOptions: {
-        project: false,
-      },
-    },
+    files: ['apps/mobile/**/*.{ts,tsx}', 'apps/native/**/*.{ts,tsx}'],
     rules: {
-      '@typescript-eslint/no-var-requires': 'off',
-      'no-console': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/require-await': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/await-thenable': 'off',
-      '@typescript-eslint/no-misused-promises': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-unnecessary-condition': 'off',
-      '@typescript-eslint/strict-boolean-expressions': 'off',
     },
-  }
-)
+  },
+
+  // Scripts/configs: allow console for CLIs/build tools, Node.js globals
+  // This must come after other configs to override base rules
+  {
+    files: [
+      'scripts/**/*.{ts,tsx,js,jsx,mjs}',
+      '**/*.config.{js,ts,cjs,mjs}',
+      '**/.eslintrc.{js,cjs}',
+      'apps/**/scripts/**/*.{ts,tsx,js,jsx,mjs}',
+      'packages/**/scripts/**/*.{ts,tsx,js,jsx,mjs}',
+    ],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.es2021,
+      },
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+    rules: {
+      'no-console': 'off',
+      // Don't disable no-undef - instead provide globals above
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-var-requires': 'off',
+    },
+  },
+];

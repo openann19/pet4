@@ -1,40 +1,70 @@
 import { describe, it, expect, vi } from 'vitest';
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../select';
 
-// Mock Radix UI Select
-vi.mock('@radix-ui/react-select', async () => {
-  const actual = await vi.importActual('@radix-ui/react-select');
+// Mock Radix UI Select - provide all necessary components
+vi.mock('@radix-ui/react-select', () => {
+  // Use a factory function that returns components
   return {
-    ...actual,
-    Root: ({ children, onValueChange, value, ...props }: any) => {
-      return (
-        <div data-testid="select-root" {...props}>
-          {children}
-        </div>
-      );
+    Root: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('div', { 'data-testid': 'select-root', ...props }, children);
     },
-    Trigger: ({ children, ...props }: any) => (
-      <button data-testid="select-trigger" {...props}>
-        {children}
-      </button>
-    ),
-    Value: ({ placeholder, ...props }: any) => (
-      <span data-testid="select-value" {...props}>
-        {placeholder}
-      </span>
-    ),
-    Content: ({ children, ...props }: any) => (
-      <div data-testid="select-content" {...props}>
-        {children}
-      </div>
-    ),
-    Item: ({ children, value, ...props }: any) => (
-      <div data-testid={`select-item-${value}`} {...props}>
-        {children}
-      </div>
-    ),
+    Trigger: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('button', { 'data-testid': 'select-trigger', ...props }, children);
+    },
+    Value: ({ placeholder, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('span', { 'data-testid': 'select-value', ...props }, placeholder);
+    },
+    Portal: ({ children }: any) => children,
+    Content: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('div', { 'data-testid': 'select-content', ...props }, children);
+    },
+    Viewport: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('div', { 'data-testid': 'select-viewport', ...props }, children);
+    },
+    Item: ({ children, value, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('div', { 'data-testid': `select-item-${value}`, ...props }, children);
+    },
+    ItemText: ({ children }: any) => {
+      const React = require('react');
+      return React.createElement('span', {}, children);
+    },
+    ItemIndicator: ({ children }: any) => {
+      const React = require('react');
+      return React.createElement('span', {}, children);
+    },
+    ScrollUpButton: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('div', { 'data-testid': 'select-scroll-up-button', ...props }, children);
+    },
+    ScrollDownButton: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('div', { 'data-testid': 'select-scroll-down-button', ...props }, children);
+    },
+    Icon: ({ children, asChild, ...props }: any) => {
+      const React = require('react');
+      return asChild ? children : React.createElement('span', props, children);
+    },
+    Label: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('div', { 'data-testid': 'select-label', ...props }, children);
+    },
+    Separator: ({ ...props }: any) => {
+      const React = require('react');
+      return React.createElement('div', { 'data-testid': 'select-separator', ...props });
+    },
+    Group: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('div', { 'data-testid': 'select-group', ...props }, children);
+    },
   };
 });
 

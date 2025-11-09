@@ -9,11 +9,16 @@ import {
   withSequence,
   interpolate,
   Extrapolation,
+  Easing,
   type SharedValue,
 } from 'react-native-reanimated';
 import { useEffect, useCallback, useRef } from 'react';
 import { haptics } from '@/lib/haptics';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import {
+  useReducedMotionSV,
+  getReducedMotionDuration,
+} from '@/effects/chat/core/reduced-motion';
 
 export interface UseMessageBubbleAnimationOptions {
   index?: number;
@@ -33,9 +38,13 @@ export interface UseMessageBubbleAnimationReturn {
   glowOpacity: SharedValue<number>;
   glowScale: SharedValue<number>;
   backgroundOpacity: SharedValue<number>;
+  reactionScale: SharedValue<number>;
+  reactionTranslateY: SharedValue<number>;
+  reactionOpacity: SharedValue<number>;
   animatedStyle: ReturnType<typeof useAnimatedStyle>;
   glowStyle: ReturnType<typeof useAnimatedStyle>;
   backgroundStyle: ReturnType<typeof useAnimatedStyle>;
+  reactionStyle: ReturnType<typeof useAnimatedStyle>;
   handlePress: () => void;
   handlePressIn: () => void;
   handlePressOut: () => void;
@@ -62,6 +71,9 @@ export function useMessageBubbleAnimation(
     hapticFeedback = true,
   } = options;
 
+  const reducedMotion = useReducedMotionSV();
+
+  // Initialize values - ensure initial state is set correctly before animations
   const opacity = useSharedValue(isNew ? 0 : 1);
   const translateY = useSharedValue(isNew ? 20 : 0);
   const scale = useSharedValue(1);
@@ -75,17 +87,38 @@ export function useMessageBubbleAnimation(
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isPressedRef = useRef(false);
 
+  // Entry animation effect
   useEffect(() => {
     if (isNew) {
-      const delay = index * staggerDelay;
-      opacity.value = withDelay(delay, withSpring(1, springConfigs.smooth));
-      translateY.value = withDelay(
-        delay,
-        withSpring(0, {
-          damping: 25,
-          stiffness: 400,
-        })
-      );
+      const isReducedMotion = reducedMotion.value;
+      const delay = isReducedMotion ? 0 : index * staggerDelay;
+      const duration = getReducedMotionDuration(300, isReducedMotion);
+
+      if (isReducedMotion) {
+        // Reduced motion: instant state change
+        opacity.value = withTiming(1, {
+          duration: duration,
+          easing: Easing.linear,
+        });
+        translateY.value = withTiming(0, {
+          duration: duration,
+          easing: Easing.linear,
+        });
+      } else {
+        // Normal motion: staggered spring animation
+        opacity.value = withDelay(delay, withSpring(1, springConfigs.smooth));
+        translateY.value = withDelay(
+          delay,
+          withSpring(0, {
+            damping: 25,
+            stiffness: 400,
+          })
+        );
+      }
+    } else {
+      // Ensure values are set correctly when not new
+      opacity.value = 1;
+      translateY.value = 0;
     }
 
     return () => {
@@ -93,18 +126,41 @@ export function useMessageBubbleAnimation(
         clearTimeout(longPressTimerRef.current);
       }
     };
-  }, [isNew, index, staggerDelay, opacity, translateY]);
+  }, [isNew, index, staggerDelay, opacity, translateY, reducedMotion]);
 
+  // Highlight animation effect
   useEffect(() => {
+    const isReducedMotion = reducedMotion.value;
+    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+    const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+
     if (isHighlighted) {
-      backgroundOpacity.value = withSequence(
-        withTiming(1, timingConfigs.fast),
-        withDelay(2000, withTiming(0, timingConfigs.smooth))
-      );
+      if (isReducedMotion) {
+        // Reduced motion: instant highlight, quick fade
+        backgroundOpacity.value = withSequence(
+          withTiming(1, {
+            duration: fastDuration,
+            easing: Easing.linear,
+          }),
+          withDelay(1500, withTiming(0, {
+            duration: smoothDuration,
+            easing: Easing.linear,
+          }))
+        );
+      } else {
+        // Normal motion: smooth sequence
+        backgroundOpacity.value = withSequence(
+          withTiming(1, timingConfigs.fast),
+          withDelay(2000, withTiming(0, timingConfigs.smooth))
+        );
+      }
     } else {
-      backgroundOpacity.value = withTiming(0, timingConfigs.fast);
+      backgroundOpacity.value = withTiming(0, {
+        duration: fastDuration,
+        easing: Easing.linear,
+      });
     }
-  }, [isHighlighted, backgroundOpacity]);
+  }, [isHighlighted, backgroundOpacity, reducedMotion]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -131,6 +187,16 @@ export function useMessageBubbleAnimation(
     };
   });
 
+  const reactionStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: reactionScale.value },
+        { translateY: reactionTranslateY.value },
+      ],
+      opacity: reactionOpacity.value,
+    };
+  });
+
   const triggerHaptic = useCallback(() => {
     if (hapticFeedback) {
       haptics.selection();
@@ -146,12 +212,30 @@ export function useMessageBubbleAnimation(
   const handlePressIn = useCallback(() => {
     triggerHaptic();
     isPressedRef.current = true;
-    scale.value = withSpring(0.96, {
-      damping: 20,
-      stiffness: 500,
-    });
-    glowOpacity.value = withSpring(1, springConfigs.smooth);
-    glowScale.value = withSpring(1.05, springConfigs.smooth);
+    const isReducedMotion = reducedMotion.value;
+
+    if (isReducedMotion) {
+      const duration = getReducedMotionDuration(120, true);
+      scale.value = withTiming(0.96, {
+        duration: duration,
+        easing: Easing.linear,
+      });
+      glowOpacity.value = withTiming(1, {
+        duration: duration,
+        easing: Easing.linear,
+      });
+      glowScale.value = withTiming(1.05, {
+        duration: duration,
+        easing: Easing.linear,
+      });
+    } else {
+      scale.value = withSpring(0.96, {
+        damping: 20,
+        stiffness: 500,
+      });
+      glowOpacity.value = withSpring(1, springConfigs.smooth);
+      glowScale.value = withSpring(1.05, springConfigs.smooth);
+    }
 
     if (onLongPress) {
       longPressTimerRef.current = setTimeout(() => {
@@ -160,7 +244,7 @@ export function useMessageBubbleAnimation(
         }
       }, 500);
     }
-  }, [scale, glowOpacity, glowScale, onLongPress, triggerHaptic, triggerLongPress]);
+  }, [scale, glowOpacity, glowScale, onLongPress, triggerHaptic, triggerLongPress, reducedMotion]);
 
   const handlePressOut = useCallback(() => {
     isPressedRef.current = false;
@@ -169,10 +253,28 @@ export function useMessageBubbleAnimation(
       longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
     }
 
-    scale.value = withSpring(1, springConfigs.smooth);
-    glowOpacity.value = withTiming(0, timingConfigs.fast);
-    glowScale.value = withTiming(1, timingConfigs.fast);
-  }, [scale, glowOpacity, glowScale]);
+    const isReducedMotion = reducedMotion.value;
+    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+
+    if (isReducedMotion) {
+      scale.value = withTiming(1, {
+        duration: fastDuration,
+        easing: Easing.linear,
+      });
+      glowOpacity.value = withTiming(0, {
+        duration: fastDuration,
+        easing: Easing.linear,
+      });
+      glowScale.value = withTiming(1, {
+        duration: fastDuration,
+        easing: Easing.linear,
+      });
+    } else {
+      scale.value = withSpring(1, springConfigs.smooth);
+      glowOpacity.value = withTiming(0, timingConfigs.fast);
+      glowScale.value = withTiming(1, timingConfigs.fast);
+    }
+  }, [scale, glowOpacity, glowScale, reducedMotion]);
 
   const handlePress = useCallback(() => {
     if (!isPressedRef.current) {
@@ -183,16 +285,31 @@ export function useMessageBubbleAnimation(
       onPress();
     }
 
-    scale.value = withSequence(
-      withSpring(0.94, {
-        damping: 15,
-        stiffness: 600,
-      }),
-      withSpring(1, springConfigs.smooth)
-    );
+    const isReducedMotion = reducedMotion.value;
+
+    if (isReducedMotion) {
+      const duration = getReducedMotionDuration(120, true);
+      scale.value = withTiming(0.94, {
+        duration: duration,
+        easing: Easing.linear,
+      }, () => {
+        scale.value = withTiming(1, {
+          duration: duration,
+          easing: Easing.linear,
+        });
+      });
+    } else {
+      scale.value = withSequence(
+        withSpring(0.94, {
+          damping: 15,
+          stiffness: 600,
+        }),
+        withSpring(1, springConfigs.smooth)
+      );
+    }
 
     handlePressOut();
-  }, [onPress, scale, handlePressOut]);
+  }, [onPress, scale, handlePressOut, reducedMotion]);
 
   const handleLongPressStart = useCallback(() => {
     handlePressIn();
@@ -204,38 +321,87 @@ export function useMessageBubbleAnimation(
 
   const animateReaction = useCallback(
     (_emoji: string) => {
+      const isReducedMotion = reducedMotion.value;
+      const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+      const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+
       reactionScale.value = 1;
       reactionTranslateY.value = 0;
       reactionOpacity.value = 1;
 
-      reactionScale.value = withSequence(
-        withSpring(1.5, {
-          damping: 10,
-          stiffness: 400,
-        }),
-        withSpring(1.2, springConfigs.bouncy)
-      );
+      if (isReducedMotion) {
+        // Reduced motion: simplified animation
+        reactionScale.value = withTiming(1.2, {
+          duration: fastDuration,
+          easing: Easing.linear,
+        }, () => {
+          reactionScale.value = withTiming(1, {
+            duration: smoothDuration,
+            easing: Easing.linear,
+          });
+        });
+        reactionTranslateY.value = withTiming(-15, {
+          duration: fastDuration,
+          easing: Easing.linear,
+        });
+        reactionOpacity.value = withSequence(
+          withTiming(1, {
+            duration: fastDuration,
+            easing: Easing.linear,
+          }),
+          withDelay(300, withTiming(0, {
+            duration: smoothDuration,
+            easing: Easing.linear,
+          }))
+        );
+      } else {
+        // Normal motion: full spring animation
+        reactionScale.value = withSequence(
+          withSpring(1.5, {
+            damping: 10,
+            stiffness: 400,
+          }),
+          withSpring(1.2, springConfigs.bouncy)
+        );
 
-      reactionTranslateY.value = withTiming(-30, {
-        duration: 800,
-      });
+        reactionTranslateY.value = withTiming(-30, {
+          duration: 800,
+        });
 
-      reactionOpacity.value = withSequence(
-        withTiming(1, timingConfigs.fast),
-        withDelay(400, withTiming(0, timingConfigs.smooth))
-      );
+        reactionOpacity.value = withSequence(
+          withTiming(1, timingConfigs.fast),
+          withDelay(400, withTiming(0, timingConfigs.smooth))
+        );
+      }
 
       triggerHaptic();
     },
-    [reactionScale, reactionTranslateY, reactionOpacity, triggerHaptic]
+    [reactionScale, reactionTranslateY, reactionOpacity, triggerHaptic, reducedMotion]
   );
 
   const animateHighlight = useCallback(() => {
-    backgroundOpacity.value = withSequence(
-      withTiming(1, timingConfigs.fast),
-      withDelay(1500, withTiming(0, timingConfigs.smooth))
-    );
-  }, [backgroundOpacity]);
+    const isReducedMotion = reducedMotion.value;
+    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+    const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+
+    if (isReducedMotion) {
+      backgroundOpacity.value = withSequence(
+        withTiming(1, {
+          duration: fastDuration,
+          easing: Easing.linear,
+        }),
+        withDelay(1500, withTiming(0, {
+          duration: smoothDuration,
+          easing: Easing.linear,
+        }))
+      );
+    } else {
+      backgroundOpacity.value = withSequence(
+        withTiming(1, timingConfigs.fast),
+        withDelay(1500, withTiming(0, timingConfigs.smooth))
+      );
+    }
+  }, [backgroundOpacity, reducedMotion]);
 
   return {
     opacity,
@@ -244,9 +410,13 @@ export function useMessageBubbleAnimation(
     glowOpacity,
     glowScale,
     backgroundOpacity,
+    reactionScale,
+    reactionTranslateY,
+    reactionOpacity,
     animatedStyle,
     glowStyle,
     backgroundStyle,
+    reactionStyle,
     handlePress,
     handlePressIn,
     handlePressOut,

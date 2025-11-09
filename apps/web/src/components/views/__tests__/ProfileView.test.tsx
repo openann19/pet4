@@ -116,7 +116,9 @@ describe('ProfileView', () => {
   it('should render empty state when no pets', () => {
     render(<ProfileView />);
 
-    expect(screen.getByText('Create Profile')).toBeInTheDocument();
+    // Use getAllByText since there are multiple "Create Profile" texts (title and button)
+    const createProfileTexts = screen.getAllByText('Create Profile');
+    expect(createProfileTexts.length).toBeGreaterThan(0);
     expect(screen.getByText('No pets description')).toBeInTheDocument();
   });
 
@@ -151,10 +153,13 @@ describe('ProfileView', () => {
     const user = userEvent.setup();
     render(<ProfileView />);
 
-    const createButton = screen.getByText('Create Profile');
+    // Use getByRole to find the button specifically, not just text
+    const createButton = screen.getByRole('button', { name: /create profile/i });
     await user.click(createButton);
 
-    expect(screen.getByTestId('create-pet-dialog')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('create-pet-dialog')).toBeInTheDocument();
+    });
   });
 
   it('should show stats when swipes exist', () => {

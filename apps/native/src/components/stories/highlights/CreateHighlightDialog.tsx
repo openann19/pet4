@@ -10,7 +10,6 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import type { StoryItem } from '../StoriesBar';
 
 interface Story {
   id: string;

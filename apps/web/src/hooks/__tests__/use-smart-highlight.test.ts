@@ -1,18 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useSmartHighlight } from '../use-smart-highlight';
 
-vi.mock('react-native-reanimated', () => ({
-  useSharedValue: vi.fn(() => ({ value: 0 })),
-  useAnimatedStyle: vi.fn(() => ({})),
-  withSequence: vi.fn((...args) => args),
-  withTiming: vi.fn((value) => value),
-  withDelay: vi.fn((delay, value) => value),
-  interpolate: vi.fn((value) => value),
-  Extrapolation: {
-    CLAMP: 'clamp',
-  },
-}));
+// Use global mock from setup.ts - no local mock needed
 
 describe('useSmartHighlight', () => {
   beforeEach(() => {
@@ -30,14 +20,15 @@ describe('useSmartHighlight', () => {
     expect(result.current.trigger).toBeDefined();
   });
 
-  it('triggers highlight animation', () => {
+  it('triggers highlight animation', async () => {
     const { result } = renderHook(() => useSmartHighlight());
 
-    act(() => {
+    await act(async () => {
       result.current.trigger();
+      await new Promise((resolve) => setTimeout(resolve, 50));
     });
 
-    expect(result.current.backgroundOpacity).toBeDefined();
+    expect(result.current.backgroundOpacity.value).toBeGreaterThan(0);
   });
 
   it('uses default highlight color', () => {
@@ -46,12 +37,18 @@ describe('useSmartHighlight', () => {
     expect(result.current.backgroundStyle).toBeDefined();
   });
 
-  it('uses custom highlight color', () => {
+  it('uses custom highlight color', async () => {
     const { result } = renderHook(() =>
       useSmartHighlight({ highlightColor: 'rgba(255, 0, 0, 0.5)' })
     );
 
+    await act(async () => {
+      result.current.trigger();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
     expect(result.current.backgroundStyle).toBeDefined();
+    expect(result.current.backgroundOpacity.value).toBeGreaterThan(0);
   });
 
   it('uses default glow color', () => {
@@ -60,10 +57,16 @@ describe('useSmartHighlight', () => {
     expect(result.current.glowStyle).toBeDefined();
   });
 
-  it('uses custom glow color', () => {
+  it('uses custom glow color', async () => {
     const { result } = renderHook(() => useSmartHighlight({ glowColor: 'rgba(0, 255, 0, 0.5)' }));
 
+    await act(async () => {
+      result.current.trigger();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+
     expect(result.current.glowStyle).toBeDefined();
+    expect(result.current.glowOpacity.value).toBeGreaterThan(0);
   });
 
   it('uses default duration', () => {
@@ -98,29 +101,34 @@ describe('useSmartHighlight', () => {
     expect(result.current.glowRadius).toBeDefined();
   });
 
-  it('triggers automatically when isHighlighted is true', () => {
+  it('triggers automatically when isHighlighted is true', async () => {
     const { result } = renderHook(() => useSmartHighlight({ isHighlighted: true }));
 
-    expect(result.current.backgroundOpacity).toBeDefined();
+    await waitFor(() => {
+      expect(result.current.backgroundOpacity.value).toBeGreaterThan(0);
+    }, { timeout: 1000 });
   });
 
   it('does not trigger automatically when isHighlighted is false', () => {
     const { result } = renderHook(() => useSmartHighlight({ isHighlighted: false }));
 
-    expect(result.current.backgroundOpacity).toBeDefined();
+    // Should remain at initial value (0) when isHighlighted is false
+    expect(result.current.backgroundOpacity.value).toBe(0);
   });
 
-  it('can be triggered multiple times', () => {
+  it('can be triggered multiple times', async () => {
     const { result } = renderHook(() => useSmartHighlight());
 
-    act(() => {
+    await act(async () => {
       result.current.trigger();
+      await new Promise((resolve) => setTimeout(resolve, 50));
     });
 
-    act(() => {
+    await act(async () => {
       result.current.trigger();
+      await new Promise((resolve) => setTimeout(resolve, 50));
     });
 
-    expect(result.current.backgroundOpacity).toBeDefined();
+    expect(result.current.backgroundOpacity.value).toBeGreaterThanOrEqual(0);
   });
 });

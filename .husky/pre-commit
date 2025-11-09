@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# Run lint fix and format on staged files
-pnpm lint:fix
-pnpm format
+# Run lint-staged on staged files only (fast pre-commit)
+pnpm lint-staged

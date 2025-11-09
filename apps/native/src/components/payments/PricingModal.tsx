@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, Pressable, ScrollView, Dimensions } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-
-const { width } = Dimensions.get('window');
+import { View, Text, StyleSheet, Modal, Pressable, ScrollView } from 'react-native';
 
 interface Plan {
   id: string;

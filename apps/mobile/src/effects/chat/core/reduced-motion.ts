@@ -48,6 +48,26 @@ loadAccessibilityInfo().catch(() => {
 
 const MEDIA_QUERY = '(prefers-reduced-motion: reduce)'
 
+// Type guard for legacy MediaQueryList API
+interface LegacyMediaQueryList {
+  addListener: (handler: (e: MediaQueryListEvent) => void) => void
+  removeListener: (handler: (e: MediaQueryListEvent) => void) => void
+  matches: boolean
+}
+
+function isLegacyMediaQueryList(
+  mq: MediaQueryList | LegacyMediaQueryList
+): mq is LegacyMediaQueryList {
+  return (
+    typeof mq === 'object' &&
+    mq !== null &&
+    'addListener' in mq &&
+    typeof (mq as LegacyMediaQueryList).addListener === 'function' &&
+    'removeListener' in mq &&
+    typeof (mq as LegacyMediaQueryList).removeListener === 'function'
+  )
+}
+
 export function isReduceMotionEnabled(): boolean {
   // RN path: prefer AccessibilityInfo snapshot if available (non-blocking)
   if (AccessibilityInfo?.isReduceMotionEnabled) {
@@ -125,21 +145,17 @@ export function useReducedMotion(): boolean {
                   mq.removeEventListener('change', handler as EventListener)
                 }
               }
-            } else if (typeof (mq as unknown as { addListener?: (handler: (e: MediaQueryListEvent) => void) => void }).addListener === 'function') {
+            } else if (isLegacyMediaQueryList(mq)) {
               // Legacy API support
               const legacyHandler = (e: MediaQueryListEvent): void => {
                 if (mounted) {
                   setReduced(!!e.matches)
                 }
               }
-              const legacyMq = mq as unknown as {
-                addListener: (handler: (e: MediaQueryListEvent) => void) => void
-                removeListener: (handler: (e: MediaQueryListEvent) => void) => void
-              }
-              legacyMq.addListener(legacyHandler)
+              mq.addListener(legacyHandler)
               webCleanup = (): void => {
                 if (mounted) {
-                  legacyMq.removeListener(legacyHandler)
+                  mq.removeListener(legacyHandler)
                 }
               }
             }

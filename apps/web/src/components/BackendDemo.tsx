@@ -39,8 +39,8 @@ export default function BackendDemo() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      loadRecords();
-      loadStats();
+      void loadRecords();
+      void loadStats();
     }
   }, [authLoading, user]);
 

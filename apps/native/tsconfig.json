@@ -1,21 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "noEmit": true,
+    "lib": ["ES2022"],
+    "jsx": "react-native",
     "baseUrl": ".",
+    "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
       "@pet3/shared": ["../../packages/shared/src"]
-    },
-    "jsx": "react-native",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "noEmit": true,
-  "lib": ["ES2022"],
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "typeRoots": ["./types", "./node_modules/@types"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
   "exclude": ["node_modules"]

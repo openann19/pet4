@@ -1,6 +1,4 @@
-/// <reference path="../../types/vendor/react-native-gesture-handler.d.ts" />
-
-import { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated'                                                                          
+import { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated'
 import { useRef, useEffect, useState } from 'react'
 import type { LayoutChangeEvent } from 'react-native'
 import { motion } from '../tokens'
@@ -39,7 +37,7 @@ async function loadGestureHandler(): Promise<GestureHandler | null> {
   if (gestureLoadPromise) return gestureLoadPromise
 
   // Dynamic import with type assertion - module may not be available
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+   
   gestureLoadPromise = (import('react-native-gesture-handler') as Promise<{ default?: ReactNativeGestureHandlerModule; Gesture?: GestureHandler }>)
     .then(module => {
       const defaultExport = (module.default ?? module) as unknown

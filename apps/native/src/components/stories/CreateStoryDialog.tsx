@@ -14,7 +14,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import type { Story } from '@petspark/shared';
 
-const { width, height } = Dimensions.get('window');
+// Dimensions available via Dimensions.get('window') when needed
 
 interface CreateStoryDialogProps {
   open: boolean;
@@ -123,7 +123,7 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
       setImage(null);
       setCaption('');
       onOpenChange(false);
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to create story');
     } finally {
       setIsPosting(false);
@@ -281,8 +281,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   previewImage: {
-    width: width,
-    height: height * 0.6,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height * 0.6,
     backgroundColor: '#000000',
   },
   overlayContainer: {

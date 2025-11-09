@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { StoryRing } from './StoryRing';
 import StoryViewer from './StoryViewer';
 import CreateStoryDialog from './CreateStoryDialog';

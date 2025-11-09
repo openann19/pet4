@@ -10,7 +10,7 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
-import type { Message, Reaction, LocationData } from '../types';
+import type { Message, LocationData } from '../types';
 import { useStorage } from '../hooks/useStorage';
 import { MessageReactions, StickerPicker, VoiceRecorder, LocationShare } from '../components/chat';
 

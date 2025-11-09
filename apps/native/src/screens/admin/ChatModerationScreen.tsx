@@ -34,7 +34,6 @@ interface MessageReport {
 export const ChatModerationScreen: React.FC = () => {
   const [reports, setReports] = useState<MessageReport[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedReport, setSelectedReport] = useState<MessageReport | null>(null);
   const [action, setAction] = useState<'warning' | 'mute' | 'suspend' | 'no_action'>('no_action');
 
   useEffect(() => {
@@ -60,7 +59,6 @@ export const ChatModerationScreen: React.FC = () => {
       // Note: Chat report review API endpoint not yet available in admin-api
       // When backend provides endpoint, update to: await mobileAdminApi.reviewChatReport(reportId, action);
       await loadReports();
-      setSelectedReport(null);
       setAction('no_action');
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -137,7 +135,6 @@ export const ChatModerationScreen: React.FC = () => {
                     <TouchableOpacity
                       style={[styles.actionButton, styles.warningButton]}
                       onPress={() => {
-                        setSelectedReport(report);
                         setAction('warning');
                         handleReview(report.id);
                       }}
@@ -147,7 +144,6 @@ export const ChatModerationScreen: React.FC = () => {
                     <TouchableOpacity
                       style={[styles.actionButton, styles.muteButton]}
                       onPress={() => {
-                        setSelectedReport(report);
                         setAction('mute');
                         handleReview(report.id);
                       }}
@@ -157,7 +153,6 @@ export const ChatModerationScreen: React.FC = () => {
                     <TouchableOpacity
                       style={[styles.actionButton, styles.suspendButton]}
                       onPress={() => {
-                        setSelectedReport(report);
                         setAction('suspend');
                         handleReview(report.id);
                       }}

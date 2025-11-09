@@ -82,7 +82,7 @@ export const LocationShare: React.FC<LocationShareProps> = ({
           longitude: position.coords.longitude,
         });
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to get your location');
       onClose();
     } finally {
