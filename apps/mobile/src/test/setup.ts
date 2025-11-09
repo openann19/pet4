@@ -1,56 +1,9 @@
-// Testing library - hoisted mock for CommonJS compatibility
-import { afterEach, vi } from 'vitest'
-import type * as RTL from '@testing-library/react-native'
-
-// Create mock before any imports
-const mockCleanup = vi.fn()
-const mockRender = vi.fn(() => ({
-  toJSON: () => null,
-  unmount: vi.fn(),
-  rerender: vi.fn(),
-  debug: vi.fn(),
-  getByText: vi.fn(),
-  getByTestId: vi.fn(),
-  queryByText: vi.fn(),
-  queryByTestId: vi.fn(),
-  findByText: vi.fn(),
-  findByTestId: vi.fn(),
-}))
-
-// Hoist the mock to avoid module loading issues
-vi.mock('@testing-library/react-native', () => ({
-  cleanup: mockCleanup,
-  render: mockRender,
-  screen: {
-    getByText: vi.fn(),
-    getByTestId: vi.fn(),
-    queryByText: vi.fn(),
-    queryByTestId: vi.fn(),
-    findByText: vi.fn(),
-    findByTestId: vi.fn(),
-    getAllByText: vi.fn(),
-    getAllByTestId: vi.fn(),
-    queryAllByText: vi.fn(),
-    queryAllByTestId: vi.fn(),
-    debug: vi.fn(),
-  },
-  fireEvent: {
-    press: vi.fn(),
-    changeText: vi.fn(),
-    scroll: vi.fn(),
-  },
-  waitFor: vi.fn(async (callback: () => void) => {
-    callback()
-  }),
-  within: vi.fn(),
-  act: vi.fn(async (callback: () => void | Promise<void>) => {
-    await callback()
-  }),
-}))
+// Testing library - use actual implementation
+import { afterEach } from 'vitest'
 
 // Cleanup after each test
 afterEach(() => {
-  mockCleanup()
+  // Cleanup will be handled by the actual testing-library
 })
 
 // Set globals/env expected by app code

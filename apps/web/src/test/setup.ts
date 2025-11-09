@@ -715,3 +715,28 @@ vi.mock('@petspark/motion', () => {
     })),
   };
 });
+
+// Mock @/effects/reanimated/animated-view
+vi.mock('@/effects/reanimated/animated-view', () => {
+  const AnimatedView = ({ children, style, ...props }: {
+    children?: React.ReactNode;
+    style?: Record<string, unknown>;
+    [key: string]: unknown;
+  }) => {
+    return React.createElement('div', { style, ...props }, children);
+  };
+
+  return {
+    AnimatedView,
+    useAnimatedStyleValue: vi.fn((style: unknown) => {
+      if (typeof style === 'function') {
+        try {
+          return style();
+        } catch {
+          return {};
+        }
+      }
+      return style || {};
+    }),
+  };
+});
