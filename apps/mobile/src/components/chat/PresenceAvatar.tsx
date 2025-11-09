@@ -27,8 +27,8 @@ type LinearGradientComponent = React.ComponentType<{
 let LinearGradient: LinearGradientComponent | null = null
 let linearGradientLoadPromise: Promise<LinearGradientComponent | null> | null = null
 
-async function loadLinearGradient(): Promise<LinearGradientComponent | null> {
-  if (LinearGradient !== null) return LinearGradient
+function loadLinearGradient(): Promise<LinearGradientComponent | null> {
+  if (LinearGradient !== null) return Promise.resolve(LinearGradient)
   if (linearGradientLoadPromise) return linearGradientLoadPromise
 
   function isLinearGradientModule(

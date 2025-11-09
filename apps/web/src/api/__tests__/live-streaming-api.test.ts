@@ -33,7 +33,9 @@ const createAPIClientMock = () => {
     });
 
     if (!response.ok) {
-      const error = new Error(`HTTP ${response.status}: ${response.statusText}`) as Error & { status: number };
+      const error = new Error(`HTTP ${response.status}: ${response.statusText}`) as Error & {
+        status: number;
+      };
       error.status = response.status;
       throw error;
     }

@@ -27,7 +27,8 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { MediaViewer } from './MediaViewer';
+import { Suspense } from 'react';
+import { MediaViewer } from '@/components/lazy-exports';
 import { ReportDialog } from './ReportDialog';
 
 const logger = createLogger('PostDetailView');
@@ -282,6 +283,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                   size="icon"
                   onClick={() => onOpenChange(false)}
                   className="rounded-full"
+                  aria-label="Close post details"
                 >
                   <ArrowLeft size={20} />
                 </Button>
@@ -291,6 +293,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                   size="icon"
                   onClick={() => setShowReportDialog(true)}
                   className="rounded-full"
+                  aria-label="Report post"
                 >
                   <Flag size={20} />
                 </Button>
@@ -512,13 +515,17 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
         </DialogContent>
       </Dialog>
 
-      <MediaViewer
-        open={showMediaViewer}
-        onOpenChange={setShowMediaViewer}
-        media={allMedia}
-        initialIndex={mediaViewerIndex}
-        authorName={post?.authorName || ''}
-      />
+      {showMediaViewer && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+          <MediaViewer
+            open={showMediaViewer}
+            onOpenChange={setShowMediaViewer}
+            media={allMedia}
+            initialIndex={mediaViewerIndex}
+            authorName={post?.authorName || ''}
+          />
+        </Suspense>
+      )}
 
       {post && (
         <ReportDialog

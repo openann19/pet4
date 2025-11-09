@@ -14,6 +14,7 @@ import { useFeatureFlag } from '@/lib/feature-flags';
 export interface VirtualMessageListProps {
   messages: ChatMessage[];
   currentUserId: string;
+  currentUserName: string;
   typingUsers: { userName?: string }[];
   onReaction: (messageId: string, emoji: string) => void;
   onTranslate: (messageId: string) => void;
@@ -36,6 +37,7 @@ const OVERSCAN = 12;
 export function VirtualMessageList({
   messages,
   currentUserId,
+  currentUserName,
   typingUsers,
   onReaction,
   onTranslate,
@@ -148,6 +150,7 @@ export function VirtualMessageList({
                 message={m}
                 isCurrentUser={m.senderId === currentUserId}
                 currentUserId={currentUserId}
+                currentUserName={currentUserName}
                 delay={0}
                 onReaction={onReaction}
                 onTranslate={onTranslate}
@@ -202,16 +205,17 @@ export function VirtualMessageList({
                 <AnimatePresence>
                   <TypingIndicatorComponent key="typing" users={typingUsers} />
                 </AnimatePresence>
-              ) : (
+              ) : row.type === 'msg' && row.msg ? (
                 <MessageItem
-                  message={row.msg!}
-                  isCurrentUser={row.msg!.senderId === currentUserId}
+                  message={row.msg}
+                  isCurrentUser={row.msg.senderId === currentUserId}
                   currentUserId={currentUserId}
+                  currentUserName={currentUserName}
                   delay={0}
                   onReaction={onReaction}
                   onTranslate={onTranslate}
                 />
-              )}
+              ) : null}
             </div>
           );
         })}

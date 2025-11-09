@@ -13,24 +13,25 @@ interface MotionViewProps extends ViewProps {
  * Unified animated View component.
  * Accepts animated style fragments and provides web performance optimizations.
  */
-export const MotionView: ForwardRefExoticComponent<MotionViewProps & RefAttributes<ComponentRef<typeof Animated.View>>> = forwardRef<
-  ComponentRef<typeof Animated.View>,
-  MotionViewProps
->(({ style, animatedStyle, ...rest }, ref) => {
-  // Combine styles properly
-  const styleFinal = animatedStyle ? [style, animatedStyle] : (style ?? ({} as ViewStyle));
+export const MotionView: ForwardRefExoticComponent<
+  MotionViewProps & RefAttributes<ComponentRef<typeof Animated.View>>
+> = forwardRef<ComponentRef<typeof Animated.View>, MotionViewProps>(
+  ({ style, animatedStyle, ...rest }, ref) => {
+    // Combine styles properly
+    const styleFinal = animatedStyle ? [style, animatedStyle] : (style ?? ({} as ViewStyle))
 
-  // Web performance hints (only apply on web, and only if animated)
-  const webStyle =
-    isWeb && animatedStyle
-      ? {
-          willChange: 'transform, opacity' as const,
-          contain: 'layout paint style' as const,
-        }
-      : undefined
+    // Web performance hints (only apply on web, and only if animated)
+    const webStyle =
+      isWeb && animatedStyle
+        ? {
+            willChange: 'transform, opacity' as const,
+            contain: 'layout paint style' as const,
+          }
+        : undefined
 
-  const finalStyle = webStyle ? [styleFinal, webStyle as ViewStyle] : styleFinal
+    const finalStyle = webStyle ? [styleFinal, webStyle as ViewStyle] : styleFinal
 
-  return <Animated.View ref={ref} {...rest} style={finalStyle} />
-})
+    return <Animated.View ref={ref} {...rest} style={finalStyle} />
+  }
+)
 MotionView.displayName = 'MotionView'

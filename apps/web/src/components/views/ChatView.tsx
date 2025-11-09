@@ -10,6 +10,7 @@ import {
 } from 'react-native-reanimated';
 import ChatRoomsList from '@/components/ChatRoomsList';
 import ChatWindow from '@/components/ChatWindowNew';
+import { ChatErrorBoundary } from '@/components/chat/window/ChatErrorBoundary';
 import { useApp } from '@/contexts/AppContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useStorage } from '@/hooks/use-storage';
@@ -22,6 +23,7 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { timingConfigs } from '@/effects/reanimated/transitions';
+import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 
 const logger = createLogger('ChatView');
 
@@ -216,61 +218,65 @@ export default function ChatView() {
   const showRoomsList = !isMobile || !selectedRoom;
 
   return (
-    <div className="h-[calc(100vh-8rem)]">
-      <AnimatedView style={headerAnimation.style} className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">{t.chat.title}</h2>
-        <p className="text-muted-foreground">
-          {(chatRooms || []).length}{' '}
-          {(chatRooms || []).length === 1 ? t.chat.subtitle : t.chat.subtitlePlural}
-        </p>
-      </AnimatedView>
+    <PageTransitionWrapper key="chat-view" direction="up">
+      <div className="h-[calc(100vh-8rem)]">
+        <AnimatedView style={headerAnimation.style} className="mb-6">
+          <h2 className="text-2xl font-bold mb-2">{t.chat.title}</h2>
+          <p className="text-muted-foreground">
+            {(chatRooms || []).length}{' '}
+            {(chatRooms || []).length === 1 ? t.chat.subtitle : t.chat.subtitlePlural}
+          </p>
+        </AnimatedView>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100%-5rem)]">
-        {showRoomsList && (
-          <AnimatedView
-            style={roomsListAnimation.style}
-            className="md:col-span-4 glass-strong rounded-3xl p-4 shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden"
-          >
-            <ChatRoomsList
-              rooms={chatRooms || []}
-              onSelectRoom={handleSelectRoom}
-              {...(selectedRoom?.id && { selectedRoomId: selectedRoom.id })}
-            />
-          </AnimatedView>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100%-5rem)]">
+          {showRoomsList && (
+            <AnimatedView
+              style={roomsListAnimation.style}
+              className="md:col-span-4 glass-strong rounded-3xl p-4 shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden"
+            >
+              <ChatRoomsList
+                rooms={chatRooms || []}
+                onSelectRoom={handleSelectRoom}
+                {...(selectedRoom?.id && { selectedRoomId: selectedRoom.id })}
+              />
+            </AnimatedView>
+          )}
 
-        {showChatWindow && selectedRoom && (
-          <AnimatedView
-            style={chatWindowAnimation.style}
-            className={`${
-              isMobile ? 'col-span-1' : 'md:col-span-8'
-            } glass-strong rounded-3xl shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden flex flex-col`}
-          >
-            <ChatWindow
-              room={selectedRoom}
-              currentUserId={userPet.id}
-              currentUserName={userPet.name}
-              currentUserAvatar={userPet.photo}
-              {...(isMobile && { onBack: handleBack })}
-            />
-          </AnimatedView>
-        )}
+          {showChatWindow && selectedRoom && (
+            <AnimatedView
+              style={chatWindowAnimation.style}
+              className={`${
+                isMobile ? 'col-span-1' : 'md:col-span-8'
+              } glass-strong rounded-3xl shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden flex flex-col`}
+            >
+              <ChatErrorBoundary>
+                <ChatWindow
+                  room={selectedRoom}
+                  currentUserId={userPet.id}
+                  currentUserName={userPet.name}
+                  currentUserAvatar={userPet.photo}
+                  {...(isMobile && { onBack: handleBack })}
+                />
+              </ChatErrorBoundary>
+            </AnimatedView>
+          )}
 
-        {!selectedRoom && !isMobile && (
-          <AnimatedView
-            style={emptyChatAnimation.style}
-            className="md:col-span-8 glass-effect rounded-3xl flex items-center justify-center border border-white/20"
-          >
-            <div className="text-center px-4">
-              <AnimatedView style={emptyChatIconStyle} className="text-6xl mb-4">
-                💬
-              </AnimatedView>
-              <h3 className="text-xl font-semibold mb-2">{t.chat.selectConversation}</h3>
-              <p className="text-muted-foreground">{t.chat.selectConversationDesc}</p>
-            </div>
-          </AnimatedView>
-        )}
+          {!selectedRoom && !isMobile && (
+            <AnimatedView
+              style={emptyChatAnimation.style}
+              className="md:col-span-8 glass-effect rounded-3xl flex items-center justify-center border border-white/20"
+            >
+              <div className="text-center px-4">
+                <AnimatedView style={emptyChatIconStyle} className="text-6xl mb-4">
+                  💬
+                </AnimatedView>
+                <h3 className="text-xl font-semibold mb-2">{t.chat.selectConversation}</h3>
+                <p className="text-muted-foreground">{t.chat.selectConversationDesc}</p>
+              </div>
+            </AnimatedView>
+          )}
+        </div>
       </div>
-    </div>
+    </PageTransitionWrapper>
   );
 }

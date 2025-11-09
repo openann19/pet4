@@ -11,7 +11,19 @@ import {
   KeyboardAvoidingView,
 } from 'react-native'
 // Stubs for unavailable imports
-const useApp = () => ({
+const useApp = (): {
+  t: {
+    community: {
+      createPost: string
+      postPlaceholder: string
+      charsRemaining: string
+    }
+    common: {
+      cancel: string
+      post: string
+    }
+  }
+} => ({
   t: {
     community: {
       createPost: 'Create Post',

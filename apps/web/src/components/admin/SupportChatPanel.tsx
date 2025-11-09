@@ -50,7 +50,7 @@ import {
   Plus,
   XCircle,
 } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 const logger = createLogger('SupportChatPanel');
@@ -68,18 +68,7 @@ export default function SupportChatPanel() {
   const [currentUser] = useStorage<User | null>('current-user', null);
   const [activeTab, setActiveTab] = useState<'all' | 'open' | 'in-progress' | 'resolved'>('all');
 
-  useEffect(() => {
-    loadTickets();
-    loadStats();
-  }, [filter, activeTab]);
-
-  useEffect(() => {
-    if (selectedTicket) {
-      loadMessages(selectedTicket.id);
-    }
-  }, [selectedTicket]);
-
-  const loadTickets = async () => {
+  const loadTickets = useCallback(async () => {
     setLoading(true);
     try {
       const statusFilter: SupportTicket['status'][] =
@@ -103,9 +92,9 @@ export default function SupportChatPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, activeTab]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const statsData = await supportApi.getStats();
       setStats(statsData);
@@ -113,9 +102,9 @@ export default function SupportChatPanel() {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load stats', err);
     }
-  };
+  }, []);
 
-  const loadMessages = async (ticketId: string) => {
+  const loadMessages = useCallback(async (ticketId: string) => {
     try {
       const messagesData = await supportApi.getTicketMessages(ticketId);
       setMessages(
@@ -127,7 +116,18 @@ export default function SupportChatPanel() {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load messages', err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void loadTickets();
+    void loadStats();
+  }, [loadTickets, loadStats]);
+
+  useEffect(() => {
+    if (selectedTicket) {
+      void loadMessages(selectedTicket.id);
+    }
+  }, [selectedTicket, loadMessages]);
 
   const handleSelectTicket = (ticket: SupportTicket) => {
     setSelectedTicket(ticket);
@@ -180,29 +180,6 @@ export default function SupportChatPanel() {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to update status', err);
       toast.error('Failed to update ticket status');
-    }
-  };
-
-  const _handleAssignTicket = async (_assignedTo: string) => {
-    if (!selectedTicket) return;
-
-    try {
-      const updated = await supportApi.assignTicket(selectedTicket.id, _assignedTo);
-      setSelectedTicket(updated);
-      setTickets(tickets.map((t) => (t.id === updated.id ? updated : t)));
-      toast.success('Ticket assigned');
-
-      await adminApi.createAuditLog({
-        adminId: currentUser?.id || 'admin',
-        action: 'support_ticket_assign',
-        targetType: 'support_ticket',
-        targetId: selectedTicket.id,
-        details: JSON.stringify({ assignedTo: _assignedTo }),
-      });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to assign ticket', err);
-      toast.error('Failed to assign ticket');
     }
   };
 
@@ -386,7 +363,10 @@ export default function SupportChatPanel() {
                           v === 'resolved' ||
                           v === 'closed'
                         ) {
-                          handleUpdateStatus(v);
+                          void handleUpdateStatus(v).catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to update ticket status', err);
+                          });
                         }
                       }}
                     >
@@ -477,15 +457,24 @@ export default function SupportChatPanel() {
                     className="flex-1 min-h-[80px]"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.metaKey) {
-                        handleSendMessage();
+                        void handleSendMessage().catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to send message from keyboard', err);
+                        });
                       }
                     }}
                   />
                   <Button
-                    onClick={handleSendMessage}
+                    onClick={() => {
+                      void handleSendMessage().catch((error) => {
+                        const err = error instanceof Error ? error : new Error(String(error));
+                        logger.error('Failed to send message from button', err);
+                      });
+                    }}
                     disabled={!newMessage.trim() || sendingMessage}
                     size="icon"
                     className="h-[80px]"
+                    aria-label="Send message"
                   >
                     <PaperPlaneTilt size={20} />
                   </Button>

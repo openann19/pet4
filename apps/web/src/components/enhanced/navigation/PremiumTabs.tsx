@@ -8,6 +8,7 @@ import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumTab {
   value: string;
@@ -40,7 +41,8 @@ export function PremiumTabs({
   className,
   children,
 }: PremiumTabsProps): React.JSX.Element {
-  const containerRef = useRef<HTMLDivElement>(null);
+    const uiConfig = useUIConfig();
+    const containerRef = useRef<HTMLDivElement>(null);
   const indicatorPosition = useSharedValue(0);
   const indicatorWidth = useSharedValue(0);
   const activeTab = value || defaultValue || tabs[0]?.value;

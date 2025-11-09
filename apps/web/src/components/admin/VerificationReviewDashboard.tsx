@@ -27,7 +27,7 @@ import {
   Warning,
   XCircle,
 } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
@@ -45,11 +45,7 @@ export function VerificationReviewDashboard(): JSX.Element {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
-  useEffect(() => {
-    loadVerificationRequests();
-  }, [selectedTab]);
-
-  const loadVerificationRequests = async (): Promise<void> => {
+  const loadVerificationRequests = useCallback(async (): Promise<void> => {
     try {
       setInitialLoading(true);
       const filters: { status?: VerificationStatus[] } | undefined =
@@ -63,7 +59,11 @@ export function VerificationReviewDashboard(): JSX.Element {
     } finally {
       setInitialLoading(false);
     }
-  };
+  }, [selectedTab]);
+
+  useEffect(() => {
+    void loadVerificationRequests();
+  }, [loadVerificationRequests]);
 
   const filteredRequests = verificationRequests.filter((r) => {
     if (selectedTab === 'all') return true;

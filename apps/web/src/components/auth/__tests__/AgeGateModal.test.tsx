@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AgeGateModal from '@/components/auth/AgeGateModal';
+import type { AgeVerification } from '@/lib/kyc-types';
 
 // Mock dependencies
 vi.mock('@/contexts/AppContext', () => ({
@@ -42,12 +43,20 @@ vi.mock('@/lib/haptics', () => ({
 }));
 
 vi.mock('@/lib/kyc-service', () => ({
-  recordAgeVerification: vi.fn().mockResolvedValue({}),
+  recordAgeVerification: vi.fn().mockResolvedValue({
+    userId: 'user-1',
+    ageVerified: true,
+    verifiedAt: new Date().toISOString(),
+  } as AgeVerification),
 }));
 
 // Mock useStorage hook
 vi.mock('@/hooks/use-storage', () => ({
-  useStorage: vi.fn(() => ['user-1', vi.fn(), vi.fn()]),
+  useStorage: vi.fn(() => {
+    const setValue = vi.fn().mockResolvedValue(undefined);
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
+    return ['user-1', setValue, deleteValue];
+  }),
 }));
 
 vi.mock('framer-motion', () => ({
@@ -100,19 +109,28 @@ describe('AgeGateModal', () => {
     const fiveYearsAgo = new Date();
     fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
     const dateString = fiveYearsAgo.toISOString().split('T')[0];
+    if (!dateString) {
+      throw new Error('Failed to generate date string');
+    }
 
     await user.type(birthDateInput, dateString);
     await user.click(screen.getByRole('button', { name: /verify age/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/you must be at least 18 years old/i)).toBeInTheDocument();
+      const errorMessage = screen.getByText(/you must be at least 18 years old/i);
+      expect(errorMessage).toBeInTheDocument();
+      expect(errorMessage.textContent ?? '').toContain('18 years old');
     });
   });
 
   it('should verify age successfully when user is 18 or older', async () => {
     const user = userEvent.setup();
     const { recordAgeVerification } = await import('@/lib/kyc-service');
-    vi.mocked(recordAgeVerification).mockResolvedValue({});
+    vi.mocked(recordAgeVerification).mockResolvedValue({
+      userId: 'user-1',
+      ageVerified: true,
+      verifiedAt: new Date().toISOString(),
+    } as AgeVerification);
 
     render(<AgeGateModal open={true} onVerified={mockOnVerified} onClose={mockOnClose} />);
 
@@ -121,6 +139,9 @@ describe('AgeGateModal', () => {
     const twentyYearsAgo = new Date();
     twentyYearsAgo.setFullYear(twentyYearsAgo.getFullYear() - 20);
     const dateString = twentyYearsAgo.toISOString().split('T')[0];
+    if (!dateString) {
+      throw new Error('Failed to generate date string');
+    }
 
     await user.type(birthDateInput, dateString);
     await user.click(screen.getByRole('button', { name: /verify age/i }));
@@ -134,7 +155,12 @@ describe('AgeGateModal', () => {
   it('should include country when provided', async () => {
     const user = userEvent.setup();
     const { recordAgeVerification } = await import('@/lib/kyc-service');
-    vi.mocked(recordAgeVerification).mockResolvedValue({});
+    vi.mocked(recordAgeVerification).mockResolvedValue({
+      userId: 'user-1',
+      ageVerified: true,
+      verifiedAt: new Date().toISOString(),
+      country: 'US',
+    } as AgeVerification);
 
     render(<AgeGateModal open={true} onVerified={mockOnVerified} onClose={mockOnClose} />);
 
@@ -144,6 +170,9 @@ describe('AgeGateModal', () => {
     const twentyYearsAgo = new Date();
     twentyYearsAgo.setFullYear(twentyYearsAgo.getFullYear() - 20);
     const dateString = twentyYearsAgo.toISOString().split('T')[0];
+    if (!dateString) {
+      throw new Error('Failed to generate date string');
+    }
 
     await user.type(birthDateInput, dateString);
     await user.type(countryInput, 'US');
@@ -165,6 +194,9 @@ describe('AgeGateModal', () => {
     const twentyYearsAgo = new Date();
     twentyYearsAgo.setFullYear(twentyYearsAgo.getFullYear() - 20);
     const dateString = twentyYearsAgo.toISOString().split('T')[0];
+    if (!dateString) {
+      throw new Error('Failed to generate date string');
+    }
 
     await user.type(birthDateInput, dateString);
     await user.click(screen.getByRole('button', { name: /verify age/i }));

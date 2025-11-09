@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { motion, MotionView } from '@petspark/motion';
 import { Plus } from '@phosphor-icons/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,7 +14,7 @@ interface StoryRingProps {
   onClick: () => void;
 }
 
-export default function StoryRing({
+function StoryRingComponent({
   stories,
   petName,
   petPhoto,
@@ -21,7 +22,7 @@ export default function StoryRing({
   hasUnviewed = false,
   onClick,
 }: StoryRingProps) {
-  const activeStories = filterActiveStories(stories);
+  const activeStories = useMemo(() => filterActiveStories(stories), [stories]);
   const hasActiveStories = activeStories.length > 0;
 
   return (
@@ -40,9 +41,8 @@ export default function StoryRing({
         ) : (
           <>
             <div
-              className={`w-16 h-16 rounded-full p-0.5 ${
-                hasUnviewed ? 'bg-gradient-to-tr from-primary via-accent to-secondary' : 'bg-muted'
-              }`}
+              className={`w-16 h-16 rounded-full p-0.5 ${hasUnviewed ? 'bg-gradient-to-tr from-primary via-accent to-secondary' : 'bg-muted'
+                }`}
             >
               <Avatar className="w-full h-full border-2 border-background">
                 <AvatarImage src={petPhoto} alt={petName} />
@@ -67,3 +67,16 @@ export default function StoryRing({
     </MotionView>
   );
 }
+
+// Memoize StoryRing to prevent unnecessary re-renders
+export default memo(StoryRingComponent, (prev, next) => {
+  return (
+    prev.petName === next.petName &&
+    prev.petPhoto === next.petPhoto &&
+    prev.isOwn === next.isOwn &&
+    prev.hasUnviewed === next.hasUnviewed &&
+    prev.stories.length === next.stories.length &&
+    prev.stories.every((story, index) => story.id === next.stories[index]?.id) &&
+    prev.onClick === next.onClick
+  );
+});

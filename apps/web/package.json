@@ -24,6 +24,7 @@
     "e2e": "playwright test",
     "e2e:smoke": "playwright test e2e/motion-smoke.spec.ts",
     "e2e:ui": "playwright test --ui",
+    "test:a11y": "playwright test e2e/a11y-audit.spec.ts",
     "ci": "tsc -p tsconfig.json --noEmit && eslint . && node scripts/verify-parity.mjs && vitest run --passWithNoTests && pnpm verify:ultra",
     "check:budget": "node scripts/check-performance-budget.mjs",
     "semgrep": "semgrep ci --config p/ci --strict --error",
@@ -113,6 +114,7 @@
     "tailwind-merge": "^2.5.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@eslint/js": "^9.21.0",
     "@playwright/test": "^1.56.1",
     "@size-limit/file": "^11.1.4",

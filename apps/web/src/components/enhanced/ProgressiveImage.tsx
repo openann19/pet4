@@ -4,6 +4,7 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { cn } from '@/lib/utils';
 import { supportsWebP, supportsAVIF } from '@/lib/image-loader';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface ProgressiveImageProps {
   src: string;
@@ -40,7 +41,8 @@ export function ProgressiveImage({
   onLoad,
   onError,
 }: ProgressiveImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
+    const uiConfig = useUIConfig();
+    const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(placeholderSrc || src);
   const [error, setError] = useState(false);
   const [bestFormat, setBestFormat] = useState<'webp' | 'avif' | 'original'>('original');
@@ -49,15 +51,25 @@ export function ProgressiveImage({
   // Detect best format support
   useEffect(() => {
     if (format === 'auto') {
-      supportsAVIF().then((avifSupported) => {
-        if (avifSupported) {
-          setBestFormat('avif');
-        } else if (supportsWebP()) {
-          setBestFormat('webp');
-        } else {
+      let isMounted = true;
+      supportsAVIF()
+        .then((avifSupported) => {
+          if (!isMounted) return;
+          if (avifSupported) {
+            setBestFormat('avif');
+          } else if (supportsWebP()) {
+            setBestFormat('webp');
+          } else {
+            setBestFormat('original');
+          }
+        })
+        .catch(() => {
+          if (!isMounted) return;
           setBestFormat('original');
-        }
-      });
+        });
+      return () => {
+        isMounted = false;
+      };
     } else {
       setBestFormat(format);
     }

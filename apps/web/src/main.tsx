@@ -35,22 +35,38 @@ if (import.meta.env.PROD) {
 
 // Initialize refresh rate detection
 import { detectRefreshRate } from './lib/refresh-rate';
+let refreshRateCleanup: (() => void) | null = null;
 if (typeof window !== 'undefined') {
-  detectRefreshRate();
+  try {
+    refreshRateCleanup = detectRefreshRate();
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    rootLogger.error('Refresh rate detection failed', err);
+  }
 }
 
 // Initialize Web Vitals collection
 import { initWebVitals } from './lib/web-vitals';
 
 if (import.meta.env.PROD) {
-  initWebVitals();
+  try {
+    initWebVitals();
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    rootLogger.error('Web Vitals initialization failed', err);
+  }
 }
 
 // Initialize error reporting
 import { initErrorReporting } from './lib/error-reporting';
-initErrorReporting({
-  enabled: import.meta.env.PROD,
-});
+try {
+  initErrorReporting({
+    enabled: import.meta.env.PROD,
+  });
+} catch (error) {
+  const err = error instanceof Error ? error : new Error(String(error));
+  rootLogger.error('Error reporting initialization failed', err);
+}
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import type { Pet, SwipeAction, UserProfile } from '../types';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 import { SwipeableCard } from '../components/SwipeableCard';
 import { FadeInView } from '../components/FadeInView';
 import { AnimatedButton } from '../components/AnimatedButton';

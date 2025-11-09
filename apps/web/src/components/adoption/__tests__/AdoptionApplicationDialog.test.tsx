@@ -70,6 +70,7 @@ describe('AdoptionApplicationDialog', () => {
     postedDate: new Date().toISOString(),
     personality: ['friendly'],
     photos: [],
+    contactEmail: 'shelter@example.com',
   };
 
   const mockOnOpenChange = vi.fn();

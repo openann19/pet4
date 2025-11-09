@@ -38,7 +38,7 @@ export function KYCManagement() {
   const [rejectText, setRejectText] = useState('');
 
   useEffect(() => {
-    loadSessions();
+    void loadSessions();
   }, []);
 
   const loadSessions = async () => {
@@ -49,7 +49,7 @@ export function KYCManagement() {
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )
       );
-    } catch (error) {
+    } catch {
       toast.error('Failed to load KYC sessions');
     }
   };
@@ -189,8 +189,8 @@ export function KYCManagement() {
           <div className="text-2xl font-bold mt-1">
             {sessions.length > 0
               ? Math.round(
-                  (sessions.filter((s) => s.status === 'verified').length / sessions.length) * 100
-                )
+                (sessions.filter((s) => s.status === 'verified').length / sessions.length) * 100
+              )
               : 0}
             %
           </div>

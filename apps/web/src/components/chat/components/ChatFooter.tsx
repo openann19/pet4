@@ -19,6 +19,7 @@ import { TemplatePanel } from './TemplatePanel';
 import VoiceRecorder from '../VoiceRecorder';
 import { REACTION_EMOJIS } from '@/lib/chat-types';
 import { CHAT_STICKERS } from '@/lib/chat-utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ChatFooterProps {
   inputValue: string;
@@ -63,7 +64,8 @@ export function ChatFooter({
   setShowTemplates,
   setShowStickers,
 }: ChatFooterProps): JSX.Element {
-  const animation = useEntryAnimation({ initialY: 20, delay: 0 });
+    const uiConfig = useUIConfig();
+    const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
   return (
     <AnimatedView
@@ -107,7 +109,13 @@ export function ChatFooter({
       <div className="flex items-end gap-2">
         <Popover open={showStickers} onOpenChange={setShowStickers}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              aria-label={showStickers ? 'Close stickers and emojis' : 'Open stickers and emojis'}
+              aria-expanded={showStickers}
+            >
               <Smiley size={24} weight={showStickers ? 'fill' : 'regular'} />
             </Button>
           </PopoverTrigger>
@@ -151,7 +159,13 @@ export function ChatFooter({
               />
             </div>
 
-            <Button onMouseDown={onStartRecording} size="icon" variant="ghost" className="shrink-0">
+            <Button
+              onMouseDown={onStartRecording}
+              size="icon"
+              variant="ghost"
+              className="shrink-0"
+              aria-label="Record voice message"
+            >
               <Microphone size={24} />
             </Button>
 
@@ -160,6 +174,7 @@ export function ChatFooter({
               disabled={!inputValue.trim()}
               size="icon"
               className="shrink-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all"
+              aria-label="Send message"
             >
               <SendButtonIcon isActive={!!inputValue.trim()} />
             </Button>

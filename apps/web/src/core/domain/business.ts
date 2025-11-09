@@ -99,7 +99,7 @@ export function checkUsageWithinLimits(
   action: 'swipe' | 'super_like' | 'boost'
 ): { allowed: boolean; reason?: string; limit?: number; remaining?: number } {
   switch (action) {
-    case 'swipe':
+    case 'swipe': {
       if (entitlements.swipeDailyCap === 'unlimited') {
         return { allowed: true };
       }
@@ -117,8 +117,9 @@ export function checkUsageWithinLimits(
         limit: entitlements.swipeDailyCap,
         remaining: swipesRemaining,
       };
+    }
 
-    case 'super_like':
+    case 'super_like': {
       const superLikesRemaining = entitlements.superLikesPerDay - usage.superLikes;
       if (superLikesRemaining <= 0) {
         return {
@@ -133,8 +134,9 @@ export function checkUsageWithinLimits(
         limit: entitlements.superLikesPerDay,
         remaining: superLikesRemaining,
       };
+    }
 
-    case 'boost':
+    case 'boost': {
       const boostsRemaining = entitlements.boostsPerWeek - usage.boostsThisWeek;
       if (boostsRemaining <= 0) {
         return {
@@ -149,6 +151,7 @@ export function checkUsageWithinLimits(
         limit: entitlements.boostsPerWeek,
         remaining: boostsRemaining,
       };
+    }
 
     default:
       return { allowed: false, reason: 'Unknown action' };

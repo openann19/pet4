@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface EnhancedCarouselProps {
   items: React.ReactNode[];
@@ -30,6 +31,7 @@ export function EnhancedCarousel({
   loop = true,
   onSlideChange,
 }: EnhancedCarouselProps) {
+  const uiConfig = useUIConfig();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right'>('right');
   const autoPlayRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -177,6 +179,7 @@ export function EnhancedCarousel({
               'absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-background/80 backdrop-blur-sm shadow-lg hover:bg-background/95 disabled:opacity-0',
               'transition-all duration-200 hover:scale-110 active:scale-95'
             )}
+            aria-label="Previous slide"
           >
             <CaretLeft size={20} weight="bold" />
           </Button>
@@ -193,6 +196,7 @@ export function EnhancedCarousel({
               'absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-background/80 backdrop-blur-sm shadow-lg hover:bg-background/95 disabled:opacity-0',
               'transition-all duration-200 hover:scale-110 active:scale-95'
             )}
+            aria-label="Next slide"
           >
             <CaretRight size={20} weight="bold" />
           </Button>

@@ -14,6 +14,7 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { safeHref } from '@/lib/url-safety';
 import { SmartImage } from '@/components/media/SmartImage';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface LinkPreviewProps {
   url: string;
@@ -32,7 +33,8 @@ export function LinkPreview({
   isLoading = false,
   className,
 }: LinkPreviewProps) {
-  const reduced = useReducedMotion();
+    const uiConfig = useUIConfig();
+    const reduced = useReducedMotion();
   const safeUrl = useMemo(() => safeHref(url), [url]);
   const showContent = !isLoading && (!!title || !!image) && safeUrl !== null;
 

@@ -175,70 +175,149 @@ export function useBatteryStatus() {
 
   useEffect(() => {
     const nav = window.navigator as Navigator & { getBattery?: () => Promise<BatteryManager> };
-    if (nav.getBattery) {
-      nav
-        .getBattery()
-        .then((battery: BatteryManager) => {
+    if (!nav.getBattery) {
+      return;
+    }
+
+    let cleanup: (() => void) | null = null;
+
+    nav
+      .getBattery()
+      .then((battery: BatteryManager) => {
+        try {
           setBatteryLevel(battery.level);
           setIsCharging(battery.charging);
 
-          const updateLevel = () => setBatteryLevel(battery.level);
-          const updateCharging = () => setIsCharging(battery.charging);
+          const updateLevel = () => {
+            try {
+              setBatteryLevel(battery.level);
+            } catch (error) {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('useBatteryStatus updateLevel error', err);
+            }
+          };
+          const updateCharging = () => {
+            try {
+              setIsCharging(battery.charging);
+            } catch (error) {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('useBatteryStatus updateCharging error', err);
+            }
+          };
 
           battery.addEventListener('levelchange', updateLevel);
           battery.addEventListener('chargingchange', updateCharging);
 
-          return () => {
-            battery.removeEventListener('levelchange', updateLevel);
-            battery.removeEventListener('chargingchange', updateCharging);
+          cleanup = () => {
+            try {
+              battery.removeEventListener('levelchange', updateLevel);
+              battery.removeEventListener('chargingchange', updateCharging);
+            } catch (error) {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('useBatteryStatus cleanup error', err);
+            }
           };
-        })
-        .catch((error) => {
-          logger.error(
-            'Failed to get battery status',
-            error instanceof Error ? error : new Error(String(error))
-          );
-        });
-    }
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('useBatteryStatus setup error', err);
+        }
+      })
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to get battery status', err);
+      });
+
+    return () => {
+      if (cleanup) {
+        cleanup();
+      }
+    };
   }, []);
 
   return { batteryLevel, isCharging };
 }
 
 export function useNetworkStatus() {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  );
   const [connectionType, setConnectionType] = useState<string>('unknown');
   const [effectiveType, setEffectiveType] = useState<string>('unknown');
 
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return;
+    }
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    const handleOnline = () => {
+      try {
+        setIsOnline(true);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('useNetworkStatus handleOnline error', err);
+      }
+    };
+
+    const handleOffline = () => {
+      try {
+        setIsOnline(false);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('useNetworkStatus handleOffline error', err);
+      }
+    };
+
+    try {
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('useNetworkStatus setup event listeners error', err);
+    }
 
     const nav = window.navigator as Navigator & { connection?: NetworkInformation };
     if (nav.connection) {
-      const connection = nav.connection;
-      setConnectionType(connection.type || 'unknown');
-      setEffectiveType(connection.effectiveType || 'unknown');
-
-      const handleChange = () => {
+      try {
+        const connection = nav.connection;
         setConnectionType(connection.type || 'unknown');
         setEffectiveType(connection.effectiveType || 'unknown');
-      };
 
-      connection.addEventListener('change', handleChange);
-      return () => {
-        window.removeEventListener('online', handleOnline);
-        window.removeEventListener('offline', handleOffline);
-        connection.removeEventListener('change', handleChange);
-      };
+        const handleChange = () => {
+          try {
+            setConnectionType(connection.type || 'unknown');
+            setEffectiveType(connection.effectiveType || 'unknown');
+          } catch (error) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logger.error('useNetworkStatus handleChange error', err);
+          }
+        };
+
+        connection.addEventListener('change', handleChange);
+
+        return () => {
+          try {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+            connection.removeEventListener('change', handleChange);
+          } catch (error) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logger.error('useNetworkStatus cleanup error', err);
+          }
+        };
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('useNetworkStatus setup connection listeners error', err);
+      }
     }
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      try {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('useNetworkStatus cleanup error', err);
+      }
     };
   }, []);
 

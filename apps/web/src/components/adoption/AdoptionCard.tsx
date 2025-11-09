@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useCallback } from 'react';
 import { Heart, MapPin, CheckCircle, PawPrint } from '@phosphor-icons/react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +11,6 @@ import { haptics } from '@/lib/haptics';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
-import { useCallback } from 'react';
 
 interface AdoptionCardProps {
   profile: AdoptionProfile;
@@ -19,7 +19,7 @@ interface AdoptionCardProps {
   isFavorited?: boolean;
 }
 
-export function AdoptionCard({ profile, onSelect, onFavorite, isFavorited }: AdoptionCardProps) {
+function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: AdoptionCardProps) {
   const { t } = useApp();
 
   const cardAnimation = useHoverLift({
@@ -170,3 +170,19 @@ export function AdoptionCard({ profile, onSelect, onFavorite, isFavorited }: Ado
     </AnimatedView>
   );
 }
+
+// Memoize AdoptionCard to prevent unnecessary re-renders
+export const AdoptionCard = memo(AdoptionCardComponent, (prev, next) => {
+  return (
+    prev.profile._id === next.profile._id &&
+    prev.profile.status === next.profile.status &&
+    prev.profile.petPhoto === next.profile.petPhoto &&
+    prev.profile.petName === next.profile.petName &&
+    prev.profile.location === next.profile.location &&
+    prev.profile.description === next.profile.description &&
+    prev.profile.adoptionFee === next.profile.adoptionFee &&
+    prev.isFavorited === next.isFavorited &&
+    prev.onSelect === next.onSelect &&
+    prev.onFavorite === next.onFavorite
+  );
+});

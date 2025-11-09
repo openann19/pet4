@@ -6,7 +6,7 @@
 
 import { configBroadcastService } from '@/core/services/config-broadcast-service';
 import { adminApi } from '@/api/admin-api';
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CheckCircle, CurrencyDollar, Flask, Gear, Radio } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,18 +22,14 @@ import { logger } from '@/lib/logger';
 import type { User } from '@/lib/user-service';
 
 export default function BusinessConfigPanel() {
-  const { t: _t } = useApp();
+  useApp();
   const [config, setConfig] = useState<BusinessConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [broadcasting, setBroadcasting] = useState(false);
   const [currentUser] = useStorage<User | null>('current-user', null);
 
-  useEffect(() => {
-    loadConfig();
-  }, []);
-
-  const loadConfig = async () => {
+  const loadConfig = useCallback(async () => {
     setLoading(true);
     try {
       const cfg = await getBusinessConfig();
@@ -68,7 +64,11 @@ export default function BusinessConfigPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser]);
+
+  useEffect(() => {
+    void loadConfig();
+  }, [loadConfig]);
 
   const handleSave = async () => {
     if (!config || !currentUser) return;
@@ -98,7 +98,7 @@ export default function BusinessConfigPanel() {
       // Then broadcast it
       await configBroadcastService.broadcastConfig(
         'business',
-        config as unknown as Record<string, unknown>,
+        config satisfies Record<string, unknown>,
         currentUser.id || 'admin'
       );
 
@@ -180,11 +180,32 @@ export default function BusinessConfigPanel() {
           <p className="text-muted-foreground">Manage prices, limits, and experiments</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={handleSave} disabled={saving || broadcasting} variant="outline">
+          <Button
+            onClick={() => {
+              void handleSave().catch((error) => {
+                const err = error instanceof Error ? error : new Error(String(error));
+                logger.error('Failed to save config', err, { action: 'handleSave' });
+                toast.error('Failed to save config');
+              });
+            }}
+            disabled={saving || broadcasting}
+            variant="outline"
+          >
             <CheckCircle size={20} className="mr-2" />
             {saving ? 'Saving...' : 'Save Changes'}
           </Button>
-          <Button onClick={handleSaveAndBroadcast} disabled={saving || broadcasting}>
+          <Button
+            onClick={() => {
+              void handleSaveAndBroadcast().catch((error) => {
+                const err = error instanceof Error ? error : new Error(String(error));
+                logger.error('Failed to save and broadcast config', err, {
+                  action: 'handleSaveAndBroadcast',
+                });
+                toast.error('Failed to save and broadcast config');
+              });
+            }}
+            disabled={saving || broadcasting}
+          >
             <Radio size={20} className="mr-2" />
             {broadcasting ? 'Broadcasting...' : 'Save & Broadcast'}
           </Button>

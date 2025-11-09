@@ -6,6 +6,7 @@ import { timingConfigs } from '@/effects/reanimated/transitions';
 import { cn } from '@/lib/utils';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import type { ReactNode } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ShimmerEffectProps {
   width?: string | number;
@@ -22,7 +23,8 @@ export function ShimmerEffect({
   className,
   animated = true,
 }: ShimmerEffectProps) {
-  const shimmerPosition = useSharedValue(-100);
+    const uiConfig = useUIConfig();
+    const shimmerPosition = useSharedValue(-100);
 
   if (animated) {
     shimmerPosition.value = withRepeat(withTiming(200, { duration: 1500 }), -1, false);

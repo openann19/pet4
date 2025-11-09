@@ -4,7 +4,7 @@
  * Individual notification item with animations
  */
 
-import { useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { Button } from '@/components/ui/button';
 import { Check, Trash, Archive } from '@phosphor-icons/react';
@@ -32,7 +32,7 @@ export interface NotificationItemProps {
   preferences?: NotificationPreferences | null;
 }
 
-export function NotificationItem({
+function NotificationItemComponent({
   notification,
   onMarkAsRead,
   onArchive,
@@ -149,3 +149,18 @@ export function NotificationItem({
     </AnimatedView>
   );
 }
+
+// Memoize NotificationItem to prevent unnecessary re-renders
+export const NotificationItem = memo(NotificationItemComponent, (prev, next) => {
+  return (
+    prev.notification.id === next.notification.id &&
+    prev.notification.read === next.notification.read &&
+    prev.notification.timestamp === next.notification.timestamp &&
+    prev.notification.title === next.notification.title &&
+    prev.notification.message === next.notification.message &&
+    prev.onMarkAsRead === next.onMarkAsRead &&
+    prev.onArchive === next.onArchive &&
+    prev.onDelete === next.onDelete &&
+    prev.getIcon === next.getIcon
+  );
+});

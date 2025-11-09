@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { moderationService, photoService } from '@/lib/backend-services';
 import type { ModerationReason, ModerationTask, PhotoRecord } from '@/lib/backend-types';
+import { createLogger } from '@/lib/logger';
 import {
   Calendar,
   CheckCircle,
@@ -26,8 +27,10 @@ import {
   Warning,
   XCircle,
 } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+
+const logger = createLogger('ModerationQueue');
 
 export function ModerationQueue() {
   const [tasks, setTasks] = useState<ModerationTask[]>([]);
@@ -41,23 +44,39 @@ export function ModerationQueue() {
   const [decisionReason, setDecisionReason] = useState<ModerationReason>('other');
   const [decisionText, setDecisionText] = useState('');
 
-  useEffect(() => {
-    loadQueue();
+  const loadQueue = useCallback(async () => {
+    try {
+      const queue = await moderationService.getQueue();
+      const allTasks = [...queue.pending, ...queue.inProgress, ...queue.completed];
+      setTasks(allTasks);
+
+      const photoMap = new Map<string, PhotoRecord>();
+      for (const task of allTasks) {
+        try {
+          const allPhotos = await photoService.getPhotosByOwner(task.ownerId, true);
+          const photo = allPhotos.find((p) => p.id === task.photoId);
+          if (photo) photoMap.set(photo.id, photo);
+        } catch (error) {
+          logger.error(
+            'Failed to load photos for task',
+            error instanceof Error ? error : new Error(String(error)),
+            { taskId: task.id, ownerId: task.ownerId }
+          );
+        }
+      }
+      setPhotos(photoMap);
+    } catch (error) {
+      logger.error(
+        'Failed to load moderation queue',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      toast.error('Failed to load moderation queue');
+    }
   }, []);
 
-  const loadQueue = async () => {
-    const queue = await moderationService.getQueue();
-    const allTasks = [...queue.pending, ...queue.inProgress, ...queue.completed];
-    setTasks(allTasks);
-
-    const photoMap = new Map<string, PhotoRecord>();
-    for (const task of allTasks) {
-      const allPhotos = await photoService.getPhotosByOwner(task.ownerId, true);
-      const photo = allPhotos.find((p) => p.id === task.photoId);
-      if (photo) photoMap.set(photo.id, photo);
-    }
-    setPhotos(photoMap);
-  };
+  useEffect(() => {
+    void loadQueue();
+  }, [loadQueue]);
 
   const filteredTasks = tasks.filter((t) => {
     if (selectedTab === 'pending') return t.status === 'pending';
@@ -65,13 +84,16 @@ export function ModerationQueue() {
     return t.status === 'completed';
   });
 
-  const handleTaskClick = async (task: ModerationTask) => {
-    setSelectedTask(task);
-    const photo = photos.get(task.photoId);
-    setDetailPhoto(photo ?? null);
-  };
+  const handleTaskClick = useCallback(
+    (task: ModerationTask) => {
+      setSelectedTask(task);
+      const photo = photos.get(task.photoId);
+      setDetailPhoto(photo ?? null);
+    },
+    [photos]
+  );
 
-  const handleTakeTask = async () => {
+  const handleTakeTask = useCallback(async () => {
     if (!selectedTask) return;
 
     setLoading(true);
@@ -89,9 +111,9 @@ export function ModerationQueue() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedTask, loadQueue]);
 
-  const handleApprove = async () => {
+  const handleApprove = useCallback(async () => {
     if (!selectedTask) return;
 
     setLoading(true);
@@ -118,9 +140,9 @@ export function ModerationQueue() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedTask, loadQueue]);
 
-  const handleReject = async () => {
+  const handleReject = useCallback(async () => {
     if (!selectedTask || !decisionText) return;
 
     setLoading(true);
@@ -148,9 +170,9 @@ export function ModerationQueue() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedTask, decisionText, decisionReason, loadQueue]);
 
-  const handleHoldForKYC = async () => {
+  const handleHoldForKYC = useCallback(async () => {
     if (!selectedTask) return;
 
     setLoading(true);
@@ -177,7 +199,7 @@ export function ModerationQueue() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedTask, loadQueue]);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -206,7 +228,15 @@ export function ModerationQueue() {
             Review and approve pet photos before they go live
           </p>
         </div>
-        <Button onClick={loadQueue} variant="outline">
+        <Button
+          onClick={() => {
+            void loadQueue().catch((error) => {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('Failed to load queue from button', err);
+            });
+          }}
+          variant="outline"
+        >
           <Clock size={16} className="mr-2" />
           Refresh
         </Button>
@@ -472,7 +502,12 @@ export function ModerationQueue() {
               {selectedTask?.status === 'pending' && (
                 <div className="space-y-4">
                   <Button
-                    onClick={handleTakeTask}
+                    onClick={() => {
+                      void handleTakeTask().catch((error) => {
+                        const err = error instanceof Error ? error : new Error(String(error));
+                        logger.error('Failed to take task from button', err);
+                      });
+                    }}
                     variant="outline"
                     className="w-full"
                     disabled={loading}
@@ -519,7 +554,12 @@ export function ModerationQueue() {
 
                   <div className="grid grid-cols-3 gap-2">
                     <Button
-                      onClick={handleApprove}
+                      onClick={() => {
+                        void handleApprove().catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to approve from button', err);
+                        });
+                      }}
                       disabled={loading}
                       className="bg-green-600 hover:bg-green-700"
                     >
@@ -527,14 +567,28 @@ export function ModerationQueue() {
                       Approve
                     </Button>
                     <Button
-                      onClick={handleReject}
+                      onClick={() => {
+                        void handleReject().catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to reject from button', err);
+                        });
+                      }}
                       disabled={loading || !decisionText}
                       variant="destructive"
                     >
                       <XCircle size={16} className="mr-2" />
                       Reject
                     </Button>
-                    <Button onClick={handleHoldForKYC} disabled={loading} variant="outline">
+                    <Button
+                      onClick={() => {
+                        void handleHoldForKYC().catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to hold for KYC from button', err);
+                        });
+                      }}
+                      disabled={loading}
+                      variant="outline"
+                    >
                       <ShieldCheck size={16} className="mr-2" />
                       Hold for KYC
                     </Button>

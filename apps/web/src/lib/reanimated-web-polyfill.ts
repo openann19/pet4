@@ -323,8 +323,7 @@ export function useAnimatedReaction<T>(
       react(currentValue, previousValueRef.current);
       previousValueRef.current = currentValue;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, prepareDeps ?? []);
+  }, [prepare, react, ...(prepareDeps ?? [])]);
 }
 
 // Animated ref (returns a ref that can be used with animated components)

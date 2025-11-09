@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import {
   View,
   Text,
@@ -66,7 +66,10 @@ export function PremiumSelect({
 }: PremiumSelectProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const selectedValues = Array.isArray(value) ? value : value ? [value] : []
+  const selectedValues = useMemo(
+    () => (Array.isArray(value) ? value : value ? [value] : []),
+    [value]
+  )
   const reducedMotion = useReducedMotionSV()
 
   const modalOpacity = useSharedValue(0)

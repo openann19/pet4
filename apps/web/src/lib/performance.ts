@@ -25,6 +25,8 @@ export interface PerformanceMetrics {
 export class PerformanceMonitor {
   private metrics: PerformanceMetrics = {};
   private observers: PerformanceObserver[] = [];
+  private loadHandler: (() => void) | null = null;
+  private timeoutId: number | null = null;
 
   constructor() {
     if (typeof window === 'undefined') return;
@@ -78,13 +80,15 @@ export class PerformanceMonitor {
       }
 
       if ('performance' in window && performance.timing) {
-        window.addEventListener('load', () => {
-          setTimeout(() => {
+        this.loadHandler = () => {
+          this.timeoutId = window.setTimeout(() => {
             const perfData = performance.timing;
             this.metrics.pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
             this.metrics.timeToInteractive = perfData.domInteractive - perfData.navigationStart;
+            this.timeoutId = null;
           }, 0);
-        });
+        };
+        window.addEventListener('load', this.loadHandler);
       }
     } catch (error) {
       logger.warn(
@@ -98,9 +102,34 @@ export class PerformanceMonitor {
     return { ...this.metrics };
   }
 
-  cleanup() {
-    this.observers.forEach((observer) => observer.disconnect());
+  /**
+   * Clean up observers and event listeners
+   */
+  destroy(): void {
+    // Disconnect all observers
+    for (const observer of this.observers) {
+      observer.disconnect();
+    }
     this.observers = [];
+
+    // Remove event listener
+    if (this.loadHandler) {
+      window.removeEventListener('load', this.loadHandler);
+      this.loadHandler = null;
+    }
+
+    // Clear timeout
+    if (this.timeoutId !== null) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
+  }
+
+  /**
+   * @deprecated Use destroy() instead
+   */
+  cleanup(): void {
+    this.destroy();
   }
 
   logMetrics() {

@@ -21,22 +21,68 @@ export interface OfflineQueueState {
 class OfflineQueueManager {
   private isOnline: boolean = navigator.onLine;
   private listeners = new Set<(online: boolean) => void>();
+  private onlineHandler: (() => void) | null = null;
+  private offlineHandler: (() => void) | null = null;
 
   constructor() {
     this.init();
   }
 
   private init() {
-    window.addEventListener('online', () => {
-      this.isOnline = true;
-      this.notifyListeners(true);
-      void this.processQueue();
-    });
+    if (typeof window === 'undefined') {
+      return;
+    }
 
-    window.addEventListener('offline', () => {
-      this.isOnline = false;
-      this.notifyListeners(false);
-    });
+    this.onlineHandler = () => {
+      try {
+        this.isOnline = true;
+        this.notifyListeners(true);
+        void this.processQueue();
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('OfflineQueueManager online handler error', err);
+      }
+    };
+
+    this.offlineHandler = () => {
+      try {
+        this.isOnline = false;
+        this.notifyListeners(false);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('OfflineQueueManager offline handler error', err);
+      }
+    };
+
+    try {
+      window.addEventListener('online', this.onlineHandler);
+      window.addEventListener('offline', this.offlineHandler);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('OfflineQueueManager setup event listeners error', err);
+    }
+  }
+
+  destroy(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      if (this.onlineHandler) {
+        window.removeEventListener('online', this.onlineHandler);
+        this.onlineHandler = null;
+      }
+      if (this.offlineHandler) {
+        window.removeEventListener('offline', this.offlineHandler);
+        this.offlineHandler = null;
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('OfflineQueueManager cleanup event listeners error', err);
+    }
+
+    this.listeners.clear();
   }
 
   onNetworkChange(callback: (online: boolean) => void) {
@@ -72,15 +118,33 @@ class OfflineQueueManager {
   }
 
   private getQueue(): OfflineQueueState {
-    const stored = localStorage.getItem('offline_queue');
-    if (!stored) {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
       return { actions: [], processing: false };
     }
-    return JSON.parse(stored);
+    try {
+      const stored = localStorage.getItem('offline_queue');
+      if (!stored) {
+        return { actions: [], processing: false };
+      }
+      return JSON.parse(stored) as OfflineQueueState;
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('OfflineQueueManager getQueue error', err);
+      return { actions: [], processing: false };
+    }
   }
 
   private saveQueue(state: OfflineQueueState): void {
-    localStorage.setItem('offline_queue', JSON.stringify(state));
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return;
+    }
+    try {
+      localStorage.setItem('offline_queue', JSON.stringify(state));
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('OfflineQueueManager saveQueue error', err);
+      // Silently fail - queue will be lost but app continues
+    }
   }
 
   async processQueue() {
@@ -165,6 +229,10 @@ class OfflineQueueManager {
 }
 
 export const offlineQueue = new OfflineQueueManager();
+
+export function destroyOfflineQueue(): void {
+  offlineQueue.destroy();
+}
 
 export const useOfflineQueue = () => {
   const [isOnline, _setIsOnline] = useStorage<boolean>('app-online-status', navigator.onLine);

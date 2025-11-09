@@ -34,27 +34,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    initializeAuth();
-  }, []);
-
-  const initializeAuth = async () => {
-    try {
-      const accessToken = localStorage.getItem('access_token');
-      const refreshToken = localStorage.getItem('refresh_token');
-
-      if (accessToken) {
-        APIClient.setTokens(accessToken, refreshToken ?? undefined);
-        await loadUserProfile();
-      }
-    } catch (error) {
-      logger.error('Failed to initialize auth', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const loadUserProfile = async () => {
+  const loadUserProfile = async (): Promise<void> => {
     try {
       const profile = await authApi.me();
       setUser(profile);
@@ -62,11 +42,75 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       logger.error('Failed to load user profile', error);
       // Token might be invalid, clear it
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
+      try {
+        if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+        }
+      } catch (storageError) {
+        const err = storageError instanceof Error ? storageError : new Error(String(storageError));
+        logger.error('Failed to clear tokens from localStorage', err);
+      }
       APIClient.logout();
     }
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const initializeAuth = async (): Promise<void> => {
+      try {
+        let accessToken: string | null = null;
+        let refreshToken: string | null = null;
+
+        try {
+          if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+            accessToken = localStorage.getItem('access_token');
+            refreshToken = localStorage.getItem('refresh_token');
+          }
+        } catch (storageError) {
+          const err =
+            storageError instanceof Error ? storageError : new Error(String(storageError));
+          logger.error('Failed to read tokens from localStorage', err);
+        }
+
+        if (accessToken && !cancelled) {
+          APIClient.setTokens(accessToken, refreshToken ?? undefined);
+          const profile = await authApi.me();
+          if (!cancelled) {
+            setUser(profile);
+            logger.info('User profile loaded', { userId: profile.id });
+          }
+        }
+      } catch (error) {
+        if (!cancelled) {
+          logger.error('Failed to initialize auth', error);
+          // Token might be invalid, clear it
+          try {
+            if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+              localStorage.removeItem('access_token');
+              localStorage.removeItem('refresh_token');
+            }
+          } catch (storageError) {
+            const err =
+              storageError instanceof Error ? storageError : new Error(String(storageError));
+            logger.error('Failed to clear tokens from localStorage', err);
+          }
+          APIClient.logout();
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void initializeAuth();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const login = async (email: string, password: string): Promise<User> => {
     setIsLoading(true);

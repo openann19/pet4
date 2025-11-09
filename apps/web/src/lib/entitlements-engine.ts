@@ -80,7 +80,7 @@ export async function canPerformAction(
     case 'read_receipt':
       return { allowed: isFeatureEnabled(entitlements, 'read_receipt') };
 
-    case 'adoption_listing':
+    case 'adoption_listing': {
       // Check active adoption listings count
       const activeListings = await getActiveAdoptionListingsCount(userId);
       if (activeListings >= entitlements.adoptionListingLimit) {
@@ -92,6 +92,7 @@ export async function canPerformAction(
         };
       }
       return { allowed: true, remaining: entitlements.adoptionListingLimit - activeListings };
+    }
 
     default:
       return { allowed: false, reason: 'Unknown action' };

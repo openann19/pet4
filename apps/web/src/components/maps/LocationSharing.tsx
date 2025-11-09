@@ -6,7 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type { Location } from '@/lib/maps/types';
+
+const logger = createLogger('LocationSharing');
 import { getCurrentLocation, snapToGrid } from '@/lib/maps/utils';
 import MapLibreMap from '@/components/maps/MapLibreMap';
 import { openInMaps } from '@/lib/maps/deep-links';
@@ -148,14 +151,23 @@ export function LocationPicker({
   useEffect(() => {
     getCurrentLocation()
       .then((location) => {
-        if (sharingPrecise) {
-          setSelectedLocation(location);
-        } else {
-          const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
-          setSelectedLocation(coarse);
+        try {
+          if (sharingPrecise) {
+            setSelectedLocation(location);
+          } else {
+            const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
+            setSelectedLocation(coarse);
+          }
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('LocationPicker snapToGrid error', err);
+          setSelectedLocation(currentLocation || { lat: 40.7128, lng: -74.006 });
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('LocationPicker getCurrentLocation error', err);
+        // Fallback to current location or default location
         setSelectedLocation(currentLocation || { lat: 40.7128, lng: -74.006 });
       });
   }, [sharingPrecise, mapSettings.PRIVACY_GRID_METERS, currentLocation]);

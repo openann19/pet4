@@ -30,7 +30,7 @@ export function VirtualList<T>({
   keyExtractor,
 }: VirtualListProps<T>): JSX.Element {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [isScrolling, setIsScrolling] = React.useState(false);
+  const [_isScrolling, setIsScrolling] = React.useState(false);
   const scrollTimeoutRef = React.useRef<number | undefined>(undefined);
 
   const rowVirtualizer = useVirtualizer({

@@ -11,13 +11,17 @@ import {
 } from '@phosphor-icons/react';
 import { useApp } from '@/contexts/AppContext';
 
-function applyVhFix(): void {
+function applyVhFix(): () => void {
   const set = (): void => {
     document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
   };
   set();
-  addEventListener('resize', set);
-  addEventListener('orientationchange', set);
+  window.addEventListener('resize', set);
+  window.addEventListener('orientationchange', set);
+  return () => {
+    window.removeEventListener('resize', set);
+    window.removeEventListener('orientationchange', set);
+  };
 }
 
 interface Pet {
@@ -98,7 +102,8 @@ export default function PetsDemoPage(): ReactElement {
   const locale = language;
 
   useEffect(() => {
-    applyVhFix();
+    const cleanup = applyVhFix();
+    return cleanup;
   }, []);
 
   useEffect(() => {

@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/sheet';
 import { X } from 'lucide-react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumDrawerProps {
   open?: boolean;
@@ -51,7 +52,8 @@ export function PremiumDrawer({
   closeOnOverlayClick = true,
   className,
 }: PremiumDrawerProps): React.JSX.Element {
-  const translateX = useSharedValue(side === 'right' ? 100 : side === 'left' ? -100 : 0);
+    const uiConfig = useUIConfig();
+    const translateX = useSharedValue(side === 'right' ? 100 : side === 'left' ? -100 : 0);
   const translateY = useSharedValue(side === 'top' ? -100 : side === 'bottom' ? 100 : 0);
   const opacity = useSharedValue(0);
 

@@ -8,6 +8,7 @@ import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumChipProps {
   label: string;
@@ -32,7 +33,8 @@ export function PremiumChip({
   className,
   'aria-label': ariaLabel,
 }: PremiumChipProps): React.JSX.Element {
-  const scale = useSharedValue(1);
+    const uiConfig = useUIConfig();
+    const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({

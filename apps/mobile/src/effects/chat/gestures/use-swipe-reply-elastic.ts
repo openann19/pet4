@@ -109,7 +109,7 @@ export function useSwipeReplyElastic(
 
   const gesture = Gesture.Pan()
     .enabled(enabled)
-    .onUpdate((event) => {
+    .onUpdate(event => {
       if (reducedMotion.value) {
         return
       }

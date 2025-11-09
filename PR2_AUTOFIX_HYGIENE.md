@@ -9,11 +9,13 @@ Completed autofix and hygiene improvements for the PETSPARK monorepo, fixing Typ
 ### 1. Fixed TypeScript Errors in `packages/chat-core`
 
 #### Created `packages/chat-core/src/hooks/useStorage.ts`
+
 - ✅ Created a simple localStorage-based storage hook for the chat-core package
 - ✅ Works in both web and can be overridden in React Native environments
 - ✅ Proper error handling and type safety
 
 #### Fixed `packages/chat-core/src/useOutbox.ts`
+
 - ✅ Fixed import path: Changed from `@/hooks/useStorage` to `./hooks/useStorage`
 - ✅ Fixed TypeScript error: Added explicit type annotation for `results` variable
 - ✅ Fixed circular dependency: Used refs (`processQueueRef`, `scheduleNextRef`) to break circular dependencies between `processQueue` and `scheduleNext`
@@ -23,6 +25,7 @@ Completed autofix and hygiene improvements for the PETSPARK monorepo, fixing Typ
 ### 2. ESLint Configuration
 
 #### Simplified ESLint Config
+
 - ✅ Restructured to apply type-aware rules only to source files (`apps/**/src/**/*.{ts,tsx}`, `packages/**/src/**/*.{ts,tsx}`)
 - ✅ Fixed `consistent-type-imports` rule configuration
 - ✅ Excluded test files and node_modules from type-aware rules
@@ -38,28 +41,34 @@ Completed autofix and hygiene improvements for the PETSPARK monorepo, fixing Typ
 ## Files Modified
 
 ### New Files
+
 - `packages/chat-core/src/hooks/useStorage.ts` - Storage hook implementation
 
 ### Modified Files
+
 - `packages/chat-core/src/useOutbox.ts` - Fixed TypeScript errors and circular dependencies
 - `eslint.config.js` - Simplified and fixed configuration
 
 ## Testing
 
 ### TypeScript
+
 - ✅ `pnpm typecheck` - All packages pass type checking
 - ✅ `packages/chat-core` - Zero TypeScript errors
 
 ### ESLint
+
 - ✅ ESLint config loads without errors
 - ⚠️ Some parsing warnings from react-native node_modules (harmless, expected)
 
 ### Formatting
+
 - ✅ `pnpm format` - Code formatting works correctly
 
 ## Remaining Work
 
 ### PR #3 - Strictness Remediation
+
 1. **Replace any/casts**: Fix all `as any` and `as unknown as` casts with proper types
 2. **Add Zod/Valibot schemas**: Add validation schemas for env and network boundaries
 3. **Fix react-hooks/exhaustive-deps**: Fix all dependency array warnings
@@ -69,6 +78,7 @@ Completed autofix and hygiene improvements for the PETSPARK monorepo, fixing Typ
 ## Acceptance Criteria Status
 
 ### PR #2
+
 - ✅ Import organization - **Fixed** (useStorage import)
 - ✅ TypeScript errors - **Fixed** (packages/chat-core)
 - ✅ Circular dependencies - **Fixed** (useOutbox.ts)
@@ -93,4 +103,3 @@ Completed autofix and hygiene improvements for the PETSPARK monorepo, fixing Typ
 2. **Dead Code Removal**: Run ts-prune/knip to identify and remove unused code
 
 3. **Path Alias Fixes**: Ensure all path aliases are properly configured and used consistently
-

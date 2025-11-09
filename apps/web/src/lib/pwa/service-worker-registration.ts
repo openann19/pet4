@@ -13,12 +13,27 @@ interface ServiceWorkerConfig {
   onError?: (error: Error) => void;
 }
 
+interface ServiceWorkerRegistrationResult {
+  registration: ServiceWorkerRegistration;
+  cleanup: () => void;
+}
+
 /**
  * Register service worker
  */
 export async function registerServiceWorker(
   config: ServiceWorkerConfig = {}
 ): Promise<ServiceWorkerRegistration | null> {
+  const result = await registerServiceWorkerWithCleanup(config);
+  return result?.registration ?? null;
+}
+
+/**
+ * Register service worker with cleanup function
+ */
+export async function registerServiceWorkerWithCleanup(
+  config: ServiceWorkerConfig = {}
+): Promise<ServiceWorkerRegistrationResult | null> {
   // Check if service workers are supported
   if (!('serviceWorker' in navigator)) {
     logger.warn('Service workers are not supported in this browser');
@@ -36,11 +51,11 @@ export async function registerServiceWorker(
       scope: '/',
     });
 
-    registration.addEventListener('updatefound', () => {
+    const updateFoundHandler = () => {
       const newWorker = registration.installing;
       if (!newWorker) return;
 
-      newWorker.addEventListener('statechange', () => {
+      const stateChangeHandler = () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
           // New service worker available
           config.onUpdate?.(registration);
@@ -48,18 +63,31 @@ export async function registerServiceWorker(
           // Service worker activated
           config.onSuccess?.(registration);
         }
-      });
-    });
+      };
+
+      newWorker.addEventListener('statechange', stateChangeHandler);
+    };
+
+    registration.addEventListener('updatefound', updateFoundHandler);
 
     // Check for updates every hour
-    window.setInterval(
+    const intervalId = window.setInterval(
       () => {
         void registration.update();
       },
       60 * 60 * 1000
     );
 
-    return registration;
+    // Cleanup function
+    const cleanup = (): void => {
+      clearInterval(intervalId);
+      registration.removeEventListener('updatefound', updateFoundHandler);
+    };
+
+    return {
+      registration,
+      cleanup,
+    };
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     logger.error('Service worker registration failed', {

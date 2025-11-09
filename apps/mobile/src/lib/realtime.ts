@@ -62,7 +62,7 @@ export class RealtimeClient {
   }
 
   emit(event: string, data: unknown): Promise<{ success: boolean; error?: string }> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (!this.connected) {
         this.enqueueOfflineEvent(event, data)
         resolve({ success: false, error: 'Offline' })
@@ -73,7 +73,10 @@ export class RealtimeClient {
         resolve({ success: true })
         this.processEvent(event, data)
       } catch (error) {
-        resolve({ success: false, error: (error instanceof Error ? error : new Error(String(error))).message })
+        resolve({
+          success: false,
+          error: (error instanceof Error ? error : new Error(String(error))).message,
+        })
       }
     })
   }
@@ -93,7 +96,7 @@ export class RealtimeClient {
   trigger(event: string, data: unknown): void {
     const callbacks = this.listeners.get(event)
     if (callbacks) {
-      callbacks.forEach((callback) => {
+      callbacks.forEach(callback => {
         try {
           callback(data)
         } catch (error) {

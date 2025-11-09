@@ -197,7 +197,7 @@ export function CommentsSheet({ open, onOpenChange, postId, postAuthor }: Commen
                 </p>
               </MotionView>
             ) : (
-              <Presence>
+              <Presence visible={topLevelComments.length > 0}>
                 {topLevelComments.map((comment, index) => {
                   const commentId = getCommentId(comment);
                   if (!commentId) return null;
@@ -219,7 +219,7 @@ export function CommentsSheet({ open, onOpenChange, postId, postAuthor }: Commen
         </ScrollArea>
 
         <div className="shrink-0 border-t border-border bg-card/50 backdrop-blur-xl">
-          <Presence>
+          <Presence visible={!!replyingTo}>
             {replyingTo && (
               <MotionView
                 initial={{ height: 0, opacity: 0 }}

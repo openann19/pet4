@@ -12,6 +12,7 @@ import {
 } from 'react-native-reanimated';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TypingDotsProps {
   dotSize?: number;
@@ -33,7 +34,8 @@ export function TypingDots({
   animationDuration = DEFAULT_ANIMATION_DURATION,
   className,
 }: TypingDotsProps): React.JSX.Element {
-  const scale1 = useSharedValue(1);
+    const uiConfig = useUIConfig();
+    const scale1 = useSharedValue(1);
   const scale2 = useSharedValue(1);
   const scale3 = useSharedValue(1);
   const opacity1 = useSharedValue(0.5);

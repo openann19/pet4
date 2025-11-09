@@ -8,6 +8,7 @@ import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import * as SliderPrimitive from '@radix-ui/react-slider';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumSliderProps {
   value?: number[];
@@ -40,7 +41,8 @@ export function PremiumSlider({
   className,
   'aria-label': ariaLabel,
 }: PremiumSliderProps): React.JSX.Element {
-  const [isDragging, setIsDragging] = useState(false);
+    const uiConfig = useUIConfig();
+    const [isDragging, setIsDragging] = useState(false);
   const tooltipOpacity = useSharedValue(0);
   const tooltipScale = useSharedValue(0.8);
 

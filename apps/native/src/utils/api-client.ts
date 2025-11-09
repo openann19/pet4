@@ -54,6 +54,11 @@ class APIClient {
       }
 
       const data = await response.json();
+      // Handle wrapped responses { data: ... } or direct responses
+      // Note: { config: ... } responses are handled by individual API clients
+      if (data && typeof data === 'object' && 'data' in data) {
+        return data.data as T;
+      }
       return data as T;
     } catch (error) {
       clearTimeout(timeoutId);
@@ -71,6 +76,14 @@ class APIClient {
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async put<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
     });
   }

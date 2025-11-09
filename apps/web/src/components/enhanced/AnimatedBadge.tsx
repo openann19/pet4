@@ -7,6 +7,7 @@ import { Presence } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import type { ReactNode } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface AnimatedBadgeProps {
   children: ReactNode;
@@ -19,7 +20,8 @@ export interface AnimatedBadgeProps {
  * Used for migrating from framer-motion to react-native-reanimated
  */
 export function AnimatedBadge({ children, show = true, className }: AnimatedBadgeProps) {
-  const scale = useSharedValue(show ? 1 : 0);
+    const uiConfig = useUIConfig();
+    const scale = useSharedValue(show ? 1 : 0);
   const opacity = useSharedValue(show ? 1 : 0);
 
   useEffect(() => {

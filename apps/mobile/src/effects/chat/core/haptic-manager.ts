@@ -26,6 +26,9 @@ interface CustomHaptics {
     light?: () => void
     medium?: () => void
     success?: () => void
+    error?: () => void
+    warning?: () => void
+    strong?: () => void
   }
 }
 
@@ -80,11 +83,50 @@ loadCustomHaptics().catch(() => {
   // Expected when custom haptics wrapper is not available
 })
 
-export type HapticType = 'selection' | 'light' | 'medium' | 'success'
+export type HapticType = 'selection' | 'light' | 'medium' | 'strong' | 'success' | 'warning' | 'error'
+
+export type HapticContext =
+  | 'send'
+  | 'receive'
+  | 'reaction'
+  | 'reply'
+  | 'delete'
+  | 'swipe'
+  | 'longPress'
+  | 'tap'
+  | 'success'
+  | 'error'
+  | 'threshold'
+  | 'statusChange'
+
+export interface HapticPattern {
+  type: HapticType;
+  delay?: number;
+  repeat?: number;
+  interval?: number;
+}
 
 /** monotonic time for precise cooldowns */
 const now = () =>
   typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now()
+
+/**
+ * Context-aware haptic patterns
+ */
+const CONTEXT_PATTERNS: Record<HapticContext, HapticPattern> = {
+  send: { type: 'selection' },
+  receive: { type: 'light' },
+  reaction: { type: 'light' },
+  reply: { type: 'light' },
+  delete: { type: 'strong' },
+  swipe: { type: 'light' },
+  longPress: { type: 'medium' },
+  tap: { type: 'selection' },
+  success: { type: 'success' },
+  error: { type: 'error' },
+  threshold: { type: 'light' },
+  statusChange: { type: 'selection' },
+};
 
 export class HapticManager {
   private lastTs = -Infinity
@@ -127,9 +169,24 @@ export class HapticManager {
               await Haptics.impactAsync?.(Haptics.ImpactFeedbackStyle.Medium)
             }
             break
+          case 'strong':
+            if (Haptics.ImpactFeedbackStyle) {
+              await Haptics.impactAsync?.(Haptics.ImpactFeedbackStyle.Medium)
+            }
+            break
           case 'success':
             if (Haptics.NotificationFeedbackType) {
               await Haptics.notificationAsync?.(Haptics.NotificationFeedbackType.Success)
+            }
+            break
+          case 'error':
+            if (Haptics.ImpactFeedbackStyle) {
+              await Haptics.impactAsync?.(Haptics.ImpactFeedbackStyle.Medium)
+            }
+            break
+          case 'warning':
+            if (Haptics.ImpactFeedbackStyle) {
+              await Haptics.impactAsync?.(Haptics.ImpactFeedbackStyle.Medium)
             }
             break
         }
@@ -172,6 +229,46 @@ export class HapticManager {
   resetCooldown(): void {
     this.lastTs = -Infinity
   }
+
+  /**
+   * Trigger haptic by context (context-aware pattern)
+   */
+  triggerByContext(context: HapticContext, bypassCooldown = false): Promise<boolean> {
+    const pattern = CONTEXT_PATTERNS[context];
+    if (!pattern) {
+      return Promise.resolve(false);
+    }
+
+    return this.triggerAsync(pattern.type, bypassCooldown);
+  }
+
+  /**
+   * Trigger haptic pattern (multiple haptics with delays)
+   */
+  async triggerPattern(pattern: HapticPattern, bypassCooldown = false): Promise<boolean> {
+    if (this.reduced) return false;
+
+    const ts = now();
+    if (!bypassCooldown && ts - this.lastTs < this.cooldownMs) return false;
+
+    try {
+      const repeat = pattern.repeat ?? 1;
+      const interval = pattern.interval ?? 50;
+
+      for (let i = 0; i < repeat; i++) {
+        if (i > 0 && interval > 0) {
+          await new Promise((resolve) => setTimeout(resolve, interval));
+        }
+
+        await this.triggerAsync(pattern.type, i === 0 ? bypassCooldown : true);
+      }
+
+      this.lastTs = now();
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
 
 let singleton: HapticManager | null = null
@@ -182,6 +279,17 @@ export function getHapticManager(): HapticManager {
 
 export function triggerHaptic(type: HapticType, bypassCooldown = false): boolean {
   return getHapticManager().trigger(type, bypassCooldown)
+}
+
+/**
+ * Trigger haptic by context (context-aware)
+ */
+export function triggerHapticByContext(context: HapticContext, bypassCooldown = false): boolean {
+  const mgr = getHapticManager();
+  mgr.triggerByContext(context, bypassCooldown).catch(() => {
+    // Silent fail
+  });
+  return true;
 }
 
 /** React hook to auto-sync reduced motion with the singleton */

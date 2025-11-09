@@ -29,9 +29,7 @@ export interface UseConfettiBurstOptions {
 export interface UseConfettiBurstReturn {
   burst: (centerX?: number, centerY?: number) => void
   particles: ConfettiParticle[]
-  createParticleStyle: (
-    particle: ConfettiParticle
-  ) => () => {
+  createParticleStyle: (particle: ConfettiParticle) => () => {
     transform: Array<{
       translateX?: number
       translateY?: number

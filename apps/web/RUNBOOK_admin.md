@@ -440,6 +440,7 @@ curl https://api.pawfectmatch.com/health
 ## Important References
 
 For related operational documentation, see:
+
 - [Production Readiness Checklist](./docs/PRODUCTION_READINESS.md)
 - [Mobile Runbook](../mobile/RUNBOOK.md)
 - [Verification Report](../../FINAL_MD_VERIFICATION_REPORT.md)

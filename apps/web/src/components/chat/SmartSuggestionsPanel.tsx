@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import type { SmartSuggestion } from '@/lib/chat-types';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface SmartSuggestionsPanelProps {
   onSelect: (suggestion: SmartSuggestion) => void;
@@ -14,6 +15,7 @@ interface SmartSuggestionsPanelProps {
 }
 
 export default function SmartSuggestionsPanel({ onSelect, onDismiss }: SmartSuggestionsPanelProps) {
+  const uiConfig = useUIConfig();
   const [suggestions] = useState<SmartSuggestion[]>([
     { id: '1', category: 'suggestion', text: 'Tell me more about your pet!', icon: '🐾' },
     { id: '2', category: 'suggestion', text: 'Want to set up a playdate?', icon: '🎾' },
@@ -43,7 +45,13 @@ export default function SmartSuggestionsPanel({ onSelect, onDismiss }: SmartSugg
             <Sparkle size={16} weight="fill" className="text-primary" />
             <span className="text-xs font-semibold">Smart Suggestions</span>
           </div>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onDismiss}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            onClick={onDismiss}
+            aria-label="Dismiss smart suggestions"
+          >
             <X size={12} />
           </Button>
         </div>
@@ -80,7 +88,6 @@ function SuggestionButton({
       onMouseEnter={hoverLift.handleEnter}
       onMouseLeave={hoverLift.handleLeave}
       onMouseDown={bounceOnTap.handlePress}
-      onMouseUp={bounceOnTap.handleRelease}
       style={buttonStyleValue}
       className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors whitespace-nowrap text-sm"
     >

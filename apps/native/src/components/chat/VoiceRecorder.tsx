@@ -48,7 +48,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onSendVoice, onCan
       cancelAnimation(waveScale);
       waveScale.value = 1;
     }
-  }, [isRecording, isPaused]);
+  }, [isRecording, isPaused, waveScale]);
 
   const handleStartRecording = async () => {
     try {

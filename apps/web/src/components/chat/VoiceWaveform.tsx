@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useVoiceWaveform } from '@/effects/chat/media/use-voice-waveform';
 import { useAnimatedStyle } from 'react-native-reanimated';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface VoiceWaveformProps {
   waveform?: number[];
@@ -32,16 +33,17 @@ export function VoiceWaveform({
   color = '#3B82F6',
   className,
 }: VoiceWaveformProps) {
-  const { playheadProgress, animatedStyle, canvasRef, drawWaveform } = useVoiceWaveform({
-    enabled: true,
-    waveform,
-    duration,
-    currentTime,
-    isPlaying,
-    width,
-    height,
-    color,
-  });
+    const uiConfig = useUIConfig();
+    const { playheadProgress, animatedStyle, canvasRef, drawWaveform } = useVoiceWaveform({
+        enabled: true,
+        waveform,
+        duration,
+        currentTime,
+        isPlaying,
+        width,
+        height,
+        color,
+      });
 
   useEffect(() => {
     drawWaveform();

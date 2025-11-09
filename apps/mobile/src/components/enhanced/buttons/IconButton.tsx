@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useRef, useEffect } from 'react'
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native'
 import Animated, {
   useSharedValue,
@@ -47,6 +47,15 @@ export function IconButton({
   const isActive = useSharedValue(0)
   const reducedMotion = useReducedMotionSV()
   const pressBounce = usePressBounce(0.9)
+  const activeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (activeTimeoutRef.current !== null) {
+        clearTimeout(activeTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handlePress = useCallback(() => {
     if (disabled) return
@@ -57,8 +66,12 @@ export function IconButton({
 
     if (reducedMotion.value) {
       isActive.value = withTiming(1, { duration: 100 })
-      setTimeout(() => {
+      if (activeTimeoutRef.current !== null) {
+        clearTimeout(activeTimeoutRef.current)
+      }
+      activeTimeoutRef.current = setTimeout(() => {
         isActive.value = withTiming(0, { duration: 100 })
+        activeTimeoutRef.current = null
       }, 100)
     } else {
       isActive.value = withSequence(

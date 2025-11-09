@@ -16,6 +16,7 @@ import {
   Users,
   Confetti,
   Info,
+  type IconWeight,
 } from '@phosphor-icons/react';
 import type { PremiumNotification } from '../types';
 
@@ -28,7 +29,7 @@ export function getNotificationIcon(
 ): ReactNode {
   const iconProps = {
     size: 24 as const,
-    weight: priority === 'urgent' || priority === 'critical' ? 'fill' : 'regular',
+    weight: (priority === 'urgent' || priority === 'critical' ? 'fill' : 'regular') as IconWeight,
   };
 
   switch (type) {

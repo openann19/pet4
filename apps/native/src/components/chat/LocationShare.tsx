@@ -1,5 +1,5 @@
 import * as Location from 'expo-location';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { createLogger } from '../../utils/logger';
 
@@ -26,13 +26,7 @@ export const LocationShare: React.FC<LocationShareProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [address, setAddress] = useState<string>('');
 
-  useEffect(() => {
-    if (visible) {
-      getCurrentLocation();
-    }
-  }, [visible]);
-
-  const getCurrentLocation = async () => {
+  const getCurrentLocation = useCallback(async () => {
     setIsLoading(true);
     try {
       // Request permissions
@@ -88,7 +82,13 @@ export const LocationShare: React.FC<LocationShareProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [onClose]);
+
+  useEffect(() => {
+    if (visible) {
+      void getCurrentLocation();
+    }
+  }, [visible, getCurrentLocation]);
 
   const handleSendLocation = () => {
     if (location) {

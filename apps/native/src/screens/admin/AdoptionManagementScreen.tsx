@@ -4,7 +4,7 @@
  * Mobile admin screen for managing adoption listings and applications.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -35,11 +35,7 @@ export const AdoptionManagementScreen: React.FC = () => {
     'all'
   );
 
-  useEffect(() => {
-    loadListings();
-  }, [filter]);
-
-  const loadListings = async () => {
+  const loadListings = useCallback(async () => {
     setLoading(true);
     try {
       // Note: Adoption listings API endpoint not yet available in admin-api
@@ -51,7 +47,11 @@ export const AdoptionManagementScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    void loadListings();
+  }, [loadListings]);
 
   const filteredListings = listings.filter((l) => {
     if (filter === 'all') return true;

@@ -33,31 +33,32 @@ export function useTimestampReveal(
 
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(10);
-  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const hideTimeoutRef = useRef<number | undefined>(undefined);
 
   const show = useCallback(() => {
     if (!enabled) {
       return;
     }
 
-    if (hideTimeoutRef.current) {
+    if (hideTimeoutRef.current !== undefined) {
       clearTimeout(hideTimeoutRef.current);
-      hideTimeoutRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+      hideTimeoutRef.current = undefined;
     }
 
     opacity.value = withSpring(1, springConfigs.smooth);
     translateY.value = withSpring(0, springConfigs.smooth);
 
-    hideTimeoutRef.current = setTimeout(() => {
+    hideTimeoutRef.current = window.setTimeout(() => {
       opacity.value = withTiming(0, timingConfigs.fast);
       translateY.value = withTiming(10, timingConfigs.fast);
+      hideTimeoutRef.current = undefined;
     }, autoHideDelay);
   }, [enabled, autoHideDelay, opacity, translateY]);
 
   const hide = useCallback(() => {
-    if (hideTimeoutRef.current) {
+    if (hideTimeoutRef.current !== undefined) {
       clearTimeout(hideTimeoutRef.current);
-      hideTimeoutRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+      hideTimeoutRef.current = undefined;
     }
 
     opacity.value = withTiming(0, timingConfigs.fast);

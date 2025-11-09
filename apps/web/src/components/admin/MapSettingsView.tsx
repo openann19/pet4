@@ -23,34 +23,52 @@ import { Switch } from '@/components/ui/switch';
 import { useMapProviderConfig } from '@/lib/maps/provider-config';
 import type { PlaceCategory } from '@/lib/maps/types';
 import { MapPin, Pencil, Plus, Trash } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import {
+  getMapConfig,
+  updateMapConfig,
+  type MapConfig,
+  type MapSettings,
+  type PlaceCategorySettings,
+} from '@/api/map-config-api';
 
-interface MapSettings {
-  PRIVACY_GRID_METERS: number;
-  DEFAULT_RADIUS_KM: number;
-  MAX_RADIUS_KM: number;
-  MIN_RADIUS_KM: number;
-  UNITS: 'metric' | 'imperial';
-  COUNTRY_BIAS: string;
-  ENABLE_PRECISE_LOCATION: boolean;
-  PRECISE_LOCATION_TIMEOUT_MINUTES: number;
-  ENABLE_GEOFENCING: boolean;
-  ENABLE_LOST_PET_ALERTS: boolean;
-  ENABLE_PLAYDATE_PLANNING: boolean;
-  ENABLE_PLACE_DISCOVERY: boolean;
-  AUTO_CENTER_ON_LOCATION: boolean;
-  SHOW_DISTANCE_LABELS: boolean;
-  CLUSTER_MARKERS: boolean;
-  MAX_MARKERS_VISIBLE: number;
-}
+const logger = createLogger('MapSettingsView');
 
-interface PlaceCategorySettings {
-  categories: PlaceCategory[];
-  defaultCategory: string;
-  enableUserSubmittedPlaces: boolean;
-  requireModeration: boolean;
-}
+const DEFAULT_MAP_SETTINGS: MapSettings = {
+  PRIVACY_GRID_METERS: 1000,
+  DEFAULT_RADIUS_KM: 10,
+  MAX_RADIUS_KM: 100,
+  MIN_RADIUS_KM: 1,
+  UNITS: 'metric',
+  COUNTRY_BIAS: 'US',
+  ENABLE_PRECISE_LOCATION: true,
+  PRECISE_LOCATION_TIMEOUT_MINUTES: 60,
+  ENABLE_GEOFENCING: true,
+  ENABLE_LOST_PET_ALERTS: true,
+  ENABLE_PLAYDATE_PLANNING: true,
+  ENABLE_PLACE_DISCOVERY: true,
+  AUTO_CENTER_ON_LOCATION: true,
+  SHOW_DISTANCE_LABELS: true,
+  CLUSTER_MARKERS: true,
+  MAX_MARKERS_VISIBLE: 50,
+};
+
+const DEFAULT_CATEGORY_SETTINGS: PlaceCategorySettings = {
+  categories: [
+    { id: 'park', name: 'Parks', icon: '🌳', color: '#22c55e' },
+    { id: 'vet', name: 'Veterinarians', icon: '🏥', color: '#3b82f6' },
+    { id: 'groomer', name: 'Groomers', icon: '✂️', color: '#a855f7' },
+    { id: 'cafe', name: 'Pet Cafes', icon: '☕', color: '#f59e0b' },
+    { id: 'store', name: 'Pet Stores', icon: '🛒', color: '#ec4899' },
+    { id: 'hotel', name: 'Pet Hotels', icon: '🏨', color: '#14b8a6' },
+    { id: 'beach', name: 'Dog Beaches', icon: '🏖️', color: '#06b6d4' },
+    { id: 'training', name: 'Training Centers', icon: '🎯', color: '#8b5cf6' },
+  ],
+  defaultCategory: 'park',
+  enableUserSubmittedPlaces: true,
+  requireModeration: true,
+};
 
 export default function MapSettingsView() {
   const {
@@ -58,43 +76,10 @@ export default function MapSettingsView() {
     updateConfig: updateProviderConfig,
     resetToDefaults: resetProviderDefaults,
   } = useMapProviderConfig();
-  const [mapSettings, setMapSettings] = useStorage<MapSettings>('admin-map-settings', {
-    PRIVACY_GRID_METERS: 1000,
-    DEFAULT_RADIUS_KM: 10,
-    MAX_RADIUS_KM: 100,
-    MIN_RADIUS_KM: 1,
-    UNITS: 'metric',
-    COUNTRY_BIAS: 'US',
-    ENABLE_PRECISE_LOCATION: true,
-    PRECISE_LOCATION_TIMEOUT_MINUTES: 60,
-    ENABLE_GEOFENCING: true,
-    ENABLE_LOST_PET_ALERTS: true,
-    ENABLE_PLAYDATE_PLANNING: true,
-    ENABLE_PLACE_DISCOVERY: true,
-    AUTO_CENTER_ON_LOCATION: true,
-    SHOW_DISTANCE_LABELS: true,
-    CLUSTER_MARKERS: true,
-    MAX_MARKERS_VISIBLE: 50,
-  });
-
-  const [categorySettings, setCategorySettings] = useStorage<PlaceCategorySettings>(
-    'admin-map-categories',
-    {
-      categories: [
-        { id: 'park', name: 'Parks', icon: '🌳', color: '#22c55e' },
-        { id: 'vet', name: 'Veterinarians', icon: '🏥', color: '#3b82f6' },
-        { id: 'groomer', name: 'Groomers', icon: '✂️', color: '#a855f7' },
-        { id: 'cafe', name: 'Pet Cafes', icon: '☕', color: '#f59e0b' },
-        { id: 'store', name: 'Pet Stores', icon: '🛒', color: '#ec4899' },
-        { id: 'hotel', name: 'Pet Hotels', icon: '🏨', color: '#14b8a6' },
-        { id: 'beach', name: 'Dog Beaches', icon: '🏖️', color: '#06b6d4' },
-        { id: 'training', name: 'Training Centers', icon: '🎯', color: '#8b5cf6' },
-      ],
-      defaultCategory: 'park',
-      enableUserSubmittedPlaces: true,
-      requireModeration: true,
-    }
-  );
+  const [mapSettings, setMapSettings] = useState<MapSettings>(DEFAULT_MAP_SETTINGS);
+  const [categorySettings, setCategorySettings] = useState<PlaceCategorySettings>(DEFAULT_CATEGORY_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [_saving, setSaving] = useState(false);
 
   const [editingCategory, setEditingCategory] = useState<PlaceCategory | null>(null);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
@@ -107,6 +92,59 @@ export default function MapSettingsView() {
     color: '#000000',
   });
 
+  // Load config from backend
+  const loadConfig = useCallback(async () => {
+    setLoading(true);
+    try {
+      const config = await getMapConfig();
+      if (config) {
+        setMapSettings(config.settings);
+        setCategorySettings(config.categorySettings);
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load map config', err);
+      toast.error('Failed to load map configuration');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadConfig();
+  }, [loadConfig]);
+
+  // Save config to backend
+  const saveConfig = useCallback(async () => {
+    if (!currentUser) {
+      toast.error('User not authenticated');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const config: MapConfig = {
+        settings: mapSettings,
+        categorySettings,
+        providerConfig: {
+          provider: providerConfig.PROVIDER ?? 'maplibre',
+          apiKey: providerConfig.MAP_TILES_API_KEY,
+          geocodingApiKey: providerConfig.GEOCODING_API_KEY,
+          mapStyleUrl: providerConfig.MAP_STYLE_URL,
+          geocodingEndpoint: providerConfig.GEOCODING_ENDPOINT,
+        },
+      };
+      await updateMapConfig(config, currentUser.id || 'admin');
+      toast.success('Map configuration saved successfully');
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save map config', err);
+      toast.error('Failed to save map configuration');
+    } finally {
+      setSaving(false);
+    }
+  }, [mapSettings, categorySettings, providerConfig, currentUser]);
+
   const handleSettingChange = <K extends keyof MapSettings>(
     key: K,
     value: MapSettings[K]
@@ -116,10 +154,14 @@ export default function MapSettingsView() {
       ...current,
       [key]: value,
     }));
-    toast.success('Map setting updated');
+    // Auto-save to backend
+    void saveConfig().catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save map setting', err, { key });
+    });
   };
 
-  const handleAddCategory = () => {
+  const handleAddCategory = (): void => {
     if (!newCategory.id || !newCategory.name || !newCategory.icon || !newCategory.color) {
       toast.error('Please fill in all category fields');
       return;
@@ -132,18 +174,30 @@ export default function MapSettingsView() {
 
     setNewCategory({ id: '', name: '', icon: '', color: '#000000' });
     setIsAddingCategory(false);
+    // Auto-save to backend
+    void saveConfig().catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save category', err);
+      toast.error('Failed to save category');
+    });
     toast.success('Category added successfully');
   };
 
-  const handleDeleteCategory = (categoryId: string) => {
+  const handleDeleteCategory = (categoryId: string): void => {
     setCategorySettings((current) => ({
       ...current,
       categories: current.categories.filter((cat) => cat.id !== categoryId),
     }));
+    // Auto-save to backend
+    void saveConfig().catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save after deleting category', err, { categoryId });
+      toast.error('Failed to delete category');
+    });
     toast.success('Category deleted');
   };
 
-  const handleUpdateCategory = (updatedCategory: PlaceCategory) => {
+  const handleUpdateCategory = (updatedCategory: PlaceCategory): void => {
     setCategorySettings((current) => ({
       ...current,
       categories: current.categories.map((cat) =>
@@ -151,40 +205,28 @@ export default function MapSettingsView() {
       ),
     }));
     setEditingCategory(null);
+    // Auto-save to backend
+    void saveConfig().catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save after updating category', err, { categoryId: updatedCategory.id });
+      toast.error('Failed to update category');
+    });
     toast.success('Category updated');
   };
 
-  // Category visibility toggle handler - reserved for future use
-
-  const _handleToggleCategoryVisibility = (_categoryId: string): void => {
-    void _categoryId;
-    toast.info('Category visibility toggled');
-  };
-  void _handleToggleCategoryVisibility;
-
-  const handleResetToDefaults = () => {
-    setMapSettings({
-      PRIVACY_GRID_METERS: 1000,
-      DEFAULT_RADIUS_KM: 10,
-      MAX_RADIUS_KM: 100,
-      MIN_RADIUS_KM: 1,
-      UNITS: 'metric',
-      COUNTRY_BIAS: 'US',
-      ENABLE_PRECISE_LOCATION: true,
-      PRECISE_LOCATION_TIMEOUT_MINUTES: 60,
-      ENABLE_GEOFENCING: true,
-      ENABLE_LOST_PET_ALERTS: true,
-      ENABLE_PLAYDATE_PLANNING: true,
-      ENABLE_PLACE_DISCOVERY: true,
-      AUTO_CENTER_ON_LOCATION: true,
-      SHOW_DISTANCE_LABELS: true,
-      CLUSTER_MARKERS: true,
-      MAX_MARKERS_VISIBLE: 50,
+  const handleResetToDefaults = (): void => {
+    setMapSettings(DEFAULT_MAP_SETTINGS);
+    setCategorySettings(DEFAULT_CATEGORY_SETTINGS);
+    // Auto-save to backend
+    void saveConfig().catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save after reset', err);
+      toast.error('Failed to reset settings');
     });
     toast.success('Settings reset to defaults');
   };
 
-  const handleBroadcastSettings = async () => {
+  const handleBroadcastSettings = async (): Promise<void> => {
     if (!currentUser) {
       toast.error('User not authenticated');
       return;
@@ -192,6 +234,9 @@ export default function MapSettingsView() {
 
     try {
       setBroadcasting(true);
+
+      // Save config first
+      await saveConfig();
 
       const allSettings = {
         mapSettings,
@@ -205,7 +250,7 @@ export default function MapSettingsView() {
         currentUser.id || 'admin'
       );
 
-      toast.success('Map settings broadcasted successfully');
+      toast.success('Map settings saved and broadcasted successfully');
 
       await adminApi.createAuditLog({
         adminId: currentUser.id || 'admin',
@@ -217,12 +262,19 @@ export default function MapSettingsView() {
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       toast.error('Failed to broadcast map settings');
-      const logger = createLogger('MapSettingsView');
       logger.error('Broadcast error', err, { configType: 'map' });
     } finally {
       setBroadcasting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-muted-foreground">Loading map configuration...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col">
@@ -241,7 +293,16 @@ export default function MapSettingsView() {
             <Button variant="outline" onClick={handleResetToDefaults}>
               Reset to Defaults
             </Button>
-            <Button onClick={handleBroadcastSettings} disabled={broadcasting}>
+            <Button
+              onClick={() => {
+                void handleBroadcastSettings().catch((error) => {
+                  const err = error instanceof Error ? error : new Error(String(error));
+                  const logger = createLogger('MapSettingsView');
+                  logger.error('Failed to broadcast settings from button', err);
+                });
+              }}
+              disabled={broadcasting}
+            >
               <Radio size={16} className="mr-2" />
               {broadcasting ? 'Broadcasting...' : 'Broadcast Settings'}
             </Button>
@@ -517,12 +578,17 @@ export default function MapSettingsView() {
                   label="User-Submitted Places"
                   description="Allow users to add new places to the map"
                   checked={categorySettings?.enableUserSubmittedPlaces ?? true}
-                  onCheckedChange={(checked: boolean) =>
-                    setCategorySettings((current) => ({
-                      ...current,
-                      enableUserSubmittedPlaces: checked,
-                    }))
-                  }
+                  onCheckedChange={(checked: boolean) => {
+                    try {
+                      setCategorySettings((current) => ({
+                        ...current,
+                        enableUserSubmittedPlaces: checked,
+                      }));
+                    } catch (error) {
+                      const err = error instanceof Error ? error : new Error(String(error));
+                      logger.error('Failed to update category setting', err);
+                    }
+                  }}
                 />
 
                 <Separator className="my-4" />
@@ -531,12 +597,17 @@ export default function MapSettingsView() {
                   label="Require Moderation"
                   description="Review user-submitted places before they appear on the map"
                   checked={categorySettings?.requireModeration ?? true}
-                  onCheckedChange={(checked: boolean) =>
-                    setCategorySettings((current) => ({
-                      ...current,
-                      requireModeration: checked,
-                    }))
-                  }
+                  onCheckedChange={(checked: boolean) => {
+                    try {
+                      setCategorySettings((current) => ({
+                        ...current,
+                        requireModeration: checked,
+                      }));
+                    } catch (error) {
+                      const err = error instanceof Error ? error : new Error(String(error));
+                      logger.error('Failed to update category setting', err);
+                    }
+                  }}
                 />
               </div>
 
@@ -696,6 +767,7 @@ export default function MapSettingsView() {
                               variant="ghost"
                               size="icon"
                               onClick={() => setEditingCategory(category)}
+                              aria-label={`Edit category ${category.name}`}
                             >
                               <Pencil size={16} />
                             </Button>
@@ -703,6 +775,7 @@ export default function MapSettingsView() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleDeleteCategory(category.id)}
+                              aria-label={`Delete category ${category.name}`}
                             >
                               <Trash size={16} className="text-destructive" />
                             </Button>

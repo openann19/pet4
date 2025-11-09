@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { X, CheckCircle, Warning, Info, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export type PremiumToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -61,7 +62,8 @@ export function PremiumToast({
   position = 'top',
   showProgress = true,
 }: PremiumToastProps): React.JSX.Element {
-  const Icon = icons[type];
+    const uiConfig = useUIConfig();
+    const Icon = icons[type];
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(position === 'top' ? -20 : 20);
   const translateX = useSharedValue(0);

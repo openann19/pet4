@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import type { LostPetReport } from '../types';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 
 export default function LostFoundScreen(): React.JSX.Element {
   const [reports, setReports] = useStorage<LostPetReport[]>('lost-found-reports', []);

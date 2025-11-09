@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useCallback, useState, useEffect, lazy, Suspense } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import {
   X,
@@ -332,11 +332,15 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
     stepOpacity.value = withSpring(0, { damping: 20, stiffness: 300 });
     stepX.value = withSpring(-20, { damping: 20, stiffness: 300 });
 
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       stepOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
       stepX.value = withSpring(0, { damping: 20, stiffness: 300 });
     }, 50);
-  }, [currentStep]);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [currentStep, stepOpacity, stepX]);
 
   const stepStyle = useAnimatedStyle(() => ({
     opacity: stepOpacity.value,
@@ -346,9 +350,23 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
   // Progress bar animation
   const progressWidth = useSharedValue(0);
 
+  // Calculate step progress
+  const stepProgress = useCallback(() => {
+    const steps: Step[] = [
+      'type',
+      'basics',
+      'characteristics',
+      'photo',
+      'personality',
+      'preferences',
+      'complete',
+    ];
+    return ((steps.indexOf(currentStep) + 1) / steps.length) * 100;
+  }, [currentStep]);
+
   useEffect(() => {
     progressWidth.value = withTiming(stepProgress(), { duration: 300 });
-  }, [currentStep, progressWidth]);
+  }, [currentStep, stepProgress, progressWidth]);
 
   const progressStyle = useAnimatedStyle(() => ({
     width: `${progressWidth.value}%`,
@@ -501,8 +519,12 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
     };
 
     if (editingPet) {
-      void setUserPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
-      void setAllPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
+      void setUserPets((current) =>
+        (current || []).map((p) => (p.id === editingPet.id ? petData : p))
+      );
+      void setAllPets((current) =>
+        (current || []).map((p) => (p.id === editingPet.id ? petData : p))
+      );
 
       toast.success('Pet profile updated!', {
         description: `${name}'s profile has been updated successfully.`,
@@ -925,19 +947,6 @@ export default function CreatePetDialog({ open, onOpenChange, editingPet }: Crea
       default:
         return null;
     }
-  };
-
-  const stepProgress = () => {
-    const steps: Step[] = [
-      'type',
-      'basics',
-      'characteristics',
-      'photo',
-      'personality',
-      'preferences',
-      'complete',
-    ];
-    return ((steps.indexOf(currentStep) + 1) / steps.length) * 100;
   };
 
   return (

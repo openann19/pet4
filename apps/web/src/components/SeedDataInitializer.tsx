@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { generateSamplePets } from '@/lib/seedData';
 import { initializeCommunityData } from '@/lib/community-seed-data';
@@ -6,43 +6,59 @@ import { initializeAdoptionProfiles } from '@/lib/adoption-seed-data';
 import type { Pet } from '@/lib/types';
 import { createLogger } from '@/lib/logger';
 
-export default function SeedDataInitializer() {
+const logger = createLogger('SeedDataInitializer');
+
+export default function SeedDataInitializer(): null {
   const [allPets, setAllPets] = useStorage<Pet[]>('all-pets', []);
   const [isInitialized, setIsInitialized] = useStorage<boolean>('data-initialized', false);
   const [isLoading, setIsLoading] = useState(false);
+  const initializationAttemptedRef = useRef(false);
 
-  useEffect(() => {
-    async function initializeData() {
-      if (isInitialized || isLoading) return;
-
-      const currentPets = allPets || [];
-      if (currentPets.length > 0) {
-        setIsInitialized(true);
-        await initializeCommunityData();
-        await initializeAdoptionProfiles();
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const samplePets = await generateSamplePets(15); // Generate 15 profiles
-        setAllPets(samplePets);
-        await initializeCommunityData();
-        await initializeAdoptionProfiles();
-        setIsInitialized(true);
-      } catch (error) {
-        const logger = createLogger('SeedDataInitializer');
-        logger.error(
-          'Failed to initialize sample data',
-          error instanceof Error ? error : new Error(String(error))
-        );
-      } finally {
-        setIsLoading(false);
-      }
+  const initializeData = useCallback(async (): Promise<void> => {
+    if (initializationAttemptedRef.current || isInitialized || isLoading) {
+      return;
     }
 
-    initializeData();
-  }, []);
+    initializationAttemptedRef.current = true;
+
+    // If pets already exist, just mark as initialized
+    if (allPets.length > 0) {
+      try {
+        await setIsInitialized(true);
+        await initializeCommunityData();
+        await initializeAdoptionProfiles();
+      } catch (error) {
+        logger.error(
+          'Failed to mark data as initialized',
+          error instanceof Error ? error : new Error(String(error))
+        );
+        initializationAttemptedRef.current = false;
+      }
+      return;
+    }
+
+    // Generate new sample data
+    setIsLoading(true);
+    try {
+      const samplePets = await generateSamplePets(15);
+      await setAllPets(samplePets);
+      await initializeCommunityData();
+      await initializeAdoptionProfiles();
+      await setIsInitialized(true);
+    } catch (error) {
+      logger.error(
+        'Failed to initialize sample data',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      initializationAttemptedRef.current = false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isInitialized, isLoading, allPets.length, setAllPets, setIsInitialized]);
+
+  useEffect(() => {
+    void initializeData();
+  }, [initializeData]);
 
   return null;
 }

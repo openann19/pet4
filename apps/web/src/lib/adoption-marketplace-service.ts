@@ -282,7 +282,7 @@ class AdoptionMarketplaceService {
         reviewedBy: undefined,
         reviewNotes: apiApp.reviewNotes,
         ownerNotes: undefined,
-      } as unknown as AdoptionApplication;
+      } satisfies AdoptionApplication;
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to create application', err, { listingId: data.listingId });
@@ -339,7 +339,7 @@ class AdoptionMarketplaceService {
         reviewedBy: undefined,
         reviewNotes: apiApp.reviewNotes,
         ownerNotes: undefined,
-      } as unknown as AdoptionApplication;
+      } satisfies AdoptionApplication;
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to get application', err, { id });
@@ -394,7 +394,7 @@ class AdoptionMarketplaceService {
             reviewedBy: undefined,
             reviewNotes: apiApp.reviewNotes,
             ownerNotes: undefined,
-          }) as unknown as AdoptionApplication
+          }) satisfies AdoptionApplication
       );
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -450,7 +450,7 @@ class AdoptionMarketplaceService {
             reviewedBy: undefined,
             reviewNotes: apiApp.reviewNotes,
             ownerNotes: undefined,
-          }) as unknown as AdoptionApplication
+          }) satisfies AdoptionApplication
       );
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -554,7 +554,7 @@ class AdoptionMarketplaceService {
             reviewedBy: undefined,
             reviewNotes: apiApp.reviewNotes,
             ownerNotes: undefined,
-          })) as unknown as AdoptionApplication[]
+          })) satisfies AdoptionApplication[]
       )
         .filter((a: AdoptionApplication) => a.status === 'submitted' || a.status === 'under_review')
         .sort(

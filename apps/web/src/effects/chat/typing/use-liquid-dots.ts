@@ -23,6 +23,8 @@ import {
 } from 'react-native-reanimated';
 import { createLogger } from '@/lib/logger';
 import { useReducedMotionSV } from '../core/reduced-motion';
+import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
+import { useUIConfig } from '@/hooks/use-ui-config';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 const logger = createLogger('liquid-dots');
@@ -68,6 +70,8 @@ export function useLiquidDots(options: UseLiquidDotsOptions = {}): UseLiquidDots
   } = options;
 
   const reducedMotion = useReducedMotionSV();
+  const { scaleDuration } = useDeviceRefreshRate();
+  const { visual, animation } = useUIConfig();
 
   // Three dots with phase-shifted animations
   const dot1Y = useSharedValue(0);
@@ -86,16 +90,22 @@ export function useLiquidDots(options: UseLiquidDotsOptions = {}): UseLiquidDots
   const startAnimation = useCallback(() => {
     const isReducedMotion = reducedMotion.value;
 
+    // Only animate if enabled and animations are enabled in UI config
+    if (!animation.enableReanimated) {
+      return;
+    }
+
     if (isReducedMotion) {
-      // Reduced Motion: Static pulsing opacity at 0.8 Hz
+      // Reduced Motion: Static pulsing opacity at 0.8 Hz - use adaptive duration
+      const pulseHalfDuration = scaleDuration(PULSE_DURATION / 2);
       const pulseOpacity = withRepeat(
         withSequence(
           withTiming(0.8, {
-            duration: PULSE_DURATION / 2,
+            duration: pulseHalfDuration,
             easing: Easing.inOut(Easing.ease),
           }),
           withTiming(0.6, {
-            duration: PULSE_DURATION / 2,
+            duration: pulseHalfDuration,
             easing: Easing.inOut(Easing.ease),
           })
         ),
@@ -107,11 +117,12 @@ export function useLiquidDots(options: UseLiquidDotsOptions = {}): UseLiquidDots
       dot2Opacity.value = pulseOpacity;
       dot3Opacity.value = pulseOpacity;
     } else {
-      // Normal: Phase-shifted sine waves
+      // Normal: Phase-shifted sine waves - use adaptive duration
+      const animationDurationAdapted = scaleDuration(ANIMATION_DURATION);
       // Dot 1
       dot1Y.value = withRepeat(
         withTiming(5, {
-          duration: ANIMATION_DURATION,
+          duration: animationDurationAdapted,
           easing: Easing.inOut(Easing.sin),
         }),
         -1,
@@ -119,7 +130,7 @@ export function useLiquidDots(options: UseLiquidDotsOptions = {}): UseLiquidDots
       );
       dot1Opacity.value = withRepeat(
         withTiming(1.0, {
-          duration: ANIMATION_DURATION,
+          duration: animationDurationAdapted,
           easing: Easing.inOut(Easing.sin),
         }),
         -1,
@@ -130,7 +141,7 @@ export function useLiquidDots(options: UseLiquidDotsOptions = {}): UseLiquidDots
       setTimeout(() => {
         dot2Y.value = withRepeat(
           withTiming(5, {
-            duration: ANIMATION_DURATION,
+            duration: animationDurationAdapted,
             easing: Easing.inOut(Easing.sin),
           }),
           -1,
@@ -138,20 +149,20 @@ export function useLiquidDots(options: UseLiquidDotsOptions = {}): UseLiquidDots
         );
         dot2Opacity.value = withRepeat(
           withTiming(1.0, {
-            duration: ANIMATION_DURATION,
+            duration: animationDurationAdapted,
             easing: Easing.inOut(Easing.sin),
           }),
           -1,
           true
         );
-      }, ANIMATION_DURATION / 3);
+      }, animationDurationAdapted / 3);
 
       // Dot 3 (phase-shifted)
       setTimeout(
         () => {
           dot3Y.value = withRepeat(
             withTiming(5, {
-              duration: ANIMATION_DURATION,
+              duration: animationDurationAdapted,
               easing: Easing.inOut(Easing.sin),
             }),
             -1,
@@ -159,17 +170,17 @@ export function useLiquidDots(options: UseLiquidDotsOptions = {}): UseLiquidDots
           );
           dot3Opacity.value = withRepeat(
             withTiming(1.0, {
-              duration: ANIMATION_DURATION,
+              duration: animationDurationAdapted,
               easing: Easing.inOut(Easing.sin),
             }),
             -1,
             true
           );
         },
-        (ANIMATION_DURATION * 2) / 3
+        (animationDurationAdapted * 2) / 3
       );
     }
-  }, [reducedMotion, dot1Y, dot1Opacity, dot2Y, dot2Opacity, dot3Y, dot3Opacity]);
+  }, [reducedMotion, scaleDuration, animation, visual, dot1Y, dot1Opacity, dot2Y, dot2Opacity, dot3Y, dot3Opacity]);
 
   useEffect(() => {
     if (enabled) {

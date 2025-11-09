@@ -34,11 +34,14 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
 import { useStorage } from '@/hooks/use-storage';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type { Playdate } from '@/lib/playdate-types';
 import '@/lib/profile-generator-helper'; // Expose generateProfiles to window
 import type { Match, SwipeAction } from '@/lib/types';
 import HoloBackground from '@/components/chrome/HoloBackground';
 import GlowTrail from '@/effects/cursor/GlowTrail';
+
+const rootLogger = createLogger('App');
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
@@ -132,7 +135,11 @@ function App(): JSX.Element {
   const { t, theme, toggleTheme, language, toggleLanguage } = useApp();
   const { isAuthenticated } = useAuth();
   const [hasSeenWelcome, setHasSeenWelcome] = useStorage<boolean>('has-seen-welcome-v2', false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean'
+      ? navigator.onLine
+      : true
+  );
   // User pets available via useStorage if needed: useStorage<Pet[]>('user-pets', [])
   const [matches] = useStorage<Match[]>('matches', []);
   const [swipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
@@ -236,34 +243,58 @@ function App(): JSX.Element {
   const closeButtonBounce = useBounceOnTap({ hapticFeedback: true });
 
   // Memoize computed values to prevent unnecessary re-renders
-  const totalMatches = useMemo(
-    () => (Array.isArray(matches) ? matches.filter((m) => m.status === 'active').length : 0),
-    [matches]
-  );
-  const totalSwipes = useMemo(
-    () => (Array.isArray(swipeHistory) ? swipeHistory.length : 0),
-    [swipeHistory]
-  );
-  const likeCount = useMemo(
-    () =>
-      Array.isArray(swipeHistory) ? swipeHistory.filter((s) => s.action === 'like').length : 0,
-    [swipeHistory]
-  );
-  const successRate = useMemo(
-    () => (likeCount > 0 ? Math.round((totalMatches / likeCount) * 100) : 0),
-    [likeCount, totalMatches]
-  );
+  const totalMatches = useMemo(() => {
+    if (!Array.isArray(matches)) return 0;
+    return matches.filter((m) => m.status === 'active').length;
+  }, [matches]);
+  const totalSwipes = useMemo(() => {
+    if (!Array.isArray(swipeHistory)) return 0;
+    return swipeHistory.length;
+  }, [swipeHistory]);
+  const likeCount = useMemo(() => {
+    if (!Array.isArray(swipeHistory)) return 0;
+    return swipeHistory.filter((s) => s.action === 'like').length;
+  }, [swipeHistory]);
+  const successRate = useMemo(() => {
+    if (likeCount <= 0 || totalMatches <= 0) return 0;
+    return Math.round((totalMatches / likeCount) * 100);
+  }, [likeCount, totalMatches]);
 
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return;
+    }
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    const handleOnline = () => {
+      try {
+        setIsOnline(true);
+      } catch {
+        // Silently handle state update errors
+      }
+    };
+
+    const handleOffline = () => {
+      try {
+        setIsOnline(false);
+      } catch {
+        // Silently handle state update errors
+      }
+    };
+
+    try {
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+    } catch {
+      // Silently handle listener registration errors
+    }
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      try {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      } catch {
+        // Silently handle listener cleanup errors
+      }
     };
   }, []);
 
@@ -274,7 +305,7 @@ function App(): JSX.Element {
         try {
           const [{ initPerformanceMonitoring }, { createLogger }] = await Promise.all([
             import('@/lib/monitoring/performance'),
-            import('@/lib/logger')
+            import('@/lib/logger'),
           ]);
           const logger = createLogger('PerformanceMonitoring');
           initPerformanceMonitoring((metric) => {
@@ -302,19 +333,28 @@ function App(): JSX.Element {
   }, [hasSeenWelcome, isAuthenticated]);
 
   const handleWelcomeGetStarted = () => {
-    void setHasSeenWelcome(true);
+    setHasSeenWelcome(true).catch((error: unknown) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      rootLogger.error('Failed to set hasSeenWelcome', err);
+    });
     setAuthMode('signup');
     setAppState('auth');
   };
 
   const handleWelcomeSignIn = () => {
-    void setHasSeenWelcome(true);
+    setHasSeenWelcome(true).catch((error: unknown) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      rootLogger.error('Failed to set hasSeenWelcome', err);
+    });
     setAuthMode('signin');
     setAppState('auth');
   };
 
   const handleWelcomeExplore = () => {
-    void setHasSeenWelcome(true);
+    setHasSeenWelcome(true).catch((error: unknown) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      rootLogger.error('Failed to set hasSeenWelcome', err);
+    });
     setAppState('main');
   };
 
@@ -626,7 +666,7 @@ function App(): JSX.Element {
                               weight={currentView === 'community' ? 'fill' : 'regular'}
                             />
                           }
-                          label={t.nav.community || 'Community'}
+                          label={t.nav.community}
                           enablePulse={currentView === 'community'}
                         />
 
@@ -639,15 +679,16 @@ function App(): JSX.Element {
                               weight={currentView === 'adoption' ? 'fill' : 'duotone'}
                             />
                           }
-                          label={t.nav.adoption || 'Adopt'}
+                          label={t.nav.adoption}
                           enablePulse={currentView === 'adoption'}
                         />
 
                         <AnimatedView
-                          className={`${NAV_BUTTON_BASE_CLASSES} relative cursor-pointer ${currentView === 'lost-found'
-                            ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
-                            }`}
+                          className={`${NAV_BUTTON_BASE_CLASSES} relative cursor-pointer ${
+                            currentView === 'lost-found'
+                              ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
+                              : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                          }`}
                           style={lostFoundAnimation.buttonStyle}
                           onMouseEnter={lostFoundAnimation.handleHover}
                           onMouseLeave={lostFoundAnimation.handleLeave}
@@ -664,7 +705,7 @@ function App(): JSX.Element {
                             />
                           </AnimatedView>
                           <span className="text-[10px] sm:text-xs font-semibold leading-tight">
-                            {t.nav['lost-found'] || 'Lost & Found'}
+                            {t.nav['lost-found']}
                           </span>
                           {currentView === 'lost-found' && (
                             <AnimatedView
@@ -765,10 +806,7 @@ function App(): JSX.Element {
                     <AnimatedView style={mapModal.style} className="fixed inset-0 z-50">
                       <Suspense fallback={<LoadingState />}>
                         <AnimatedView style={mapContent.style} className="h-full w-full">
-                          <PlaydateMap
-                            playdates={playdates || []}
-                            onClose={() => setShowMap(false)}
-                          />
+                          <PlaydateMap playdates={playdates} onClose={() => setShowMap(false)} />
                         </AnimatedView>
                       </Suspense>
                     </AnimatedView>

@@ -4,7 +4,7 @@
  */
 
 import * as Haptics from 'expo-haptics'
-import React, { useCallback } from 'react'
+import React, { memo, useCallback } from 'react'
 import { Dimensions, Image, StyleSheet, Text, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
@@ -34,7 +34,7 @@ const springConfig = {
   mass: 0.9,
 }
 
-export function SwipeCard({
+function SwipeCardComponent({
   pet,
   onSwipeLeft,
   onSwipeRight,
@@ -246,3 +246,15 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 })
+
+// Memoize SwipeCard to prevent unnecessary re-renders
+export const SwipeCard = memo(SwipeCardComponent, (prev, next) => {
+  return (
+    prev.pet.id === next.pet.id &&
+    prev.pet.name === next.pet.name &&
+    prev.pet.photo === next.pet.photo &&
+    prev.isTop === next.isTop &&
+    prev.onSwipeLeft === next.onSwipeLeft &&
+    prev.onSwipeRight === next.onSwipeRight
+  );
+});

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { Heart, Sparkle, PawPrint, X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,6 @@ export default function WelcomeModal(): JSX.Element | null {
   const { t } = useApp();
   const [hasSeenWelcome, setHasSeenWelcome] = useStorage<boolean>('has-seen-welcome', false);
   const [open, setOpen] = useState(false);
-  const [_step, _setStep] = useState(0);
 
   // Animated values
   const bgScale = useSharedValue(1);
@@ -102,10 +101,10 @@ export default function WelcomeModal(): JSX.Element | null {
     );
   }, [bgScale, bgRotate, iconScale, iconPulse, iconGlowScale, iconGlowOpacity, arrowX]);
 
-  const handleClose = (): void => {
-    setHasSeenWelcome(true);
+  const handleClose = useCallback((): void => {
+    void setHasSeenWelcome(true);
     setOpen(false);
-  };
+  }, [setHasSeenWelcome]);
 
   const features = [
     {

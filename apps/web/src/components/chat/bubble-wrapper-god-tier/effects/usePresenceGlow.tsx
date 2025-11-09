@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { ReactNode } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PresenceGlowProps {
   isActive: boolean;
@@ -31,7 +32,8 @@ export function PresenceGlow({
   intensity = DEFAULT_INTENSITY,
   pulseDuration = DEFAULT_PULSE_DURATION,
 }: PresenceGlowProps): React.JSX.Element {
-  const glowOpacity = useSharedValue(0);
+    const uiConfig = useUIConfig();
+    const glowOpacity = useSharedValue(0);
 
   useEffect(() => {
     if (isActive) {

@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode, MouseEventHandler } from 'react';
 import { useEffect, useRef, useState } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface AnimatedStyleReturn {
   value: unknown;
@@ -49,9 +50,10 @@ interface AnimatedViewProps {
 }
 
 function convertToCSSProperties(style: unknown): CSSProperties {
-  if (!style || typeof style !== 'object') {
-    return {};
-  }
+    const uiConfig = useUIConfig();
+    if (!style || typeof style !== 'object') {
+        return {};
+      }
 
   const cssStyle: CSSProperties = {};
   const styleObj = style as Record<string, unknown>;

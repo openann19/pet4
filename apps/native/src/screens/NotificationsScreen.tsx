@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   Platform,
@@ -12,7 +12,7 @@ import { AnimatedButton } from '../components/AnimatedButton';
 import { AnimatedCard } from '../components/AnimatedCard';
 import { FadeInView } from '../components/FadeInView';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 import { notificationsApi } from '../utils/api-client';
 import { createLogger } from '../utils/logger';
 
@@ -39,11 +39,7 @@ export default function NotificationsScreen() {
     []
   );
 
-  useEffect(() => {
-    loadNotifications();
-  }, []);
-
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -86,7 +82,11 @@ export default function NotificationsScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [storedNotifications, setStoredNotifications]);
+
+  useEffect(() => {
+    void loadNotifications();
+  }, [loadNotifications]);
 
   const markAsRead = async (id: string) => {
     try {

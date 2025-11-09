@@ -32,7 +32,7 @@ async function fetchHighlights(userId: string): Promise<StoryHighlight[]> {
 /**
  * Create a new story highlight
  */
-async function createHighlight(
+function createHighlight(
   userId: string,
   petId: string,
   title: string,
@@ -51,7 +51,7 @@ async function createHighlight(
 /**
  * Update a story highlight (add/remove stories)
  */
-async function updateHighlight(
+function updateHighlight(
   highlightId: string,
   updates: {
     title?: string
@@ -66,14 +66,14 @@ async function updateHighlight(
 /**
  * Delete a story highlight
  */
-async function deleteHighlight(highlightId: string): Promise<void> {
+function deleteHighlight(highlightId: string): Promise<void> {
   return apiClient.delete<void>(`/stories/highlights/${highlightId}`)
 }
 
 /**
  * Add a story to a highlight
  */
-async function addStoryToHighlight(highlightId: string, storyId: string): Promise<StoryHighlight> {
+function addStoryToHighlight(highlightId: string, storyId: string): Promise<StoryHighlight> {
   return apiClient.post<StoryHighlight>(`/stories/highlights/${highlightId}/stories`, { storyId })
 }
 
@@ -109,11 +109,11 @@ export function useCreateHighlight(): UseMutationResult<
 
   return useMutation({
     mutationKey: mutationKeys.stories.createHighlight,
-    mutationFn: async data => {
+    mutationFn: data => {
       return createHighlight(data.userId, data.petId, data.title, data.coverImage, data.storyIds)
     },
     onSuccess: newHighlight => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: queryKeys.stories.highlights(newHighlight.userId),
       })
     },
@@ -145,11 +145,11 @@ export function useUpdateHighlight(): UseMutationResult<
 
   return useMutation({
     mutationKey: mutationKeys.stories.updateHighlight,
-    mutationFn: async ({ highlightId, updates }) => {
+    mutationFn: ({ highlightId, updates }) => {
       return updateHighlight(highlightId, updates)
     },
     onSuccess: updatedHighlight => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: queryKeys.stories.highlights(updatedHighlight.userId),
       })
     },
@@ -173,11 +173,11 @@ export function useAddStoryToHighlight(): UseMutationResult<
 
   return useMutation({
     mutationKey: mutationKeys.stories.addStoryToHighlight,
-    mutationFn: async ({ highlightId, storyId }) => {
+    mutationFn: ({ highlightId, storyId }) => {
       return addStoryToHighlight(highlightId, storyId)
     },
     onSuccess: updatedHighlight => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: queryKeys.stories.highlights(updatedHighlight.userId),
       })
     },
@@ -201,11 +201,11 @@ export function useDeleteHighlight(): UseMutationResult<
 
   return useMutation({
     mutationKey: mutationKeys.stories.deleteHighlight,
-    mutationFn: async ({ highlightId }) => {
+    mutationFn: ({ highlightId }) => {
       return deleteHighlight(highlightId)
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: queryKeys.stories.highlights(variables.userId),
       })
     },

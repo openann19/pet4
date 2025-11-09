@@ -15,7 +15,7 @@ import {
 } from 'react-native'
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
-import { useStorage } from '@/hooks/useStorage'
+import { useStorage } from '@/hooks/use-storage'
 import { timingConfigs } from '@/effects/reanimated/transitions'
 
 const AnimatedView = Animated.createAnimatedComponent(View)

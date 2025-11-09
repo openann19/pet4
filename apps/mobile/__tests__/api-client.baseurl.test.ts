@@ -12,13 +12,12 @@ describe('resolveBaseUrl (production guard)', () => {
     process.env = OLD_ENV
   })
 
-  it('throws in production when no EXPO_PUBLIC_API_URL present', () => {
+  it('throws in production when no EXPO_PUBLIC_API_URL present', async () => {
     process.env['NODE_ENV'] = 'production'
     delete process.env['EXPO_PUBLIC_API_URL']
-    expect(() => {
-      // re-import to run resolveBaseUrl
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      require('../src/utils/api-client')
-    }).toThrow(/EXPO_PUBLIC_API_URL/i)
+    // Dynamic import will reject if module throws during evaluation
+    await expect(
+      import('../src/utils/api-client')
+    ).rejects.toThrow(/EXPO_PUBLIC_API_URL/i)
   })
 })

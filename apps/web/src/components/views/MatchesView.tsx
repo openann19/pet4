@@ -2,7 +2,8 @@ import CallInterface from '@/components/call/CallInterface';
 import CompatibilityBreakdown from '@/components/CompatibilityBreakdown';
 import { DetailedPetAnalytics } from '@/components/enhanced/DetailedPetAnalytics';
 import { EnhancedPetDetailView } from '@/components/enhanced/EnhancedPetDetailView';
-import PlaydateScheduler from '@/components/playdate/PlaydateScheduler';
+import { Suspense } from 'react';
+import { PlaydateScheduler } from '@/components/lazy-exports';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,7 +25,7 @@ import {
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -34,7 +35,7 @@ import {
   withSequence,
 } from 'react-native-reanimated';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 interface MatchesViewProps {
   onNavigateToChat?: () => void;
@@ -63,6 +64,28 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
     userPet?.photo
   );
 
+  // Memoized handlers for match cards
+  const handlePetSelect = useCallback((pet: Pet & { match: Match }) => {
+    selectPet(pet, pet.match);
+  }, [selectPet]);
+
+  const handlePetBreakdown = useCallback((pet: Pet & { match: Match }) => {
+    setBreakdownPet(pet);
+  }, []);
+
+  const handlePetPlaydate = useCallback((pet: Pet & { match: Match }) => {
+    setPlaydatePet(pet);
+  }, []);
+
+  const handlePetVideoCall = useCallback((pet: Pet & { match: Match }) => {
+    initiateCall(pet.id, pet.name, pet.photo, 'video');
+  }, [initiateCall]);
+
+  const handleStartChat = useCallback(() => {
+    haptics.trigger('medium');
+    onNavigateToChat?.();
+  }, [onNavigateToChat]);
+
   // Animation hooks for empty state
   const emptyHeartScale = useSharedValue(0);
   const emptyHeartRotate = useSharedValue(-180);
@@ -73,11 +96,10 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
 
   // Interactive element hooks
   const cardHover = useHoverLift();
-  const cardTap = useBounceOnTap();
 
   // Presence hooks
-  const emptyStatePresence = useAnimatePresence(matchedPets.length === 0 && !isLoading);
-  const selectedPetPresence = useAnimatePresence(!!selectedPet);
+  const emptyStatePresence = useAnimatePresence({ isVisible: matchedPets.length === 0 && !isLoading });
+  const selectedPetPresence = useAnimatePresence({ isVisible: !!selectedPet });
 
   // Initialize empty state animations
   useEffect(() => {
@@ -121,166 +143,169 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
 
   if (matchedPets.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        {emptyStatePresence.shouldRender && (
-          <AnimatedView
-            style={[emptyHeartStyle, emptyStatePresence.animatedStyle]}
-            className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
-          >
+      <PageTransitionWrapper key="matches-empty" direction="up">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+          {emptyStatePresence.shouldRender && (
             <AnimatedView
-              style={
-                useAnimatedStyle(() => ({
-                  transform: [
-                    {
-                      scale: withRepeat(
-                        withSequence(
-                          withTiming(1.2, { duration: 750 }),
-                          withTiming(1, { duration: 750 })
-                        ),
-                        -1,
-                        true
-                      ),
-                    },
-                  ],
-                })) as AnimatedStyle
-              }
+              style={[emptyHeartStyle, emptyStatePresence.animatedStyle]}
+              className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
             >
-              <Heart size={48} className="text-primary" />
+              <AnimatedView
+                style={
+                  useAnimatedStyle(() => ({
+                    transform: [
+                      {
+                        scale: withRepeat(
+                          withSequence(
+                            withTiming(1.2, { duration: 750 }),
+                            withTiming(1, { duration: 750 })
+                          ),
+                          -1,
+                          true
+                        ),
+                      },
+                    ],
+                  })) as AnimatedStyle
+                }
+              >
+                <Heart size={48} className="text-primary" />
+              </AnimatedView>
+              <AnimatedView
+                style={emptyPulseStyle}
+                className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-accent/20"
+              />
             </AnimatedView>
-            <AnimatedView
-              style={emptyPulseStyle}
-              className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-accent/20"
-            />
+          )}
+          <AnimatedView style={emptyTextStyle} className="text-2xl font-bold mb-2">
+            {t.matches.noMatches}
           </AnimatedView>
-        )}
-        <AnimatedView style={emptyTextStyle} className="text-2xl font-bold mb-2">
-          {t.matches.noMatches}
-        </AnimatedView>
-        <AnimatedView style={emptyTextStyle} className="text-muted-foreground mb-6 max-w-md">
-          {t.matches.noMatchesDesc}
-        </AnimatedView>
-      </div>
+          <AnimatedView style={emptyTextStyle} className="text-muted-foreground mb-6 max-w-md">
+            {t.matches.noMatchesDesc}
+          </AnimatedView>
+        </div>
+      </PageTransitionWrapper>
     );
   }
 
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-2xl font-bold mb-2">{t.matches.title}</h2>
-          <p className="text-muted-foreground">
-            {matchedPets.length}{' '}
-            {matchedPets.length === 1 ? t.matches.subtitle : t.matches.subtitlePlural}
-          </p>
-        </div>
-        {onNavigateToChat && matchedPets.length > 0 && (
-          <AnimatedView>
-            <Button
-              onClick={() => {
-                haptics.trigger('medium');
-                onNavigateToChat();
-              }}
-              className="bg-gradient-to-r from-primary to-accent hover:shadow-xl transition-all"
-              size="lg"
-            >
-              <ChatCircle size={20} weight="fill" className="mr-2" />
-              {t.matches.startChat}
-            </Button>
-          </AnimatedView>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {matchedPets.map((pet, idx) => (
-          <MatchCard
-            key={pet.id}
-            pet={pet}
-            onSelect={() => selectPet(pet, pet.match)}
-            onBreakdown={() => setBreakdownPet(pet)}
-            onPlaydate={() => setPlaydatePet(pet)}
-            onVideoCall={() => initiateCall(pet.id, pet.name, pet.photo, 'video')}
-            onChat={onNavigateToChat}
-            t={t}
-          />
-        ))}
-      </div>
-
-      <AnimatedView>
-        {selectedPet && selectedMatch && (
-          <EnhancedPetDetailView
-            pet={selectedPet}
-            onClose={clearSelection}
-            {...(onNavigateToChat ? { onChat: onNavigateToChat } : {})}
-            compatibilityScore={selectedMatch.compatibilityScore}
-            matchReasons={matchReasoning}
-            showActions={false}
-          />
-        )}
-      </AnimatedView>
-
-      <Dialog open={!!breakdownPet} onOpenChange={(open) => !open && setBreakdownPet(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          {breakdownPet && userPet && (
-            <div>
-              <div className="mb-4">
-                <h3 className="text-2xl font-bold">{breakdownPet.name}</h3>
-                <p className="text-muted-foreground">
-                  {t.matches.compatibilityWith} {userPet.name}
-                </p>
-              </div>
-              <Tabs defaultValue="analytics" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                  <TabsTrigger value="breakdown">Breakdown</TabsTrigger>
-                </TabsList>
-                <TabsContent value="analytics" className="mt-4">
-                  <DetailedPetAnalytics
-                    pet={breakdownPet}
-                    {...(breakdownPet.trustProfile
-                      ? { trustProfile: breakdownPet.trustProfile }
-                      : {})}
-                    compatibilityScore={calculateCompatibility(userPet, breakdownPet)}
-                    matchReasons={breakdownPet.match.reasoning || []}
-                  />
-                </TabsContent>
-                <TabsContent value="breakdown" className="mt-4">
-                  <CompatibilityBreakdown
-                    factors={getCompatibilityFactors(userPet, breakdownPet)}
-                  />
-                </TabsContent>
-              </Tabs>
-            </div>
+    <PageTransitionWrapper key="matches-content" direction="up">
+      <div>
+        <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-2xl font-bold mb-2">{t.matches.title}</h2>
+            <p className="text-muted-foreground">
+              {matchedPets.length}{' '}
+              {matchedPets.length === 1 ? t.matches.subtitle : t.matches.subtitlePlural}
+            </p>
+          </div>
+          {onNavigateToChat && matchedPets.length > 0 && (
+            <AnimatedView>
+              <Button
+                onClick={handleStartChat}
+                className="bg-gradient-to-r from-primary to-accent hover:shadow-xl transition-all"
+                size="lg"
+              >
+                <ChatCircle size={20} weight="fill" className="mr-2" />
+                {t.matches.startChat}
+              </Button>
+            </AnimatedView>
           )}
-        </DialogContent>
-      </Dialog>
+        </div>
 
-      {playdatePet && userPet && (
-        <PlaydateScheduler
-          match={playdatePet.match}
-          userPet={userPet}
-          onClose={() => setPlaydatePet(null)}
-          onStartVideoCall={() => {
-            initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video');
-            setPlaydatePet(null);
-          }}
-          onStartVoiceCall={() => {
-            initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice');
-            setPlaydatePet(null);
-          }}
-        />
-      )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {matchedPets.map((pet) => (
+            <MatchCard
+              key={pet.id}
+              pet={pet}
+              onSelect={() => handlePetSelect(pet)}
+              onBreakdown={() => handlePetBreakdown(pet)}
+              onPlaydate={() => handlePetPlaydate(pet)}
+              onVideoCall={() => handlePetVideoCall(pet)}
+              onChat={onNavigateToChat}
+              t={t}
+            />
+          ))}
+        </div>
 
-      <AnimatedView>
-        {activeCall && (
-          <CallInterface
-            session={activeCall}
-            onEndCall={endCall}
-            onToggleMute={toggleMute}
-            onToggleVideo={toggleVideo}
-          />
+        <AnimatedView>
+          {selectedPet && selectedMatch && (
+            <EnhancedPetDetailView
+              pet={selectedPet}
+              onClose={clearSelection}
+              {...(onNavigateToChat ? { onChat: onNavigateToChat } : {})}
+              compatibilityScore={selectedMatch.compatibilityScore}
+              matchReasons={matchReasoning}
+              showActions={false}
+            />
+          )}
+        </AnimatedView>
+
+        <Dialog open={!!breakdownPet} onOpenChange={(open) => !open && setBreakdownPet(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            {breakdownPet && userPet && (
+              <div>
+                <div className="mb-4">
+                  <h3 className="text-2xl font-bold">{breakdownPet.name}</h3>
+                  <p className="text-muted-foreground">
+                    {t.matches.compatibilityWith} {userPet.name}
+                  </p>
+                </div>
+                <Tabs defaultValue="analytics" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                    <TabsTrigger value="breakdown">Breakdown</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="analytics" className="mt-4">
+                    <DetailedPetAnalytics
+                      pet={breakdownPet}
+                      {...(breakdownPet.trustProfile
+                        ? { trustProfile: breakdownPet.trustProfile }
+                        : {})}
+                      compatibilityScore={calculateCompatibility(userPet, breakdownPet)}
+                      matchReasons={breakdownPet.match.reasoning || []}
+                    />
+                  </TabsContent>
+                  <TabsContent value="breakdown" className="mt-4">
+                    <CompatibilityBreakdown
+                      factors={getCompatibilityFactors(userPet, breakdownPet)}
+                    />
+                  </TabsContent>
+                </Tabs>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {playdatePet && userPet && (
+          <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <PlaydateScheduler
+              match={playdatePet.match}
+              userPet={userPet}
+              onClose={() => setPlaydatePet(null)}
+              onStartVideoCall={() => {
+                initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video');
+                setPlaydatePet(null);
+              }}
+              onStartVoiceCall={() => {
+                initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice');
+                setPlaydatePet(null);
+              }}
+            />
+          </Suspense>
         )}
-      </AnimatedView>
-    </div>
+
+        <AnimatedView>
+          {activeCall && (
+            <CallInterface
+              session={activeCall}
+              onEndCall={endCall}
+              onToggleMute={toggleMute}
+              onToggleVideo={toggleVideo}
+            />
+          )}
+        </AnimatedView>
+      </div>
+    </PageTransitionWrapper>
   );
 }
 

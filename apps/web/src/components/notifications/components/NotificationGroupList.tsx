@@ -52,7 +52,10 @@ export function NotificationGroupList({
       if (!timeGroups.has(timeGroup)) {
         timeGroups.set(timeGroup, []);
       }
-      timeGroups.get(timeGroup)!.push(group);
+      const groupList = timeGroups.get(timeGroup);
+      if (groupList) {
+        groupList.push(group);
+      }
     });
 
     return Array.from(timeGroups.entries());

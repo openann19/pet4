@@ -19,7 +19,7 @@ import {
 import { apiClient } from '@/utils/api-client'
 import { createLogger } from '@/utils/logger'
 import { saveAuthToken, saveRefreshToken } from '@/utils/secure-storage'
-import { useStorage } from '@/hooks/useStorage'
+import { useStorage } from '@/hooks/use-storage'
 
 type SignUpFormProps = {
   readonly onSuccess: () => void
@@ -42,7 +42,34 @@ type SignUpResponse = {
 
 const logger = createLogger('SignUpForm')
 
-const useApp = () => ({
+const useApp = (): {
+  t: {
+    auth: {
+      signUpTitle: string
+      signUpSubtitle: string
+      email: string
+      emailPlaceholder: string
+      emailRequired: string
+      emailInvalid: string
+      password: string
+      passwordPlaceholder: string
+      passwordRequired: string
+      passwordTooShort: string
+      confirmPassword: string
+      confirmPasswordPlaceholder: string
+      confirmPasswordRequired: string
+      passwordMismatch: string
+      signUp: string
+      signUpSuccess: string
+      signUpError: string
+      signIn: string
+      alreadyHaveAccount: string
+    }
+    common: {
+      loading: string
+    }
+  }
+} => ({
   t: {
     auth: {
       signUpTitle: 'Create Account',
@@ -196,7 +223,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
       setIsSubmitting(false)
     }
   }, [
-    analytics,
+    clearError,
     email,
     onSuccess,
     password,

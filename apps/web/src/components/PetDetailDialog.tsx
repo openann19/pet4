@@ -6,7 +6,10 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { usePhotoCarousel } from '@/hooks/usePhotoCarousel';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type { Pet } from '@/lib/types';
+
+const logger = createLogger('PetDetailDialog');
 import {
   Calendar,
   CaretLeft,
@@ -37,9 +40,12 @@ interface PetDetailDialogProps {
 }
 
 export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDialogProps) {
-  if (!pet) return null;
-
-  const photos = pet.photos || [pet.photo];
+  // All hooks must be called unconditionally at the top level
+  const photos = Array.isArray(pet?.photos)
+    ? pet.photos.filter((photo): photo is string => typeof photo === 'string' && photo.length > 0)
+    : pet?.photo && typeof pet.photo === 'string'
+      ? [pet.photo]
+      : [];
   const {
     currentIndex,
     currentPhoto,
@@ -49,13 +55,6 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
     prevPhoto,
     goToPhoto,
   } = usePhotoCarousel({ photos });
-
-  const sizeMap: Record<string, string> = {
-    small: 'Small (< 20 lbs)',
-    medium: 'Medium (20-50 lbs)',
-    large: 'Large (50-100 lbs)',
-    'extra-large': 'Extra Large (> 100 lbs)',
-  };
 
   // Animation hooks
   const dialogOpacity = useSharedValue(0);
@@ -67,7 +66,6 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
   // Interactive element hooks
   const closeButtonHover = useHoverLift();
   const closeButtonTap = useBounceOnTap();
-  // (Reserved for future interactive buttons; remove unused to satisfy lints)
 
   // Presence hooks
   const dialogPresence = useAnimatePresence({ isVisible: open });
@@ -83,7 +81,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
       dialogScale.value = withTiming(0.95, { duration: 200 });
       dialogY.value = withTiming(20, { duration: 200 });
     }
-  }, [open]);
+  }, [open, dialogOpacity, dialogScale, dialogY]);
 
   const dialogStyle = useAnimatedStyle(() => ({
     opacity: dialogOpacity.value,
@@ -99,12 +97,22 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
       photoOpacity.value = withSpring(1, { damping: 20, stiffness: 250 });
       photoScale.value = withSpring(1, { damping: 20, stiffness: 250 });
     });
-  }, [currentIndex]);
+  }, [currentIndex, photoOpacity, photoScale]);
 
   const photoStyle = useAnimatedStyle(() => ({
     opacity: photoOpacity.value,
     transform: [{ scale: photoScale.value }],
   })) as AnimatedStyle;
+
+  const sizeMap: Record<string, string> = {
+    small: 'Small (< 20 lbs)',
+    medium: 'Medium (20-50 lbs)',
+    large: 'Large (50-100 lbs)',
+    'extra-large': 'Extra Large (> 100 lbs)',
+  };
+
+  // Early return after all hooks have been called
+  if (!pet) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -117,8 +125,15 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
             <AnimatedView
               style={[closeButtonHover.animatedStyle, closeButtonTap.animatedStyle]}
               onClick={() => {
-                haptics.trigger('light');
-                onOpenChange(false);
+                try {
+                  haptics.trigger('light');
+                  onOpenChange(false);
+                } catch (error) {
+                  const err = error instanceof Error ? error : new Error(String(error));
+                  logger.error('PetDetailDialog close button error', err);
+                  // Still close dialog even if haptics fails
+                  onOpenChange(false);
+                }
               }}
               onMouseEnter={closeButtonHover.handleEnter}
               onMouseLeave={closeButtonHover.handleLeave}
@@ -142,13 +157,27 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
               {hasMultiplePhotos && (
                 <>
                   <AnimatedView
-                    onClick={prevPhoto}
+                    onClick={() => {
+                      try {
+                        prevPhoto();
+                      } catch (error) {
+                        const err = error instanceof Error ? error : new Error(String(error));
+                        logger.error('PetDetailDialog prevPhoto error', err);
+                      }
+                    }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 glass-strong rounded-full flex items-center justify-center shadow-2xl border border-white/30 backdrop-blur-xl opacity-0 group-hover:opacity-100 transition-opacity z-30"
                   >
                     <CaretLeft size={24} weight="bold" className="text-white drop-shadow-lg" />
                   </AnimatedView>
                   <AnimatedView
-                    onClick={nextPhoto}
+                    onClick={() => {
+                      try {
+                        nextPhoto();
+                      } catch (error) {
+                        const err = error instanceof Error ? error : new Error(String(error));
+                        logger.error('PetDetailDialog nextPhoto error', err);
+                      }
+                    }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 glass-strong rounded-full flex items-center justify-center shadow-2xl border border-white/30 backdrop-blur-xl opacity-0 group-hover:opacity-100 transition-opacity z-30"
                   >
                     <CaretRight size={24} weight="bold" className="text-white drop-shadow-lg" />
@@ -157,12 +186,20 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     {photos.map((_, idx) => (
                       <AnimatedView
                         key={idx}
-                        onClick={() => goToPhoto(idx)}
-                        className={`h-2 rounded-full transition-all shadow-lg ${
-                          idx === currentIndex
+                        onClick={() => {
+                          try {
+                            if (idx >= 0 && idx < photos.length) {
+                              goToPhoto(idx);
+                            }
+                          } catch (error) {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('PetDetailDialog goToPhoto error', err, { index: idx });
+                          }
+                        }}
+                        className={`h-2 rounded-full transition-all shadow-lg ${idx === currentIndex
                             ? 'bg-white w-10'
                             : 'bg-white/50 w-2 hover:bg-white/75'
-                        }`}
+                          }`}
                       />
                     ))}
                   </AnimatedView>
@@ -179,16 +216,20 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                   )}
                 </div>
                 <div className="flex items-center gap-4 text-white/90">
-                  <span className="flex items-center gap-1.5 text-lg">
-                    {pet.gender === 'male' ? (
-                      <GenderMale size={20} weight="fill" />
-                    ) : (
-                      <GenderFemale size={20} weight="fill" />
-                    )}
-                    {pet.age} years
-                  </span>
-                  <span className="w-1 h-1 rounded-full bg-white/60" />
-                  <span className="text-lg">{pet.breed}</span>
+                  {pet?.gender && (
+                    <span className="flex items-center gap-1.5 text-lg">
+                      {pet.gender === 'male' ? (
+                        <GenderMale size={20} weight="fill" />
+                      ) : (
+                        <GenderFemale size={20} weight="fill" />
+                      )}
+                      {pet.age != null && `${pet.age} years`}
+                    </span>
+                  )}
+                  {pet?.gender && pet?.breed && (
+                    <span className="w-1 h-1 rounded-full bg-white/60" />
+                  )}
+                  {pet?.breed && <span className="text-lg">{pet.breed}</span>}
                 </div>
                 {hasMultiplePhotos && (
                   <AnimatedView className="text-sm text-white/70 mt-2">
@@ -228,38 +269,46 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                       Details
                     </h3>
                     <div className="space-y-3">
-                      <AnimatedView className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
-                        <span className="text-sm text-muted-foreground flex items-center gap-2">
-                          <Calendar size={18} weight="fill" className="text-accent" />
-                          Age
-                        </span>
-                        <span className="font-semibold">{pet.age} years old</span>
-                      </AnimatedView>
-                      <AnimatedView className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
-                        <span className="text-sm text-muted-foreground flex items-center gap-2">
-                          {pet.gender === 'male' ? (
-                            <GenderMale size={18} weight="fill" className="text-accent" />
-                          ) : (
-                            <GenderFemale size={18} weight="fill" className="text-accent" />
-                          )}
-                          Gender
-                        </span>
-                        <span className="font-semibold capitalize">{pet.gender}</span>
-                      </AnimatedView>
-                      <AnimatedView className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
-                        <span className="text-sm text-muted-foreground flex items-center gap-2">
-                          <Ruler size={18} weight="fill" className="text-accent" />
-                          Size
-                        </span>
-                        <span className="font-semibold">{sizeMap[pet.size] || pet.size}</span>
-                      </AnimatedView>
-                      <AnimatedView className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
-                        <span className="text-sm text-muted-foreground flex items-center gap-2">
-                          <MapPin size={18} weight="fill" className="text-accent" />
-                          Location
-                        </span>
-                        <span className="font-semibold">{pet.location}</span>
-                      </AnimatedView>
+                      {pet.age != null && (
+                        <AnimatedView className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
+                          <span className="text-sm text-muted-foreground flex items-center gap-2">
+                            <Calendar size={18} weight="fill" className="text-accent" />
+                            Age
+                          </span>
+                          <span className="font-semibold">{pet.age} years old</span>
+                        </AnimatedView>
+                      )}
+                      {pet.gender && (
+                        <AnimatedView className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
+                          <span className="text-sm text-muted-foreground flex items-center gap-2">
+                            {pet.gender === 'male' ? (
+                              <GenderMale size={18} weight="fill" className="text-accent" />
+                            ) : (
+                              <GenderFemale size={18} weight="fill" className="text-accent" />
+                            )}
+                            Gender
+                          </span>
+                          <span className="font-semibold capitalize">{pet.gender}</span>
+                        </AnimatedView>
+                      )}
+                      {pet.size && (
+                        <AnimatedView className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
+                          <span className="text-sm text-muted-foreground flex items-center gap-2">
+                            <Ruler size={18} weight="fill" className="text-accent" />
+                            Size
+                          </span>
+                          <span className="font-semibold">{sizeMap[pet.size] || pet.size}</span>
+                        </AnimatedView>
+                      )}
+                      {pet.location && (
+                        <AnimatedView className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
+                          <span className="text-sm text-muted-foreground flex items-center gap-2">
+                            <MapPin size={18} weight="fill" className="text-accent" />
+                            Location
+                          </span>
+                          <span className="font-semibold">{pet.location}</span>
+                        </AnimatedView>
+                      )}
                     </div>
                   </div>
 
@@ -271,70 +320,75 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     <AnimatedView className="p-4 rounded-xl bg-linear-to-br from-primary/5 to-accent/5 border border-border">
                       <div className="flex items-center gap-3 mb-4">
                         <Avatar className="w-14 h-14 ring-2 ring-primary/20">
-                          <AvatarImage src={pet.ownerAvatar} />
+                          <AvatarImage src={pet?.ownerAvatar} />
                           <AvatarFallback className="bg-linear-to-br from-primary to-accent text-primary-foreground text-lg font-bold">
-                            {pet.ownerName[0]}
+                            {pet?.ownerName?.[0] ?? '?'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
-                          <p className="font-bold text-lg">{pet.ownerName}</p>
-                          <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <MapPin size={14} weight="fill" />
-                            {pet.location}
-                          </p>
+                          <p className="font-bold text-lg">{pet?.ownerName ?? 'Unknown Owner'}</p>
+                          {pet?.location && (
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                              <MapPin size={14} weight="fill" />
+                              {pet.location}
+                            </p>
+                          )}
                         </div>
                       </div>
-                      {pet.trustProfile && (
+                      {pet?.trustProfile && (
                         <div className="flex items-center gap-2 justify-between pt-3 border-t border-border">
                           <div className="flex items-center gap-1.5">
                             <Star size={16} weight="fill" className="text-accent" />
                             <span className="text-sm font-semibold">
-                              {pet.trustProfile.overallRating.toFixed(1)}
+                              {typeof pet.trustProfile.overallRating === 'number'
+                                ? pet.trustProfile.overallRating.toFixed(1)
+                                : 'N/A'}
                             </span>
                           </div>
                           <span className="text-xs text-muted-foreground">
-                            {pet.trustProfile.totalReviews} reviews
+                            {typeof pet.trustProfile.totalReviews === 'number'
+                              ? `${pet.trustProfile.totalReviews} reviews`
+                              : 'No reviews'}
                           </span>
-                          {pet.trustProfile.responseRate > 0 && (
-                            <>
-                              <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-                              <span className="text-xs text-muted-foreground">
-                                {pet.trustProfile.responseRate}% response rate
-                              </span>
-                            </>
-                          )}
+                          {typeof pet.trustProfile.responseRate === 'number' &&
+                            pet.trustProfile.responseRate > 0 && (
+                              <>
+                                <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
+                                <span className="text-xs text-muted-foreground">
+                                  {pet.trustProfile.responseRate}% response rate
+                                </span>
+                              </>
+                            )}
                         </div>
                       )}
                     </AnimatedView>
                   </div>
                 </AnimatedView>
 
-                {pet.personality &&
-                  Array.isArray(pet.personality) &&
-                  pet.personality.length > 0 && (
-                    <>
-                      <Separator />
-                      <AnimatedView className="space-y-3">
-                        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                          Personality Traits
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {pet.personality.map((trait, idx) => (
-                            <AnimatedView key={idx}>
-                              <Badge
-                                variant="secondary"
-                                className="px-3 py-1.5 text-sm font-medium hover:bg-secondary/80 transition-colors"
-                              >
-                                {trait}
-                              </Badge>
-                            </AnimatedView>
-                          ))}
-                        </div>
-                      </AnimatedView>
-                    </>
-                  )}
+                {Array.isArray(pet.personality) && pet.personality.length > 0 && (
+                  <>
+                    <Separator />
+                    <AnimatedView className="space-y-3">
+                      <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                        Personality Traits
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {pet.personality.map((trait, idx) => (
+                          <AnimatedView key={idx}>
+                            <Badge
+                              variant="secondary"
+                              className="px-3 py-1.5 text-sm font-medium hover:bg-secondary/80 transition-colors"
+                            >
+                              {trait}
+                            </Badge>
+                          </AnimatedView>
+                        ))}
+                      </div>
+                    </AnimatedView>
+                  </>
+                )}
 
-                {pet.interests && Array.isArray(pet.interests) && pet.interests.length > 0 && (
+                {Array.isArray(pet.interests) && pet.interests.length > 0 && (
                   <>
                     <Separator />
                     <AnimatedView className="space-y-3">
@@ -357,7 +411,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                   </>
                 )}
 
-                {pet.lookingFor && Array.isArray(pet.lookingFor) && pet.lookingFor.length > 0 && (
+                {Array.isArray(pet.lookingFor) && pet.lookingFor.length > 0 && (
                   <>
                     <Separator />
                     <AnimatedView className="space-y-3">

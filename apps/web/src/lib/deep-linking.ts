@@ -29,6 +29,10 @@ class DeepLinkManager {
   private isInitialized = false;
   private pendingRoute: DeepLinkRoute | null = null;
   private appState: 'closed' | 'background' | 'foreground' = 'foreground';
+  private popstateHandler: (() => void) | null = null;
+  private focusHandler: (() => void) | null = null;
+  private blurHandler: (() => void) | null = null;
+  private visibilityChangeHandler: (() => void) | null = null;
 
   constructor(config: DeepLinkConfig) {
     this.config = config;
@@ -42,31 +46,64 @@ class DeepLinkManager {
     this.isInitialized = true;
 
     // Handle initial URL if app opened from link
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
+
+    try {
       this.handleCurrentUrl();
 
       // Listen for URL changes (popstate for browser, focus for app)
-      window.addEventListener('popstate', () => this.handleCurrentUrl());
+      this.popstateHandler = () => {
+        try {
+          this.handleCurrentUrl();
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('DeepLinkManager popstate handler error', err);
+        }
+      };
+      window.addEventListener('popstate', this.popstateHandler);
 
       // Listen for app focus (when coming from background)
-      window.addEventListener('focus', () => {
-        this.appState = 'foreground';
-        this.processPendingRoute();
-      });
-
-      window.addEventListener('blur', () => {
-        this.appState = 'background';
-      });
-
-      // Listen for visibility changes
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
+      this.focusHandler = () => {
+        try {
           this.appState = 'foreground';
           this.processPendingRoute();
-        } else {
-          this.appState = 'background';
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('DeepLinkManager focus handler error', err);
         }
-      });
+      };
+      window.addEventListener('focus', this.focusHandler);
+
+      this.blurHandler = () => {
+        try {
+          this.appState = 'background';
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('DeepLinkManager blur handler error', err);
+        }
+      };
+      window.addEventListener('blur', this.blurHandler);
+
+      // Listen for visibility changes
+      this.visibilityChangeHandler = () => {
+        try {
+          if (document.visibilityState === 'visible') {
+            this.appState = 'foreground';
+            this.processPendingRoute();
+          } else {
+            this.appState = 'background';
+          }
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('DeepLinkManager visibilitychange handler error', err);
+        }
+      };
+      document.addEventListener('visibilitychange', this.visibilityChangeHandler);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('DeepLinkManager initialize error', err);
     }
   }
 
@@ -79,7 +116,10 @@ class DeepLinkManager {
     const route = this.parseUrl(url);
 
     if (route) {
-      this.handleRoute(route);
+      void this.handleRoute(route).catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to handle current URL', err);
+      });
     }
   }
 
@@ -199,13 +239,19 @@ class DeepLinkManager {
     if (this.pendingRoute && this.appState === 'foreground') {
       const route = this.pendingRoute;
       this.pendingRoute = null;
-      this.handleRoute(route);
+      void this.handleRoute(route).catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to process pending route', err);
+      });
     }
   }
 
   navigate(route: DeepLinkRoute): void {
     if (this.appState === 'foreground') {
-      this.handleRoute(route);
+      void this.handleRoute(route).catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to navigate to route', err);
+      });
     } else {
       // Store for when app becomes foreground
       this.pendingRoute = route;
@@ -225,6 +271,34 @@ class DeepLinkManager {
   }
 
   destroy(): void {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      this.isInitialized = false;
+      this.pendingRoute = null;
+      return;
+    }
+
+    try {
+      if (this.popstateHandler) {
+        window.removeEventListener('popstate', this.popstateHandler);
+        this.popstateHandler = null;
+      }
+      if (this.focusHandler) {
+        window.removeEventListener('focus', this.focusHandler);
+        this.focusHandler = null;
+      }
+      if (this.blurHandler) {
+        window.removeEventListener('blur', this.blurHandler);
+        this.blurHandler = null;
+      }
+      if (this.visibilityChangeHandler) {
+        document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+        this.visibilityChangeHandler = null;
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('DeepLinkManager destroy error', err);
+    }
+
     this.isInitialized = false;
     this.pendingRoute = null;
   }

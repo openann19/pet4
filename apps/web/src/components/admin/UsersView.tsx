@@ -17,6 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useStorage } from '@/hooks/use-storage';
 import type { Pet } from '@/lib/types';
+import { createLogger } from '@/lib/logger';
 import type { Icon } from '@phosphor-icons/react';
 import {
   Calendar,
@@ -33,6 +34,8 @@ import type { VariantProps } from 'class-variance-authority';
 import { Presence, MotionView } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+
+const logger = createLogger('UsersView');
 
 type BadgeVariant = VariantProps<typeof badgeVariants>['variant'];
 
@@ -399,18 +402,48 @@ export default function UsersView() {
           <DialogFooter className="flex gap-2">
             {selectedUser?.status === 'active' && (
               <>
-                <Button variant="outline" onClick={() => handleSuspendUser(selectedUser.id)}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    if (!selectedUser) return;
+                    void handleSuspendUser(selectedUser.id).catch((error) => {
+                      const err = error instanceof Error ? error : new Error(String(error));
+                      logger.error('Failed to suspend user', err, { userId: selectedUser.id });
+                      toast.error('Failed to suspend user: ' + err.message);
+                    });
+                  }}
+                >
                   <Warning size={16} className="mr-2" />
                   Suspend (7 days)
                 </Button>
-                <Button variant="destructive" onClick={() => handleBanUser(selectedUser.id)}>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    if (!selectedUser) return;
+                    void handleBanUser(selectedUser.id).catch((error) => {
+                      const err = error instanceof Error ? error : new Error(String(error));
+                      logger.error('Failed to ban user', err, { userId: selectedUser.id });
+                      toast.error('Failed to ban user: ' + err.message);
+                    });
+                  }}
+                >
                   <Prohibit size={16} className="mr-2" />
                   Ban Permanently
                 </Button>
               </>
             )}
             {(selectedUser?.status === 'suspended' || selectedUser?.status === 'banned') && (
-              <Button variant="default" onClick={() => handleReactivateUser(selectedUser.id)}>
+              <Button
+                variant="default"
+                onClick={() => {
+                  if (!selectedUser) return;
+                  void handleReactivateUser(selectedUser.id).catch((error) => {
+                    const err = error instanceof Error ? error : new Error(String(error));
+                    logger.error('Failed to reactivate user', err, { userId: selectedUser.id });
+                    toast.error('Failed to reactivate user: ' + err.message);
+                  });
+                }}
+              >
                 <CheckCircle size={16} className="mr-2" />
                 Reactivate User
               </Button>
@@ -490,7 +523,16 @@ export default function UsersView() {
               Cancel
             </Button>
             <Button
-              onClick={handleResetPassword}
+              onClick={() => {
+                void handleResetPassword().catch((error) => {
+                  const err = error instanceof Error ? error : new Error(String(error));
+                  logger.error('Failed to reset password', err, {
+                    userId: selectedUser?.id,
+                    mode: resetPasswordMode,
+                  });
+                  toast.error('Failed to reset password: ' + err.message);
+                });
+              }}
               disabled={
                 resettingPassword || (resetPasswordMode === 'manual' && newPassword.length < 8)
               }

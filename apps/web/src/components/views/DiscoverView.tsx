@@ -47,7 +47,7 @@ import {
   SquaresFour,
   X,
 } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -61,7 +61,7 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { toast } from 'sonner';
 
 const logger = createLogger('DiscoverView');
@@ -229,19 +229,21 @@ export default function DiscoverView() {
     swipedPetIds,
   });
 
-  // Add distance calculation to available pets
-  const availablePets = discoveryPets.map((pet) => {
-    if (userPet?.location && pet.location) {
-      const distance = getDistanceBetweenLocations(userPet.location, pet.location);
-      const coordinates = pet.coordinates || parseLocation(pet.location);
-      return {
-        ...pet,
-        ...(distance !== undefined && { distance }),
-        ...(coordinates && { coordinates }),
-      };
-    }
-    return pet;
-  });
+  // Memoize distance calculation for available pets
+  const availablePets = useMemo(() => {
+    return discoveryPets.map((pet) => {
+      if (userPet?.location && pet.location) {
+        const distance = getDistanceBetweenLocations(userPet.location, pet.location);
+        const coordinates = pet.coordinates || parseLocation(pet.location);
+        return {
+          ...pet,
+          ...(distance !== undefined && { distance }),
+          ...(coordinates && { coordinates }),
+        };
+      }
+      return pet;
+    });
+  }, [discoveryPets, userPet?.location]);
 
   // Update current index when discovery index changes
   useEffect(() => {
@@ -545,9 +547,7 @@ export default function DiscoverView() {
     opacity: compatibilityGlowOpacity.value,
   })) as AnimatedStyle;
 
-  // Animation hooks for button hover/tap
-  const passButtonHover = useHoverLift({ scale: 1.05, translateY: -2 });
-  const likeButtonHover = useHoverLift({ scale: 1.05, translateY: -2 });
+  // Animation hooks for button content (icons, shimmer)
   const likeButtonShimmerX = useSharedValue(-100);
   const likeButtonHeartScale = useSharedValue(1);
 
@@ -680,361 +680,359 @@ export default function DiscoverView() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-2 sm:px-4">
-      <div className="mb-4 sm:mb-6">
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl sm:text-2xl font-bold mb-1">{t.discover.title}</h2>
-            <p className="text-sm text-muted-foreground hidden sm:block">
-              {t.discover.subtitle} {userPet.name}
-            </p>
+    <PageTransitionWrapper key="discover-view" direction="up">
+      <div className="max-w-2xl mx-auto px-2 sm:px-4">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-xl sm:text-2xl font-bold mb-1">{t.discover.title}</h2>
+              <p className="text-sm text-muted-foreground hidden sm:block">
+                {t.discover.subtitle} {userPet.name}
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2 justify-between">
-          <div className="inline-flex items-center bg-muted/50 rounded-xl p-1 border border-border">
-            <Button
-              variant={viewMode === 'cards' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => {
-                haptics.trigger('selection');
-                setViewMode('cards');
-              }}
-              className="h-8 sm:h-9 px-2 sm:px-4 rounded-lg text-xs sm:text-sm"
-            >
-              <SquaresFour size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">{t.map.cards}</span>
-            </Button>
-            <Button
-              variant={viewMode === 'map' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => {
-                haptics.trigger('selection');
-                setViewMode('map');
-              }}
-              className="h-8 sm:h-9 px-2 sm:px-4 rounded-lg text-xs sm:text-sm"
-            >
-              <MapPin size={16} className="sm:mr-2" />
-              <span className="hidden sm:inline">{t.map.mapView}</span>
-            </Button>
-          </div>
-          <div className="flex items-center gap-2">
-            <AnimatePresence>
-              {prefs.maxDistance < 100 && (
-                <AnimatedView key="distance-badge">
-                  <Badge
-                    variant="outline"
-                    className="gap-1.5 text-xs font-semibold border-primary/30 bg-primary/5 text-primary px-2 py-1"
-                  >
-                    <NavigationArrow size={14} weight="fill" />
-                    Within {prefs.maxDistance} miles
-                  </Badge>
-                </AnimatedView>
-              )}
-            </AnimatePresence>
-            <AnimatedView>
-              <Badge
-                variant={showAdoptableOnly ? 'default' : 'outline'}
-                className="gap-1.5 text-xs font-semibold cursor-pointer hover:bg-primary/10 transition-colors px-2 py-1"
+          <div className="flex items-center gap-2 justify-between">
+            <div className="inline-flex items-center bg-muted/50 rounded-xl p-1 border border-border">
+              <Button
+                variant={viewMode === 'cards' ? 'default' : 'ghost'}
+                size="sm"
                 onClick={() => {
                   haptics.trigger('selection');
-                  setShowAdoptableOnly(!showAdoptableOnly);
+                  setViewMode('cards');
                 }}
+                className="h-8 sm:h-9 px-2 sm:px-4 rounded-lg text-xs sm:text-sm"
               >
-                <PawPrint size={14} weight="fill" />
-                {t.adoption?.adoptable ?? 'Adoptable'}
-              </Badge>
-            </AnimatedView>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                haptics.trigger('selection');
-                savedSearchesDialog.open();
-              }}
-              className="h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
-            >
-              <BookmarkSimple size={16} className="sm:mr-2" weight="fill" />
-              <span className="hidden sm:inline">Saved</span>
-            </Button>
-            <DiscoveryFilters />
-          </div>
-        </div>
-      </div>
-
-      {userPet && viewMode === 'cards' && (
-        <StoriesBar
-          allStories={stories || []}
-          currentUserId={userPet.id}
-          currentUserName={userPet.name}
-          currentUserPetId={userPet.id}
-          currentUserPetName={userPet.name}
-          currentUserPetPhoto={userPet.photo}
-          onStoryCreated={handleStoryCreated}
-          onStoryUpdate={handleStoryUpdate}
-        />
-      )}
-
-      {viewMode === 'map' ? (
-        <DiscoverMapMode
-          pets={availablePets as Pet[]}
-          userPet={userPet}
-          onSwipe={(pet, action) => {
-            const tempIndex = currentIndex;
-            const foundIndex = availablePets.findIndex((p) => p.id === pet.id);
-            if (foundIndex !== -1) {
-              setCurrentIndex(foundIndex);
-            }
-            setTimeout(() => {
-              handleSwipe(action);
-              if (tempIndex !== foundIndex) {
-                setCurrentIndex(tempIndex);
-              }
-            }, 50);
-          }}
-        />
-      ) : (
-        <div className="relative h-[500px] sm:h-[600px] flex items-center justify-center mb-6">
-          <AnimatePresence mode="wait">
-            {currentPet && (
-              <AnimatedView
-                key={currentPet.id}
-                style={swipeAnimatedStyle}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-                className="absolute inset-0 cursor-grab active:cursor-grabbing touch-none"
+                <SquaresFour size={16} className="sm:mr-2" />
+                <span className="hidden sm:inline">{t.map.cards}</span>
+              </Button>
+              <Button
+                variant={viewMode === 'map' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => {
+                  haptics.trigger('selection');
+                  setViewMode('map');
+                }}
+                className="h-8 sm:h-9 px-2 sm:px-4 rounded-lg text-xs sm:text-sm"
               >
-                <AnimatedView
-                  className="absolute -top-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-linear-to-r from-primary to-accent rounded-full text-white font-bold text-lg shadow-2xl z-50 border-4 border-white"
-                  style={likeOpacityStyle}
-                >
-                  <Heart size={24} weight="fill" className="inline mr-2" />
-                  LIKE
-                </AnimatedView>
-                <AnimatedView
-                  className="absolute -top-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-linear-to-r from-gray-500 to-gray-700 rounded-full text-white font-bold text-lg shadow-2xl z-50 border-4 border-white"
-                  style={passOpacityStyle}
-                >
-                  PASS
-                  <X size={24} weight="bold" className="inline ml-2" />
-                </AnimatedView>
-                {showSwipeHint && currentIndex === 0 && (
-                  <AnimatedView
-                    style={swipeHintContainerStyle}
-                    className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
-                  >
-                    <AnimatedView style={swipeHintYStyle} className="flex gap-12">
-                      <AnimatedView
-                        style={swipeHintLeftStyle}
-                        className="flex items-center gap-2 glass-strong px-4 py-2 rounded-full backdrop-blur-xl border border-white/30"
-                      >
-                        <span className="text-2xl">👈</span>
-                        <span className="text-white font-semibold drop-shadow-lg">
-                          {t.discover.swipeHintPass}
-                        </span>
-                      </AnimatedView>
-                      <AnimatedView
-                        style={swipeHintRightStyle}
-                        className="flex items-center gap-2 glass-strong px-4 py-2 rounded-full backdrop-blur-xl border border-white/30"
-                      >
-                        <span className="text-white font-semibold drop-shadow-lg">
-                          {t.discover.swipeHintLike}
-                        </span>
-                        <span className="text-2xl">👉</span>
-                      </AnimatedView>
-                    </AnimatedView>
+                <MapPin size={16} className="sm:mr-2" />
+                <span className="hidden sm:inline">{t.map.mapView}</span>
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <AnimatePresence>
+                {prefs.maxDistance < 100 && (
+                  <AnimatedView key="distance-badge">
+                    <Badge
+                      variant="outline"
+                      className="gap-1.5 text-xs font-semibold border-primary/30 bg-primary/5 text-primary px-2 py-1"
+                    >
+                      <NavigationArrow size={14} weight="fill" />
+                      Within {prefs.maxDistance} miles
+                    </Badge>
                   </AnimatedView>
                 )}
-                <div className="h-full overflow-hidden rounded-3xl glass-strong premium-shadow backdrop-blur-2xl">
-                  <div className="relative h-full flex flex-col bg-linear-to-br from-white/50 to-white/30">
-                    <div className="relative h-96 overflow-hidden group">
-                      <AnimatedView
-                        className="absolute inset-0 bg-linear-to-br from-primary/25 via-accent/15 to-secondary/20 z-10 pointer-events-none"
-                        style={useAnimatedStyle(() => ({ opacity: 0 })) as AnimatedStyle}
-                        onMouseEnter={() => {}}
-                      >
-                        {null}
-                      </AnimatedView>
-                      <img
-                        src={currentPet.photo}
-                        alt={currentPet.name}
-                        className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
-                      <AnimatedView
-                        style={compatibilityBadgeStyle}
-                        className="absolute top-4 right-4 glass-strong px-4 py-2 rounded-full font-bold text-lg shadow-2xl backdrop-blur-xl border-2 border-white/40"
-                        onMouseEnter={() => {
-                          compatibilityBadgeHoverScale.value = withSpring(
-                            1.15,
-                            springConfigs.bouncy
-                          );
-                        }}
-                        onMouseLeave={() => {
-                          compatibilityBadgeHoverScale.value = withSpring(1, springConfigs.bouncy);
-                        }}
-                        onClick={() => {
-                          haptics.trigger('selection');
-                          breakdownDialog.toggle();
-                        }}
-                      >
-                        <span className="bg-linear-to-r from-accent via-primary to-secondary bg-clip-text text-transparent animate-gradient">
-                          {compatibilityScore}% {t.discover.match}
-                        </span>
+              </AnimatePresence>
+              <AnimatedView>
+                <Badge
+                  variant={showAdoptableOnly ? 'default' : 'outline'}
+                  className="gap-1.5 text-xs font-semibold cursor-pointer hover:bg-primary/10 transition-colors px-2 py-1"
+                  onClick={() => {
+                    haptics.trigger('selection');
+                    setShowAdoptableOnly(!showAdoptableOnly);
+                  }}
+                >
+                  <PawPrint size={14} weight="fill" />
+                  {t.adoption?.adoptable ?? 'Adoptable'}
+                </Badge>
+              </AnimatedView>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  haptics.trigger('selection');
+                  savedSearchesDialog.open();
+                }}
+                className="h-8 sm:h-9 px-2 sm:px-3 rounded-lg"
+              >
+                <BookmarkSimple size={16} className="sm:mr-2" weight="fill" />
+                <span className="hidden sm:inline">Saved</span>
+              </Button>
+              <DiscoveryFilters />
+            </div>
+          </div>
+        </div>
+
+        {userPet && viewMode === 'cards' && (
+          <StoriesBar
+            allStories={stories || []}
+            currentUserId={userPet.id}
+            currentUserName={userPet.name}
+            currentUserPetId={userPet.id}
+            currentUserPetName={userPet.name}
+            currentUserPetPhoto={userPet.photo}
+            onStoryCreated={handleStoryCreated}
+            onStoryUpdate={handleStoryUpdate}
+          />
+        )}
+
+        {viewMode === 'map' ? (
+          <DiscoverMapMode
+            pets={availablePets as Pet[]}
+            userPet={userPet}
+            onSwipe={(pet, action) => {
+              const tempIndex = currentIndex;
+              const foundIndex = availablePets.findIndex((p) => p.id === pet.id);
+              if (foundIndex !== -1) {
+                setCurrentIndex(foundIndex);
+              }
+              setTimeout(() => {
+                handleSwipe(action);
+                if (tempIndex !== foundIndex) {
+                  setCurrentIndex(tempIndex);
+                }
+              }, 50);
+            }}
+          />
+        ) : (
+          <div className="relative h-[500px] sm:h-[600px] flex items-center justify-center mb-6">
+            <AnimatePresence mode="wait">
+              {currentPet && (
+                <AnimatedView
+                  key={currentPet.id}
+                  style={swipeAnimatedStyle}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  className="absolute inset-0 cursor-grab active:cursor-grabbing touch-none"
+                >
+                  <AnimatedView
+                    className="absolute -top-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-linear-to-r from-primary to-accent rounded-full text-white font-bold text-lg shadow-2xl z-50 border-4 border-white"
+                    style={likeOpacityStyle}
+                  >
+                    <Heart size={24} weight="fill" className="inline mr-2" />
+                    LIKE
+                  </AnimatedView>
+                  <AnimatedView
+                    className="absolute -top-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-linear-to-r from-gray-500 to-gray-700 rounded-full text-white font-bold text-lg shadow-2xl z-50 border-4 border-white"
+                    style={passOpacityStyle}
+                  >
+                    PASS
+                    <X size={24} weight="bold" className="inline ml-2" />
+                  </AnimatedView>
+                  {showSwipeHint && currentIndex === 0 && (
+                    <AnimatedView
+                      style={swipeHintContainerStyle}
+                      className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
+                    >
+                      <AnimatedView style={swipeHintYStyle} className="flex gap-12">
                         <AnimatedView
-                          className="absolute inset-0 rounded-full"
-                          style={compatibilityGlowStyle}
+                          style={swipeHintLeftStyle}
+                          className="flex items-center gap-2 glass-strong px-4 py-2 rounded-full backdrop-blur-xl border border-white/30"
+                        >
+                          <span className="text-2xl">👈</span>
+                          <span className="text-white font-semibold drop-shadow-lg">
+                            {t.discover.swipeHintPass}
+                          </span>
+                        </AnimatedView>
+                        <AnimatedView
+                          style={swipeHintRightStyle}
+                          className="flex items-center gap-2 glass-strong px-4 py-2 rounded-full backdrop-blur-xl border border-white/30"
+                        >
+                          <span className="text-white font-semibold drop-shadow-lg">
+                            {t.discover.swipeHintLike}
+                          </span>
+                          <span className="text-2xl">👉</span>
+                        </AnimatedView>
+                      </AnimatedView>
+                    </AnimatedView>
+                  )}
+                  <div className="h-full overflow-hidden rounded-3xl glass-strong premium-shadow backdrop-blur-2xl">
+                    <div className="relative h-full flex flex-col bg-linear-to-br from-white/50 to-white/30">
+                      <div className="relative h-96 overflow-hidden group">
+                        <AnimatedView
+                          className="absolute inset-0 bg-linear-to-br from-primary/25 via-accent/15 to-secondary/20 z-10 pointer-events-none"
+                          style={useAnimatedStyle(() => ({ opacity: 0 })) as AnimatedStyle}
+                          onMouseEnter={() => {}}
                         >
                           {null}
                         </AnimatedView>
-                      </AnimatedView>
-                      <AnimatedView
-                        className="absolute top-4 left-4 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl cursor-pointer transition-transform hover:scale-110 active:scale-90"
-                        onClick={() => {
-                          haptics.trigger('selection');
-                          selectedPetDialog.open();
-                        }}
-                      >
-                        <Info size={20} className="text-white drop-shadow-lg" weight="bold" />
-                      </AnimatedView>
-                      <AnimatedView
-                        className="absolute bottom-4 right-4 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl cursor-pointer transition-transform hover:scale-110 active:scale-90"
-                        onClick={() => {
-                          haptics.trigger('selection');
-                          breakdownDialog.toggle();
-                        }}
-                        style={
-                          useAnimatedStyle(() => ({
-                            transform: [{ rotate: breakdownDialog.isOpen ? '360deg' : '0deg' }],
-                          })) as AnimatedStyle
-                        }
-                      >
-                        <ChartBar
-                          size={20}
-                          className="text-white drop-shadow-lg"
-                          weight={breakdownDialog.isOpen ? 'fill' : 'bold'}
+                        <img
+                          src={currentPet.photo}
+                          alt={currentPet.name}
+                          className="w-full h-full object-cover transition-transform duration-700 ease-out hover:scale-110"
                         />
-                      </AnimatedView>
-                    </div>
-
-                    <div className="flex-1 p-6 overflow-y-auto">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-2xl font-bold truncate">{currentPet.name}</h3>
-                            {currentPet.verified && (
-                              <VerificationBadge
-                                verified={currentPet.verified}
-                                level={
-                                  verificationRequests?.[currentPet.id]?.verificationLevel ||
-                                  'basic'
-                                }
-                                size="sm"
-                              />
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-muted-foreground flex items-center gap-1 truncate">
-                              <MapPin size={16} weight="fill" />
-                              {currentPet.location}
-                            </p>
-                            {currentPet.distance !== undefined && (
-                              <AnimatedView style={distanceBadgeStyle}>
-                                <Badge
-                                  variant="secondary"
-                                  className="gap-1 bg-linear-to-r from-primary/10 to-accent/10 border border-primary/20 text-foreground font-semibold px-2 py-0.5"
-                                >
-                                  <NavigationArrow
-                                    size={12}
-                                    weight="fill"
-                                    className="text-primary"
-                                  />
-                                  {formatDistance(currentPet.distance)}
-                                </Badge>
-                              </AnimatedView>
-                            )}
-                          </div>
-                        </div>
+                        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
+                        <AnimatedView
+                          style={compatibilityBadgeStyle}
+                          className="absolute top-4 right-4 glass-strong px-4 py-2 rounded-full font-bold text-lg shadow-2xl backdrop-blur-xl border-2 border-white/40"
+                          onMouseEnter={() => {
+                            compatibilityBadgeHoverScale.value = withSpring(
+                              1.15,
+                              springConfigs.bouncy
+                            );
+                          }}
+                          onMouseLeave={() => {
+                            compatibilityBadgeHoverScale.value = withSpring(
+                              1,
+                              springConfigs.bouncy
+                            );
+                          }}
+                          onClick={() => {
+                            haptics.trigger('selection');
+                            breakdownDialog.toggle();
+                          }}
+                        >
+                          <span className="bg-linear-to-r from-accent via-primary to-secondary bg-clip-text text-transparent animate-gradient">
+                            {compatibilityScore}% {t.discover.match}
+                          </span>
+                          <AnimatedView
+                            className="absolute inset-0 rounded-full"
+                            style={compatibilityGlowStyle}
+                          >
+                            {null}
+                          </AnimatedView>
+                        </AnimatedView>
+                        <AnimatedView
+                          className="absolute top-4 left-4 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl cursor-pointer transition-transform hover:scale-110 active:scale-90"
+                          onClick={() => {
+                            haptics.trigger('selection');
+                            selectedPetDialog.open();
+                          }}
+                        >
+                          <Info size={20} className="text-white drop-shadow-lg" weight="bold" />
+                        </AnimatedView>
+                        <AnimatedView
+                          className="absolute bottom-4 right-4 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl cursor-pointer transition-transform hover:scale-110 active:scale-90"
+                          onClick={() => {
+                            haptics.trigger('selection');
+                            breakdownDialog.toggle();
+                          }}
+                          style={
+                            useAnimatedStyle(() => ({
+                              transform: [{ rotate: breakdownDialog.isOpen ? '360deg' : '0deg' }],
+                            })) as AnimatedStyle
+                          }
+                        >
+                          <ChartBar
+                            size={20}
+                            className="text-white drop-shadow-lg"
+                            weight={breakdownDialog.isOpen ? 'fill' : 'bold'}
+                          />
+                        </AnimatedView>
                       </div>
 
-                      {currentPet.trustProfile && (
-                        <div className="mb-4">
-                          <PetRatings trustProfile={currentPet.trustProfile} compact />
-                        </div>
-                      )}
-
-                      {currentPet.trustProfile?.badges &&
-                        Array.isArray(currentPet.trustProfile.badges) &&
-                        currentPet.trustProfile.badges.length > 0 && (
-                          <div className="mb-4">
-                            <TrustBadges
-                              badges={currentPet.trustProfile.badges.slice(0, 4)}
-                              compact
-                            />
-                          </div>
-                        )}
-
-                      <div className="space-y-4">
-                        <div>
-                          <p className="text-sm font-semibold text-muted-foreground mb-2">
-                            {t.discover.about}
-                          </p>
-                          <p className="text-foreground">
-                            {currentPet.breed} • {currentPet.age} {t.common.years} •{' '}
-                            {currentPet.gender}
-                          </p>
-                        </div>
-
-                        {reasoning.length > 0 && (
-                          <div>
-                            <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-2">
-                              <Sparkle size={16} weight="fill" className="text-accent" />
-                              {t.discover.whyMatch}
-                            </p>
-                            <div className="space-y-1">
-                              {reasoning.map((reason, idx) => (
-                                <p key={idx} className="text-sm text-foreground">
-                                  • {reason}
-                                </p>
-                              ))}
+                      <div className="flex-1 p-6 overflow-y-auto">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="text-2xl font-bold truncate">{currentPet.name}</h3>
+                              {currentPet.verified && (
+                                <VerificationBadge
+                                  verified={currentPet.verified}
+                                  level={
+                                    verificationRequests?.[currentPet.id]?.verificationLevel ||
+                                    'basic'
+                                  }
+                                  size="sm"
+                                />
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="text-muted-foreground flex items-center gap-1 truncate">
+                                <MapPin size={16} weight="fill" />
+                                {currentPet.location}
+                              </p>
+                              {currentPet.distance !== undefined && (
+                                <AnimatedView style={distanceBadgeStyle}>
+                                  <Badge
+                                    variant="secondary"
+                                    className="gap-1 bg-linear-to-r from-primary/10 to-accent/10 border border-primary/20 text-foreground font-semibold px-2 py-0.5"
+                                  >
+                                    <NavigationArrow
+                                      size={12}
+                                      weight="fill"
+                                      className="text-primary"
+                                    />
+                                    {formatDistance(currentPet.distance)}
+                                  </Badge>
+                                </AnimatedView>
+                              )}
                             </div>
                           </div>
+                        </div>
+
+                        {currentPet.trustProfile && (
+                          <div className="mb-4">
+                            <PetRatings trustProfile={currentPet.trustProfile} compact />
+                          </div>
                         )}
 
-                        {currentPet.personality &&
-                          Array.isArray(currentPet.personality) &&
-                          currentPet.personality.length > 0 && (
+                        {currentPet.trustProfile?.badges &&
+                          Array.isArray(currentPet.trustProfile.badges) &&
+                          currentPet.trustProfile.badges.length > 0 && (
+                            <div className="mb-4">
+                              <TrustBadges
+                                badges={currentPet.trustProfile.badges.slice(0, 4)}
+                                compact
+                              />
+                            </div>
+                          )}
+
+                        <div className="space-y-4">
+                          <div>
+                            <p className="text-sm font-semibold text-muted-foreground mb-2">
+                              {t.discover.about}
+                            </p>
+                            <p className="text-foreground">
+                              {currentPet.breed} • {currentPet.age} {t.common.years} •{' '}
+                              {currentPet.gender}
+                            </p>
+                          </div>
+
+                          {reasoning.length > 0 && (
                             <div>
-                              <p className="text-sm font-semibold text-muted-foreground mb-2">
-                                {t.discover.personality}
+                              <p className="text-sm font-semibold text-muted-foreground mb-2 flex items-center gap-2">
+                                <Sparkle size={16} weight="fill" className="text-accent" />
+                                {t.discover.whyMatch}
                               </p>
-                              <div className="flex flex-wrap gap-2">
-                                {currentPet.personality.map((trait, idx) => (
-                                  <Badge key={idx} variant="secondary">
-                                    {trait}
-                                  </Badge>
+                              <div className="space-y-1">
+                                {reasoning.map((reason, idx) => (
+                                  <p key={idx} className="text-sm text-foreground">
+                                    • {reason}
+                                  </p>
                                 ))}
                               </div>
                             </div>
                           )}
-                      </div>
-                    </div>
 
-                    <div className="p-6 glass-effect border-t border-white/20 flex gap-4 backdrop-blur-xl">
-                      <AnimatedView
-                        style={passButtonHover.animatedStyle}
-                        onMouseEnter={passButtonHover.handleEnter}
-                        onMouseLeave={passButtonHover.handleLeave}
-                        className="flex-1"
-                      >
+                          {currentPet.personality &&
+                            Array.isArray(currentPet.personality) &&
+                            currentPet.personality.length > 0 && (
+                              <div>
+                                <p className="text-sm font-semibold text-muted-foreground mb-2">
+                                  {t.discover.personality}
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                  {currentPet.personality.map((trait, idx) => (
+                                    <Badge key={idx} variant="secondary">
+                                      {trait}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                        </div>
+                      </div>
+
+                      <div className="p-6 glass-effect border-t border-white/20 flex gap-4 backdrop-blur-xl">
                         <Button
                           size="lg"
                           variant="outline"
-                          className="w-full h-14 border-2 glass-effect hover:glass-strong hover:border-destructive/50 hover:bg-destructive/10 group backdrop-blur-xl transition-all"
+                          className="flex-1 w-full h-14 border-2 glass-effect hover:glass-strong hover:border-destructive/50 hover:bg-destructive/10 group backdrop-blur-xl"
                           onClick={() => {
                             haptics.trigger('light');
                             handleSwipe('pass');
@@ -1048,16 +1046,9 @@ export default function DiscoverView() {
                             />
                           </AnimatedView>
                         </Button>
-                      </AnimatedView>
-                      <AnimatedView
-                        style={likeButtonHover.animatedStyle}
-                        onMouseEnter={likeButtonHover.handleEnter}
-                        onMouseLeave={likeButtonHover.handleLeave}
-                        className="flex-1"
-                      >
                         <Button
                           size="lg"
-                          className="w-full h-14 bg-linear-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 shadow-2xl hover:shadow-accent/50 transition-all group relative overflow-hidden neon-glow"
+                          className="flex-1 w-full h-14 bg-linear-to-r from-primary via-accent to-secondary hover:from-primary/90 hover:via-accent/90 hover:to-secondary/90 shadow-2xl hover:shadow-accent/50 group relative overflow-hidden neon-glow"
                           onClick={() => {
                             haptics.trigger('success');
                             handleSwipe('like');
@@ -1077,68 +1068,68 @@ export default function DiscoverView() {
                             />
                           </AnimatedView>
                         </Button>
-                      </AnimatedView>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </AnimatedView>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
-
-      {breakdownDialog.isOpen && compatibilityFactors && (
-        <AnimatedView style={breakdownDialogStyle}>
-          <CompatibilityBreakdown factors={compatibilityFactors} className="mb-6" />
-        </AnimatedView>
-      )}
-
-      <AnimatePresence>
-        {selectedPetDialog.isOpen && currentPet && (
-          <Suspense fallback={null}>
-            <EnhancedPetDetailView
-              key={currentPet.id}
-              pet={currentPet}
-              onClose={selectedPetDialog.close}
-              onLike={() => {
-                handleSwipe('like');
-                selectedPetDialog.close();
-              }}
-              onPass={() => {
-                handleSwipe('pass');
-                selectedPetDialog.close();
-              }}
-              compatibilityScore={compatibilityScore}
-              matchReasons={reasoning}
-              showActions={true}
-            />
-          </Suspense>
+                </AnimatedView>
+              )}
+            </AnimatePresence>
+          </div>
         )}
-      </AnimatePresence>
 
-      <MatchCelebration
-        show={celebrationDialog.isOpen}
-        petName1={userPet?.name || ''}
-        petName2={matchedPetName}
-        onComplete={celebrationDialog.close}
-      />
+        {breakdownDialog.isOpen && compatibilityFactors && (
+          <AnimatedView style={breakdownDialogStyle}>
+            <CompatibilityBreakdown factors={compatibilityFactors} className="mb-6" />
+          </AnimatedView>
+        )}
 
-      {savedSearchesDialog.isOpen && (
-        <Dialog open={savedSearchesDialog.isOpen} onOpenChange={savedSearchesDialog.setOpen}>
-          <DialogContent className="max-w-2xl max-h-[80vh]">
-            <SavedSearchesManager
-              currentPreferences={prefs}
-              onApplySearch={(newPreferences) => {
-                const event = new CustomEvent('updateDiscoveryPreferences', {
-                  detail: newPreferences,
-                });
-                window.dispatchEvent(event);
-              }}
-              onClose={savedSearchesDialog.close}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
+        <AnimatePresence>
+          {selectedPetDialog.isOpen && currentPet && (
+            <Suspense fallback={null}>
+              <EnhancedPetDetailView
+                key={currentPet.id}
+                pet={currentPet}
+                onClose={selectedPetDialog.close}
+                onLike={() => {
+                  handleSwipe('like');
+                  selectedPetDialog.close();
+                }}
+                onPass={() => {
+                  handleSwipe('pass');
+                  selectedPetDialog.close();
+                }}
+                compatibilityScore={compatibilityScore}
+                matchReasons={reasoning}
+                showActions={true}
+              />
+            </Suspense>
+          )}
+        </AnimatePresence>
+
+        <MatchCelebration
+          show={celebrationDialog.isOpen}
+          petName1={userPet?.name || ''}
+          petName2={matchedPetName}
+          onComplete={celebrationDialog.close}
+        />
+
+        {savedSearchesDialog.isOpen && (
+          <Dialog open={savedSearchesDialog.isOpen} onOpenChange={savedSearchesDialog.setOpen}>
+            <DialogContent className="max-w-2xl max-h-[80vh]">
+              <SavedSearchesManager
+                currentPreferences={prefs}
+                onApplySearch={(newPreferences) => {
+                  const event = new CustomEvent('updateDiscoveryPreferences', {
+                    detail: newPreferences,
+                  });
+                  window.dispatchEvent(event);
+                }}
+                onClose={savedSearchesDialog.close}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
+    </PageTransitionWrapper>
   );
 }

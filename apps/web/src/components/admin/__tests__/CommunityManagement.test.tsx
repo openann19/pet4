@@ -5,10 +5,10 @@ import CommunityManagement from '../CommunityManagement';
 import { useStorage } from '@/hooks/use-storage';
 import { communityService } from '@/lib/community-service';
 
-vi.mock('@/hooks/useStorage');
+vi.mock('@/hooks/use-storage');
 vi.mock('@/lib/community-service', () => ({
   communityService: {
-    getPosts: vi.fn(),
+    getFeed: vi.fn(),
     deletePost: vi.fn(),
   },
 }));
@@ -65,7 +65,7 @@ describe('CommunityManagement', () => {
       }
       return [defaultValue, vi.fn(), vi.fn()];
     });
-    mockCommunityService.getPosts.mockResolvedValue(mockPosts as never);
+    mockCommunityService.getFeed.mockResolvedValue({ posts: mockPosts, total: mockPosts.length } as never);
   });
 
   it('renders community management', async () => {
@@ -80,7 +80,7 @@ describe('CommunityManagement', () => {
     render(<CommunityManagement />);
 
     await waitFor(() => {
-      expect(mockCommunityService.getPosts).toHaveBeenCalled();
+      expect(mockCommunityService.getFeed).toHaveBeenCalled();
     });
   });
 
@@ -109,8 +109,9 @@ describe('CommunityManagement', () => {
     });
 
     const hideButtons = screen.queryAllByRole('button', { name: /hide/i });
-    if (hideButtons.length > 0) {
-      await user.click(hideButtons[0]);
+    const hideButton = hideButtons[0];
+    if (hideButton) {
+      await user.click(hideButton);
     }
   });
 
@@ -130,8 +131,9 @@ describe('CommunityManagement', () => {
     });
 
     const unhideButtons = screen.queryAllByRole('button', { name: /unhide/i });
-    if (unhideButtons.length > 0) {
-      await user.click(unhideButtons[0]);
+    const unhideButton = unhideButtons[0];
+    if (unhideButton) {
+      await user.click(unhideButton);
     }
   });
 
@@ -146,8 +148,9 @@ describe('CommunityManagement', () => {
     });
 
     const deleteButtons = screen.queryAllByRole('button', { name: /delete/i });
-    if (deleteButtons.length > 0) {
-      await user.click(deleteButtons[0]);
+    const deleteButton = deleteButtons[0];
+    if (deleteButton) {
+      await user.click(deleteButton);
     }
   });
 
@@ -160,13 +163,14 @@ describe('CommunityManagement', () => {
     });
 
     const tabs = screen.getAllByRole('tab');
-    if (tabs.length > 1) {
-      await user.click(tabs[1]);
+    const secondTab = tabs[1];
+    if (secondTab) {
+      await user.click(secondTab);
     }
   });
 
   it('handles empty posts list', async () => {
-    mockCommunityService.getPosts.mockResolvedValue([] as never);
+    mockCommunityService.getFeed.mockResolvedValue({ posts: [], total: 0 } as never);
 
     render(<CommunityManagement />);
 
@@ -176,7 +180,7 @@ describe('CommunityManagement', () => {
   });
 
   it('handles API errors gracefully', async () => {
-    mockCommunityService.getPosts.mockRejectedValue(new Error('API Error'));
+    mockCommunityService.getFeed.mockRejectedValue(new Error('API Error'));
 
     render(<CommunityManagement />);
 

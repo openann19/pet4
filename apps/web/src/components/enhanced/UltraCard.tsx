@@ -13,6 +13,7 @@ import {
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
 import { type HTMLAttributes, type ReactNode } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface UltraCardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -38,12 +39,13 @@ export function UltraCard({
   className,
   ...props
 }: UltraCardProps) {
-  const reveal = useUltraCardReveal({
-    index,
-    enabled: enableReveal,
-    delay: 0,
-    rotationIntensity: 12,
-  });
+    const uiConfig = useUIConfig();
+    const reveal = useUltraCardReveal({
+        index,
+        enabled: enableReveal,
+        delay: 0,
+        rotationIntensity: 12,
+      });
 
   const magnetic = useMagneticHover({
     strength: 0.2,

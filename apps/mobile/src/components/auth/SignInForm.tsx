@@ -12,7 +12,33 @@ import {
 } from 'react-native'
 import { useStorage } from '../../hooks/use-storage'
 // Stubs for missing web-only modules
-const useApp = () => ({
+const useApp = (): {
+  t: {
+    auth: {
+      emailRequired: string
+      emailInvalid: string
+      passwordRequired: string
+      passwordTooShort: string
+      signInSuccess: string
+      signInError: string
+      forgotPasswordInfo: string
+      signInTitle: string
+      signInSubtitle: string
+      email: string
+      emailPlaceholder: string
+      password: string
+      passwordPlaceholder: string
+      forgotPassword: string
+      signIn: string
+      noAccount: string
+      signUp: string
+      or: string
+    }
+    common: {
+      loading: string
+    }
+  }
+} => ({
   t: {
     auth: {
       emailRequired: 'Email is required',
@@ -38,9 +64,9 @@ const useApp = () => ({
   },
 })
 
-const haptics = { trigger: (_: string) => { } }
-const analytics = { track: (_: string, _p?: Record<string, unknown>) => { } }
-const toast = { success: (_: string) => { }, error: (_: string) => { }, info: (_: string) => { } }
+const haptics = { trigger: (_: string) => {} }
+const analytics = { track: (_: string, _p?: Record<string, unknown>) => {} }
+const toast = { success: (_: string) => {}, error: (_: string) => {}, info: (_: string) => {} }
 
 export type SignInFormProps = {
   onSuccess: () => void

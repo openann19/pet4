@@ -14,12 +14,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type {
   Playdate,
   PlaydateLocation,
   PlaydateStatus,
   PlaydateType,
 } from '@/lib/playdate-types';
+
+const logger = createLogger('PlaydateScheduler');
 import type { Match, Pet } from '@/lib/types';
 import {
   Calendar,
@@ -173,20 +176,50 @@ export default function PlaydateScheduler({
 
     const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${playdate.location.lat},${playdate.location.lng}`;
 
-    if (navigator.share) {
-      navigator
-        .share({
-          title: playdate.title,
-          text: `Meet me at ${playdate.location.name}`,
-          url: mapsUrl,
-        })
-        .then(() => toast.success('Location shared!'))
-        .catch(() => {});
-    } else {
-      navigator.clipboard.writeText(mapsUrl);
-      toast.success('Location link copied to clipboard!');
+    try {
+      if (navigator.share) {
+        navigator
+          .share({
+            title: playdate.title,
+            text: `Meet me at ${playdate.location.name}`,
+            url: mapsUrl,
+          })
+          .then(() => {
+            toast.success('Location shared!');
+            haptics.success();
+          })
+          .catch((error) => {
+            // User cancelled or share failed
+            if (error instanceof Error && error.name !== 'AbortError') {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('PlaydateScheduler shareLocation error', err, {
+                playdateId: playdate.id,
+              });
+              toast.error('Failed to share location. Please try again.');
+            }
+          });
+      } else {
+        navigator.clipboard
+          .writeText(mapsUrl)
+          .then(() => {
+            toast.success('Location link copied to clipboard!');
+            haptics.success();
+          })
+          .catch((error) => {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logger.error('PlaydateScheduler copyToClipboard error', err, {
+              playdateId: playdate.id,
+            });
+            toast.error('Failed to copy location link. Please try again.');
+          });
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('PlaydateScheduler shareLocation sync error', err, {
+        playdateId: playdate.id,
+      });
+      toast.error('Failed to share location. Please try again.');
     }
-    haptics.success();
   }, []);
 
   const handleGetDirections = useCallback((playdate: Playdate) => {

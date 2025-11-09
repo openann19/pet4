@@ -5,6 +5,7 @@ This document describes the production-grade setup implemented to improve TypeSc
 ## Overview
 
 The setup implements:
+
 - **Type-aware linting only where it pays off** (web + packages)
 - **TypeScript project references** for incremental builds
 - **ESLint caching** for faster repeated runs
@@ -16,6 +17,7 @@ The setup implements:
 ### 1. ESLint Configuration (`eslint.config.js`)
 
 **Performance Improvements:**
+
 - Uses `projectService: true` instead of explicit `project` arrays (key perf improvement in typescript-eslint v7)
 - Type-aware rules **only** applied to:
   - `apps/web/**/*.{ts,tsx}`
@@ -24,6 +26,7 @@ The setup implements:
 - Mobile apps (`apps/mobile`, `apps/native`) skip heavy type-aware rules
 
 **Benefits:**
+
 - Eliminates global type-aware parsing
 - Caches per-project ASTs only where needed
 - Most files lint without TypeScript's semantic server
@@ -31,14 +34,17 @@ The setup implements:
 ### 2. TypeScript Project References
 
 **Root `tsconfig.json`:**
+
 - Uses project references mode (`files: []`, `references: [...]`)
 - References all packages and apps
 
 **Package/App `tsconfig.json`:**
+
 - All packages set `composite: true` for incremental builds
 - Apps reference their dependencies via `references`
 
 **Benefits:**
+
 - Unlocks `tsc -b` incremental builds
 - Cross-package rebuilds are cheap
 - Type checking only re-runs when dependencies change
@@ -46,6 +52,7 @@ The setup implements:
 ### 3. Package Scripts
 
 **Updated Scripts:**
+
 ```json
 {
   "typecheck": "tsc --noEmit",
@@ -57,31 +64,37 @@ The setup implements:
 ```
 
 **New Scripts:**
+
 - `build:types` - Build TypeScript project references incrementally
 - `build:types:watch` - Watch mode for incremental builds
 
 **Benefits:**
+
 - ESLint cache speeds up repeated linting
 - TypeScript builds are incremental (only changed files)
 
 ### 4. lint-staged Configuration
 
 **`.lintstagedrc.json`:**
+
 - Lints only staged files on pre-commit
 - Auto-fixes ESLint issues
 - Formats with Prettier
 
 **Benefits:**
+
 - Pre-commit hooks are fast (only staged files)
 - Full strictness still runs in CI
 
 ### 5. Pre-commit Hook
 
 **`.husky/pre-commit`:**
+
 - Runs `lint-staged` instead of full repo lint
 - Only processes changed files
 
 **Benefits:**
+
 - Fast pre-commit checks
 - Developer-friendly (no long waits)
 
@@ -90,6 +103,7 @@ The setup implements:
 ### Development Workflow
 
 1. **Type Checking:**
+
    ```bash
    pnpm typecheck          # Full type check
    pnpm build:types        # Incremental build
@@ -97,6 +111,7 @@ The setup implements:
    ```
 
 2. **Linting:**
+
    ```bash
    pnpm lint              # Lint with cache
    pnpm lint:fix          # Lint and fix with cache
@@ -109,11 +124,13 @@ The setup implements:
 ### CI/CD
 
 **Full Validation:**
+
 ```bash
 pnpm validate  # Runs: typecheck + lint + test
 ```
 
 This ensures:
+
 - Full type checking across all projects
 - Full linting (type-aware rules applied)
 - All tests pass
@@ -123,29 +140,35 @@ This ensures:
 ### Before vs After
 
 **ESLint:**
+
 - Before: Type-aware parsing for all files (~30s)
 - After: Type-aware only for TYPE_AWARE globs (~5s for most changes)
 
 **TypeScript:**
+
 - Before: Full type check on every run (~20s)
 - After: Incremental builds (~2s for unchanged files)
 
 **Pre-commit:**
+
 - Before: Full repo lint (~30s)
 - After: Only staged files (~2s)
 
 ## Configuration Files
 
 ### ESLint
+
 - `eslint.config.js` - Flat config with type-aware rules scoped
 
 ### TypeScript
+
 - `tsconfig.json` - Root with project references
 - `tsconfig.base.json` - Base compiler options
 - `packages/*/tsconfig.json` - Composite packages
 - `apps/*/tsconfig.json` - Composite apps with references
 
 ### Linting
+
 - `.lintstagedrc.json` - lint-staged configuration
 - `.husky/pre-commit` - Pre-commit hook
 
@@ -154,6 +177,7 @@ This ensures:
 ### ESLint Type-Aware Rules Not Running
 
 **Check:**
+
 1. File matches `TYPE_AWARE` globs
 2. File is not in `ignores` list
 3. File is not a test file (`.test.ts`, `.spec.ts`)
@@ -161,11 +185,13 @@ This ensures:
 ### TypeScript Build Issues
 
 **Check:**
+
 1. All packages have `composite: true`
 2. Root `tsconfig.json` has correct references
 3. Packages reference their dependencies
 
 **Rebuild:**
+
 ```bash
 # Clean build
 rm -rf **/.tsbuildinfo
@@ -178,11 +204,13 @@ pnpm exec tsc -b --force
 ### Cache Issues
 
 **Clear ESLint Cache:**
+
 ```bash
 rm -rf .cache/eslint
 ```
 
 **Clear TypeScript Build Info:**
+
 ```bash
 find . -name "*.tsbuildinfo" -delete
 ```
@@ -190,6 +218,7 @@ find . -name "*.tsbuildinfo" -delete
 ## Editor Settings (VSCode/Cursor)
 
 **Recommended Settings:**
+
 ```json
 {
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -216,6 +245,7 @@ find . -name "*.tsbuildinfo" -delete
 **Risk:** Type-aware rules won't run outside `TYPE_AWARE` globs.
 
 **Mitigation:**
+
 - CI still runs `tsc --noEmit` globally to keep safety
 - Mobile apps intentionally skip heavy rules for performance
 - Tests are excluded (type-aware rules not needed)
@@ -253,11 +283,13 @@ pnpm exec tsc -b --verbose | sed -n '1,80p'
 ## Next Steps
 
 1. **Install Dependencies:**
+
    ```bash
    pnpm install
    ```
 
 2. **Test the Setup:**
+
    ```bash
    pnpm build:types
    pnpm lint

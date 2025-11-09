@@ -163,7 +163,14 @@ export function useMatches(petId?: string): {
         selectedPet.age &&
         selectedPet.size
       ) {
-        generateMatchReasoning(userPet, selectedPet).then(setMatchReasoning);
+        void generateMatchReasoning(userPet, selectedPet)
+          .then(setMatchReasoning)
+          .catch((error: unknown) => {
+            const err = error instanceof Error ? error : new Error(String(error));
+            // Silently fail match reasoning generation - it's not critical
+            // Error is intentionally swallowed as reasoning is non-essential
+            setMatchReasoning([]);
+          });
       } else {
         setMatchReasoning([]);
       }

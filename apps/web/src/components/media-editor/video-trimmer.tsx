@@ -147,7 +147,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   thumb: {
-    width: undefined as unknown as number,
     flex: 1,
     height: '100%',
   },

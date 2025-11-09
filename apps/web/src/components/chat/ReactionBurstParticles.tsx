@@ -19,6 +19,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ReactionBurstParticlesProps {
   enabled?: boolean;
@@ -43,7 +44,8 @@ export function ReactionBurstParticles({
   size = 6,
   staggerMs = 8,
 }: ReactionBurstParticlesProps) {
-  const reduced = useReducedMotion();
+    const uiConfig = useUIConfig();
+    const reduced = useReducedMotion();
   const dur = getReducedMotionDuration(600, reduced);
 
   const { particles, finishedCount } = useMemo(() => {

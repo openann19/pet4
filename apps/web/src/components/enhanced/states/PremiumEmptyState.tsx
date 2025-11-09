@@ -8,6 +8,7 @@ import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { PremiumButton } from '../PremiumButton';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumEmptyStateProps {
   icon?: React.ReactNode;
@@ -29,7 +30,8 @@ export function PremiumEmptyState({
   variant = 'default',
   className,
 }: PremiumEmptyStateProps): React.JSX.Element {
-  const scale = useSharedValue(0.9);
+    const uiConfig = useUIConfig();
+    const scale = useSharedValue(0.9);
   const opacity = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {

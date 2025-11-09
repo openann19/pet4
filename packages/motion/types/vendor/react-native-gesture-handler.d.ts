@@ -27,4 +27,3 @@ declare module 'react-native-gesture-handler' {
   export default gestureModule
   export { GestureHandler, GestureModule }
 }
-

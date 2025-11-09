@@ -5,7 +5,7 @@ import { adminApi } from '@/api/admin-api';
 import { useStorage } from '@/hooks/use-storage';
 
 vi.mock('@/api/admin-api');
-vi.mock('@/hooks/useStorage');
+vi.mock('@/hooks/use-storage');
 vi.mock('@/components/admin/PetProfileGenerator', () => ({
   PetProfileGenerator: () => <div data-testid="pet-profile-generator">Pet Profile Generator</div>,
 }));
@@ -61,19 +61,21 @@ describe('DashboardView', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      const deleteValue = vi.fn().mockResolvedValue(undefined);
       if (key === 'all-pets') {
-        return [mockPets];
+        return [mockPets, setValue, deleteValue];
       }
       if (key === 'user-matches') {
-        return [mockMatches];
+        return [mockMatches, setValue, deleteValue];
       }
       if (key === 'admin-reports') {
-        return [mockReports];
+        return [mockReports, setValue, deleteValue];
       }
       if (key === 'admin-verifications') {
-        return [mockVerifications];
+        return [mockVerifications, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      return [defaultValue, setValue, deleteValue];
     });
     mockAdminApi.getSystemStats.mockResolvedValue(mockSystemStats);
   });
@@ -169,20 +171,22 @@ describe('DashboardView', () => {
   });
 
   it('handles empty pets array', async () => {
+    const setValue = vi.fn().mockResolvedValue(undefined);
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'all-pets') {
-        return [[]];
+        return [[], setValue, deleteValue];
       }
       if (key === 'user-matches') {
-        return [[]];
+        return [[], setValue, deleteValue];
       }
       if (key === 'admin-reports') {
-        return [[]];
+        return [[], setValue, deleteValue];
       }
       if (key === 'admin-verifications') {
-        return [[]];
+        return [[], setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      return [defaultValue, setValue, deleteValue];
     });
 
     render(<DashboardView />);
@@ -193,20 +197,22 @@ describe('DashboardView', () => {
   });
 
   it('handles null storage values', async () => {
+    const setValue = vi.fn().mockResolvedValue(undefined);
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'all-pets') {
-        return [null];
+        return [null, setValue, deleteValue];
       }
       if (key === 'user-matches') {
-        return [null];
+        return [null, setValue, deleteValue];
       }
       if (key === 'admin-reports') {
-        return [null];
+        return [null, setValue, deleteValue];
       }
       if (key === 'admin-verifications') {
-        return [null];
+        return [null, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      return [defaultValue, setValue, deleteValue];
     });
 
     render(<DashboardView />);
@@ -247,22 +253,26 @@ describe('DashboardView', () => {
       expect(mockAdminApi.getSystemStats).toHaveBeenCalled();
     });
 
+    const setValue = vi.fn().mockResolvedValue(undefined);
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'all-pets') {
         return [
           [...mockPets, { _id: '3', name: 'Max', ownerId: 'owner3', ownerName: 'Bob', photos: [] }],
+          setValue,
+          deleteValue,
         ];
       }
       if (key === 'user-matches') {
-        return [mockMatches];
+        return [mockMatches, setValue, deleteValue];
       }
       if (key === 'admin-reports') {
-        return [mockReports];
+        return [mockReports, setValue, deleteValue];
       }
       if (key === 'admin-verifications') {
-        return [mockVerifications];
+        return [mockVerifications, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      return [defaultValue, setValue, deleteValue];
     });
 
     rerender(<DashboardView />);
@@ -278,20 +288,22 @@ describe('DashboardView', () => {
       { _id: '2', name: 'Luna', ownerId: 'owner2', photos: [] },
     ];
 
+    const setValue = vi.fn().mockResolvedValue(undefined);
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'all-pets') {
-        return [petsWithoutOwner];
+        return [petsWithoutOwner, setValue, deleteValue];
       }
       if (key === 'user-matches') {
-        return [mockMatches];
+        return [mockMatches, setValue, deleteValue];
       }
       if (key === 'admin-reports') {
-        return [mockReports];
+        return [mockReports, setValue, deleteValue];
       }
       if (key === 'admin-verifications') {
-        return [mockVerifications];
+        return [mockVerifications, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      return [defaultValue, setValue, deleteValue];
     });
 
     render(<DashboardView />);
@@ -308,20 +320,22 @@ describe('DashboardView', () => {
       { _id: '3', name: 'Max', ownerId: 'owner2', ownerName: 'Jane', photos: [] },
     ];
 
+    const setValue = vi.fn().mockResolvedValue(undefined);
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'all-pets') {
-        return [petsWithDuplicateOwners];
+        return [petsWithDuplicateOwners, setValue, deleteValue];
       }
       if (key === 'user-matches') {
-        return [mockMatches];
+        return [mockMatches, setValue, deleteValue];
       }
       if (key === 'admin-reports') {
-        return [mockReports];
+        return [mockReports, setValue, deleteValue];
       }
       if (key === 'admin-verifications') {
-        return [mockVerifications];
+        return [mockVerifications, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      return [defaultValue, setValue, deleteValue];
     });
 
     render(<DashboardView />);

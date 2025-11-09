@@ -12,6 +12,7 @@ import { Microphone, X, Check } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { toast } from 'sonner';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface VoiceRecorderProps {
   onRecorded: (audioBlob: Blob, duration: number, waveform: number[]) => void;
@@ -24,7 +25,8 @@ export default function VoiceRecorder({
   onCancel,
   maxDuration = 120,
 }: VoiceRecorderProps) {
-  const [duration, setDuration] = useState(0);
+    const uiConfig = useUIConfig();
+    const [duration, setDuration] = useState(0);
   const [waveform, setWaveform] = useState<number[]>([]);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -209,7 +211,13 @@ export default function VoiceRecorder({
         </div>
       </div>
 
-      <Button size="icon" variant="ghost" onClick={handleCancel} className="shrink-0">
+      <Button
+        size="icon"
+        variant="ghost"
+        onClick={handleCancel}
+        className="shrink-0"
+        aria-label="Cancel recording"
+      >
         <X size={20} />
       </Button>
 
@@ -217,6 +225,7 @@ export default function VoiceRecorder({
         size="icon"
         onClick={handleStopAndSend}
         className="shrink-0 bg-linear-to-br from-primary to-accent"
+        aria-label="Stop and send recording"
       >
         <Check size={20} weight="bold" />
       </Button>

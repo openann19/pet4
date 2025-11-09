@@ -4,7 +4,7 @@
  * Mobile admin screen for reviewing KYC verification submissions.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -35,11 +35,7 @@ export const KYCManagementScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'pending' | 'verified' | 'rejected'>('pending');
 
-  useEffect(() => {
-    loadSessions();
-  }, [filter]);
-
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     setLoading(true);
     try {
       const data = await mobileAdminApi.getKYCQueue();
@@ -59,27 +55,37 @@ export const KYCManagementScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
 
-  const handleVerify = async (sessionId: string) => {
-    try {
-      await mobileAdminApi.reviewKYC(sessionId, 'approve');
-      await loadSessions();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to verify session', err, { context: 'handleVerify', sessionId });
-    }
-  };
+  useEffect(() => {
+    void loadSessions();
+  }, [loadSessions]);
 
-  const handleReject = async (sessionId: string) => {
-    try {
-      await mobileAdminApi.reviewKYC(sessionId, 'reject', 'Rejected by admin');
-      await loadSessions();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to reject session', err, { context: 'handleReject', sessionId });
-    }
-  };
+  const handleVerify = useCallback(
+    async (sessionId: string) => {
+      try {
+        await mobileAdminApi.reviewKYC(sessionId, 'approve');
+        await loadSessions();
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to verify session', err, { context: 'handleVerify', sessionId });
+      }
+    },
+    [loadSessions]
+  );
+
+  const handleReject = useCallback(
+    async (sessionId: string) => {
+      try {
+        await mobileAdminApi.reviewKYC(sessionId, 'reject', 'Rejected by admin');
+        await loadSessions();
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to reject session', err, { context: 'handleReject', sessionId });
+      }
+    },
+    [loadSessions]
+  );
 
   const filteredSessions = sessions.filter((s) => {
     if (filter === 'all') return true;

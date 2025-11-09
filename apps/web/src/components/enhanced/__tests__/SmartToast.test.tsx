@@ -11,7 +11,7 @@ vi.mock('react-native-reanimated', () => ({
   useAnimatedStyle: vi.fn(() => ({})),
 }));
 vi.mock('@/effects/reanimated/animated-view', () => ({
-  AnimatedView: ({ children, ...props }: { children: React.ReactNode;[key: string]: unknown }) => (
+  AnimatedView: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
     <div data-testid="animated-view" {...props}>
       {children}
     </div>

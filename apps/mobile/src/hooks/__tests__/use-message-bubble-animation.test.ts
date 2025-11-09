@@ -5,54 +5,16 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react-native'
 import { useMessageBubbleAnimation } from '../use-message-bubble-animation'
 
-// Mock react-native-reanimated
-vi.mock('react-native-reanimated', () => {
-  const createMockSharedValue = (initial: number) => {
-    let currentValue = initial
-    return {
-      get value() {
-        return currentValue
-      },
-      set value(newValue: number) {
-        if (typeof newValue === 'number') {
-          currentValue = newValue
-        }
-      },
-    }
-  }
-
-  return {
-    useSharedValue: vi.fn((initial: number) => createMockSharedValue(initial)),
-    useAnimatedStyle: vi.fn((fn: () => Record<string, unknown>) => {
-      try {
-        return fn()
-      } catch {
-        return {}
-      }
-    }),
-    withSpring: vi.fn((toValue: number) => toValue),
-    withTiming: vi.fn((toValue: number) => toValue),
-    withDelay: vi.fn((_delay: number, animation: unknown) => animation),
-    withSequence: vi.fn((...animations: unknown[]) => animations[animations.length - 1]),
-    interpolate: vi.fn((value: number, _inputRange: number[], outputRange: number[]) => {
-      return outputRange[0] ?? 0
-    }),
-    Extrapolation: {
-      CLAMP: 'clamp',
-    },
-    Easing: {
-      linear: (t: number) => t,
-    },
-  }
-})
-
-// Mock reduced motion
+// Mock reduced motion - must be before import to prevent parsing issues
 vi.mock('../../effects/chat/core/reduced-motion', () => ({
   useReducedMotionSV: vi.fn(() => ({ value: false })),
   getReducedMotionDuration: vi.fn((duration: number) => duration),
+  useReducedMotion: vi.fn(() => false),
+  isReduceMotionEnabled: vi.fn(() => false),
+  getReducedMotionMultiplier: vi.fn(() => 1),
 }))
 
 // Mock haptic manager
@@ -98,11 +60,11 @@ describe('useMessageBubbleAnimation', () => {
 
     await act(async () => {
       result.current.handlePressIn()
-      await new Promise((resolve) => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 0))
     })
 
     expect(result.current.scale.value).toBeLessThanOrEqual(1)
-    expect(typeof result.current.glowOpacity.value).toBe('number')
+    expect(result.current.glowOpacity.value).toBeGreaterThanOrEqual(0)
   })
 
   it('should handle press out events', async () => {
@@ -110,12 +72,12 @@ describe('useMessageBubbleAnimation', () => {
 
     await act(async () => {
       result.current.handlePressIn()
-      await new Promise((resolve) => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 0))
     })
 
     await act(async () => {
       result.current.handlePressOut()
-      await new Promise((resolve) => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 0))
     })
 
     expect(result.current.scale.value).toBe(1)
@@ -124,7 +86,8 @@ describe('useMessageBubbleAnimation', () => {
   it('should animate highlight when isHighlighted changes', async () => {
     vi.useFakeTimers()
     const { result, rerender } = renderHook(
-      ({ isHighlighted }) => useMessageBubbleAnimation({ isHighlighted }),
+      ({ isHighlighted }: { isHighlighted: boolean }) =>
+        useMessageBubbleAnimation({ isHighlighted }),
       { initialProps: { isHighlighted: false } }
     )
 
@@ -139,7 +102,7 @@ describe('useMessageBubbleAnimation', () => {
       await vi.advanceTimersByTimeAsync(10)
     })
 
-    expect(typeof result.current.backgroundOpacity.value).toBe('number')
+    expect(result.current.backgroundOpacity.value).toBeGreaterThanOrEqual(0)
 
     vi.useRealTimers()
   })
@@ -152,8 +115,8 @@ describe('useMessageBubbleAnimation', () => {
       useMessageBubbleAnimation({ index: 1, isNew: true })
     )
 
-    expect(typeof result0.current.opacity.value).toBe('number')
-    expect(typeof result1.current.opacity.value).toBe('number')
+    expect(result0.current.opacity.value).toBeGreaterThanOrEqual(0)
+    expect(result1.current.opacity.value).toBeGreaterThanOrEqual(0)
     expect(result0.current.scale.value).toBe(result1.current.scale.value)
   })
 
@@ -179,7 +142,7 @@ describe('useMessageBubbleAnimation', () => {
 
     await act(async () => {
       result.current.animateReaction('❤️')
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise(resolve => setTimeout(resolve, 10))
     })
 
     expect(result.current.reactionScale.value).toBeGreaterThanOrEqual(1)
@@ -212,12 +175,12 @@ describe('useMessageBubbleAnimation', () => {
 
     await act(async () => {
       result.current.handlePressIn()
-      await new Promise((resolve) => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 0))
     })
 
     await act(async () => {
       result.current.handlePress()
-      await new Promise((resolve) => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 0))
     })
 
     expect(onPress).toHaveBeenCalled()
@@ -228,14 +191,14 @@ describe('useMessageBubbleAnimation', () => {
 
     await act(async () => {
       result.current.handleLongPressStart()
-      await new Promise((resolve) => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 0))
     })
 
     expect(result.current.scale.value).toBeLessThanOrEqual(1)
 
     await act(async () => {
       result.current.handleLongPressEnd()
-      await new Promise((resolve) => setTimeout(resolve, 0))
+      await new Promise(resolve => setTimeout(resolve, 0))
     })
 
     expect(result.current.scale.value).toBe(1)
@@ -246,10 +209,10 @@ describe('useMessageBubbleAnimation', () => {
 
     await act(async () => {
       result.current.animateHighlight()
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise(resolve => setTimeout(resolve, 10))
     })
 
-    expect(typeof result.current.backgroundOpacity.value).toBe('number')
+    expect(result.current.backgroundOpacity.value).toBeGreaterThanOrEqual(0)
   })
 
   it('should support isOwn option for send/receive effects', () => {
@@ -260,7 +223,7 @@ describe('useMessageBubbleAnimation', () => {
       useMessageBubbleAnimation({ isOwn: false, isNew: true })
     )
 
-    expect(typeof sendResult.current.opacity.value).toBe('number')
-    expect(typeof receiveResult.current.opacity.value).toBe('number')
+    expect(sendResult.current.opacity.value).toBeGreaterThanOrEqual(0)
+    expect(receiveResult.current.opacity.value).toBeGreaterThanOrEqual(0)
   })
 })

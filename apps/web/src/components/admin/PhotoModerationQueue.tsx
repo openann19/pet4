@@ -104,13 +104,16 @@ export function PhotoModerationQueueAdmin() {
   }, []);
 
   useEffect(() => {
-    loadRecords();
-    loadStats();
+    void loadRecords();
+    void loadStats();
   }, [loadRecords, loadStats]);
 
   useEffect(() => {
     if (selectedRecord) {
-      loadAuditLogs(selectedRecord.photoId);
+      void loadAuditLogs(selectedRecord.photoId).catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to load audit logs in useEffect', err);
+      });
     }
   }, [selectedRecord, loadAuditLogs]);
 
@@ -477,26 +480,66 @@ export function PhotoModerationQueueAdmin() {
                 <div className="flex gap-2">
                   {selectedRecord.status === 'pending' || selectedRecord.status === 'scanning' ? (
                     <>
-                      <Button onClick={handleApprove} variant="default">
+                      <Button
+                        onClick={() => {
+                          void handleApprove().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to approve from button', err);
+                          });
+                        }}
+                        variant="default"
+                      >
                         <CheckCircle className="w-4 h-4 mr-2" />
                         {t.photoModeration.approvePhoto}
                       </Button>
-                      <Button onClick={handleReject} variant="destructive">
+                      <Button
+                        onClick={() => {
+                          void handleReject().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to reject from button', err);
+                          });
+                        }}
+                        variant="destructive"
+                      >
                         <XCircle className="w-4 h-4 mr-2" />
                         {t.photoModeration.rejectPhoto}
                       </Button>
-                      <Button onClick={handleQuarantine} variant="outline">
+                      <Button
+                        onClick={() => {
+                          void handleQuarantine().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to quarantine from button', err);
+                          });
+                        }}
+                        variant="outline"
+                      >
                         <Warning className="w-4 h-4 mr-2" />
                         {t.photoModeration.quarantinePhoto}
                       </Button>
                     </>
                   ) : selectedRecord.status === 'quarantined' ? (
                     <>
-                      <Button onClick={handleApprove} variant="default">
+                      <Button
+                        onClick={() => {
+                          void handleApprove().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to approve from button', err);
+                          });
+                        }}
+                        variant="default"
+                      >
                         <CheckCircle className="w-4 h-4 mr-2" />
                         {t.photoModeration.approvePhoto}
                       </Button>
-                      <Button onClick={handleReleaseFromQuarantine} variant="outline">
+                      <Button
+                        onClick={() => {
+                          void handleReleaseFromQuarantine().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to release from quarantine from button', err);
+                          });
+                        }}
+                        variant="outline"
+                      >
                         <Eye className="w-4 h-4 mr-2" />
                         {t.photoModeration.releaseFromQuarantine}
                       </Button>

@@ -3,6 +3,7 @@
 import { useRef, useEffect } from 'react';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { useFeatureFlags } from '@/config/feature-flags';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 /**
  * GlowTrail Component
@@ -11,7 +12,8 @@ import { useFeatureFlags } from '@/config/feature-flags';
  * Respects reduced motion preferences
  */
 export default function GlowTrail() {
-  const r = useRef<HTMLDivElement>(null);
+    const uiConfig = useUIConfig();
+    const r = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
   const { enableGlowTrail } = useFeatureFlags();
 

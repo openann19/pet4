@@ -1906,15 +1906,15 @@ const [notifSettings, setNotifSettings] = useKV<NotificationSettings>('notificat
 // URL schemes
 //match/:matchId
 //chat/:conversationId
-pawf: //pet/:petId
-pawf: //post/:postId
+//pet/:petId
+//post/:postId
 
 // Universal links (iOS/Android)
-pawf: //pawfectmatch.app/match/:matchId
+//pawfectmatch.app/match/:matchId
 pawf: //pawfectmatch.app/chat/:conversationId
 
 // Deep link routing
-https: https: function handleDeepLink(url: string) {
+pawf: pawf: pawf: https: https: function handleDeepLink(url: string) {
   const parsed = new URL(url)
   const path = parsed.pathname
 

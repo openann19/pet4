@@ -3,6 +3,7 @@
 import { useTypingPlaceholder } from '@/hooks/use-typing-placeholder';
 import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TypingPlaceholderProps {
   enabled?: boolean;
@@ -15,13 +16,14 @@ export function TypingPlaceholder({
   isOwn = false,
   className,
 }: TypingPlaceholderProps): React.JSX.Element {
-  const { animatedStyles, containerStyle } = useTypingPlaceholder({
-    enabled,
-    barCount: 3,
-    barWidth: 4,
-    barHeight: 32,
-    animationDuration: 600,
-  });
+    const uiConfig = useUIConfig();
+    const { animatedStyles, containerStyle } = useTypingPlaceholder({
+        enabled,
+        barCount: 3,
+        barWidth: 4,
+        barHeight: 32,
+        animationDuration: 600,
+      });
 
   return (
     <AnimatedView

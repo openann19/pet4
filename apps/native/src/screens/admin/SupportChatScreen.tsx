@@ -4,7 +4,7 @@
  * Mobile admin screen for managing support tickets.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -35,11 +35,7 @@ export const SupportChatScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'open' | 'in-progress' | 'resolved'>('all');
 
-  useEffect(() => {
-    loadTickets();
-  }, [filter]);
-
-  const loadTickets = async () => {
+  const loadTickets = useCallback(async () => {
     setLoading(true);
     try {
       // Note: Support tickets API endpoint not yet available in admin-api
@@ -51,7 +47,11 @@ export const SupportChatScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    void loadTickets();
+  }, [loadTickets]);
 
   const filteredTickets = tickets.filter((t) => {
     if (filter === 'all') return true;

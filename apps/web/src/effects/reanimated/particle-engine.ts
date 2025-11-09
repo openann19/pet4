@@ -3,12 +3,23 @@
 import { makeRng } from '@petspark/shared';
 import {
   Easing,
-  useAnimatedStyle,
-  useSharedValue,
   withSequence,
   withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
+
+export interface ParticleData {
+  id: string;
+  startX: number;
+  startY: number;
+  vx: number;
+  vy: number;
+  color: string;
+  size: number;
+  lifetime: number;
+  createdAt: number;
+  rotationTarget: number;
+}
 
 export interface Particle {
   id: string;
@@ -23,6 +34,7 @@ export interface Particle {
   size: number;
   lifetime: number;
   createdAt: number;
+  rotationTarget: number;
 }
 
 export interface ParticleConfig {
@@ -59,13 +71,13 @@ export const DEFAULT_CONFIG: Required<ParticleConfig> = {
   spread: 360,
 };
 
-export function createParticle(
+export function createParticleData(
   startX: number,
   startY: number,
   angle: number,
   config: Required<ParticleConfig>,
   seed?: number
-): Particle {
+): ParticleData {
   const rng = makeRng(seed ?? Date.now());
   const id = `${Date.now()}-${rng()}`;
   const velocity = config.minVelocity + rng() * (config.maxVelocity - config.minVelocity);
@@ -77,45 +89,58 @@ export function createParticle(
 
   const vx = Math.cos(radians) * velocity;
   const vy = Math.sin(radians) * velocity;
+  const rotationRng = makeRng(Date.now());
+  const rotationTarget = rotationRng() * 360;
 
   return {
     id,
-    x: useSharedValue(startX),
-    y: useSharedValue(startY),
-    scale: useSharedValue(0),
-    opacity: useSharedValue(1),
-    rotation: useSharedValue(0),
+    startX,
+    startY,
     vx,
     vy,
     color,
     size,
     lifetime,
     createdAt: Date.now(),
+    rotationTarget,
   };
 }
 
-export function spawnParticles(
+export function spawnParticlesData(
   originX: number,
   originY: number,
   config: ParticleConfig = {},
   seed?: number
-): Particle[] {
+): ParticleData[] {
   const fullConfig: Required<ParticleConfig> = {
     ...DEFAULT_CONFIG,
     ...config,
   };
 
-  const particles: Particle[] = [];
+  const particles: ParticleData[] = [];
   const angleStep = fullConfig.spread / fullConfig.count;
   const rng = makeRng(seed ?? Date.now());
 
   for (let i = 0; i < fullConfig.count; i++) {
     const angle = -fullConfig.spread / 2 + i * angleStep + (rng() - 0.5) * 20;
-    const particle = createParticle(originX, originY, angle, fullConfig, seed);
+    const particle = createParticleData(originX, originY, angle, fullConfig, seed);
     particles.push(particle);
   }
 
   return particles;
+}
+
+/**
+ * @deprecated Use spawnParticlesData and createParticleFromData in hooks instead
+ * This function is kept for backward compatibility but will be removed
+ */
+export function spawnParticles(
+  originX: number,
+  originY: number,
+  config: ParticleConfig = {},
+  seed?: number
+): ParticleData[] {
+  return spawnParticlesData(originX, originY, config, seed);
 }
 
 export function animateParticle(particle: Particle, config: Required<ParticleConfig>): void {
@@ -165,27 +190,33 @@ export function animateParticle(particle: Particle, config: Required<ParticleCon
     })
   );
 
-  const rotationRng = makeRng(particle.createdAt);
-  particle.rotation.value = withTiming(rotationRng() * 360, {
+  particle.rotation.value = withTiming(particle.rotationTarget, {
     duration: particle.lifetime,
     easing: Easing.linear,
   });
 }
 
-export function createParticleAnimatedStyle(
-  particle: Particle
-): ReturnType<typeof useAnimatedStyle> {
-  return useAnimatedStyle(() => {
-    return {
-      position: 'absolute',
-      left: particle.x.value,
-      top: particle.y.value,
-      width: particle.size,
-      height: particle.size,
-      backgroundColor: particle.color,
-      borderRadius: particle.size / 2,
-      opacity: particle.opacity.value,
-      transform: [{ scale: particle.scale.value }, { rotate: `${particle.rotation.value}deg` }],
-    };
-  });
+/**
+ * Helper function to create a Particle from ParticleData with SharedValues
+ * This should be called in a React hook or component, not in callbacks
+ */
+export function createParticleFromData(
+  data: ParticleData,
+  createSharedValue: (value: number) => SharedValue<number>
+): Particle {
+  return {
+    id: data.id,
+    x: createSharedValue(data.startX),
+    y: createSharedValue(data.startY),
+    scale: createSharedValue(0),
+    opacity: createSharedValue(1),
+    rotation: createSharedValue(0),
+    vx: data.vx,
+    vy: data.vy,
+    color: data.color,
+    size: data.size,
+    lifetime: data.lifetime,
+    createdAt: data.createdAt,
+    rotationTarget: data.rotationTarget,
+  };
 }

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { MessageTemplate } from '@/lib/chat-types';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TemplateButtonProps {
   template: MessageTemplate;
@@ -15,7 +16,8 @@ export interface TemplateButtonProps {
 }
 
 export function TemplateButton({ template, onSelect }: TemplateButtonProps): JSX.Element {
-  const hover = useHoverAnimation({ scale: 1.02 });
+    const uiConfig = useUIConfig();
+    const hover = useHoverAnimation({ scale: 1.02 });
 
   return (
     <AnimatedView style={hover.animatedStyle}>

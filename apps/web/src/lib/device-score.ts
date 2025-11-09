@@ -43,8 +43,10 @@ export function deviceScore(): DeviceMetrics {
       : undefined;
 
   // CPU cores
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- hardwareConcurrency can be undefined in some browsers
-  const cores = navigator.hardwareConcurrency ?? 4;
+  // hardwareConcurrency can be undefined in some browsers (e.g., older Safari)
+  // Use type guard to ensure type safety
+  const cores =
+    typeof navigator.hardwareConcurrency === 'number' ? navigator.hardwareConcurrency : 4;
   const cpuScore = Math.min(3, Math.ceil(cores / 4));
 
   // GPU detection via WebGL renderer string

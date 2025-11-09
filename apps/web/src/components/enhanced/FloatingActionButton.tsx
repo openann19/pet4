@@ -17,6 +17,7 @@ import { haptics } from '@/lib/haptics';
 import { AnimatedView, useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface FloatingActionButtonProps {
   icon?: React.ReactNode;
@@ -39,7 +40,8 @@ export function FloatingActionButton({
   expanded = false,
   label,
 }: FloatingActionButtonProps): React.JSX.Element {
-  const reducedMotion = useReducedMotion();
+    const uiConfig = useUIConfig();
+    const reducedMotion = useReducedMotion();
   const scale = useSharedValue(0);
   const rotate = useSharedValue(-180);
   const iconRotate = useSharedValue(0);

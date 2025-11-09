@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
+import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { MagnifyingGlass, Plus, MapPin } from '@phosphor-icons/react';
-import { motion, Presence, MotionView } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
+import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import type { LostAlert } from '@/lib/lost-found-types';
 import { LostAlertCard } from '@/components/lost-found/LostAlertCard';
 import { CreateLostAlertDialog } from '@/components/lost-found/CreateLostAlertDialog';
@@ -35,12 +37,7 @@ export default function LostFoundView() {
   const [cursor, setCursor] = useState<string | undefined>();
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
 
-  useEffect(() => {
-    loadAlerts();
-    getUserLocation();
-  }, [viewMode]);
-
-  const getUserLocation = async () => {
+  const getUserLocation = useCallback(async () => {
     try {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -59,9 +56,9 @@ export default function LostFoundView() {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to get user location', err, { action: 'getUserLocation' });
     }
-  };
+  }, []);
 
-  const loadAlerts = async () => {
+  const loadAlerts = useCallback(async () => {
     try {
       setLoading(true);
       const filters: LostAlertFilters & { cursor?: string; limit?: number } = {
@@ -102,7 +99,12 @@ export default function LostFoundView() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [viewMode, cursor, userLocation, activeTab]);
+
+  useEffect(() => {
+    void loadAlerts();
+    void getUserLocation();
+  }, [loadAlerts, getUserLocation]);
 
   const handleToggleFavorite = (alertId: string) => {
     setFavorites((currentFavorites) => {
@@ -160,167 +162,171 @@ export default function LostFoundView() {
   const foundCount = alerts.filter((a) => a.status === 'found').length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold flex items-center gap-3">
-            <MapPin size={32} weight="fill" className="text-primary" />
-            {t.lostFound?.title || 'Lost & Found'}
-          </h2>
-          <p className="text-muted-foreground">
-            {t.lostFound?.subtitle || 'Report lost pets and help reunite families'}
-          </p>
+    <PageTransitionWrapper key="lost-found-view" direction="up">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold flex items-center gap-3">
+              <MapPin size={32} weight="fill" className="text-primary" />
+              {t.lostFound?.title || 'Lost & Found'}
+            </h2>
+            <p className="text-muted-foreground">
+              {t.lostFound?.subtitle || 'Report lost pets and help reunite families'}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setViewMode(viewMode === 'browse' ? 'mine' : 'browse')}
+              variant="outline"
+            >
+              {viewMode === 'browse' ? 'My Alerts' : 'Browse All'}
+            </Button>
+            <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
+              <Plus size={20} weight="fill" />
+              {t.lostFound?.reportLost || 'Report Lost Pet'}
+            </Button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setViewMode(viewMode === 'browse' ? 'mine' : 'browse')}
-            variant="outline"
-          >
-            {viewMode === 'browse' ? 'My Alerts' : 'Browse All'}
-          </Button>
-          <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
-            <Plus size={20} weight="fill" />
-            {t.lostFound?.reportLost || 'Report Lost Pet'}
-          </Button>
-        </div>
-      </div>
+        {viewMode === 'browse' && (
+          <>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="flex-1 relative w-full">
+                <MagnifyingGlass
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  size={20}
+                />
+                <Input
+                  placeholder={
+                    t.lostFound?.searchPlaceholder || 'Search by pet name, breed, location...'
+                  }
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
 
-      {viewMode === 'browse' && (
-        <>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="flex-1 relative w-full">
-              <MagnifyingGlass
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                size={20}
-              />
-              <Input
-                placeholder={
-                  t.lostFound?.searchPlaceholder || 'Search by pet name, breed, location...'
-                }
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as FilterTab)}>
+                <TabsList>
+                  <TabsTrigger value="all">
+                    All {alerts.length > 0 && `(${alerts.length})`}
+                  </TabsTrigger>
+                  <TabsTrigger value="active">
+                    Active {activeCount > 0 && `(${activeCount})`}
+                  </TabsTrigger>
+                  <TabsTrigger value="found">
+                    Found {foundCount > 0 && `(${foundCount})`}
+                  </TabsTrigger>
+                  <TabsTrigger value="favorites">
+                    Favorites{' '}
+                    {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
 
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as FilterTab)}>
-              <TabsList>
-                <TabsTrigger value="all">
-                  All {alerts.length > 0 && `(${alerts.length})`}
-                </TabsTrigger>
-                <TabsTrigger value="active">
-                  Active {activeCount > 0 && `(${activeCount})`}
-                </TabsTrigger>
-                <TabsTrigger value="found">Found {foundCount > 0 && `(${foundCount})`}</TabsTrigger>
-                <TabsTrigger value="favorites">
-                  Favorites{' '}
-                  {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+            <ScrollArea className="h-[calc(100vh-320px)]">
+              <AnimatePresence mode="wait">
+                {filteredAlerts().length === 0 ? (
+                  <MotionView
+                    key="empty"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="flex flex-col items-center justify-center py-16"
+                  >
+                    <MapPin size={64} className="text-muted-foreground mb-4" weight="thin" />
+                    <h3 className="text-xl font-semibold mb-2">
+                      {activeTab === 'favorites'
+                        ? 'No Favorites Yet'
+                        : searchQuery
+                          ? 'No Results Found'
+                          : 'No Active Alerts'}
+                    </h3>
+                    <p className="text-muted-foreground text-center max-w-md">
+                      {activeTab === 'favorites'
+                        ? 'Start adding alerts to your favorites to see them here.'
+                        : searchQuery
+                          ? 'Try adjusting your search terms.'
+                          : 'Check back soon for lost pet alerts in your area.'}
+                    </p>
+                  </MotionView>
+                ) : (
+                  <MotionView
+                    key="grid"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"
+                  >
+                    {filteredAlerts().map((alert, index) => (
+                      <MotionView
+                        key={alert.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <LostAlertCard
+                          alert={alert}
+                          onSelect={handleSelectAlert}
+                          onReportSighting={handleReportSighting}
+                          isFavorited={Array.isArray(favorites) && favorites.includes(alert.id)}
+                          onToggleFavorite={handleToggleFavorite}
+                        />
+                      </MotionView>
+                    ))}
+                  </MotionView>
+                )}
+              </AnimatePresence>
+            </ScrollArea>
+          </>
+        )}
 
+        {viewMode === 'mine' && (
           <ScrollArea className="h-[calc(100vh-320px)]">
-            <Presence mode="wait">
-              {filteredAlerts().length === 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
+              {alerts.map((alert, index) => (
                 <MotionView
-                  key="empty"
+                  key={alert.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="flex flex-col items-center justify-center py-16"
+                  transition={{ delay: index * 0.05 }}
                 >
-                  <MapPin size={64} className="text-muted-foreground mb-4" weight="thin" />
-                  <h3 className="text-xl font-semibold mb-2">
-                    {activeTab === 'favorites'
-                      ? 'No Favorites Yet'
-                      : searchQuery
-                        ? 'No Results Found'
-                        : 'No Active Alerts'}
-                  </h3>
-                  <p className="text-muted-foreground text-center max-w-md">
-                    {activeTab === 'favorites'
-                      ? 'Start adding alerts to your favorites to see them here.'
-                      : searchQuery
-                        ? 'Try adjusting your search terms.'
-                        : 'Check back soon for lost pet alerts in your area.'}
-                  </p>
+                  <LostAlertCard
+                    alert={alert}
+                    onSelect={handleSelectAlert}
+                    onReportSighting={handleReportSighting}
+                    isFavorited={Array.isArray(favorites) && favorites.includes(alert.id)}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
                 </MotionView>
-              ) : (
-                <MotionView
-                  key="grid"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"
-                >
-                  {filteredAlerts().map((alert, index) => (
-                    <MotionView
-                      key={alert.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <LostAlertCard
-                        alert={alert}
-                        onSelect={handleSelectAlert}
-                        onReportSighting={handleReportSighting}
-                        isFavorited={Array.isArray(favorites) && favorites.includes(alert.id)}
-                        onToggleFavorite={handleToggleFavorite}
-                      />
-                    </MotionView>
-                  ))}
-                </MotionView>
-              )}
-            </Presence>
+              ))}
+            </div>
           </ScrollArea>
-        </>
-      )}
+        )}
 
-      {viewMode === 'mine' && (
-        <ScrollArea className="h-[calc(100vh-320px)]">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
-            {alerts.map((alert, index) => (
-              <MotionView
-                key={alert.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <LostAlertCard
-                  alert={alert}
-                  onSelect={handleSelectAlert}
-                  onReportSighting={handleReportSighting}
-                  isFavorited={Array.isArray(favorites) && favorites.includes(alert.id)}
-                  onToggleFavorite={handleToggleFavorite}
-                />
-              </MotionView>
-            ))}
-          </div>
-        </ScrollArea>
-      )}
+        <CreateLostAlertDialog
+          open={showCreateDialog}
+          onClose={() => setShowCreateDialog(false)}
+          onSuccess={() => {
+            loadAlerts();
+            toast.success('Lost pet alert created successfully!');
+          }}
+        />
 
-      <CreateLostAlertDialog
-        open={showCreateDialog}
-        onClose={() => setShowCreateDialog(false)}
-        onSuccess={() => {
-          loadAlerts();
-          toast.success('Lost pet alert created successfully!');
-        }}
-      />
-
-      <ReportSightingDialog
-        open={showSightingDialog}
-        alert={selectedAlert}
-        onClose={() => {
-          setShowSightingDialog(false);
-          setSelectedAlert(null);
-        }}
-        onSuccess={() => {
-          loadAlerts();
-        }}
-      />
-    </div>
+        <ReportSightingDialog
+          open={showSightingDialog}
+          alert={selectedAlert}
+          onClose={() => {
+            setShowSightingDialog(false);
+            setSelectedAlert(null);
+          }}
+          onSuccess={() => {
+            loadAlerts();
+          }}
+        />
+      </div>
+    </PageTransitionWrapper>
   );
 }

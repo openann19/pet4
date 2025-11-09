@@ -2,6 +2,7 @@ import { FeatureCard } from '@mobile/components/FeatureCard'
 import { SectionHeader } from '@mobile/components/SectionHeader'
 import { colors } from '@mobile/theme/colors'
 import type { PetProfile } from '@mobile/types/pet'
+import type { PetApiResponse } from '@mobile/types/api'
 import { matchingApi } from '@mobile/utils/api-client'
 import { createLogger } from '@mobile/utils/logger'
 import * as Haptics from 'expo-haptics'
@@ -13,6 +14,37 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 const logger = createLogger('FeedScreen')
 
 type Tab = 'discovery' | 'map'
+
+/**
+ * Valid species types
+ */
+type PetSpecies = 'dog' | 'cat' | 'bird' | 'rabbit' | 'other'
+
+/**
+ * Map API response pet to UI PetProfile
+ */
+function mapApiPetToProfile(apiPet: PetApiResponse): PetProfile {
+  // Validate species - default to 'other' if invalid
+  const validSpecies: PetSpecies[] = ['dog', 'cat', 'bird', 'rabbit', 'other']
+  const species = validSpecies.includes(apiPet.species as PetSpecies)
+    ? (apiPet.species as PetSpecies)
+    : 'other'
+
+  // Filter and map media to photos
+  const photos = apiPet.media.filter(media => media.type === 'photo').map(media => media.url)
+
+  return {
+    id: apiPet.id,
+    ownerId: apiPet.ownerId,
+    name: apiPet.name,
+    species,
+    breed: apiPet.breedName,
+    age: Math.floor(apiPet.ageMonths / 12),
+    photos,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+}
 
 interface SegmentBtnProps {
   label: string
@@ -45,20 +77,8 @@ function DiscoveryList(): React.ReactElement {
       setError(null)
       const response = await matchingApi.getAvailablePets({ limit: 20 })
 
-      // Map API response to PetProfile format
-      const mappedPets: PetProfile[] = response.pets.map(pet => ({
-        id: pet.id,
-        ownerId: pet.ownerId,
-        name: pet.name,
-        species: (pet.species as 'dog' | 'cat' | 'bird' | 'rabbit' | 'other') || 'other',
-        breed: pet.breedName,
-        age: Math.floor(pet.ageMonths / 12),
-        photos: pet.media
-          .filter((m: { type: string }) => m.type === 'photo')
-          .map((m: { url: string }) => m.url),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }))
+      // Map API response to PetProfile format using type-safe mapper
+      const mappedPets: PetProfile[] = response.pets.map(mapApiPetToProfile)
 
       setPets(mappedPets)
     } catch (err) {
@@ -141,7 +161,7 @@ function MapPane(): React.ReactElement {
   const pendingRegionRef = useRef<typeof initialRegion | null>(null)
 
   // Optional dynamic MapView (no hard dep). If the package is missing, we fall back gracefully.
-  const [MapView, setMapView] = useState<React.ComponentType<{
+  type MapViewProps = {
     style?: unknown
     initialRegion?: {
       latitude: number
@@ -156,7 +176,8 @@ function MapPane(): React.ReactElement {
       longitudeDelta: number
     }) => void
     children?: React.ReactNode
-  }> | null>(null)
+  }
+  const [MapView, setMapView] = useState<React.ComponentType<MapViewProps> | null>(null)
 
   useEffect(() => {
     let mounted = true
@@ -170,7 +191,7 @@ function MapPane(): React.ReactElement {
         if (mapsModule) {
           const MapComponent = mapsModule.default
           if (MapComponent && typeof MapComponent === 'function') {
-            setMapView(() => MapComponent as React.ComponentType<any>)
+            setMapView(() => MapComponent as React.ComponentType<MapViewProps>)
           } else {
             setMapView(null)
           }
@@ -271,7 +292,7 @@ export function FeedScreen(): React.ReactElement {
   )
 
   const indicator = useAnimatedStyle(() => {
-    const translateX = (x.value ?? 0) * 100
+    const translateX = x.value * 100
     return {
       transform: [{ translateX }],
     }

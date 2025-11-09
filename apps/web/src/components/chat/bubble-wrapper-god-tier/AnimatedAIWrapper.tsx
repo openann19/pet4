@@ -2,8 +2,9 @@
 
 import { type ReactNode } from 'react';
 import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view';
-import { useAiReplyAnimation } from './effects/useAiReplyAnimation';
+import { useAiReplyAnimation } from './effects/use-ai-reply-animation';
 import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface AnimatedAIWrapperProps {
   children: ReactNode;
@@ -22,12 +23,13 @@ export function AnimatedAIWrapper({
   showGlow = true,
   className,
 }: AnimatedAIWrapperProps): React.JSX.Element {
-  const aiAnimation = useAiReplyAnimation({
-    enabled,
-    showShimmer,
-    showSparkles,
-    showGlow,
-  });
+    const uiConfig = useUIConfig();
+    const aiAnimation = useAiReplyAnimation({
+        enabled,
+        showShimmer,
+        showSparkles,
+        showGlow,
+      });
 
   return (
     <AnimatedView

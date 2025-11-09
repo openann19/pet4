@@ -7,6 +7,7 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { SmartImage } from '@/components/media/SmartImage';
 import type { MessageAttachment } from '@/lib/chat-types';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface MessageAttachmentsProps {
   attachments: MessageAttachment[];
@@ -15,25 +16,26 @@ interface MessageAttachmentsProps {
 export default function MessageAttachments({
   attachments,
 }: MessageAttachmentsProps): React.JSX.Element {
-  return (
-    <div className="space-y-2">
-      {attachments.map((attachment) => {
-        if (attachment.type === 'voice') {
-          return <VoiceAttachment key={attachment.id} attachment={attachment} />;
-        }
-        if (attachment.type === 'photo') {
-          return <PhotoAttachment key={attachment.id} attachment={attachment} />;
-        }
-        if (attachment.type === 'video') {
-          return <VideoAttachment key={attachment.id} attachment={attachment} />;
-        }
-        if (attachment.type === 'document') {
-          return <DocumentAttachment key={attachment.id} attachment={attachment} />;
-        }
-        return null;
-      })}
-    </div>
-  );
+    const uiConfig = useUIConfig();
+    return (
+        <div className="space-y-2">
+          {attachments.map((attachment) => {
+            if (attachment.type === 'voice') {
+              return <VoiceAttachment key={attachment.id} attachment={attachment} />;
+            }
+            if (attachment.type === 'photo') {
+              return <PhotoAttachment key={attachment.id} attachment={attachment} />;
+            }
+            if (attachment.type === 'video') {
+              return <VideoAttachment key={attachment.id} attachment={attachment} />;
+            }
+            if (attachment.type === 'document') {
+              return <DocumentAttachment key={attachment.id} attachment={attachment} />;
+            }
+            return null;
+          })}
+        </div>
+      );
 }
 
 interface VoiceAttachmentProps {

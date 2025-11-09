@@ -8,11 +8,13 @@ const vibrate = (duration: number) => {
   // Android vibration
   if (Platform.OS === 'android') {
     // Dynamic import to avoid require() style import
-    import('react-native').then(({ Vibration }) => {
-      Vibration.vibrate(duration);
-    }).catch(() => {
-      // Fallback if Vibration is not available
-    });
+    import('react-native')
+      .then(({ Vibration }) => {
+        Vibration.vibrate(duration);
+      })
+      .catch(() => {
+        // Fallback if Vibration is not available
+      });
   }
 };
 

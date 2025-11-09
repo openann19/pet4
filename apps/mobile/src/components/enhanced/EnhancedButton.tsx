@@ -27,6 +27,8 @@ import Animated from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { usePressBounce } from '@petspark/motion'
 import { springConfigs } from '@/effects/reanimated/transitions'
+import { colors } from '@/theme/colors'
+import { useReducedMotionSV } from '@petspark/motion'
 
 const AnimatedView = Animated.createAnimatedComponent(View)
 
@@ -34,8 +36,8 @@ export interface EnhancedButtonProps extends Omit<PressableProps, 'onPress'> {
   title?: string
   children?: React.ReactNode
   onPress?: () => void | Promise<void>
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive'
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+  size?: 'sm' | 'default' | 'lg' | 'icon'
   loading?: boolean
   disabled?: boolean
   style?: ViewStyle
@@ -52,8 +54,8 @@ export function EnhancedButton({
   title,
   children,
   onPress,
-  variant = 'primary',
-  size = 'md',
+  variant = 'default',
+  size = 'default',
   loading = false,
   disabled = false,
   style,
@@ -66,7 +68,8 @@ export function EnhancedButton({
   testID,
   ...pressableProps
 }: EnhancedButtonProps): React.JSX.Element {
-  const pressBounce = usePressBounce(0.95)
+  const reducedMotion = useReducedMotionSV()
+  const pressBounce = usePressBounce(reducedMotion.value ? 1 : 0.96)
 
   const successScale = useSharedValue(1)
   const errorShake = useSharedValue(0)
@@ -125,13 +128,7 @@ export function EnhancedButton({
           }
         }
       }
-    } catch (error) {
-      // Extract error for logging if needed
-      const err = error instanceof Error ? error : new Error(String(error))
-      // Error logged for debugging
-      if (err) {
-        // Error handling
-      }
+    } catch (_error) {
       errorShake.value = withSequence(
         withTiming(-5, { duration: 50 }),
         withTiming(5, { duration: 50 }),
@@ -157,18 +154,31 @@ export function EnhancedButton({
     isPromise,
   ])
 
+  // Map web variant names to mobile
+  const mobileVariant = variant === 'default' ? 'primary' : variant === 'link' ? 'ghost' : variant
+  const mobileSize =
+    size === 'default'
+      ? 'md'
+      : size === 'icon'
+        ? 'md'
+        : size === 'sm'
+          ? 'sm'
+          : size === 'lg'
+            ? 'lg'
+            : 'md'
+
   const containerStyles = [
     styles.container,
-    styles[variant],
-    styles[size],
+    styles[mobileVariant],
+    styles[mobileSize],
     (disabled || loading) && styles.disabled,
     style,
   ]
 
   const textStyles = [
     styles.text,
-    styles[`${variant}Text`],
-    styles[`${size}Text`],
+    styles[`${mobileVariant}Text`],
+    styles[`${mobileSize}Text`],
     (disabled || loading) && styles.disabledText,
     textStyle,
   ]
@@ -188,7 +198,11 @@ export function EnhancedButton({
           {loading ? (
             <ActivityIndicator
               size="small"
-              color={variant === 'primary' || variant === 'destructive' ? '#ffffff' : '#3b82f6'}
+              color={
+                mobileVariant === 'primary' || mobileVariant === 'destructive'
+                  ? colors.textPrimary
+                  : colors.primary
+              }
             />
           ) : (
             <>
@@ -214,50 +228,56 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
 
-  // Variants
+  // Variants - using theme colors
   primary: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     borderWidth: 0,
   },
   secondary: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: colors.border,
   },
   outline: {
     backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#3b82f6',
+    borderWidth: 1.5,
+    borderColor: colors.primary,
   },
   ghost: {
     backgroundColor: 'transparent',
     borderWidth: 0,
   },
   destructive: {
-    backgroundColor: '#ef4444',
+    backgroundColor: colors.danger,
     borderWidth: 0,
   },
 
-  // Sizes
+  // Sizes - ensuring 44px minimum for accessibility
   sm: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    minHeight: 36,
+    minHeight: 44,
+    minWidth: 44,
   },
   md: {
     paddingHorizontal: 16,
     paddingVertical: 12,
     minHeight: 44,
+    minWidth: 44,
   },
   lg: {
     paddingHorizontal: 20,
     paddingVertical: 14,
-    minHeight: 50,
-  },
-  xl: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
     minHeight: 56,
+    minWidth: 44,
+  },
+  icon: {
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    minHeight: 44,
+    minWidth: 44,
+    width: 44,
+    height: 44,
   },
 
   // Disabled state
@@ -272,19 +292,19 @@ const styles = StyleSheet.create({
   },
 
   primaryText: {
-    color: '#ffffff',
+    color: colors.textPrimary,
   },
   secondaryText: {
-    color: '#374151',
+    color: colors.textPrimary,
   },
   outlineText: {
-    color: '#3b82f6',
+    color: colors.primary,
   },
   ghostText: {
-    color: '#374151',
+    color: colors.textPrimary,
   },
   destructiveText: {
-    color: '#ffffff',
+    color: colors.textPrimary,
   },
 
   smText: {
@@ -295,9 +315,6 @@ const styles = StyleSheet.create({
   },
   lgText: {
     fontSize: 18,
-  },
-  xlText: {
-    fontSize: 20,
   },
 
   disabledText: {

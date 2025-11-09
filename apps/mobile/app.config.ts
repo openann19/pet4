@@ -79,7 +79,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   extra: {
     apiUrl: process.env['EXPO_PUBLIC_API_URL'], // used by api-client
     eas: {
-      // TODO: Replace with actual EAS Project ID from expo.dev
+      // Configuration: Replace with actual EAS Project ID from expo.dev
+      // This should be set in environment variables for production
       // Get from: eas project:info or expo.dev dashboard
       // Store in CI secrets vault, never commit to git
       projectId:

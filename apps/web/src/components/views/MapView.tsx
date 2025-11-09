@@ -12,6 +12,7 @@ import {
   CheckCircle,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
+import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -207,227 +208,52 @@ export default function MapView() {
   const displayLocation = preciseSharingEnabled && userLocation ? userLocation : coarseLocation;
 
   return (
-    <div className="relative h-[calc(100vh-12rem)] max-h-[800px] bg-background rounded-2xl overflow-hidden border border-border shadow-xl">
-      {/* Map Container */}
-      <div
-        ref={mapRef}
-        className="absolute inset-0 bg-gradient-to-br from-muted/50 via-background to-muted/30"
-      >
-        {/* Placeholder Map Visual */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center space-y-4 p-8">
-            <MapPin size={64} className="mx-auto text-primary/30" weight="duotone" />
-            <div className="space-y-2">
-              <p className="text-lg font-semibold text-foreground/70">
-                {t.map?.interactiveMap || 'Interactive Map'}
-              </p>
-              <p className="text-sm text-muted-foreground max-w-md">
-                {t.map?.mapDescription ||
-                  'Discover pet-friendly places, plan playdates, and find matches near you with our privacy-first location features.'}
-              </p>
-              {displayLocation && (
-                <Badge variant="secondary" className="mt-2">
-                  {preciseSharingEnabled ? '📍 Precise' : '📌 Approximate'} •{' '}
-                  {displayLocation.lat.toFixed(4)}, {displayLocation.lng.toFixed(4)}
-                </Badge>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Markers Visualization */}
-        {displayLocation &&
-          filteredPlaces.slice(0, 15).map((place, idx) => {
-            const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
-            return (
-              <MotionView
-                key={place.id}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: idx * 0.05, duration: 0.3 }}
-                className="absolute"
-                style={{
-                  left: `${20 + (idx % 5) * 16}%`,
-                  top: `${20 + Math.floor(idx / 5) * 25}%`,
-                }}
-              >
-                <button
-                  onClick={() => {
-                    haptics.trigger('light');
-                    setSelectedMarker({
-                      id: place.id,
-                      type: 'place',
-                      location: place.location,
-                      data: place,
-                    });
-                    setShowList(false);
-                  }}
-                  className="relative group cursor-pointer transform transition-transform hover:scale-110 active:scale-95"
-                >
-                  <div
-                    className="w-10 h-10 rounded-full shadow-lg flex items-center justify-center text-xl backdrop-blur-sm border-2 border-white"
-                    style={{ backgroundColor: category?.color || '#ec4899' }}
-                  >
-                    {category?.icon || '📍'}
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                </button>
-              </MotionView>
-            );
-          })}
-      </div>
-
-      {/* Top Controls */}
-      <div className="absolute top-4 left-4 right-4 z-10 space-y-3">
-        {/* Search Bar */}
-        <MotionView
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          className="backdrop-blur-xl bg-background/80 rounded-2xl shadow-2xl border border-border/50 p-3"
+    <PageTransitionWrapper key="map-view" direction="up">
+      <div className="relative h-[calc(100vh-12rem)] max-h-[800px] bg-background rounded-2xl overflow-hidden border border-border shadow-xl">
+        {/* Map Container */}
+        <div
+          ref={mapRef}
+          className="absolute inset-0 bg-gradient-to-br from-muted/50 via-background to-muted/30"
         >
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <MagnifyingGlass
-                size={20}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-              />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t.map?.searchPlaceholder || 'Search places...'}
-                className="pl-10 h-11 bg-background/50 border-border"
-              />
+          {/* Placeholder Map Visual */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center space-y-4 p-8">
+              <MapPin size={64} className="mx-auto text-primary/30" weight="duotone" />
+              <div className="space-y-2">
+                <p className="text-lg font-semibold text-foreground/70">
+                  {t.map?.interactiveMap || 'Interactive Map'}
+                </p>
+                <p className="text-sm text-muted-foreground max-w-md">
+                  {t.map?.mapDescription ||
+                    'Discover pet-friendly places, plan playdates, and find matches near you with our privacy-first location features.'}
+                </p>
+                {displayLocation && (
+                  <Badge variant="secondary" className="mt-2">
+                    {preciseSharingEnabled ? '📍 Precise' : '📌 Approximate'} •{' '}
+                    {displayLocation.lat.toFixed(4)}, {displayLocation.lng.toFixed(4)}
+                  </Badge>
+                )}
+              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                haptics.trigger('selection');
-                setShowList(!showList);
-              }}
-              className="h-11 w-11 rounded-xl hover:bg-primary/10"
-            >
-              {showList ? <X size={20} /> : <List size={20} />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={requestLocation}
-              disabled={isLocating}
-              className="h-11 w-11 rounded-xl hover:bg-primary/10"
-            >
-              <Crosshair size={20} className={isLocating ? 'animate-spin' : ''} />
-            </Button>
           </div>
 
-          {/* Category Pills */}
-          <div className="flex gap-2 overflow-x-auto mt-3 pb-1 scrollbar-hide">
-            {PLACE_CATEGORIES.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => handleCategoryFilter(category.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                  selectedCategory === category.id
-                    ? 'bg-primary text-primary-foreground shadow-md scale-105'
-                    : 'bg-background/50 text-foreground/70 hover:bg-muted'
-                }`}
-              >
-                <span>{category.icon}</span>
-                <span>{category.name}</span>
-              </button>
-            ))}
-          </div>
-        </MotionView>
-
-        {/* Privacy Banner */}
-        {locationPermission === 'granted' && !preciseSharingEnabled && (
-          <MotionView
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            className="backdrop-blur-xl bg-primary/10 rounded-xl border border-primary/20 p-3"
-          >
-            <div className="flex items-start gap-3">
-              <Warning size={20} className="text-primary shrink-0 mt-0.5" weight="fill" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground">
-                  {t.map?.approximateLocation || 'Using approximate location'}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {t.map?.enablePrecisePrompt ||
-                    'Enable precise location for live meet-ups and exact navigation'}
-                </p>
-              </div>
-              <Button
-                size="sm"
-                onClick={handleEnablePreciseSharing}
-                className="shrink-0 h-8 text-xs"
-              >
-                {t.map?.enable || 'Enable'}
-              </Button>
-            </div>
-          </MotionView>
-        )}
-
-        {preciseSharingEnabled && preciseSharingUntil && (
-          <MotionView
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="backdrop-blur-xl bg-green-500/10 rounded-xl border border-green-500/20 p-3"
-          >
-            <div className="flex items-center gap-3">
-              <CheckCircle size={20} className="text-green-500 shrink-0" weight="fill" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground">
-                  {t.map?.preciseEnabled || 'Precise location active'}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {t.map?.preciseExpires ||
-                    `Expires in ${Math.ceil((preciseSharingUntil - Date.now()) / 60000)} minutes`}
-                </p>
-              </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleDisablePreciseSharing}
-                className="shrink-0 h-8 text-xs"
-              >
-                {t.map?.disable || 'Disable'}
-              </Button>
-            </div>
-          </MotionView>
-        )}
-      </div>
-
-      {/* Places List Sidebar */}
-      <Presence>
-        {showList && (
-          <MotionView
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="absolute right-0 top-0 bottom-0 w-full sm:w-96 bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl overflow-y-auto"
-          >
-            <div className="p-4 space-y-3">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">
-                  {t.map?.nearbyPlaces || 'Nearby Places'} ({filteredPlaces.length})
-                </h3>
-                <Button variant="ghost" size="icon" onClick={() => setShowList(false)}>
-                  <X size={20} />
-                </Button>
-              </div>
-
-              {filteredPlaces.map((place) => {
-                const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
-                const isSaved = (savedPlaces || []).includes(place.id);
-
-                return (
-                  <Card
-                    key={place.id}
-                    className="p-4 hover:shadow-lg transition-all cursor-pointer"
+          {/* Markers Visualization */}
+          {displayLocation &&
+            filteredPlaces.slice(0, 15).map((place, idx) => {
+              const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
+              return (
+                <MotionView
+                  key={place.id}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: idx * 0.05, duration: 0.3 }}
+                  className="absolute"
+                  style={{
+                    left: `${20 + (idx % 5) * 16}%`,
+                    top: `${20 + Math.floor(idx / 5) * 25}%`,
+                  }}
+                >
+                  <button
                     onClick={() => {
                       haptics.trigger('light');
                       setSelectedMarker({
@@ -438,181 +264,358 @@ export default function MapView() {
                       });
                       setShowList(false);
                     }}
+                    className="relative group cursor-pointer transform transition-transform hover:scale-110 active:scale-95"
                   >
-                    <div className="flex gap-3">
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
-                        style={{ backgroundColor: `${category?.color}20` }}
-                      >
-                        {category?.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-semibold text-sm truncate">{place.name}</h4>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 shrink-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSavePlace(place.id);
-                            }}
-                          >
-                            <Heart
-                              size={16}
-                              weight={isSaved ? 'fill' : 'regular'}
-                              className={isSaved ? 'text-red-500' : ''}
-                            />
-                          </Button>
-                        </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                          {place.description}
-                        </p>
-                        <div className="flex items-center gap-3 mt-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {formatDistance(place.distance || 0)}
-                          </Badge>
-                          {place.verified && (
-                            <Badge variant="outline" className="text-xs">
-                              ✓ Verified
-                            </Badge>
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            ⭐ {place.rating.toFixed(1)} ({place.reviewCount})
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-          </MotionView>
-        )}
-      </Presence>
-
-      {/* Selected Place Detail Sheet */}
-      <Presence>
-        {selectedMarker?.type === 'place' && (
-          <MotionView
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="absolute bottom-0 left-0 right-0 max-h-[60%] bg-background rounded-t-3xl shadow-2xl border-t border-border overflow-y-auto"
-          >
-            {(() => {
-              const place = selectedMarker.data as Place;
-              const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
-              const isSaved = (savedPlaces || []).includes(place.id);
-
-              return (
-                <div className="p-6 space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
-                        style={{ backgroundColor: `${category?.color}20` }}
-                      >
-                        {category?.icon}
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold">{place.name}</h3>
-                        <p className="text-sm text-muted-foreground">{place.address}</p>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => setSelectedMarker(null)}>
-                      <X size={20} />
-                    </Button>
-                  </div>
-
-                  {place.description && <p className="text-foreground/80">{place.description}</p>}
-
-                  <div className="flex gap-2 flex-wrap">
-                    <Badge variant="secondary">📏 {formatDistance(place.distance || 0)}</Badge>
-                    <Badge variant="secondary">
-                      ⭐ {place.rating.toFixed(1)} ({place.reviewCount})
-                    </Badge>
-                    {place.verified && (
-                      <Badge variant="outline" className="text-green-600 border-green-600">
-                        ✓ Verified
-                      </Badge>
-                    )}
-                    {place.isOpen && (
-                      <Badge variant="outline" className="text-green-600 border-green-600">
-                        🕐 Open Now
-                      </Badge>
-                    )}
-                  </div>
-
-                  {place.amenities.length > 0 && (
-                    <div>
-                      <p className="text-sm font-semibold mb-2">Amenities</p>
-                      <div className="flex gap-2 flex-wrap">
-                        {place.amenities.map((amenity) => (
-                          <Badge key={amenity} variant="outline">
-                            {amenity}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-2 pt-2">
-                    <Button
-                      className="flex-1"
-                      onClick={() => {
-                        haptics.trigger('medium');
-                        handleSavePlace(place.id);
-                      }}
-                      variant={isSaved ? 'secondary' : 'outline'}
+                    <div
+                      className="w-10 h-10 rounded-full shadow-lg flex items-center justify-center text-xl backdrop-blur-sm border-2 border-white"
+                      style={{ backgroundColor: category?.color || '#ec4899' }}
                     >
-                      <Heart size={18} weight={isSaved ? 'fill' : 'regular'} className="mr-2" />
-                      {isSaved ? t.map?.saved || 'Saved' : t.map?.save || 'Save'}
-                    </Button>
-                    <Button
-                      className="flex-1"
-                      onClick={() => {
-                        haptics.trigger('medium');
-                        const url = `https://www.google.com/maps/dir/?api=1&destination=${place.location.lat},${place.location.lng}`;
-                        window.open(url, '_blank');
-                      }}
-                    >
-                      <NavigationArrow size={18} className="mr-2" />
-                      {t.map?.navigate || 'Navigate'}
-                    </Button>
-                  </div>
-                </div>
+                      {category?.icon || '📍'}
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                  </button>
+                </MotionView>
               );
-            })()}
-          </MotionView>
-        )}
-      </Presence>
+            })}
+        </div>
 
-      {/* Stats Footer */}
-      <MotionView
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="absolute bottom-4 left-4 right-4 z-10"
-      >
-        <div className="backdrop-blur-xl bg-background/80 rounded-2xl shadow-xl border border-border p-4">
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold text-primary">{filteredPlaces.length}</p>
-              <p className="text-xs text-muted-foreground">{t.map?.placesNearby || 'Places'}</p>
+        {/* Top Controls */}
+        <div className="absolute top-4 left-4 right-4 z-10 space-y-3">
+          {/* Search Bar */}
+          <MotionView
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="backdrop-blur-xl bg-background/80 rounded-2xl shadow-2xl border border-border/50 p-3"
+          >
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <MagnifyingGlass
+                  size={20}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t.map?.searchPlaceholder || 'Search places...'}
+                  className="pl-10 h-11 bg-background/50 border-border"
+                />
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  haptics.trigger('selection');
+                  setShowList(!showList);
+                }}
+                className="h-11 w-11 rounded-xl hover:bg-primary/10"
+              >
+                {showList ? <X size={20} /> : <List size={20} />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={requestLocation}
+                disabled={isLocating}
+                className="h-11 w-11 rounded-xl hover:bg-primary/10"
+              >
+                <Crosshair size={20} className={isLocating ? 'animate-spin' : ''} />
+              </Button>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-primary">{(savedPlaces || []).length}</p>
-              <p className="text-xs text-muted-foreground">{t.map?.saved || 'Saved'}</p>
+
+            {/* Category Pills */}
+            <div className="flex gap-2 overflow-x-auto mt-3 pb-1 scrollbar-hide">
+              {PLACE_CATEGORIES.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => handleCategoryFilter(category.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                    selectedCategory === category.id
+                      ? 'bg-primary text-primary-foreground shadow-md scale-105'
+                      : 'bg-background/50 text-foreground/70 hover:bg-muted'
+                  }`}
+                >
+                  <span>{category.icon}</span>
+                  <span>{category.name}</span>
+                </button>
+              ))}
             </div>
-            <div>
-              <p className="text-2xl font-bold text-primary">{radiusKm}</p>
-              <p className="text-xs text-muted-foreground">{t.map?.radiusKm || 'km radius'}</p>
+          </MotionView>
+
+          {/* Privacy Banner */}
+          {locationPermission === 'granted' && !preciseSharingEnabled && (
+            <MotionView
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="backdrop-blur-xl bg-primary/10 rounded-xl border border-primary/20 p-3"
+            >
+              <div className="flex items-start gap-3">
+                <Warning size={20} className="text-primary shrink-0 mt-0.5" weight="fill" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground">
+                    {t.map?.approximateLocation || 'Using approximate location'}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t.map?.enablePrecisePrompt ||
+                      'Enable precise location for live meet-ups and exact navigation'}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={handleEnablePreciseSharing}
+                  className="shrink-0 h-8 text-xs"
+                >
+                  {t.map?.enable || 'Enable'}
+                </Button>
+              </div>
+            </MotionView>
+          )}
+
+          {preciseSharingEnabled && preciseSharingUntil && (
+            <MotionView
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="backdrop-blur-xl bg-green-500/10 rounded-xl border border-green-500/20 p-3"
+            >
+              <div className="flex items-center gap-3">
+                <CheckCircle size={20} className="text-green-500 shrink-0" weight="fill" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground">
+                    {t.map?.preciseEnabled || 'Precise location active'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {t.map?.preciseExpires ||
+                      `Expires in ${Math.ceil((preciseSharingUntil - Date.now()) / 60000)} minutes`}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleDisablePreciseSharing}
+                  className="shrink-0 h-8 text-xs"
+                >
+                  {t.map?.disable || 'Disable'}
+                </Button>
+              </div>
+            </MotionView>
+          )}
+        </div>
+
+        {/* Places List Sidebar */}
+        <Presence>
+          {showList && (
+            <MotionView
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="absolute right-0 top-0 bottom-0 w-full sm:w-96 bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl overflow-y-auto"
+            >
+              <div className="p-4 space-y-3">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">
+                    {t.map?.nearbyPlaces || 'Nearby Places'} ({filteredPlaces.length})
+                  </h3>
+                  <Button variant="ghost" size="icon" onClick={() => setShowList(false)}>
+                    <X size={20} />
+                  </Button>
+                </div>
+
+                {filteredPlaces.map((place) => {
+                  const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
+                  const isSaved = (savedPlaces || []).includes(place.id);
+
+                  return (
+                    <Card
+                      key={place.id}
+                      className="p-4 hover:shadow-lg transition-all cursor-pointer"
+                      onClick={() => {
+                        haptics.trigger('light');
+                        setSelectedMarker({
+                          id: place.id,
+                          type: 'place',
+                          location: place.location,
+                          data: place,
+                        });
+                        setShowList(false);
+                      }}
+                    >
+                      <div className="flex gap-3">
+                        <div
+                          className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+                          style={{ backgroundColor: `${category?.color}20` }}
+                        >
+                          {category?.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className="font-semibold text-sm truncate">{place.name}</h4>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 shrink-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSavePlace(place.id);
+                              }}
+                            >
+                              <Heart
+                                size={16}
+                                weight={isSaved ? 'fill' : 'regular'}
+                                className={isSaved ? 'text-red-500' : ''}
+                              />
+                            </Button>
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
+                            {place.description}
+                          </p>
+                          <div className="flex items-center gap-3 mt-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {formatDistance(place.distance || 0)}
+                            </Badge>
+                            {place.verified && (
+                              <Badge variant="outline" className="text-xs">
+                                ✓ Verified
+                              </Badge>
+                            )}
+                            <span className="text-xs text-muted-foreground">
+                              ⭐ {place.rating.toFixed(1)} ({place.reviewCount})
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </MotionView>
+          )}
+        </Presence>
+
+        {/* Selected Place Detail Sheet */}
+        <Presence>
+          {selectedMarker?.type === 'place' && (
+            <MotionView
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="absolute bottom-0 left-0 right-0 max-h-[60%] bg-background rounded-t-3xl shadow-2xl border-t border-border overflow-y-auto"
+            >
+              {(() => {
+                const place = selectedMarker.data as Place;
+                const category = PLACE_CATEGORIES.find((c) => c.id === place.category);
+                const isSaved = (savedPlaces || []).includes(place.id);
+
+                return (
+                  <div className="p-6 space-y-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+                          style={{ backgroundColor: `${category?.color}20` }}
+                        >
+                          {category?.icon}
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold">{place.name}</h3>
+                          <p className="text-sm text-muted-foreground">{place.address}</p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => setSelectedMarker(null)}>
+                        <X size={20} />
+                      </Button>
+                    </div>
+
+                    {place.description && <p className="text-foreground/80">{place.description}</p>}
+
+                    <div className="flex gap-2 flex-wrap">
+                      <Badge variant="secondary">📏 {formatDistance(place.distance || 0)}</Badge>
+                      <Badge variant="secondary">
+                        ⭐ {place.rating.toFixed(1)} ({place.reviewCount})
+                      </Badge>
+                      {place.verified && (
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                          ✓ Verified
+                        </Badge>
+                      )}
+                      {place.isOpen && (
+                        <Badge variant="outline" className="text-green-600 border-green-600">
+                          🕐 Open Now
+                        </Badge>
+                      )}
+                    </div>
+
+                    {place.amenities.length > 0 && (
+                      <div>
+                        <p className="text-sm font-semibold mb-2">Amenities</p>
+                        <div className="flex gap-2 flex-wrap">
+                          {place.amenities.map((amenity) => (
+                            <Badge key={amenity} variant="outline">
+                              {amenity}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        className="flex-1"
+                        onClick={() => {
+                          haptics.trigger('medium');
+                          handleSavePlace(place.id);
+                        }}
+                        variant={isSaved ? 'secondary' : 'outline'}
+                      >
+                        <Heart size={18} weight={isSaved ? 'fill' : 'regular'} className="mr-2" />
+                        {isSaved ? t.map?.saved || 'Saved' : t.map?.save || 'Save'}
+                      </Button>
+                      <Button
+                        className="flex-1"
+                        onClick={() => {
+                          haptics.trigger('medium');
+                          const url = `https://www.google.com/maps/dir/?api=1&destination=${place.location.lat},${place.location.lng}`;
+                          window.open(url, '_blank');
+                        }}
+                      >
+                        <NavigationArrow size={18} className="mr-2" />
+                        {t.map?.navigate || 'Navigate'}
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })()}
+            </MotionView>
+          )}
+        </Presence>
+
+        {/* Stats Footer */}
+        <MotionView
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="absolute bottom-4 left-4 right-4 z-10"
+        >
+          <div className="backdrop-blur-xl bg-background/80 rounded-2xl shadow-xl border border-border p-4">
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <p className="text-2xl font-bold text-primary">{filteredPlaces.length}</p>
+                <p className="text-xs text-muted-foreground">{t.map?.placesNearby || 'Places'}</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-primary">{(savedPlaces || []).length}</p>
+                <p className="text-xs text-muted-foreground">{t.map?.saved || 'Saved'}</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-primary">{radiusKm}</p>
+                <p className="text-xs text-muted-foreground">{t.map?.radiusKm || 'km radius'}</p>
+              </div>
             </div>
           </div>
-        </div>
-      </MotionView>
-    </div>
+        </MotionView>
+      </div>
+    </PageTransitionWrapper>
   );
 }

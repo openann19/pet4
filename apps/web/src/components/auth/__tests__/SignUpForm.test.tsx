@@ -206,7 +206,11 @@ describe('SignUpForm', () => {
     await user.type(passwordInput, 'password123');
 
     // Button has aria-label "Show password" or "Hide password"
-    const toggleButton = screen.getAllByRole('button', { name: /show password/i })[0];
+    const toggleButtons = screen.getAllByRole('button', { name: /show password/i });
+    const toggleButton = toggleButtons[0];
+    if (!toggleButton) {
+      throw new Error('Toggle button not found');
+    }
     await user.click(toggleButton);
 
     expect(passwordInput.type).toBe('text');
@@ -243,8 +247,11 @@ describe('SignUpForm', () => {
     const submitButton = screen.getByRole('button', { name: /sign up/i });
     await user.click(submitButton);
 
-    await waitFor(() => {
-      expect(screen.getByTestId('age-gate-modal')).toBeInTheDocument();
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('age-gate-modal')).toBeInTheDocument();
+      },
+      { timeout: 2000 }
+    );
   });
 });

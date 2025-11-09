@@ -37,7 +37,7 @@ import {
 } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 const logger = createLogger('ContentModerationQueue');
@@ -64,11 +64,7 @@ export function ContentModerationQueue() {
   const [decisionReason, setDecisionReason] = useState<string>('');
   const [decisionText, setDecisionText] = useState('');
 
-  useEffect(() => {
-    loadQueue();
-  }, [selectedType, selectedStatus]);
-
-  const loadQueue = async () => {
+  const loadQueue = useCallback(async () => {
     try {
       setLoading(true);
       const newItems: ModerationItem[] = [];
@@ -189,7 +185,14 @@ export function ContentModerationQueue() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedType, selectedStatus]);
+
+  useEffect(() => {
+    void loadQueue().catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load queue in useEffect', err);
+    });
+  }, [loadQueue]);
 
   const handleApprove = async () => {
     if (!selectedItem) return;
@@ -540,7 +543,12 @@ export function ContentModerationQueue() {
 
                   <div className="grid grid-cols-2 gap-2">
                     <Button
-                      onClick={handleApprove}
+                      onClick={() => {
+                        void handleApprove().catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to approve from button', err);
+                        });
+                      }}
                       disabled={loading}
                       className="bg-green-600 hover:bg-green-700"
                     >
@@ -548,7 +556,12 @@ export function ContentModerationQueue() {
                       Approve
                     </Button>
                     <Button
-                      onClick={handleReject}
+                      onClick={() => {
+                        void handleReject().catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to reject from button', err);
+                        });
+                      }}
                       disabled={loading || !decisionText}
                       variant="destructive"
                     >

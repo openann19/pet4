@@ -6,9 +6,12 @@ import type { PremiumNotification } from '../types';
 
 // Mock useStorage - use a closure to allow mutation
 const storageMock = {
-  impl: (key: string, defaultValue: unknown): [unknown, () => Promise<void>, () => Promise<void>] => {
-    const setter = async () => { };
-    const clear = async () => { };
+  impl: (
+    key: string,
+    defaultValue: unknown
+  ): [unknown, () => Promise<void>, () => Promise<void>] => {
+    const setter = async () => {};
+    const clear = async () => {};
     return [defaultValue, setter, clear];
   },
 };
@@ -67,8 +70,8 @@ describe('PremiumNotificationBell', () => {
     vi.clearAllMocks();
     vi.useFakeTimers();
     storageMock.impl = (key: string, defaultValue: unknown) => {
-      const setter = vi.fn(async () => { });
-      const clear = vi.fn(async () => { });
+      const setter = vi.fn(async () => {});
+      const clear = vi.fn(async () => {});
       if (key === 'premium-notifications') {
         return [mockNotifications, setter, clear];
       }

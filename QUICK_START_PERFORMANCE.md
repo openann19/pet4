@@ -65,11 +65,13 @@ git commit -m "test: verify setup"
 ## 📊 Performance Improvements
 
 ### Before
+
 - ESLint: ~30s (type-aware for all files)
 - TypeScript: ~20s (full type check)
 - Pre-commit: ~30s (full repo lint)
 
 ### After
+
 - ESLint: ~5s (type-aware only for TYPE_AWARE globs)
 - TypeScript: ~2s (incremental builds)
 - Pre-commit: ~2s (only staged files)

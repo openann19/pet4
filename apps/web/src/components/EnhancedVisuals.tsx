@@ -8,6 +8,9 @@ import {
 } from 'react-native-reanimated';
 import React from 'react';
 import type { ReactNode } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('EnhancedVisuals');
 
 interface EnhancedCardProps {
   children: ReactNode;
@@ -21,11 +24,15 @@ export function EnhancedCard({ children, className = '', delay = 0 }: EnhancedCa
   const hoverY = useSharedValue(0);
 
   React.useEffect(() => {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       opacity.value = withTiming(1, { duration: 500 });
       y.value = withTiming(0, { duration: 500 });
     }, delay);
-  }, [delay]);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [delay, opacity, y]);
 
   const handleMouseEnter = React.useCallback(() => {
     hoverY.value = withTiming(-4, { duration: 200 });
@@ -71,9 +78,13 @@ export function FloatingActionButton({
 
   React.useEffect(() => {
     opacity.value = withTiming(1, { duration: 200 });
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       scale.value = withTiming(1, { duration: 300 });
     }, 200);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [opacity, scale]);
 
   const handleMouseEnter = React.useCallback(() => {
@@ -83,6 +94,15 @@ export function FloatingActionButton({
   const handleMouseLeave = React.useCallback(() => {
     hoverScale.value = withTiming(1, { duration: 200 });
   }, []);
+
+  const handleClick = React.useCallback(() => {
+    try {
+      onClick();
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('FloatingActionButton onClick error', err);
+    }
+  }, [onClick]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -94,7 +114,7 @@ export function FloatingActionButton({
       animatedStyle={animatedStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={onClick}
+      onClick={handleClick}
       className={`fixed bottom-24 right-6 z-50 h-14 flex items-center gap-3 bg-linear-to-r from-primary to-accent text-white px-6 rounded-full shadow-2xl hover:shadow-primary/50 transition-all duration-300 ${className}`}
     >
       <span className="text-xl">{icon}</span>
@@ -276,6 +296,35 @@ interface LoadingDotsProps {
   color?: string;
 }
 
+function useDotAnimation(delay: number) {
+  const translateY = useSharedValue(0);
+  const opacity = useSharedValue(0.5);
+
+  React.useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      translateY.value = withRepeat(
+        withSequence(withTiming(-8, { duration: 300 }), withTiming(0, { duration: 300 })),
+        -1,
+        true
+      );
+      opacity.value = withRepeat(
+        withSequence(withTiming(1, { duration: 300 }), withTiming(0.5, { duration: 300 })),
+        -1,
+        true
+      );
+    }, delay);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [delay, translateY]);
+
+  return useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    opacity: opacity.value,
+  }));
+}
+
 export function LoadingDots({ size = 'md', color = 'bg-primary' }: LoadingDotsProps) {
   const sizeClasses = {
     sm: 'w-1.5 h-1.5',
@@ -283,34 +332,9 @@ export function LoadingDots({ size = 'md', color = 'bg-primary' }: LoadingDotsPr
     lg: 'w-3 h-3',
   };
 
-  const createDotAnimation = (delay: number) => {
-    const translateY = useSharedValue(0);
-    const opacity = useSharedValue(0.5);
-
-    React.useEffect(() => {
-      setTimeout(() => {
-        translateY.value = withRepeat(
-          withSequence(withTiming(-8, { duration: 300 }), withTiming(0, { duration: 300 })),
-          -1,
-          true
-        );
-        opacity.value = withRepeat(
-          withSequence(withTiming(1, { duration: 300 }), withTiming(0.5, { duration: 300 })),
-          -1,
-          true
-        );
-      }, delay);
-    }, [delay]);
-
-    return useAnimatedStyle(() => ({
-      transform: [{ translateY: translateY.value }],
-      opacity: opacity.value,
-    }));
-  };
-
-  const dot1Style = createDotAnimation(0);
-  const dot2Style = createDotAnimation(150);
-  const dot3Style = createDotAnimation(300);
+  const dot1Style = useDotAnimation(0);
+  const dot2Style = useDotAnimation(150);
+  const dot3Style = useDotAnimation(300);
 
   return (
     <div className="flex items-center justify-center gap-1.5">

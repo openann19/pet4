@@ -153,11 +153,15 @@ export default function CommunityManagement() {
 
   const handleHidePost = useCallback(
     (postId: string) => {
-      setHiddenPosts((prev) => {
+      void setHiddenPosts((prev) => {
         if (prev?.includes(postId)) {
           return prev;
         }
         return [...(prev || []), postId];
+      }).catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to hide post', err, { postId });
+        toast.error('Failed to hide post');
       });
       toast.success('Post hidden from feed');
     },
@@ -166,7 +170,11 @@ export default function CommunityManagement() {
 
   const handleUnhidePost = useCallback(
     (postId: string) => {
-      setHiddenPosts((prev) => (prev || []).filter((id) => id !== postId));
+      void setHiddenPosts((prev) => (prev || []).filter((id) => id !== postId)).catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to unhide post', err, { postId });
+        toast.error('Failed to restore post');
+      });
       toast.success('Post restored to feed');
     },
     [setHiddenPosts]
@@ -352,7 +360,15 @@ export default function CommunityManagement() {
             <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={() => void handleDeletePost()}>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                void handleDeletePost().catch((error) => {
+                  const err = error instanceof Error ? error : new Error(String(error));
+                  logger.error('Failed to delete post from button', err);
+                });
+              }}
+            >
               Delete
             </Button>
           </DialogFooter>

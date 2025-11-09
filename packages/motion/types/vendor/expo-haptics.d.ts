@@ -25,4 +25,3 @@ declare module 'expo-haptics' {
   const haptics: Haptics
   export default haptics
 }
-

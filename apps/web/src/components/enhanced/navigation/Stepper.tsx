@@ -8,6 +8,7 @@ import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { Check, Circle } from 'lucide-react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface StepperStep {
   id: string;
@@ -32,7 +33,8 @@ export function Stepper({
   orientation = 'horizontal',
   className,
 }: StepperProps): React.JSX.Element {
-  const progressWidth = useSharedValue(0);
+    const uiConfig = useUIConfig();
+    const progressWidth = useSharedValue(0);
 
   const progressStyle = useAnimatedStyle(() => ({
     width: `${progressWidth.value}%`,

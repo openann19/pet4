@@ -4,6 +4,10 @@ import type { LayoutChangeEvent } from 'react-native'
 import { motion } from '../tokens'
 import { useReducedMotionSV } from '../reduced-motion'
 
+// Type declaration for optional react-native-gesture-handler module
+// Declaration file is in src/types/react-native-gesture-handler.d.ts
+// The module may not be available in all environments (e.g., web)
+
 // Optional gesture handler import (may not be available in all environments)
 interface GestureHandler {
   Pan: () => {
@@ -37,9 +41,21 @@ async function loadGestureHandler(): Promise<GestureHandler | null> {
   if (gestureLoadPromise) return gestureLoadPromise
 
   // Dynamic import with type assertion - module may not be available
-   
-  gestureLoadPromise = (import('react-native-gesture-handler') as Promise<{ default?: ReactNativeGestureHandlerModule; Gesture?: GestureHandler }>)
+
+  // Dynamic import - module may not be available in all environments (e.g., web)
+  // Type declaration is in src/types/react-native-gesture-handler.d.ts
+  // Using type assertion to handle optional module that may not exist at runtime
+  gestureLoadPromise = (
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    import('react-native-gesture-handler') as unknown as Promise<{
+      default?: ReactNativeGestureHandlerModule
+      Gesture?: GestureHandler
+    }>
+  )
     .then(module => {
+      if (!module) {
+        return null
+      }
       const defaultExport = (module.default ?? module) as unknown
       if (isGestureHandlerModule(defaultExport)) {
         Gesture =

@@ -7,6 +7,7 @@ import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface SegmentedControlOption {
   label: string;
@@ -33,7 +34,8 @@ export function SegmentedControl({
   className,
   'aria-label': ariaLabel,
 }: SegmentedControlProps): React.JSX.Element {
-  const containerRef = useRef<HTMLDivElement>(null);
+    const uiConfig = useUIConfig();
+    const containerRef = useRef<HTMLDivElement>(null);
   const indicatorPosition = useSharedValue(0);
   const indicatorWidth = useSharedValue(0);
   const selectedValues = Array.isArray(value) ? value : value ? [value] : [];

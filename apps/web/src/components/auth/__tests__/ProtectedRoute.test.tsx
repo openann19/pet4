@@ -27,14 +27,18 @@ vi.mock('@/components/ui/spinner', () => ({
   Spinner: ({ size }: any) => <div data-testid={`spinner-${size}`}>Loading...</div>,
 }));
 
+const mockUseAuth = vi.fn();
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: mockUseAuth,
+}));
+
 describe('ProtectedRoute', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should render children when authenticated', () => {
-    const { useAuth } = require('@/contexts/AuthContext');
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: { id: 'user-1', roles: ['user'] },
       isAuthenticated: true,
       isLoading: false,
@@ -52,8 +56,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('should redirect to login when not authenticated', () => {
-    const { useAuth } = require('@/contexts/AuthContext');
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: null,
       isAuthenticated: false,
       isLoading: false,
@@ -77,8 +80,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('should show spinner when loading', () => {
-    const { useAuth } = require('@/contexts/AuthContext');
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: null,
       isAuthenticated: false,
       isLoading: true,
@@ -96,8 +98,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('should redirect to unauthorized when adminOnly and user is not admin', () => {
-    const { useAuth } = require('@/contexts/AuthContext');
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: { id: 'user-1', roles: ['user'] },
       isAuthenticated: true,
       isLoading: false,
@@ -115,8 +116,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('should allow access when adminOnly and user is admin', () => {
-    const { useAuth } = require('@/contexts/AuthContext');
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: { id: 'admin-1', roles: ['admin'] },
       isAuthenticated: true,
       isLoading: false,
@@ -134,8 +134,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('should redirect to unauthorized when moderatorOnly and user is not moderator', () => {
-    const { useAuth } = require('@/contexts/AuthContext');
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: { id: 'user-1', roles: ['user'] },
       isAuthenticated: true,
       isLoading: false,
@@ -153,8 +152,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('should allow access when moderatorOnly and user is moderator', () => {
-    const { useAuth } = require('@/contexts/AuthContext');
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: { id: 'mod-1', roles: ['moderator'] },
       isAuthenticated: true,
       isLoading: false,
@@ -172,8 +170,7 @@ describe('ProtectedRoute', () => {
   });
 
   it('should allow access when moderatorOnly and user is admin', () => {
-    const { useAuth } = require('@/contexts/AuthContext');
-    vi.mocked(useAuth).mockReturnValue({
+    mockUseAuth.mockReturnValue({
       user: { id: 'admin-1', roles: ['admin'] },
       isAuthenticated: true,
       isLoading: false,

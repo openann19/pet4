@@ -104,9 +104,12 @@ describe('useSmartHighlight', () => {
   it('triggers automatically when isHighlighted is true', async () => {
     const { result } = renderHook(() => useSmartHighlight({ isHighlighted: true }));
 
-    await waitFor(() => {
-      expect(result.current.backgroundOpacity.value).toBeGreaterThan(0);
-    }, { timeout: 1000 });
+    await waitFor(
+      () => {
+        expect(result.current.backgroundOpacity.value).toBeGreaterThan(0);
+      },
+      { timeout: 1000 }
+    );
   });
 
   it('does not trigger automatically when isHighlighted is false', () => {

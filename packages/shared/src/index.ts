@@ -9,6 +9,7 @@ export * from './types/optional-with-undef'
 export * from './utils/stories-utils'
 export * from './storage/StorageAdapter'
 export * from './chat'
+export * from './gdpr'
 
 // Re-export motion facade (relative import for now)
 export * from '../../motion/src/index'

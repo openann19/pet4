@@ -27,8 +27,14 @@ async function loadExpoHaptics(): Promise<ExpoHaptics | null> {
   if (hapticsLoadPromise) return hapticsLoadPromise
 
   // Dynamic import with type assertion - module may not be available
-   
-  hapticsLoadPromise = (import('expo-haptics') as Promise<{ default?: ExpoHaptics; impactAsync?: ExpoHaptics['impactAsync']; ImpactFeedbackStyle?: ExpoHaptics['ImpactFeedbackStyle'] }>)
+
+  hapticsLoadPromise = (
+    import('expo-haptics') as Promise<{
+      default?: ExpoHaptics
+      impactAsync?: ExpoHaptics['impactAsync']
+      ImpactFeedbackStyle?: ExpoHaptics['ImpactFeedbackStyle']
+    }>
+  )
     .then(module => {
       const defaultExport = module.default ?? module
       if (isExpoHaptics(defaultExport)) {

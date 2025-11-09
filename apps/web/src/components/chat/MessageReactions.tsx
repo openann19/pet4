@@ -11,6 +11,7 @@ import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { haptics } from '@/lib/haptics';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface MessageReactionsProps {
   reactions: MessageReaction[];
@@ -25,7 +26,8 @@ export default function MessageReactions({
   onReact,
   currentUserId,
 }: MessageReactionsProps): React.JSX.Element {
-  const [showPicker, setShowPicker] = useState(false);
+    const uiConfig = useUIConfig();
+    const [showPicker, setShowPicker] = useState(false);
   const [visibleReactions, setVisibleReactions] = useState<Set<string>>(new Set());
 
   const reactionGroups = useMemo(() => {

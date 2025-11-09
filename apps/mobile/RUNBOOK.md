@@ -362,6 +362,7 @@ pnpm test:run
 ## Important References
 
 For related operational documentation, see:
+
 - [Mobile Production Readiness Checklist](./PRODUCTION_READINESS.md)
 - [Web Admin Runbook](../web/RUNBOOK_admin.md)
 - [Web Production Readiness](../web/docs/PRODUCTION_READINESS.md)
@@ -372,7 +373,8 @@ For related operational documentation, see:
 
 ## Notes on Current Status
 
-**As of 2025-11-08**: 
+**As of 2025-11-08**:
+
 - Pre-release checklist items need to be completed before production deployment
 - TypeScript and ESLint issues identified in verification report must be resolved
 - Contact information placeholders must be filled in

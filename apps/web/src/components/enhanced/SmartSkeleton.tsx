@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useShimmer } from '@/effects/reanimated/use-shimmer';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface SmartSkeletonProps {
   variant?: 'text' | 'circular' | 'rectangular' | 'card' | 'avatar' | 'post';
@@ -23,10 +24,11 @@ export function SmartSkeleton({
   animate = true,
   count = 1,
 }: SmartSkeletonProps) {
-  const shimmer = useShimmer({
-    enabled: animate,
-    duration: 2000,
-  });
+    const uiConfig = useUIConfig();
+    const shimmer = useShimmer({
+        enabled: animate,
+        duration: 2000,
+      });
 
   const baseClasses = cn('bg-muted relative overflow-hidden', className);
 

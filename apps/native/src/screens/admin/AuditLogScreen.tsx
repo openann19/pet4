@@ -4,7 +4,7 @@
  * Mobile admin screen for viewing audit logs of admin actions.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -37,11 +37,7 @@ export const AuditLogScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'user' | 'content' | 'config'>('all');
 
-  useEffect(() => {
-    loadLogs();
-  }, [filter]);
-
-  const loadLogs = async () => {
+  const loadLogs = useCallback(async () => {
     setLoading(true);
     try {
       const data = await mobileAdminApi.getAuditLogs(100);
@@ -65,7 +61,11 @@ export const AuditLogScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    void loadLogs();
+  }, [loadLogs]);
 
   const filteredLogs = logs.filter((log) => {
     if (filter === 'all') return true;

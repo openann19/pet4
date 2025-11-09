@@ -7,7 +7,7 @@ import {
   withDelay,
   type SharedValue,
 } from 'react-native-reanimated'
-import { useEffect, useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import type { MessageStatus } from '@mobile/lib/chat-types'
 import { springConfigs, timingConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'

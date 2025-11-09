@@ -25,10 +25,7 @@ import {
   type SharedValue,
 } from 'react-native-reanimated'
 import { triggerHaptic } from '../effects/chat/core/haptic-manager'
-import {
-  useReducedMotionSV,
-  getReducedMotionDuration,
-} from '../effects/chat/core/reduced-motion'
+import { useReducedMotionSV, getReducedMotionDuration } from '../effects/chat/core/reduced-motion'
 import { springConfigs, timingConfigs } from '../effects/reanimated/transitions'
 
 export interface UseMessageBubbleAnimationOptions {
@@ -164,10 +161,13 @@ export function useMessageBubbleAnimation(
             duration: fastDuration,
             easing: Easing.linear,
           }),
-          withDelay(1500, withTiming(0, {
-            duration: smoothDuration,
-            easing: Easing.linear,
-          }))
+          withDelay(
+            1500,
+            withTiming(0, {
+              duration: smoothDuration,
+              easing: Easing.linear,
+            })
+          )
         )
       } else {
         // Normal motion: smooth sequence
@@ -192,18 +192,8 @@ export function useMessageBubbleAnimation(
   })
 
   const glowStyle = useAnimatedStyle(() => {
-    const shadowRadius = interpolate(
-      glowOpacity.value,
-      [0, 1],
-      [0, 8],
-      Extrapolation.CLAMP
-    )
-    const shadowOpacity = interpolate(
-      glowOpacity.value,
-      [0, 1],
-      [0, 0.5],
-      Extrapolation.CLAMP
-    )
+    const shadowRadius = interpolate(glowOpacity.value, [0, 1], [0, 8], Extrapolation.CLAMP)
+    const shadowOpacity = interpolate(glowOpacity.value, [0, 1], [0, 0.5], Extrapolation.CLAMP)
 
     return {
       opacity: glowOpacity.value,
@@ -223,10 +213,7 @@ export function useMessageBubbleAnimation(
 
   const reactionStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: reactionScale.value },
-        { translateY: reactionTranslateY.value },
-      ],
+      transform: [{ scale: reactionScale.value }, { translateY: reactionTranslateY.value }],
       opacity: reactionOpacity.value,
     }
   })
@@ -331,15 +318,19 @@ export function useMessageBubbleAnimation(
 
     if (isReducedMotion) {
       const duration = getReducedMotionDuration(120, true)
-      scale.value = withTiming(0.94, {
-        duration: duration,
-        easing: Easing.linear,
-      }, () => {
-        scale.value = withTiming(1, {
+      scale.value = withTiming(
+        0.94,
+        {
           duration: duration,
           easing: Easing.linear,
-        })
-      })
+        },
+        () => {
+          scale.value = withTiming(1, {
+            duration: duration,
+            easing: Easing.linear,
+          })
+        }
+      )
     } else {
       scale.value = withSequence(
         withSpring(0.94, {
@@ -373,15 +364,19 @@ export function useMessageBubbleAnimation(
 
       if (isReducedMotion) {
         // Reduced motion: simplified animation
-        reactionScale.value = withTiming(1.2, {
-          duration: fastDuration,
-          easing: Easing.linear,
-        }, () => {
-          reactionScale.value = withTiming(1, {
-            duration: smoothDuration,
+        reactionScale.value = withTiming(
+          1.2,
+          {
+            duration: fastDuration,
             easing: Easing.linear,
-          })
-        })
+          },
+          () => {
+            reactionScale.value = withTiming(1, {
+              duration: smoothDuration,
+              easing: Easing.linear,
+            })
+          }
+        )
         reactionTranslateY.value = withTiming(-15, {
           duration: fastDuration,
           easing: Easing.linear,
@@ -391,10 +386,13 @@ export function useMessageBubbleAnimation(
             duration: fastDuration,
             easing: Easing.linear,
           }),
-          withDelay(300, withTiming(0, {
-            duration: smoothDuration,
-            easing: Easing.linear,
-          }))
+          withDelay(
+            300,
+            withTiming(0, {
+              duration: smoothDuration,
+              easing: Easing.linear,
+            })
+          )
         )
       } else {
         // Normal motion: full spring animation
@@ -418,13 +416,7 @@ export function useMessageBubbleAnimation(
 
       triggerHapticFeedback()
     },
-    [
-      reactionScale,
-      reactionTranslateY,
-      reactionOpacity,
-      triggerHapticFeedback,
-      reducedMotion,
-    ]
+    [reactionScale, reactionTranslateY, reactionOpacity, triggerHapticFeedback, reducedMotion]
   )
 
   const animateHighlight = useCallback(() => {
@@ -438,10 +430,13 @@ export function useMessageBubbleAnimation(
           duration: fastDuration,
           easing: Easing.linear,
         }),
-        withDelay(1500, withTiming(0, {
-          duration: smoothDuration,
-          easing: Easing.linear,
-        }))
+        withDelay(
+          1500,
+          withTiming(0, {
+            duration: smoothDuration,
+            easing: Easing.linear,
+          })
+        )
       )
     } else {
       backgroundOpacity.value = withSequence(

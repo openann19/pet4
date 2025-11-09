@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useTheme } from '../useTheme';
-import { useStorage } from '../useStorage';
+import { useStorage } from '../use-storage';
 import { getThemePreset, applyThemePreset } from '@/lib/theme-presets';
 
-vi.mock('../useStorage');
+vi.mock('../use-storage');
 vi.mock('@/lib/theme-presets', () => ({
   getThemePreset: vi.fn((preset: string) => ({
     name: preset,

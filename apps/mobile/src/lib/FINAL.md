@@ -4,16 +4,16 @@ Global Diagnostics
 Run npx tsc --noEmit --strict and npx eslint . --max-warnings=0.
 Export full error lists, categorize (module resolution, RN typings, implicit any, style typing, etc.), and baseline counts.
 Configuration Alignment
-Normalize root 
+Normalize root
 tsconfig.base.json
- paths/typeRoots (React Native, shared packages).
+paths/typeRoots (React Native, shared packages).
 Ensure each package tsconfig extends correctly and declares project-specific types/paths.
 Sync tooling configs (Vitest/Jest/ESLint) with new aliases.
 Alias & Module Resolution Fixes
-Refactor all imports from 
-mobile/*
-, 
-shared/*
+Refactor all imports from
+mobile/_
+,
+shared/_
 , etc., to align with tsconfig paths.
 Add missing barrel exports (e.g., apps/mobile/src/index.ts), update re-export structure.
 React Native Compatibility Sweep

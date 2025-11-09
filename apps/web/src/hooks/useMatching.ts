@@ -55,12 +55,14 @@ export function useMatching({ userPet, otherPet, autoCalculate = true }: UseMatc
 
   useEffect(() => {
     if (autoCalculate) {
-      calculateMatch();
+      // Calculate match asynchronously - fire-and-forget with error handling inside
+      void calculateMatch();
     }
   }, [autoCalculate, calculateMatch]);
 
   const recalculate = useCallback(() => {
-    calculateMatch();
+    // Calculate match asynchronously - fire-and-forget with error handling inside
+    void calculateMatch();
   }, [calculateMatch]);
 
   return {

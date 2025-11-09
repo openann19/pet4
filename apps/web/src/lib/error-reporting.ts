@@ -29,7 +29,8 @@ export function initErrorReporting(config: ErrorReportingConfig = {}): void {
 
   try {
     // Dynamically import Sentry only if DSN is available
-    import('@sentry/browser')
+    // Fire-and-forget: initialize asynchronously without blocking
+    void import('@sentry/browser')
       .then((Sentry) => {
         Sentry.init({
           dsn,
@@ -65,7 +66,8 @@ export function reportError(error: Error, context?: Record<string, unknown>): vo
   if (!errorReportingInitialized) return;
 
   try {
-    import('@sentry/browser')
+    // Fire-and-forget: report error asynchronously without blocking
+    void import('@sentry/browser')
       .then((Sentry) => {
         Sentry.captureException(error, {
           contexts: {
@@ -88,7 +90,8 @@ export function setErrorReportingUser(userId: string, email?: string): void {
   if (!errorReportingInitialized) return;
 
   try {
-    import('@sentry/browser')
+    // Fire-and-forget: set user context asynchronously without blocking
+    void import('@sentry/browser')
       .then((Sentry) => {
         Sentry.setUser({
           id: userId,

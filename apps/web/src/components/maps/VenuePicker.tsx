@@ -7,7 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type { Location, Place } from '@/lib/maps/types';
+
+const logger = createLogger('VenuePicker');
 import {
   getCurrentLocation,
   snapToGrid,
@@ -53,10 +56,19 @@ export default function VenuePicker({
     if (open) {
       getCurrentLocation()
         .then((location) => {
-          const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
-          setUserLocation(coarse);
+          try {
+            const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
+            setUserLocation(coarse);
+          } catch (error) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logger.error('VenuePicker snapToGrid error', err);
+            setUserLocation(matchLocation || { lat: 40.7128, lng: -74.006 });
+          }
         })
-        .catch(() => {
+        .catch((error) => {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('VenuePicker getCurrentLocation error', err);
+          // Fallback to match location or default location
           setUserLocation(matchLocation || { lat: 40.7128, lng: -74.006 });
         });
     }

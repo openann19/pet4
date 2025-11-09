@@ -5,6 +5,7 @@ import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CheckCircle, Heart, Lightning, Sparkle, Star, Trophy } from '@phosphor-icons/react';
 import type { Icon } from '@phosphor-icons/react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface TrustBadge {
   type: 'verified' | 'health' | 'responsive' | 'experienced' | 'top-rated' | 'favorite';
@@ -84,7 +85,8 @@ interface BadgeAnimatedProps {
 }
 
 function BadgeAnimated({ index, animated, sizeConfig, config, Icon }: BadgeAnimatedProps) {
-  const staggered = useStaggeredItem({ index, staggerDelay: 50 });
+    const uiConfig = useUIConfig();
+    const staggered = useStaggeredItem({ index, staggerDelay: 50 });
   const scale = useSharedValue(animated ? 0.8 : 1);
 
   useEffect(() => {

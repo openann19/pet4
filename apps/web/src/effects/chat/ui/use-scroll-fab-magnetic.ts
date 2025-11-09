@@ -21,16 +21,10 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-motion';
+import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
+import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';
+import { useUIConfig } from '@/hooks/use-ui-config';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-
-/**
- * Spring configuration for entry
- */
-const FAB_ENTRY_SPRING = {
-  stiffness: 300,
-  damping: 25,
-  mass: 0.8,
-};
 
 /**
  * Scroll FAB magnetic effect options
@@ -70,6 +64,8 @@ export function useScrollFabMagnetic(
   } = options;
 
   const reducedMotion = useReducedMotionSV();
+  const { hz, scaleDuration } = useDeviceRefreshRate();
+  const { animation, visual } = useUIConfig();
   const scale = useSharedValue(isVisible ? 1 : 0);
   const translateY = useSharedValue(0);
   const badgeScale = useSharedValue(1);
@@ -77,7 +73,9 @@ export function useScrollFabMagnetic(
   // Entry animation
   useEffect(() => {
     if (enabled && isVisible) {
-      const duration = getReducedMotionDuration(ENTRY_DURATION, reducedMotion.value);
+      // Use adaptive duration scaling
+      const baseDuration = getReducedMotionDuration(ENTRY_DURATION, reducedMotion.value);
+      const duration = scaleDuration(baseDuration);
 
       if (reducedMotion.value) {
         scale.value = withTiming(1, {
@@ -85,29 +83,41 @@ export function useScrollFabMagnetic(
           easing: Easing.linear,
         });
       } else {
-        scale.value = withSpring(1, FAB_ENTRY_SPRING);
+        // Use UI config spring physics or fallback to adaptive config
+        const springConfig = animation.enableReanimated && animation.springPhysics
+          ? {
+              stiffness: animation.springPhysics.stiffness,
+              damping: animation.springPhysics.damping,
+              mass: animation.springPhysics.mass,
+            }
+          : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
+        scale.value = withSpring(1, springConfig);
       }
     } else if (enabled && !isVisible) {
+      // Use adaptive duration for exit
+      const exitDuration = scaleDuration(ENTRY_DURATION);
       scale.value = withTiming(0, {
-        duration: ENTRY_DURATION,
+        duration: exitDuration,
         easing: Easing.in(Easing.ease),
       });
     }
-  }, [enabled, isVisible, reducedMotion, scale]);
+  }, [enabled, isVisible, reducedMotion, hz, scaleDuration, animation, scale]);
 
-  // Magnetic hover oscillation
+  // Magnetic hover oscillation (only if animations enabled)
   useEffect(() => {
-    if (enabled && isVisible && !reducedMotion.value) {
+    if (enabled && isVisible && !reducedMotion.value && animation.enableReanimated) {
       const period = 1000 / OSCILLATION_FREQUENCY; // ms
+      // Use adaptive duration for oscillation
+      const halfPeriod = scaleDuration(period / 2);
 
       translateY.value = withRepeat(
         withSequence(
           withTiming(OSCILLATION_AMPLITUDE, {
-            duration: period / 2,
+            duration: halfPeriod,
             easing: Easing.inOut(Easing.sin),
           }),
           withTiming(-OSCILLATION_AMPLITUDE, {
-            duration: period / 2,
+            duration: halfPeriod,
             easing: Easing.inOut(Easing.sin),
           })
         ),
@@ -117,17 +127,25 @@ export function useScrollFabMagnetic(
     } else {
       translateY.value = 0;
     }
-  }, [enabled, isVisible, reducedMotion, translateY]);
+  }, [enabled, isVisible, reducedMotion, scaleDuration, animation, translateY]);
 
   // Badge increment animation
   useEffect(() => {
     if (enabled && badgeCount > (previousBadgeCount ?? 0)) {
+      // Use UI config spring physics or fallback to adaptive config
+      const springConfig = animation.enableReanimated && animation.springPhysics
+        ? {
+            stiffness: animation.springPhysics.stiffness,
+            damping: animation.springPhysics.damping,
+            mass: animation.springPhysics.mass,
+          }
+        : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
       badgeScale.value = withSequence(
-        withSpring(1.3, FAB_ENTRY_SPRING),
-        withSpring(1, FAB_ENTRY_SPRING)
+        withSpring(1.3, springConfig),
+        withSpring(1, springConfig)
       );
     }
-  }, [enabled, badgeCount, previousBadgeCount, badgeScale]);
+  }, [enabled, badgeCount, previousBadgeCount, hz, animation, badgeScale]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

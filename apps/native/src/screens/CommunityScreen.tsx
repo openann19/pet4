@@ -21,7 +21,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import type { Post } from '../types';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 import { FadeInView } from '../components/FadeInView';
 import { AnimatedCard } from '../components/AnimatedCard';
 import { AnimatedButton } from '../components/AnimatedButton';

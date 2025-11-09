@@ -14,6 +14,8 @@ import { REACTION_EMOJIS } from '@/lib/chat-types';
 import { toast } from 'sonner';
 import VoiceRecorder from '../VoiceRecorder';
 import { useRef } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
+import { useChatKeyboardShortcuts } from '@/hooks/chat/use-chat-keyboard-shortcuts';
 
 export interface ChatInputBarProps {
   inputValue: string;
@@ -53,8 +55,25 @@ export function ChatInputBar({
   onTemplate,
   onQuickReaction,
 }: ChatInputBarProps): JSX.Element {
+  const uiConfig = useUIConfig();
   const internalInputRef = useRef<HTMLInputElement>(null);
   const inputRef = externalInputRef ?? internalInputRef;
+
+  // Register keyboard shortcuts for input actions
+  useChatKeyboardShortcuts({
+    enabled: true,
+    context: 'chat-input',
+    onSend: () => {
+      if (inputValue.trim()) {
+        onSend(inputValue, 'text');
+        setInputValue('');
+      }
+    },
+    onFocusInput: () => {
+      inputRef.current?.focus();
+    },
+    inputRef,
+  });
 
   return (
     <div className="glass-strong border-t border-white/20 p-4 shadow-2xl backdrop-blur-2xl space-y-3">
@@ -94,7 +113,12 @@ export function ChatInputBar({
       <div className="flex items-end gap-2">
         <Popover open={showStickers} onOpenChange={setShowStickers}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              aria-label={showStickers ? 'Close stickers panel' : 'Open stickers panel'}
+            >
               <Smiley size={24} weight={showStickers ? 'fill' : 'regular'} />
             </Button>
           </PopoverTrigger>
@@ -157,6 +181,7 @@ export function ChatInputBar({
                 }}
                 placeholder="Type a message..."
                 className="pr-12 glass-effect border-white/30 focus:border-primary/50 backdrop-blur-xl"
+                aria-label="Message input"
               />
             </div>
 
@@ -167,6 +192,7 @@ export function ChatInputBar({
               size="icon"
               variant="ghost"
               className="shrink-0"
+              aria-label="Record voice message"
             >
               <Microphone size={24} />
             </Button>
@@ -179,6 +205,7 @@ export function ChatInputBar({
               disabled={!inputValue.trim()}
               size="icon"
               className="shrink-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all"
+              aria-label="Send message"
             >
               <SendButtonIcon />
             </Button>

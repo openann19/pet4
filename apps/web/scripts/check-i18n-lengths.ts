@@ -141,7 +141,7 @@ async function main(): Promise<void> {
 
     try {
       // Import the translations object dynamically
-      const i18nModule = await import(i18nPath);
+      const i18nModule: unknown = await import(i18nPath);
 
       // Type guard for translations module
       interface TranslationsModule {

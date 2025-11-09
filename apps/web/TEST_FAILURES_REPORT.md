@@ -3,6 +3,7 @@
 Generated: $(date)
 
 ## Summary
+
 - **Total Test Files**: 195
 - **Failed Test Files**: 123
 - **Passed Test Files**: 72
@@ -13,11 +14,13 @@ Generated: $(date)
 ## Failed Test Files by Category
 
 ### 1. Config Tests (2 failures)
+
 - `src/config/__tests__/env.test.ts`
   - ✗ should validate HTTPS in production
   - ✗ should require VITE_MAPBOX_TOKEN when maps are enabled in production
 
 ### 2. Hook Tests (Multiple failures)
+
 - `src/hooks/use-message-bubble-animation.test.tsx`
   - ✗ should initialize with default values
   - ✗ should animate highlight when isHighlighted changes
@@ -79,6 +82,7 @@ Generated: $(date)
   - ✗ should call start manually
 
 ### 3. Component Tests - Auth (11 failures)
+
 - `src/components/auth/__tests__/AgeGateModal.test.tsx` (7 failures)
   - ✗ should render when open
   - ✗ should show error when birth date is not provided
@@ -106,6 +110,7 @@ Generated: $(date)
   - ✗ should show age gate modal when age not verified
 
 ### 4. Component Tests - Enhanced UI (Multiple failures)
+
 - `src/components/enhanced/__tests__/EnhancedPetDetailView.test.tsx` (26 failures)
   - ✗ should render pet information correctly
   - ✗ should render photo gallery with single photo
@@ -157,6 +162,7 @@ Generated: $(date)
   - ✗ should clear announcement after 5 seconds
 
 ### 5. Component Tests - Chat (Multiple failures)
+
 - `src/components/chat/__tests__/MessageReactions.test.tsx` (4 failures)
   - ✗ shows add reaction button
   - ✗ opens reaction picker when add button is clicked
@@ -199,6 +205,7 @@ Generated: $(date)
   - ✗ should handle all animation contexts
 
 ### 6. Component Tests - Community (Multiple failures)
+
 - `src/components/community/__tests__/PostCard.test.tsx` (Multiple failures)
   - ✗ displays favorite button when onFavorite is provided
   - ✗ calls onFavorite when favorite button is clicked
@@ -248,6 +255,7 @@ Generated: $(date)
   - **Error**: No "RankingSkeleton" export is defined on the mock
 
 ### 7. Component Tests - Adoption (Multiple failures)
+
 - `src/components/adoption/__tests__/AdoptionCard.test.tsx` (Multiple failures)
   - ✗ displays pet breed
   - ✗ navigates to next photo
@@ -274,6 +282,7 @@ Generated: $(date)
   - ✗ should reset form when dialog closes
 
 ### 8. Component Tests - Admin (Multiple failures)
+
 - `src/components/admin/__tests__/ModerationQueue.test.tsx` (2 failures)
   - ✗ should handle report resolution
   - ✗ should handle report dismissal
@@ -299,6 +308,7 @@ Generated: $(date)
   - ✗ should have proper semantic structure
 
 ### 9. Component Tests - UI Components (Multiple failures)
+
 - `src/components/ui/__tests__/select.test.tsx` (1 failure)
   - ✗ should render select
   - **Error**: `SelectScrollUpButton` must be used within `SelectContent`
@@ -308,12 +318,14 @@ Generated: $(date)
   - ✗ should call onDrop when valid file is dropped
 
 ### 10. Component Tests - Views (Multiple failures)
+
 - `src/components/views/__tests__/ProfileView.test.tsx` (2 failures)
   - ✗ should render empty state when no pets
   - ✗ should open create pet dialog when button is clicked
   - **Error**: Found multiple elements with the text "Create Profile"
 
 ### 11. Component Tests - Notifications (18 failures)
+
 - `src/components/notifications/__tests__/PremiumNotificationBell.test.tsx` (18 failures)
   - ✗ should display unread count in aria-label
   - ✗ should display urgent count in aria-label
@@ -336,11 +348,13 @@ Generated: $(date)
   - **Error**: `mockUseStorage.mockImplementation is not a function`
 
 ### 12. Component Tests - Stories (1 failure)
+
 - `src/components/stories/__tests__/StoryFilterSelector.test.tsx` (1 failure)
   - ✗ should render gradient placeholder when media preview is not provided
   - **Error**: Unable to find an accessible element with the role "button" and name `/Select filter:/`
 
 ### 13. API Tests (Multiple failures)
+
 - `src/api/__tests__/adoption-api.test.ts` (20 failures)
   - ✗ should return adoption profiles
   - ✗ should apply filters
@@ -374,6 +388,7 @@ Generated: $(date)
   - ✗ should throw on error
 
 ### 14. Core Services Tests (16 failures)
+
 - `src/core/services/__tests__/admin-integration.test.ts` (16 failures)
   - ✗ should initialize successfully
   - ✗ should broadcast admin actions
@@ -393,6 +408,7 @@ Generated: $(date)
   - **Error**: No "RealtimeClient" export is defined on the "@/lib/realtime" mock
 
 ### 15. Effects Tests (6 failures)
+
 - `src/effects/micro-interactions/core.test.ts` (6 failures)
   - ✗ should animate element with success animation
   - ✗ should animate element with error animation
@@ -402,10 +418,12 @@ Generated: $(date)
   - ✗ should create glow animation
 
 ### 16. Component Tests - Health (1 failure)
+
 - `src/components/health/__tests__/PetHealthDashboard.test.tsx` (1 failure)
   - ✗ should call handleAddHealthRecord when Add Record button is clicked
 
 ### 17. Component Tests - Lost Found (Multiple failures)
+
 - `src/components/lost-found/__tests__/MapLocationPicker.test.tsx` (Multiple failures)
   - Various location picker related failures
 
@@ -413,10 +431,12 @@ Generated: $(date)
   - Various form interaction failures
 
 ### 18. Component Tests - Call (1 failure)
+
 - `src/components/call/__tests__/GroupCallInterface.test.tsx` (1 failure)
   - ✗ should display caller avatar when provided
 
 ### 19. Component Tests - Community Reports (Multiple failures)
+
 - `src/components/community/__tests__/ReportDialog.test.tsx` (Multiple failures)
   - ✗ should render when open
   - ✗ should require appeal text
@@ -427,6 +447,7 @@ Generated: $(date)
 ## Common Issues
 
 ### 1. Mock Mismatches
+
 - **useMatches.test.ts**: Mocks `useUserPets` but implementation uses `usePets`
 - **AgeGateModal.test.tsx**: Missing `t.common.cancel` in translation mock
 - **@petspark/motion**: Missing `MotionView` and `Animated` exports in mock
@@ -434,25 +455,30 @@ Generated: $(date)
 - **RankingSkeleton**: Missing export in mock
 
 ### 2. Translation/Object Access Issues
+
 - `t.common.cancel` is undefined in AgeGateModal
 - Various translation keys missing in mocks
 
 ### 3. Test Setup Issues
+
 - Missing act() wrappers causing warnings
 - Missing mock implementations for storage hooks
 - Missing exports in module mocks
 
 ### 4. Component Rendering Issues
+
 - Multiple elements with same text (ProfileView)
 - Missing test IDs in rendered components
 - Context provider issues (Select component)
 
 ### 5. Async/Timing Issues
+
 - Timeout issues with 5-second delays
 - Missing waitFor() in async tests
 - Unhandled promise rejections
 
 ### 6. DOM/Event Issues
+
 - Missing pointer capture polyfill for jsdom
 - Touch event handling issues
 - Missing event listeners cleanup
@@ -460,6 +486,7 @@ Generated: $(date)
 ## Priority Fixes
 
 ### High Priority
+
 1. Fix useMatches.test.ts mock mismatch
 2. Fix AgeGateModal translation mock (add t.common)
 3. Fix @petspark/motion mock (add MotionView, Animated exports)
@@ -467,6 +494,7 @@ Generated: $(date)
 5. Fix RankingSkeleton mock export
 
 ### Medium Priority
+
 1. Fix act() warnings in hooks tests
 2. Fix ProfileView duplicate text issue
 3. Fix Select component context issue
@@ -474,6 +502,7 @@ Generated: $(date)
 5. Fix async timing issues
 
 ### Low Priority
+
 1. Fix remaining component rendering issues
 2. Fix API test mocks
 3. Fix effects test issues

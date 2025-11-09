@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import AuditLogView from '../AuditLogView';
 import { useStorage } from '@/hooks/use-storage';
 
-vi.mock('@/hooks/useStorage');
+vi.mock('@/hooks/use-storage');
 
 const mockUseStorage = vi.mocked(useStorage);
 

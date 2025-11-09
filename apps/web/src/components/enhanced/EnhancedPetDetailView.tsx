@@ -27,6 +27,7 @@ import { useSharedValue, useAnimatedStyle, withSpring, withDelay } from '@petspa
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { haptics } from '@/lib/haptics';
 import type { Pet } from '@/lib/types';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface EnhancedPetDetailViewProps {
   pet: Pet;
@@ -49,6 +50,7 @@ export function EnhancedPetDetailView({
   matchReasons,
   showActions = true,
 }: EnhancedPetDetailViewProps): React.JSX.Element {
+  const uiConfig = useUIConfig();
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(true);
@@ -259,6 +261,7 @@ function CloseButton({ onClose }: CloseButtonProps): React.JSX.Element {
       size="icon"
       onClick={handlePress}
       className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
+      aria-label="Close pet detail view"
     >
       <AnimatedView style={bounce.animatedStyle}>
         <X size={24} weight="bold" />
@@ -285,6 +288,7 @@ function PhotoNavButton({ onClick }: PhotoNavButtonProps): React.JSX.Element {
       size="icon"
       onClick={handlePress}
       className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background pointer-events-auto"
+      aria-label="Navigate to next photo"
     >
       <AnimatedView style={bounce.animatedStyle}>
         <PawPrint size={20} weight="fill" />
@@ -303,9 +307,8 @@ function PhotoIndicator({ index, isActive, onClick }: PhotoIndicatorProps): Reac
   return (
     <button
       onClick={onClick}
-      className={`h-2 rounded-full transition-all overflow-hidden ${
-        isActive ? 'w-6 bg-white' : 'w-2 bg-white/50'
-      }`}
+      className={`h-2 rounded-full transition-all overflow-hidden ${isActive ? 'w-6 bg-white' : 'w-2 bg-white/50'
+        }`}
       aria-label={`Go to photo ${index + 1}`}
     >
       <AnimatedView

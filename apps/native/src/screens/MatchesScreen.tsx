@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import type { Match } from '../types';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 import { useNavigation } from '@react-navigation/native';
 
 export default function MatchesScreen(): React.JSX.Element {

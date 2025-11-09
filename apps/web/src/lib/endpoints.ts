@@ -123,6 +123,15 @@ export const ENDPOINTS = {
     GET_VERIFICATION: (id: string) => `/kyc/verifications/${id}`,
   },
 
+  // GDPR
+  GDPR: {
+    EXPORT: '/api/gdpr/export',
+    DELETE: '/api/gdpr/delete',
+    CONSENT: '/api/gdpr/consent',
+    CONSENT_STATUS: (userId: string) => `/api/gdpr/consent?userId=${userId}`,
+    UPDATE_CONSENT: '/api/gdpr/consent',
+  },
+
   // Blocking
   BLOCKING: {
     BLOCK: '/blocking/block',

@@ -6,7 +6,7 @@ import {
   Easing,
   interpolate,
 } from 'react-native-reanimated'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
 export interface UseGlowPulseOptions {
@@ -51,7 +51,7 @@ export function useGlowPulse(options: UseGlowPulseOptions = {}): UseGlowPulseRet
     }
   }) as AnimatedStyle
 
-  const start = (): void => {
+  const start = useCallback((): void => {
     progress.value = withRepeat(
       withTiming(1, {
         duration,
@@ -60,11 +60,11 @@ export function useGlowPulse(options: UseGlowPulseOptions = {}): UseGlowPulseRet
       -1,
       true
     )
-  }
+  }, [duration, progress])
 
-  const stop = (): void => {
+  const stop = useCallback((): void => {
     progress.value = 0
-  }
+  }, [progress])
 
   useEffect(() => {
     if (enabled) {
@@ -72,7 +72,7 @@ export function useGlowPulse(options: UseGlowPulseOptions = {}): UseGlowPulseRet
     } else {
       stop()
     }
-  }, [enabled])
+  }, [enabled, start, stop])
 
   return {
     animatedStyle,

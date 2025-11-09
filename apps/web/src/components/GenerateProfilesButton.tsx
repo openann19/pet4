@@ -22,7 +22,7 @@ export default function GenerateProfilesButton({
   size = 'default',
   showLabel = true,
 }: GenerateProfilesButtonProps) {
-  const [_allPets, setAllPets] = useStorage<Pet[]>('all-pets', []);
+  const [, setAllPets] = useStorage<Pet[]>('all-pets', []);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const buttonHover = useHoverTap({ hoverScale: 1.02, tapScale: 0.98 });
@@ -55,7 +55,10 @@ export default function GenerateProfilesButton({
 
     try {
       const newPets = await generateSamplePets(15);
-      setAllPets((current) => [...(current || []), ...newPets]);
+      void setAllPets((current) => {
+        const currentPets = current ?? [];
+        return [...currentPets, ...newPets];
+      });
 
       haptics.trigger('success');
       toast.success('Profiles Generated!', {
@@ -82,10 +85,11 @@ export default function GenerateProfilesButton({
         style={buttonHover.animatedStyle}
         onMouseEnter={buttonHover.handleMouseEnter}
         onMouseLeave={buttonHover.handleMouseLeave}
-        onClick={buttonHover.handlePress}
       >
         <Button
-          onClick={handleGenerateProfiles}
+          onClick={() => {
+            void handleGenerateProfiles();
+          }}
           disabled={isGenerating}
           variant={variant}
           size={size}

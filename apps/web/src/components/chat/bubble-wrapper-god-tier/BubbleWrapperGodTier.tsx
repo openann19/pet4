@@ -5,14 +5,16 @@ import { useAnimatedStyle } from 'react-native-reanimated';
 import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useTypingIndicator } from './effects/useTypingIndicator';
 import { useReactionTrail, type ReactionTrailParticle } from './effects/useReactionTrail';
-import { useAiReplyAnimation } from './effects/useAiReplyAnimation';
+import { useAiReplyAnimation } from './effects/use-ai-reply-animation';
 import { useBubbleMoodTheme } from './effects/useBubbleMoodTheme';
 import { useMessageAgeEffect } from './effects/useMessageAgeEffect';
 import { useBubbleCompressionOnSpeed } from './effects/useBubbleCompressionOnSpeed';
-import { useDeleteBubbleAnimation } from './effects/useDeleteBubbleAnimation';
+import { useDeleteBubbleAnimation } from './effects/use-delete-bubble-animation';
 import { useParticleExplosionDelete } from '@/hooks/use-particle-explosion-delete';
+import { ParticleView } from '../ParticleView';
 import { useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface BubbleWrapperGodTierProps {
   children: ReactNode;
@@ -41,6 +43,7 @@ export function BubbleWrapperGodTier({
   enabled = true,
   isDeleting = false,
 }: BubbleWrapperGodTierProps): React.JSX.Element {
+  const uiConfig = useUIConfig();
   const typingIndicator = useTypingIndicator({
     enabled: showTyping && enabled,
   });
@@ -171,13 +174,11 @@ export function BubbleWrapperGodTier({
       </AnimatedView>
 
       {particleExplosion.particles.map((particle) => (
-        <AnimatedView
+        <ParticleView
           key={particle.id}
-          style={particleExplosion.getParticleStyle(particle) as AnimatedStyle}
+          particle={particle}
           className="absolute pointer-events-none z-[10000] rounded-full"
-        >
-          <div />
-        </AnimatedView>
+        />
       ))}
     </div>
   );

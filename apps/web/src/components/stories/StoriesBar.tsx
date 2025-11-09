@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback, Suspense } from 'react';
 import { motion, MotionView } from '@petspark/motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import StoryRing from './StoryRing';
-import StoryViewer from './StoryViewer';
+import { StoryViewer } from '@/components/lazy-exports';
 import CreateStoryDialog from './CreateStoryDialog';
 import { groupStoriesByUser, filterActiveStories } from '@petspark/shared';
 import type { Story } from '@petspark/shared';
@@ -33,26 +33,46 @@ export default function StoriesBar({
   const [viewingStories, setViewingStories] = useState<Story[] | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  const activeStories = filterActiveStories(allStories);
-  const storiesByUser = groupStoriesByUser(activeStories);
+  // Memoize expensive computations
+  const activeStories = useMemo(() => filterActiveStories(allStories), [allStories]);
+  const storiesByUser = useMemo(() => groupStoriesByUser(activeStories), [activeStories]);
 
-  const ownStories = activeStories.filter((s) => s.userId === currentUserId);
-  const otherStories = activeStories.filter((s) => s.userId !== currentUserId);
+  const ownStories = useMemo(
+    () => activeStories.filter((s) => s.userId === currentUserId),
+    [activeStories, currentUserId]
+  );
+  const otherStories = useMemo(
+    () => activeStories.filter((s) => s.userId !== currentUserId),
+    [activeStories, currentUserId]
+  );
 
-  const handleStoryRingClick = (userId: string) => {
+  const uniqueUserIds = useMemo(
+    () => Array.from(new Set([...otherStories.map((s) => s.userId)])),
+    [otherStories]
+  );
+
+  const handleStoryRingClick = useCallback((userId: string) => {
     const userStories = storiesByUser.get(userId);
     if (userStories && userStories.length > 0) {
       setViewingStories(userStories);
     }
-  };
+  }, [storiesByUser]);
 
-  const handleOwnStoryClick = () => {
+  const handleOwnStoryClick = useCallback(() => {
     if (ownStories.length > 0) {
       setViewingStories(ownStories);
     } else {
       setShowCreateDialog(true);
     }
-  };
+  }, [ownStories]);
+
+  const handleCloseViewer = useCallback(() => {
+    setViewingStories(null);
+  }, []);
+
+  const handleShowCreateDialog = useCallback(() => {
+    setShowCreateDialog(true);
+  }, []);
 
   if (activeStories.length === 0 && ownStories.length === 0) {
     return (
@@ -68,7 +88,7 @@ export default function StoriesBar({
               <p className="text-sm text-muted-foreground">Be the first to share a story!</p>
             </div>
             <button
-              onClick={() => setShowCreateDialog(true)}
+              onClick={handleShowCreateDialog}
               className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-xl shadow-lg hover:scale-105 transition-transform"
             >
               +
@@ -90,8 +110,6 @@ export default function StoriesBar({
       </>
     );
   }
-
-  const uniqueUserIds = Array.from(new Set([...otherStories.map((s) => s.userId)]));
 
   return (
     <>
@@ -138,14 +156,16 @@ export default function StoriesBar({
       </MotionView>
 
       {viewingStories && (
-        <StoryViewer
-          stories={viewingStories}
-          currentUserId={currentUserId}
-          currentUserName={currentUserName}
-          currentUserAvatar={currentUserAvatar}
-          onClose={() => setViewingStories(null)}
-          onStoryUpdate={onStoryUpdate}
-        />
+        <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+          <StoryViewer
+            stories={viewingStories}
+            currentUserId={currentUserId}
+            currentUserName={currentUserName}
+            currentUserAvatar={currentUserAvatar}
+            onClose={handleCloseViewer}
+            onStoryUpdate={onStoryUpdate}
+          />
+        </Suspense>
       )}
 
       <CreateStoryDialog

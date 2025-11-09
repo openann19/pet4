@@ -12,11 +12,18 @@ export const useStories = (currentUserId: string = 'user-1') => {
   const [stories, setStories] = useState<Story[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadStories();
+  const saveStories = useCallback(async (newStories: Story[]) => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY_STORIES, JSON.stringify(newStories));
+      setStories(newStories);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save stories', err, { context: 'saveStories' });
+      throw error;
+    }
   }, []);
 
-  const loadStories = async () => {
+  const loadStories = useCallback(async () => {
     try {
       const saved = await AsyncStorage.getItem(STORAGE_KEY_STORIES);
       if (saved) {
@@ -41,18 +48,11 @@ export const useStories = (currentUserId: string = 'user-1') => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [saveStories]);
 
-  const saveStories = async (newStories: Story[]) => {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY_STORIES, JSON.stringify(newStories));
-      setStories(newStories);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to save stories', err, { context: 'saveStories' });
-      throw error;
-    }
-  };
+  useEffect(() => {
+    void loadStories();
+  }, [loadStories]);
 
   const createStory = useCallback(
     async (
@@ -104,7 +104,7 @@ export const useStories = (currentUserId: string = 'user-1') => {
         return { success: false, error: 'Failed to create story' };
       }
     },
-    [stories, currentUserId]
+    [currentUserId, saveStories, stories]
   );
 
   const markStoryAsViewed = useCallback(
@@ -122,7 +122,7 @@ export const useStories = (currentUserId: string = 'user-1') => {
         });
       }
     },
-    [stories]
+    [saveStories, stories]
   );
 
   const deleteStory = useCallback(
@@ -137,7 +137,7 @@ export const useStories = (currentUserId: string = 'user-1') => {
         return { success: false, error: 'Failed to delete story' };
       }
     },
-    [stories]
+    [saveStories, stories]
   );
 
   const deleteStoryItem = useCallback(
@@ -166,7 +166,7 @@ export const useStories = (currentUserId: string = 'user-1') => {
         return { success: false, error: 'Failed to delete story item' };
       }
     },
-    [stories]
+    [saveStories, stories]
   );
 
   const getUnviewedStoriesCount = useCallback(() => {

@@ -6,7 +6,7 @@
 import React, { useCallback } from 'react'
 import { View, Text, ScrollView, Pressable, StyleSheet, type ViewStyle } from 'react-native'
 import * as Haptics from 'expo-haptics'
-import { useFilters } from '@/hooks/useFilters'
+import { useFilters } from '@/hooks/use-filters'
 
 export interface FilterOption {
   id: string

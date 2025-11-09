@@ -6,7 +6,7 @@ import { adminApi } from '@/api/admin-api';
 import { useStorage } from '@/hooks/use-storage';
 
 vi.mock('@/api/admin-api');
-vi.mock('@/hooks/useStorage');
+vi.mock('@/hooks/use-storage');
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
@@ -45,15 +45,17 @@ describe('UsersView', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    const setValue = vi.fn().mockResolvedValue(undefined);
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'all-pets') {
-        return [mockPets];
+        return [mockPets, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      return [defaultValue, setValue, deleteValue];
     });
-    mockAdminApi.suspendUser = vi.fn().mockResolvedValue(undefined);
-    mockAdminApi.banUser = vi.fn().mockResolvedValue(undefined);
-    mockAdminApi.activateUser = vi.fn().mockResolvedValue(undefined);
+    (mockAdminApi as { suspendUser?: ReturnType<typeof vi.fn>; banUser?: ReturnType<typeof vi.fn>; activateUser?: ReturnType<typeof vi.fn> }).suspendUser = vi.fn().mockResolvedValue(undefined);
+    (mockAdminApi as { suspendUser?: ReturnType<typeof vi.fn>; banUser?: ReturnType<typeof vi.fn>; activateUser?: ReturnType<typeof vi.fn> }).banUser = vi.fn().mockResolvedValue(undefined);
+    (mockAdminApi as { suspendUser?: ReturnType<typeof vi.fn>; banUser?: ReturnType<typeof vi.fn>; activateUser?: ReturnType<typeof vi.fn> }).activateUser = vi.fn().mockResolvedValue(undefined);
   });
 
   it('renders users view', async () => {
@@ -174,7 +176,7 @@ describe('UsersView', () => {
     await user.click(suspendButton);
 
     await waitFor(() => {
-      expect(mockAdminApi.suspendUser).toHaveBeenCalled();
+      expect((mockAdminApi as { suspendUser?: ReturnType<typeof vi.fn> }).suspendUser).toHaveBeenCalled();
     });
   });
 
@@ -199,7 +201,7 @@ describe('UsersView', () => {
     await user.click(banButton);
 
     await waitFor(() => {
-      expect(mockAdminApi.banUser).toHaveBeenCalled();
+      expect((mockAdminApi as { banUser?: ReturnType<typeof vi.fn> }).banUser).toHaveBeenCalled();
     });
   });
 
@@ -225,7 +227,7 @@ describe('UsersView', () => {
       await user.click(activateButton);
 
       await waitFor(() => {
-        expect(mockAdminApi.activateUser).toHaveBeenCalled();
+        expect((mockAdminApi as { activateUser?: ReturnType<typeof vi.fn> }).activateUser).toHaveBeenCalled();
       });
     }
   });
@@ -316,7 +318,7 @@ describe('UsersView', () => {
 
   it('handles API errors gracefully', async () => {
     const user = userEvent.setup();
-    mockAdminApi.suspendUser.mockRejectedValue(new Error('API Error'));
+    (mockAdminApi as { suspendUser?: ReturnType<typeof vi.fn> }).suspendUser?.mockRejectedValue(new Error('API Error'));
 
     render(<UsersView />);
 
@@ -337,7 +339,7 @@ describe('UsersView', () => {
     await user.click(suspendButton);
 
     await waitFor(() => {
-      expect(mockAdminApi.suspendUser).toHaveBeenCalled();
+      expect((mockAdminApi as { suspendUser?: ReturnType<typeof vi.fn> }).suspendUser).toHaveBeenCalled();
     });
   });
 });

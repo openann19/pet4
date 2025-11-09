@@ -5,12 +5,12 @@ import {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  FadeIn,
 } from 'react-native-reanimated';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface DeletedGhostBubbleProps {
   isIncoming?: boolean;
@@ -23,6 +23,7 @@ export function DeletedGhostBubble({
   className,
   delay = 0,
 }: DeletedGhostBubbleProps) {
+  const uiConfig = useUIConfig();
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.95);
 
@@ -45,7 +46,6 @@ export function DeletedGhostBubble({
 
   return (
     <AnimatedView
-      entering={FadeIn.duration(300)}
       style={animatedStyle}
       className={cn(
         'relative rounded-2xl p-3 max-w-[85%]',

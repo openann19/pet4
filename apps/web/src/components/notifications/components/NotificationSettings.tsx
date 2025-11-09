@@ -36,13 +36,21 @@ export function NotificationSettings({
         </Label>
         <Switch
           id="quiet-hours"
-          checked={preferences?.quietHours.enabled ?? false}
+          checked={preferences?.quietHours?.enabled ?? false}
           onCheckedChange={(enabled) => {
+            if (!preferences) return;
+            const currentQuietHours = preferences.quietHours;
             updatePreferences({
-              quietHours: {
-                ...preferences!.quietHours,
-                enabled,
-              },
+              quietHours: currentQuietHours
+                ? {
+                    ...currentQuietHours,
+                    enabled,
+                  }
+                : {
+                    enabled,
+                    start: '22:00',
+                    end: '08:00',
+                  },
             });
           }}
         />

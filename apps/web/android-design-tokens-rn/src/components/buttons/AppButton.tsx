@@ -8,6 +8,7 @@ import {
   ViewStyle,
   TextStyle,
   TouchableOpacityProps,
+  type GestureResponderEvent,
 } from 'react-native';
 import { useHaptics } from '@/hooks/use-haptics';
 
@@ -121,7 +122,7 @@ export function AppButton({
   const variantStyles = getVariantStyles();
   const isDisabled = disabled || loading;
 
-  const handlePress = (e: any) => {
+  const handlePress = (e: GestureResponderEvent): void => {
     if (!isDisabled && onPress) {
       haptics.impact('light');
       onPress(e);

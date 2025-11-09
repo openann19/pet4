@@ -22,7 +22,7 @@ import { MessageItem } from './components/MessageItem';
 import { DateGroup } from './components/DateGroup';
 import { ScrollToBottomFAB } from './components/ScrollToBottomFAB';
 import { TypingIndicator } from './components/TypingIndicator';
-
+import { useChatKeyboardShortcuts } from '@/hooks/chat/use-chat-keyboard-shortcuts';
 const logger = createLogger('AdvancedChatWindow');
 
 interface AdvancedChatWindowProps {
@@ -182,6 +182,47 @@ export default function AdvancedChatWindow({
   );
 
   const messageGroups = groupMessagesByDate(messageManagement.messages);
+
+  // Register keyboard shortcuts for chat actions
+  const [focusedMessageId, setFocusedMessageId] = useState<string | null>(null);
+  const focusedMessage = focusedMessageId
+    ? messageManagement.messages.find((m) => m.id === focusedMessageId)
+    : null;
+
+  useChatKeyboardShortcuts({
+    enabled: true,
+    context: 'chat',
+    onSend: () => {
+      if (inputHandling.inputValue.trim()) {
+        handleSendWithTyping(inputHandling.inputValue, 'text');
+      }
+    },
+    onReply: focusedMessage
+      ? () => {
+        inputHandling.inputRef.current?.focus();
+        inputHandling.handleInputChange(`@${focusedMessage.senderName || 'User'} `);
+      }
+      : undefined,
+    onDelete: focusedMessage
+      ? () => {
+        messageManagement.setMessages((cur) => cur.filter((m) => m.id !== focusedMessageId));
+      }
+      : undefined,
+    onReact: focusedMessage
+      ? () => {
+        handleReactionWithBurst(focusedMessage.id, '❤️');
+      }
+      : undefined,
+    onScrollToBottom: () => {
+      messageManagement.scrollToBottom();
+    },
+    onFocusInput: () => {
+      inputHandling.inputRef.current?.focus();
+    },
+    onClose: onBack,
+    inputRef: inputHandling.inputRef,
+    messageFocused: focusedMessageId !== null,
+  });
 
   const handleBlockUser = useCallback(async () => {
     if (!room || !currentUserId) return;

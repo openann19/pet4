@@ -337,6 +337,7 @@ export default function BackendDemo() {
                       variant="ghost"
                       size="icon"
                       className="shrink-0"
+                      aria-label={`Delete record ${record.id}`}
                     >
                       <Trash size={18} />
                     </Button>

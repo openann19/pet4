@@ -201,7 +201,7 @@ describe('useTypingManager', () => {
     expect(mockRealtimeClient.on).toHaveBeenCalledWith('typing_stop', expect.any(Function))
 
     const typingStartHandler = (mockRealtimeClient.on as ReturnType<typeof vi.fn>).mock.calls.find(
-      (call) => call[0] === 'typing_start'
+      call => call[0] === 'typing_start'
     )?.[1] as (data: unknown) => void
 
     act(() => {
@@ -231,11 +231,11 @@ describe('useTypingManager', () => {
     )
 
     const typingStartHandler = (mockRealtimeClient.on as ReturnType<typeof vi.fn>).mock.calls.find(
-      (call) => call[0] === 'typing_start'
+      call => call[0] === 'typing_start'
     )?.[1] as (data: unknown) => void
 
     const typingStopHandler = (mockRealtimeClient.on as ReturnType<typeof vi.fn>).mock.calls.find(
-      (call) => call[0] === 'typing_stop'
+      call => call[0] === 'typing_stop'
     )?.[1] as (data: unknown) => void
 
     act(() => {
@@ -269,7 +269,7 @@ describe('useTypingManager', () => {
     )
 
     const typingStartHandler = (mockRealtimeClient.on as ReturnType<typeof vi.fn>).mock.calls.find(
-      (call) => call[0] === 'typing_start'
+      call => call[0] === 'typing_start'
     )?.[1] as (data: unknown) => void
 
     act(() => {
@@ -294,7 +294,7 @@ describe('useTypingManager', () => {
     )
 
     const typingStartHandler = (mockRealtimeClient.on as ReturnType<typeof vi.fn>).mock.calls.find(
-      (call) => call[0] === 'typing_start'
+      call => call[0] === 'typing_start'
     )?.[1] as (data: unknown) => void
 
     act(() => {
@@ -338,11 +338,11 @@ describe('useTypingManager', () => {
     )
 
     const typingStartHandler = (mockRealtimeClient.on as ReturnType<typeof vi.fn>).mock.calls.find(
-      (call) => call[0] === 'typing_start'
+      call => call[0] === 'typing_start'
     )?.[1] as (data: unknown) => void
 
     const typingStopHandler = (mockRealtimeClient.on as ReturnType<typeof vi.fn>).mock.calls.find(
-      (call) => call[0] === 'typing_stop'
+      call => call[0] === 'typing_stop'
     )?.[1] as (data: unknown) => void
 
     unmount()
@@ -373,7 +373,8 @@ describe('useTypingManager', () => {
     })
 
     await waitFor(() => {
-      const secondCallCount = (mockRealtimeClient.emit as ReturnType<typeof vi.fn>).mock.calls.length
+      const secondCallCount = (mockRealtimeClient.emit as ReturnType<typeof vi.fn>).mock.calls
+        .length
       expect(secondCallCount).toBe(firstCallCount)
     })
   })

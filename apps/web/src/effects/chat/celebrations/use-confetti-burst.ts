@@ -21,6 +21,8 @@ import { createLogger } from '@/lib/logger';
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion';
 import { logEffectEnd, logEffectStart } from '../core/telemetry';
 import { randomRange } from '../core/seeded-rng';
+import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
+import { useUIConfig } from '@/hooks/use-ui-config';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 const logger = createLogger('confetti-burst');
@@ -85,14 +87,21 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
   } = options;
 
   const reducedMotion = useReducedMotionSV();
+  const { scaleDuration, deviceCapability } = useDeviceRefreshRate();
+  const { animation, feedback } = useUIConfig();
   const containerOpacity = useSharedValue(0);
 
-  // Create particles (limit to 120 max for performance)
-  const actualParticleCount = Math.min(particleCount, 120);
+  // Create particles (limit based on device capability and UI config)
+  // Respect device capability limits: 60-200 particles based on device performance
+  // Disable particles entirely if animation.showParticles is false
+  const maxParticleCount = animation.showParticles
+    ? deviceCapability.maxParticles
+    : 0;
+  const actualParticleCount = Math.min(particleCount, maxParticleCount);
   const particlesRef = useRef<ConfettiParticle[]>([]);
 
-  // Initialize particles
-  if (particlesRef.current.length === 0) {
+  // Initialize particles (only if particles are enabled)
+  if (particlesRef.current.length === 0 && actualParticleCount > 0) {
     particlesRef.current = Array.from({ length: actualParticleCount }, () => {
       const angle = randomRange(0, Math.PI * 2);
       const velocity = randomRange(200, 400);
@@ -115,13 +124,15 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
       return;
     }
 
-    const duration =
+    const baseDuration =
       customDuration ??
       DEFAULT_DURATION_MIN + randomRange(0, DEFAULT_DURATION_MAX - DEFAULT_DURATION_MIN);
     const isReducedMotion = reducedMotion.value;
-    const finalDuration = isReducedMotion
+    // Use adaptive duration scaling based on device refresh rate
+    const baseFinalDuration = isReducedMotion
       ? getReducedMotionDuration(DEFAULT_DURATION_MIN, true)
-      : duration;
+      : baseDuration;
+    const finalDuration = scaleDuration(baseFinalDuration);
 
     // Log effect start
     const effectId = logEffectStart('confetti-match', {
@@ -130,80 +141,82 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
       particleCount: actualParticleCount,
     });
 
-    // Show container
+    // Show container - use adaptive duration
+    const containerFadeInDuration = scaleDuration(50);
     containerOpacity.value = withTiming(1, {
-      duration: 50,
+      duration: containerFadeInDuration,
       easing: Easing.out(Easing.ease),
     });
 
-    // Animate particles
-    if (!isReducedMotion) {
+    // Animate particles (only if particles enabled and count > 0)
+    if (!isReducedMotion && animation.showParticles && actualParticleCount > 0) {
       particlesRef.current.forEach((particle) => {
         const angle = randomRange(0, Math.PI * 2);
         const velocity = randomRange(200, 400);
         const xVelocity = Math.cos(angle) * velocity;
         const yVelocity = Math.sin(angle) * velocity;
 
-        // X movement
-        particle.x.value = withTiming(xVelocity * (duration / 1000), {
-          duration,
+        // X movement - use adaptive duration
+        particle.x.value = withTiming(xVelocity * (finalDuration / 1000), {
+          duration: finalDuration,
           easing: Easing.out(Easing.quad),
         });
 
-        // Y movement (gravity)
-        particle.y.value = withTiming(yVelocity * (duration / 1000) + 500, {
-          duration,
+        // Y movement (gravity) - use adaptive duration
+        particle.y.value = withTiming(yVelocity * (finalDuration / 1000) + 500, {
+          duration: finalDuration,
           easing: Easing.in(Easing.quad),
         });
 
-        // Rotation
+        // Rotation - use adaptive duration
         particle.rotation.value = withTiming(360 * randomRange(2, 5), {
-          duration,
+          duration: finalDuration,
           easing: Easing.linear,
         });
 
-        // Opacity fade
+        // Opacity fade - use adaptive duration
         particle.opacity.value = withTiming(
           1,
           {
-            duration: duration * 0.1,
+            duration: scaleDuration(finalDuration * 0.1),
             easing: Easing.out(Easing.ease),
           },
           () => {
             particle.opacity.value = withTiming(0, {
-              duration: duration * 0.9,
+              duration: scaleDuration(finalDuration * 0.9),
               easing: Easing.in(Easing.ease),
             });
           }
         );
 
-        // Scale
+        // Scale - use adaptive duration
         particle.scale.value = withTiming(
           1,
           {
-            duration: duration * 0.2,
+            duration: scaleDuration(finalDuration * 0.2),
             easing: Easing.out(Easing.ease),
           },
           () => {
             particle.scale.value = withTiming(0.5, {
-              duration: duration * 0.8,
+              duration: scaleDuration(finalDuration * 0.8),
               easing: Easing.in(Easing.ease),
             });
           }
         );
       });
     } else {
-      // Reduced motion: instant opacity change
+      // Reduced motion: instant opacity change - use adaptive duration
+      const reducedOpacityDuration = scaleDuration(120);
       particlesRef.current.forEach((particle) => {
         particle.opacity.value = withTiming(
           1,
           {
-            duration: 120,
+            duration: reducedOpacityDuration,
             easing: Easing.linear,
           },
           () => {
             particle.opacity.value = withTiming(0, {
-              duration: 120,
+              duration: reducedOpacityDuration,
               easing: Easing.linear,
             });
           }
@@ -211,29 +224,30 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
       });
     }
 
-    // Hide container after animation
+    // Hide container after animation - use adaptive duration
+    const containerFadeOutDuration = scaleDuration(200);
     setTimeout(() => {
       containerOpacity.value = withTiming(0, {
-        duration: 200,
+        duration: containerFadeOutDuration,
         easing: Easing.in(Easing.ease),
       });
-    }, duration);
+    }, finalDuration);
 
     // Call onComplete
     if (onComplete) {
       setTimeout(() => {
         onComplete();
-      }, duration);
+      }, finalDuration);
     }
 
     // Log effect end
     setTimeout(() => {
       logEffectEnd(effectId, {
-        durationMs: duration,
+        durationMs: finalDuration,
         success: true,
       });
-    }, duration);
-  }, [enabled, customDuration, reducedMotion, containerOpacity, onComplete, actualParticleCount]);
+    }, finalDuration);
+  }, [enabled, customDuration, reducedMotion, scaleDuration, animation, feedback, containerOpacity, onComplete, actualParticleCount, deviceCapability]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

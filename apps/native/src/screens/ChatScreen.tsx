@@ -11,7 +11,7 @@ import {
   Pressable,
 } from 'react-native';
 import type { Message, LocationData } from '../types';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 import { MessageReactions, StickerPicker, VoiceRecorder, LocationShare } from '../components/chat';
 
 export default function ChatScreen({

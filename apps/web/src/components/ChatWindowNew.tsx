@@ -27,7 +27,10 @@ import {
   getReactionsArray,
 } from '@/lib/chat-utils';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import { realtime } from '@/lib/realtime';
+
+const logger = createLogger('ChatWindowNew');
 import {
   ArrowLeft,
   ChatCentered,
@@ -45,7 +48,7 @@ import {
   VideoCamera,
   X,
 } from '@phosphor-icons/react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
@@ -128,7 +131,7 @@ export default function ChatWindow({
   useEffect(() => {
     headerY.value = withSpring(0, { damping: 20, stiffness: 300 });
     headerOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
-  }, []);
+  }, [headerY, headerOpacity]);
 
   // Typing indicator animation
   useEffect(() => {
@@ -147,7 +150,7 @@ export default function ChatWindow({
     } else {
       typingOpacity.value = withSpring(0, { damping: 20, stiffness: 300 });
     }
-  }, [typingUsers.length]);
+  }, [typingUsers.length, typingOpacity, typingTextOpacity, typingDotsScale]);
 
   const headerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: headerY.value }],
@@ -193,7 +196,7 @@ export default function ChatWindow({
       templatesOpacity.value = withSpring(0, { damping: 20, stiffness: 300 });
       templatesHeight.value = withSpring(0, { damping: 20, stiffness: 300 });
     }
-  }, [showTemplates]);
+  }, [showTemplates, templatesOpacity, templatesHeight]);
 
   const templatesStyle = useAnimatedStyle(() => ({
     opacity: templatesOpacity.value,
@@ -231,13 +234,28 @@ export default function ChatWindow({
     toggleVideo,
   } = useCall(room.id, currentUserId, currentUserName, currentUserAvatar);
 
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
+
+  const markMessagesAsRead = useCallback(() => {
+    const lastMsg = messages && messages.length > 0 ? messages[messages.length - 1] : null;
+    if (lastMsg?.id) {
+      void markChatAsRead(lastMsg.id).catch(() => {
+        // Silently handle errors - error handling is done in the hook
+      });
+    }
+  }, [messages, markChatAsRead]);
 
   useEffect(() => {
     markMessagesAsRead();
-  }, [room.id]);
+  }, [room.id, markMessagesAsRead]);
 
   // Keyboard handling: Escape closes modals/popovers
   useEffect(() => {
@@ -266,40 +284,35 @@ export default function ChatWindow({
     if (typingUsers.length > 0) {
       scrollToBottom();
     }
-  }, [typingUsers]);
-
-  const scrollToBottom = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  };
+  }, [typingUsers, scrollToBottom]);
 
   const handleSendMessage = (content: string, type: 'text' | 'sticker' | 'voice' = 'text') => {
     if (!content.trim() && type === 'text') return;
 
-    haptics.trigger('light');
+    try {
+      haptics.trigger('light');
 
-    // sendChatMessage returns ChatMessage | null, not a promise
-    // Type definition says Promise<void> but implementation returns value
-    // Cast to unknown first to avoid type mismatch
-    const newMessage = sendChatMessage(content) as ChatMessage | null | Promise<void>;
-    if (newMessage instanceof Promise) {
-      void newMessage.catch(() => {
-        // Silently handle errors - error handling is done in the hook
-      });
-      return;
-    }
-    if (!newMessage) return;
+      // sendChatMessage returns ChatMessage | null synchronously
+      const newMessage = sendChatMessage(content);
+      if (!newMessage) {
+        logger.warn('ChatWindowNew sendMessage returned null', { content, type });
+        return;
+      }
 
-    setInputValue('');
-    setShowStickers(false);
-    handleTypingMessageSend();
+      setInputValue('');
+      setShowStickers(false);
+      handleTypingMessageSend();
 
-    if (type === 'text') {
-      toast.success('Message sent!', {
-        duration: 1500,
-        position: 'top-center',
-      });
+      if (type === 'text') {
+        toast.success('Message sent!', {
+          duration: 1500,
+          position: 'top-center',
+        });
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('ChatWindowNew handleSendMessage error', err, { content, type });
+      toast.error('Failed to send message. Please try again.');
     }
   };
 
@@ -309,11 +322,19 @@ export default function ChatWindow({
   };
 
   const handleReaction = (messageId: string, emoji: string) => {
-    haptics.trigger('selection');
-    void addChatReaction(messageId, emoji as ReactionType).catch(() => {
-      // Silently handle errors - error handling is done in the hook
-    });
-    setShowReactions(null);
+    try {
+      haptics.trigger('selection');
+      void addChatReaction(messageId, emoji as ReactionType).catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('ChatWindowNew handleReaction error', err, { messageId, emoji });
+        toast.error('Failed to add reaction. Please try again.');
+      });
+      setShowReactions(null);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('ChatWindowNew handleReaction sync error', err, { messageId, emoji });
+      setShowReactions(null);
+    }
   };
 
   const handleUseTemplate = (template: string) => {
@@ -323,40 +344,74 @@ export default function ChatWindow({
   };
 
   const handleVoiceRecorded = (audioBlob: Blob, duration: number, waveform: number[]) => {
-    const messageId = generateMessageId();
+    try {
+      const messageId = generateMessageId();
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64Audio = reader.result as string;
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        try {
+          const base64Audio = reader.result as string;
+          if (!base64Audio) {
+            logger.error(
+              'ChatWindowNew handleVoiceRecorded empty result',
+              new Error('FileReader returned empty result'),
+              { messageId, duration }
+            );
+            toast.error('Failed to process voice message. Please try again.');
+            setIsRecording(false);
+            return;
+          }
 
-      setVoiceMessage(messageId, { blob: base64Audio, duration, waveform });
+          setVoiceMessage(messageId, { blob: base64Audio, duration, waveform });
 
-      const newMessage: ChatMessage = {
-        id: messageId,
-        roomId: room.id,
-        senderId: currentUserId,
-        senderName: currentUserName,
-        content: `Voice message (${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')})`,
-        type: 'voice',
-        timestamp: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        status: 'sent',
-        reactions: [],
+          const newMessage: ChatMessage = {
+            id: messageId,
+            roomId: room.id,
+            senderId: currentUserId,
+            senderName: currentUserName,
+            content: `Voice message (${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')})`,
+            type: 'voice',
+            timestamp: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            status: 'sent',
+            reactions: [],
+          };
+          if (currentUserAvatar !== undefined) {
+            newMessage.senderAvatar = currentUserAvatar;
+          }
+
+          setMessages((current: ChatMessage[]) => [...(current || []), newMessage]);
+          setIsRecording(false);
+
+          toast.success('Voice message sent!', {
+            duration: 1500,
+            position: 'top-center',
+          });
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('ChatWindowNew handleVoiceRecorded onloadend error', err, { messageId });
+          toast.error('Failed to process voice message. Please try again.');
+          setIsRecording(false);
+        }
       };
-      if (currentUserAvatar !== undefined) {
-        newMessage.senderAvatar = currentUserAvatar;
-      }
 
-      setMessages((current: ChatMessage[]) => [...(current || []), newMessage]);
+      reader.onerror = () => {
+        logger.error(
+          'ChatWindowNew handleVoiceRecorded FileReader error',
+          new Error('FileReader failed'),
+          { messageId }
+        );
+        toast.error('Failed to read voice message. Please try again.');
+        setIsRecording(false);
+      };
+
+      reader.readAsDataURL(audioBlob);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('ChatWindowNew handleVoiceRecorded error', err, { duration });
+      toast.error('Failed to record voice message. Please try again.');
       setIsRecording(false);
-
-      toast.success('Voice message sent!', {
-        duration: 1500,
-        position: 'top-center',
-      });
-    };
-
-    reader.readAsDataURL(audioBlob);
+    }
   };
 
   const handleVoiceCancel = () => {
@@ -392,20 +447,23 @@ export default function ChatWindow({
       setPlayingVoice(null);
       audioRef.current = null;
     };
-    void audio.play().catch(() => {
-      // Silently handle audio play errors
+    audio.onerror = () => {
+      logger.error('ChatWindowNew audio playback error', new Error('Audio playback failed'), {
+        messageId,
+      });
+      toast.error('Failed to play voice message. Please try again.');
+      setPlayingVoice(null);
+      audioRef.current = null;
+    };
+    void audio.play().catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('ChatWindowNew audio.play() error', err, { messageId });
+      toast.error('Failed to play voice message. Please try again.');
+      setPlayingVoice(null);
+      audioRef.current = null;
     });
     audioRef.current = audio;
     setPlayingVoice(messageId);
-  };
-
-  const markMessagesAsRead = () => {
-    const lastMsg = messages && messages.length > 0 ? messages[messages.length - 1] : null;
-    if (lastMsg?.id) {
-      void markChatAsRead(lastMsg.id).catch(() => {
-        // Silently handle errors - error handling is done in the hook
-      });
-    }
   };
 
   const messageGroups = chatMessageGroups;
@@ -425,26 +483,52 @@ export default function ChatWindow({
   const multipleTypingUsers = typingUsers.filter((u) => u.userId !== currentUserId).length > 1;
 
   const handleVoiceCall = () => {
-    haptics.trigger('heavy');
-    const petId = room.matchedPetId;
-    const petName = room.matchedPetName;
-    if (petId && petName) {
-      void initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'voice').catch(() => {
-        // Silently handle errors - error handling is done in the hook
-      });
-      toast.info('Starting voice call...');
+    try {
+      haptics.trigger('heavy');
+      const petId = room.matchedPetId;
+      const petName = room.matchedPetName;
+      if (petId && petName) {
+        void initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'voice').catch(
+          (error) => {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logger.error('ChatWindowNew handleVoiceCall error', err, { petId, petName });
+            toast.error('Failed to start voice call. Please try again.');
+          }
+        );
+        toast.info('Starting voice call...');
+      } else {
+        logger.warn('ChatWindowNew handleVoiceCall missing petId or petName', { petId, petName });
+        toast.error('Unable to start call. Pet information is missing.');
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('ChatWindowNew handleVoiceCall sync error', err);
+      toast.error('Failed to start voice call. Please try again.');
     }
   };
 
   const handleVideoCall = () => {
-    haptics.trigger('heavy');
-    const petId = room.matchedPetId;
-    const petName = room.matchedPetName;
-    if (petId && petName) {
-      void initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'video').catch(() => {
-        // Silently handle errors - error handling is done in the hook
-      });
-      toast.info('Starting video call...');
+    try {
+      haptics.trigger('heavy');
+      const petId = room.matchedPetId;
+      const petName = room.matchedPetName;
+      if (petId && petName) {
+        void initiateCall(petId, petName, room.matchedPetPhoto || undefined, 'video').catch(
+          (error) => {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logger.error('ChatWindowNew handleVideoCall error', err, { petId, petName });
+            toast.error('Failed to start video call. Please try again.');
+          }
+        );
+        toast.info('Starting video call...');
+      } else {
+        logger.warn('ChatWindowNew handleVideoCall missing petId or petName', { petId, petName });
+        toast.error('Unable to start call. Pet information is missing.');
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('ChatWindowNew handleVideoCall sync error', err);
+      toast.error('Failed to start video call. Please try again.');
     }
   };
 
@@ -489,7 +573,13 @@ export default function ChatWindow({
         >
           <div className="flex items-center gap-3">
             {onBack && (
-              <Button variant="ghost" size="icon" onClick={onBack} className="md:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBack}
+                className="md:hidden"
+                aria-label="Back to chat list"
+              >
                 <ArrowLeft size={20} />
               </Button>
             )}
@@ -570,10 +660,7 @@ export default function ChatWindow({
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6">
               {messageGroups.map((group: { date: string; messages: ChatMessage[] }) => (
                 <div key={group.date} className="space-y-4">
-                  <AnimatedView
-                    className="flex justify-center"
-                    style={dateGroupStyle}
-                  >
+                  <AnimatedView className="flex justify-center" style={dateGroupStyle}>
                     <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
                       {group.date}
                     </div>

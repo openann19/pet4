@@ -20,58 +20,151 @@ interface QueryProviderProps {
 export function QueryProvider({ children }: QueryProviderProps) {
   // Setup online/offline detection
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return;
+    }
+
     const handleOnline = () => {
-      logger.debug('Network connection restored');
-      onlineManager.setOnline(true);
+      try {
+        logger.debug('Network connection restored');
+        onlineManager.setOnline(true);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider handleOnline error', err);
+      }
     };
 
     const handleOffline = () => {
-      logger.debug('Network connection lost');
-      onlineManager.setOnline(false);
+      try {
+        logger.debug('Network connection lost');
+        onlineManager.setOnline(false);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider handleOffline error', err);
+      }
     };
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    try {
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
 
-    // Set initial online state
-    onlineManager.setOnline(navigator.onLine);
+      // Set initial online state - navigator.onLine is always defined in browsers
+      if (typeof navigator.onLine === 'boolean') {
+        onlineManager.setOnline(navigator.onLine);
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('QueryProvider setup online/offline listeners error', err);
+    }
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      try {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider cleanup online/offline listeners error', err);
+      }
     };
   }, []);
 
   // Setup focus management for background tabs
   useEffect(() => {
-    const handleFocus = () => focusManager.setFocused(true);
-    const handleBlur = () => focusManager.setFocused(false);
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
 
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
+    const handleFocus = () => {
+      try {
+        focusManager.setFocused(true);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider handleFocus error', err);
+      }
+    };
 
-    // Set initial focus state
-    focusManager.setFocused(document.hasFocus());
+    const handleBlur = () => {
+      try {
+        focusManager.setFocused(false);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider handleBlur error', err);
+      }
+    };
+
+    try {
+      window.addEventListener('focus', handleFocus);
+      window.addEventListener('blur', handleBlur);
+
+      // Set initial focus state - document.hasFocus() is always defined in browsers
+      if (typeof document.hasFocus === 'function') {
+        try {
+          focusManager.setFocused(document.hasFocus());
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('QueryProvider document.hasFocus error', err);
+          // Default to focused if hasFocus fails
+          focusManager.setFocused(true);
+        }
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('QueryProvider setup focus/blur listeners error', err);
+    }
 
     return () => {
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
+      try {
+        window.removeEventListener('focus', handleFocus);
+        window.removeEventListener('blur', handleBlur);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider cleanup focus/blur listeners error', err);
+      }
     };
   }, []);
 
   // Setup background sync
   useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      typeof navigator === 'undefined' ||
+      typeof document === 'undefined'
+    ) {
+      return;
+    }
+
     const syncInterval = setInterval(() => {
-      if (navigator.onLine && document.visibilityState === 'visible') {
-        logger.debug('Running background sync');
-        queryClient.invalidateQueries({
-          refetchType: 'active',
-        });
+      try {
+        const isOnline = typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
+        const isVisible =
+          typeof document.visibilityState === 'string' && document.visibilityState === 'visible';
+
+        if (isOnline && isVisible) {
+          logger.debug('Running background sync');
+          void queryClient
+            .invalidateQueries({
+              refetchType: 'active',
+            })
+            .catch((error: unknown) => {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('Background sync failed', err);
+            });
+        }
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Background sync interval error', err);
       }
     }, backgroundSyncConfig.syncInterval);
 
-    return () => clearInterval(syncInterval);
-  }, []);
+    return () => {
+      try {
+        clearInterval(syncInterval);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider cleanup sync interval error', err);
+      }
+    };
+  }, [queryClient]);
 
   // In development, show React Query devtools
   const showDevtools = import.meta.env.DEV;

@@ -1,16 +1,13 @@
 // Flat config, fast-by-default. Type-aware rules are scoped to specific globs.
-import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import reactHooks from 'eslint-plugin-react-hooks';
-import react from 'eslint-plugin-react';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
-import globals from 'globals';
+import js from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import reactHooks from 'eslint-plugin-react-hooks'
+import react from 'eslint-plugin-react'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
+import globals from 'globals'
 
 /** Globs where we actually want type-aware linting (web + key packages). */
-const TYPE_AWARE = [
-  'apps/web/**/*.{ts,tsx}',
-  'packages/*/src/**/*.{ts,tsx}',
-];
+const TYPE_AWARE = ['apps/web/**/*.{ts,tsx}', 'packages/*/src/**/*.{ts,tsx}']
 
 export default [
   // Ignore heavy/generated stuff completely
@@ -28,6 +25,8 @@ export default [
       '**/.turbo/**',
       '**/.cache/**',
       '**/html/**',
+      '**/MEDIA_EDITOR_EXAMPLES.tsx',
+      'MEDIA_EDITOR_EXAMPLES.tsx',
     ],
   },
 
@@ -43,7 +42,7 @@ export default [
       globals: { ...globals.browser, ...globals.node },
     },
     plugins: {
-      'react': react,
+      react: react,
       'react-hooks': reactHooks,
       'jsx-a11y': jsxA11y,
     },
@@ -53,7 +52,7 @@ export default [
       'react/react-in-jsx-scope': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
     },
     settings: { react: { version: 'detect' } },
@@ -94,7 +93,11 @@ export default [
 
   // Tests: never type-aware; keep it quick
   {
-    files: ['**/*.{test,spec}.{ts,tsx,js,jsx}', '**/test/**/*.{ts,tsx,js,jsx}', '**/__tests__/**/*.{ts,tsx,js,jsx}'],
+    files: [
+      '**/*.{test,spec}.{ts,tsx,js,jsx}',
+      '**/test/**/*.{ts,tsx,js,jsx}',
+      '**/__tests__/**/*.{ts,tsx,js,jsx}',
+    ],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
@@ -143,9 +146,12 @@ export default [
     rules: {
       'no-console': 'off',
       // Don't disable no-undef - instead provide globals above
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-require-imports': 'off',
       '@typescript-eslint/no-var-requires': 'off',
     },
   },
-];
+]

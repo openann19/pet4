@@ -36,6 +36,16 @@ export interface SyncStatus {
   pendingActions: number;
   lastSyncTime?: string;
   failedActions: number;
+  progress?: number;
+  currentAction?: string;
+}
+
+export interface SyncProgress {
+  readonly total: number;
+  readonly completed: number;
+  readonly failed: number;
+  readonly percentage: number;
+  readonly currentAction?: string;
 }
 
 class OfflineSyncManager {
@@ -43,25 +53,88 @@ class OfflineSyncManager {
   private isSyncing = false;
   private syncQueue: PendingSyncAction[] = [];
   private listeners = new Set<(status: SyncStatus) => void>();
+  private onlineHandler: (() => void) | null = null;
+  private offlineHandler: (() => void) | null = null;
+  private lastSyncTime: string | undefined;
+  private syncProgress: SyncProgress | null = null;
+  private enableIncrementalSync = true;
+  private enablePrioritizedSync = true;
+  private enableBackgroundSync = true;
+  private idleSyncTimeout: number | null = null;
 
   constructor() {
     this.initializeEventListeners();
-    this.loadQueueFromStorage();
+    // Initialize queue from storage asynchronously - fire-and-forget with error handling inside
+    void this.loadQueueFromStorage();
   }
 
   private initializeEventListeners() {
-    window.addEventListener('online', () => {
-      logger.info('Online - starting sync');
-      this.isOnline = true;
-      this.notifyListeners();
-      void this.syncPendingActions();
-    });
+    if (typeof window === 'undefined') {
+      return;
+    }
 
-    window.addEventListener('offline', () => {
-      logger.info('Offline - queuing future actions');
-      this.isOnline = false;
-      this.notifyListeners();
-    });
+    this.onlineHandler = () => {
+      try {
+        logger.info('Online - starting sync');
+        this.isOnline = true;
+        this.notifyListeners();
+
+        // Load last sync time
+        void this.loadLastSyncTime();
+
+        // Start sync
+        void this.syncPendingActions();
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('OfflineSyncManager online handler error', err);
+      }
+    };
+
+    this.offlineHandler = () => {
+      try {
+        logger.info('Offline - queuing future actions');
+        this.isOnline = false;
+        this.notifyListeners();
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('OfflineSyncManager offline handler error', err);
+      }
+    };
+
+    try {
+      window.addEventListener('online', this.onlineHandler);
+      window.addEventListener('offline', this.offlineHandler);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('OfflineSyncManager setup event listeners error', err);
+    }
+  }
+
+  destroy(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      if (this.onlineHandler) {
+        window.removeEventListener('online', this.onlineHandler);
+        this.onlineHandler = null;
+      }
+      if (this.offlineHandler) {
+        window.removeEventListener('offline', this.offlineHandler);
+        this.offlineHandler = null;
+      }
+      if (this.idleSyncTimeout !== null) {
+        clearTimeout(this.idleSyncTimeout);
+        this.idleSyncTimeout = null;
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('OfflineSyncManager cleanup event listeners error', err);
+    }
+
+    this.listeners.clear();
+    this.syncQueue = [];
   }
 
   private async loadQueueFromStorage() {
@@ -138,6 +211,9 @@ class OfflineSyncManager {
 
     if (this.isOnline) {
       void this.syncPendingActions();
+    } else {
+      // Schedule background sync when online
+      this.scheduleBackgroundSync();
     }
 
     return pendingAction.id;
@@ -153,9 +229,31 @@ class OfflineSyncManager {
 
     logger.info('Starting sync', { actionCount: this.syncQueue.length });
 
-    const actionsToSync = this.syncQueue.filter(
+    // Get actions to sync
+    let actionsToSync = this.syncQueue.filter(
       (a) => a.status === 'pending' || a.status === 'failed'
     );
+
+    // Prioritize actions if enabled
+    if (this.enablePrioritizedSync) {
+      actionsToSync = this.prioritizeActions(actionsToSync);
+    }
+
+    // Incremental sync: only sync changed data if enabled
+    if (this.enableIncrementalSync && this.lastSyncTime) {
+      actionsToSync = this.filterIncrementalActions(actionsToSync);
+    }
+
+    const total = actionsToSync.length;
+    let completed = 0;
+    let failed = 0;
+
+    this.syncProgress = {
+      total,
+      completed: 0,
+      failed: 0,
+      percentage: 0,
+    };
 
     for (const action of actionsToSync) {
       if (!this.isOnline) {
@@ -165,13 +263,24 @@ class OfflineSyncManager {
 
       try {
         action.status = 'syncing';
+        this.syncProgress = {
+          total,
+          completed,
+          failed,
+          percentage: Math.round((completed / total) * 100),
+          currentAction: action.action,
+        };
+        this.notifyListeners();
+
         await this.executeAction(action);
         action.status = 'completed';
+        completed++;
         logger.debug('Completed action', { action: action.action, actionId: action.id });
 
         this.syncQueue = this.syncQueue.filter((a) => a.id !== action.id);
       } catch (error) {
         action.retries++;
+        failed++;
 
         if (action.retries >= action.maxRetries) {
           action.status = 'failed';
@@ -191,21 +300,101 @@ class OfflineSyncManager {
           });
         }
       }
+
+      this.syncProgress = {
+        total,
+        completed,
+        failed,
+        percentage: Math.round((completed / total) * 100),
+      };
+      this.notifyListeners();
     }
 
     await this.saveQueueToStorage();
     this.isSyncing = false;
+    this.syncProgress = null;
     this.notifyListeners();
 
     try {
-      await APIClient.post(ENDPOINTS.SYNC.LAST_SYNC_TIME, { timestamp: new Date().toISOString() });
+      const syncTime = new Date().toISOString();
+      await APIClient.post(ENDPOINTS.SYNC.LAST_SYNC_TIME, { timestamp: syncTime });
+      this.lastSyncTime = syncTime;
     } catch (apiError) {
       logger.warn('Failed to update sync time on API, saving locally', { error: apiError });
     }
 
-    await storage.set('last-sync-time', new Date().toISOString());
+    const syncTime = new Date().toISOString();
+    await storage.set('last-sync-time', syncTime);
+    this.lastSyncTime = syncTime;
 
-    logger.info('Sync completed', { remaining: this.syncQueue.length });
+    logger.info('Sync completed', { remaining: this.syncQueue.length, completed, failed });
+  }
+
+  private prioritizeActions(actions: PendingSyncAction[]): PendingSyncAction[] {
+    // Priority order: send_message > like_pet > create_pet > update_pet > others
+    const priorityOrder: Record<SyncAction, number> = {
+      send_message: 0,
+      like_pet: 1,
+      pass_pet: 2,
+      create_pet: 3,
+      update_pet: 4,
+      create_story: 5,
+      react_to_message: 6,
+      update_profile: 7,
+      upload_photo: 8,
+    };
+
+    return [...actions].sort((a, b) => {
+      const aPriority = priorityOrder[a.action] ?? 999;
+      const bPriority = priorityOrder[b.action] ?? 999;
+      return aPriority - bPriority;
+    });
+  }
+
+  private filterIncrementalActions(actions: PendingSyncAction[]): PendingSyncAction[] {
+    if (!this.lastSyncTime) {
+      return actions;
+    }
+
+    const lastSync = new Date(this.lastSyncTime).getTime();
+    return actions.filter((action) => {
+      const actionTime = new Date(action.timestamp).getTime();
+      return actionTime > lastSync;
+    });
+  }
+
+  private scheduleBackgroundSync(): void {
+    if (!this.enableBackgroundSync) {
+      return;
+    }
+
+    // Cancel existing timeout
+    if (this.idleSyncTimeout !== null) {
+      clearTimeout(this.idleSyncTimeout);
+      this.idleSyncTimeout = null;
+    }
+
+    // Schedule sync when idle (after 5 seconds of inactivity)
+    this.idleSyncTimeout = window.setTimeout(() => {
+      if (this.isOnline && !this.isSyncing && this.syncQueue.length > 0) {
+        logger.debug('Background sync triggered');
+        void this.syncPendingActions();
+      }
+      this.idleSyncTimeout = null;
+    }, 5000);
+  }
+
+  private async loadLastSyncTime(): Promise<void> {
+    try {
+      const syncTime = await this.getLastSyncTime();
+      if (syncTime) {
+        this.lastSyncTime = syncTime;
+      }
+    } catch (error) {
+      logger.warn('Failed to load last sync time', {
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
+    }
   }
 
   private async executeAction(action: PendingSyncAction): Promise<void> {
@@ -291,7 +480,14 @@ class OfflineSyncManager {
       isSyncing: this.isSyncing,
       pendingActions: this.syncQueue.length,
       failedActions,
+      lastSyncTime: this.lastSyncTime,
+      progress: this.syncProgress?.percentage,
+      currentAction: this.syncProgress?.currentAction,
     };
+  }
+
+  getProgress(): SyncProgress | null {
+    return this.syncProgress;
   }
 
   async getLastSyncTime(): Promise<string | undefined> {

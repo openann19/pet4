@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import type { UserProfile, Pet } from '../types';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 import { useNavigation } from '@react-navigation/native';
 import { PricingModal, SubscriptionStatusCard, BillingIssueBanner } from '../components/payments';
 import { useSubscription } from '../hooks/payments/useSubscription';

@@ -23,6 +23,8 @@ import { createLogger } from '@/lib/logger';
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion';
 import { randomRange } from '../core/seeded-rng';
 import { logEffectEnd, logEffectStart } from '../core/telemetry';
+import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
+import { useUIConfig } from '@/hooks/use-ui-config';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 const logger = createLogger('sticker-physics');
@@ -72,6 +74,8 @@ export function useStickerPhysics(options: UseStickerPhysicsOptions = {}): UseSt
   const scale = useSharedValue(1);
 
   const reducedMotion = useReducedMotionSV();
+  const { scaleDuration } = useDeviceRefreshRate();
+  const { animation, performance } = useUIConfig();
   const textureCacheRef = useRef<string | null>(null);
 
   const trigger = useCallback(() => {
@@ -79,13 +83,15 @@ export function useStickerPhysics(options: UseStickerPhysicsOptions = {}): UseSt
       return;
     }
 
-    const duration =
+    const baseDuration =
       STICKER_DURATION_MIN + randomRange(0, STICKER_DURATION_MAX - STICKER_DURATION_MIN);
 
     const isReducedMotion = reducedMotion.value;
-    const finalDuration = isReducedMotion
+    // Use adaptive duration scaling based on device refresh rate
+    const baseFinalDuration = isReducedMotion
       ? getReducedMotionDuration(STICKER_DURATION_MIN, true)
-      : duration;
+      : baseDuration;
+    const finalDuration = scaleDuration(baseFinalDuration);
 
     // Log effect start
     const effectId = logEffectStart('sticker-physics', {
@@ -93,54 +99,54 @@ export function useStickerPhysics(options: UseStickerPhysicsOptions = {}): UseSt
       reducedMotion: isReducedMotion,
     });
 
-    // Cache texture (for future use)
-    if (!textureCacheRef.current) {
+    // Cache texture (for future use) - only if performance optimization enabled
+    if (performance.useSkiaWhereAvailable && !textureCacheRef.current) {
       textureCacheRef.current = 'sticker-texture';
       logger.debug('Sticker texture cached');
     }
 
-    // X movement (linear with initial velocity)
-    const finalX = initialVelocity.x * (duration / 1000);
+    // X movement (linear with initial velocity) - use adaptive duration
+    const finalX = initialVelocity.x * (finalDuration / 1000);
     translateX.value = withTiming(finalX, {
-      duration,
+      duration: finalDuration,
       easing: Easing.linear,
     });
 
-    // Y movement (gravity + bounce)
+    // Y movement (gravity + bounce) - use adaptive duration
     const bounceY = floorY + Math.abs(initialVelocity.y) * BOUNCE_COEFFICIENT;
     translateY.value = withSequence(
       withTiming(floorY, {
-        duration: duration * 0.6, // fall
+        duration: scaleDuration(finalDuration * 0.6), // fall
         easing: Easing.out(Easing.quad),
       }),
       withTiming(bounceY, {
-        duration: duration * 0.2, // bounce up
+        duration: scaleDuration(finalDuration * 0.2), // bounce up
         easing: Easing.out(Easing.quad),
       }),
       withTiming(floorY, {
-        duration: duration * 0.2, // settle
+        duration: scaleDuration(finalDuration * 0.2), // settle
         easing: Easing.in(Easing.quad),
       })
     );
 
-    // Rotation (spins during flight)
+    // Rotation (spins during flight) - use adaptive duration
     rotation.value = withTiming(360 * 2, {
-      duration,
+      duration: finalDuration,
       easing: Easing.linear,
     });
 
-    // Scale (slight shrink on impact)
+    // Scale (slight shrink on impact) - use adaptive duration
     scale.value = withSequence(
       withTiming(1, {
-        duration: duration * 0.6,
+        duration: scaleDuration(finalDuration * 0.6),
         easing: Easing.linear,
       }),
       withTiming(0.9, {
-        duration: duration * 0.1,
+        duration: scaleDuration(finalDuration * 0.1),
         easing: Easing.out(Easing.quad),
       }),
       withTiming(1, {
-        duration: duration * 0.3,
+        duration: scaleDuration(finalDuration * 0.3),
         easing: Easing.out(Easing.quad),
       })
     );
@@ -149,21 +155,24 @@ export function useStickerPhysics(options: UseStickerPhysicsOptions = {}): UseSt
     if (onComplete) {
       setTimeout(() => {
         onComplete();
-      }, duration);
+      }, finalDuration);
     }
 
     // Log effect end
     setTimeout(() => {
       logEffectEnd(effectId, {
-        durationMs: duration,
+        durationMs: finalDuration,
         success: true,
       });
-    }, duration);
+    }, finalDuration);
   }, [
     enabled,
     initialVelocity,
     floorY,
     reducedMotion,
+    scaleDuration,
+    animation,
+    performance,
     translateX,
     translateY,
     rotation,

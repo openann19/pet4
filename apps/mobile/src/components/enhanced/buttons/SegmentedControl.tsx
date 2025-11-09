@@ -32,7 +32,7 @@ export interface SegmentedControlProps {
   accessibilityLabel: string
 }
 
-const SPRING_CONFIG = { stiffness: 400, damping: 20 }
+const SPRING_CONFIG = { stiffness: 400, damping: 20 } as const
 const MAX_SEGMENTS = 10 // Maximum expected segments
 
 export function SegmentedControl({
@@ -99,6 +99,16 @@ export function SegmentedControl({
     width: indicatorWidth.value,
   }))
 
+  const indicatorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (indicatorTimeoutRef.current !== null) {
+        clearTimeout(indicatorTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const handleOptionPress = useCallback(
     (optionValue: string) => {
       if (multiSelect) {
@@ -110,7 +120,13 @@ export function SegmentedControl({
         onValueChange?.(optionValue)
       }
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-      setTimeout(updateIndicator, 100)
+      if (indicatorTimeoutRef.current !== null) {
+        clearTimeout(indicatorTimeoutRef.current)
+      }
+      indicatorTimeoutRef.current = setTimeout(() => {
+        updateIndicator()
+        indicatorTimeoutRef.current = null
+      }, 100)
     },
     [multiSelect, selectedValues, onValueChange, updateIndicator]
   )

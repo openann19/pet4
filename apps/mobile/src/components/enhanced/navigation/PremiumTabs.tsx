@@ -7,6 +7,7 @@ import Animated, {
   withTiming,
   measure,
   runOnUI,
+  type AnimatedRef,
 } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
@@ -50,12 +51,11 @@ export function PremiumTabs({
   children,
 }: PremiumTabsProps): React.JSX.Element {
   const containerRef = useRef<View>(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tabRefs = useRef<Array<any>>([])
+  const tabRefs = useRef<Array<React.ComponentRef<typeof AnimatedPressable> | null>>([])
   const indicatorPosition = useSharedValue(0)
   const indicatorWidth = useSharedValue(0)
   const reducedMotion = useReducedMotionSV()
-  const activeTab = value || defaultValue || tabs[0]?.value
+  const activeTab = value ?? defaultValue ?? tabs[0]?.value ?? ''
 
   const updateIndicator = useCallback(() => {
     const activeIndex = tabs.findIndex(tab => tab.value === activeTab)
@@ -64,8 +64,8 @@ export function PremiumTabs({
       if (tabRef) {
         runOnUI(() => {
           'worklet'
-          // measure function accepts animated refs
-          const measurements = measure(tabRef)
+          // AnimatedPressable refs are compatible with measure function
+          const measurements = measure(tabRef as AnimatedRef<React.ComponentRef<typeof AnimatedPressable>>)
           if (measurements) {
             indicatorPosition.value = reducedMotion.value
               ? withTiming(measurements.pageX, { duration: 200 })
@@ -81,7 +81,7 @@ export function PremiumTabs({
 
   useEffect(() => {
     updateIndicator()
-  }, [updateIndicator, activeTab])
+  }, [updateIndicator])
 
   const indicatorStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: indicatorPosition.value }],
@@ -125,10 +125,8 @@ export function PremiumTabs({
           return (
             <AnimatedPressable
               key={tab.value}
-              ref={(ref) => {
-                if (ref) {
-                  tabRefs.current[index] = ref
-                }
+              ref={(ref: React.ComponentRef<typeof AnimatedPressable> | null) => {
+                tabRefs.current[index] = ref
               }}
               onPress={() => handleTabPress(tab.value)}
               disabled={tab.disabled}

@@ -9,6 +9,7 @@ import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useStickerAnimation } from '@/effects/reanimated/use-sticker-animation';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
 import { springConfigs } from '@/effects/reanimated/transitions';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface StickerMessageProps {
   sticker: Sticker;
@@ -17,7 +18,8 @@ export interface StickerMessageProps {
 }
 
 export function StickerMessage({ sticker, isOwn = false, onHover }: StickerMessageProps) {
-  const [isHovered, setIsHovered] = useState(false);
+    const uiConfig = useUIConfig();
+    const [isHovered, setIsHovered] = useState(false);
 
   const entryOpacity = useSharedValue(0);
   const entryScale = useSharedValue(0.5);

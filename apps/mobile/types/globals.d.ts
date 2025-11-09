@@ -1,11 +1,12 @@
 /**
  * Global type declarations for React Native with optional DOM APIs
- * TODO: Temporary triage - These are platform-specific and should be properly typed
+ * Note: Temporary type definitions - These are platform-specific and should be properly typed
+ * This is a workaround for platform-specific types that need proper typing
  */
 
 declare global {
   // DOM APIs that may be available in React Native Web or polyfilled environments
-  const window: Window & typeof globalThis | undefined
+  const window: (Window & typeof globalThis) | undefined
   const document: Document | undefined
   const navigator: Navigator | undefined
 }
@@ -44,4 +45,3 @@ interface Navigator {
 }
 
 export {}
-

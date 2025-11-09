@@ -125,8 +125,8 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
         'message' in err
           ? err.message
           : (err as APIError).message ||
-          t.auth?.signUpError ||
-          'Failed to create account. Please try again.';
+            t.auth?.signUpError ||
+            'Failed to create account. Please try again.';
       toast.error(errorMessage);
       haptics.trigger('error');
     } finally {
@@ -134,32 +134,54 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
     }
   };
 
-  const handleAgeVerified = (_country?: string) => {
+  const handleAgeVerified = (country?: string) => {
     setAgeVerified(true);
     setShowAgeGate(false);
-    // Continue with sign-up
-    const form = document.querySelector('form')!;
+    haptics.trigger('success');
+    analytics.track('age_verified', { country: country || 'unknown' });
+
+    // Age verified - automatically continue with sign-up flow
+    // This allows seamless continuation after age gate completion
+    const form = document.querySelector('form');
     if (form) {
-      form.requestSubmit();
+      // Trigger form submission if form data is valid
+      // This resumes the sign-up process after age verification
+      const formData = new FormData(form);
+      const hasFormData = name && email && password && confirmPassword && agreeToTerms;
+
+      if (hasFormData && validateForm()) {
+        form.requestSubmit();
+      } else {
+        // If form is incomplete, user can continue filling it after age verification
+        // The form will validate and submit normally when user clicks submit
+        logger.info('Age verified, waiting for form completion', { email });
+      }
     }
   };
 
-  const handleOAuthSuccess = (provider: 'google' | 'apple') => {
+  const handleOAuthSuccess = async (provider: 'google' | 'apple') => {
     try {
       haptics.trigger('light');
       analytics.track('oauth_success', { provider });
 
-      // OAuth flow would handle age verification server-side
-      // For now, show age gate if needed
+      // Age verification is required for OAuth flows
+      // Server-side OAuth providers may include age data, but we verify client-side for consistency
+      // Show age gate modal if user hasn't verified age yet
       if (!ageVerified) {
         setShowAgeGate(true);
-      } else {
-        toast.success(t.auth?.signUpSuccess || 'Account created successfully!');
-        onSuccess();
+        return;
       }
+
+      // Age verified - proceed with OAuth registration
+      // Note: OAuth provider should handle user creation, this is for post-auth flow
+      toast.success(t.auth?.signUpSuccess || 'Account created successfully!');
+      haptics.trigger('success');
+      onSuccess();
     } catch (error) {
-      logger.error('OAuth error', error instanceof Error ? error : new Error(String(error)));
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('OAuth error', err, { provider });
       toast.error(t.auth?.signUpError || 'Failed to sign up. Please try again.');
+      haptics.trigger('error');
     }
   };
 

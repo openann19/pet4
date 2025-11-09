@@ -8,6 +8,7 @@ import { PaperPlaneRight } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ScrollToBottomFABProps {
   isVisible: boolean;
@@ -24,9 +25,10 @@ export function ScrollToBottomFAB({
   badgeAnimatedStyle,
   onClick,
 }: ScrollToBottomFABProps): React.ReactElement | null {
-  if (!isVisible) {
-    return null;
-  }
+    const uiConfig = useUIConfig();
+    if (!isVisible) {
+        return null;
+      }
 
   return (
     <AnimatedView style={animatedStyle} className="fixed bottom-24 right-6 z-40">
@@ -34,6 +36,7 @@ export function ScrollToBottomFAB({
         size="icon"
         className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
         onClick={onClick}
+        aria-label="Scroll to bottom"
       >
         <PaperPlaneRight size={20} weight="fill" />
         {badgeCount > 0 && badgeAnimatedStyle && (

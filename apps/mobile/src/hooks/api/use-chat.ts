@@ -13,7 +13,7 @@ import { apiClient } from '@/utils/api-client'
 /**
  * Fetch chat messages
  */
-async function fetchMessages(
+function fetchMessages(
   chatRoomId: string,
   cursor?: string
 ): Promise<{ items: Message[]; nextCursor?: string }> {
@@ -43,10 +43,7 @@ async function sendMessage(chatRoomId: string, content: string): Promise<Message
 /**
  * Mark message as read
  */
-async function markMessageAsRead(
-  chatRoomId: string,
-  messageId: string
-): Promise<{ success: boolean }> {
+function markMessageAsRead(chatRoomId: string, messageId: string): Promise<{ success: boolean }> {
   return apiClient.post<{ success: boolean }>(`/api/chat/${chatRoomId}/messages/${messageId}/read`)
 }
 
@@ -58,17 +55,17 @@ export function useChatMessages(
 ): ReturnType<typeof useInfiniteQuery<Message[]>> {
   return useInfiniteQuery({
     queryKey: chatRoomId ? queryKeys.chat.messages(chatRoomId) : ['chat', 'messages', 'null'],
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam }: { pageParam: string | undefined }): Promise<Message[]> => {
       if (!chatRoomId) {
         throw new Error('Chat room ID is required')
       }
-      const response = await fetchMessages(chatRoomId, pageParam as string | undefined)
+      const response = await fetchMessages(chatRoomId, pageParam)
       return response.items
     },
     enabled: !!chatRoomId,
-    getNextPageParam: () => {
+    getNextPageParam: (): string | undefined => {
       // Return cursor for next page if available
-      return
+      return undefined
     },
     staleTime: 30 * 1000, // 30 seconds for messages
     gcTime: 5 * 60 * 1000, // 5 minutes

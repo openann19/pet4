@@ -10,8 +10,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
-import { useEffect, useState, useCallback } from 'react';
+import { createLogger } from '@/lib/logger';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import type { ReactNode, CSSProperties } from 'react';
+import { ensureFocusAppearance } from '@/core/a11y/focus-appearance';
+import { useTargetSize } from '@/hooks/use-target-size';
+
+const logger = createLogger('AnimatedButton');
 
 interface AnimatedButtonProps {
   children: ReactNode;
@@ -53,6 +58,9 @@ export function AnimatedButton({
   type = 'button',
   ariaLabel,
 }: AnimatedButtonProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  // Target size validation - ensures 44x44px minimum touch target
+  const { ensure: ensureTargetSize } = useTargetSize({ enabled: !disabled, autoFix: true });
   const scale = useSharedValue(1);
   const translateY = useSharedValue(0);
   const shimmerX = useSharedValue(-200);
@@ -69,23 +77,29 @@ export function AnimatedButton({
 
   const handlePress = useCallback(() => {
     if (disabled) return;
-    haptics.impact('light');
 
-    scale.value = withSpring(
-      0.95,
-      {
-        damping: 15,
-        stiffness: 400,
-      },
-      () => {
-        scale.value = withSpring(1, {
+    try {
+      haptics.impact('light');
+
+      scale.value = withSpring(
+        0.95,
+        {
           damping: 15,
           stiffness: 400,
-        });
-      }
-    );
+        },
+        () => {
+          scale.value = withSpring(1, {
+            damping: 15,
+            stiffness: 400,
+          });
+        }
+      );
 
-    onClick?.();
+      onClick?.();
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('AnimatedButton onClick error', err);
+    }
   }, [disabled, onClick, scale]);
 
   const handleEnter = useCallback(() => {
@@ -162,20 +176,32 @@ export function AnimatedButton({
   const glowShadowOpacity = glow ? 0.3 + currentGlowProgress * 0.3 : 0;
   const glowStyle: CSSProperties = glow
     ? {
-        boxShadow: `0 0 20px rgba(var(--primary), ${glowShadowOpacity})`,
-      }
+      boxShadow: `0 0 20px rgba(var(--primary), ${glowShadowOpacity})`,
+    }
     : {};
 
   const shimmerStyle: CSSProperties =
     shimmer && !disabled
       ? {
-          transform: `translateX(${currentShimmerX}%)`,
-          opacity: 0.3,
-        }
+        transform: `translateX(${currentShimmerX}%)`,
+        opacity: 0.3,
+      }
       : {};
+
+  // Ensure focus appearance and target size meet WCAG 2.2 AAA requirements
+  useEffect(() => {
+    if (containerRef.current && !disabled) {
+      const buttonElement = containerRef.current.querySelector('button');
+      if (buttonElement) {
+        ensureFocusAppearance(buttonElement);
+        ensureTargetSize(buttonElement);
+      }
+    }
+  }, [disabled, ensureTargetSize]);
 
   return (
     <div
+      ref={containerRef}
       className="inline-block"
       role="presentation"
       onMouseEnter={handleEnter}
@@ -190,7 +216,7 @@ export function AnimatedButton({
         type={type}
         aria-label={ariaLabel}
         className={cn(
-          'relative overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+          'relative overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-ring',
           glow && 'shadow-lg shadow-primary/30',
           className
         )}

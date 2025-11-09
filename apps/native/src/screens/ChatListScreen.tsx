@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import type { ChatRoom } from '../types';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ChatListScreen(): React.JSX.Element {

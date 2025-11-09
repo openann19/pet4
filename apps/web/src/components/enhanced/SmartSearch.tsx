@@ -151,6 +151,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setTimeout(() => setIsFocused(false), 200)}
           placeholder={placeholder}
+          aria-label={placeholder || 'Search'}
           className="pl-10 pr-10"
         />
         {query && (

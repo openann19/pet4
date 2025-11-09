@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useStorage } from '@/hooks/use-storage';
+import { getAPIConfig, updateAPIConfig, type APIConfig } from '@/api/api-config-api';
 import {
   Eye,
   EyeSlash,
@@ -57,7 +57,9 @@ function AnimatedButton({
   size = 'default',
   className = '',
   bounceAnimation,
-}: AnimatedButtonProps): JSX.Element {
+  'aria-label': ariaLabel,
+  ...props
+}: AnimatedButtonProps & { 'aria-label'?: string }): JSX.Element {
   const handleClick = useCallback((): void => {
     if (disabled) return;
     bounceAnimation.handlePress();
@@ -66,75 +68,18 @@ function AnimatedButton({
 
   return (
     <AnimatedView style={bounceAnimation.animatedStyle} className={className}>
-      <Button variant={variant} size={size} onClick={handleClick} disabled={disabled}>
+      <Button
+        variant={variant}
+        size={size}
+        onClick={handleClick}
+        disabled={disabled}
+        aria-label={ariaLabel}
+        {...props}
+      >
         {children}
       </Button>
     </AnimatedView>
   );
-}
-
-export interface APIConfig {
-  maps: {
-    provider: 'google' | 'mapbox' | 'openstreetmap';
-    apiKey: string;
-    enabled: boolean;
-    rateLimit: number;
-  };
-  ai: {
-    provider: 'openai' | 'anthropic' | 'spark';
-    apiKey: string;
-    model: string;
-    enabled: boolean;
-    maxTokens: number;
-    temperature: number;
-  };
-  kyc: {
-    provider: 'stripe' | 'onfido' | 'jumio' | 'manual';
-    apiKey: string;
-    enabled: boolean;
-    autoApprove: boolean;
-    requireDocuments: boolean;
-  };
-  photoModeration: {
-    provider: 'aws-rekognition' | 'google-vision' | 'openai' | 'spark';
-    apiKey: string;
-    enabled: boolean;
-    autoReject: boolean;
-    confidenceThreshold: number;
-  };
-  sms: {
-    provider: 'twilio' | 'vonage' | 'aws-sns' | 'disabled';
-    apiKey: string;
-    apiSecret: string;
-    enabled: boolean;
-    fromNumber: string;
-  };
-  email: {
-    provider: 'sendgrid' | 'mailgun' | 'aws-ses' | 'disabled';
-    apiKey: string;
-    enabled: boolean;
-    fromEmail: string;
-    fromName: string;
-  };
-  storage: {
-    provider: 'aws-s3' | 'cloudflare-r2' | 'local';
-    apiKey: string;
-    apiSecret: string;
-    bucket: string;
-    region: string;
-    enabled: boolean;
-  };
-  analytics: {
-    provider: 'google-analytics' | 'mixpanel' | 'amplitude' | 'disabled';
-    apiKey: string;
-    enabled: boolean;
-  };
-  livekit: {
-    apiKey: string;
-    apiSecret: string;
-    wsUrl: string;
-    enabled: boolean;
-  };
 }
 
 const DEFAULT_CONFIG: APIConfig = {
@@ -202,11 +147,55 @@ const DEFAULT_CONFIG: APIConfig = {
 };
 
 export default function APIConfigView() {
-  const [config, setConfig] = useStorage<APIConfig>('admin-api-config', DEFAULT_CONFIG);
+  const [config, setConfig] = useState<APIConfig>(DEFAULT_CONFIG);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [showSecrets, setShowSecrets] = useState<Record<string, boolean>>({});
   const [testingService, setTestingService] = useState<string | null>(null);
   const [broadcasting, setBroadcasting] = useState(false);
   const [currentUser] = useUserStorage<User | null>('current-user', null);
+
+  // Load config from backend
+  const loadConfig = useCallback(async () => {
+    setLoading(true);
+    try {
+      const loadedConfig = await getAPIConfig();
+      if (loadedConfig) {
+        setConfig(loadedConfig);
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load API config', err);
+      toast.error('Failed to load API configuration');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadConfig();
+  }, [loadConfig]);
+
+  // Save config to backend
+  const saveConfig = useCallback(async () => {
+    if (!currentUser) {
+      toast.error('User not authenticated');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const updatedConfig = await updateAPIConfig(config, currentUser.id || 'admin');
+      setConfig(updatedConfig);
+      toast.success('API configuration saved successfully');
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save API config', err);
+      toast.error('Failed to save API configuration');
+    } finally {
+      setSaving(false);
+    }
+  }, [config, currentUser]);
 
   const toggleSecret = useCallback(
     (key: string): void => {
@@ -239,15 +228,19 @@ export default function APIConfigView() {
             },
           };
         });
-        toast.success('Configuration updated');
         logger.info('Configuration updated', { section, field, value });
+        // Auto-save to backend (debounced in practice, but immediate for now)
+        void saveConfig().catch((error) => {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('Failed to save configuration', err, { section, field, value });
+        });
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to update configuration', err, { section, field, value });
         toast.error('Failed to update configuration');
       }
     },
-    [setConfig]
+    [saveConfig, logger]
   );
 
   const testConnection = useCallback(async (service: string): Promise<void> => {
@@ -269,7 +262,7 @@ export default function APIConfigView() {
       toast.error(`${service} connection test failed`);
       logger.error('Connection test failed', err, { service });
     }
-  }, []);
+  }, [logger]);
 
   const resetToDefaults = useCallback(
     (section: keyof APIConfig): void => {
@@ -279,15 +272,21 @@ export default function APIConfigView() {
           ...current,
           [section]: DEFAULT_CONFIG[section],
         }));
-        toast.success('Reset to default configuration');
         logger.info('Configuration reset to defaults', { section });
+        // Auto-save to backend
+        void saveConfig().catch((error) => {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('Failed to save after reset', err, { section });
+          toast.error('Failed to reset configuration');
+        });
+        toast.success('Reset to default configuration');
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to reset configuration', err, { section });
         toast.error('Failed to reset configuration');
       }
     },
-    [setConfig]
+    [saveConfig, logger]
   );
 
   const handleBroadcast = useCallback(async (): Promise<void> => {
@@ -300,13 +299,16 @@ export default function APIConfigView() {
       setBroadcasting(true);
       triggerHaptic('light');
 
+      // Save config first
+      await saveConfig();
+
       await configBroadcastService.broadcastConfig(
         'api',
-        config as unknown as Record<string, unknown>,
+        config satisfies Record<string, unknown>,
         currentUser.id || 'admin'
       );
 
-      toast.success('API configuration broadcasted successfully');
+      toast.success('API configuration saved and broadcasted successfully');
 
       await adminApi.createAuditLog({
         adminId: currentUser.id || 'admin',
@@ -322,7 +324,7 @@ export default function APIConfigView() {
     } finally {
       setBroadcasting(false);
     }
-  }, [config, currentUser]);
+  }, [config, currentUser, saveConfig]);
 
   const testButtonBounce = useBounceOnTap({ scale: 0.92, duration: 180 });
   const resetButtonBounce = useBounceOnTap({ scale: 0.93, duration: 160 });
@@ -344,7 +346,16 @@ export default function APIConfigView() {
               <Key size={16} />
               Secure Storage
             </Badge>
-            <Button onClick={handleBroadcast} disabled={broadcasting} variant="default">
+            <Button
+              onClick={() => {
+                void handleBroadcast().catch((error) => {
+                  const err = error instanceof Error ? error : new Error(String(error));
+                  logger.error('Failed to broadcast config from button', err);
+                });
+              }}
+              disabled={broadcasting}
+              variant="default"
+            >
               <Radio size={16} className="mr-2" />
               {broadcasting ? 'Broadcasting...' : 'Broadcast Config'}
             </Button>
@@ -445,6 +456,7 @@ export default function APIConfigView() {
                           size="icon"
                           onClick={() => toggleSecret('maps-key')}
                           bounceAnimation={iconButtonBounce}
+                          aria-label={showSecrets['maps-key'] ? 'Hide maps API key' : 'Show maps API key'}
                         >
                           {showSecrets['maps-key'] ? <EyeSlash size={20} /> : <Eye size={20} />}
                         </AnimatedButton>
@@ -464,7 +476,12 @@ export default function APIConfigView() {
 
                   <div className="flex gap-2">
                     <AnimatedButton
-                      onClick={() => testConnection('Maps')}
+                      onClick={() => {
+                        void testConnection('Maps').catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to test Maps connection from button', err);
+                        });
+                      }}
                       disabled={testingService === 'Maps'}
                       className="flex-1"
                       bounceAnimation={testButtonBounce}
@@ -537,6 +554,7 @@ export default function APIConfigView() {
                           variant="outline"
                           size="icon"
                           onClick={() => toggleSecret('ai-key')}
+                          aria-label={showSecrets['ai-key'] ? 'Hide AI API key' : 'Show AI API key'}
                         >
                           {showSecrets['ai-key'] ? <EyeSlash size={20} /> : <Eye size={20} />}
                         </Button>
@@ -587,7 +605,12 @@ export default function APIConfigView() {
 
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => testConnection('AI')}
+                      onClick={() => {
+                        void testConnection('AI').catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to test AI connection from button', err);
+                        });
+                      }}
                       disabled={testingService === 'AI'}
                       className="flex-1"
                     >
@@ -654,6 +677,7 @@ export default function APIConfigView() {
                           variant="outline"
                           size="icon"
                           onClick={() => toggleSecret('kyc-key')}
+                          aria-label={showSecrets['kyc-key'] ? 'Hide KYC API key' : 'Show KYC API key'}
                         >
                           {showSecrets['kyc-key'] ? <EyeSlash size={20} /> : <Eye size={20} />}
                         </Button>
@@ -693,7 +717,12 @@ export default function APIConfigView() {
 
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => testConnection('KYC')}
+                      onClick={() => {
+                        void testConnection('KYC').catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to test KYC connection from button', err);
+                        });
+                      }}
                       disabled={testingService === 'KYC'}
                       className="flex-1"
                     >
@@ -764,6 +793,7 @@ export default function APIConfigView() {
                           variant="outline"
                           size="icon"
                           onClick={() => toggleSecret('mod-key')}
+                          aria-label={showSecrets['mod-key'] ? 'Hide moderation API key' : 'Show moderation API key'}
                         >
                           {showSecrets['mod-key'] ? <EyeSlash size={20} /> : <Eye size={20} />}
                         </Button>
@@ -814,7 +844,12 @@ export default function APIConfigView() {
 
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => testConnection('Photo Moderation')}
+                      onClick={() => {
+                        void testConnection('Photo Moderation').catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to test Photo Moderation connection from button', err);
+                        });
+                      }}
                       disabled={testingService === 'Photo Moderation'}
                       className="flex-1"
                     >
@@ -881,6 +916,7 @@ export default function APIConfigView() {
                             variant="outline"
                             size="icon"
                             onClick={() => toggleSecret('sms-key')}
+                            aria-label={showSecrets['sms-key'] ? 'Hide SMS API key' : 'Show SMS API key'}
                           >
                             {showSecrets['sms-key'] ? <EyeSlash size={20} /> : <Eye size={20} />}
                           </Button>
@@ -900,6 +936,7 @@ export default function APIConfigView() {
                             variant="outline"
                             size="icon"
                             onClick={() => toggleSecret('sms-secret')}
+                            aria-label={showSecrets['sms-secret'] ? 'Hide SMS API secret' : 'Show SMS API secret'}
                           >
                             {showSecrets['sms-secret'] ? <EyeSlash size={20} /> : <Eye size={20} />}
                           </Button>
@@ -921,7 +958,12 @@ export default function APIConfigView() {
 
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => testConnection('SMS')}
+                      onClick={() => {
+                        void testConnection('SMS').catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to test SMS connection from button', err);
+                        });
+                      }}
                       disabled={testingService === 'SMS' || config?.sms?.provider === 'disabled'}
                       className="flex-1"
                     >
@@ -986,6 +1028,7 @@ export default function APIConfigView() {
                             variant="outline"
                             size="icon"
                             onClick={() => toggleSecret('email-key')}
+                            aria-label={showSecrets['email-key'] ? 'Hide email API key' : 'Show email API key'}
                           >
                             {showSecrets['email-key'] ? <EyeSlash size={20} /> : <Eye size={20} />}
                           </Button>
@@ -1016,7 +1059,12 @@ export default function APIConfigView() {
 
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => testConnection('Email')}
+                      onClick={() => {
+                        void testConnection('Email').catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to test Email connection from button', err);
+                        });
+                      }}
                       disabled={
                         testingService === 'Email' || config?.email?.provider === 'disabled'
                       }
@@ -1082,6 +1130,7 @@ export default function APIConfigView() {
                             variant="outline"
                             size="icon"
                             onClick={() => toggleSecret('storage-key')}
+                            aria-label={showSecrets['storage-key'] ? 'Hide storage API key' : 'Show storage API key'}
                           >
                             {showSecrets['storage-key'] ? (
                               <EyeSlash size={20} />
@@ -1105,6 +1154,7 @@ export default function APIConfigView() {
                             variant="outline"
                             size="icon"
                             onClick={() => toggleSecret('storage-secret')}
+                            aria-label={showSecrets['storage-secret'] ? 'Hide storage secret key' : 'Show storage secret key'}
                           >
                             {showSecrets['storage-secret'] ? (
                               <EyeSlash size={20} />
@@ -1141,7 +1191,12 @@ export default function APIConfigView() {
 
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => testConnection('Storage')}
+                      onClick={() => {
+                        void testConnection('Storage').catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to test Storage connection from button', err);
+                        });
+                      }}
                       disabled={testingService === 'Storage'}
                       className="flex-1"
                     >
@@ -1214,6 +1269,7 @@ export default function APIConfigView() {
                           variant="outline"
                           size="icon"
                           onClick={() => toggleSecret('analytics-key')}
+                          aria-label={showSecrets['analytics-key'] ? 'Hide analytics API key' : 'Show analytics API key'}
                         >
                           {showSecrets['analytics-key'] ? (
                             <EyeSlash size={20} />
@@ -1227,7 +1283,12 @@ export default function APIConfigView() {
 
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => testConnection('Analytics')}
+                      onClick={() => {
+                        void testConnection('Analytics').catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to test Analytics connection from button', err);
+                        });
+                      }}
                       disabled={
                         testingService === 'Analytics' || config?.analytics?.provider === 'disabled'
                       }
@@ -1298,6 +1359,7 @@ export default function APIConfigView() {
                         variant="outline"
                         size="icon"
                         onClick={() => toggleSecret('livekit-key')}
+                        aria-label={showSecrets['livekit-key'] ? 'Hide LiveKit API key' : 'Show LiveKit API key'}
                       >
                         {showSecrets['livekit-key'] ? <EyeSlash size={20} /> : <Eye size={20} />}
                       </Button>
@@ -1320,6 +1382,7 @@ export default function APIConfigView() {
                         variant="outline"
                         size="icon"
                         onClick={() => toggleSecret('livekit-secret')}
+                        aria-label={showSecrets['livekit-secret'] ? 'Hide LiveKit API secret' : 'Show LiveKit API secret'}
                       >
                         {showSecrets['livekit-secret'] ? <EyeSlash size={20} /> : <Eye size={20} />}
                       </Button>
@@ -1342,7 +1405,12 @@ export default function APIConfigView() {
 
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => testConnection('LiveKit')}
+                      onClick={() => {
+                        void testConnection('LiveKit').catch((error) => {
+                          const err = error instanceof Error ? error : new Error(String(error));
+                          logger.error('Failed to test LiveKit connection from button', err);
+                        });
+                      }}
                       disabled={testingService === 'LiveKit' || !config?.livekit?.enabled}
                       className="flex-1"
                     >

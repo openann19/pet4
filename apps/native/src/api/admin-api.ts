@@ -6,6 +6,7 @@
 
 import type { AdminUser, AdminAction } from '@petspark/shared';
 import { createLogger } from '../utils/logger';
+import { apiClient } from '../utils/api-client';
 
 const logger = createLogger('AdminAPI');
 
@@ -32,16 +33,12 @@ export interface ResetPasswordResult {
 }
 
 class MobileAdminApiImpl {
-  private baseUrl = '/api/v1/admin';
-
   /**
    * Get system statistics
    */
   async getSystemStats(): Promise<SystemStats> {
     try {
-      const response = await fetch(`${this.baseUrl}/analytics`);
-      if (!response.ok) throw new Error('Failed to fetch stats');
-      return await response.json();
+      return await apiClient.get<SystemStats>('/v1/admin/analytics');
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to get system stats', err, { context: 'getSystemStats' });
@@ -66,16 +63,10 @@ class MobileAdminApiImpl {
     options?: ResetPasswordOptions
   ): Promise<ResetPasswordResult> {
     try {
-      const response = await fetch(`${this.baseUrl}/users/${userId}/reset-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sendEmail: options?.sendEmail ?? true,
-          ...(options?.newPassword ? { newPassword: options.newPassword } : {}),
-        }),
+      return await apiClient.post<ResetPasswordResult>(`/v1/admin/users/${userId}/reset-password`, {
+        sendEmail: options?.sendEmail ?? true,
+        ...(options?.newPassword ? { newPassword: options.newPassword } : {}),
       });
-      if (!response.ok) throw new Error('Failed to reset password');
-      return await response.json();
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to reset password', err, { context: 'resetUserPassword', userId });
@@ -88,9 +79,7 @@ class MobileAdminApiImpl {
    */
   async getUserDetails(userId: string): Promise<AdminUser> {
     try {
-      const response = await fetch(`${this.baseUrl}/users/${userId}`);
-      if (!response.ok) throw new Error('Failed to fetch user');
-      return await response.json();
+      return await apiClient.get<AdminUser>(`/v1/admin/users/${userId}`);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to get user details', err, { context: 'getUserDetails', userId });
@@ -111,12 +100,7 @@ class MobileAdminApiImpl {
     }
   ): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/users/${userId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
-      });
-      if (!response.ok) throw new Error('Failed to update user');
+      await apiClient.put(`/v1/admin/users/${userId}`, updates);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to update user', err, { context: 'updateUser', userId });
@@ -132,17 +116,14 @@ class MobileAdminApiImpl {
     config: Record<string, unknown>
   ): Promise<{ success: boolean; version: number }> {
     try {
-      const response = await fetch(`${this.baseUrl}/config/broadcast`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      return await apiClient.post<{ success: boolean; version: number }>(
+        '/v1/admin/config/broadcast',
+        {
           configType,
           config,
           timestamp: new Date().toISOString(),
-        }),
-      });
-      if (!response.ok) throw new Error('Failed to broadcast config');
-      return await response.json();
+        }
+      );
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to broadcast config', err, { context: 'broadcastConfig', configType });
@@ -155,9 +136,7 @@ class MobileAdminApiImpl {
    */
   async getAuditLogs(limit: number = 100): Promise<AdminAction[]> {
     try {
-      const response = await fetch(`${this.baseUrl}/audit-logs?limit=${limit}`);
-      if (!response.ok) throw new Error('Failed to fetch audit logs');
-      return await response.json();
+      return await apiClient.get<AdminAction[]>(`/v1/admin/audit-logs?limit=${limit}`);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to get audit logs', err, { context: 'getAuditLogs', limit });
@@ -170,13 +149,20 @@ class MobileAdminApiImpl {
    */
   async createAuditLog(entry: Omit<AdminAction, 'id' | 'timestamp'>): Promise<void> {
     try {
-      await fetch(`${this.baseUrl}/audit-logs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...entry,
-          timestamp: new Date().toISOString(),
-        }),
+      // Convert details to string if it's an object (for backend compatibility)
+      const details = entry.details
+        ? typeof entry.details === 'string'
+          ? entry.details
+          : JSON.stringify(entry.details)
+        : undefined;
+
+      await apiClient.post('/v1/admin/audit-logs', {
+        adminId: entry.adminId,
+        action: entry.action,
+        targetType: entry.targetType,
+        targetId: entry.targetId,
+        details,
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -189,12 +175,7 @@ class MobileAdminApiImpl {
    */
   async moderatePhoto(taskId: string, action: string, reason?: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/moderation/photos/${taskId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, reason }),
-      });
-      if (!response.ok) throw new Error('Failed to moderate photo');
+      await apiClient.post(`/v1/admin/moderation/photos/${taskId}`, { action, reason });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to moderate photo', err, { context: 'moderatePhoto', taskId, action });
@@ -214,9 +195,9 @@ class MobileAdminApiImpl {
     }>
   > {
     try {
-      const response = await fetch(`${this.baseUrl}/kyc/queue`);
-      if (!response.ok) throw new Error('Failed to fetch KYC queue');
-      const data = await response.json();
+      const data = await apiClient.get<{ pending?: Array<{ id: string; userId: string; status: string; createdAt: string }> }>(
+        '/v1/admin/kyc/queue'
+      );
       return data.pending || [];
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -230,12 +211,7 @@ class MobileAdminApiImpl {
    */
   async reviewKYC(sessionId: string, action: 'approve' | 'reject', reason?: string): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/kyc/sessions/${sessionId}/review`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, reason }),
-      });
-      if (!response.ok) throw new Error('Failed to review KYC');
+      await apiClient.post(`/v1/admin/kyc/sessions/${sessionId}/review`, { action, reason });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to review KYC', err, { context: 'reviewKYC', sessionId, action });

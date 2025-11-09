@@ -22,11 +22,11 @@ export class ChatErrorBoundary extends React.Component<ChatErrorBoundaryProps, S
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static override getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     logger.error('Chat error boundary caught error', error, {
       componentStack: errorInfo.componentStack,
     });

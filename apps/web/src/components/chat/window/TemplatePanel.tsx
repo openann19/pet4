@@ -7,6 +7,7 @@ import { MESSAGE_TEMPLATES } from '@/lib/chat-types';
 import type { MessageTemplate } from '@/lib/chat-types';
 import { X } from '@phosphor-icons/react';
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TemplatePanelProps {
   onClose: () => void;
@@ -14,13 +15,20 @@ export interface TemplatePanelProps {
 }
 
 export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.Element {
+  const uiConfig = useUIConfig();
   const animation = useEntryAnimation({ initialY: -10, delay: 0 });
 
   return (
     <AnimatedView style={animation.animatedStyle} className="glass-effect p-3 rounded-xl space-y-2">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold">Message Templates</h4>
-        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onClose}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6"
+          onClick={onClose}
+          aria-label="Close message templates"
+        >
           <X size={14} />
         </Button>
       </div>

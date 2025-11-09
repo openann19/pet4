@@ -111,6 +111,12 @@ class AnalyticsService {
   }
 
   async trackEvent(name: EventName, properties: Record<string, unknown> = {}): Promise<void> {
+    // Check consent before tracking
+    if (!this.hasAnalyticsConsent()) {
+      logger.debug('Analytics tracking skipped - consent not granted', { eventName: name });
+      return;
+    }
+
     const event: AnalyticsEvent = {
       id: generateCorrelationId(),
       name,
@@ -140,6 +146,27 @@ class AnalyticsService {
     }
 
     logger.debug('Analytics event', { name, properties });
+  }
+
+  /**
+   * Check if analytics consent is granted
+   */
+  private hasAnalyticsConsent(): boolean {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    try {
+      const consentData = localStorage.getItem('gdpr-consent');
+      if (!consentData) {
+        return false;
+      }
+
+      const parsed = JSON.parse(consentData) as { value?: { analytics?: boolean } };
+      return parsed.value?.analytics === true;
+    } catch {
+      return false;
+    }
   }
 
   async trackPageView(path: string, properties: Record<string, unknown> = {}): Promise<void> {

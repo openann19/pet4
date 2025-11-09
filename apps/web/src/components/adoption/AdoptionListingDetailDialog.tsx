@@ -65,13 +65,6 @@ export function AdoptionListingDetailDialog({
     personalReferences: '',
   });
 
-  if (!listing) return null;
-
-  const photos =
-    listing.petPhotos && listing.petPhotos.length > 0
-      ? listing.petPhotos
-      : ['/placeholder-pet.jpg'];
-
   const photoPresence = useAnimatePresence({
     isVisible: true,
     enterTransition: 'fade',
@@ -85,6 +78,13 @@ export function AdoptionListingDetailDialog({
     enterTransition: 'slideUp',
     exitTransition: 'fade',
   });
+
+  if (!listing) return null;
+
+  const photos =
+    listing.petPhotos && listing.petPhotos.length > 0
+      ? listing.petPhotos
+      : ['/placeholder-pet.jpg'];
 
   const nextPhoto = (): void => {
     haptics.trigger('selection');
@@ -230,9 +230,8 @@ export function AdoptionListingDetailDialog({
                   <button
                     key={index}
                     onClick={() => setCurrentPhotoIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      index === currentPhotoIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
-                    }`}
+                    className={`w-2 h-2 rounded-full transition-all ${index === currentPhotoIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
+                      }`}
                   />
                 ))}
               </div>

@@ -256,7 +256,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
 
           <ScrollArea className="flex-1">
             <div className="p-4">
-              <Presence mode="popLayout">
+              <Presence visible={true}>
                 {filteredNotifications.length === 0 ? (
                   <MotionView
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -423,7 +423,7 @@ function NotificationItem({
               </span>
 
               <div className="flex items-center gap-1">
-                <Presence>
+                <Presence visible={isHovered}>
                   {isHovered && (
                     <>
                       {!notification.read && (

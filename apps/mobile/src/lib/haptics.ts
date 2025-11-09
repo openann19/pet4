@@ -15,8 +15,7 @@ class HapticFeedback {
   private isSupported: boolean
 
   constructor() {
-    this.isSupported =
-      typeof navigator !== 'undefined' && 'vibrate' in navigator
+    this.isSupported = typeof navigator !== 'undefined' && 'vibrate' in navigator
   }
 
   private vibrate(pattern: number | number[]): void {

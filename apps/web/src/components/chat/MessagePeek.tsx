@@ -8,6 +8,7 @@ import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { useFeatureFlags } from '@/config/feature-flags';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { X } from '@phosphor-icons/react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface MessagePeekProps {
   message: {
@@ -30,6 +31,7 @@ export interface MessagePeekProps {
  * Manages focus: traps focus when open, returns to trigger on close
  */
 export function MessagePeek({ message, visible, onClose, position, triggerRef }: MessagePeekProps) {
+  const uiConfig = useUIConfig();
   const reducedMotion = usePrefersReducedMotion();
   const { enableMessagePeek } = useFeatureFlags();
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -96,8 +98,12 @@ export function MessagePeek({ message, visible, onClose, position, triggerRef }:
 
       if (focusableElements.length === 0) return;
 
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
+      const firstElement = focusableElements[0] as HTMLElement | null;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement | null;
+
+      if (!firstElement || !lastElement) {
+        return;
+      }
 
       if (e.shiftKey) {
         // Shift + Tab

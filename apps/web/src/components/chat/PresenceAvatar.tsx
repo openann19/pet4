@@ -12,6 +12,7 @@ import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PresenceAvatarProps {
   src?: string;
@@ -30,7 +31,8 @@ export function PresenceAvatar({
   size = 40,
   className,
 }: PresenceAvatarProps) {
-  const reduced = useReducedMotion();
+    const uiConfig = useUIConfig();
+    const reduced = useReducedMotion();
   const rot = useSharedValue(0);
 
   const dur = getReducedMotionDuration(3600, reduced);

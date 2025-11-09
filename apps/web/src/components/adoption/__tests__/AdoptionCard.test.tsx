@@ -257,6 +257,7 @@ describe('AdoptionCard', () => {
       postedDate: new Date().toISOString(),
       personality: [],
       photos: [],
+      contactEmail: 'cathaven@example.com',
     };
 
     render(<AdoptionCard profile={minimalProfile} onSelect={mockOnSelect} />);

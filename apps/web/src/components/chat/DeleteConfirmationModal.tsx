@@ -6,14 +6,13 @@ import {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  FadeIn,
-  FadeOut,
 } from 'react-native-reanimated';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { X, Trash } from '@phosphor-icons/react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface DeleteConfirmationModalProps {
   isOpen: boolean;
@@ -32,6 +31,7 @@ export function DeleteConfirmationModal({
   context = 'self-delete',
   className,
 }: DeleteConfirmationModalProps) {
+  const uiConfig = useUIConfig();
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
   const backdropOpacity = useSharedValue(0);
@@ -72,8 +72,6 @@ export function DeleteConfirmationModal({
 
   return (
     <AnimatedView
-      entering={FadeIn.duration(150)}
-      exiting={FadeOut.duration(100)}
       style={backdropStyle}
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',

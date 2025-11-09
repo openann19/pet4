@@ -14,6 +14,7 @@ import type { TypingUser } from '@/lib/chat-types';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { timingConfigs } from '@/effects/reanimated/transitions';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TypingIndicatorProps {
   readonly users: readonly TypingUser[];
@@ -24,7 +25,8 @@ interface TypingDotProps {
 }
 
 function TypingDot({ index }: TypingDotProps): JSX.Element {
-  const opacity = useSharedValue(0.3);
+    const uiConfig = useUIConfig();
+    const opacity = useSharedValue(0.3);
   const translateY = useSharedValue(0);
 
   useEffect(() => {

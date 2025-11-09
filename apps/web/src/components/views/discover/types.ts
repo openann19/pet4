@@ -2,7 +2,7 @@
  * Discover View Types
  */
 
-import type { Pet, Match, SwipeAction } from '@/lib/types';
+import type { Pet } from '@/lib/types';
 import type { DiscoveryPreferences } from '@/components/DiscoveryFilters';
 
 export interface DiscoverViewState {

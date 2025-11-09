@@ -68,7 +68,7 @@ function ParticipantVideo({
   isSpotlight,
   onVideoRef,
 }: ParticipantVideoProps): JSX.Element {
-  const hoverLift = useHoverLift({ enabled: true });
+  const hoverLift = useHoverLift();
   const pulseScale = useSharedValue(1);
 
   useEffect(() => {
@@ -838,7 +838,7 @@ function ParticipantsPanel({
   totalParticipants,
   raisedHands,
   onInvite,
-  onClose,
+  onClose: _onClose,
 }: ParticipantsPanelProps): JSX.Element {
   const slideX = useSharedValue(400);
   const opacity = useSharedValue(0);

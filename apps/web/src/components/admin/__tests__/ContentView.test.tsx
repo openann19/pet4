@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import ContentView from '../ContentView';
 import { useStorage } from '@/hooks/use-storage';
 
-vi.mock('@/hooks/useStorage');
+vi.mock('@/hooks/use-storage');
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),

@@ -5,8 +5,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { URL } from 'node:url';
 
-import { apiConfigApi } from '@/api/api-config-api';
-import type { APIConfig } from '@/components/admin/APIConfigView';
+import { apiConfigApi, type APIConfig } from '@/api/api-config-api';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 let server: ReturnType<typeof createServer>;

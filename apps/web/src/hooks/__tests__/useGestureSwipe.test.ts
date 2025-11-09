@@ -3,10 +3,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useGestureSwipe } from '../useGestureSwipe';
 
 // Helper to create TouchEventInit with touches array (polyfill accepts arrays and converts to TouchList)
-function createTouchEventInit(
-  touches: Touch[],
-  changedTouches?: Touch[]
-): TouchEventInit {
+function createTouchEventInit(touches: Touch[], changedTouches?: Touch[]): TouchEventInit {
   // Polyfill accepts Touch[] arrays and converts them internally
   return {
     touches: touches as unknown as TouchList,

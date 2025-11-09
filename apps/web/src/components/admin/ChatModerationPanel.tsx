@@ -34,7 +34,7 @@ export default function ChatModerationPanel() {
   const [actionInFlight, setActionInFlight] = useState(false);
 
   useEffect(() => {
-    loadReports();
+    void loadReports();
   }, []);
 
   const loadReports = async () => {
@@ -231,7 +231,12 @@ export default function ChatModerationPanel() {
           <Card className="max-w-2xl w-full p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">Report Details</h3>
-              <Button variant="ghost" size="icon" onClick={() => setSelectedReport(null)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSelectedReport(null)}
+                aria-label="Close report details"
+              >
                 <X size={20} />
               </Button>
             </div>

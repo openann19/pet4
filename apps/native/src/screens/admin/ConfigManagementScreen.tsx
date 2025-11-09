@@ -5,12 +5,17 @@
  */
 
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { createLogger } from '../../utils/logger';
 import { mobileAdminApi } from '../../api/admin-api';
 import { AnimatedCard } from '../../components/AnimatedCard';
 import { FadeInView } from '../../components/FadeInView';
+import { getBusinessConfig } from '../../api/business-config-api';
+import { getMatchingConfig } from '../../api/matching-config-api';
+import { getMapConfig } from '../../api/map-config-api';
+import { getAPIConfig } from '../../api/api-config-api';
 
 const logger = createLogger('ConfigManagementScreen');
 
@@ -51,18 +56,82 @@ const configItems: ConfigItem[] = [
 ];
 
 export const ConfigManagementScreen: React.FC = () => {
-  const [broadcasting, setBroadcasting] = useState(false);
+  const navigation = useNavigation();
+  const [broadcasting, setBroadcasting] = useState<Record<ConfigType, boolean>>({
+    business: false,
+    matching: false,
+    map: false,
+    api: false,
+  });
+
+  const handleEdit = (configType: ConfigType): void => {
+    switch (configType) {
+      case 'business':
+        navigation.navigate('BusinessConfig' as never);
+        break;
+      case 'matching':
+        navigation.navigate('MatchingConfig' as never);
+        break;
+      case 'map':
+        navigation.navigate('MapSettings' as never);
+        break;
+      case 'api':
+        navigation.navigate('APIConfig' as never);
+        break;
+    }
+  };
 
   const handleBroadcast = async (configType: ConfigType) => {
-    setBroadcasting(true);
+    setBroadcasting((prev) => ({ ...prev, [configType]: true }));
     try {
-      const config: Record<string, unknown> = {};
+      // Load current config and broadcast it
+      let config: Record<string, unknown> = {};
+      try {
+        switch (configType) {
+          case 'business': {
+            const businessConfig = await getBusinessConfig();
+            if (businessConfig) {
+              config = businessConfig as unknown as Record<string, unknown>;
+            }
+            break;
+          }
+          case 'matching': {
+            const matchingConfig = await getMatchingConfig();
+            if (matchingConfig) {
+              config = matchingConfig as unknown as Record<string, unknown>;
+            }
+            break;
+          }
+          case 'map': {
+            const mapConfig = await getMapConfig();
+            if (mapConfig) {
+              config = mapConfig as unknown as Record<string, unknown>;
+            }
+            break;
+          }
+          case 'api': {
+            const apiConfig = await getAPIConfig();
+            if (apiConfig) {
+              config = apiConfig as unknown as Record<string, unknown>;
+            }
+            break;
+          }
+        }
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to load config for broadcast', err, { configType });
+        Alert.alert('Error', 'Failed to load configuration. Please edit and save first.');
+        return;
+      }
+
       await mobileAdminApi.broadcastConfig(configType, config);
+      Alert.alert('Success', 'Configuration broadcasted successfully');
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to broadcast config', err, { context: 'handleBroadcast', configType });
+      Alert.alert('Error', 'Failed to broadcast configuration');
     } finally {
-      setBroadcasting(false);
+      setBroadcasting((prev) => ({ ...prev, [configType]: false }));
     }
   };
 
@@ -89,19 +158,19 @@ export const ConfigManagementScreen: React.FC = () => {
                 </View>
               </View>
               <View style={styles.configActions}>
-                <TouchableOpacity
-                  style={styles.editButton}
-                  onPress={() => undefined}
-                >
+                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item.type)}>
                   <Text style={styles.editButtonText}>Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.broadcastButton, broadcasting && styles.broadcastButtonDisabled]}
+                  style={[
+                    styles.broadcastButton,
+                    broadcasting[item.type] && styles.broadcastButtonDisabled,
+                  ]}
                   onPress={() => handleBroadcast(item.type)}
-                  disabled={broadcasting}
+                  disabled={broadcasting[item.type]}
                 >
                   <Text style={styles.broadcastButtonText}>
-                    {broadcasting ? 'Broadcasting...' : 'Broadcast'}
+                    {broadcasting[item.type] ? 'Broadcasting...' : 'Broadcast'}
                   </Text>
                 </TouchableOpacity>
               </View>

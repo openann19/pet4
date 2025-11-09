@@ -73,6 +73,12 @@ export function PremiumToast({
     }
   }, [opacity, translateY, scale, reducedMotion])
 
+  const handleDismiss = useCallback((): void => {
+    opacity.value = withTiming(0, { duration: 200 })
+    scale.value = withTiming(0.9, { duration: 200 })
+    setTimeout(() => onDismiss(id), 200)
+  }, [id, onDismiss, opacity, scale])
+
   useEffect(() => {
     if (!showProgress || isPaused || duration === 0) return
 
@@ -87,7 +93,7 @@ export function PremiumToast({
     }, duration)
 
     return () => clearTimeout(timer)
-  }, [duration, isPaused, showProgress, progressWidth, reducedMotion])
+  }, [duration, handleDismiss, isPaused, showProgress, progressWidth, reducedMotion])
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -97,12 +103,6 @@ export function PremiumToast({
   const progressStyle = useAnimatedStyle(() => ({
     width: `${progressWidth.value}%`,
   }))
-
-  const handleDismiss = useCallback((): void => {
-    opacity.value = withTiming(0, { duration: 200 })
-    scale.value = withTiming(0.9, { duration: 200 })
-    setTimeout(() => onDismiss(id), 200)
-  }, [id, onDismiss, opacity, scale])
 
   const colorScheme = colors[type]
 

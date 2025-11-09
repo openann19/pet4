@@ -16,15 +16,12 @@ export interface UIProviderProps {
   config?: Partial<AbsoluteMaxUIModeConfig>;
 }
 
-export function UIProvider({ children, config }: UIProviderProps): React.JSX.Element {
+export function UIProvider({ children, config }: UIProviderProps): React.JSX.Element {                                                                          
   const mergedConfig: AbsoluteMaxUIModeConfig = config
-    ? (deepMerge(
-        ABSOLUTE_MAX_UI_MODE as unknown as Record<string, unknown>,
-        config as Record<string, unknown>
-      ) as unknown as AbsoluteMaxUIModeConfig)
+    ? deepMerge(ABSOLUTE_MAX_UI_MODE, config)
     : ABSOLUTE_MAX_UI_MODE;
 
-  return <UIContext.Provider value={{ config: mergedConfig }}>{children}</UIContext.Provider>;
+  return <UIContext.Provider value={{ config: mergedConfig }}>{children}</UIContext.Provider>;                                                                  
 }
 
 export function useUIContext(): UIContextType {
@@ -38,13 +35,16 @@ export function useUIContext(): UIContextType {
 /**
  * Deep merge utility for merging UI config
  */
-function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial<T>): T {
+function deepMerge(
+  target: AbsoluteMaxUIModeConfig,
+  source: Partial<AbsoluteMaxUIModeConfig>
+): AbsoluteMaxUIModeConfig {
   const result = { ...target };
 
   for (const key in source) {
     if (source[key] !== undefined) {
       const sourceValue = source[key];
-      const targetValue = target[key];
+      const targetValue = target[key as keyof AbsoluteMaxUIModeConfig];
 
       if (
         sourceValue !== null &&
@@ -54,12 +54,12 @@ function deepMerge<T extends Record<string, unknown>>(target: T, source: Partial
         typeof targetValue === 'object' &&
         !Array.isArray(targetValue)
       ) {
-        result[key] = deepMerge(
-          targetValue as Record<string, unknown>,
-          sourceValue as Record<string, unknown>
-        ) as T[Extract<keyof T, string>];
-      } else {
-        result[key] = sourceValue as T[Extract<keyof T, string>];
+        (result as Record<string, unknown>)[key] = deepMerge(
+          targetValue as AbsoluteMaxUIModeConfig,
+          sourceValue as Partial<AbsoluteMaxUIModeConfig>
+        );
+      } else if (sourceValue !== undefined) {
+        (result as Record<string, unknown>)[key] = sourceValue;
       }
     }
   }

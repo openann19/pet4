@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, rerender } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { LinkPreview } from '../LinkPreview';
 
 describe('LinkPreview', () => {

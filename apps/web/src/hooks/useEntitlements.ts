@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { UserEntitlements, EntitlementKey } from '@/lib/payments-types';
 import { PaymentsService } from '@/lib/payments-service';
+import { enhancedAuth } from '@/lib/enhanced-auth';
 
 export function useEntitlements(): {
   entitlements: UserEntitlements | null;
@@ -17,7 +18,11 @@ export function useEntitlements(): {
   const fetchEntitlements = useCallback(async () => {
     try {
       setLoading(true);
-      const user = await spark.user();
+      const user = enhancedAuth.getCurrentUser();
+      if (!user) {
+        setError('User not authenticated');
+        return;
+      }
       const result = await PaymentsService.getUserEntitlements(user.id);
       setEntitlements(result);
       setError(null);
@@ -29,7 +34,8 @@ export function useEntitlements(): {
   }, []);
 
   useEffect(() => {
-    fetchEntitlements();
+    // Fetch entitlements asynchronously - fire-and-forget with error handling inside
+    void fetchEntitlements();
   }, [fetchEntitlements]);
 
   const hasEntitlement = useCallback(

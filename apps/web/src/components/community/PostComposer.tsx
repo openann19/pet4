@@ -408,7 +408,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
           </div>
 
           {/* Image Preview */}
-          <Presence>
+          <Presence visible={images.length > 0}>
             {images.length > 0 && (
               <MotionView
                 initial={{ opacity: 0, height: 0 }}
@@ -452,7 +452,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
           </Presence>
 
           {/* Video Preview */}
-          <Presence>
+          <Presence visible={!!videoState.previewUrl}>
             {videoState.previewUrl && (
               <MotionView
                 initial={{ opacity: 0, height: 0 }}
@@ -571,7 +571,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
           </Presence>
 
           {/* Media Options Popup */}
-          <Presence>
+          <Presence visible={showMediaOptions}>
             {showMediaOptions && (
               <MotionView
                 initial={{ opacity: 0, scale: 0.95, y: -10 }}
@@ -619,11 +619,10 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setCropSize(value as CropSize)}
-                            className={`p-3 rounded-lg border-2 transition-all text-left ${
-                              cropSize === value
-                                ? 'border-primary bg-primary/10'
-                                : 'border-border hover:border-primary/50'
-                            }`}
+                            className={`p-3 rounded-lg border-2 transition-all text-left ${cropSize === value
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-primary/50'
+                              }`}
                           >
                             <div className="text-xl mb-0.5">{icon}</div>
                             <div className="text-xs font-medium">{label}</div>
@@ -758,11 +757,10 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                     setVisibility(value);
                     haptics.selection();
                   }}
-                  className={`p-3 rounded-lg border-2 transition-all ${
-                    visibility === value
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border hover:border-primary/50'
-                  }`}
+                  className={`p-3 rounded-lg border-2 transition-all ${visibility === value
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:border-primary/50'
+                    }`}
                 >
                   <Icon
                     size={24}

@@ -40,9 +40,9 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { Suspense } from 'react';
 import { CommentsSheet } from './CommentsSheet';
-import type { MediaItem } from './MediaViewer';
-import { MediaViewer } from './MediaViewer';
+import { MediaViewer, type MediaItem } from '@/components/lazy-exports';
 import { PostDetailView } from './PostDetailView';
 import { ReportDialog } from './ReportDialog';
 
@@ -213,79 +213,132 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
   }, [post.id, logger]);
 
   const handleSave = useCallback(async () => {
-    triggerHaptic('selection');
+    try {
+      triggerHaptic('selection');
 
-    if (isSaved) {
-      await communityService.unsavePost(post.id);
-      setIsSaved(false);
-      toast.success(t.community?.unsaved || 'Post removed from saved');
-    } else {
-      await communityService.savePost(post.id);
-      setIsSaved(true);
-      toast.success(t.community?.saved || 'Post saved');
+      if (isSaved) {
+        await communityService.unsavePost(post.id);
+        setIsSaved(false);
+        toast.success(t.community?.unsaved || 'Post removed from saved');
+      } else {
+        await communityService.savePost(post.id);
+        setIsSaved(true);
+        toast.success(t.community?.saved || 'Post saved');
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('PostCard handleSave error', err, { postId: post.id, isSaved });
+      toast.error(t.community?.saveError || 'Failed to save post. Please try again.');
     }
-  }, [isSaved, post.id, t]);
+  }, [isSaved, post.id, t, logger]);
 
   const handleShare = useCallback(async () => {
-    triggerHaptic('selection');
+    try {
+      triggerHaptic('selection');
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Post by ${post.authorName}`,
-          text: post.text?.slice(0, 100) ?? '',
-          url: `${window.location.origin}/community/post/${post.id}`,
-        });
-      } catch {
-        // Share was cancelled by user - no need to log
-      }
-    } else {
-      void navigator.clipboard
-        .writeText(`${window.location.origin}/community/post/${post.id}`)
-        .then(() => {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        try {
+          await navigator.share({
+            title: `Post by ${post.authorName}`,
+            text: post.text?.slice(0, 100) ?? '',
+            url: `${window.location.origin}/community/post/${post.id}`,
+          });
+        } catch (error) {
+          // User cancelled share - AbortError is expected
+          if (error instanceof Error && error.name !== 'AbortError') {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logger.error('PostCard handleShare navigator.share error', err, { postId: post.id });
+            toast.error(t.community?.shareError || 'Failed to share post. Please try again.');
+          }
+        }
+      } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(
+            `${window.location.origin}/community/post/${post.id}`
+          );
           toast.success(t.community?.linkCopied || 'Link copied to clipboard');
-        })
-        .catch(() => {
-          // Clipboard write failed - silently fail
-        });
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('PostCard handleShare clipboard.writeText error', err, { postId: post.id });
+          toast.error(t.community?.clipboardError || 'Failed to copy link. Please try again.');
+        }
+      } else {
+        logger.warn('PostCard handleShare navigator.share and navigator.clipboard not available');
+        toast.error(t.community?.shareError || 'Sharing is not supported in this browser.');
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('PostCard handleShare error', err, { postId: post.id });
+      toast.error(t.community?.shareError || 'Failed to share post. Please try again.');
     }
-  }, [post.authorName, post.text, post.id, t]);
+  }, [post.authorName, post.text, post.id, t, logger]);
 
   const handleReport = useCallback(() => {
-    triggerHaptic('selection');
-    setShowReportDialog(true);
-  }, []);
+    try {
+      triggerHaptic('selection');
+      setShowReportDialog(true);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('PostCard handleReport error', err, { postId: post.id });
+    }
+  }, [post.id, logger]);
 
-  const handleMediaClick = useCallback((index: number) => {
-    setMediaViewerIndex(index);
-    setShowMediaViewer(true);
-    triggerHaptic('selection');
-  }, []);
+  const handleMediaClick = useCallback(
+    (index: number) => {
+      try {
+        if (index < 0 || !Array.isArray(post.media) || index >= post.media.length) {
+          logger.warn('PostCard handleMediaClick invalid index', {
+            postId: post.id,
+            index,
+            mediaLength: post.media?.length ?? 0,
+          });
+          return;
+        }
+        setMediaViewerIndex(index);
+        setShowMediaViewer(true);
+        triggerHaptic('selection');
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('PostCard handleMediaClick error', err, { postId: post.id, index });
+      }
+    },
+    [post.id, post.media, logger]
+  );
 
   const handleCardClick = useCallback(
     (e: React.MouseEvent) => {
-      // Don't open detail view if clicking on interactive elements
-      const target = e.target as HTMLElement;
-      if (
-        target.closest('button') ||
-        target.closest('[role="button"]') ||
-        target.closest('a') ||
-        target.closest('[role="link"]')
-      ) {
-        return;
-      }
+      try {
+        // Don't open detail view if clicking on interactive elements
+        const target = e.target as HTMLElement;
+        if (
+          target.closest('button') ||
+          target.closest('[role="button"]') ||
+          target.closest('a') ||
+          target.closest('[role="link"]')
+        ) {
+          return;
+        }
 
-      triggerHaptic('selection');
-      setShowPostDetail(true);
-      onPostClick?.(post.id);
+        triggerHaptic('selection');
+        setShowPostDetail(true);
+        onPostClick?.(post.id);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('PostCard handleCardClick error', err, { postId: post.id });
+      }
     },
-    [onPostClick, post.id]
+    [onPostClick, post.id, logger]
   );
 
   const handleCommentClick = useCallback(() => {
-    setShowComments(true);
-    triggerHaptic('selection');
-  }, []);
+    try {
+      setShowComments(true);
+      triggerHaptic('selection');
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('PostCard handleCommentClick error', err, { postId: post.id });
+    }
+  }, [post.id, logger]);
 
   const truncatedText =
     (post.text?.length ?? 0) > 150 ? post.text?.slice(0, 150) + '...' : (post.text ?? '');
@@ -432,11 +485,10 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
                     <button
                       key={index}
                       onClick={() => setCurrentMediaIndex(index)}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        index === currentMediaIndex
-                          ? 'w-6 bg-white'
-                          : 'w-1.5 bg-white/50 hover:bg-white/75'
-                      }`}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${index === currentMediaIndex
+                        ? 'w-6 bg-white'
+                        : 'w-1.5 bg-white/50 hover:bg-white/75'
+                        }`}
                       aria-label={`View photo ${index + 1}`}
                     />
                   ))}
@@ -470,9 +522,8 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
                   <Heart
                     size={24}
                     weight={isLiked ? 'fill' : 'regular'}
-                    className={`transition-colors ${
-                      isLiked ? 'text-red-500' : 'text-foreground group-hover:text-red-500'
-                    }`}
+                    className={`transition-colors ${isLiked ? 'text-red-500' : 'text-foreground group-hover:text-red-500'
+                      }`}
                   />
                 </AnimatedView>
                 {likesCount > 0 && (
@@ -521,9 +572,8 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
                 <BookmarkSimple
                   size={24}
                   weight={isSaved ? 'fill' : 'regular'}
-                  className={`transition-colors ${
-                    isSaved ? 'text-primary' : 'text-foreground hover:text-primary'
-                  }`}
+                  className={`transition-colors ${isSaved ? 'text-primary' : 'text-foreground hover:text-primary'
+                    }`}
                 />
               </AnimatedView>
             </button>
@@ -561,13 +611,17 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
             postAuthor={post.authorName}
           />
 
-          <MediaViewer
-            open={showMediaViewer}
-            onOpenChange={setShowMediaViewer}
-            media={allMedia}
-            initialIndex={mediaViewerIndex}
-            authorName={post.authorName}
-          />
+          {showMediaViewer && (
+            <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+              <MediaViewer
+                open={showMediaViewer}
+                onOpenChange={setShowMediaViewer}
+                media={allMedia}
+                initialIndex={mediaViewerIndex}
+                authorName={post.authorName}
+              />
+            </Suspense>
+          )}
 
           <ReportDialog
             open={showReportDialog}

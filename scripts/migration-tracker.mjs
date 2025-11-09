@@ -110,7 +110,7 @@ function findFiles(dir, extensions = ['.tsx', '.ts']) {
         }
       }
     }
-  } catch (error) {
+  } catch {
     // Skip directories we can't read
   }
 

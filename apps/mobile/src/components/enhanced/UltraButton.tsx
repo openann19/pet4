@@ -3,8 +3,15 @@
  * Location: apps/mobile/src/components/enhanced/UltraButton.tsx
  */
 
-import React from 'react'
-import { Pressable, Text, StyleSheet, type ViewStyle, type PressableProps } from 'react-native'
+import React, { useCallback, useRef, useEffect } from 'react'
+import {
+  Pressable,
+  Text,
+  StyleSheet,
+  type ViewStyle,
+  type PressableProps,
+  type GestureResponderEvent,
+} from 'react-native'
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { usePressBounce } from '@petspark/motion'
@@ -40,16 +47,33 @@ export function UltraButton({
     opacity: glowOpacity.value,
   }))
 
-  const handlePress = (event: any): void => {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-    if (enableGlow) {
-      glowOpacity.value = withSpring(1, springConfigs.bouncy)
-      setTimeout(() => {
-        glowOpacity.value = withSpring(0, springConfigs.smooth)
-      }, 200)
+  const glowTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (glowTimeoutRef.current !== null) {
+        clearTimeout(glowTimeoutRef.current)
+      }
     }
-    onPress?.(event)
-  }
+  }, [])
+
+  const handlePress = useCallback(
+    (event: GestureResponderEvent): void => {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+      if (enableGlow) {
+        glowOpacity.value = withSpring(1, springConfigs.bouncy)
+        if (glowTimeoutRef.current !== null) {
+          clearTimeout(glowTimeoutRef.current)
+        }
+        glowTimeoutRef.current = setTimeout(() => {
+          glowOpacity.value = withSpring(0, springConfigs.smooth)
+          glowTimeoutRef.current = null
+        }, 200)
+      }
+      onPress?.(event)
+    },
+    [enableGlow, glowOpacity, onPress]
+  )
 
   const variantStyles: Record<string, ViewStyle> = {
     default: { backgroundColor: '#3b82f6' },

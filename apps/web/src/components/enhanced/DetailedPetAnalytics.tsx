@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import type { Pet, PetTrustProfile } from '@/lib/types';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface DetailedPetAnalyticsProps {
   pet: Pet;
@@ -20,42 +21,43 @@ export function DetailedPetAnalytics({
   compatibilityScore,
   matchReasons,
 }: DetailedPetAnalyticsProps) {
-  const stats = [
-    {
-      icon: Heart,
-      label: 'Overall Rating',
-      value: trustProfile?.overallRating?.toFixed(1) || 'N/A',
-      max: '5.0',
-      color: 'text-primary',
-      bgColor: 'bg-primary/10',
-      borderColor: 'border-primary/20',
-    },
-    {
-      icon: Users,
-      label: 'Playdates',
-      value: trustProfile?.playdateCount || 0,
-      suffix: ' completed',
-      color: 'text-secondary',
-      bgColor: 'bg-secondary/10',
-      borderColor: 'border-secondary/20',
-    },
-    {
-      icon: Lightning,
-      label: 'Response Rate',
-      value: `${Math.round((trustProfile?.responseRate || 0) * 100)}%`,
-      color: 'text-accent',
-      bgColor: 'bg-accent/10',
-      borderColor: 'border-accent/20',
-    },
-    {
-      icon: Clock,
-      label: 'Avg Response',
-      value: trustProfile?.responseTime || 'N/A',
-      color: 'text-lavender',
-      bgColor: 'bg-lavender/10',
-      borderColor: 'border-lavender/20',
-    },
-  ];
+    const uiConfig = useUIConfig();
+    const stats = [
+        {
+          icon: Heart,
+          label: 'Overall Rating',
+          value: trustProfile?.overallRating?.toFixed(1) || 'N/A',
+          max: '5.0',
+          color: 'text-primary',
+          bgColor: 'bg-primary/10',
+          borderColor: 'border-primary/20',
+        },
+        {
+          icon: Users,
+          label: 'Playdates',
+          value: trustProfile?.playdateCount || 0,
+          suffix: ' completed',
+          color: 'text-secondary',
+          bgColor: 'bg-secondary/10',
+          borderColor: 'border-secondary/20',
+        },
+        {
+          icon: Lightning,
+          label: 'Response Rate',
+          value: `${Math.round((trustProfile?.responseRate || 0) * 100)}%`,
+          color: 'text-accent',
+          bgColor: 'bg-accent/10',
+          borderColor: 'border-accent/20',
+        },
+        {
+          icon: Clock,
+          label: 'Avg Response',
+          value: trustProfile?.responseTime || 'N/A',
+          color: 'text-lavender',
+          bgColor: 'bg-lavender/10',
+          borderColor: 'border-lavender/20',
+        },
+      ];
 
   const personalityTraits = pet.personality || [];
   const interests = pet.interests || [];

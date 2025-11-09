@@ -119,11 +119,9 @@ class Logger {
         console.error(prefix, record.message, ...record.args);
       } else if (record.level >= LogLevel.WARN) {
         console.warn(prefix, record.message, ...record.args);
-      } else if (record.level >= LogLevel.INFO) {
-        console.info(prefix, record.message, ...record.args);
-      } else {
-        console.debug(prefix, record.message, ...record.args);
       }
+      // INFO and DEBUG levels are silently ignored in production
+      // Only ERROR and WARN are logged to console per lint rules
     });
   }
 

@@ -58,6 +58,7 @@ export default function DashboardView() {
   const [matches] = useStorage<Match[]>('user-matches', []);
   const [reports] = useStorage<Report[]>('admin-reports', []);
   const [verifications] = useStorage<Verification[]>('admin-verifications', []);
+  const logger = createLogger('DashboardView');
 
   useEffect(() => {
     const loadStats = async () => {
@@ -65,16 +66,14 @@ export default function DashboardView() {
         const systemStats = await adminApi.getSystemStats();
         // Merge with local data for immediate UI updates
         const localStats = {
-          totalUsers: new Set((allPets ?? []).map((p) => p.ownerId ?? p.ownerName)).size,
-          activeUsers: Math.floor(
-            new Set((allPets ?? []).map((p) => p.ownerId ?? p.ownerName)).size * 0.7
-          ),
-          totalPets: (allPets ?? []).length,
-          totalMatches: (matches ?? []).length,
+          totalUsers: new Set(allPets.map((p) => p.ownerId ?? p.ownerName)).size,
+          activeUsers: Math.floor(new Set(allPets.map((p) => p.ownerId ?? p.ownerName)).size * 0.7),
+          totalPets: allPets.length,
+          totalMatches: matches.length,
           totalMessages: systemStats.totalMessages,
-          pendingReports: (reports ?? []).filter((r) => r.status === 'pending').length,
-          pendingVerifications: (verifications ?? []).filter((v) => v.status === 'pending').length,
-          resolvedReports: (reports ?? []).filter((r) => r.status === 'resolved').length,
+          pendingReports: reports.filter((r) => r.status === 'pending').length,
+          pendingVerifications: verifications.filter((v) => v.status === 'pending').length,
+          resolvedReports: reports.filter((r) => r.status === 'resolved').length,
         };
         // Use API stats when available, fallback to local calculations
         setStats({
@@ -85,28 +84,30 @@ export default function DashboardView() {
         });
       } catch (error) {
         // Fallback to local calculations if API fails
-        const logger = createLogger('DashboardView');
         const err = error instanceof Error ? error : new Error(String(error));
         logger.warn(
           'Failed to load system stats from API, falling back to local calculations',
           err
         );
-        const uniqueOwners = new Set((allPets ?? []).map((p) => p.ownerId ?? p.ownerName));
+        const uniqueOwners = new Set(allPets.map((p) => p.ownerId ?? p.ownerName));
         setStats({
           totalUsers: uniqueOwners.size,
           activeUsers: Math.floor(uniqueOwners.size * 0.7),
-          totalPets: (allPets ?? []).length,
-          totalMatches: (matches ?? []).length,
+          totalPets: allPets.length,
+          totalMatches: matches.length,
           totalMessages: 0, // Can't calculate from local storage
-          pendingReports: (reports ?? []).filter((r) => r.status === 'pending').length,
-          pendingVerifications: (verifications ?? []).filter((v) => v.status === 'pending').length,
-          resolvedReports: (reports ?? []).filter((r) => r.status === 'resolved').length,
+          pendingReports: reports.filter((r) => r.status === 'pending').length,
+          pendingVerifications: verifications.filter((v) => v.status === 'pending').length,
+          resolvedReports: reports.filter((r) => r.status === 'resolved').length,
         });
       }
     };
 
-    void loadStats();
-  }, [allPets, matches, reports, verifications]);
+    void loadStats().catch((error) => {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load stats in useEffect', err);
+    });
+  }, [allPets, matches, reports, verifications, logger]);
 
   const statCards = [
     {
@@ -183,7 +184,7 @@ export default function DashboardView() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat, index) => {
+        {statCards.map((stat) => {
           const Icon = stat.icon;
           const TrendIcon =
             stat.trend === 'up' ? TrendUp : stat.trend === 'down' ? TrendDown : Clock;

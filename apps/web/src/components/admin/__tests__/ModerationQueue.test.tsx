@@ -124,10 +124,17 @@ describe('ModerationQueue', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    const task1 = mockTasks[0];
+    const task2 = mockTasks[1];
+    if (!task1 || !task2) {
+      throw new Error('Mock tasks not properly initialized');
+    }
     mockModerationService.getQueue.mockResolvedValue({
-      pending: [mockTasks[0]],
-      inProgress: [mockTasks[1]],
+      pending: [task1],
+      inProgress: [task2],
       completed: [],
+      totalCount: 2,
+      averageReviewTime: 0,
     });
     mockPhotoService.getPhotosByOwner.mockResolvedValue(mockPhotos);
     mockUserService.user.mockResolvedValue({
@@ -169,13 +176,17 @@ describe('ModerationQueue', () => {
     });
 
     const taskCards = screen.queryAllByRole('button');
-    if (taskCards.length > 0) {
-      await user.click(taskCards[0]);
+    const firstTaskCard = taskCards[0];
+    if (firstTaskCard) {
+      await user.click(firstTaskCard);
     }
   });
 
   it('takes task when take button is clicked', async () => {
-    const user = userEvent.setup();
+    const task1 = mockTasks[0];
+    if (!task1) {
+      throw new Error('Mock task not properly initialized');
+    }
     mockModerationService.takeTask.mockResolvedValue(undefined);
 
     render(<ModerationQueue />);
@@ -186,7 +197,10 @@ describe('ModerationQueue', () => {
   });
 
   it('approves task when approve button is clicked', async () => {
-    const user = userEvent.setup();
+    const task1 = mockTasks[0];
+    if (!task1) {
+      throw new Error('Mock task not properly initialized');
+    }
     mockModerationService.makeDecision.mockResolvedValue(undefined);
 
     render(<ModerationQueue />);
@@ -197,7 +211,10 @@ describe('ModerationQueue', () => {
   });
 
   it('rejects task when reject button is clicked', async () => {
-    const user = userEvent.setup();
+    const task1 = mockTasks[0];
+    if (!task1) {
+      throw new Error('Mock task not properly initialized');
+    }
     mockModerationService.makeDecision.mockResolvedValue(undefined);
 
     render(<ModerationQueue />);
@@ -255,6 +272,8 @@ describe('ModerationQueue', () => {
       pending: [],
       inProgress: [],
       completed: [],
+      totalCount: 0,
+      averageReviewTime: 0,
     });
 
     render(<ModerationQueue />);

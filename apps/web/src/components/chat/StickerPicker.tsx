@@ -29,6 +29,7 @@ import {
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface StickerPickerProps {
   onSelectSticker: (sticker: Sticker) => void;
@@ -36,6 +37,7 @@ interface StickerPickerProps {
 }
 
 export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) {
+  const uiConfig = useUIConfig();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [recentStickerIds, setRecentStickerIds] = useStorage<string[]>('recent-stickers', []);
@@ -128,7 +130,13 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
               </Badge>
             )}
           </div>
-          <Button variant="ghost" size="icon" onClick={handleClose} className="rounded-full">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleClose}
+            className="rounded-full"
+            aria-label="Close sticker picker"
+          >
             <X size={20} />
           </Button>
         </div>

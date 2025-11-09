@@ -27,7 +27,7 @@ async function fetchPosts(category?: string): Promise<CommunityPost[]> {
 /**
  * Fetch a single community post
  */
-async function fetchPost(postId: string): Promise<CommunityPost> {
+function fetchPost(postId: string): Promise<CommunityPost> {
   return apiClient.get<CommunityPost>(`/api/v1/community/posts/${postId}`, {
     cacheKey: `community:post:${postId}`,
     skipCache: false,
@@ -37,7 +37,7 @@ async function fetchPost(postId: string): Promise<CommunityPost> {
 /**
  * Fetch comments for a post
  */
-async function fetchComments(postId: string): Promise<CommunityComment[]> {
+function fetchComments(postId: string): Promise<CommunityComment[]> {
   return apiClient.get<CommunityComment[]>(`/api/v1/community/posts/${postId}/comments`, {
     cacheKey: `community:post:${postId}:comments`,
     skipCache: false,
@@ -47,7 +47,7 @@ async function fetchComments(postId: string): Promise<CommunityComment[]> {
 /**
  * Create a community post
  */
-async function createPost(
+function createPost(
   title: string,
   content: string,
   category: string,
@@ -76,7 +76,7 @@ async function likePost(postId: string): Promise<{ liked: boolean; likesCount: n
 /**
  * Add a comment to a post
  */
-async function addComment(postId: string, content: string): Promise<CommunityComment> {
+function addComment(postId: string, content: string): Promise<CommunityComment> {
   return apiClient.post<CommunityComment>(`/api/v1/community/posts/${postId}/comments`, { content })
 }
 

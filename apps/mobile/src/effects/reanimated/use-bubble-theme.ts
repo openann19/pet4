@@ -6,7 +6,7 @@ import {
   Extrapolation,
   type SharedValue,
 } from 'react-native-reanimated'
-import { useEffect, useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { timingConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
 
@@ -100,7 +100,7 @@ export function useBubbleTheme(options: UseBubbleThemeOptions = {}): UseBubbleTh
       shadowIntensity.value = withTiming(targetIntensity, timingConfigs.smooth)
       colorIntensity.value = withTiming(targetIntensity, timingConfigs.smooth)
     },
-    [senderType, gradientIntensity, shadowIntensity, colorIntensity]
+    [senderType, messageType, gradientIntensity, shadowIntensity, colorIntensity]
   )
 
   const themeColors = THEME_COLORS[theme]

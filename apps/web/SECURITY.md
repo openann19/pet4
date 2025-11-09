@@ -1,7 +1,7 @@
 # PawfectMatch Security Policy
 
-**Version:** 1.0  
-**Last Updated:** 2025-11-03  
+**Version:** 1.0
+**Last Updated:** 2025-11-03
 **Maintainer:** Security Team
 
 ---
@@ -155,24 +155,37 @@ PawfectMatch implements multiple layers of security:
 - Collect only necessary data
 - Regular data cleanup
 - Automatic deletion of expired content (stories after 24h)
+- Consent-based data collection (analytics, marketing, third-party)
 
 ### Privacy Controls
 
 **User Rights**:
 
-- View all data (data export)
-- Delete account and data
-- Opt-out of analytics
+- View all data (data export) - GDPR Right to Access
+- Delete account and data - GDPR Right to Erasure
+- Opt-out of analytics - Consent withdrawal
+- Opt-out of marketing - Consent withdrawal
+- Opt-out of third-party tracking - Consent withdrawal
 - Control location precision
 - Manage visibility settings
+- Withdraw consent at any time
 
 **GDPR Compliance**:
 
 - Lawful basis for processing
 - Data Processing Agreement (DPA) with vendors
-- Right to be forgotten
-- Data portability
-- Consent management
+- Right to be forgotten (data deletion)
+- Right to access (data export)
+- Right to data portability (JSON export)
+- Right to withdraw consent
+- Consent management system
+- Cookie/tracking consent banner
+- Consent version tracking
+- Consent history records
+- Analytics respect consent preferences
+- Marketing respect consent preferences
+- Third-party tracking respect consent preferences
+- Do Not Track (DNT) browser setting support
 
 ---
 
@@ -455,6 +468,6 @@ interface AuditLog {
 
 ---
 
-**For security questions or concerns, contact**: security@pawfectmatch.com  
-**Last Updated**: 2025-11-03  
+**For security questions or concerns, contact**: security@pawfectmatch.com
+**Last Updated**: 2025-11-03
 **Next Review**: 2025-12-03

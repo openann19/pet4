@@ -69,7 +69,12 @@ export function useStorage<T>(
     };
 
     if (!isInitializedRef.current) {
-      loadValue();
+      void loadValue().catch((error) => {
+        logger.error(
+          `Failed to load value for key ${key} in useEffect`,
+          error instanceof Error ? error : new Error(String(error))
+        );
+      });
     }
 
     return () => {

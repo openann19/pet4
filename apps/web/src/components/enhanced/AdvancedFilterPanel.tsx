@@ -13,6 +13,7 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface FilterOption {
   id: string;
@@ -46,6 +47,7 @@ export function AdvancedFilterPanel({
   onClose,
   showActiveCount = true,
 }: AdvancedFilterPanelProps) {
+  const uiConfig = useUIConfig();
   const {
     values: localValues,
     activeFiltersCount,
@@ -81,7 +83,12 @@ export function AdvancedFilterPanel({
           )}
         </div>
         {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label="Close filter panel"
+          >
             <X size={20} />
           </Button>
         )}

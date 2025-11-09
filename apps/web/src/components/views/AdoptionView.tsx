@@ -16,11 +16,12 @@ import { ClipboardText, Heart, MagnifyingGlass, Plus } from '@phosphor-icons/rea
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { VirtualGrid } from '@/components/virtual/VirtualGrid';
 
 const logger = createLogger('AdoptionView');
 
@@ -45,7 +46,6 @@ export default function AdoptionView() {
 
   // Interactive element hooks
   const cardHover = useHoverLift();
-  const cardTap = useBounceOnTap();
 
   useEffect(() => {
     loadListings();
@@ -126,7 +126,7 @@ export default function AdoptionView() {
     }
   };
 
-  const handleToggleFavorite = (listingId: string) => {
+  const handleToggleFavorite = useCallback((listingId: string) => {
     setFavorites((currentFavorites) => {
       const current = Array.isArray(currentFavorites) ? currentFavorites : [];
       if (current.includes(listingId)) {
@@ -135,14 +135,28 @@ export default function AdoptionView() {
         return [...current, listingId];
       }
     });
-  };
+  }, [setFavorites]);
 
-  const handleSelectListing = (listing: AdoptionListing) => {
+  const handleSelectListing = useCallback((listing: AdoptionListing) => {
     setSelectedListing(listing);
     setShowDetailDialog(true);
-  };
+  }, []);
 
-  const filteredListings = () => {
+  // Memoize render item callback for VirtualGrid
+  const renderListingCard = useCallback((listing: AdoptionListing) => (
+    <AdoptionListingCard
+      listing={listing}
+      onSelect={handleSelectListing}
+      onFavorite={handleToggleFavorite}
+      isFavorited={Array.isArray(favorites) && favorites.includes(listing.id)}
+    />
+  ), [favorites, handleSelectListing, handleToggleFavorite]);
+
+  // Memoize key extractor
+  const listingKeyExtractor = useCallback((listing: AdoptionListing) => listing.id, []);
+
+  // Memoize filtered listings to prevent unnecessary recalculations
+  const filteredListings = useMemo(() => {
     let list = listings.filter((l) => l.status === 'active');
 
     if (activeTab === 'available') {
@@ -162,7 +176,7 @@ export default function AdoptionView() {
     }
 
     return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  };
+  }, [listings, activeTab, favorites, searchQuery]);
 
   if (viewMode === 'my-applications') {
     return <MyApplicationsView onBack={() => setViewMode('browse')} />;
@@ -182,140 +196,134 @@ export default function AdoptionView() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold flex items-center gap-3">
-            <Heart size={32} weight="fill" className="text-primary" />
-            {t.adoption?.title || 'Pet Adoption'}
-          </h2>
-          <p className="text-muted-foreground">
-            {t.adoption?.subtitle || 'Find your perfect companion and give them a forever home'}
-          </p>
+    <PageTransitionWrapper key="adoption-view" direction="up">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold flex items-center gap-3">
+              <Heart size={32} weight="fill" className="text-primary" />
+              {t.adoption?.title || 'Pet Adoption'}
+            </h2>
+            <p className="text-muted-foreground">
+              {t.adoption?.subtitle || 'Find your perfect companion and give them a forever home'}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setViewMode('my-applications')}
+              variant="outline"
+              className="gap-2"
+            >
+              <ClipboardText size={20} weight="fill" />
+              {t.adoption?.myApplications || 'My Applications'}
+              {userApplicationsCount > 0 && (
+                <Badge variant="secondary" className="ml-1">
+                  {userApplicationsCount}
+                </Badge>
+              )}
+            </Button>
+            <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
+              <Plus size={20} weight="fill" />
+              {t.adoption?.createListing || 'Create Listing'}
+            </Button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setViewMode('my-applications')}
-            variant="outline"
-            className="gap-2"
-          >
-            <ClipboardText size={20} weight="fill" />
-            {t.adoption?.myApplications || 'My Applications'}
-            {userApplicationsCount > 0 && (
-              <Badge variant="secondary" className="ml-1">
-                {userApplicationsCount}
-              </Badge>
-            )}
-          </Button>
-          <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
-            <Plus size={20} weight="fill" />
-            {t.adoption?.createListing || 'Create Listing'}
-          </Button>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div className="flex-1 relative w-full">
+            <MagnifyingGlass
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              size={20}
+            />
+            <Input
+              placeholder={'Search by pet name, breed, location...'}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
+            <TabsList>
+              <TabsTrigger value="all">
+                All {listings.length > 0 && `(${listings.length})`}
+              </TabsTrigger>
+              <TabsTrigger value="available">
+                {t.adoption?.available || 'Available'} {availableCount > 0 && `(${availableCount})`}
+              </TabsTrigger>
+              <TabsTrigger value="favorites">
+                Favorites{' '}
+                {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
+
+        <div className="h-[calc(100vh-320px)]">
+          {contentPresence.shouldRender && !loading && (
+            <AnimatedView style={contentPresence.animatedStyle}>
+              {filteredListings.length === 0 ? (
+                <AnimatedView
+                  key="empty"
+                  className="flex flex-col items-center justify-center py-16"
+                >
+                  <Heart size={64} className="text-muted-foreground mb-4" weight="thin" />
+                  <h3 className="text-xl font-semibold mb-2">
+                    {activeTab === 'favorites'
+                      ? 'No Favorites Yet'
+                      : searchQuery
+                        ? 'No Results Found'
+                        : 'No Pets Available'}
+                  </h3>
+                  <p className="text-muted-foreground text-center max-w-md">
+                    {activeTab === 'favorites'
+                      ? 'Start adding pets to your favorites to see them here.'
+                      : searchQuery
+                        ? 'Try adjusting your search terms or filters.'
+                        : 'Check back soon for new pets looking for their forever homes.'}
+                  </p>
+                </AnimatedView>
+              ) : (
+                <VirtualGrid
+                  items={filteredListings}
+                  renderItem={renderListingCard}
+                  columns={3}
+                  itemHeight={400}
+                  gap={24}
+                  overscan={5}
+                  containerClassName="h-full"
+                  keyExtractor={listingKeyExtractor}
+                />
+              )}
+            </AnimatedView>
+          )}
+        </div>
+
+        <CreateAdoptionListingDialog
+          open={showCreateDialog}
+          onOpenChange={setShowCreateDialog}
+          onSuccess={() => {
+            loadListings();
+            loadUserApplicationsCount();
+          }}
+        />
+
+        <AdoptionListingDetailDialog
+          listing={selectedListing}
+          open={showDetailDialog}
+          onOpenChange={(open) => {
+            setShowDetailDialog(open);
+            if (!open) {
+              setSelectedListing(null);
+            }
+            loadUserApplicationsCount();
+          }}
+          onApplicationSubmitted={() => {
+            loadUserApplicationsCount();
+          }}
+        />
       </div>
-
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="flex-1 relative w-full">
-          <MagnifyingGlass
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            size={20}
-          />
-          <Input
-            placeholder={'Search by pet name, breed, location...'}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-          <TabsList>
-            <TabsTrigger value="all">
-              All {listings.length > 0 && `(${listings.length})`}
-            </TabsTrigger>
-            <TabsTrigger value="available">
-              {t.adoption?.available || 'Available'} {availableCount > 0 && `(${availableCount})`}
-            </TabsTrigger>
-            <TabsTrigger value="favorites">
-              Favorites{' '}
-              {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
-      <ScrollArea className="h-[calc(100vh-320px)]">
-        {contentPresence.shouldRender && !loading && (
-          <AnimatedView style={contentPresence.animatedStyle}>
-            {filteredListings().length === 0 ? (
-              <AnimatedView key="empty" className="flex flex-col items-center justify-center py-16">
-                <Heart size={64} className="text-muted-foreground mb-4" weight="thin" />
-                <h3 className="text-xl font-semibold mb-2">
-                  {activeTab === 'favorites'
-                    ? 'No Favorites Yet'
-                    : searchQuery
-                      ? 'No Results Found'
-                      : 'No Pets Available'}
-                </h3>
-                <p className="text-muted-foreground text-center max-w-md">
-                  {activeTab === 'favorites'
-                    ? 'Start adding pets to your favorites to see them here.'
-                    : searchQuery
-                      ? 'Try adjusting your search terms or filters.'
-                      : 'Check back soon for new pets looking for their forever homes.'}
-                </p>
-              </AnimatedView>
-            ) : (
-              <AnimatedView
-                key="grid"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"
-              >
-                {filteredListings().map((listing, index) => (
-                  <AnimatedView
-                    key={listing.id}
-                    style={[cardHover.animatedStyle, cardTap.animatedStyle]}
-                    onMouseEnter={cardHover.handleEnter}
-                    onMouseLeave={cardHover.handleLeave}
-                    onMouseDown={cardTap.handlePress}
-                  >
-                    <AdoptionListingCard
-                      listing={listing}
-                      onSelect={handleSelectListing}
-                      onFavorite={handleToggleFavorite}
-                      isFavorited={Array.isArray(favorites) && favorites.includes(listing.id)}
-                    />
-                  </AnimatedView>
-                ))}
-              </AnimatedView>
-            )}
-          </AnimatedView>
-        )}
-      </ScrollArea>
-
-      <CreateAdoptionListingDialog
-        open={showCreateDialog}
-        onOpenChange={setShowCreateDialog}
-        onSuccess={() => {
-          loadListings();
-          loadUserApplicationsCount();
-        }}
-      />
-
-      <AdoptionListingDetailDialog
-        listing={selectedListing}
-        open={showDetailDialog}
-        onOpenChange={(open) => {
-          setShowDetailDialog(open);
-          if (!open) {
-            setSelectedListing(null);
-          }
-          loadUserApplicationsCount();
-        }}
-        onApplicationSubmitted={() => {
-          loadUserApplicationsCount();
-        }}
-      />
-    </div>
+    </PageTransitionWrapper>
   );
 }

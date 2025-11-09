@@ -75,11 +75,13 @@ export function useBiometricAuth(): UseBiometricAuthReturn {
 
       if (result.success) {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+        return {
+          success: true,
+        }
       }
-
       return {
-        success: result.success,
-        error: result.success ? undefined : ('Authentication failed' as string | undefined),
+        success: false,
+        error: 'Authentication failed',
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Authentication error occurred'

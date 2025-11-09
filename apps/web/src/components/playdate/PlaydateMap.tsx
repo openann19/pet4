@@ -31,43 +31,83 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
   useEffect(() => {
     getCurrentLocation()
       .then((location) => {
-        setUserLocation(location);
+        if (location && typeof location.lat === 'number' && typeof location.lng === 'number') {
+          setUserLocation(location);
+        }
       })
       .catch((error: unknown) => {
         // Location access denied or unavailable - component handles gracefully
         // User can still view playdates without their location
         if (error instanceof Error && error.name !== 'NotAllowedError') {
           // Only handle unexpected errors, permission denials are expected
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('PlaydateMap getCurrentLocation error', err);
         }
       });
   }, []);
 
   const playdatesWithLocation = playdates.filter(
-    (p) => p.location.lat && p.location.lng && p.status !== 'cancelled'
+    (p) =>
+      p?.location?.lat &&
+      typeof p.location.lat === 'number' &&
+      p?.location?.lng &&
+      typeof p.location.lng === 'number' &&
+      p?.status !== 'cancelled'
   );
 
   const handleSelectPlaydate = (playdate: Playdate) => {
-    setSelectedPlaydate(playdate);
-    if (onSelectPlaydate) {
-      onSelectPlaydate(playdate);
+    if (!playdate) return;
+    try {
+      setSelectedPlaydate(playdate);
+      if (onSelectPlaydate) {
+        onSelectPlaydate(playdate);
+      }
+    } catch (error) {
+      // Silently handle state update errors
     }
   };
 
   const handleGetDirections = (playdate: Playdate) => {
-    if (!playdate.location.lat || !playdate.location.lng) return;
+    if (
+      !playdate?.location?.lat ||
+      typeof playdate.location.lat !== 'number' ||
+      !playdate?.location?.lng ||
+      typeof playdate.location.lng !== 'number'
+    ) {
+      return;
+    }
 
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${playdate.location.lat},${playdate.location.lng}`;
-    window.open(url, '_blank');
+    try {
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${playdate.location.lat},${playdate.location.lng}`;
+      if (typeof window !== 'undefined') {
+        window.open(url, '_blank');
+      }
+    } catch (error) {
+      // Silently handle window.open errors
+    }
   };
 
   const getDistanceFromUser = (playdate: Playdate) => {
-    if (!userLocation || !playdate.location.lat || !playdate.location.lng) return null;
+    if (
+      !userLocation ||
+      !playdate?.location?.lat ||
+      typeof playdate.location.lat !== 'number' ||
+      !playdate?.location?.lng ||
+      typeof playdate.location.lng !== 'number'
+    ) {
+      return null;
+    }
 
-    const distance = calculateDistance(userLocation, {
-      lat: playdate.location.lat,
-      lng: playdate.location.lng,
-    });
-    return formatDistance(distance);
+    try {
+      const distance = calculateDistance(userLocation, {
+        lat: playdate.location.lat,
+        lng: playdate.location.lng,
+      });
+      return formatDistance(distance);
+    } catch (error) {
+      // Silently handle distance calculation errors
+      return null;
+    }
   };
 
   return (

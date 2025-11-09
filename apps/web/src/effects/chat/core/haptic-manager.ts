@@ -23,11 +23,15 @@ interface ExpoHaptics {
 }
 
 interface CustomHaptics {
-  haptics?: {
-    selection?: () => void;
-    light?: () => void;
-    medium?: () => void;
-    success?: () => void;
+  haptics: {
+    selection: () => void;
+    light: () => void;
+    medium: () => void;
+    heavy: () => void;
+    success: () => void;
+    warning: () => void;
+    error: () => void;
+    impact: (type: 'light' | 'medium' | 'heavy') => void;
   };
 }
 
@@ -50,32 +54,9 @@ async function loadCustomHaptics(): Promise<CustomHaptics | null> {
 
   customHapticsLoadPromise = import('@/lib/haptics')
     .then((module) => {
-      // Type-safe check for haptics module
-      // The haptics module exports a HapticFeedback instance
-      interface HapticsModuleExport {
-        haptics?: {
-          selection?: () => void;
-          light?: () => void;
-          medium?: () => void;
-          success?: () => void;
-        };
-        default?: {
-          haptics?: {
-            selection?: () => void;
-            light?: () => void;
-            medium?: () => void;
-            success?: () => void;
-          };
-        };
-      }
-
-      const mod = module as unknown as HapticsModuleExport;
-
-      // Check if module has haptics export
-      if (mod.haptics && typeof mod.haptics === 'object') {
-        custom = { haptics: mod.haptics };
-      } else if (mod.default?.haptics && typeof mod.default.haptics === 'object') {
-        custom = { haptics: mod.default.haptics };
+      // The haptics module exports a named `haptics` export
+      if (module.haptics && typeof module.haptics === 'object') {
+        custom = { haptics: module.haptics };
       }
 
       return custom;
@@ -88,11 +69,50 @@ async function loadCustomHaptics(): Promise<CustomHaptics | null> {
   return customHapticsLoadPromise;
 }
 
-export type HapticType = 'selection' | 'light' | 'medium' | 'success';
+export type HapticType = 'selection' | 'light' | 'medium' | 'strong' | 'success' | 'warning' | 'error';
+
+export type HapticContext =
+  | 'send'
+  | 'receive'
+  | 'reaction'
+  | 'reply'
+  | 'delete'
+  | 'swipe'
+  | 'longPress'
+  | 'tap'
+  | 'success'
+  | 'error'
+  | 'threshold'
+  | 'statusChange';
+
+export interface HapticPattern {
+  type: HapticType;
+  delay?: number;
+  repeat?: number;
+  interval?: number;
+}
 
 /** monotonic time for precise cooldowns */
 const now = () =>
   typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+
+/**
+ * Context-aware haptic patterns
+ */
+const CONTEXT_PATTERNS: Record<HapticContext, HapticPattern> = {
+  send: { type: 'selection' },
+  receive: { type: 'light' },
+  reaction: { type: 'light' },
+  reply: { type: 'light' },
+  delete: { type: 'strong' },
+  swipe: { type: 'light' },
+  longPress: { type: 'medium' },
+  tap: { type: 'selection' },
+  success: { type: 'success' },
+  error: { type: 'error' },
+  threshold: { type: 'light' },
+  statusChange: { type: 'selection' },
+};
 
 export class HapticManager {
   private lastTs = -Infinity;
@@ -118,8 +138,30 @@ export class HapticManager {
       await Promise.all([loadCustomHaptics(), loadExpoHaptics()]);
 
       // Prefer custom wrapper if available, else Expo Haptics
-      if (custom?.haptics?.[t] && typeof custom.haptics[t] === 'function') {
-        custom.haptics[t]!();
+      if (custom?.haptics) {
+        switch (t) {
+          case 'selection':
+            custom.haptics.selection();
+            break;
+          case 'light':
+            custom.haptics.impact('light');
+            break;
+          case 'medium':
+            custom.haptics.impact('medium');
+            break;
+          case 'strong':
+            custom.haptics.impact('heavy');
+            break;
+          case 'success':
+            custom.haptics.success();
+            break;
+          case 'warning':
+            custom.haptics.warning();
+            break;
+          case 'error':
+            custom.haptics.error();
+            break;
+        }
       } else if (Haptics) {
         switch (t) {
           case 'selection':
@@ -138,6 +180,21 @@ export class HapticManager {
           case 'success':
             if (Haptics.NotificationFeedbackType) {
               await Haptics.notificationAsync?.(Haptics.NotificationFeedbackType.Success);
+            }
+            break;
+          case 'strong':
+            if (Haptics.ImpactFeedbackStyle) {
+              await Haptics.impactAsync?.(Haptics.ImpactFeedbackStyle.Heavy);
+            }
+            break;
+          case 'warning':
+            if (Haptics.NotificationFeedbackType) {
+              await Haptics.notificationAsync?.(Haptics.NotificationFeedbackType.Warning);
+            }
+            break;
+          case 'error':
+            if (Haptics.NotificationFeedbackType) {
+              await Haptics.notificationAsync?.(Haptics.NotificationFeedbackType.Error);
             }
             break;
         }
@@ -180,6 +237,46 @@ export class HapticManager {
   resetCooldown(): void {
     this.lastTs = -Infinity;
   }
+
+  /**
+   * Trigger haptic by context (context-aware pattern)
+   */
+  async triggerByContext(context: HapticContext, bypassCooldown = false): Promise<boolean> {
+    const pattern = CONTEXT_PATTERNS[context];
+    if (!pattern) {
+      return false;
+    }
+
+    return this.triggerAsync(pattern.type, bypassCooldown);
+  }
+
+  /**
+   * Trigger haptic pattern (multiple haptics with delays)
+   */
+  async triggerPattern(pattern: HapticPattern, bypassCooldown = false): Promise<boolean> {
+    if (this.reduced) return false;
+
+    const ts = now();
+    if (!bypassCooldown && ts - this.lastTs < this.cooldownMs) return false;
+
+    try {
+      const repeat = pattern.repeat ?? 1;
+      const interval = pattern.interval ?? 50;
+
+      for (let i = 0; i < repeat; i++) {
+        if (i > 0 && interval > 0) {
+          await new Promise((resolve) => setTimeout(resolve, interval));
+        }
+
+        await this.triggerAsync(pattern.type, i === 0 ? bypassCooldown : true);
+      }
+
+      this.lastTs = now();
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
 
 let singleton: HapticManager | null = null;
@@ -190,6 +287,17 @@ export function getHapticManager(): HapticManager {
 
 export function triggerHaptic(type: HapticType, bypassCooldown = false): boolean {
   return getHapticManager().trigger(type, bypassCooldown);
+}
+
+/**
+ * Trigger haptic by context (context-aware)
+ */
+export function triggerHapticByContext(context: HapticContext, bypassCooldown = false): boolean {
+  const mgr = getHapticManager();
+  mgr.triggerByContext(context, bypassCooldown).catch(() => {
+    // Silent fail
+  });
+  return true;
 }
 
 /** React hook to auto-sync reduced motion with the singleton */

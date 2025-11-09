@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 
 export default function SignupScreen(): React.JSX.Element {
   const navigation = useNavigation();

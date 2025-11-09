@@ -22,19 +22,27 @@ import { createLogger } from './logger'
 import { cacheGet, cacheSet } from './offline-cache'
 import { getAuthToken } from './secure-storage'
 import { telemetry } from './telemetry'
+import type {
+  MatchingApiResponse,
+  MatchingApiOptions,
+} from '../types/api'
 
 const logger = createLogger('api-client')
 
 function resolveBaseUrl(): string {
   const viaEnv = process.env['EXPO_PUBLIC_API_URL']
-  const viaExtra = (Constants?.expoConfig?.extra as Record<string, unknown> | undefined)?.[
-    'apiUrl'
-  ] as string | undefined
+  const viaExtra =
+    Constants.expoConfig?.extra && typeof Constants.expoConfig.extra === 'object'
+      ? (Constants.expoConfig.extra as Record<string, unknown>)['apiUrl']
+      : undefined
+  const apiUrl = typeof viaExtra === 'string' ? viaExtra : undefined
 
-  const url = (viaEnv || viaExtra || '').trim()
+  const url = (viaEnv ?? apiUrl ?? '').trim()
 
   const isHttp = (v: string): boolean => /^https?:\/\//i.test(v)
-  if (url && isHttp(url)) return url.replace(/\/+$/, '')
+  if (url && isHttp(url)) {
+    return url.replace(/\/+$/, '')
+  }
 
   if (process.env['NODE_ENV'] === 'production') {
     throw new Error(
@@ -399,7 +407,8 @@ class APIClient {
 
         clearTimeout(timeoutId)
 
-        const responseEtag = response.headers.get('ETag') ?? undefined
+        const etagHeader = response.headers.get('ETag')
+        const responseEtag = etagHeader !== null ? etagHeader : undefined
         const duration = Date.now() - startTime
 
         // Track telemetry
@@ -566,57 +575,25 @@ class APIClient {
 
 export const apiClient = new APIClient()
 
-// API endpoint types
-export interface PetMedia {
-  url: string
-  type: string
-}
-
-export interface PetLocation {
-  geohash: string
-  roundedLat: number
-  roundedLng: number
-  city: string
-  country: string
-  timezone: string
-}
-
-export interface PetProfile {
-  id: string
-  ownerId: string
-  species: string
-  breedId: string
-  breedName: string
-  name: string
-  sex: string
-  neuterStatus: string
-  dateOfBirth: string
-  ageMonths: number
-  lifeStage: string
-  size: string
-  weightKg: number
-  intents: string[]
-  location: PetLocation
-  media: PetMedia[]
-}
-
-export interface MatchingApiResponse {
-  pets: PetProfile[]
-  nextCursor?: string
-  total: number
-}
-
-export interface MatchingApiOptions {
-  limit?: number
-  cursor?: string
-}
+// Re-export API types from types/api.ts for convenience
+export type {
+  PetMedia,
+  PetLocation,
+  PetApiResponse,
+  MatchingApiResponse,
+  MatchingApiOptions,
+} from '../types/api'
 
 // API endpoints
 export const matchingApi = {
   async getAvailablePets(options?: MatchingApiOptions): Promise<MatchingApiResponse> {
     const params = new URLSearchParams()
-    if (options?.limit) params.append('limit', String(options.limit))
-    if (options?.cursor) params.append('cursor', options.cursor)
+    if (options?.limit) {
+      params.append('limit', String(options.limit))
+    }
+    if (options?.cursor) {
+      params.append('cursor', options.cursor)
+    }
 
     const query = params.toString()
     const endpoint = `/matching/available${query ? `?${query}` : ''}`

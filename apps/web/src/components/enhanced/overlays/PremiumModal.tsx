@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumModalProps {
   open?: boolean;
@@ -53,7 +54,8 @@ export function PremiumModal({
   closeOnOverlayClick = true,
   className,
 }: PremiumModalProps): React.JSX.Element {
-  const scale = useSharedValue(0.95);
+    const uiConfig = useUIConfig();
+    const scale = useSharedValue(0.95);
   const opacity = useSharedValue(0);
 
   useEffect(() => {

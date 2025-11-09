@@ -10,13 +10,15 @@ import { PaperPlaneRight } from '@phosphor-icons/react';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface SendButtonIconProps {
   isActive?: boolean;
 }
 
 export function SendButtonIcon({ isActive = false }: SendButtonIconProps): JSX.Element {
-  const translateX = useSharedValue(0);
+    const uiConfig = useUIConfig();
+    const translateX = useSharedValue(0);
   const scale = useSharedValue(1);
 
   const iconStyle = useAnimatedStyle(() => ({

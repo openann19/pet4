@@ -10,6 +10,7 @@ import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { TypingDotsWeb } from './TypingDotsWeb';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface WebBubbleWrapperProps {
   children: ReactNode;
@@ -47,10 +48,11 @@ export function WebBubbleWrapper({
   glowOpacity = 0,
   glowIntensity = 0.85,
 }: WebBubbleWrapperProps) {
-  const bubbleTilt = useBubbleTilt({
-    enabled: enable3DTilt,
-    maxTilt: 10,
-  });
+    const uiConfig = useUIConfig();
+    const bubbleTilt = useBubbleTilt({
+        enabled: enable3DTilt,
+        maxTilt: 10,
+      });
 
   const bubbleEntry = useBubbleEntry({
     index,

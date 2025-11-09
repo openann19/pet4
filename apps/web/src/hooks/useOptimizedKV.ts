@@ -1,5 +1,5 @@
-import { useStorage } from './useStorage';
-import { useMemo, useCallback } from 'react';
+import { useStorage } from './use-storage';
+import { useMemo, useCallback, useRef, useEffect } from 'react';
 
 export function useOptimizedKV<T>(key: string, defaultValue: T) {
   const [value, setValue, deleteValue] = useStorage<T>(key, defaultValue);
@@ -20,17 +20,30 @@ export function useOptimizedKV<T>(key: string, defaultValue: T) {
 
 export function useDebouncedKV<T>(key: string, defaultValue: T, delay = 300) {
   const [value, setValue, deleteValue] = useStorage<T>(key, defaultValue);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const debouncedSetValue = useCallback(
     (newValue: T | ((current: T) => T)) => {
-      const timeoutId = setTimeout(() => {
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => {
         setValue(newValue);
+        timeoutRef.current = null;
       }, delay);
-
-      return () => clearTimeout(timeoutId);
     },
     [setValue, delay]
   );
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
 
   return [value, debouncedSetValue, deleteValue] as const;
 }

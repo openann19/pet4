@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import type { ButtonHTMLAttributes } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface PremiumButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'gradient';
@@ -28,7 +29,8 @@ export function PremiumButton({
   onClick,
   ...props
 }: PremiumButtonProps) {
-  const hoverLift = useHoverLift({ scale: 1.05 });
+    const uiConfig = useUIConfig();
+    const hoverLift = useHoverLift({ scale: 1.05 });
   const bounceOnTap = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
   const rotation = useSharedValue(0);
 

@@ -4,7 +4,7 @@
  * Individual message bubble with animations and interactions
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Translate as TranslateIcon } from '@phosphor-icons/react';
@@ -16,12 +16,15 @@ import { useSendWarp } from '@/effects/chat/bubbles/use-send-warp';
 import { useReceiveAirCushion } from '@/effects/chat/bubbles/use-receive-air-cushion';
 import { WebBubbleWrapper } from '../WebBubbleWrapper';
 import { PresenceAvatar } from '../PresenceAvatar';
-import { MessageAttachments } from '../MessageAttachments';
-import { MessageReactions } from '../MessageReactions';
+import MessageAttachments from '../MessageAttachments';
+import MessageReactions from '../MessageReactions';
 import { VoiceWaveform } from '../VoiceWaveform';
 import { formatChatTime } from '@/lib/chat-utils';
 import { REACTION_EMOJIS } from '@/lib/chat-types';
 import type { ChatMessage } from '@/lib/chat-types';
+import { ensureFocusAppearance } from '@/core/a11y/focus-appearance';
+import { getStableMessageReference } from '@/core/a11y/fixed-references';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface MessageItemProps {
   message: ChatMessage;
@@ -42,6 +45,7 @@ export function MessageItem({
   onReaction,
   onTranslate,
 }: MessageItemProps): JSX.Element {
+  const bubbleRef = useRef<HTMLDivElement>(null);
   const bubbleHover = useHoverAnimation({ scale: 1.02 });
 
   // Premium send/receive effects
@@ -74,6 +78,34 @@ export function MessageItem({
     }
   }, [isCurrentUser, message.status, sendWarp]);
 
+  // Create stable message reference for accessibility
+  const stableReference = useMemo(() => {
+    return getStableMessageReference(
+      message.id,
+      message.timestamp || message.createdAt,
+      message.senderName || currentUserName || 'Unknown',
+      message.content,
+      true // use relative timestamp
+    );
+  }, [message.id, message.timestamp, message.createdAt, message.senderName, currentUserName, message.content]);
+
+  // Ensure focus appearance on bubble
+  useEffect(() => {
+    if (bubbleRef.current) {
+      const bubbleElement = bubbleRef.current.querySelector('[class*="rounded-2xl"]') as HTMLElement;
+      if (bubbleElement) {
+        bubbleElement.setAttribute('id', stableReference.stableId);
+        bubbleElement.setAttribute('tabIndex', '0');
+        bubbleElement.setAttribute('role', 'article');
+        bubbleElement.setAttribute('aria-label', stableReference.ariaLabel);
+        if (stableReference.ariaDescription) {
+          bubbleElement.setAttribute('aria-describedby', `${stableReference.stableId}-description`);
+        }
+        ensureFocusAppearance(bubbleElement);
+      }
+    }
+  }, [stableReference]);
+
   // Combine all animations
   const combinedStyle = useAnimatedStyle(() => {
     const entryStyle = messageAnimation.animatedStyle;
@@ -83,7 +115,7 @@ export function MessageItem({
       ...entryStyle,
       ...effectStyle,
     };
-  });
+  }) as AnimatedStyle;
 
   return (
     <AnimatedView
@@ -101,7 +133,7 @@ export function MessageItem({
         />
       )}
 
-      <div className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
+      <div ref={bubbleRef} className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
         <WebBubbleWrapper
           isIncoming={!isCurrentUser}
           index={delay / 50}
@@ -113,14 +145,17 @@ export function MessageItem({
             style={bubbleHover.animatedStyle}
             onMouseEnter={bubbleHover.handleMouseEnter}
             onMouseLeave={bubbleHover.handleMouseLeave}
-            className={`relative group ${
-              message.type === 'sticker' ? 'p-0' : 'p-3'
-            } rounded-2xl shadow-lg ${
-              isCurrentUser
+            className={`relative group ${message.type === 'sticker' ? 'p-0' : 'p-3'
+              } rounded-2xl shadow-lg focus-ring ${isCurrentUser
                 ? 'bg-linear-to-br from-primary to-accent text-white'
                 : 'glass-strong backdrop-blur-xl border border-white/20'
-            }`}
+              }`}
           >
+            {stableReference.ariaDescription && (
+              <div id={`${stableReference.stableId}-description`} className="sr-only">
+                {stableReference.ariaDescription}
+              </div>
+            )}
             {message.type === 'text' && (
               <>
                 <p className="text-sm wrap-break-word">{message.content}</p>
@@ -181,7 +216,7 @@ export function MessageItem({
             <MessageReactions
               reactions={Array.isArray(message.reactions) ? message.reactions : []}
               availableReactions={REACTION_EMOJIS}
-              onReact={(emoji) => {
+              onReact={(emoji: string): void => {
                 onReaction(message.id, emoji);
               }}
               currentUserId={currentUserId}

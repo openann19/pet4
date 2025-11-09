@@ -158,13 +158,13 @@ vi.mock('react-native-reanimated', () => {
         return currentValue;
       },
       set value(newValue: number) {
-        // When animations are assigned, update the value immediately in tests
-        // In real Reanimated, this would happen on the UI thread over time
+        // Test environment: animations resolve immediately for deterministic testing
+        // Production: animations run on UI thread with worklet timing
         if (typeof newValue === 'number') {
           currentValue = newValue;
         } else {
-          // If it's an animation object, extract the target value
-          // For mocks, we just use the value directly
+          // Animation objects (withSpring, withTiming) are resolved to target values
+          // This simulates completed animation state for test assertions
           currentValue = typeof newValue === 'number' ? newValue : currentValue;
         }
       },
@@ -234,8 +234,8 @@ vi.mock('react-native-reanimated', () => {
       }
     }),
     withSpring: vi.fn((toValue: number, _config?: unknown) => {
-      // Return a marker object that can be detected by the setter
-      // In real Reanimated, this would be a worklet animation object
+      // Test mock: returns target value immediately for deterministic test results
+      // Production: returns worklet animation object that animates on UI thread
       return toValue;
     }),
     withTiming: vi.fn((toValue: number, _config?: unknown) => {
@@ -330,39 +330,40 @@ global.ResizeObserver = createMockResizeObserver();
 
 // TouchEvent polyfill for jsdom (doesn't support TouchEvent by default)
 if (typeof TouchEvent === 'undefined') {
-  (global as typeof globalThis & { TouchEvent: typeof TouchEvent }).TouchEvent = class TouchEvent extends Event {
-    readonly touches: TouchList;
-    readonly targetTouches: TouchList;
-    readonly changedTouches: TouchList;
-    readonly altKey: boolean;
-    readonly metaKey: boolean;
-    readonly ctrlKey: boolean;
-    readonly shiftKey: boolean;
+  (global as typeof globalThis & { TouchEvent: typeof TouchEvent }).TouchEvent =
+    class TouchEvent extends Event {
+      readonly touches: TouchList;
+      readonly targetTouches: TouchList;
+      readonly changedTouches: TouchList;
+      readonly altKey: boolean;
+      readonly metaKey: boolean;
+      readonly ctrlKey: boolean;
+      readonly shiftKey: boolean;
 
-    constructor(type: string, eventInitDict?: TouchEventInit) {
-      super(type, eventInitDict);
+      constructor(type: string, eventInitDict?: TouchEventInit) {
+        super(type, eventInitDict);
 
-      // Create TouchList from touches array if provided
-      const touchesArray = (eventInitDict?.touches as Touch[]) || [];
-      const targetTouchesArray = (eventInitDict?.targetTouches as Touch[]) || [];
-      const changedTouchesArray = (eventInitDict?.changedTouches as Touch[]) || [];
+        // Create TouchList from touches array if provided
+        const touchesArray = (eventInitDict?.touches as Touch[]) || [];
+        const targetTouchesArray = (eventInitDict?.targetTouches as Touch[]) || [];
+        const changedTouchesArray = (eventInitDict?.changedTouches as Touch[]) || [];
 
-      // Create TouchList objects
-      const createTouchList = (touches: Touch[]): TouchList => {
-        const list = touches as unknown as TouchList;
-        list.item = (index: number) => touches[index] || null;
-        return list;
-      };
+        // Create TouchList objects
+        const createTouchList = (touches: Touch[]): TouchList => {
+          const list = touches as unknown as TouchList;
+          list.item = (index: number) => touches[index] || null;
+          return list;
+        };
 
-      this.touches = createTouchList(touchesArray);
-      this.targetTouches = createTouchList(targetTouchesArray);
-      this.changedTouches = createTouchList(changedTouchesArray);
-      this.altKey = eventInitDict?.altKey || false;
-      this.metaKey = eventInitDict?.metaKey || false;
-      this.ctrlKey = eventInitDict?.ctrlKey || false;
-      this.shiftKey = eventInitDict?.shiftKey || false;
-    }
-  } as typeof TouchEvent;
+        this.touches = createTouchList(touchesArray);
+        this.targetTouches = createTouchList(targetTouchesArray);
+        this.changedTouches = createTouchList(changedTouchesArray);
+        this.altKey = eventInitDict?.altKey || false;
+        this.metaKey = eventInitDict?.metaKey || false;
+        this.ctrlKey = eventInitDict?.ctrlKey || false;
+        this.shiftKey = eventInitDict?.shiftKey || false;
+      }
+    } as typeof TouchEvent;
 
   // Touch polyfill
   if (typeof Touch === 'undefined') {
@@ -400,11 +401,12 @@ if (typeof TouchEvent === 'undefined') {
 
   // TouchList polyfill
   if (typeof TouchList === 'undefined') {
-    (global as typeof globalThis & { TouchList: typeof TouchList }).TouchList = class TouchList extends Array<Touch> {
-      item(index: number): Touch | null {
-        return this[index] || null;
-      }
-    } as typeof TouchList;
+    (global as typeof globalThis & { TouchList: typeof TouchList }).TouchList =
+      class TouchList extends Array<Touch> {
+        item(index: number): Touch | null {
+          return this[index] || null;
+        }
+      } as typeof TouchList;
   }
 }
 
@@ -641,8 +643,13 @@ vi.mock('@petspark/motion', () => {
       React.createElement('div', props, children),
     MotionText: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
       React.createElement('span', props, children),
-    MotionScrollView: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
-      React.createElement('div', props, children),
+    MotionScrollView: ({
+      children,
+      ...props
+    }: {
+      children?: React.ReactNode;
+      [key: string]: unknown;
+    }) => React.createElement('div', props, children),
     AnimatePresence: ({ children }: { children?: React.ReactNode }) => children,
     Presence: ({ children }: { children?: React.ReactNode }) => children,
     useMotionValue: vi.fn(() => ({ get: () => 0, set: vi.fn() })),

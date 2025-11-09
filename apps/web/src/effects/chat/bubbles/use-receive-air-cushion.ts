@@ -21,17 +21,10 @@ import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-mo
 import { triggerHaptic } from '../core/haptic-manager';
 import { logEffectStart, logEffectEnd } from '../core/telemetry';
 import { randomRange } from '../core/seeded-rng';
+import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
+import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';
+import { useUIConfig } from '@/hooks/use-ui-config';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-
-/**
- * Spring configuration for air-cushion effect
- * Stiffness: 280, Damping: 20 (under-damped)
- */
-const AIR_CUSHION_SPRING = {
-  stiffness: 280,
-  damping: 20,
-  mass: 1.0,
-};
 
 /**
  * Receive air-cushion effect options
@@ -72,6 +65,8 @@ export function useReceiveAirCushion(
   } = options;
 
   const reducedMotion = useReducedMotionSV();
+  const { hz, scaleDuration } = useDeviceRefreshRate();
+  const { visual, feedback, animation } = useUIConfig();
   const scale = useSharedValue(isNew && enabled ? 0.98 : 1.0);
   const shadowOpacity = useSharedValue(0);
   const shadowRadius = useSharedValue(0);
@@ -82,9 +77,11 @@ export function useReceiveAirCushion(
     }
 
     const isReducedMotion = reducedMotion.value;
-    const scaleDuration = isReducedMotion
+    // Use adaptive duration scaling based on device refresh rate
+    const baseScaleDuration = isReducedMotion
       ? getReducedMotionDuration(SCALE_DURATION_MIN, true)
       : SCALE_DURATION_MIN + randomRange(0, SCALE_DURATION_MAX - SCALE_DURATION_MIN);
+    const scaleDurationAdapted = scaleDuration(baseScaleDuration);
 
     // Log effect start
     const effectId = logEffectStart('receive-air-cushion', {
@@ -92,7 +89,7 @@ export function useReceiveAirCushion(
       isMention,
     });
 
-    // Scale animation (0.98 → 1.0)
+    // Scale animation (0.98 → 1.0) - use UI config spring physics if available
     if (isReducedMotion) {
       // Instant scale for reduced motion
       scale.value = withTiming(1.0, {
@@ -100,24 +97,36 @@ export function useReceiveAirCushion(
         easing: (t) => t, // linear
       });
     } else {
-      scale.value = withSpring(1.0, AIR_CUSHION_SPRING);
+      // Use UI config spring physics or fallback to adaptive config
+      const springConfig = animation.enableReanimated && animation.springPhysics
+        ? {
+            stiffness: animation.springPhysics.stiffness,
+            damping: animation.springPhysics.damping,
+            mass: animation.springPhysics.mass,
+          }
+        : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
+      scale.value = withSpring(1.0, springConfig);
     }
 
-    // Shadow animation (0 → 4px)
-    const shadowDuration = getReducedMotionDuration(SHADOW_DURATION, isReducedMotion);
+    // Shadow animation (0 → 4px) - only if shadows enabled
+    if (visual.enableShadows) {
+      // Use adaptive duration scaling for shadow animation
+      const baseShadowDuration = getReducedMotionDuration(SHADOW_DURATION, isReducedMotion);
+      const shadowDuration = scaleDuration(baseShadowDuration);
 
-    shadowOpacity.value = withTiming(1.0, {
-      duration: shadowDuration,
-      easing: (t) => t, // linear
-    });
+      shadowOpacity.value = withTiming(1.0, {
+        duration: shadowDuration,
+        easing: (t) => t, // linear
+      });
 
-    shadowRadius.value = withTiming(SHADOW_MAX_RADIUS, {
-      duration: shadowDuration,
-      easing: (t) => t, // linear
-    });
+      shadowRadius.value = withTiming(SHADOW_MAX_RADIUS, {
+        duration: shadowDuration,
+        easing: (t) => t, // linear
+      });
+    }
 
-    // Haptic feedback (only on mentions)
-    if (isMention) {
+    // Haptic feedback (only on mentions and if haptics enabled)
+    if (isMention && feedback.haptics) {
       triggerHaptic('light');
     }
 
@@ -125,17 +134,17 @@ export function useReceiveAirCushion(
     if (onComplete) {
       setTimeout(() => {
         onComplete();
-      }, scaleDuration);
+      }, scaleDurationAdapted);
     }
 
     // Log effect end
     setTimeout(() => {
       logEffectEnd(effectId, {
-        durationMs: scaleDuration,
+        durationMs: scaleDurationAdapted,
         success: true,
       });
-    }, scaleDuration);
-  }, [enabled, isNew, isMention, reducedMotion, scale, shadowOpacity, shadowRadius, onComplete]);
+    }, scaleDurationAdapted);
+  }, [enabled, isNew, isMention, reducedMotion, hz, scaleDuration, visual, feedback, animation, scale, shadowOpacity, shadowRadius, onComplete]);
 
   useEffect(() => {
     if (enabled && isNew) {

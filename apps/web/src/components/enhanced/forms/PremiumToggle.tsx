@@ -7,6 +7,7 @@ import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumToggleProps {
   checked?: boolean;
@@ -33,7 +34,8 @@ export function PremiumToggle({
   className,
   'aria-label': ariaLabel,
 }: PremiumToggleProps): React.JSX.Element {
-  const thumbPosition = useSharedValue(checked ? 1 : 0);
+    const uiConfig = useUIConfig();
+    const thumbPosition = useSharedValue(checked ? 1 : 0);
   const glowOpacity = useSharedValue(checked ? 1 : 0);
 
   const thumbStyle = useAnimatedStyle(() => {

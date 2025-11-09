@@ -7,22 +7,24 @@
  */
 
 import React, { useMemo, useEffect } from 'react';
-import Animated, {
+import {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withRepeat,
   withTiming,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng';
-import { View } from 'react-native';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface DotCfg {
   phase: number;
-  y: Animated.SharedValue<number>;
+  y: SharedValue<number>;
   a: number;
-  o: Animated.SharedValue<number>;
+  o: SharedValue<number>;
 }
 
 export interface LiquidDotsProps {
@@ -42,7 +44,8 @@ export function LiquidDots({
   dots = 3,
   seed = 'liquid-dots',
 }: LiquidDotsProps) {
-  const reduced = useReducedMotion();
+    const uiConfig = useUIConfig();
+    const reduced = useReducedMotion();
 
   // shared clock loops 0..1
   const t = useSharedValue(0);
@@ -90,40 +93,37 @@ export function LiquidDots({
   });
 
   return (
-    <View
-      accessibilityRole="status"
+    <div
+      role="status"
       aria-live="polite"
       className={`flex items-center gap-1 ${className ?? ''}`}
-      style={{ flexDirection: 'row' }}
+      style={{ display: 'flex', flexDirection: 'row' }}
     >
       {config.map((d, i) => {
-        const style = useAnimatedStyle(() => ({
+        const animatedStyle = useAnimatedStyle(() => ({
           transform: [{ translateY: reduced ? 0 : d.y.value }],
           opacity: reduced ? 1 : d.o.value,
         }));
 
-        // web-only glow/blur via style prop merging
-        const glow: React.CSSProperties = {
-          filter: 'blur(0.4px)',
-          boxShadow: `0 0 ${dotSize * 0.6}px ${dotColor}40`,
-        };
-
         return (
-          <Animated.View
+          <div
             key={i}
-            style={[
-              {
-                width: dotSize,
-                height: dotSize,
-                borderRadius: dotSize / 2,
-                backgroundColor: dotColor,
-              },
-              style,
-              glow,
-            ]}
-          />
+            style={{
+              width: dotSize,
+              height: dotSize,
+              borderRadius: dotSize / 2,
+              backgroundColor: dotColor,
+              filter: 'blur(0.4px)',
+              boxShadow: `0 0 ${dotSize * 0.6}px ${dotColor}40`,
+            }}
+          >
+            <AnimatedView
+              style={animatedStyle}
+              className="w-full h-full"
+            />
+          </div>
         );
       })}
-    </View>
+    </div>
   );
 }

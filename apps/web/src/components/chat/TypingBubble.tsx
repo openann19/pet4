@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { TypingDots } from './TypingDots';
 import { TypingDotsWeb } from './TypingDotsWeb';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TypingBubbleProps {
   isIncoming?: boolean;
@@ -21,7 +22,8 @@ export function TypingBubble({
   className,
   bubbleClassName,
 }: TypingBubbleProps): React.JSX.Element {
-  const isMobile = variant === 'mobile';
+    const uiConfig = useUIConfig();
+    const isMobile = variant === 'mobile';
 
   return (
     <div

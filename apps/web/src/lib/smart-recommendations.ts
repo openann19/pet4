@@ -1,10 +1,15 @@
 import type { Pet, SwipeAction } from './types';
+import { createLogger } from './logger';
+
+const logger = createLogger('smart-recommendations');
 
 export interface RecommendationScore {
   petId: string;
   score: number;
   reasons: string[];
   category: 'perfect-match' | 'great-fit' | 'good-potential' | 'worth-exploring';
+  contentBasedScore?: number;
+  collaborativeScore?: number;
 }
 
 export interface UserPreferences {
@@ -16,20 +21,63 @@ export interface UserPreferences {
   socialPreference: 'one-on-one' | 'group-friendly' | 'both';
 }
 
+/**
+ * User similarity data for collaborative filtering
+ */
+export interface UserSimilarity {
+  userId: string;
+  similarity: number; // 0-1
+  commonLikes: string[]; // Pet IDs both users liked
+  commonPasses: string[]; // Pet IDs both users passed
+}
+
 export class SmartRecommendationEngine {
   private swipeHistory: SwipeAction[];
   private userPreferences: UserPreferences | null = null;
+  private similarUsers: UserSimilarity[] = [];
+  private readonly collaborativeWeight = 0.3; // 30% collaborative, 70% content-based
+  private readonly minSimilarityThreshold = 0.3; // Minimum similarity to consider
 
   constructor(swipeHistory: SwipeAction[] = []) {
     this.swipeHistory = swipeHistory;
     this.learnFromHistory();
   }
 
+  /**
+   * Set similar users for collaborative filtering
+   */
+  setSimilarUsers(similarUsers: UserSimilarity[]): void {
+    this.similarUsers = similarUsers.filter(
+      (u) => u.similarity >= this.minSimilarityThreshold
+    );
+    logger.debug('Set similar users for collaborative filtering', {
+      count: this.similarUsers.length,
+      averageSimilarity:
+        this.similarUsers.reduce((sum, u) => sum + u.similarity, 0) / this.similarUsers.length,
+    });
+  }
+
+  /**
+   * Learn user preferences from swipe history
+   */
   private learnFromHistory(): void {
     if (this.swipeHistory.length < 5) {
       return;
     }
 
+    const likedPets: string[] = [];
+    const passedPets: string[] = [];
+
+    for (const swipe of this.swipeHistory) {
+      if (swipe.action === 'like' || swipe.action === 'superlike') {
+        likedPets.push(swipe.targetPetId);
+      } else if (swipe.action === 'pass') {
+        passedPets.push(swipe.targetPetId);
+      }
+    }
+
+    // Extract preferences from liked pets (would need pet data)
+    // For now, initialize with defaults
     this.userPreferences = {
       favoriteBreeds: [],
       favoritePersonalities: [],
@@ -38,6 +86,11 @@ export class SmartRecommendationEngine {
       activityLevel: 'medium',
       socialPreference: 'both',
     };
+
+    logger.debug('Learned preferences from history', {
+      likedCount: likedPets.length,
+      passedCount: passedPets.length,
+    });
   }
 
   public scoreRecommendations(
@@ -52,19 +105,64 @@ export class SmartRecommendationEngine {
         continue;
       }
 
-      const score = this.calculateScore(pet, userPet);
-      const reasons = this.generateReasons(pet, userPet, score);
-      const category = this.categorizeScore(score);
+      // Content-based scoring
+      const contentBasedScore = this.calculateScore(pet, userPet);
+
+      // Collaborative filtering scoring
+      const collaborativeScore = this.calculateCollaborativeScore(pet.id);
+
+      // Hybrid score: weighted combination
+      const hybridScore =
+        contentBasedScore * (1 - this.collaborativeWeight) +
+        collaborativeScore * this.collaborativeWeight;
+
+      const reasons = this.generateReasons(pet, userPet, hybridScore);
+      const category = this.categorizeScore(hybridScore);
 
       scores.push({
         petId: pet.id,
-        score,
+        score: Math.round(hybridScore),
         reasons,
         category,
+        contentBasedScore: Math.round(contentBasedScore),
+        collaborativeScore: Math.round(collaborativeScore),
       });
     }
 
     return scores.sort((a, b) => b.score - a.score);
+  }
+
+  /**
+   * Calculate collaborative filtering score
+   * Based on what similar users liked
+   */
+  private calculateCollaborativeScore(petId: string): number {
+    if (this.similarUsers.length === 0) {
+      return 50; // Neutral score if no similar users
+    }
+
+    let totalScore = 0;
+    let totalWeight = 0;
+
+    for (const similarUser of this.similarUsers) {
+      const weight = similarUser.similarity;
+
+      // Check if similar user liked this pet
+      if (similarUser.commonLikes.includes(petId)) {
+        totalScore += 100 * weight; // High score if similar user liked it
+        totalWeight += weight;
+      } else if (similarUser.commonPasses.includes(petId)) {
+        totalScore += 20 * weight; // Low score if similar user passed it
+        totalWeight += weight;
+      }
+    }
+
+    // Normalize to 0-100 range
+    if (totalWeight === 0) {
+      return 50; // Neutral if no data
+    }
+
+    return Math.min(100, Math.max(0, totalScore / totalWeight));
   }
 
   private calculateScore(targetPet: Pet, userPet: Pet): number {

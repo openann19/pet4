@@ -113,12 +113,13 @@ function normalizeError(
 }
 
 function generateCorrelationId(): string {
-   
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
 }
 
 export class UnifiedAPIClient {
-  private readonly config: Required<Pick<APIClientConfig, 'baseURL' | 'timeout' | 'defaultHeaders'>> &
+  private readonly config: Required<
+    Pick<APIClientConfig, 'baseURL' | 'timeout' | 'defaultHeaders'>
+  > &
     Pick<APIClientConfig, 'auth' | 'telemetry'>
   private refreshTokenPromise: Promise<string> | null = null
 
@@ -197,10 +198,10 @@ export class UnifiedAPIClient {
 
     try {
       // Convert Headers to plain object for telemetry
-      const headersObj: Record<string, string> = {};
+      const headersObj: Record<string, string> = {}
       headers.forEach((value, key) => {
-        headersObj[key] = value;
-      });
+        headersObj[key] = value
+      })
 
       this.config.telemetry?.onRequest?.({
         url,
@@ -225,7 +226,12 @@ export class UnifiedAPIClient {
       })
 
       // Handle 401 with auth refresh
-      if (response.status === 401 && this.config.auth !== undefined && options.skipAuth !== true && attempt === 0) {
+      if (
+        response.status === 401 &&
+        this.config.auth !== undefined &&
+        options.skipAuth !== true &&
+        attempt === 0
+      ) {
         try {
           await this.refreshAuthToken()
           // Retry once with new token

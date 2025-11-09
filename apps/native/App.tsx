@@ -22,7 +22,11 @@ import SettingsScreen from './src/screens/SettingsScreen';
 import { CallScreen } from './src/screens/CallScreen';
 import PlaydatesScreen from './src/screens/PlaydatesScreen';
 import DataInitializer from './src/components/DataInitializer';
-import { useStorage } from './src/hooks/useStorage';
+import { useStorage } from './src/hooks/use-storage';
+import { BusinessConfigScreen } from './src/screens/admin/BusinessConfigScreen';
+import { MatchingConfigScreen } from './src/screens/admin/MatchingConfigScreen';
+import { MapSettingsScreen } from './src/screens/admin/MapSettingsScreen';
+import { APIConfigScreen } from './src/screens/admin/APIConfigScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -225,6 +229,34 @@ export default function App(): React.JSX.Element {
                     backgroundColor: '#6366f1',
                   },
                   headerTintColor: '#fff',
+                }}
+              />
+              <Stack.Screen
+                name="BusinessConfig"
+                component={BusinessConfigScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="MatchingConfig"
+                component={MatchingConfigScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="MapSettings"
+                component={MapSettingsScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="APIConfig"
+                component={APIConfigScreen}
+                options={{
+                  headerShown: false,
                 }}
               />
             </>

@@ -4,7 +4,7 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import TypingIndicatorComponent from '../TypingIndicator';
 import { MessageItem } from './MessageItem';
-import type { ChatMessage, ChatRoom } from '@/lib/chat-types';
+import type { ChatMessage } from '@/lib/chat-types';
 import { groupMessagesByDate } from '@/lib/chat-utils';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import type { RefObject } from 'react';
@@ -12,6 +12,7 @@ import type { RefObject } from 'react';
 export interface MessageListProps {
   messages: ChatMessage[];
   currentUserId: string;
+  currentUserName: string;
   typingUsers: { userName?: string }[];
   onReaction: (messageId: string, emoji: string) => void;
   onTranslate: (messageId: string) => void;
@@ -21,6 +22,7 @@ export interface MessageListProps {
 export function MessageList({
   messages,
   currentUserId,
+  currentUserName,
   typingUsers,
   onReaction,
   onTranslate,
@@ -39,6 +41,7 @@ export function MessageList({
               message={m}
               isCurrentUser={m.senderId === currentUserId}
               currentUserId={currentUserId}
+              currentUserName={currentUserName}
               delay={idx * 50}
               onReaction={onReaction}
               onTranslate={onTranslate}

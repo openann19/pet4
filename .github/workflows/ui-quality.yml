@@ -76,6 +76,34 @@ jobs:
         run: node scripts/budget-check.mjs
         continue-on-error: false
 
+      - name: Performance Budget - Bundle Size
+        run: node scripts/qa/check-bundle.js
+        continue-on-error: false
+
+      - name: Performance Budget - Lighthouse CI
+        run: node scripts/qa/run-lhci.js
+        continue-on-error: false
+        env:
+          CI: true
+
+      - name: Verify Performance Budgets
+        run: node scripts/qa/verify-performance-budgets.js
+        continue-on-error: false
+
+      - name: Run E2E Tests - Keyboard Navigation
+        run: pnpm --filter spark-template e2e e2e/keyboard-navigation.spec.ts
+        continue-on-error: false
+
+      - name: Run E2E Tests - Animation Performance
+        run: pnpm --filter spark-template e2e e2e/animation-performance.spec.ts
+        continue-on-error: false
+
+      - name: Run E2E Tests - Visual Regression
+        run: pnpm --filter spark-template e2e e2e/presence-aurora-visual.spec.ts
+        continue-on-error: false
+        env:
+          CI: true
+
       - name: Upload quality report
         if: always()
         uses: actions/upload-artifact@v4

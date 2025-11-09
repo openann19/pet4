@@ -15,6 +15,7 @@ import { useGlowPulse } from '@/effects/reanimated';
 import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 const logger = createLogger('GlowingBadge');
 
@@ -53,7 +54,8 @@ export function GlowingBadge({
   className,
   'aria-label': ariaLabel,
 }: GlowingBadgeProps): JSX.Element {
-  const scale = useSharedValue(0.8);
+    const uiConfig = useUIConfig();
+    const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0);
   const pulseOpacity = useSharedValue(0.5);
 

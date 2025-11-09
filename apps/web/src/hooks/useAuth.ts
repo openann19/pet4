@@ -42,7 +42,8 @@ export function useAuth(): {
       }
     }
 
-    initAuth();
+    // Initialize auth asynchronously - fire-and-forget with error handling inside
+    void initAuth();
 
     return () => {
       mounted = false;

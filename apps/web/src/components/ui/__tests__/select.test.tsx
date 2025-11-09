@@ -1,67 +1,115 @@
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
+import type { ReactNode, ComponentPropsWithoutRef } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../select';
+
+// Types for Radix UI Select mock components
+interface SelectRootProps {
+  children?: ReactNode;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  [key: string]: unknown;
+}
+
+interface SelectTriggerProps {
+  children?: ReactNode;
+  [key: string]: unknown;
+}
+
+interface SelectValueProps {
+  placeholder?: string;
+  [key: string]: unknown;
+}
+
+interface SelectContentProps {
+  children?: ReactNode;
+  [key: string]: unknown;
+}
+
+interface SelectItemProps {
+  children?: ReactNode;
+  value: string;
+  [key: string]: unknown;
+}
+
+interface SelectIconProps {
+  children?: ReactNode;
+  asChild?: boolean;
+  [key: string]: unknown;
+}
 
 // Mock Radix UI Select - provide all necessary components
 vi.mock('@radix-ui/react-select', () => {
   // Use a factory function that returns components
   return {
-    Root: ({ children, ...props }: any) => {
+    Root: ({ children, ...props }: SelectRootProps) => {
       const React = require('react');
       return React.createElement('div', { 'data-testid': 'select-root', ...props }, children);
     },
-    Trigger: ({ children, ...props }: any) => {
+    Trigger: ({ children, ...props }: SelectTriggerProps) => {
       const React = require('react');
       return React.createElement('button', { 'data-testid': 'select-trigger', ...props }, children);
     },
-    Value: ({ placeholder, ...props }: any) => {
+    Value: ({ placeholder, ...props }: SelectValueProps) => {
       const React = require('react');
       return React.createElement('span', { 'data-testid': 'select-value', ...props }, placeholder);
     },
-    Portal: ({ children }: any) => children,
-    Content: ({ children, ...props }: any) => {
+    Portal: ({ children }: { children?: ReactNode }) => children,
+    Content: ({ children, ...props }: SelectContentProps) => {
       const React = require('react');
       return React.createElement('div', { 'data-testid': 'select-content', ...props }, children);
     },
-    Viewport: ({ children, ...props }: any) => {
+    Viewport: ({ children, ...props }: SelectContentProps) => {
       const React = require('react');
       return React.createElement('div', { 'data-testid': 'select-viewport', ...props }, children);
     },
-    Item: ({ children, value, ...props }: any) => {
+    Item: ({ children, value, ...props }: SelectItemProps) => {
       const React = require('react');
-      return React.createElement('div', { 'data-testid': `select-item-${value}`, ...props }, children);
+      return React.createElement(
+        'div',
+        { 'data-testid': `select-item-${value}`, ...props },
+        children
+      );
     },
-    ItemText: ({ children }: any) => {
+    ItemText: ({ children }: { children?: ReactNode }) => {
       const React = require('react');
       return React.createElement('span', {}, children);
     },
-    ItemIndicator: ({ children }: any) => {
+    ItemIndicator: ({ children }: { children?: ReactNode }) => {
       const React = require('react');
       return React.createElement('span', {}, children);
     },
-    ScrollUpButton: ({ children, ...props }: any) => {
+    ScrollUpButton: ({ children, ...props }: SelectTriggerProps) => {
       const React = require('react');
-      return React.createElement('div', { 'data-testid': 'select-scroll-up-button', ...props }, children);
+      return React.createElement(
+        'div',
+        { 'data-testid': 'select-scroll-up-button', ...props },
+        children
+      );
     },
-    ScrollDownButton: ({ children, ...props }: any) => {
+    ScrollDownButton: ({ children, ...props }: SelectTriggerProps) => {
       const React = require('react');
-      return React.createElement('div', { 'data-testid': 'select-scroll-down-button', ...props }, children);
+      return React.createElement(
+        'div',
+        { 'data-testid': 'select-scroll-down-button', ...props },
+        children
+      );
     },
-    Icon: ({ children, asChild, ...props }: any) => {
+    Icon: ({ children, asChild, ...props }: SelectIconProps) => {
       const React = require('react');
       return asChild ? children : React.createElement('span', props, children);
     },
-    Label: ({ children, ...props }: any) => {
+    Label: ({ children, ...props }: SelectTriggerProps) => {
       const React = require('react');
       return React.createElement('div', { 'data-testid': 'select-label', ...props }, children);
     },
-    Separator: ({ ...props }: any) => {
+    Separator: ({ ...props }: ComponentPropsWithoutRef<'div'>) => {
       const React = require('react');
       return React.createElement('div', { 'data-testid': 'select-separator', ...props });
     },
-    Group: ({ children, ...props }: any) => {
+    Group: ({ children, ...props }: SelectContentProps) => {
       const React = require('react');
       return React.createElement('div', { 'data-testid': 'select-group', ...props }, children);
     },

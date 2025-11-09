@@ -244,7 +244,9 @@ function TabItem({ item, selected, onPress }: TabItemProps): React.ReactElement 
         activeOpacity={1}
       >
         {/* Glow effect for active item */}
-        {selected && <Animated.View style={Object.assign({}, styles.iconGlow, glowAnimatedStyle)} />}
+        {selected && (
+          <Animated.View style={Object.assign({}, styles.iconGlow, glowAnimatedStyle)} />
+        )}
 
         {/* Icon */}
         {item.icon && (
@@ -261,7 +263,9 @@ function TabItem({ item, selected, onPress }: TabItemProps): React.ReactElement 
         </Text>
 
         {/* Active indicator */}
-        <Animated.View style={Object.assign({}, styles.activeIndicator, animation.indicatorStyle)} />
+        <Animated.View
+          style={Object.assign({}, styles.activeIndicator, animation.indicatorStyle)}
+        />
 
         {/* Badge */}
         {item.badge && item.badge > 0 && (

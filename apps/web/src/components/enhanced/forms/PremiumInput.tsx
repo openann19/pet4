@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useId } from 'react';
 import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import { Eye, EyeSlash, X, CheckCircle, AlertCircle } from '@phosphor-icons/react';
+import { Eye, EyeSlash, X, CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import type { InputHTMLAttributes, ReactNode } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;
@@ -42,14 +43,22 @@ export function PremiumInput({
   onClear,
   type,
   disabled,
+  id,
   ...props
 }: PremiumInputProps) {
+  const uiConfig = useUIConfig();
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [hasValue, setHasValue] = useState(Boolean(value));
   const inputRef = useRef<HTMLInputElement>(null);
+  const generatedId = useId();
+  const inputId = id || generatedId;
+  const labelId = `${inputId}-label`;
+  const helperTextId = helperText ? `${inputId}-helper` : undefined;
+  const errorId = error ? `${inputId}-error` : undefined;
+  const ariaDescribedBy = [helperTextId, errorId].filter(Boolean).join(' ') || undefined;
 
-  const hoverLift = useHoverLift({ scale: 1.01, enabled: !disabled });
+  const hoverLift = useHoverLift({ scale: 1.01 });
   const labelScale = useSharedValue(hasValue || isFocused ? 0.85 : 1);
   const labelY = useSharedValue(hasValue || isFocused ? -24 : 0);
   const borderWidth = useSharedValue(variant === 'outlined' ? 1 : 0);
@@ -172,7 +181,6 @@ export function PremiumInput({
         )}
         onMouseEnter={hoverLift.handleEnter}
         onMouseLeave={hoverLift.handleLeave}
-        style={hoverLift.containerStyle}
       >
         <AnimatedView
           style={borderStyle}
@@ -186,6 +194,16 @@ export function PremiumInput({
         )}
 
         {label && (
+          <label
+            htmlFor={inputId}
+            id={labelId}
+            className="sr-only"
+          >
+            {label}
+          </label>
+        )}
+
+        {label && (
           <AnimatedView
             style={labelStyle}
             className={cn(
@@ -196,6 +214,7 @@ export function PremiumInput({
               size === 'sm' && 'text-sm',
               size === 'lg' && 'text-base'
             )}
+            aria-hidden="true"
           >
             {label}
           </AnimatedView>
@@ -203,17 +222,22 @@ export function PremiumInput({
 
         <input
           ref={inputRef}
+          id={inputId}
           type={inputType}
           value={value}
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
           disabled={disabled}
+          aria-labelledby={label ? labelId : undefined}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={error ? 'true' : undefined}
           className={cn(
             'flex-1 bg-transparent outline-none placeholder:text-muted-foreground/50',
             label && 'pt-6',
             !leftIcon && !label && 'pt-0'
           )}
+          {...(label ? {} : !props['aria-label'] ? { 'aria-label': props.placeholder || 'Input' } : {})}
           {...props}
         />
 
@@ -244,7 +268,7 @@ export function PremiumInput({
             </button>
           )}
 
-          {error && <AlertCircle size={16} className="text-red-500 shrink-0" />}
+          {error && <WarningCircle size={16} className="text-red-500 shrink-0" />}
 
           {!error && hasValue && !showClearButton && (
             <CheckCircle size={16} className="text-green-500 shrink-0" />
@@ -256,12 +280,14 @@ export function PremiumInput({
 
       {(error || helperText) && (
         <div
+          id={error ? errorId : helperTextId}
           className={cn(
             'mt-1.5 text-xs flex items-center gap-1',
             error ? 'text-red-500' : 'text-muted-foreground'
           )}
+          role={error ? 'alert' : undefined}
         >
-          {error ? <AlertCircle size={12} /> : null}
+          {error ? <WarningCircle size={12} /> : null}
           <span>{error || helperText}</span>
         </div>
       )}

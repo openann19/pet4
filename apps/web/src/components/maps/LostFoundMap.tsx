@@ -5,7 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type { Location, LostPetAlert } from '@/lib/maps/types';
+
+const logger = createLogger('LostFoundMap');
 import {
   getCurrentLocation,
   snapToGrid,
@@ -38,10 +41,19 @@ export default function LostFoundMap({
   useEffect(() => {
     getCurrentLocation()
       .then((location) => {
-        const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
-        setUserLocation(coarse);
+        try {
+          const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
+          setUserLocation(coarse);
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('LostFoundMap snapToGrid error', err);
+          setUserLocation({ lat: 40.7128, lng: -74.006 });
+        }
       })
-      .catch(() => {
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('LostFoundMap getCurrentLocation error', err);
+        // Fallback to default location (New York)
         setUserLocation({ lat: 40.7128, lng: -74.006 });
       });
   }, [mapSettings.PRIVACY_GRID_METERS]);

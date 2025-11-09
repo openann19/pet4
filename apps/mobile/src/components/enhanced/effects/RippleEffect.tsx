@@ -5,6 +5,8 @@ import {
   StyleSheet,
   type ViewStyle,
   type GestureResponderEvent,
+  type ViewProps,
+  type TouchableOpacityProps,
 } from 'react-native'
 import Animated, {
   useSharedValue,
@@ -74,7 +76,9 @@ export function RippleEffect({
     opacity: rippleOpacity.value,
   }))
 
-  const Component: React.ComponentType<any> = onPress ? TouchableOpacity : View
+  const Component: React.ComponentType<ViewProps | TouchableOpacityProps> = onPress
+    ? TouchableOpacity
+    : View
 
   return (
     <Component

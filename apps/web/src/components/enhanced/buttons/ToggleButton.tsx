@@ -5,8 +5,12 @@ import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
+
+const logger = createLogger('ToggleButton');
 
 export interface ToggleButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
@@ -29,7 +33,8 @@ export function ToggleButton({
   'aria-label': ariaLabel,
   ...props
 }: ToggleButtonProps): React.JSX.Element {
-  const scale = useSharedValue(checked ? 1 : 0.95);
+    const uiConfig = useUIConfig();
+    const scale = useSharedValue(checked ? 1 : 0.95);
   const opacity = useSharedValue(checked ? 1 : 0.7);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -41,20 +46,25 @@ export function ToggleButton({
     (e: React.MouseEvent<HTMLButtonElement>) => {
       if (disabled) return;
 
-      const newChecked = !checked;
-      onChange?.(newChecked);
+      try {
+        const newChecked = !checked;
+        onChange?.(newChecked);
 
-      if (newChecked) {
-        scale.value = withSpring(1, springConfigs.bouncy);
-        opacity.value = withSpring(1, springConfigs.smooth);
-        haptics.selection();
-      } else {
-        scale.value = withSpring(0.95, springConfigs.smooth);
-        opacity.value = withSpring(0.7, springConfigs.smooth);
-        haptics.selection();
+        if (newChecked) {
+          scale.value = withSpring(1, springConfigs.bouncy);
+          opacity.value = withSpring(1, springConfigs.smooth);
+          haptics.selection();
+        } else {
+          scale.value = withSpring(0.95, springConfigs.smooth);
+          opacity.value = withSpring(0.7, springConfigs.smooth);
+          haptics.selection();
+        }
+
+        onClick?.(e);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('ToggleButton onClick error', err);
       }
-
-      onClick?.(e);
     },
     [checked, disabled, onChange, onClick, scale, opacity]
   );

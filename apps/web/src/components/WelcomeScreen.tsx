@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
 import { analytics } from '@/lib/analytics';
+import { ConsentBanner } from '@/components/gdpr/ConsentBanner';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import {
   useSharedValue,
@@ -40,7 +41,7 @@ export default function WelcomeScreen({
   isOnline = true,
   deepLinkMessage,
 }: WelcomeScreenProps) {
-  const { t, language, toggleLanguage: _toggleLanguage } = useApp();
+  const { t, language } = useApp();
   const [isLoading, setIsLoading] = useState(true);
   const shouldReduceMotion = useReducedMotion();
   const primaryBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -412,6 +413,7 @@ export default function WelcomeScreen({
           </div>
         </div>
       </div>
+      <ConsentBanner showOnMount={true} />
     </main>
   );
 }

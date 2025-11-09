@@ -5,7 +5,7 @@ import AdminLayout from '../AdminLayout';
 import { useStorage } from '@/hooks/use-storage';
 import { useSidebarAnimation } from '@/effects/reanimated/use-sidebar-animation';
 
-vi.mock('@/hooks/useStorage');
+vi.mock('@/hooks/use-storage');
 vi.mock('@/effects/reanimated/use-sidebar-animation');
 vi.mock('@/lib/logger', () => ({
   createLogger: () => ({

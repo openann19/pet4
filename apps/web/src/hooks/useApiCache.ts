@@ -85,10 +85,12 @@ export function useApiCache<T>(
     if (cachedData) {
       setData(cachedData);
       if (refetchOnMount) {
-        fetchData(false);
+        // Fire-and-forget: refetch in background with error handling inside
+        void fetchData(false);
       }
     } else {
-      fetchData(true);
+      // Fire-and-forget: fetch data asynchronously with error handling inside
+      void fetchData(true);
     }
   }, [key, enabled, refetchOnMount, fetchData]);
 
@@ -97,7 +99,8 @@ export function useApiCache<T>(
     if (!refetchInterval || !enabled || !key) return;
 
     const interval = setInterval(() => {
-      fetchData(false);
+      // Fire-and-forget: refetch at interval with error handling inside
+      void fetchData(false);
     }, refetchInterval);
 
     return () => clearInterval(interval);

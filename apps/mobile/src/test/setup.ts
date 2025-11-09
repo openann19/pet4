@@ -71,16 +71,53 @@ vi.mock('react-native-safe-area-context', () => ({
 
 // Mock react-native-reanimated
 vi.mock('react-native-reanimated', () => {
+  const createMockSharedValue = (initial: number) => {
+    let val = initial
+    return {
+      get value() {
+        return val
+      },
+      set value(v: unknown) {
+        // Handle number values and animation results
+        if (v !== null && v !== undefined) {
+          const numValue = Number(v)
+          if (!Number.isNaN(numValue)) {
+            val = numValue
+          }
+        }
+      },
+    }
+  }
+
   const Reanimated = {
     default: {
       call: () => {},
     },
-    useSharedValue: () => ({ value: 0 }),
-    useAnimatedStyle: () => ({}),
+    useSharedValue: (initial: number) => createMockSharedValue(initial),
+    useAnimatedStyle: (fn: () => Record<string, unknown>) => {
+      try {
+        return fn()
+      } catch {
+        return {}
+      }
+    },
     withTiming: (value: number) => value,
     withSpring: (value: number) => value,
     withRepeat: (value: number) => value,
-    withSequence: (...args: unknown[]) => args,
+    withDelay: (_delay: number, animation: unknown) => animation,
+    withSequence: (...args: unknown[]) => args[args.length - 1],
+    interpolate: (_val: number, _input: number[], output: number[]) => (output && output[0] !== undefined ? output[0] : 0),
+    Extrapolation: {
+      CLAMP: 'clamp',
+    },
+    Easing: {
+      linear: (t: number) => t,
+      ease: (t: number) => t,
+      in: (e: (t: number) => number) => e,
+      out: (e: (t: number) => number) => e,
+      inOut: (e: (t: number) => number) => e,
+      bezier: () => (t: number) => t,
+    },
     FadeIn: {},
     FadeOut: {},
     Layout: {},
@@ -101,3 +138,7 @@ vi.mock('react-native-gesture-handler', () => ({
   },
   GestureDetector: ({ children }: { children: React.ReactNode }) => children,
 }))
+
+// Note: reduced-motion files are intercepted by a Vite plugin in vitest.config.ts
+// The plugin replaces imports with mock versions to prevent esbuild transformation errors
+// Individual test files can override mocks if needed

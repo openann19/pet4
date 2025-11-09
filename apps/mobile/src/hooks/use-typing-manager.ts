@@ -43,7 +43,7 @@ export function useTypingManager({
   const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const lastTypingEmitRef = useRef<number>(0)
 
-  const emitTypingStart = useCallback(() => {
+  const emitTypingStart = useCallback((): void => {
     if (!realtimeClient) return
 
     const now = Date.now()
@@ -53,7 +53,7 @@ export function useTypingManager({
 
     lastTypingEmitRef.current = now
 
-    realtimeClient
+    void realtimeClient
       .emit('typing_start', {
         roomId,
         userId: currentUserId,
@@ -64,10 +64,10 @@ export function useTypingManager({
       })
   }, [realtimeClient, roomId, currentUserId, currentUserName, debounceDelay])
 
-  const emitTypingStop = useCallback(() => {
+  const emitTypingStop = useCallback((): void => {
     if (!realtimeClient) return
 
-    realtimeClient
+    void realtimeClient
       .emit('typing_stop', {
         roomId,
         userId: currentUserId,
@@ -77,8 +77,8 @@ export function useTypingManager({
       })
   }, [realtimeClient, roomId, currentUserId])
 
-  const stopTyping = useCallback(() => {
-    setIsTyping((prevIsTyping) => {
+  const stopTyping = useCallback((): void => {
+    setIsTyping(prevIsTyping => {
       if (!prevIsTyping) return prevIsTyping
 
       emitTypingStop()
@@ -92,8 +92,8 @@ export function useTypingManager({
     })
   }, [emitTypingStop])
 
-  const startTyping = useCallback(() => {
-    setIsTyping((prevIsTyping) => {
+  const startTyping = useCallback((): void => {
+    setIsTyping(prevIsTyping => {
       if (prevIsTyping) return prevIsTyping
 
       emitTypingStart()
@@ -111,7 +111,7 @@ export function useTypingManager({
   }, [typingTimeout, emitTypingStart, stopTyping])
 
   const handleInputChange = useCallback(
-    (value: string) => {
+    (value: string): void => {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current)
       }
@@ -127,7 +127,7 @@ export function useTypingManager({
     [startTyping, stopTyping, debounceDelay]
   )
 
-  const handleMessageSend = useCallback(() => {
+  const handleMessageSend = useCallback((): void => {
     stopTyping()
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current)
@@ -138,7 +138,7 @@ export function useTypingManager({
   useEffect(() => {
     if (!realtimeClient) return
 
-    const handleTypingStart = (data: unknown) => {
+    const handleTypingStart = (data: unknown): void => {
       const payload = data as {
         roomId?: string
         userId?: string
@@ -158,8 +158,8 @@ export function useTypingManager({
       const userId = payload.userId
       const userName = payload.userName
 
-      setTypingUsers((prev) => {
-        const exists = prev.some((u) => u.userId === userId)
+      setTypingUsers(prev => {
+        const exists = prev.some(u => u.userId === userId)
         if (exists) return prev
 
         return [
@@ -173,7 +173,7 @@ export function useTypingManager({
       })
     }
 
-    const handleTypingStop = (data: unknown) => {
+    const handleTypingStop = (data: unknown): void => {
       const payload = data as {
         roomId?: string
         userId?: string
@@ -183,7 +183,7 @@ export function useTypingManager({
         return
       }
 
-      setTypingUsers((prev) => prev.filter((u) => u.userId !== payload.userId))
+      setTypingUsers(prev => prev.filter(u => u.userId !== payload.userId))
     }
 
     realtimeClient.on('typing_start', handleTypingStart)
@@ -203,7 +203,7 @@ export function useTypingManager({
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current)
       }
-      setIsTyping((prevIsTyping) => {
+      setIsTyping(prevIsTyping => {
         if (prevIsTyping) {
           emitTypingStop()
         }

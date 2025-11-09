@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface SplitButtonAction {
   label: string;
@@ -46,7 +47,8 @@ export function SplitButton({
   disabled = false,
   className,
 }: SplitButtonProps): React.JSX.Element {
-  const [isOpen, setIsOpen] = useState(false);
+    const uiConfig = useUIConfig();
+    const [isOpen, setIsOpen] = useState(false);
   const dividerOpacity = useSharedValue(1);
   const menuScale = useSharedValue(0.95);
 

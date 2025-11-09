@@ -11,7 +11,7 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { useCallback, useRef } from 'react';
-import { haptics } from '@/lib/haptics';
+import { triggerHaptic } from '@/effects/chat/core/haptic-manager';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 
 export interface UseBubbleGestureOptions {
@@ -56,24 +56,14 @@ export function useBubbleGesture(options: UseBubbleGestureOptions = {}): UseBubb
   const reactionMenuScale = useSharedValue(0.9);
   const reactionMenuTranslateY = useSharedValue(10);
 
-  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const longPressTimerRef = useRef<number | undefined>(undefined);
   const isPressedRef = useRef(false);
-
-  const triggerHaptic = useCallback(() => {
-    if (hapticFeedback) {
-      haptics.selection();
-    }
-  }, [hapticFeedback]);
-
-  const triggerLongPressHaptic = useCallback(() => {
-    if (hapticFeedback) {
-      haptics.impact('medium');
-    }
-  }, [hapticFeedback]);
 
   const handlePressIn = useCallback(() => {
     isPressedRef.current = true;
-    triggerHaptic();
+    if (hapticFeedback) {
+      triggerHaptic('selection');
+    }
 
     scale.value = withSpring(0.96, {
       damping: 20,
@@ -83,20 +73,22 @@ export function useBubbleGesture(options: UseBubbleGestureOptions = {}): UseBubb
     glowOpacity.value = withSpring(0.3, springConfigs.smooth);
 
     if (onLongPress) {
-      longPressTimerRef.current = setTimeout(() => {
+      longPressTimerRef.current = window.setTimeout(() => {
         if (isPressedRef.current) {
-          triggerLongPressHaptic();
+          if (hapticFeedback) {
+            triggerHaptic('medium');
+          }
           glowOpacity.value = withSpring(1, springConfigs.smooth);
           glowScale.value = withSpring(1.15, springConfigs.smooth);
           onLongPress();
+          longPressTimerRef.current = undefined;
         }
       }, longPressDelay);
     }
   }, [
     onLongPress,
     longPressDelay,
-    triggerHaptic,
-    triggerLongPressHaptic,
+    hapticFeedback,
     scale,
     glowOpacity,
     glowScale,
@@ -105,9 +97,9 @@ export function useBubbleGesture(options: UseBubbleGestureOptions = {}): UseBubb
   const handlePressOut = useCallback(() => {
     isPressedRef.current = false;
 
-    if (longPressTimerRef.current) {
+    if (longPressTimerRef.current !== undefined) {
       clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+      longPressTimerRef.current = undefined;
     }
 
     scale.value = withSpring(1, springConfigs.smooth);

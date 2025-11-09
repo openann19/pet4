@@ -50,7 +50,7 @@ export function BottomSheet({
   }))
 
   const panGesture = Gesture.Pan()
-    .onUpdate((event) => {
+    .onUpdate(event => {
       if (event.translationY > 0) {
         translateY.value = event.translationY
       }
@@ -80,10 +80,19 @@ export function BottomSheet({
   return (
     <Modal visible={visible} transparent animationType="none">
       <Animated.View style={Object.assign({}, styles.backdrop, animatedBackdropStyle)}>
-        <TouchableOpacity style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }} activeOpacity={1} onPress={onClose} />
+        <TouchableOpacity
+          style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
+          activeOpacity={1}
+          onPress={onClose}
+        />
         <GestureDetector gesture={panGesture}>
           <Animated.View
-            style={Object.assign({}, styles.sheet, { height, paddingBottom: insets.bottom }, animatedSheetStyle)}
+            style={Object.assign(
+              {},
+              styles.sheet,
+              { height, paddingBottom: insets.bottom },
+              animatedSheetStyle
+            )}
           >
             <View style={styles.handle} />
             {children}

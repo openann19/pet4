@@ -36,43 +36,39 @@ class Logger {
     // In development: DEBUG, In production: INFO
     if (__DEV__) {
       this.level = LogLevel.DEBUG
-      // Add console handler for development
-      this.addConsoleHandler()
+      // Add dev handler for development (structured logging only, no console)
+      this.addDevHandler()
     } else {
       // In production, default to INFO level
       this.level = LogLevel.INFO
-      // Add remote logging handler for production
-      this.addRemoteHandler()
     }
+    // Add remote logging handler for both dev and production
+    this.addRemoteHandler()
   }
 
   /**
-   * Add console handler for development only
+   * Add dev handler for development mode
+   * Uses structured logging without console calls
+   * Logs are sent to remote endpoint for dev tools integration
    */
-  private addConsoleHandler(): void {
-    this.addHandler(entry => {
-      const prefix = entry.context ? `[${entry.context}]` : ''
-      const message = `${prefix} ${entry.message}`
+  private addDevHandler(): void {
+    this.addHandler(async entry => {
+      try {
+        // Send all logs to dev endpoint in development
+        const endpoint = process.env['EXPO_PUBLIC_DEV_LOG_ENDPOINT'] || '/api/logs/dev'
 
-      switch (entry.level) {
-        case LogLevel.DEBUG:
-          // eslint-disable-next-line no-console
-          console.debug(message, entry.data ?? '')
-          break
-        case LogLevel.INFO:
-          // eslint-disable-next-line no-console
-          console.info(message, entry.data ?? '')
-          break
-        case LogLevel.WARN:
-           
-          console.warn(message, entry.data ?? '')
-          break
-        case LogLevel.ERROR:
-           
-          console.error(message, entry.error ?? entry.data ?? '')
-          break
-        default:
-          break
+        await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(entry),
+        }).catch(() => {
+          // Silently fail - logging should not break the app
+          // In dev mode, if endpoint is not available, logs are silently dropped
+        })
+      } catch {
+        // Silently fail - logging should not break the app
       }
     })
   }

@@ -242,12 +242,12 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
       timerRef.current = window.setTimeout(() => {
         timerRef.current = null;
         void processQueue();
-      }, delay) as unknown as number;
+      }, delay);
     } else {
       timerRef.current = window.setTimeout(() => {
         timerRef.current = null;
         void processQueue();
-      }, 300) as unknown as number;
+      }, 300);
     }
   }, [queue, processQueue]);
 

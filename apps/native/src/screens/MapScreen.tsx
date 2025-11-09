@@ -1,5 +1,5 @@
 import * as Location from 'expo-location';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   Platform,
@@ -14,6 +14,7 @@ import { AnimatedButton } from '../components/AnimatedButton';
 import { AnimatedCard } from '../components/AnimatedCard';
 import { FadeInView } from '../components/FadeInView';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
+import { adoptionApi, lostFoundApi } from '../utils/api-client';
 import { createLogger } from '../utils/logger';
 
 const logger = createLogger('MapScreen');
@@ -38,6 +39,62 @@ export default function MapScreen() {
   );
   const [preciseSharingEnabled, setPreciseSharingEnabled] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const loadNearbyMarkers = useCallback(
+    async (lat: number, lon: number) => {
+      try {
+        setError(null);
+        const markers: MapMarker[] = [];
+
+        // Fetch lost pet alerts
+        if (selectedCategory === 'all' || selectedCategory === 'lost') {
+          try {
+            const alerts = await lostFoundApi.getAlertsNearby(lat, lon, 10);
+            alerts.forEach((alert) => {
+              markers.push({
+                id: `lost-${alert.id}`,
+                name: alert.petName,
+                type: 'lost-pet',
+                latitude: alert.latitude,
+                longitude: alert.longitude,
+                distance: alert.distance,
+                photo: alert.photo,
+              });
+            });
+          } catch (err) {
+            logger.warn('Failed to fetch lost pet alerts', { error: err });
+          }
+        }
+
+        // Fetch adoption listings
+        if (selectedCategory === 'all' || selectedCategory === 'pets') {
+          try {
+            const listings = await adoptionApi.getListingsNearby(lat, lon, 10);
+            listings.forEach((listing) => {
+              markers.push({
+                id: `adoption-${listing.id}`,
+                name: listing.petName,
+                type: 'pet',
+                latitude: listing.latitude,
+                longitude: listing.longitude,
+                distance: listing.distance,
+                photo: listing.photo,
+              });
+            });
+          } catch (err) {
+            logger.warn('Failed to fetch adoption listings', { error: err });
+          }
+        }
+
+        setMarkers(markers);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load markers';
+        logger.error('Failed to load markers', err instanceof Error ? err : new Error(String(err)));
+        setError(errorMessage);
+      }
+    },
+    [selectedCategory]
+  );
 
   useEffect(() => {
     (async () => {
@@ -65,64 +122,11 @@ export default function MapScreen() {
         setLoading(false);
       }
     })();
-  }, []);
-
-  const loadNearbyMarkers = async (lat: number, lon: number) => {
-    try {
-      setError(null);
-      const markers: MapMarker[] = [];
-
-      // Fetch lost pet alerts
-      if (selectedCategory === 'all' || selectedCategory === 'lost') {
-        try {
-          const alerts = await lostFoundApi.getAlertsNearby(lat, lon, 10);
-          alerts.forEach((alert) => {
-            markers.push({
-              id: `lost-${alert.id}`,
-              name: alert.petName,
-              type: 'lost-pet',
-              latitude: alert.latitude,
-              longitude: alert.longitude,
-              distance: alert.distance,
-              photo: alert.photo,
-            });
-          });
-        } catch (err) {
-          logger.warn('Failed to fetch lost pet alerts', { error: err });
-        }
-      }
-
-      // Fetch adoption listings
-      if (selectedCategory === 'all' || selectedCategory === 'pets') {
-        try {
-          const listings = await adoptionApi.getListingsNearby(lat, lon, 10);
-          listings.forEach((listing) => {
-            markers.push({
-              id: `adoption-${listing.id}`,
-              name: listing.petName,
-              type: 'pet',
-              latitude: listing.latitude,
-              longitude: listing.longitude,
-              distance: listing.distance,
-              photo: listing.photo,
-            });
-          });
-        } catch (err) {
-          logger.warn('Failed to fetch adoption listings', { error: err });
-        }
-      }
-
-      setMarkers(markers);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load markers';
-      logger.error('Failed to load markers', err instanceof Error ? err : new Error(String(err)));
-      setError(errorMessage);
-    }
-  };
+  }, [loadNearbyMarkers]);
 
   useEffect(() => {
     if (location && !loading) {
-      loadNearbyMarkers(location.coords.latitude, location.coords.longitude);
+      void loadNearbyMarkers(location.coords.latitude, location.coords.longitude);
     }
   }, [selectedCategory, location, loading, loadNearbyMarkers]);
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -17,6 +18,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import type { Story } from '@petspark/shared';
+import type { AVPlaybackStatus, VideoProps, ResizeMode } from '../../types/expo-av';
+import type { HapticsAPI, NotificationFeedbackType, ImpactFeedbackStyle } from '../../types/expo-haptics';
+
+// Dynamic imports for optional dependencies - loaded at runtime
+let Video: React.ComponentType<VideoProps> | null = null;
+let ResizeModeValue: typeof ResizeMode | null = null;
+let HapticsInstance: HapticsAPI | null = null;
 
 const { width, height } = Dimensions.get('window');
 const STORY_DURATION = 5000; // 5 seconds per story
@@ -45,44 +53,150 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isPaused, setIsPaused] = useState(false);
   const [, setProgress] = useState(0);
+  const [videoStatus, setVideoStatus] = useState<{
+    isLoading: boolean;
+    hasError: boolean;
+    errorMessage?: string;
+  }>({
+    isLoading: true,
+    hasError: false,
+  });
 
   const progressAnimation = useSharedValue(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const videoRef = useRef<React.ComponentType<VideoProps> & { pauseAsync?: () => Promise<AVPlaybackStatus>; playAsync?: () => Promise<AVPlaybackStatus>; reloadAsync?: () => Promise<void> } | null>(null);
+  const [isVideoModuleLoaded, setIsVideoModuleLoaded] = useState(false);
 
   const currentStory = stories[currentIndex];
 
-  // Progress animation
+  // Load video module dynamically
+  useEffect(() => {
+    if (currentStory?.type === 'video' && !isVideoModuleLoaded) {
+      void Promise.all([
+        import('expo-av' as string)
+          .then((module: { Video: unknown; ResizeMode: unknown }) => {
+            Video = module.Video as React.ComponentType<VideoProps>;
+            ResizeModeValue = module.ResizeMode as typeof ResizeMode;
+            return true;
+          })
+          .catch(() => {
+            // expo-av not available, video will show error state
+            setVideoStatus({
+              isLoading: false,
+              hasError: true,
+              errorMessage: 'Video player not available. Please install expo-av.',
+            });
+            return false;
+          }),
+        import('expo-haptics' as string)
+          .then((module: { default: unknown } | HapticsAPI) => {
+            if ('default' in module && module.default) {
+              HapticsInstance = module.default as HapticsAPI;
+            } else {
+              HapticsInstance = module as HapticsAPI;
+            }
+            return true;
+          })
+          .catch(() => {
+            // expo-haptics not available, continue without haptics
+            return true;
+          }),
+      ]).then(() => {
+        setIsVideoModuleLoaded(true);
+      });
+    }
+  }, [currentStory?.type, isVideoModuleLoaded]);
+
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => {
+      if (prev < stories.length - 1) {
+        setProgress(0);
+        progressAnimation.value = 0;
+        return prev + 1;
+      } else {
+        setProgress(0);
+        progressAnimation.value = 0;
+        onComplete?.();
+        onClose();
+        return prev;
+      }
+    });
+  }, [stories.length, onComplete, onClose, progressAnimation]);
+
+  // Handle video playback status
+  const handleVideoStatusUpdate = useCallback(
+    (status: AVPlaybackStatus) => {
+      if (!currentStory) return;
+
+      if (!status.isLoaded) {
+        if (status.error) {
+          setVideoStatus({
+            isLoading: false,
+            hasError: true,
+            errorMessage: 'Failed to load video. Please try again.',
+          });
+          if (HapticsInstance?.notificationAsync) {
+            void HapticsInstance.notificationAsync(NotificationFeedbackType.Error);
+          }
+        } else {
+          setVideoStatus({ isLoading: true, hasError: false });
+        }
+        return;
+      }
+
+      setVideoStatus({ isLoading: false, hasError: false });
+
+      // Update progress based on video position
+      if (status.isPlaying && status.durationMillis) {
+        const progress = status.positionMillis / status.durationMillis;
+        progressAnimation.value = progress;
+
+        // Auto-advance when video completes
+        if (status.didJustFinish) {
+          goToNext();
+        }
+      }
+
+      // Handle playback state
+      if (status.isPlaying !== !isPaused) {
+        setIsPaused(!status.isPlaying);
+      }
+    },
+    [currentStory, isPaused, progressAnimation, goToNext]
+  );
+
+  // Progress animation for photos and video loading
   useEffect(() => {
     if (isPaused || !currentStory) return;
+    if (currentStory.type === 'video' && videoStatus.isLoading) return;
 
     progressAnimation.value = 0;
     const duration = currentStory.duration * 1000 || STORY_DURATION;
 
-    progressAnimation.value = withTiming(1, {
-      duration,
-    });
+    if (currentStory.type === 'photo') {
+      progressAnimation.value = withTiming(1, {
+        duration,
+      });
 
-    timerRef.current = setTimeout(() => {
-      goToNext();
-    }, duration);
+      timerRef.current = setTimeout(() => {
+        goToNext();
+      }, duration);
+    }
 
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
     };
-  }, [currentIndex, isPaused, currentStory]);
+  }, [currentIndex, isPaused, currentStory, videoStatus.isLoading, goToNext, progressAnimation]);
 
-  const goToNext = () => {
-    if (currentIndex < stories.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
-      setProgress(0);
+  // Reset video state when story changes
+  useEffect(() => {
+    if (currentStory?.type === 'video') {
+      setVideoStatus({ isLoading: true, hasError: false });
       progressAnimation.value = 0;
-    } else {
-      onComplete?.();
-      onClose();
     }
-  };
+  }, [currentIndex, currentStory?.type, progressAnimation]);
 
   const goToPrevious = () => {
     if (currentIndex > 0) {
@@ -109,9 +223,25 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
     .minDuration(100)
     .onStart(() => {
       runOnJS(setIsPaused)(true);
+      if (currentStory?.type === 'video' && videoRef.current && isVideoModuleLoaded) {
+        videoRef.current.pauseAsync().catch(() => {
+          // Error handling for video pause
+        });
+      }
+      if (HapticsInstance) {
+        void HapticsInstance.impactAsync(ImpactFeedbackStyle.Light);
+      }
     })
     .onEnd(() => {
       runOnJS(setIsPaused)(false);
+      if (currentStory?.type === 'video' && videoRef.current && isVideoModuleLoaded) {
+        videoRef.current.playAsync().catch(() => {
+          // Error handling for video play
+        });
+      }
+      if (HapticsInstance) {
+        void HapticsInstance.impactAsync(ImpactFeedbackStyle.Light);
+      }
     });
 
   // Swipe down to close
@@ -131,7 +261,9 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
     return name.charAt(0).toUpperCase();
   };
 
-  if (!currentStory) return null;
+  if (!currentStory) {
+    return null;
+  }
 
   return (
     <Modal visible={true} animationType="fade" statusBarTranslucent>
@@ -193,9 +325,54 @@ export const StoryViewer: React.FC<StoryViewerProps> = ({
               )}
 
               {currentStory.type === 'video' && (
-                <View style={styles.videoPlaceholder}>
-                  <Text style={styles.videoText}>Video Player</Text>
-                  <Text style={styles.videoSubtext}>Video support coming soon</Text>
+                <View style={styles.videoContainer}>
+                  {!isVideoModuleLoaded || videoStatus.isLoading ? (
+                    <View style={styles.videoLoadingContainer}>
+                      <ActivityIndicator size="large" color="#ffffff" />
+                      <Text style={styles.videoLoadingText}>Loading video...</Text>
+                    </View>
+                  ) : videoStatus.hasError ? (
+                    <View style={styles.videoErrorContainer}>
+                      <Text style={styles.videoErrorText}>
+                        {videoStatus.errorMessage || 'Failed to load video'}
+                      </Text>
+                      <Pressable
+                        style={styles.retryButton}
+                        onPress={() => {
+                          setVideoStatus({ isLoading: true, hasError: false });
+                          if (videoRef.current) {
+                            videoRef.current.reloadAsync().catch(() => {
+                              // Error handling for video reload
+                            });
+                          }
+                          if (HapticsInstance) {
+                            void HapticsInstance.impactAsync(ImpactFeedbackStyle.Light);
+                          }
+                        }}
+                      >
+                        <Text style={styles.retryButtonText}>Retry</Text>
+                      </Pressable>
+                    </View>
+                  ) : Video && ResizeModeValue ? (
+                    <Video
+                      ref={videoRef as never}
+                      source={{ uri: currentStory.mediaUrl }}
+                      style={styles.video}
+                      resizeMode={ResizeModeValue.CONTAIN}
+                      shouldPlay={!isPaused}
+                      isLooping={false}
+                      isMuted={false}
+                      useNativeControls={false}
+                      onPlaybackStatusUpdate={handleVideoStatusUpdate as never}
+                      onLoadStart={() => {
+                        setVideoStatus({ isLoading: true, hasError: false });
+                      }}
+                    />
+                  ) : (
+                    <View style={styles.videoErrorContainer}>
+                      <Text style={styles.videoErrorText}>Video player not available</Text>
+                    </View>
+                  )}
                 </View>
               )}
 
@@ -316,23 +493,52 @@ const styles = StyleSheet.create({
     width: width,
     height: height * 0.8,
   },
-  videoPlaceholder: {
-    width: width * 0.8,
-    height: height * 0.5,
-    backgroundColor: '#1f2937',
-    borderRadius: 12,
+  videoContainer: {
+    width: width,
+    height: height * 0.8,
+    backgroundColor: '#000000',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  videoText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 8,
+  video: {
+    width: width,
+    height: height * 0.8,
   },
-  videoSubtext: {
-    fontSize: 14,
-    color: '#9ca3af',
+  videoLoadingContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  videoLoadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#ffffff',
+    opacity: 0.8,
+  },
+  videoErrorContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    zIndex: 10,
+  },
+  videoErrorText: {
+    fontSize: 16,
+    color: '#ffffff',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  retryButton: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   captionContainer: {
     position: 'absolute',

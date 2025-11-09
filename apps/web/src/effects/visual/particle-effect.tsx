@@ -1,6 +1,7 @@
 import { makeRng } from '@petspark/shared';
 import { motion, MotionView } from '@petspark/motion';
 import { useEffect, useState } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface Particle {
   id: number;
@@ -33,7 +34,8 @@ export function ParticleEffect({
   withGlow = true,
   className = '',
 }: ParticleEffectProps) {
-  const [particles, setParticles] = useState<Particle[]>([]);
+    const uiConfig = useUIConfig();
+    const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
     if (triggerKey === 0) return;

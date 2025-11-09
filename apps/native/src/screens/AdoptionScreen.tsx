@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import type { AdoptionListing } from '../types';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 
 export default function AdoptionScreen(): React.JSX.Element {
   const [listings] = useStorage<AdoptionListing[]>('adoption-listings', []);

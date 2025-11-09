@@ -17,12 +17,16 @@ import { REACTION_EMOJIS } from '@/lib/chat-types';
 import type { ChatMessage } from '@/lib/chat-types';
 import { formatChatTime } from '@/lib/chat-utils';
 import { Badge } from '@/components/ui/badge';
-import { useEffect } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
+import { ensureFocusAppearance } from '@/core/a11y/focus-appearance';
+import { getStableMessageReference } from '@/core/a11y/fixed-references';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface MessageItemProps {
   message: ChatMessage;
   isCurrentUser: boolean;
   currentUserId: string;
+  currentUserName: string;
   delay: number;
   onReaction: (messageId: string, emoji: string) => void;
   onTranslate: (messageId: string) => void;
@@ -32,18 +36,50 @@ export function MessageItem({
   message,
   isCurrentUser,
   currentUserId,
+  currentUserName,
   delay,
   onReaction,
   onTranslate,
 }: MessageItemProps): JSX.Element {
+  const bubbleRef = useRef<HTMLDivElement>(null);
   const hover = useHoverAnimation({ scale: 1.02 });
   const sendWarp = useSendWarp({ enabled: isCurrentUser && message.status === 'sent' });
   const receiveAir = useReceiveAirCushion({
     enabled: !isCurrentUser,
     isNew: delay < 100,
-    isMention: false,
+    isMention:
+      (message.content?.includes(`@${currentUserName}`) ?? false) ||
+      (message.content?.includes(`@${currentUserId}`) ?? false),
   });
   const entry = useEntryAnimation({ initialY: 20, initialScale: 0.95, delay });
+
+  // Create stable message reference for accessibility
+  const stableReference = useMemo(() => {
+    return getStableMessageReference(
+      message.id,
+      message.timestamp || message.createdAt,
+      message.senderName || currentUserName || 'Unknown',
+      message.content,
+      true // use relative timestamp
+    );
+  }, [message.id, message.timestamp, message.createdAt, message.senderName, currentUserName, message.content]);
+
+  // Ensure focus appearance on bubble
+  useEffect(() => {
+    if (bubbleRef.current) {
+      const bubbleElement = bubbleRef.current.querySelector('[class*="rounded-2xl"]') as HTMLElement;
+      if (bubbleElement) {
+        bubbleElement.setAttribute('id', stableReference.stableId);
+        bubbleElement.setAttribute('tabIndex', '0');
+        bubbleElement.setAttribute('role', 'article');
+        bubbleElement.setAttribute('aria-label', stableReference.ariaLabel);
+        if (stableReference.ariaDescription) {
+          bubbleElement.setAttribute('aria-describedby', `${stableReference.stableId}-description`);
+        }
+        ensureFocusAppearance(bubbleElement);
+      }
+    }
+  }, [stableReference]);
 
   useEffect(() => {
     if (isCurrentUser && message.status === 'sent') {
@@ -55,7 +91,7 @@ export function MessageItem({
     const a = entry.animatedStyle;
     const b = isCurrentUser ? sendWarp.animatedStyle : receiveAir.animatedStyle;
     return { ...a, ...b };
-  });
+  }) as AnimatedStyle;
 
   return (
     <AnimatedView
@@ -73,7 +109,7 @@ export function MessageItem({
         />
       )}
 
-      <div className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
+      <div ref={bubbleRef} className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
         <WebBubbleWrapper
           isIncoming={!isCurrentUser}
           index={delay / 50}
@@ -85,12 +121,16 @@ export function MessageItem({
             style={hover.animatedStyle}
             onMouseEnter={hover.handleMouseEnter}
             onMouseLeave={hover.handleMouseLeave}
-            className={`relative group ${message.type === 'sticker' ? 'p-0' : 'p-3'} rounded-2xl shadow-lg ${
-              isCurrentUser
-                ? 'bg-linear-to-br from-primary to-accent text-white'
-                : 'glass-strong backdrop-blur-xl border border-white/20'
-            }`}
+            className={`relative group ${message.type === 'sticker' ? 'p-0' : 'p-3'} rounded-2xl shadow-lg focus-ring ${isCurrentUser
+              ? 'bg-linear-to-br from-primary to-accent text-white'
+              : 'glass-strong backdrop-blur-xl border border-white/20'
+              }`}
           >
+            {stableReference.ariaDescription && (
+              <div id={`${stableReference.stableId}-description`} className="sr-only">
+                {stableReference.ariaDescription}
+              </div>
+            )}
             {message.type === 'text' && (
               <>
                 <p className="text-sm wrap-break-word">{message.content}</p>

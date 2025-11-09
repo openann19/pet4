@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,9 @@ import {
 import { AnimatedButton } from '../components/AnimatedButton';
 import { AnimatedCard } from '../components/AnimatedCard';
 import { FadeInView } from '../components/FadeInView';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
+// PrivacySettings will be imported from mobile package when available
+// For now, we'll create a simple inline implementation
 
 export default function SettingsScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useStorage('notificationsEnabled', true);
@@ -35,6 +37,8 @@ export default function SettingsScreen() {
       },
     ]);
   };
+
+  const [showPrivacySettings, setShowPrivacySettings] = useState(false);
 
   const handleDeleteAccount = () => {
     Alert.alert('Delete Account', 'Are you sure? This action cannot be undone.', [
@@ -127,7 +131,7 @@ export default function SettingsScreen() {
           <SettingRow
             icon="🔐"
             label="Privacy"
-            onPress={() => Alert.alert('Privacy', 'Privacy settings coming soon!')}
+            onPress={() => setShowPrivacySettings(true)}
           />
           <SettingRow
             icon="🛡️"
@@ -229,6 +233,39 @@ export default function SettingsScreen() {
           </FadeInView>
         </View>
       </ScrollView>
+
+      {showPrivacySettings && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Privacy & Data</Text>
+              <TouchableOpacity onPress={() => setShowPrivacySettings(false)}>
+                <Text style={styles.modalClose}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.modalScroll}>
+              <Text style={styles.modalText}>
+                Privacy settings are available in the mobile app. Please use the mobile app to manage your privacy
+                preferences and data rights.
+              </Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  Alert.alert('Data Export', 'Data export feature will be available soon.');
+                }}
+              >
+                <Text style={styles.modalButtonText}>Export Data</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonDanger]}
+                onPress={handleDeleteAccount}
+              >
+                <Text style={styles.modalButtonText}>Delete Account</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -335,5 +372,63 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#DC2626',
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    width: '90%',
+    maxHeight: '80%',
+    padding: 16,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#111827',
+  },
+  modalClose: {
+    fontSize: 24,
+    color: '#6B7280',
+    fontWeight: '300',
+  },
+  modalScroll: {
+    flex: 1,
+  },
+  modalText: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  modalButton: {
+    backgroundColor: '#6366F1',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  modalButtonDanger: {
+    backgroundColor: '#DC2626',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

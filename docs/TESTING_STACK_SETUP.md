@@ -29,11 +29,11 @@ All packages include the following test scripts:
 
 ```json
 {
-  "test": "vitest",                    // Watch mode (development)
-  "test:watch": "vitest",              // Watch mode (explicit)
-  "test:run": "vitest run --passWithNoTests",  // Run once (CI)
+  "test": "vitest", // Watch mode (development)
+  "test:watch": "vitest", // Watch mode (explicit)
+  "test:run": "vitest run --passWithNoTests", // Run once (CI)
   "test:cov": "vitest run --coverage", // Run with coverage
-  "test:ci": "vitest run --coverage --reporter=verbose"  // CI mode
+  "test:ci": "vitest run --coverage --reporter=verbose" // CI mode
 }
 ```
 
@@ -106,13 +106,8 @@ Pre-commit hooks are configured via Husky:
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix --max-warnings=0",
-      "prettier --write"
-    ],
-    "*.{json,md,mdx,css,scss,yaml,yml}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx,js,jsx}": ["eslint --fix --max-warnings=0", "prettier --write"],
+    "*.{json,md,mdx,css,scss,yaml,yml}": ["prettier --write"]
   }
 }
 ```

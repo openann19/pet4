@@ -3,6 +3,7 @@
 import { useTypingIndicator } from './effects/useTypingIndicator';
 import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TypingDotsProps {
   dotSize?: number;
@@ -17,10 +18,11 @@ export function TypingDots({
   className,
   enabled = true,
 }: TypingDotsProps): React.JSX.Element {
-  const { dotStyles, containerStyle } = useTypingIndicator({
-    enabled,
-    dotSize,
-  });
+    const uiConfig = useUIConfig();
+    const { dotStyles, containerStyle } = useTypingIndicator({
+        enabled,
+        dotSize,
+      });
 
   return (
     <AnimatedView

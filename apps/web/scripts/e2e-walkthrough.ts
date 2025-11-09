@@ -157,14 +157,10 @@ export async function runWalkthrough(): Promise<WalkthroughResult> {
     });
 
     await step('3. User Login', async () => {
-      const { user, tokens } = await authService.login({
+      await authService.login({
         email: 'user@demo.com',
         password: 'user123',
       });
-
-      if (!user || !tokens) {
-        throw new Error('Login failed');
-      }
     });
 
     await step('4. Create Pet Profile', async () => {

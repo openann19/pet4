@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import type { ReactNode } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface AnnounceNewMessageProps {
   lastText: string | null;
@@ -13,7 +14,8 @@ export interface AnnounceNewMessageProps {
  * Uses aria-live="assertive" to interrupt current announcements
  */
 export function AnnounceNewMessage({ lastText, senderName }: AnnounceNewMessageProps): JSX.Element {
-  const announcementRef = useRef<HTMLDivElement>(null);
+    const uiConfig = useUIConfig();
+    const announcementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (lastText && announcementRef.current) {

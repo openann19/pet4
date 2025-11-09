@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,11 +14,7 @@ export function LostFoundManagement() {
   const [alerts, setAlerts] = useState<LostAlert[]>([]);
   const [selectedAlert, setSelectedAlert] = useState<LostAlert | null>(null);
 
-  useEffect(() => {
-    loadAlerts();
-  }, []);
-
-  const loadAlerts = async () => {
+  const loadAlerts = useCallback(async () => {
     try {
       // Get all alerts (admin endpoint)
       const result = await lostFoundAPI.queryAlerts({ limit: 1000 });
@@ -32,20 +28,27 @@ export function LostFoundManagement() {
       logger.error('Failed to load alerts', err, { action: 'loadAlerts' });
       toast.error('Failed to load alerts');
     }
-  };
+  }, []);
 
-  const handleArchiveAlert = async (alertId: string) => {
-    try {
-      await lostFoundService.updateAlertStatus(alertId, 'archived');
-      toast.success('Alert archived');
-      await loadAlerts();
-      setSelectedAlert(null);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to archive alert', err, { action: 'archiveAlert', alertId });
-      toast.error('Failed to archive alert');
-    }
-  };
+  useEffect(() => {
+    void loadAlerts();
+  }, [loadAlerts]);
+
+  const handleArchiveAlert = useCallback(
+    async (alertId: string) => {
+      try {
+        await lostFoundService.updateAlertStatus(alertId, 'archived');
+        toast.success('Alert archived');
+        await loadAlerts();
+        setSelectedAlert(null);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to archive alert', err, { action: 'archiveAlert', alertId });
+        toast.error('Failed to archive alert');
+      }
+    },
+    [loadAlerts]
+  );
 
   const getStatusColor = (status: LostAlert['status']) => {
     switch (status) {

@@ -10,7 +10,8 @@
       "@/*": ["./src/*"],
       "@design-system/*": ["./design-system/*"],
       "@petspark/chat-core": ["../../packages/chat-core/src/index.ts"],
-      "@petspark/config": ["../../packages/config/src/index.ts"]
+      "@petspark/config": ["../../packages/config/src/index.ts"],
+      "@petspark/shared": ["../../packages/shared/src/index.ts"]
     }
   },
   "include": [

@@ -105,18 +105,26 @@ describe('PerformanceMonitoring', () => {
     });
 
     const tabs = screen.getAllByRole('tab');
-    if (tabs.length > 1) {
-      await user.click(tabs[1]);
+    const secondTab = tabs[1];
+    if (secondTab) {
+      await user.click(secondTab);
     }
   });
 
   it('handles missing metrics gracefully', () => {
     mockGetPerformanceMetrics.mockReturnValue({
       pageLoadTime: undefined,
+      firstContentfulPaint: undefined,
+      largestContentfulPaint: undefined,
+      firstInputDelay: undefined,
+      cumulativeLayoutShift: undefined,
+      timeToInteractive: undefined,
+      fcp: undefined,
+      lcp: undefined,
+      fid: undefined,
+      cls: undefined,
       apiResponseTime: undefined,
       memoryUsage: undefined,
-      cpuUsage: undefined,
-      networkLatency: undefined,
     });
 
     render(<PerformanceMonitoring />);

@@ -4,7 +4,7 @@
  * Mobile admin screen for moderating community posts and comments.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -35,11 +35,7 @@ export const CommunityManagementScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<'all' | 'active' | 'flagged' | 'hidden'>('all');
 
-  useEffect(() => {
-    loadPosts();
-  }, [filter]);
-
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     setLoading(true);
     try {
       // Note: Community posts API endpoint not yet available in admin-api
@@ -51,18 +47,25 @@ export const CommunityManagementScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
 
-  const handleModerate = async (postId: string, action: 'approve' | 'hide' | 'delete') => {
-    try {
-      // Note: Post moderation API endpoint not yet available in admin-api
-      // When backend provides endpoint, update to: await mobileAdminApi.moderatePost(postId, action);
-      await loadPosts();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to moderate post', err, { context: 'handleModerate', postId, action });
-    }
-  };
+  useEffect(() => {
+    void loadPosts();
+  }, [loadPosts]);
+
+  const handleModerate = useCallback(
+    async (postId: string, action: 'approve' | 'hide' | 'delete') => {
+      try {
+        // Note: Post moderation API endpoint not yet available in admin-api
+        // When backend provides endpoint, update to: await mobileAdminApi.moderatePost(postId, action);
+        await loadPosts();
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to moderate post', err, { context: 'handleModerate', postId, action });
+      }
+    },
+    [loadPosts]
+  );
 
   const filteredPosts = posts.filter((p) => {
     if (filter === 'all') return true;

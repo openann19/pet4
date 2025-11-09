@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, type MockedFunction } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AdoptionManagement from '../AdoptionManagement';
@@ -11,7 +11,7 @@ vi.mock('@/api/adoption-api', () => ({
   },
 }));
 
-vi.mock('@/hooks/useStorage');
+vi.mock('@/hooks/use-storage');
 vi.mock('@/components/adoption/AdoptionCard', () => ({
   AdoptionCard: ({ profile }: { profile: { petName: string } }) => (
     <div data-testid={`adoption-card-${profile.petName}`}>{profile.petName}</div>
@@ -88,16 +88,18 @@ describe('AdoptionManagement', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      const deleteValue = vi.fn().mockResolvedValue(undefined);
       if (key === 'adoption-profiles') {
-        return [mockProfiles];
+        return [mockProfiles, setValue, deleteValue];
       }
       if (key === 'flagged-adoption-profiles') {
-        return [['1']];
+        return [['1'], setValue, deleteValue];
       }
       if (key === 'hidden-adoption-profiles') {
-        return [[], vi.fn()];
+        return [[], setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      return [defaultValue, setValue, deleteValue];
     });
     vi.mocked(mockAdoptionApi.deleteProfile).mockResolvedValue(undefined);
   });
@@ -165,17 +167,21 @@ describe('AdoptionManagement', () => {
   it('should handle hide profile', async () => {
     const user = userEvent.setup();
     const setHiddenProfiles = vi.fn();
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string) => {
       if (key === 'hidden-adoption-profiles') {
-        return [[], setHiddenProfiles];
+        return [[], setHiddenProfiles, deleteValue];
       }
       if (key === 'adoption-profiles') {
-        return [mockProfiles];
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        return [mockProfiles, setValue, deleteValue];
       }
       if (key === 'flagged-adoption-profiles') {
-        return [['1']];
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        return [['1'], setValue, deleteValue];
       }
-      return [[], vi.fn()];
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      return [[], setValue, deleteValue];
     });
 
     render(<AdoptionManagement />);
@@ -194,17 +200,21 @@ describe('AdoptionManagement', () => {
   it('should handle unhide profile', async () => {
     const user = userEvent.setup();
     const setHiddenProfiles = vi.fn();
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string) => {
       if (key === 'hidden-adoption-profiles') {
-        return [['1'], setHiddenProfiles];
+        return [['1'], setHiddenProfiles, deleteValue];
       }
       if (key === 'adoption-profiles') {
-        return [mockProfiles];
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        return [mockProfiles, setValue, deleteValue];
       }
       if (key === 'flagged-adoption-profiles') {
-        return [['1']];
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        return [['1'], setValue, deleteValue];
       }
-      return [[], vi.fn()];
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      return [[], setValue, deleteValue];
     });
 
     render(<AdoptionManagement />);

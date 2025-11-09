@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface AchievementBadgeProps {
   size?: number;
@@ -13,7 +14,8 @@ export function AchievementBadge({
   color = 'var(--primary)',
   className = '',
 }: AchievementBadgeProps) {
-  const scale = useSharedValue(0);
+    const uiConfig = useUIConfig();
+    const scale = useSharedValue(0);
 
   useEffect(() => {
     scale.value = withSpring(1, { stiffness: 300, damping: 20 });

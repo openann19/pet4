@@ -86,7 +86,7 @@ export default function AgeGateModal({ open, onVerified, onClose }: AgeGateModal
   if (!open) return null;
 
   return (
-    <Presence>
+    <Presence visible={open}>
       <MotionView
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

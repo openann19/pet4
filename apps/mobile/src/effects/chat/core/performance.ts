@@ -16,7 +16,7 @@ const logger = createLogger('performance')
 /**
  * Device refresh rate (Hz)
  */
-export type DeviceHz = 60 | 120
+export type DeviceHz = 60 | 120 | 240
 
 /**
  * Frame budget in milliseconds based on refresh rate
@@ -25,6 +25,7 @@ export function getFrameBudget(deviceHz: DeviceHz): number {
   // Frame budget = 1000ms / refresh rate
   // 60Hz: 16.67ms per frame
   // 120Hz: 8.33ms per frame
+  // 240Hz: 4.17ms per frame
   return 1000 / deviceHz
 }
 
@@ -40,16 +41,21 @@ export async function detectDeviceHzAsync(): Promise<DeviceHz> {
     const deviceInfoModule = await import('react-native-device-info').catch(() => null)
     const DeviceInfo = deviceInfoModule?.default ?? deviceInfoModule
 
-    if (DeviceInfo && typeof DeviceInfo.getDeviceId === 'function') {
+      if (DeviceInfo && typeof DeviceInfo.getDeviceId === 'function') {
       // iOS ProMotion devices (iPhone 13 Pro and later) support 120Hz
+      // iPad Pro models may support up to 120Hz
+      // Future devices may support 240Hz
       const deviceId = DeviceInfo.getDeviceId()
       const isProMotion =
         deviceId &&
         (deviceId.includes('iPhone14') || // iPhone 13 Pro series
           deviceId.includes('iPhone15') || // iPhone 14 Pro series
           deviceId.includes('iPhone16') || // iPhone 15 Pro series
+          deviceId.includes('iPhone17') || // iPhone 16 Pro series (future)
           deviceId.includes('iPad')) // iPad Pro models
       if (isProMotion) {
+        // Most ProMotion devices support 120Hz, some newer may support 240Hz
+        // Default to 120Hz, can be enhanced with actual device detection
         return 120
       }
     }

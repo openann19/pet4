@@ -11,11 +11,7 @@ export const useHighlights = (userId: string) => {
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadHighlights();
-  }, [userId]);
-
-  const loadHighlights = async () => {
+  const loadHighlights = useCallback(async () => {
     try {
       const key = `${STORAGE_KEY}_${userId}`;
       const saved = await AsyncStorage.getItem(key);
@@ -29,19 +25,26 @@ export const useHighlights = (userId: string) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userId]);
 
-  const saveHighlights = async (newHighlights: Highlight[]) => {
-    try {
-      const key = `${STORAGE_KEY}_${userId}`;
-      await AsyncStorage.setItem(key, JSON.stringify(newHighlights));
-      setHighlights(newHighlights);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to save highlights', err, { context: 'saveHighlights', userId });
-      throw error;
-    }
-  };
+  useEffect(() => {
+    void loadHighlights();
+  }, [loadHighlights]);
+
+  const saveHighlights = useCallback(
+    async (newHighlights: Highlight[]) => {
+      try {
+        const key = `${STORAGE_KEY}_${userId}`;
+        await AsyncStorage.setItem(key, JSON.stringify(newHighlights));
+        setHighlights(newHighlights);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to save highlights', err, { context: 'saveHighlights', userId });
+        throw error;
+      }
+    },
+    [userId]
+  );
 
   const createHighlight = useCallback(
     async (title: string, storyIds: string[], coverImage: string) => {
@@ -69,7 +72,7 @@ export const useHighlights = (userId: string) => {
         return { success: false, error: 'Failed to create highlight' };
       }
     },
-    [highlights, userId]
+    [highlights, saveHighlights, userId]
   );
 
   const updateHighlight = useCallback(
@@ -90,7 +93,7 @@ export const useHighlights = (userId: string) => {
         return { success: false, error: 'Failed to update highlight' };
       }
     },
-    [highlights]
+    [highlights, saveHighlights]
   );
 
   const deleteHighlight = useCallback(
@@ -109,7 +112,7 @@ export const useHighlights = (userId: string) => {
         return { success: false, error: 'Failed to delete highlight' };
       }
     },
-    [highlights]
+    [highlights, saveHighlights]
   );
 
   const addStoriesToHighlight = useCallback(
@@ -139,7 +142,7 @@ export const useHighlights = (userId: string) => {
         return { success: false, error: 'Failed to add stories' };
       }
     },
-    [highlights]
+    [highlights, saveHighlights]
   );
 
   const removeStoryFromHighlight = useCallback(
@@ -168,7 +171,7 @@ export const useHighlights = (userId: string) => {
         return { success: false, error: 'Failed to remove story' };
       }
     },
-    [highlights]
+    [highlights, saveHighlights]
   );
 
   return {

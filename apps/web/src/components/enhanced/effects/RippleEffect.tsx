@@ -5,6 +5,7 @@ import { useRippleEffect } from '@/effects/reanimated/use-ripple-effect';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
 import type { ReactNode, HTMLAttributes } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface RippleEffectProps extends HTMLAttributes<HTMLDivElement> {
   color?: string;
@@ -24,7 +25,8 @@ export function RippleEffect({
   onClick,
   ...props
 }: RippleEffectProps) {
-  const ripple = useRippleEffect({ color, opacity, duration });
+    const uiConfig = useUIConfig();
+    const ripple = useRippleEffect({ color, opacity, duration });
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {

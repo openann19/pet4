@@ -11,6 +11,7 @@ import type { ChatRoom } from '@/lib/chat-types';
 import { createLogger } from '@/lib/logger';
 import { toast } from 'sonner';
 import type { ReactNode } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 const logger = createLogger('ChatHeader');
 
@@ -29,6 +30,7 @@ export function ChatHeader({
   awayMode,
   setAwayMode,
 }: ChatHeaderProps): JSX.Element {
+  const uiConfig = useUIConfig();
   const headerAnim = useEntryAnimation({ initialY: -20, delay: 0 });
 
   return (
@@ -38,7 +40,13 @@ export function ChatHeader({
     >
       <div className="flex items-center gap-3">
         {onBack && (
-          <Button variant="ghost" size="icon" onClick={onBack} className="md:hidden">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="md:hidden"
+            aria-label="Back to chat list"
+          >
             <ArrowLeft size={20} />
           </Button>
         )}
@@ -57,7 +65,12 @@ export function ChatHeader({
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              aria-label="Chat options menu"
+            >
               <DotsThree size={24} weight="bold" />
             </Button>
           </PopoverTrigger>

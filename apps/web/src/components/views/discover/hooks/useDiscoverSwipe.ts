@@ -37,9 +37,9 @@ export interface UseDiscoverSwipeReturn {
 }
 
 export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverSwipeReturn {
-  const { currentPet, currentIndex, onSwipeComplete, onMatch } = options;
+  const { currentPet, currentIndex: _currentIndex, onSwipeComplete, onMatch } = options;
 
-  const [swipeHistory, setSwipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
+  const [, setSwipeHistory] = useStorage<SwipeAction[]>('swipe-history', []);
   const [, setMatches] = useStorage<Match[]>('matches', []);
 
   const { performSwipe, checkMatch } = useMatching();
@@ -68,7 +68,10 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
           timestamp: new Date().toISOString(),
         };
 
-        setSwipeHistory((prev) => [...(prev || []), newSwipe]);
+        void setSwipeHistory((prev) => [...(prev || []), newSwipe]).catch((error) => {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('Failed to save swipe history', err, { petId: currentPet.id, action });
+        });
 
         // Check for match
         if (action === 'like' && swipeResult.compatibility >= 80) {
@@ -82,7 +85,10 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
               compatibility: matchResult.compatibility || swipeResult.compatibility,
             };
 
-            setMatches((prev) => [...(prev || []), match]);
+            void setMatches((prev) => [...(prev || []), match]).catch((error) => {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('Failed to save match', err, { petId: currentPet.id });
+            });
             onMatch(match);
             toast.success("It's a Match!");
           }
@@ -112,7 +118,10 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
     reset,
   } = useSwipe({
     onSwipe: (dir) => {
-      handleSwipe(dir === 'right' ? 'like' : 'pass');
+      void handleSwipe(dir === 'right' ? 'like' : 'pass').catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Swipe handler failed', err, { direction: dir });
+      });
     },
   });
 

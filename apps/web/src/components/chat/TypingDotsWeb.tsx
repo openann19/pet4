@@ -12,6 +12,7 @@ import {
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TypingDotsWebProps {
   dotSize?: number;
@@ -33,19 +34,20 @@ export function TypingDotsWeb({
   animationDuration = DEFAULT_ANIMATION_DURATION,
   className,
 }: TypingDotsWebProps): React.JSX.Element {
-  return (
-    <div className={cn('flex items-center', className)} style={{ gap }}>
-      {[0, 1, 2].map((index) => (
-        <TypingDot
-          key={index}
-          dotSize={dotSize}
-          dotColor={dotColor}
-          animationDuration={animationDuration}
-          delay={index * 200}
-        />
-      ))}
-    </div>
-  );
+    const uiConfig = useUIConfig();
+    return (
+        <div className={cn('flex items-center', className)} style={{ gap }}>
+          {[0, 1, 2].map((index) => (
+            <TypingDot
+              key={index}
+              dotSize={dotSize}
+              dotColor={dotColor}
+              animationDuration={animationDuration}
+              delay={index * 200}
+            />
+          ))}
+        </div>
+      );
 }
 
 function TypingDot({

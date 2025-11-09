@@ -46,7 +46,7 @@ export interface SubmitApplicationRequest {
   reason: string;
 }
 
-export type CreateAdoptionProfileRequest = Omit<AdoptionProfile, '_id' | 'postedDate'>
+export type CreateAdoptionProfileRequest = Omit<AdoptionProfile, '_id' | 'postedDate'>;
 
 export interface UpdateApplicationStatusRequest {
   status: 'pending' | 'approved' | 'rejected' | 'withdrawn';

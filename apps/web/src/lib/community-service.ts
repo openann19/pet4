@@ -331,9 +331,7 @@ export const communityService = {
     }
   },
 
-  createNotification(
-    data: Partial<CommunityNotification> & { receiverId: string }
-  ): Promise<void> {
+  createNotification(data: Partial<CommunityNotification> & { receiverId: string }): Promise<void> {
     // Notifications are now handled automatically by the backend API
     // This function is kept for compatibility but does nothing
     logger.debug('Notification creation handled by backend API', { notification: data });

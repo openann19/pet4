@@ -208,18 +208,33 @@ export function PremiumInput({
           editable={editable}
           style={[styles.input, sizes[size], label && styles.inputWithLabel]}
           placeholderTextColor="#9ca3af"
+          accessibilityLabel={label || props.accessibilityLabel || props.placeholder || 'Text input'}
+          accessibilityHint={helperText || error || props.accessibilityHint}
+          accessibilityState={{ disabled: !editable }}
           {...props}
         />
 
         <View style={styles.rightActions}>
           {showClearButton && hasValue && editable && (
-            <TouchableOpacity onPress={handleClear} style={styles.actionButton}>
+            <TouchableOpacity
+              onPress={handleClear}
+              style={styles.actionButton}
+              accessibilityRole="button"
+              accessibilityLabel="Clear input"
+              accessibilityHint="Clears the input field"
+            >
               <X size={16} color="#6b7280" />
             </TouchableOpacity>
           )}
 
           {showPasswordToggle && type === 'password' && (
-            <TouchableOpacity onPress={togglePassword} style={styles.actionButton}>
+            <TouchableOpacity
+              onPress={togglePassword}
+              style={styles.actionButton}
+              accessibilityRole="button"
+              accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+              accessibilityHint="Toggles password visibility"
+            >
               {showPassword ? (
                 <EyeSlash size={16} color="#6b7280" />
               ) : (

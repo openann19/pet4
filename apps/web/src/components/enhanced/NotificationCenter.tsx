@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface Notification {
   id: string;
@@ -24,6 +25,7 @@ export interface Notification {
 }
 
 export function NotificationCenter() {
+  const uiConfig = useUIConfig();
   const [notifications, setNotifications] = useStorage<Notification[]>('notifications', []);
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
@@ -63,12 +65,18 @@ export function NotificationCenter() {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative rounded-full">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative rounded-full"
+          aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
+        >
           <Bell size={20} weight={unreadCount > 0 ? 'fill' : 'regular'} />
           {unreadCount > 0 && (
             <Badge
               className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
               variant="destructive"
+              aria-hidden="true"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </Badge>
@@ -226,6 +234,7 @@ function NotificationItem({
             size="icon"
             className="h-6 w-6"
             onClick={() => onMarkAsRead(notification.id)}
+            aria-label="Mark as read"
           >
             <Check size={14} />
           </Button>
@@ -235,6 +244,7 @@ function NotificationItem({
           size="icon"
           className="h-6 w-6"
           onClick={() => onDelete(notification.id)}
+          aria-label="Delete notification"
         >
           <X size={14} />
         </Button>

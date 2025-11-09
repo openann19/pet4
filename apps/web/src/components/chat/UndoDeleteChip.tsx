@@ -5,8 +5,6 @@ import {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  FadeIn,
-  FadeOut,
 } from 'react-native-reanimated';
 import { useCallback, useEffect, useState } from 'react';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
@@ -14,6 +12,7 @@ import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { ArrowUUpLeft } from '@phosphor-icons/react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface UndoDeleteChipProps {
   onUndo: () => void;
@@ -22,7 +21,8 @@ export interface UndoDeleteChipProps {
 }
 
 export function UndoDeleteChip({ onUndo, duration = 5000, className }: UndoDeleteChipProps) {
-  const [isVisible, setIsVisible] = useState(true);
+    const uiConfig = useUIConfig();
+    const [isVisible, setIsVisible] = useState(true);
   const translateX = useSharedValue(-100);
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.8);
@@ -66,8 +66,6 @@ export function UndoDeleteChip({ onUndo, duration = 5000, className }: UndoDelet
 
   return (
     <AnimatedView
-      entering={FadeIn.duration(200)}
-      exiting={FadeOut.duration(150)}
       style={animatedStyle}
       className={cn(
         'fixed bottom-20 left-1/2 -translate-x-1/2 z-50',

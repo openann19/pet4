@@ -11,6 +11,7 @@ import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import type { MessageTemplate } from '@/lib/chat-types';
 import { MESSAGE_TEMPLATES } from '@/lib/chat-types';
 import { TemplateButton } from './TemplateButton';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TemplatePanelProps {
   onClose: () => void;
@@ -18,7 +19,8 @@ export interface TemplatePanelProps {
 }
 
 export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.Element {
-  const animation = useEntryAnimation({ initialY: 20, delay: 0 });
+    const uiConfig = useUIConfig();
+    const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
   return (
     <AnimatedView
@@ -27,7 +29,13 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
     >
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-foreground">Message Templates</h3>
-        <Button variant="ghost" size="icon" onClick={onClose} className="h-6 w-6">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          className="h-6 w-6"
+          aria-label="Close message templates"
+        >
           <X size={16} />
         </Button>
       </div>

@@ -5,7 +5,7 @@ import SettingsView from '../SettingsView';
 import { useStorage } from '@/hooks/use-storage';
 import { triggerHaptic } from '@/lib/haptics';
 
-vi.mock('@/hooks/useStorage');
+vi.mock('@/hooks/use-storage');
 vi.mock('@/lib/haptics', () => ({
   triggerHaptic: vi.fn(),
 }));
@@ -82,8 +82,9 @@ describe('SettingsView', () => {
     render(<SettingsView />);
 
     const switches = screen.getAllByRole('switch');
-    if (switches.length > 0) {
-      await user.click(switches[0]);
+    const firstSwitch = switches[0];
+    if (firstSwitch) {
+      await user.click(firstSwitch);
     }
 
     expect(mockSetFeatureFlags).toHaveBeenCalled();
@@ -95,8 +96,9 @@ describe('SettingsView', () => {
     render(<SettingsView />);
 
     const sliders = screen.getAllByRole('slider');
-    if (sliders.length > 0) {
-      await user.click(sliders[0]);
+    const firstSlider = sliders[0];
+    if (firstSlider) {
+      await user.click(firstSlider);
     }
   });
 
@@ -105,8 +107,9 @@ describe('SettingsView', () => {
     render(<SettingsView />);
 
     const switches = screen.getAllByRole('switch');
-    if (switches.length > 0) {
-      await user.click(switches[switches.length - 1]);
+    const lastSwitch = switches[switches.length - 1];
+    if (lastSwitch) {
+      await user.click(lastSwitch);
     }
 
     expect(mockSetSystemSettings).toHaveBeenCalled();
@@ -153,8 +156,9 @@ describe('SettingsView', () => {
     render(<SettingsView />);
 
     const switches = screen.getAllByRole('switch');
-    if (switches.length > 0) {
-      await user.click(switches[0]);
+    const firstSwitch = switches[0];
+    if (firstSwitch) {
+      await user.click(firstSwitch);
     }
   });
 

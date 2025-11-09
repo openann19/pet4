@@ -1,10 +1,12 @@
 /**
- * Effects Core Index
+ * Effects Core Index (Mobile)
  *
- * Central exports for effects core utilities
- * This ensures proper imports and enforces ultra effects stack compliance
+ * Central export point for core effects utilities:
+ * - Adaptive animation configs
+ * - Effect telemetry
+ *
+ * Location: apps/mobile/src/effects/core/index.ts
  */
 
-export * from '../chat/core/haptic-manager'
-export * from '../chat/core/reduced-motion'
-export * from '../chat/core/telemetry'
+export * from './adaptive-animation-config';
+export * from './use-effect-telemetry';

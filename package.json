@@ -22,6 +22,7 @@
     "mobile-android": "pnpm --filter petspark-mobile android",
     "mobile-ios": "pnpm --filter petspark-mobile ios",
     "check:parity": "tsx scripts/check-mobile-parity.ts",
+    "validate:effects": "tsx scripts/validate-effects-compliance.ts",
     "typecheck:motion": "pnpm --filter ./packages/motion typecheck && pnpm --filter ./apps/web typecheck && pnpm --filter ./apps/mobile typecheck",
     "lint:motion": "eslint packages/motion apps/web/src/effects apps/mobile/src/effects apps/web/src/components apps/mobile/src/components --ext .ts,.tsx",
     "test:motion": "pnpm --filter ./packages/motion test:run",

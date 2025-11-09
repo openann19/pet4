@@ -6,6 +6,7 @@
 import { type ReactNode } from 'react';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { usePageTransition, useParallaxScroll, useBreathingAnimation } from '@/effects/reanimated';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface UltraEnhancedViewProps {
   children: ReactNode;
@@ -22,11 +23,12 @@ export function UltraEnhancedView({
   enableTransition = true,
   className = '',
 }: UltraEnhancedViewProps) {
-  const pageTransition = usePageTransition({
-    isVisible: true,
-    direction: 'up',
-    duration: 400,
-  });
+    const uiConfig = useUIConfig();
+    const pageTransition = usePageTransition({
+        isVisible: true,
+        direction: 'up',
+        duration: 400,
+      });
 
   const parallax = useParallaxScroll({
     speed: 0.3,

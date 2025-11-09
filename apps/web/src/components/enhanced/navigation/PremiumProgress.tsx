@@ -7,6 +7,7 @@ import { springConfigs } from '@/effects/reanimated/transitions';
 import { cn } from '@/lib/utils';
 import * as ProgressPrimitive from '@radix-ui/react-progress';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumProgressProps {
   value?: number;
@@ -31,7 +32,8 @@ export function PremiumProgress({
   className,
   'aria-label': ariaLabel,
 }: PremiumProgressProps): React.JSX.Element {
-  const progressWidth = useSharedValue(0);
+    const uiConfig = useUIConfig();
+    const progressWidth = useSharedValue(0);
   const shimmerX = useSharedValue(-100);
 
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);

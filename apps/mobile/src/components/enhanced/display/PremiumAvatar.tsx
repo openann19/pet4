@@ -1,5 +1,13 @@
 import React, { useCallback } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, type ViewStyle } from 'react-native'
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  type ViewStyle,
+  type ViewProps,
+  type TouchableOpacityProps,
+} from 'react-native'
 import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import type { ReactNode } from 'react'
@@ -104,7 +112,9 @@ export function PremiumAvatar({
     xl: { width: 28, height: 28, fontSize: 16 },
   }
 
-  const Component: React.ComponentType<any> = onPress ? TouchableOpacity : View
+  const Component: React.ComponentType<ViewProps | TouchableOpacityProps> = onPress
+    ? TouchableOpacity
+    : View
 
   return (
     <View style={[styles.container, style]} testID={testID}>

@@ -1,14 +1,13 @@
 /**
- * useStorage Hook for Mobile
+ * useStorage Hook
  *
  * React hook replacement for useKV from @github/spark/hooks
- * Provides reactive storage state management using AsyncStorage.
- * Matches the web API signature: [value, setValue, deleteValue]
+ * Provides reactive storage state management using the storage service.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { createLogger } from '../utils/logger'
+import { storage } from '@/lib/storage'
+import { createLogger } from '@/lib/logger'
 
 const logger = createLogger('useStorage')
 
@@ -22,7 +21,7 @@ const logger = createLogger('useStorage')
 export function useStorage<T>(
   key: string,
   defaultValue: T
-): [T, (value: T | ((prev: T) => T)) => Promise<void>, () => Promise<void>] {
+): [T, (value: T | ((prev: T) => T)) => void, () => void] {
   const [value, setValueState] = useState<T>(defaultValue)
   const [isLoading, setIsLoading] = useState(true)
   const defaultValueRef = useRef(defaultValue)
@@ -49,26 +48,18 @@ export function useStorage<T>(
 
     const loadValue = async () => {
       try {
-        const stored = await AsyncStorage.getItem(key)
+        const stored = await storage.get<T>(key)
 
         if (!cancelled) {
-          if (stored !== null) {
-            try {
-              const parsed = JSON.parse(stored) as T
-              setValueState(parsed)
-            } catch {
-              // If parsing fails, use default value
-              setValueState(defaultValueRef.current)
-            }
-          } else {
-            setValueState(defaultValueRef.current)
-          }
+          setValueState(stored !== null && stored !== undefined ? stored : defaultValueRef.current)
           setIsLoading(false)
           isInitializedRef.current = true
         }
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error))
-        logger.error(`Failed to load value for key ${key}`, err)
+        logger.error(
+          `Failed to load value for key ${key}`,
+          error instanceof Error ? error : new Error(String(error))
+        )
         if (!cancelled) {
           setValueState(defaultValueRef.current)
           setIsLoading(false)
@@ -90,59 +81,52 @@ export function useStorage<T>(
   const setValue = useCallback(
     async (newValue: T | ((prev: T) => T)) => {
       try {
-        // Use functional update to get current state, avoiding stale closures
-        let computedValue: T
-        setValueState(currentState => {
-          // Compute new value using current state
-          computedValue =
-            typeof newValue === 'function' ? (newValue as (prev: T) => T)(currentState) : newValue
+        // Compute new value synchronously first
+        const computedValue =
+          typeof newValue === 'function' ? (newValue as (prev: T) => T)(value) : newValue
 
-          return computedValue
-        })
+        // Update state immediately
+        setValueState(computedValue)
 
         // Await persistence to ensure write succeeds
-        await AsyncStorage.setItem(key, JSON.stringify(computedValue!))
-
-        // Update state after successful persistence
-        setValueState(computedValue!)
+        // For critical keys like is-authenticated, this ensures state consistency
+        await storage.set(key, computedValue)
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error))
-        logger.error(`Failed to set value for key ${key}`, err)
+        logger.error(
+          `Failed to set value for key ${key}`,
+          error instanceof Error ? error : new Error(String(error))
+        )
 
         // Revert on error by loading current value from storage
         try {
-          const current = await AsyncStorage.getItem(key)
-          if (current !== null) {
-            try {
-              const parsed = JSON.parse(current) as T
-              setValueState(parsed)
-            } catch {
-              setValueState(defaultValueRef.current)
-            }
-          } else {
-            setValueState(defaultValueRef.current)
-          }
+          const current = await storage.get<T>(key)
+          setValueState(
+            current !== null && current !== undefined ? current : defaultValueRef.current
+          )
         } catch (revertError) {
-          const revertErr =
+          logger.error(
+            `Failed to revert value for key ${key}`,
             revertError instanceof Error ? revertError : new Error(String(revertError))
-          logger.error(`Failed to revert value for key ${key}`, revertErr)
+          )
         }
 
         // Re-throw error so caller can handle it
         throw error
       }
     },
-    [key]
+    [key, value]
   )
 
   // Delete value function
   const deleteValue = useCallback(async () => {
     try {
       setValueState(defaultValueRef.current)
-      await AsyncStorage.removeItem(key)
+      await storage.delete(key)
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error(`Failed to delete value for key ${key}`, err)
+      logger.error(
+        `Failed to delete value for key ${key}`,
+        error instanceof Error ? error : new Error(String(error))
+      )
     }
   }, [key])
 
@@ -151,3 +135,26 @@ export function useStorage<T>(
 
   return [currentValue, setValue, deleteValue]
 }
+
+export function useStorageOnce<T>(key: string, defaultValue: T): T {
+  const [value, setValue] = useState<T>(defaultValue)
+  const hasLoadedRef = useRef(false)
+
+  useEffect(() => {
+    if (!hasLoadedRef.current) {
+      hasLoadedRef.current = true
+      const stored = storage.get<T>(key)
+      if (stored !== null) {
+        setValue(stored)
+      }
+    }
+  }, [key])
+
+  return value
+}
+
+/**
+ * Alias for useStorage for backwards compatibility
+ * @deprecated Use useStorage instead
+ */
+export const useKV = useStorage

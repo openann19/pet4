@@ -79,7 +79,8 @@ class TelemetryService {
   private startFlushInterval(): void {
     // Flush events every 30 seconds
     this.flushInterval = setInterval(() => {
-      this.flush();
+      // Fire-and-forget: flush asynchronously without blocking
+      void this.flush();
     }, 30000);
   }
 
@@ -111,7 +112,8 @@ class TelemetryService {
 
     // Flush immediately for critical events
     if (this.isCriticalEvent(eventName)) {
-      this.flush();
+      // Fire-and-forget: flush asynchronously without blocking
+      void this.flush();
     }
   }
 
@@ -194,7 +196,9 @@ class TelemetryService {
     if (this.flushInterval) {
       clearInterval(this.flushInterval);
     }
-    this.flush();
+    // Fire-and-forget: attempt to flush remaining events before destroy
+    // Note: This may not complete if page is unloading, but we try anyway
+    void this.flush();
   }
 }
 
@@ -207,6 +211,7 @@ if (typeof window !== 'undefined') {
     const url = window.location.href;
     if (url !== lastUrl) {
       lastUrl = url;
+      // trackPageView is synchronous, no promise to handle
       telemetry.trackPageView();
     }
   }).observe(document, { subtree: true, childList: true });

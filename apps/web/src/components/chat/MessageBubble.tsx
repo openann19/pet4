@@ -19,6 +19,7 @@ import { useMessageBubbleAnimation } from '@/hooks/use-message-bubble-animation'
 import { useMessageDeliveryTransition } from '@/hooks/use-message-delivery-transition';
 import { useNewMessageDrop } from '@/hooks/use-new-message-drop';
 import { useParticleExplosionDelete } from '@/hooks/use-particle-explosion-delete';
+import { ParticleView } from './ParticleView';
 import { useSmartHighlight } from '@/hooks/use-smart-highlight';
 import { useUndoSendAnimation } from '@/hooks/use-undo-send-animation';
 import { useVoiceWaveform } from '@/hooks/use-voice-waveform';
@@ -44,7 +45,7 @@ import {
   Waveform,
   X,
 } from '@phosphor-icons/react';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState, useMemo } from 'react';
 import { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { AnimatedAIWrapper, BubbleWrapperGodTier } from './bubble-wrapper-god-tier';
 import { useHapticFeedback } from './bubble-wrapper-god-tier/effects/useHapticFeedback';
@@ -54,6 +55,9 @@ import { DeletedGhostBubble } from './DeletedGhostBubble';
 import { UndoDeleteChip } from './UndoDeleteChip';
 import { MessagePeek } from './MessagePeek';
 import { SmartImage } from '@/components/media/SmartImage';
+import { useUIConfig } from "@/hooks/use-ui-config";
+import { ensureFocusAppearance } from '@/core/a11y/focus-appearance';
+import { getStableMessageReference } from '@/core/a11y/fixed-references';
 
 interface MessageBubbleProps {
   message: Message;
@@ -110,6 +114,7 @@ function MessageBubble({
   onUndo,
   showTimestamp = false,
 }: MessageBubbleProps) {
+  const uiConfig = useUIConfig();
   const { t } = useApp();
   const [showReactions, setShowReactions] = useState(false);
   const [showContextMenu, setShowContextMenu] = useState(false);
@@ -122,7 +127,36 @@ function MessageBubble({
   const [showPeek, setShowPeek] = useState(false);
   const [peekPosition, setPeekPosition] = useState<{ x: number; y: number } | undefined>();
   const bubbleRef = useRef<HTMLDivElement>(null);
+  const bubbleContentRef = useRef<HTMLDivElement>(null);
   const previousStatusRef = useRef<Message['status'] | undefined>(previousStatus);
+
+  // Create stable message reference for accessibility
+  const stableReference = useMemo(() => {
+    return getStableMessageReference(
+      message.id,
+      message.createdAt,
+      message.senderName || 'Unknown',
+      message.content,
+      true // use relative timestamp
+    );
+  }, [message.id, message.createdAt, message.senderName, message.content]);
+
+  // Ensure focus appearance on bubble container
+  useEffect(() => {
+    if (bubbleRef.current) {
+      const bubbleElement = bubbleRef.current.querySelector('[class*="rounded-2xl"]') as HTMLElement;
+      if (bubbleElement) {
+        bubbleElement.setAttribute('id', stableReference.stableId);
+        bubbleElement.setAttribute('tabIndex', '0');
+        bubbleElement.setAttribute('role', 'article');
+        bubbleElement.setAttribute('aria-label', stableReference.ariaLabel);
+        if (stableReference.ariaDescription) {
+          bubbleElement.setAttribute('aria-describedby', `${stableReference.stableId}-description`);
+        }
+        ensureFocusAppearance(bubbleElement);
+      }
+    }
+  }, [stableReference]);
 
   const particleBurst = useParticleBurstOnEvent({ enabled: true });
   const hapticFeedback = useHapticFeedback({ enabled: true });
@@ -355,10 +389,10 @@ function MessageBubble({
             return colors[Math.floor(Math.random() * colors.length)] ?? '#FF6B6B';
           })
           .filter((color): color is string => color !== undefined) ?? [
-          '#FF6B6B',
-          '#4ECDC4',
-          '#45B7D1',
-        ];
+            '#FF6B6B',
+            '#4ECDC4',
+            '#45B7D1',
+          ];
 
         particleExplosion.triggerExplosion(centerX, centerY, emojiColors);
       }
@@ -580,7 +614,7 @@ function MessageBubble({
               : 'bg-card border border-border text-foreground rounded-bl-sm',
             isClusterEnd && (isOwn ? 'rounded-br-sm' : 'rounded-bl-sm'),
             message.status === 'failed' && 'opacity-75',
-            'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+            'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus-ring'
           )}
           onMouseMove={hoverTilt.handleMouseMove}
           onMouseLeave={hoverTilt.handleMouseLeave}
@@ -621,6 +655,11 @@ function MessageBubble({
               }}
               enabled={!isDeleting}
             >
+              {stableReference.ariaDescription && (
+                <div id={`${stableReference.stableId}-description`} className="sr-only">
+                  {stableReference.ariaDescription}
+                </div>
+              )}
               <div className="wrap-break-word whitespace-pre-wrap">
                 {isAIMessage && typingReveal.revealedText.length > 0 ? (
                   <AnimatedAIWrapper enabled={true}>
@@ -663,7 +702,10 @@ function MessageBubble({
                   }}
                   onClick={() => {
                     // Open full-screen image
-                    window.open(message.metadata!.media!.url, '_blank');
+                    const mediaUrl = message.metadata?.media?.url;
+                    if (mediaUrl) {
+                      window.open(mediaUrl, '_blank');
+                    }
                   }}
                 />
               )}
@@ -713,8 +755,11 @@ function MessageBubble({
             <button
               className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
               onClick={() => {
-                const { lat, lng } = message.metadata!.location!;
-                window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+                const location = message.metadata?.location;
+                if (location) {
+                  const { lat, lng } = location;
+                  window.open(`https://www.google.com/maps?q=${lat},${lng}`, '_blank');
+                }
               }}
             >
               <MapPin size={16} />
@@ -919,12 +964,7 @@ function MessageBubble({
       {particleExplosion.particles.length > 0 && (
         <div className="fixed inset-0 pointer-events-none z-9999">
           {particleExplosion.particles.map((particle) => (
-            <AnimatedView
-              key={particle.id}
-              style={particleExplosion.getParticleStyle(particle) as AnimatedStyle}
-            >
-              <div />
-            </AnimatedView>
+            <ParticleView key={particle.id} particle={particle} />
           ))}
         </div>
       )}

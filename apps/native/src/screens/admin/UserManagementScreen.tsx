@@ -4,7 +4,7 @@
  * Mobile admin screen for managing users, including password reset functionality.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -41,11 +41,7 @@ export const UserManagementScreen: React.FC = () => {
   const [resettingPassword, setResettingPassword] = useState(false);
   const [filter, setFilter] = useState<'all' | 'active' | 'suspended' | 'banned'>('all');
 
-  useEffect(() => {
-    loadUsers();
-  }, [filter]);
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
       // Note: getUserDetails requires userId, so we use empty array for now
@@ -57,7 +53,11 @@ export const UserManagementScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    void loadUsers();
+  }, [loadUsers]);
 
   const handleResetPassword = async () => {
     if (!selectedUser) return;

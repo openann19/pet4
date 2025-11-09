@@ -15,6 +15,48 @@ export default defineConfig({
     conditions: ['import', 'module', 'default'],
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
+  plugins: [
+    // Plugin to intercept reduced-motion imports and replace with mock
+    // This prevents esbuild from trying to transform the real file which has incompatible syntax
+    // The real file uses dynamic imports and typeof checks that esbuild cannot transform in test environment
+    {
+      name: 'mock-reduced-motion',
+      enforce: 'pre', // Run before other plugins to intercept early
+      resolveId(source: string, importer?: string) {
+        // Don't intercept the mock file itself or any test files
+        if (
+          source.includes('test/mocks') ||
+          source.includes('mock') ||
+          source.includes('__tests__') ||
+          source.includes('.test.') ||
+          source.includes('.spec.')
+        ) {
+          return null
+        }
+
+        const mockPath = path.resolve(projectRoot, './src/test/mocks/reduced-motion.ts')
+
+        // Match various import patterns for reduced-motion files
+        const reducedMotionPatterns = [
+          /reduced-motion\.ts$/,
+          /reduced-motion$/,
+          /use-reduced-motion-sv\.ts$/,
+          /use-reduced-motion-sv$/,
+          /effects\/chat\/core\/reduced-motion/,
+          /effects\/core\/use-reduced-motion-sv/,
+        ]
+
+        // Check if source matches any reduced-motion pattern
+        const matches = reducedMotionPatterns.some(pattern => pattern.test(source))
+
+        if (matches) {
+          return mockPath
+        }
+
+        return null
+      },
+    },
+  ],
   server: {
     fs: {
       allow: [
@@ -46,6 +88,7 @@ export default defineConfig({
           include: ['@petspark/shared'],
         },
       },
+      moduleDirectories: ['node_modules'],
     },
     coverage: {
       provider: 'v8',

@@ -18,10 +18,11 @@ class SilentLogger implements Logger {
   error(): void {}
 }
 
-class ConsoleLogger implements Logger {
+class RemoteLogger implements Logger {
   constructor(
     private readonly name: string,
-    private readonly level: LogLevel = 'info'
+    private readonly level: LogLevel = 'info',
+    private readonly endpoint: string = '/api/logs'
   ) {}
 
   private shouldLog(level: LogLevel): boolean {
@@ -29,38 +30,67 @@ class ConsoleLogger implements Logger {
     return levels.indexOf(level) >= levels.indexOf(this.level)
   }
 
-  debug(message: string, context?: LogContext): void {
-    if (this.shouldLog('debug')) {
-      // eslint-disable-next-line no-console
-      console.debug(`[${this.name}] ${message}`, context ?? '')
+  private async sendLog(
+    level: LogLevel,
+    message: string,
+    error?: Error | unknown,
+    context?: LogContext
+  ): Promise<void> {
+    if (!this.shouldLog(level)) return
+
+    try {
+      const logEntry = {
+        level,
+        name: this.name,
+        message,
+        timestamp: new Date().toISOString(),
+        ...(error
+          ? {
+              error:
+                error instanceof Error
+                  ? { message: error.message, stack: error.stack, name: error.name }
+                  : { error: String(error) },
+            }
+          : {}),
+        ...(context ? { context } : {}),
+      }
+
+      await fetch(this.endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(logEntry),
+      }).catch(() => {
+        // Silently fail - logging should not break the app
+      })
+    } catch {
+      // Silently fail - logging should not break the app
     }
+  }
+
+  debug(message: string, context?: LogContext): void {
+    void this.sendLog('debug', message, undefined, context)
   }
 
   info(message: string, context?: LogContext): void {
-    if (this.shouldLog('info')) {
-      // eslint-disable-next-line no-console
-      console.info(`[${this.name}] ${message}`, context ?? '')
-    }
+    void this.sendLog('info', message, undefined, context)
   }
 
   warn(message: string, context?: LogContext): void {
-    if (this.shouldLog('warn')) {
-      console.warn(`[${this.name}] ${message}`, context ?? '')
-    }
+    void this.sendLog('warn', message, undefined, context)
   }
 
   error(message: string, error?: Error | unknown, context?: LogContext): void {
-    if (this.shouldLog('error')) {
-      const errorDetails = error instanceof Error ? error : { error }
-      console.error(`[${this.name}] ${message}`, errorDetails, context ?? '')
-    }
+    void this.sendLog('error', message, error, context)
   }
 }
 
 let defaultLogger: Logger = new SilentLogger()
 
 export function createLogger(name: string, level: LogLevel = 'info'): Logger {
-  return new ConsoleLogger(name, level)
+  const endpoint = (typeof process !== 'undefined' && process.env?.['LOG_ENDPOINT']) || '/api/logs'
+  return new RemoteLogger(name, level, endpoint)
 }
 
 export function setDefaultLogger(logger: Logger): void {

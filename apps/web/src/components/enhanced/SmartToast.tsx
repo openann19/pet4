@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -57,7 +58,8 @@ export function SmartToast({
   onDismiss,
   position = 'top',
 }: SmartToastProps) {
-  const Icon = icons[type];
+    const uiConfig = useUIConfig();
+    const Icon = icons[type];
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(position === 'top' ? -20 : 20);
   const translateX = useSharedValue(0);

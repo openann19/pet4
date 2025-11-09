@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Check, ChevronDown, X } from 'lucide-react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumSelectOption {
   label: string;
@@ -56,7 +57,8 @@ export function PremiumSelect({
   className,
   'aria-label': ariaLabel,
 }: PremiumSelectProps): React.JSX.Element {
-  const [isOpen, setIsOpen] = useState(false);
+    const uiConfig = useUIConfig();
+    const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
 
@@ -199,6 +201,7 @@ export function PremiumSelect({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search..."
+                  aria-label="Search options"
                   className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>

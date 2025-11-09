@@ -5,6 +5,7 @@ import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-
 import { AnimatedView } from './animated-view';
 import { timingConfigs, springConfigs } from './transitions';
 import type { AnimatedStyle } from './animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface AnimatePresenceProps {
   children: ReactNode;
@@ -21,7 +22,8 @@ interface PresenceChildProps {
 }
 
 function PresenceChild({ children, isVisible, onExitComplete, childKey }: PresenceChildProps) {
-  const opacity = useSharedValue(isVisible ? 1 : 0);
+    const uiConfig = useUIConfig();
+    const opacity = useSharedValue(isVisible ? 1 : 0);
   const scale = useSharedValue(isVisible ? 1 : 0.95);
   const translateY = useSharedValue(isVisible ? 0 : -8);
   const [shouldRender, setShouldRender] = useState(isVisible);

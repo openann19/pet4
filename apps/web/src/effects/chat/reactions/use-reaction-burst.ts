@@ -23,16 +23,10 @@ import {
 import { triggerHaptic } from '../core/haptic-manager';
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion';
 import { logEffectEnd, logEffectStart } from '../core/telemetry';
+import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
+import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';
+import { useUIConfig } from '@/hooks/use-ui-config';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-
-/**
- * Spring configuration for emoji lift
- */
-const EMOJI_LIFT_SPRING = {
-  stiffness: 350,
-  damping: 25,
-  mass: 0.8,
-};
 
 /**
  * Reaction burst effect options
@@ -62,7 +56,7 @@ export interface UseReactionBurstReturn {
 }
 
 const DEFAULT_ENABLED = true;
-const PARTICLE_COUNT = 8;
+const BASE_PARTICLE_COUNT = 8;
 const BURST_DURATION = 280; // ms
 const EMOJI_LIFT_DURATION = 300; // ms
 
@@ -70,6 +64,15 @@ export function useReactionBurst(options: UseReactionBurstOptions = {}): UseReac
   const { enabled = DEFAULT_ENABLED, onComplete, onLongPressConfirm } = options;
 
   const reducedMotion = useReducedMotionSV();
+  const { hz, scaleDuration, deviceCapability } = useDeviceRefreshRate();
+  const { visual, feedback, animation } = useUIConfig();
+
+  // Calculate particle count based on device capability and UI config
+  // Reaction burst uses fewer particles (8 max) which is well within device limits
+  // But we still respect the animation.showParticles flag
+  const particleCount = animation.showParticles
+    ? Math.min(BASE_PARTICLE_COUNT, Math.floor(deviceCapability.maxParticles / 15))
+    : 0;
 
   // Initialize all particle SharedValues at top level (hooks must be called unconditionally)
   const particle0X = useSharedValue(0);
@@ -171,20 +174,24 @@ export function useReactionBurst(options: UseReactionBurstOptions = {}): UseReac
     }
 
     const isReducedMotion = reducedMotion.value;
-    const burstDuration = getReducedMotionDuration(BURST_DURATION, isReducedMotion);
+    // Use adaptive duration scaling based on device refresh rate
+    const baseBurstDuration = getReducedMotionDuration(BURST_DURATION, isReducedMotion);
+    const burstDuration = scaleDuration(baseBurstDuration);
 
     // Log effect start
     const effectId = logEffectStart('reaction-burst', {
       reducedMotion: isReducedMotion,
     });
 
-    // Trigger haptic: Impact.Light on attach
-    triggerHaptic('light');
+    // Trigger haptic: Impact.Light on attach (only if haptics enabled)
+    if (feedback.haptics) {
+      triggerHaptic('light');
+    }
 
-    // Animate particles in ring pattern
-    if (!isReducedMotion) {
-      particles.forEach((particle, index) => {
-        const angle = (index / PARTICLE_COUNT) * Math.PI * 2;
+    // Animate particles in ring pattern (only if particles enabled and count > 0)
+    if (!isReducedMotion && animation.showParticles && particleCount > 0) {
+      particles.slice(0, particleCount).forEach((particle, index) => {
+        const angle = (index / particleCount) * Math.PI * 2;
         const radius = 30; // pixels
         const targetX = Math.cos(angle) * radius;
         const targetY = Math.sin(angle) * radius;
@@ -213,15 +220,25 @@ export function useReactionBurst(options: UseReactionBurstOptions = {}): UseReac
       });
     }
 
-    // Emoji lift animation
-    emojiScale.value = withSpring(1.2, EMOJI_LIFT_SPRING);
-    emojiTranslateY.value = withSpring(-15, EMOJI_LIFT_SPRING);
+    // Emoji lift animation - use UI config spring physics or adaptive config
+    const springConfig = animation.enableReanimated && animation.springPhysics
+      ? {
+          stiffness: animation.springPhysics.stiffness,
+          damping: animation.springPhysics.damping,
+          mass: animation.springPhysics.mass,
+        }
+      : adaptiveAnimationConfigs.bouncy(hz as 60 | 120);
+    emojiScale.value = withSpring(1.2, springConfig);
+    emojiTranslateY.value = withSpring(-15, springConfig);
 
-    // Shadow animation (2→8px)
-    shadowRadius.value = withTiming(8, {
-      duration: EMOJI_LIFT_DURATION,
-      easing: Easing.out(Easing.ease),
-    });
+    // Shadow animation (2→8px) - only if shadows enabled, use adaptive duration
+    if (visual.enableShadows) {
+      const emojiLiftDurationAdapted = scaleDuration(EMOJI_LIFT_DURATION);
+      shadowRadius.value = withTiming(8, {
+        duration: emojiLiftDurationAdapted,
+        easing: Easing.out(Easing.ease),
+      });
+    }
 
     // Call onComplete
     if (onComplete) {
@@ -237,13 +254,15 @@ export function useReactionBurst(options: UseReactionBurstOptions = {}): UseReac
         success: true,
       });
     }, burstDuration);
-  }, [enabled, reducedMotion, particles, emojiScale, emojiTranslateY, shadowRadius, onComplete]);
+  }, [enabled, reducedMotion, hz, scaleDuration, visual, feedback, animation, particles, emojiScale, emojiTranslateY, shadowRadius, onComplete, particleCount, deviceCapability]);
 
   const triggerLongPress = useCallback(() => {
-    // Haptic: Success on long-press menu confirm
-    triggerHaptic('success');
+    // Haptic: Success on long-press menu confirm (only if haptics enabled)
+    if (feedback.haptics) {
+      triggerHaptic('success');
+    }
     onLongPressConfirm?.();
-  }, [onLongPressConfirm]);
+  }, [feedback.haptics, onLongPressConfirm]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

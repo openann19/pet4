@@ -25,7 +25,7 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('CommunityApi');
 
-export type GetFeedRequest = FeedOptions
+export type GetFeedRequest = FeedOptions;
 
 export interface CreatePostRequest {
   kind: PostKind;
@@ -63,11 +63,11 @@ class CommunityApiImpl {
   async getFeed(options: FeedOptions): Promise<FeedResponse> {
     try {
       const params = new URLSearchParams();
-      if (options.mode) params.append('mode', options.mode);
-      if (options.lat) params.append('lat', String(options.lat));
-      if (options.lng) params.append('lng', String(options.lng));
-      if (options.cursor) params.append('cursor', options.cursor);
-      if (options.limit) params.append('limit', String(options.limit));
+      params.append('mode', options.mode);
+      if (options.lat !== undefined) params.append('lat', String(options.lat));
+      if (options.lng !== undefined) params.append('lng', String(options.lng));
+      if (options.cursor !== undefined) params.append('cursor', options.cursor);
+      if (options.limit !== undefined) params.append('limit', String(options.limit));
 
       const query = params.toString();
       const response = await APIClient.get<FeedResponse>(

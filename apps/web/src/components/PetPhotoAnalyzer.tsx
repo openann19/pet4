@@ -160,8 +160,28 @@ Return ONLY valid JSON with this exact structure, nothing else:
 }`;
 
       const response = await llmService.llm(prompt, 'gpt-4o', true);
-      const analysisResult = JSON.parse(response);
+      const parsed = JSON.parse(response) as unknown;
 
+      // Type guard to validate AnalysisResult
+      const isValidAnalysisResult = (data: unknown): data is AnalysisResult => {
+        if (typeof data !== 'object' || data === null) return false;
+        const obj = data as Record<string, unknown>;
+        return (
+          typeof obj.breed === 'string' &&
+          typeof obj.age === 'number' &&
+          typeof obj.size === 'string' &&
+          ['small', 'medium', 'large', 'extra-large'].includes(obj.size) &&
+          Array.isArray(obj.personality) &&
+          obj.personality.every((item: unknown) => typeof item === 'string') &&
+          typeof obj.confidence === 'number'
+        );
+      };
+
+      if (!isValidAnalysisResult(parsed)) {
+        throw new Error('Invalid analysis result format from LLM');
+      }
+
+      const analysisResult: AnalysisResult = parsed;
       setResult(analysisResult);
       setShowResult(true);
 
@@ -288,6 +308,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                   if (file) handleFileUpload(file);
                 }}
                 className="hidden"
+                aria-label="Take photo with camera"
               />
 
               <input
@@ -299,6 +320,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                   if (file) handleFileUpload(file);
                 }}
                 className="hidden"
+                aria-label="Upload photo from device"
               />
 
               {uploadMode === 'url' && (
@@ -308,6 +330,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                     value={photo}
                     onChange={(e) => handlePhotoInput(e.target.value)}
                     placeholder="Paste image URL here..."
+                    aria-label="Image URL"
                     className="flex-1 px-3 py-2 text-sm border border-input rounded-md bg-background focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20 transition-all"
                     disabled={analyzing}
                   />

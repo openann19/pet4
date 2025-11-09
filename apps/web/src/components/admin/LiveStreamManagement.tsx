@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,13 +17,7 @@ export function LiveStreamManagement() {
   const [streams, setStreams] = useState<LiveStream[]>([]);
   const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
 
-  useEffect(() => {
-    loadStreams();
-    const interval = setInterval(loadStreams, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const loadStreams = async () => {
+  const loadStreams = useCallback(async () => {
     try {
       const apiStreams = await liveStreamingAPI.getAllStreams();
       // Convert API streams to service streams
@@ -70,22 +64,33 @@ export function LiveStreamManagement() {
       );
       toast.error('Failed to load streams');
     }
-  };
+  }, []);
 
-  const handleEndStream = async (streamId: string) => {
-    try {
-      await streamingService.endStream(streamId);
-      toast.success('Stream ended');
-      await loadStreams();
-      setSelectedStream(null);
-    } catch (error) {
-      logger.error(
-        'Failed to end stream',
-        error instanceof Error ? error : new Error(String(error))
-      );
-      toast.error('Failed to end stream');
-    }
-  };
+  useEffect(() => {
+    void loadStreams();
+    const interval = setInterval(() => {
+      void loadStreams();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [loadStreams]);
+
+  const handleEndStream = useCallback(
+    async (streamId: string) => {
+      try {
+        await streamingService.endStream(streamId);
+        toast.success('Stream ended');
+        await loadStreams();
+        setSelectedStream(null);
+      } catch (error) {
+        logger.error(
+          'Failed to end stream',
+          error instanceof Error ? error : new Error(String(error))
+        );
+        toast.error('Failed to end stream');
+      }
+    },
+    [loadStreams]
+  );
 
   const getStatusColor = (status: LiveStream['status']) => {
     switch (status) {

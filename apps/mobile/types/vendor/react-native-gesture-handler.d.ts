@@ -1,6 +1,7 @@
 /**
  * Type declarations for react-native-gesture-handler
- * TODO: Temporary triage - Update to use official types when available
+ * Note: Temporary type definitions - Update to use official types when available
+ * This is a workaround until the official @types/react-native-gesture-handler package is updated
  */
 
 import type { ReactNode } from 'react'
@@ -13,6 +14,7 @@ declare module 'react-native-gesture-handler' {
     LongPress: () => GestureHandler
     Pinch: () => GestureHandler
     Rotation: () => GestureHandler
+    Simultaneous: (...gestures: GestureHandler[]) => GestureHandler
   }
 
   export interface GestureEvent {
@@ -24,6 +26,8 @@ declare module 'react-native-gesture-handler' {
     y: number
     absoluteX: number
     absoluteY: number
+    scale?: number
+    rotation?: number
   }
 
   export interface GestureHandler {
@@ -51,6 +55,6 @@ declare module 'react-native-gesture-handler' {
   export const Gesture: GestureType
   export const GestureDetector: React.ComponentType<GestureDetectorProps>
   export const GestureHandlerRootView: React.ComponentType<GestureHandlerRootViewProps>
-  
+
   export default { Gesture, GestureDetector, GestureHandlerRootView }
 }

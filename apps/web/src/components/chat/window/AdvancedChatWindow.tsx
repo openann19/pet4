@@ -37,6 +37,8 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { LiquidDots } from '../LiquidDots';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useUIConfig } from "@/hooks/use-ui-config";
+import { useChatKeyboardShortcuts } from '@/hooks/chat/use-chat-keyboard-shortcuts';
 
 const logger = createLogger('AdvancedChatWindow');
 
@@ -55,6 +57,7 @@ export default function AdvancedChatWindow({
   currentUserAvatar,
   onBack,
 }: AdvancedChatWindowProps): JSX.Element {
+  const uiConfig = useUIConfig();
   const [messages, setMessages] = useStorage<ChatMessage[]>(`chat-messages-${room.id}`, []);
   const [inputValue, setInputValue] = useState('');
   const [showStickers, setShowStickers] = useState(false);
@@ -249,16 +252,16 @@ export default function AdvancedChatWindow({
         (cur || []).map((x) =>
           x.id === messageId
             ? {
-                ...x,
-                metadata: {
-                  ...x.metadata,
-                  translation: {
-                    originalLang: 'auto',
-                    targetLang: 'en',
-                    translatedText: translated,
-                  },
+              ...x,
+              metadata: {
+                ...x.metadata,
+                translation: {
+                  originalLang: 'auto',
+                  targetLang: 'en',
+                  translatedText: translated,
                 },
-              }
+              },
+            }
             : x
         )
       );
@@ -277,6 +280,51 @@ export default function AdvancedChatWindow({
     isVisible: scrollFabVisible,
     badgeCount: messages?.length ?? 0,
     previousBadgeCount,
+  });
+
+  // Register keyboard shortcuts for chat actions
+  const [focusedMessageId, setFocusedMessageId] = useState<string | null>(null);
+  const focusedMessage = focusedMessageId ? messages?.find((m) => m.id === focusedMessageId) : null;
+
+  useChatKeyboardShortcuts({
+    enabled: true,
+    context: 'chat',
+    onSend: () => {
+      if (inputValue.trim()) {
+        onSend(inputValue, 'text');
+      }
+    },
+    onReply: focusedMessage
+      ? () => {
+        // Focus input and add reply context
+        inputRef.current?.focus();
+        setInputValue(`@${focusedMessage.senderName || 'User'} `);
+      }
+      : undefined,
+    onDelete: focusedMessage
+      ? () => {
+        // Delete focused message
+        setMessages((cur) => (cur || []).filter((m) => m.id !== focusedMessageId));
+      }
+      : undefined,
+    onReact: focusedMessage
+      ? () => {
+        // Open reaction picker for focused message
+        // This would typically open a reaction menu
+        onReaction(focusedMessage.id, '❤️');
+      }
+      : undefined,
+    onScrollToBottom: () => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    },
+    onFocusInput: () => {
+      inputRef.current?.focus();
+    },
+    onClose: onBack,
+    inputRef,
+    messageFocused: focusedMessageId !== null,
   });
 
   const useVirtualization = flags().chat.virtualization;
@@ -306,6 +354,7 @@ export default function AdvancedChatWindow({
           <VirtualMessageList
             messages={messages || []}
             currentUserId={currentUserId}
+            currentUserName={currentUserName}
             typingUsers={typingUsers}
             onReaction={onReaction}
             onTranslate={onTranslate}
@@ -314,6 +363,7 @@ export default function AdvancedChatWindow({
           <MessageList
             messages={messages || []}
             currentUserId={currentUserId}
+            currentUserName={currentUserName}
             typingUsers={typingUsers}
             onReaction={onReaction}
             onTranslate={onTranslate}
@@ -340,6 +390,7 @@ export default function AdvancedChatWindow({
                 scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
               }
             }}
+            aria-label="Scroll to bottom"
           >
             <PaperPlaneRight size={20} weight="fill" />
           </Button>

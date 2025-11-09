@@ -8,6 +8,7 @@ import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export type AvatarStatus = 'online' | 'offline' | 'away' | 'busy';
 
@@ -50,7 +51,8 @@ export function PremiumAvatar({
   className,
   'aria-label': ariaLabel,
 }: PremiumAvatarProps): React.JSX.Element {
-  const scale = useSharedValue(1);
+    const uiConfig = useUIConfig();
+    const scale = useSharedValue(1);
   const glowOpacity = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => ({

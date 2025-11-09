@@ -17,16 +17,10 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { useReducedMotionSV } from '../core/reduced-motion';
+import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
+import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';
+import { useUIConfig } from '@/hooks/use-ui-config';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-
-/**
- * Spring configuration for playhead
- */
-const PLAYHEAD_SPRING = {
-  stiffness: 300,
-  damping: 25,
-  mass: 0.8,
-};
 
 /**
  * Voice waveform effect options
@@ -71,6 +65,8 @@ export function useVoiceWaveform(options: UseVoiceWaveformOptions = {}): UseVoic
   } = options;
 
   const reducedMotion = useReducedMotionSV();
+  const { hz } = useDeviceRefreshRate();
+  const { visual, animation } = useUIConfig();
   const playheadProgress = useSharedValue(0);
   const waveformOpacity = useSharedValue(1);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -82,10 +78,18 @@ export function useVoiceWaveform(options: UseVoiceWaveformOptions = {}): UseVoic
       if (reducedMotion.value) {
         playheadProgress.value = progress;
       } else {
-        playheadProgress.value = withSpring(progress, PLAYHEAD_SPRING);
+      // Use UI config spring physics or fallback to adaptive config
+      const springConfig = animation.enableReanimated && animation.springPhysics
+        ? {
+            stiffness: animation.springPhysics.stiffness,
+            damping: animation.springPhysics.damping,
+            mass: animation.springPhysics.mass,
+          }
+        : adaptiveAnimationConfigs.smoothEntry(hz as 60 | 120);
+      playheadProgress.value = withSpring(progress, springConfig);
       }
     }
-  }, [enabled, currentTime, duration, reducedMotion, playheadProgress]);
+  }, [enabled, currentTime, duration, reducedMotion, hz, animation, playheadProgress]);
 
   // Draw waveform on canvas
   const drawWaveform = () => {
@@ -115,27 +119,34 @@ export function useVoiceWaveform(options: UseVoiceWaveformOptions = {}): UseVoic
       const x = index * barWidth;
       const y = centerY - barHeight / 2;
 
-      // Gradient for glow effect
+      // Gradient for glow effect (only if glow enabled)
       const gradient = ctx.createLinearGradient(x, 0, x + barWidth, height);
-      gradient.addColorStop(0, `${color}40`);
-      gradient.addColorStop(0.5, color);
-      gradient.addColorStop(1, `${color}40`);
+      if (visual.enableGlow) {
+        gradient.addColorStop(0, `${color}40`);
+        gradient.addColorStop(0.5, color);
+        gradient.addColorStop(1, `${color}40`);
+      } else {
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, color);
+      }
 
       ctx.fillStyle = gradient;
       ctx.fillRect(x, y, barWidth * 0.8, barHeight);
 
-      // Glow effect
-      ctx.shadowBlur = 4;
-      ctx.shadowColor = color;
-      ctx.fillRect(x, y, barWidth * 0.8, barHeight);
-      ctx.shadowBlur = 0;
+      // Glow effect (only if glow enabled)
+      if (visual.enableGlow) {
+        ctx.shadowBlur = 4;
+        ctx.shadowColor = color;
+        ctx.fillRect(x, y, barWidth * 0.8, barHeight);
+        ctx.shadowBlur = 0;
+      }
     });
   };
 
   // Redraw waveform when data changes
   useEffect(() => {
     drawWaveform();
-  }, [waveform, width, height, color, enabled]);
+  }, [waveform, width, height, color, enabled, visual]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

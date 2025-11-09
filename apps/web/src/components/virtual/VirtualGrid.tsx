@@ -34,7 +34,7 @@ export function VirtualGrid<T>({
   keyExtractor,
 }: VirtualGridProps<T>): JSX.Element {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [isScrolling, setIsScrolling] = React.useState(false);
+  const [_isScrolling, setIsScrolling] = React.useState(false);
   const scrollTimeoutRef = React.useRef<number | undefined>(undefined);
 
   const rows = Math.ceil(items.length / columns);

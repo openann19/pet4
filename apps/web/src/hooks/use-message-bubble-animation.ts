@@ -15,10 +15,7 @@ import {
 import { useEffect, useCallback, useRef } from 'react';
 import { haptics } from '@/lib/haptics';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import {
-  useReducedMotionSV,
-  getReducedMotionDuration,
-} from '@/effects/chat/core/reduced-motion';
+import { useReducedMotionSV, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 
 export interface UseMessageBubbleAnimationOptions {
   index?: number;
@@ -142,10 +139,13 @@ export function useMessageBubbleAnimation(
             duration: fastDuration,
             easing: Easing.linear,
           }),
-          withDelay(1500, withTiming(0, {
-            duration: smoothDuration,
-            easing: Easing.linear,
-          }))
+          withDelay(
+            1500,
+            withTiming(0, {
+              duration: smoothDuration,
+              easing: Easing.linear,
+            })
+          )
         );
       } else {
         // Normal motion: smooth sequence
@@ -189,10 +189,7 @@ export function useMessageBubbleAnimation(
 
   const reactionStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: reactionScale.value },
-        { translateY: reactionTranslateY.value },
-      ],
+      transform: [{ scale: reactionScale.value }, { translateY: reactionTranslateY.value }],
       opacity: reactionOpacity.value,
     };
   });
@@ -250,7 +247,7 @@ export function useMessageBubbleAnimation(
     isPressedRef.current = false;
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+      longPressTimerRef.current = undefined;
     }
 
     const isReducedMotion = reducedMotion.value;
@@ -289,15 +286,19 @@ export function useMessageBubbleAnimation(
 
     if (isReducedMotion) {
       const duration = getReducedMotionDuration(120, true);
-      scale.value = withTiming(0.94, {
-        duration: duration,
-        easing: Easing.linear,
-      }, () => {
-        scale.value = withTiming(1, {
+      scale.value = withTiming(
+        0.94,
+        {
           duration: duration,
           easing: Easing.linear,
-        });
-      });
+        },
+        () => {
+          scale.value = withTiming(1, {
+            duration: duration,
+            easing: Easing.linear,
+          });
+        }
+      );
     } else {
       scale.value = withSequence(
         withSpring(0.94, {
@@ -331,15 +332,19 @@ export function useMessageBubbleAnimation(
 
       if (isReducedMotion) {
         // Reduced motion: simplified animation
-        reactionScale.value = withTiming(1.2, {
-          duration: fastDuration,
-          easing: Easing.linear,
-        }, () => {
-          reactionScale.value = withTiming(1, {
-            duration: smoothDuration,
+        reactionScale.value = withTiming(
+          1.2,
+          {
+            duration: fastDuration,
             easing: Easing.linear,
-          });
-        });
+          },
+          () => {
+            reactionScale.value = withTiming(1, {
+              duration: smoothDuration,
+              easing: Easing.linear,
+            });
+          }
+        );
         reactionTranslateY.value = withTiming(-15, {
           duration: fastDuration,
           easing: Easing.linear,
@@ -349,10 +354,13 @@ export function useMessageBubbleAnimation(
             duration: fastDuration,
             easing: Easing.linear,
           }),
-          withDelay(300, withTiming(0, {
-            duration: smoothDuration,
-            easing: Easing.linear,
-          }))
+          withDelay(
+            300,
+            withTiming(0, {
+              duration: smoothDuration,
+              easing: Easing.linear,
+            })
+          )
         );
       } else {
         // Normal motion: full spring animation
@@ -390,10 +398,13 @@ export function useMessageBubbleAnimation(
           duration: fastDuration,
           easing: Easing.linear,
         }),
-        withDelay(1500, withTiming(0, {
-          duration: smoothDuration,
-          easing: Easing.linear,
-        }))
+        withDelay(
+          1500,
+          withTiming(0, {
+            duration: smoothDuration,
+            easing: Easing.linear,
+          })
+        )
       );
     } else {
       backgroundOpacity.value = withSequence(

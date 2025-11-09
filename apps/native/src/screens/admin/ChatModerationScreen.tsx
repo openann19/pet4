@@ -4,7 +4,7 @@
  * Mobile admin screen for reviewing reported chat messages.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -36,11 +36,7 @@ export const ChatModerationScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [action, setAction] = useState<'warning' | 'mute' | 'suspend' | 'no_action'>('no_action');
 
-  useEffect(() => {
-    loadReports();
-  }, []);
-
-  const loadReports = async () => {
+  const loadReports = useCallback(async () => {
     setLoading(true);
     try {
       // Note: Chat reports API endpoint not yet available in admin-api
@@ -52,19 +48,26 @@ export const ChatModerationScreen: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleReview = async (reportId: string) => {
-    try {
-      // Note: Chat report review API endpoint not yet available in admin-api
-      // When backend provides endpoint, update to: await mobileAdminApi.reviewChatReport(reportId, action);
-      await loadReports();
-      setAction('no_action');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to review report', err, { context: 'handleReview', reportId, action });
-    }
-  };
+  useEffect(() => {
+    void loadReports();
+  }, [loadReports]);
+
+  const handleReview = useCallback(
+    async (reportId: string) => {
+      try {
+        // Note: Chat report review API endpoint not yet available in admin-api
+        // When backend provides endpoint, update to: await mobileAdminApi.reviewChatReport(reportId, action);
+        await loadReports();
+        setAction('no_action');
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to review report', err, { context: 'handleReview', reportId, action });
+      }
+    },
+    [action, loadReports]
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {

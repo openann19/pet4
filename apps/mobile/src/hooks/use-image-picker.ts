@@ -59,7 +59,7 @@ export function useImagePicker(): UseImagePickerReturn {
         })
       }
 
-      if (result.canceled || !result.assets[0]) {
+      if (result.canceled || !result.assets || result.assets.length === 0 || !result.assets[0]) {
         return null
       }
 
@@ -106,7 +106,7 @@ export function useImagePicker(): UseImagePickerReturn {
         quality: 0.8,
       })
 
-      if (result.canceled || !result.assets.length) {
+      if (result.canceled || !result.assets || result.assets.length === 0) {
         return []
       }
 

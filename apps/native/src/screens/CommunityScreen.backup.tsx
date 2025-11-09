@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'react-native';
 import type { Post } from '../types';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 
 export default function CommunityScreen(): React.JSX.Element {
   const [posts, setPosts] = useStorage<Post[]>('community-posts', []);

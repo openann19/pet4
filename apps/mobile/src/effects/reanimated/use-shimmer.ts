@@ -6,7 +6,7 @@ import {
   Easing,
   type SharedValue,
 } from 'react-native-reanimated'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
 export interface UseShimmerOptions {
@@ -46,7 +46,7 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
     }
   }) as AnimatedStyle
 
-  const start = () => {
+  const start = useCallback(() => {
     translateX.value = withRepeat(
       withTiming(shimmerWidth, {
         duration,
@@ -63,12 +63,12 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
       -1,
       true
     )
-  }
+  }, [duration, shimmerWidth, translateX, opacity])
 
-  const stop = () => {
+  const stop = useCallback(() => {
     translateX.value = -shimmerWidth
     opacity.value = 0.3
-  }
+  }, [shimmerWidth, translateX, opacity])
 
   useEffect(() => {
     if (enabled) {
@@ -83,7 +83,7 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
       stop()
       return
     }
-  }, [enabled, delay, duration, shimmerWidth])
+  }, [enabled, delay, start, stop])
 
   return {
     translateX,

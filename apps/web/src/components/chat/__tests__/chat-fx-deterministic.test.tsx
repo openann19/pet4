@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, rerender } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { ConfettiBurst } from '../ConfettiBurst';
 import { ReactionBurstParticles } from '../ReactionBurstParticles';
 import { LiquidDots } from '../LiquidDots';

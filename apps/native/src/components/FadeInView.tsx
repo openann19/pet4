@@ -39,7 +39,7 @@ export const FadeInView: React.FC<FadeInViewProps> = ({
         easing: Easing.out(Easing.cubic),
       })
     );
-  }, []);
+  }, [delay, duration, opacity, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

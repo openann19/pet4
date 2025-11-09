@@ -20,7 +20,11 @@ interface UseChatMessagesOptions {
 interface UseChatMessagesReturn {
   messages: ChatMessage[];
   messageGroups: ReturnType<typeof groupMessagesByDate>;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (
+    content: string,
+    type?: 'text' | 'sticker' | 'voice',
+    metadata?: ChatMessage['metadata']
+  ) => ChatMessage | null;
   addReaction: (messageId: string, reaction: ReactionType) => Promise<void>;
   markAsRead: (messageId: string) => Promise<void>;
   setMessages: (updater: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
@@ -49,8 +53,8 @@ export function useChatMessages({
       await chatAPI.sendMessage(chatRoomId, content);
     },
     onFlush: () => {
-      // Invalidate messages query after successful flush
-      queryClient.invalidateQueries({
+      // Invalidate messages query after successful flush - fire-and-forget
+      void queryClient.invalidateQueries({
         queryKey: queryKeys.chat.messages(roomId),
       });
     },

@@ -8,7 +8,7 @@ import {
   Easing,
   type SharedValue,
 } from 'react-native-reanimated'
-import { useEffect, useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
 export interface UseTypingShimmerOptions {

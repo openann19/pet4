@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import {
   Funnel,
@@ -260,33 +260,55 @@ export default function DiscoveryFilters() {
     }
   };
 
-  const handleSave = () => {
-    setPreferences((current) => ({
-      ...(current || DEFAULT_PREFERENCES),
-      minAge,
-      maxAge,
-      sizes,
-      maxDistance,
-      personalities,
-      interests,
-      lookingFor,
-      minCompatibility,
-      mediaFilters: {
-        cropSize,
-        photoQuality,
-        hasVideo,
-        minPhotos,
-      },
-      advancedFilters: {
-        verified,
-        activeToday,
-        hasStories,
-        respondQuickly,
-        superLikesOnly,
-      },
-    }));
+  const handleSave = useCallback(() => {
+    void setPreferences((current) => {
+      const currentPrefs = current ?? DEFAULT_PREFERENCES;
+      return {
+        ...currentPrefs,
+        minAge,
+        maxAge,
+        sizes,
+        maxDistance,
+        personalities,
+        interests,
+        lookingFor,
+        minCompatibility,
+        mediaFilters: {
+          cropSize,
+          photoQuality,
+          hasVideo,
+          minPhotos,
+        },
+        advancedFilters: {
+          verified,
+          activeToday,
+          hasStories,
+          respondQuickly,
+          superLikesOnly,
+        },
+      };
+    });
     setOpen(false);
-  };
+  }, [
+    setPreferences,
+    minAge,
+    maxAge,
+    sizes,
+    maxDistance,
+    personalities,
+    interests,
+    lookingFor,
+    minCompatibility,
+    cropSize,
+    photoQuality,
+    hasVideo,
+    minPhotos,
+    verified,
+    activeToday,
+    hasStories,
+    respondQuickly,
+    superLikesOnly,
+  ]);
 
   const handleReset = () => {
     setMinAge(DEFAULT_PREFERENCES.minAge);

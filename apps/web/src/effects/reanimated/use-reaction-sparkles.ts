@@ -14,11 +14,9 @@ import { useCallback, useState, useEffect } from 'react';
 import { haptics } from '@/lib/haptics';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import {
-  spawnParticles,
-  animateParticle,
-  type Particle,
+  spawnParticlesData,
+  type ParticleData,
   type ParticleConfig,
-  DEFAULT_CONFIG,
 } from './particle-engine';
 
 export type ReactionType = '❤️' | '😂' | '👍' | '👎' | '🔥' | '🙏' | '⭐';
@@ -36,7 +34,7 @@ export interface UseReactionSparklesReturn {
   pulseScale: SharedValue<number>;
   animatedStyle: ReturnType<typeof useAnimatedStyle>;
   pulseStyle: ReturnType<typeof useAnimatedStyle>;
-  particles: Particle[];
+  particles: ParticleData[];
   animate: (emoji: ReactionType, x?: number, y?: number) => void;
   startPulse: () => void;
   stopPulse: () => void;
@@ -70,7 +68,7 @@ export function useReactionSparkles(
   const emojiScale = useSharedValue(0);
   const emojiOpacity = useSharedValue(0);
   const pulseScale = useSharedValue(1);
-  const [particles, setParticles] = useState<Particle[]>([]);
+  const [particles, setParticles] = useState<ParticleData[]>([]);
   const [isPulsing, setIsPulsing] = useState(false);
 
   const getParticleConfig = useCallback((emoji: ReactionType): ParticleConfig => {
@@ -109,17 +107,21 @@ export function useReactionSparkles(
 
       if (enableParticles && x !== undefined && y !== undefined) {
         const config = getParticleConfig(emoji);
-        const newParticles = spawnParticles(x, y, config);
-
-        newParticles.forEach((particle) => {
-          animateParticle(particle, { ...DEFAULT_CONFIG, ...config });
-        });
+        // Get particle data (no hooks called here)
+        // Note: Particles are data-only, not animated here
+        // Components can use ParticleView or similar to render animated particles
+        const newParticles = spawnParticlesData(x, y, config);
 
         setParticles((prev) => [...prev, ...newParticles]);
 
+        // Clean up particles after their lifetime
+        const maxLifetime = config.maxLifetime ?? 1000;
         setTimeout(() => {
-          setParticles((prev) => prev.filter((p) => !newParticles.includes(p)));
-        }, config.maxLifetime ?? 1000);
+          setParticles((prev) => {
+            const now = Date.now();
+            return prev.filter((p) => now - p.createdAt < maxLifetime);
+          });
+        }, maxLifetime);
       }
 
       if (onReaction) {

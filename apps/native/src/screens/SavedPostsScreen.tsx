@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -13,7 +13,7 @@ import { AnimatedButton } from '../components/AnimatedButton';
 import { AnimatedCard } from '../components/AnimatedCard';
 import { FadeInView } from '../components/FadeInView';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
-import { useStorage } from '../hooks/useStorage';
+import { useStorage } from '../hooks/use-storage';
 import type { Post } from '../types';
 import { communityApi } from '../utils/api-client';
 import { createLogger } from '../utils/logger';
@@ -26,11 +26,7 @@ export default function SavedPostsScreen() {
   const [error, setError] = useState<string | null>(null);
   const [storedSavedPostIds, setStoredSavedPostIds] = useStorage<string[]>('savedPostIds', []);
 
-  useEffect(() => {
-    loadSavedPosts();
-  }, [storedSavedPostIds]);
-
-  const loadSavedPosts = async () => {
+  const loadSavedPosts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -48,16 +44,16 @@ export default function SavedPostsScreen() {
           const postData = await communityApi.getPostById(postId);
           posts.push({
             id: postData.id,
-            userId: postData.authorId,
-            userName: postData.authorName,
-            userAvatar: postData.authorAvatar,
+            authorId: postData.authorId,
+            authorName: postData.authorName,
+            authorAvatar: postData.authorAvatar,
             content: postData.content,
-            imageUrl: postData.images?.[0],
-            timestamp: new Date(postData.timestamp).getTime(),
+            images: postData.images,
+            timestamp: postData.timestamp,
             likes: postData.likes,
             comments: postData.comments,
             shares: postData.shares,
-            liked: false,
+            type: postData.type || 'text',
           });
         } catch (err) {
           logger.warn('Failed to fetch post', { postId, error: err });
@@ -76,7 +72,11 @@ export default function SavedPostsScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [storedSavedPostIds]);
+
+  useEffect(() => {
+    void loadSavedPosts();
+  }, [loadSavedPosts]);
 
   const unsavePost = (postId: string) => {
     setSavedPosts(savedPosts.filter((p) => p.id !== postId));
@@ -137,10 +137,16 @@ export default function SavedPostsScreen() {
           <FadeInView key={post.id} delay={100 + index * 50}>
             <AnimatedCard style={styles.postCard}>
               <View style={styles.postHeader}>
-                <Image source={{ uri: post.userAvatar }} style={styles.avatar} />
+                {post.authorAvatar ? (
+                  <Image source={{ uri: post.authorAvatar }} style={styles.avatar} />
+                ) : (
+                  <View style={[styles.avatar, { backgroundColor: '#E5E7EB' }]} />
+                )}
                 <View style={styles.userInfo}>
-                  <Text style={styles.userName}>{post.userName}</Text>
-                  <Text style={styles.postTime}>{formatTime(post.timestamp)}</Text>
+                  <Text style={styles.userName}>{post.authorName}</Text>
+                  <Text style={styles.postTime}>
+                    {formatTime(new Date(post.timestamp).getTime())}
+                  </Text>
                 </View>
                 <TouchableOpacity onPress={() => unsavePost(post.id)}>
                   <Text style={styles.unsaveButton}>✓ Saved</Text>
@@ -149,9 +155,9 @@ export default function SavedPostsScreen() {
 
               <Text style={styles.postContent}>{post.content}</Text>
 
-              {post.imageUrl && (
+              {post.images && post.images[0] && (
                 <Image
-                  source={{ uri: post.imageUrl }}
+                  source={{ uri: post.images[0] }}
                   style={styles.postImage}
                   resizeMode="cover"
                 />
@@ -174,7 +180,7 @@ export default function SavedPostsScreen() {
 
               <View style={styles.postActions}>
                 <AnimatedButton style={styles.actionButton}>
-                  <Text style={styles.actionButtonText}>{post.liked ? '❤️' : '🤍'} Like</Text>
+                  <Text style={styles.actionButtonText}>🤍 Like</Text>
                 </AnimatedButton>
                 <AnimatedButton style={styles.actionButton}>
                   <Text style={styles.actionButtonText}>💬 Comment</Text>

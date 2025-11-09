@@ -120,7 +120,7 @@ export default function ReportsView() {
   const [actionInFlight, setActionInFlight] = useState(false);
 
   useEffect(() => {
-    loadReports();
+    void loadReports();
   }, []);
 
   const loadReports = async () => {
@@ -451,11 +451,32 @@ export default function ReportsView() {
             >
               Cancel
             </Button>
-            <Button variant="secondary" onClick={handleDismiss} disabled={actionInFlight}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                void handleDismiss().catch((error) => {
+                  logger.error(
+                    'Failed to dismiss report',
+                    error instanceof Error ? error : new Error(String(error))
+                  );
+                });
+              }}
+              disabled={actionInFlight}
+            >
               <XCircle size={16} className="mr-2" />
               {actionInFlight ? 'Processing...' : 'Dismiss'}
             </Button>
-            <Button onClick={handleResolve} disabled={actionInFlight || actionType === 'dismiss'}>
+            <Button
+              onClick={() => {
+                void handleResolve().catch((error) => {
+                  logger.error(
+                    'Failed to resolve report',
+                    error instanceof Error ? error : new Error(String(error))
+                  );
+                });
+              }}
+              disabled={actionInFlight || actionType === 'dismiss'}
+            >
               <CheckCircle size={16} className="mr-2" />
               {actionInFlight ? 'Processing...' : 'Resolve'}
             </Button>

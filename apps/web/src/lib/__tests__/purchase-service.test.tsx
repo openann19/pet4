@@ -38,12 +38,12 @@ vi.mock('../logger', () => ({
 const kvStore: KVStore = new Map();
 
 const kv = {
-  get: vi.fn(
-    async <T extends unknown>(key: string): Promise<T | undefined> =>
-      kvStore.get(key) as T | undefined
-  ),
-  set: vi.fn(async <T extends unknown>(key: string, value: T): Promise<void> => {
+  get: vi.fn(<T,>(key: string): Promise<T | undefined> => {
+    return Promise.resolve(kvStore.get(key) as T | undefined);
+  }),
+  set: vi.fn(<T,>(key: string, value: T): Promise<void> => {
     kvStore.set(key, value);
+    return Promise.resolve();
   }),
   delete: vi.fn(async (key: string): Promise<void> => {
     kvStore.delete(key);

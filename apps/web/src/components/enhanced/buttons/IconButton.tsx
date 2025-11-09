@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, type ReactNode, type ButtonHTMLAttributes } from 'react';
+import { useCallback, useRef, useEffect, type ReactNode, type ButtonHTMLAttributes } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -15,8 +15,14 @@ import { useMagneticHover } from '@/effects/reanimated/use-magnetic-hover';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
+import { createLogger } from '@/lib/logger';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { Dimens } from '@/core/tokens/dimens';
+import { useUIConfig } from "@/hooks/use-ui-config";
+import { ensureFocusAppearance } from '@/core/a11y/focus-appearance';
+import { useTargetSize } from '@/hooks/use-target-size';
+
+const logger = createLogger('IconButton');
 
 export interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   icon: ReactNode;
@@ -59,6 +65,9 @@ export function IconButton({
   'aria-label': ariaLabel,
   ...props
 }: IconButtonProps): React.JSX.Element {
+  const uiConfig = useUIConfig();
+  // Target size validation - ensures 44x44px minimum touch target (already enforced by SIZE_CONFIG)
+  const { ensure: ensureTargetSize } = useTargetSize({ enabled: !disabled, autoFix: true });
   const buttonRef = useRef<HTMLButtonElement>(null);
   const glowOpacity = useSharedValue(0);
   const isActive = useSharedValue(0);
@@ -111,18 +120,23 @@ export function IconButton({
     (e: React.MouseEvent<HTMLButtonElement>) => {
       if (disabled) return;
 
-      if (enableRipple) {
-        ripple.addRipple(e);
+      try {
+        if (enableRipple) {
+          ripple.addRipple(e);
+        }
+
+        haptics.impact('light');
+
+        isActive.value = withSequence(
+          withTiming(1, { duration: 100 }),
+          withTiming(0, { duration: 200 })
+        );
+
+        onClick?.(e);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('IconButton onClick error', err);
       }
-
-      haptics.impact('light');
-
-      isActive.value = withSequence(
-        withTiming(1, { duration: 100 }),
-        withTiming(0, { duration: 200 })
-      );
-
-      onClick?.(e);
     },
     [disabled, enableRipple, ripple, onClick, isActive]
   );
@@ -130,6 +144,14 @@ export function IconButton({
   const activeStyle = useAnimatedStyle(() => ({
     transform: [{ scale: 1 - isActive.value * 0.1 }],
   })) as AnimatedStyle;
+
+  // Ensure focus appearance and target size meet WCAG 2.2 AAA requirements
+  useEffect(() => {
+    if (buttonRef.current && !disabled) {
+      ensureFocusAppearance(buttonRef.current);
+      ensureTargetSize(buttonRef.current);
+    }
+  }, [disabled, ensureTargetSize]);
 
   const config = SIZE_CONFIG[size];
   const variantStyles = {
@@ -163,7 +185,7 @@ export function IconButton({
                 'transition-all duration-300',
                 'disabled:cursor-not-allowed disabled:opacity-50',
                 'flex items-center justify-center',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-ring',
                 variantStyles[variant],
                 className
               )}

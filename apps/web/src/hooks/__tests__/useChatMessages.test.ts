@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useChatMessages } from '../useChatMessages';
-import { useStorage } from '../useStorage';
+import { useStorage } from '../use-storage';
 import { groupMessagesByDate, generateMessageId, getReactionsArray } from '@/lib/chat-utils';
 
-vi.mock('../useStorage');
+vi.mock('../use-storage');
 vi.mock('@/lib/chat-utils', () => ({
   groupMessagesByDate: vi.fn((messages) => messages),
   generateMessageId: vi.fn(() => 'msg-123'),

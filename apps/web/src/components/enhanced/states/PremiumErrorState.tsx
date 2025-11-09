@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { PremiumButton } from '../PremiumButton';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumErrorStateProps {
   title?: string;
@@ -31,7 +32,8 @@ export function PremiumErrorState({
   showDetails = false,
   className,
 }: PremiumErrorStateProps): React.JSX.Element {
-  const scale = useSharedValue(0.9);
+    const uiConfig = useUIConfig();
+    const scale = useSharedValue(0.9);
   const opacity = useSharedValue(0);
   const shake = useSharedValue(0);
 

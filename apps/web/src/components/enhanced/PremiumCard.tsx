@@ -3,6 +3,7 @@ import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reani
 import { MotionView } from '@petspark/motion';
 import { useHoverLift } from '@petspark/motion';
 import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface PremiumCardProps {
   variant?: 'default' | 'glass' | 'elevated' | 'gradient';
@@ -23,7 +24,8 @@ export function PremiumCard({
   style,
   ...props
 }: PremiumCardProps) {
-  const opacity = useSharedValue(0);
+    const uiConfig = useUIConfig();
+    const opacity = useSharedValue(0);
   const translateY = useSharedValue(20);
   const hoverLift = useHoverLift(8);
 

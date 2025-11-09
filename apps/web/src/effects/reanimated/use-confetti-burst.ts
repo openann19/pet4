@@ -31,7 +31,32 @@ export interface UseConfettiBurstOptions {
   spread?: number;
 }
 
-export function useConfettiBurst(options: UseConfettiBurstOptions = {}) {
+export interface UseConfettiBurstReturn {
+  burst: (centerX?: number, centerY?: number) => void;
+  particles: ConfettiParticle[];
+  /**
+   * Returns a worklet function that computes particle style based on progress
+   * Components should use: useAnimatedStyle(() => createParticleStyle(particle)())
+   */
+  createParticleStyle: (
+    particle: ConfettiParticle
+  ) => () => {
+    transform: Array<{
+      translateX?: number;
+      translateY?: number;
+      rotate?: string;
+      scale?: number;
+    }>;
+    opacity: number;
+    backgroundColor: string;
+    width: number;
+    height: number;
+  };
+  isAnimating: boolean;
+  progress: ReturnType<typeof useSharedValue<number>>;
+}
+
+export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConfettiBurstReturn {
   const {
     particleCount = 30,
     colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f7dc6f', '#bb8fce'],
@@ -78,33 +103,61 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}) {
         setParticles([]);
       }, duration);
     },
-    [particleCount, colors, duration, spread]
+    [particleCount, colors, duration, spread, progress]
   );
 
-  const createParticleStyle = useCallback((particle: ConfettiParticle) => {
-    return useAnimatedStyle(() => {
-      const x = particle.x + particle.velocity.x * progress.value;
-      const y =
-        particle.y + particle.velocity.y * progress.value + 300 * progress.value * progress.value;
+  // Create particle style function (returns worklet computation function)
+  // Components should create styles using: useAnimatedStyle(() => createParticleStyle(particle)())
+  // This avoids calling useAnimatedStyle inside useCallback
+  const createParticleStyle = useCallback(
+    (
+      particle: ConfettiParticle
+    ): (() => {
+      transform: Array<{
+        translateX?: number;
+        translateY?: number;
+        rotate?: string;
+        scale?: number;
+      }>;
+      opacity: number;
+      backgroundColor: string;
+      width: number;
+      height: number;
+    }) => {
+      // Return a worklet function that computes style based on progress
+      // This function will be called inside useAnimatedStyle in components
+      return () => {
+        'worklet';
+        const x = particle.x + particle.velocity.x * progress.value;
+        const y =
+          particle.y + particle.velocity.y * progress.value + 300 * progress.value * progress.value;
 
-      const rotation = particle.rotation + progress.value * 720;
-      const opacity = interpolate(progress.value, [0, 0.7, 1], [1, 1, 0]);
-      const scale = interpolate(progress.value, [0, 0.2, 1], [0, 1, 0.8]);
+        const rotation = particle.rotation + progress.value * 720;
+        const opacity = interpolate(progress.value, [0, 0.7, 1], [1, 1, 0]);
+        const scale = interpolate(progress.value, [0, 0.2, 1], [0, 1, 0.8]);
 
-      return {
-        transform: [{ translateX: x }, { translateY: y }, { rotate: `${rotation}deg` }, { scale }],
-        opacity,
-        backgroundColor: particle.color,
-        width: particle.size,
-        height: particle.size,
+        return {
+          transform: [
+            { translateX: x },
+            { translateY: y },
+            { rotate: `${rotation}deg` },
+            { scale },
+          ],
+          opacity,
+          backgroundColor: particle.color,
+          width: particle.size,
+          height: particle.size,
+        };
       };
-    });
-  }, []);
+    },
+    [progress]
+  );
 
   return {
     burst,
     particles,
     createParticleStyle,
     isAnimating: particles.length > 0,
+    progress,
   };
 }

@@ -44,7 +44,7 @@ export function DetailedPetAnalytics({
   trustProfile,
   compatibilityScore,
   matchReasons,
-}: DetailedPetAnalyticsProps) {
+}: DetailedPetAnalyticsProps): React.JSX.Element {
   const profile = trustProfile ?? pet.trustProfile ?? {}
 
   const stats = [

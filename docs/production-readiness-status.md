@@ -10,15 +10,15 @@ This canonical report supersedes prior status documents. Update this file for al
 
 ## KPI Dashboard (Last run: 2025-11-09)
 
-| Area       | Status | Metric (last observed)                                                                   | Command          | Supporting Log |
-| ---------- | ------ | ---------------------------------------------------------------------------------------- | ---------------- | -------------- |
-| Lint       | 🔴     | 5047 problems (3007 errors, 2031 warnings); mostly in scripts/, some in packages        | `pnpm lint`      | `logs/web-lint-baseline.log` |
-| Type-Check (Root) | 🟢 | 0 errors - **MAJOR IMPROVEMENT** from ~1500 errors                                     | `pnpm typecheck` | -              |
-| Type-Check (Web)  | 🔴 | Composite project config errors (TS6304, TS6310, TS6377)                                | `pnpm --filter web typecheck` | -              |
-| Type-Check (Mobile)| 🔴 | Composite project config errors (TS6304, TS6310, TS6377)                               | `pnpm --filter mobile typecheck` | -              |
-| Tests      | 🔴     | Missing test:run scripts in some packages; vitest not found in config package           | `pnpm test`      | -              |
-| Security   | 🔴     | 2 critical, 1 high, 3 moderate, 1 low (form-data, @react-native-community/cli)         | `pnpm audit --prod` | -              |
-| Build (Web) | 🔴   | Failing due to tsconfig composite project errors                                        | `pnpm --filter web build` | -              |
+| Area                | Status | Metric (last observed)                                                           | Command                          | Supporting Log               |
+| ------------------- | ------ | -------------------------------------------------------------------------------- | -------------------------------- | ---------------------------- |
+| Lint                | 🔴     | 5047 problems (3007 errors, 2031 warnings); mostly in scripts/, some in packages | `pnpm lint`                      | `logs/web-lint-baseline.log` |
+| Type-Check (Root)   | 🟢     | 0 errors - **MAJOR IMPROVEMENT** from ~1500 errors                               | `pnpm typecheck`                 | -                            |
+| Type-Check (Web)    | 🔴     | Composite project config errors (TS6304, TS6310, TS6377)                         | `pnpm --filter web typecheck`    | -                            |
+| Type-Check (Mobile) | 🔴     | Composite project config errors (TS6304, TS6310, TS6377)                         | `pnpm --filter mobile typecheck` | -                            |
+| Tests               | 🔴     | Missing test:run scripts in some packages; vitest not found in config package    | `pnpm test`                      | -                            |
+| Security            | 🔴     | 2 critical, 1 high, 3 moderate, 1 low (form-data, @react-native-community/cli)   | `pnpm audit --prod`              | -                            |
+| Build (Web)         | 🔴     | Failing due to tsconfig composite project errors                                 | `pnpm --filter web build`        | -                            |
 
 > ✅ **Progress:** Root TypeScript typecheck passes with 0 errors (down from ~1500). Admin moderation migrated to real APIs.
 > 🔁 **Action:** Fix tsconfig composite project configuration, clean up lint errors (prioritize scripts/), restore test infrastructure, remediate critical security vulnerabilities.
@@ -40,14 +40,14 @@ This canonical report supersedes prior status documents. Update this file for al
 
 ### Web Client
 
-| Capability       | Status | Notes                                                                                               |
-| ---------------- | ------ | --------------------------------------------------------------------------------------------------- |
-| UI foundations   | 🟡     | Design system, overlays, and swipe engine scaffolded but require integration into production flows. |
-| Data integration | 🟡     | Admin moderation migrated to real APIs; other services may still use mocks—needs audit.             |
-| Authentication   | 🔴     | Login/refresh logic stubbed only; API client not wired to auth context.                             |
-| Maps & realtime  | 🟠     | Architecture defined; provider hookup, geocoding, and websocket wiring pending.                     |
+| Capability       | Status | Notes                                                                                                        |
+| ---------------- | ------ | ------------------------------------------------------------------------------------------------------------ |
+| UI foundations   | 🟡     | Design system, overlays, and swipe engine scaffolded but require integration into production flows.          |
+| Data integration | 🟡     | Admin moderation migrated to real APIs; other services may still use mocks—needs audit.                      |
+| Authentication   | 🔴     | Login/refresh logic stubbed only; API client not wired to auth context.                                      |
+| Maps & realtime  | 🟠     | Architecture defined; provider hookup, geocoding, and websocket wiring pending.                              |
 | Deployment       | 🔴     | Build failing due to tsconfig composite project errors; env configuration and quality gates need completion. |
-| Admin moderation | 🟢     | ReportsView and ChatModerationPanel use real backend APIs.                                          |
+| Admin moderation | 🟢     | ReportsView and ChatModerationPanel use real backend APIs.                                                   |
 
 ### Mobile Clients (iOS & Android)
 

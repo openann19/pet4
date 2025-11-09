@@ -6,7 +6,7 @@ import { adminApi } from '@/api/admin-api';
 import { useStorage } from '@/hooks/use-storage';
 
 vi.mock('@/api/admin-api');
-vi.mock('@/hooks/useStorage');
+vi.mock('@/hooks/use-storage');
 vi.mock('@/lib/utils', () => ({
   generateULID: vi.fn(() => 'test-ulid-123'),
 }));
@@ -57,14 +57,16 @@ describe('ReportsView', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    const setValue = vi.fn().mockResolvedValue(undefined);
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-reports') {
-        return [[], vi.fn()];
+        return [[], setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      return [defaultValue, setValue, deleteValue];
     });
-    mockAdminApi.resolveReport = vi.fn().mockResolvedValue(undefined);
-    mockAdminApi.dismissReport = vi.fn().mockResolvedValue(undefined);
+    (mockAdminApi as { resolveReport?: ReturnType<typeof vi.fn>; dismissReport?: ReturnType<typeof vi.fn> }).resolveReport = vi.fn().mockResolvedValue(undefined);
+    (mockAdminApi as { resolveReport?: ReturnType<typeof vi.fn>; dismissReport?: ReturnType<typeof vi.fn> }).dismissReport = vi.fn().mockResolvedValue(undefined);
   });
 
   it('renders reports view', async () => {
@@ -86,9 +88,13 @@ describe('ReportsView', () => {
   it('displays existing reports from storage', async () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-reports') {
-        return [mockReports, vi.fn()];
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        const deleteValue = vi.fn().mockResolvedValue(undefined);
+        return [mockReports, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      const deleteValue = vi.fn().mockResolvedValue(undefined);
+      return [defaultValue, setValue, deleteValue];
     });
 
     render(<ReportsView />);
@@ -103,9 +109,13 @@ describe('ReportsView', () => {
     const user = userEvent.setup();
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-reports') {
-        return [mockReports, vi.fn()];
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        const deleteValue = vi.fn().mockResolvedValue(undefined);
+        return [mockReports, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      const deleteValue = vi.fn().mockResolvedValue(undefined);
+      return [defaultValue, setValue, deleteValue];
     });
 
     render(<ReportsView />);
@@ -191,7 +201,7 @@ describe('ReportsView', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(mockAdminApi.resolveReport).toHaveBeenCalled();
+      expect((mockAdminApi as { resolveReport?: ReturnType<typeof vi.fn> }).resolveReport).toHaveBeenCalled();
     });
   });
 
@@ -225,7 +235,7 @@ describe('ReportsView', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(mockAdminApi.dismissReport).toHaveBeenCalled();
+      expect((mockAdminApi as { dismissReport?: ReturnType<typeof vi.fn> }).dismissReport).toHaveBeenCalled();
     });
   });
 
@@ -241,9 +251,13 @@ describe('ReportsView', () => {
   it('displays status badges correctly', async () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-reports') {
-        return [mockReports, vi.fn()];
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        const deleteValue = vi.fn().mockResolvedValue(undefined);
+        return [mockReports, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()];
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      const deleteValue = vi.fn().mockResolvedValue(undefined);
+      return [defaultValue, setValue, deleteValue];
     });
 
     render(<ReportsView />);
@@ -306,7 +320,7 @@ describe('ReportsView', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(mockAdminApi.resolveReport).toHaveBeenCalled();
+      expect((mockAdminApi as { resolveReport?: ReturnType<typeof vi.fn> }).resolveReport).toHaveBeenCalled();
     });
   });
 

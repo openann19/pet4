@@ -41,7 +41,7 @@ async function fetchPetApplications(petId: string): Promise<AdoptionApplication[
 /**
  * Fetch adoption process details
  */
-async function fetchProcess(applicationId: string): Promise<AdoptionProcess> {
+function fetchProcess(applicationId: string): Promise<AdoptionProcess> {
   return apiClient.get<AdoptionProcess>(`/api/v1/adoption/applications/${applicationId}/process`, {
     cacheKey: `adoption:process:${applicationId}`,
     skipCache: false,
@@ -70,7 +70,7 @@ async function submitApplication(
 /**
  * Update application status
  */
-async function updateStatus(
+function updateStatus(
   applicationId: string,
   status: string,
   notes?: string
@@ -118,7 +118,7 @@ export function usePetAdoptionApplications(
 ): UseQueryResult<AdoptionApplication[]> {
   return useQuery({
     queryKey: queryKeys.adoption.petApplications(petId || ''),
-    queryFn: async () => {
+    queryFn: () => {
       if (!petId) {
         throw new Error('Pet ID is required')
       }
@@ -137,7 +137,7 @@ export function useAdoptionProcess(
 ): UseQueryResult<AdoptionProcess> {
   return useQuery({
     queryKey: queryKeys.adoption.process(applicationId || ''),
-    queryFn: async () => {
+    queryFn: () => {
       if (!applicationId) {
         throw new Error('Application ID is required')
       }

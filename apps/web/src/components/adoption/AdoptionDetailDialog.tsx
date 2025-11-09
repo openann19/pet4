@@ -42,10 +42,6 @@ export function AdoptionDetailDialog({
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
 
-  if (!profile) return null;
-
-  const photos = profile.photos && profile.photos.length > 0 ? profile.photos : [profile.petPhoto];
-
   const photoPresence = useAnimatePresence({
     isVisible: true,
     enterTransition: 'fade',
@@ -54,6 +50,10 @@ export function AdoptionDetailDialog({
 
   const prevButtonHover = useHoverTap({ hoverScale: 1.1, tapScale: 0.95 });
   const nextButtonHover = useHoverTap({ hoverScale: 1.1, tapScale: 0.95 });
+
+  if (!profile) return null;
+
+  const photos = profile.photos && profile.photos.length > 0 ? profile.photos : [profile.petPhoto];
 
   const nextPhoto = (): void => {
     haptics.trigger('selection');
@@ -127,9 +127,8 @@ export function AdoptionDetailDialog({
                         haptics.trigger('selection');
                         setCurrentPhotoIndex(index);
                       }}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        index === currentPhotoIndex ? 'bg-white w-6' : 'bg-white/50'
-                      }`}
+                      className={`w-2 h-2 rounded-full transition-all ${index === currentPhotoIndex ? 'bg-white w-6' : 'bg-white/50'
+                        }`}
                     />
                   ))}
                 </div>
@@ -204,9 +203,8 @@ export function AdoptionDetailDialog({
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      profile.vaccinated ? 'bg-green-500/10' : 'bg-gray-500/10'
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${profile.vaccinated ? 'bg-green-500/10' : 'bg-gray-500/10'
+                      }`}
                   >
                     {profile.vaccinated ? (
                       <CheckCircle
@@ -228,9 +226,8 @@ export function AdoptionDetailDialog({
 
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      profile.spayedNeutered ? 'bg-green-500/10' : 'bg-gray-500/10'
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${profile.spayedNeutered ? 'bg-green-500/10' : 'bg-gray-500/10'
+                      }`}
                   >
                     {profile.spayedNeutered ? (
                       <CheckCircle
@@ -254,9 +251,8 @@ export function AdoptionDetailDialog({
 
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      profile.goodWithKids ? 'bg-green-500/10' : 'bg-gray-500/10'
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${profile.goodWithKids ? 'bg-green-500/10' : 'bg-gray-500/10'
+                      }`}
                   >
                     <UsersThree
                       size={20}
@@ -279,9 +275,8 @@ export function AdoptionDetailDialog({
 
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      profile.goodWithPets ? 'bg-green-500/10' : 'bg-gray-500/10'
-                    }`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${profile.goodWithPets ? 'bg-green-500/10' : 'bg-gray-500/10'
+                      }`}
                   >
                     <PawPrint
                       size={20}

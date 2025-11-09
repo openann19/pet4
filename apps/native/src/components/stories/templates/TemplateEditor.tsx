@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import type { StoryTemplate } from './StoryTemplates';
 
-
 interface TemplateEditorProps {
   visible: boolean;
   onClose: () => void;

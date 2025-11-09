@@ -210,7 +210,12 @@ export function CreateAdoptionListingWizard({
                 : ''}
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label="Close adoption listing wizard"
+          >
             <X size={24} />
           </Button>
         </div>
@@ -222,22 +227,20 @@ export function CreateAdoptionListingWizard({
               <button
                 key={step.id}
                 onClick={() => setCurrentStep(step.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all whitespace-nowrap ${
-                  currentStep === step.id
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : index < currentStepIndex
-                      ? 'border-green-500/50 bg-green-500/5 text-green-600 dark:text-green-400'
-                      : 'border-border bg-card hover:border-primary/50'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all whitespace-nowrap ${currentStep === step.id
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : index < currentStepIndex
+                    ? 'border-green-500/50 bg-green-500/5 text-green-600 dark:text-green-400'
+                    : 'border-border bg-card hover:border-primary/50'
+                  }`}
               >
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                    index < currentStepIndex
-                      ? 'bg-green-500 text-white'
-                      : currentStep === step.id
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground'
-                  }`}
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index < currentStepIndex
+                    ? 'bg-green-500 text-white'
+                    : currentStep === step.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
+                    }`}
                 >
                   {index < currentStepIndex ? <Check size={14} weight="bold" /> : index + 1}
                 </div>
@@ -247,7 +250,7 @@ export function CreateAdoptionListingWizard({
           </div>
         </div>
 
-        <Presence mode="wait">
+        <Presence visible={true}>
           <MotionView
             key={currentStep}
             initial={{ opacity: 0, x: 20 }}
@@ -421,11 +424,10 @@ export function CreateAdoptionListingWizard({
                             key={option}
                             type="button"
                             onClick={() => toggleArrayItem('temperament', option)}
-                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
-                              formData.temperament?.includes(option)
-                                ? 'border-primary bg-primary/10 text-primary'
-                                : 'border-border hover:border-primary/50'
-                            }`}
+                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${formData.temperament?.includes(option)
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border hover:border-primary/50'
+                              }`}
                           >
                             {option}
                           </button>
@@ -613,11 +615,10 @@ export function CreateAdoptionListingWizard({
                             key={option}
                             type="button"
                             onClick={() => toggleArrayItem('requirements', option)}
-                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all text-left ${
-                              formData.requirements?.includes(option)
-                                ? 'border-primary bg-primary/10 text-primary'
-                                : 'border-border hover:border-primary/50'
-                            }`}
+                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all text-left ${formData.requirements?.includes(option)
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border hover:border-primary/50'
+                              }`}
                           >
                             {option}
                           </button>
@@ -834,7 +835,15 @@ export function CreateAdoptionListingWizard({
                 <ArrowRight size={16} className="ml-2" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={!canProceed() || isSubmitting}>
+              <Button
+                onClick={() => {
+                  void handleSubmit().catch((error) => {
+                    const err = error instanceof Error ? error : new Error(String(error));
+                    logger.error('Failed to submit adoption listing from button', err);
+                  });
+                }}
+                disabled={!canProceed() || isSubmitting}
+              >
                 {isSubmitting ? 'Submitting...' : 'Submit for Review'}
               </Button>
             )}

@@ -35,7 +35,7 @@ const SPRING_CONFIG = {
   stiffness: 400,
   damping: 20,
   mass: 1,
-}
+} as const
 
 export function FloatingActionButton({
   icon,
@@ -70,6 +70,7 @@ export function FloatingActionButton({
       scale.value = withSpring(1, SPRING_CONFIG)
       rotate.value = withSpring(0, SPRING_CONFIG)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scale, rotate, reducedMotion])
 
   // Expanded state

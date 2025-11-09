@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
@@ -32,11 +32,7 @@ export function MatchingConfigPanel() {
   const [broadcasting, setBroadcasting] = useState(false);
   const [currentUser] = useStorage<User | null>('current-user', null);
 
-  useEffect(() => {
-    loadConfig();
-  }, []);
-
-  const loadConfig = async () => {
+  const loadConfig = useCallback(async () => {
     try {
       setLoading(true);
       const currentConfig = await matchingAPI.getConfig();
@@ -68,7 +64,11 @@ export function MatchingConfigPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void loadConfig();
+  }, [loadConfig]);
 
   const handleSave = async () => {
     if (!config) return;
@@ -115,7 +115,7 @@ export function MatchingConfigPanel() {
       // Broadcast the config
       await configBroadcastService.broadcastConfig(
         'matching',
-        updatedConfig as unknown as Record<string, unknown>,
+        updatedConfig satisfies Record<string, unknown>,
         currentUser.id || 'admin'
       );
 
@@ -404,7 +404,13 @@ export function MatchingConfigPanel() {
 
       <div className="flex gap-4">
         <Button
-          onClick={handleSave}
+          onClick={() => {
+            void handleSave().catch((error) => {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('Failed to save config', err, { action: 'handleSave' });
+              toast.error('Failed to save configuration');
+            });
+          }}
           disabled={!isWeightValid || saving || broadcasting}
           className="flex items-center gap-2"
           variant="outline"
@@ -423,7 +429,15 @@ export function MatchingConfigPanel() {
         </Button>
 
         <Button
-          onClick={handleSaveAndBroadcast}
+          onClick={() => {
+            void handleSaveAndBroadcast().catch((error) => {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('Failed to save and broadcast config', err, {
+                action: 'handleSaveAndBroadcast',
+              });
+              toast.error('Failed to save and broadcast configuration');
+            });
+          }}
           disabled={!isWeightValid || saving || broadcasting}
           className="flex items-center gap-2"
         >
@@ -440,7 +454,17 @@ export function MatchingConfigPanel() {
           )}
         </Button>
 
-        <Button variant="outline" onClick={loadConfig} disabled={saving || broadcasting}>
+        <Button
+          variant="outline"
+          onClick={() => {
+            void loadConfig().catch((error) => {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('Failed to load config', err, { action: 'loadConfig' });
+              toast.error('Failed to load configuration');
+            });
+          }}
+          disabled={saving || broadcasting}
+        >
           Reset to Current
         </Button>
       </div>

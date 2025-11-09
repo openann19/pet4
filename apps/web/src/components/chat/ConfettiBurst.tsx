@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import Animated, {
+import {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -15,16 +15,19 @@ import Animated, {
   withDelay,
   Easing,
   runOnJS,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ConfettiParticle {
-  x: Animated.SharedValue<number>;
-  y: Animated.SharedValue<number>;
-  r: Animated.SharedValue<number>;
-  s: Animated.SharedValue<number>;
-  o: Animated.SharedValue<number>;
+  x: SharedValue<number>;
+  y: SharedValue<number>;
+  r: SharedValue<number>;
+  s: SharedValue<number>;
+  o: SharedValue<number>;
   color: string;
   w: number;
   h: number;
@@ -52,6 +55,7 @@ export function ConfettiBurst({
   className,
   seed = 'confetti-burst',
 }: ConfettiBurstProps) {
+  const uiConfig = useUIConfig();
   const reduced = useReducedMotion();
   const dur = getReducedMotionDuration(duration, reduced);
   const finished = useSharedValue(0);
@@ -127,26 +131,34 @@ export function ConfettiBurst({
 
   return (
     <div className={`fixed inset-0 z-50 pointer-events-none ${className ?? ''}`}>
-      {particles.map((p, i) => {
-        const style = useAnimatedStyle(() => ({
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          opacity: p.o.value,
-          transform: [
-            { translateX: p.x.value },
-            { translateY: p.y.value },
-            { rotate: `${p.r.value}deg` },
-            { scale: p.s.value },
-          ],
-          width: p.w,
-          height: p.h,
-          backgroundColor: p.color,
-          borderRadius: 2,
-        }));
-
-        return <Animated.View key={i} style={style} />;
-      })}
+      {particles.map((p, i) => (
+        <ConfettiParticleView key={i} particle={p} />
+      ))}
     </div>
   );
+}
+
+/**
+ * ConfettiParticleView component that renders a single confetti particle with animated style
+ * Uses useAnimatedStyle to create reactive styles from particle SharedValues
+ */
+function ConfettiParticleView({ particle }: { particle: ConfettiParticle }): React.JSX.Element {
+  const style = useAnimatedStyle(() => ({
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    opacity: particle.o.value,
+    transform: [
+      { translateX: particle.x.value },
+      { translateY: particle.y.value },
+      { rotate: `${particle.r.value}deg` },
+      { scale: particle.s.value },
+    ],
+    width: particle.w,
+    height: particle.h,
+    backgroundColor: particle.color,
+    borderRadius: 2,
+  }));
+
+  return <AnimatedView style={style} />;
 }

@@ -14,7 +14,9 @@ self.addEventListener('notificationclick', (e) => {
         if (clientList.length > 0) {
           return clientList[0].focus();
         }
-        return self.clients.openWindow('/chat?reply=' + encodeURIComponent(notification.data?.mid || ''));
+        return self.clients.openWindow(
+          '/chat?reply=' + encodeURIComponent(notification.data?.mid || '')
+        );
       })
     );
   } else {

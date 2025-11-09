@@ -34,7 +34,7 @@ export function getEnvVar(name: string, fallback: boolean): boolean {
   if (hasProcess(globalThis)) {
     const global = globalThis as GlobalWithProcess
     const proc = global.process
-    if (proc?.env) {
+    if (proc && proc.env) {
       const val = proc.env[name]
       if (typeof val !== 'undefined') {
         const v = String(val).toLowerCase()

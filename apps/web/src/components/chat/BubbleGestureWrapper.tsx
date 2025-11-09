@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useEffect } from 'react';
 import type { ReactNode, MouseEvent, TouchEvent } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface BubbleGestureWrapperProps {
   children: ReactNode;
@@ -38,6 +39,7 @@ export function BubbleGestureWrapper({
   onHoverEnd,
   enabled = true,
 }: BubbleGestureWrapperProps) {
+  const uiConfig = useUIConfig();
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const isPressedRef = useRef(false);
   const panStartRef = useRef<{ x: number; y: number } | null>(null);
@@ -100,7 +102,7 @@ export function BubbleGestureWrapper({
 
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
-        longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+        longPressTimerRef.current = undefined;
       }
 
       if (wasPressed && panStartRef.current) {
@@ -140,7 +142,7 @@ export function BubbleGestureWrapper({
 
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+      longPressTimerRef.current = undefined;
     }
 
     if (onHoverEnd) {
@@ -228,7 +230,7 @@ export function BubbleGestureWrapper({
 
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
-        longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>;
+        longPressTimerRef.current = undefined;
       }
 
       if (wasPressed && panStartRef.current) {

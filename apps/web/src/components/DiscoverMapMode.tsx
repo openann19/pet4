@@ -4,10 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type { Pet } from '@/lib/types';
 import { calculateDistance, snapToGrid, getCurrentLocation } from '@/lib/maps/utils';
+
+const logger = createLogger('DiscoverMapMode');
 import type { Location } from '@/lib/maps/types';
 import PetDetailDialog from '@/components/PetDetailDialog';
+import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { calculateCompatibility } from '@/lib/matching';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
 import MapLibreMap from '@/components/maps/MapLibreMap';
@@ -38,30 +42,65 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
   useEffect(() => {
     getCurrentLocation()
       .then((location) => {
-        const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
-        setUserLocation(coarse);
+        try {
+          if (location && typeof location.lat === 'number' && typeof location.lng === 'number') {
+            const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
+            setUserLocation(coarse);
+          } else {
+            logger.warn('DiscoverMapMode invalid location format', { location });
+            setUserLocation({ lat: 40.7128, lng: -74.006 });
+          }
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('DiscoverMapMode snapToGrid error', err);
+          setUserLocation({ lat: 40.7128, lng: -74.006 });
+        }
       })
-      .catch(() => {
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('DiscoverMapMode getCurrentLocation error', err);
+        // Fallback to default location (New York)
         setUserLocation({ lat: 40.7128, lng: -74.006 });
       });
   }, [mapSettings.PRIVACY_GRID_METERS]);
 
   const petsWithLocations = useMemo(() => {
-    if (!userLocation) return [];
+    if (
+      !userLocation ||
+      typeof userLocation.lat !== 'number' ||
+      typeof userLocation.lng !== 'number'
+    ) {
+      return [];
+    }
+
+    if (!Array.isArray(pets)) {
+      logger.warn('DiscoverMapMode pets is not an array', { pets });
+      return [];
+    }
 
     return pets
+      .filter((pet) => pet != null)
       .map((pet) => {
-        const petLoc = {
-          lat: userLocation.lat + (Math.random() - 0.5) * 0.1,
-          lng: userLocation.lng + (Math.random() - 0.5) * 0.1,
-        };
+        try {
+          const petLoc = {
+            lat: userLocation.lat + (Math.random() - 0.5) * 0.1,
+            lng: userLocation.lng + (Math.random() - 0.5) * 0.1,
+          };
 
-        return {
-          ...pet,
-          locationData: petLoc,
-          distance: calculateDistance(userLocation, petLoc),
-        };
+          const distance = calculateDistance(userLocation, petLoc);
+
+          return {
+            ...pet,
+            locationData: petLoc,
+            distance,
+          };
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('DiscoverMapMode calculateDistance error', err, { petId: pet?.id });
+          return null;
+        }
       })
+      .filter((pet): pet is NonNullable<typeof pet> => pet != null)
       .sort((a, b) => a.distance - b.distance);
   }, [pets, userLocation]);
 
@@ -81,9 +120,18 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
   }, [userLocation]);
 
   const handleMarkerClick = (marker: MapMarker) => {
-    haptics.trigger('light');
-    setSelectedPet(marker.data as Pet);
-    setShowDetail(true);
+    try {
+      if (!marker?.data) {
+        logger.warn('DiscoverMapMode handleMarkerClick missing marker data', { marker });
+        return;
+      }
+      haptics.trigger('light');
+      setSelectedPet(marker.data as Pet);
+      setShowDetail(true);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('DiscoverMapMode handleMarkerClick error', err, { markerId: marker?.id });
+    }
   };
 
   const handleLike = () => {
@@ -159,6 +207,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
                 size="icon"
                 onClick={() => setSelectedPet(null)}
                 className="shrink-0"
+                aria-label="Close pet details"
               >
                 <X size={20} />
               </Button>
@@ -209,6 +258,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
                 size="icon"
                 className="h-14 w-14"
                 onClick={() => setShowDetail(true)}
+                aria-label="View pet details"
               >
                 <Info size={24} />
               </Button>
@@ -218,7 +268,15 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
       )}
 
       {selectedPet && (
-        <PetDetailDialog pet={selectedPet} open={showDetail} onOpenChange={setShowDetail} />
+        <ErrorBoundary
+          fallback={
+            <div className="p-4 text-sm text-muted-foreground">
+              Failed to load pet details. Please refresh.
+            </div>
+          }
+        >
+          <PetDetailDialog pet={selectedPet} open={showDetail} onOpenChange={setShowDetail} />
+        </ErrorBoundary>
       )}
 
       <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">

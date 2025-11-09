@@ -95,8 +95,9 @@ describe('ChatModerationPanel', () => {
   });
 
   it('should handle report resolution', async () => {
+    const user = userEvent.setup();
     const resolvedReport: MessageReport = {
-      ...mockReports[0],
+      ...mockReports[0]!,
       status: 'resolved',
       action: 'warning',
       reviewedBy: 'admin1',
@@ -111,8 +112,12 @@ describe('ChatModerationPanel', () => {
       expect(screen.getByText('Reported by: user1')).toBeInTheDocument();
     });
 
-    const reviewButton = screen.getAllByText('Review')[0];
-    await userEvent.click(reviewButton);
+    const reviewButtons = screen.getAllByText('Review');
+    const reviewButton = reviewButtons[0];
+    if (!reviewButton) {
+      throw new Error('Review button not found');
+    }
+    await user.click(reviewButton);
 
     await waitFor(() => {
       expect(screen.getByText('Report Details')).toBeInTheDocument();
@@ -127,8 +132,9 @@ describe('ChatModerationPanel', () => {
   });
 
   it('should handle report dismissal', async () => {
+    const user = userEvent.setup();
     const dismissedReport: MessageReport = {
-      ...mockReports[0],
+      ...mockReports[0]!,
       status: 'dismissed',
     };
 
@@ -140,8 +146,12 @@ describe('ChatModerationPanel', () => {
       expect(screen.getByText('Reported by: user1')).toBeInTheDocument();
     });
 
-    const reviewButton = screen.getAllByText('Review')[0];
-    await userEvent.click(reviewButton);
+    const reviewButtons = screen.getAllByText('Review');
+    const reviewButton = reviewButtons[0];
+    if (!reviewButton) {
+      throw new Error('Review button not found');
+    }
+    await user.click(reviewButton);
 
     await waitFor(() => {
       expect(screen.getByText('Report Details')).toBeInTheDocument();
@@ -162,7 +172,7 @@ describe('ChatModerationPanel', () => {
   });
 
   it('should handle API errors gracefully', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
     mockAdminModerationApi.listReports.mockRejectedValue(new Error('API Error'));
 
     render(<ChatModerationPanel />);
