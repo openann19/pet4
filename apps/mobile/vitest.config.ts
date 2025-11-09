@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = __dirname
@@ -16,6 +17,7 @@ export default defineConfig({
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
   },
   plugins: [
+    react(),
     // Plugin to intercept reduced-motion imports and replace with mock
     // This prevents esbuild from trying to transform the real file which has incompatible syntax
     // The real file uses dynamic imports and typeof checks that esbuild cannot transform in test environment
@@ -67,8 +69,9 @@ export default defineConfig({
     },
   },
   esbuild: {
-    target: 'esnext',
+    target: 'es2020',
     jsx: 'automatic',
+    format: 'esm',
   },
   test: {
     globals: true,
@@ -82,6 +85,11 @@ export default defineConfig({
       '**/node_modules/**',
       '**/.expo/**',
     ],
+    server: {
+      deps: {
+        inline: ['@testing-library/react-native'],
+      },
+    },
     deps: {
       optimizer: {
         web: {

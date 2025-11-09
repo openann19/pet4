@@ -34,7 +34,6 @@
     "@types/node": "^22.13.5",
     "depcheck": "^1.4.7",
     "eslint": "^9.28.0",
-    "lint-staged": "^15.2.10",
     "eslint-import-resolver-typescript": "^3.10.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -43,13 +42,13 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "globby": "^14.0.0",
+    "lint-staged": "^15.2.10",
     "prettier": "^3.4.2",
     "ts-morph": "^23.0.0",
     "ts-prune": "^0.10.3",
     "tsx": "^4.20.6",
     "typescript": "~5.7.2",
-    "typescript-eslint": "^8.38.0",
-    "lint-staged": "^15.2.10"
+    "typescript-eslint": "^8.38.0"
   },
   "packageManager": "pnpm@10.18.3",
   "pnpm": {

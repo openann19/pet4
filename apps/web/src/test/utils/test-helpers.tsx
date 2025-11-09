@@ -8,6 +8,7 @@ import { render, RenderOptions } from '@testing-library/react';
 import { ReactElement } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi } from 'vitest';
+import { UIProvider } from '@/contexts/UIContext';
 
 /**
  * Create a test query client with default options
@@ -27,13 +28,28 @@ export function createTestQueryClient(): QueryClient {
 }
 
 /**
- * Render component with React Query provider
+ * Render component with React Query provider and UIProvider
  */
 export function renderWithQueryClient(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
   const queryClient = createTestQueryClient();
 
   function Wrapper({ children }: { children: React.ReactNode }) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    return (
+      <QueryClientProvider client={queryClient}>
+        <UIProvider>{children}</UIProvider>
+      </QueryClientProvider>
+    );
+  }
+
+  return render(ui, { wrapper: Wrapper, ...options });
+}
+
+/**
+ * Render component with UIProvider only
+ */
+export function renderWithUI(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return <UIProvider>{children}</UIProvider>;
   }
 
   return render(ui, { wrapper: Wrapper, ...options });

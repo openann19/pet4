@@ -32,13 +32,11 @@ describe('useShimmer', () => {
       removeEventListener: vi.fn(),
     }))
 
-    await act(async () => {
-      const { result } = renderHook(() => useShimmer())
+    const { result } = renderHook(() => useShimmer())
 
-      await waitFor(() => {
-        // Should return opacity-based style instead of transform
-        expect(result.current.animatedStyle).toBeDefined()
-      })
+    await waitFor(() => {
+      // Should return opacity-based style instead of transform
+      expect(result.current.animatedStyle).toBeDefined()
     })
   })
 })
