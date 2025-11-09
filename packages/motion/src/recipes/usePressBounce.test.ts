@@ -48,15 +48,13 @@ describe('usePressBounce', () => {
       removeEventListener: vi.fn(),
     }))
 
+    const { result } = renderHook(() => usePressBounce())
+
     await act(async () => {
-      const { result } = renderHook(() => usePressBounce())
-
-      act(() => {
-        result.current.onPressIn()
-      })
-
-      // Should use instant duration when reduced motion is enabled
-      expect(result.current.onPressIn).toBeDefined()
+      result.current.onPressIn()
     })
+
+    // Should use instant duration when reduced motion is enabled
+    expect(result.current.onPressIn).toBeDefined()
   })
 })
