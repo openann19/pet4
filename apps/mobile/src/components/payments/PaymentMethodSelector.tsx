@@ -163,7 +163,7 @@ export interface PaymentMethod {
     label: string
 }
 
-interface PaymentMethodSelectorProps {
+export interface PaymentMethodSelectorProps {
     paymentMethods: PaymentMethod[]
     selectedMethodId?: string
     onSelectMethod: (methodId: string) => void

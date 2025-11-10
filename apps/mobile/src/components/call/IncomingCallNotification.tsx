@@ -216,7 +216,7 @@ export const IncomingCallNotification: React.FC<IncomingCallNotificationProps> =
               variant="primary"
               size="lg"
               onPress={handleDecline}
-              style={[styles.declineButton, { backgroundColor: theme.colors.danger }]}
+              style={StyleSheet.flatten([styles.declineButton, { backgroundColor: theme.colors.danger }])}
             >
               ✕ Decline
             </PremiumButton>
@@ -226,7 +226,7 @@ export const IncomingCallNotification: React.FC<IncomingCallNotificationProps> =
               variant="primary"
               size="lg"
               onPress={handleAccept}
-              style={[styles.acceptButton, { backgroundColor: theme.colors.success }]}
+              style={StyleSheet.flatten([styles.acceptButton, { backgroundColor: theme.colors.success }])}
             >
               📹 Accept
             </PremiumButton>

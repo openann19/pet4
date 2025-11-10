@@ -191,7 +191,7 @@ function MapPane(): React.ReactElement {
         if (mapsModule) {
           const MapComponent = mapsModule.default
           if (MapComponent && typeof MapComponent === 'function') {
-            setMapView(() => MapComponent as React.ComponentType<MapViewProps>)
+            setMapView(() => MapComponent as unknown as React.ComponentType<MapViewProps>)
           } else {
             setMapView(null)
           }

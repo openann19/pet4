@@ -75,11 +75,11 @@ const PlanCard: React.FC<PlanCardProps> = ({
       <AnimatedView style={planAnimatedStyle}>
         <PremiumCard
           variant={isSelected ? 'elevated' : 'default'}
-          style={[
+          style={StyleSheet.flatten([
             styles.planCard,
-            isSelected && [styles.planCardSelected, { borderColor: plan.color }],
+            isSelected && StyleSheet.flatten([styles.planCardSelected, { borderColor: plan.color }]),
             plan.popular && styles.planCardPopular,
-          ]}
+          ])}
         >
           {plan.popular && (
             <View style={[styles.popularBadge, { backgroundColor: plan.color }]}>

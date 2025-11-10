@@ -9,7 +9,7 @@ import { queryKeys, mutationKeys } from '@/lib/query-client'
 import { paymentService } from '@/services/payment-service'
 import type { Subscription } from '@/components/payments/SubscriptionStatusCard'
 import type { BillingIssue } from '@/components/payments/BillingIssueBanner'
-import type { PaymentMethod } from '@/services/payment-service'
+import type { PaymentMethod, CreateSubscriptionRequest } from '@/services/payment-service'
 import { createLogger } from '@/utils/logger'
 
 const logger = createLogger('PaymentsAPIHooks')
@@ -78,15 +78,24 @@ export function useCreateSubscription(): UseMutationResult<
   return useMutation({
     mutationKey: mutationKeys.payments.createSubscription,
     mutationFn: async data => {
-      const response = await paymentService.createSubscription({
+      const requestData: CreateSubscriptionRequest = {
         userId: data.userId,
         planId: data.planId,
         platform: data.platform,
         billingCycle: data.billingCycle,
-        receiptData: data.receiptData,
-        purchaseToken: data.purchaseToken,
-        transactionId: data.transactionId,
-      })
+      }
+      
+      if (data.receiptData) {
+        requestData.receiptData = data.receiptData
+      }
+      if (data.purchaseToken) {
+        requestData.purchaseToken = data.purchaseToken
+      }
+      if (data.transactionId) {
+        requestData.transactionId = data.transactionId
+      }
+      
+      const response = await paymentService.createSubscription(requestData)
 
       if (!response.success || !response.subscription) {
         throw new Error(response.error ?? 'Failed to create subscription')

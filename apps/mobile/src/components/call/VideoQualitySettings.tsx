@@ -127,13 +127,13 @@ export const VideoQualitySettings: React.FC = () => {
         >
           <PremiumCard
             variant={isSelected ? 'elevated' : 'default'}
-            style={[
+            style={StyleSheet.flatten([
               styles.qualityOption,
               isSelected && {
                 borderWidth: 2,
                 borderColor: theme.colors.primary,
               },
-            ]}
+            ])}
           >
             <View style={styles.qualityOptionContent}>
               <View style={styles.qualityHeader}>

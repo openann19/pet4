@@ -25,7 +25,7 @@ export interface Subscription {
     billingPeriod?: 'monthly' | 'yearly'
 }
 
-interface SubscriptionStatusCardProps {
+export interface SubscriptionStatusCardProps {
     subscription: Subscription
     onManage: () => void
     onUpgrade?: () => void

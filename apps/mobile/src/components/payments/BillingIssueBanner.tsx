@@ -23,7 +23,7 @@ export interface BillingIssue {
     message?: string
 }
 
-interface BillingIssueBannerProps {
+export interface BillingIssueBannerProps {
     issue: BillingIssue
     onUpdatePayment: () => void
     onDismiss: () => void

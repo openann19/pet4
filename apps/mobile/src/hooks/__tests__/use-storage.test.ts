@@ -156,12 +156,12 @@ describe('useStorage', () => {
   it('updates when key changes', async () => {
     mockAsyncStorage.getItem.mockResolvedValue(null)
 
-    const { result, rerender } = renderHook<
-      [string, (value: string | ((prev: string) => string)) => Promise<void>, () => Promise<void>],
-      { key: string }
-    >(({ key }: { key: string }) => useStorage<string>(key, 'default'), {
-      initialProps: { key: 'key1' },
-    })
+    const { result, rerender } = renderHook(
+      ({ key }: { key: string }) => useStorage<string>(key, 'default'),
+      {
+        initialProps: { key: 'key1' },
+      }
+    )
 
     await waitFor(() => {
       expect(result.current[0]).toBe('default')

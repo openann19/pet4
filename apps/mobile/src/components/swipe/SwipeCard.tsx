@@ -252,7 +252,7 @@ export const SwipeCard = memo(SwipeCardComponent, (prev, next) => {
   return (
     prev.pet.id === next.pet.id &&
     prev.pet.name === next.pet.name &&
-    prev.pet.photo === next.pet.photo &&
+    prev.pet.photos[0] === next.pet.photos[0] &&
     prev.isTop === next.isTop &&
     prev.onSwipeLeft === next.onSwipeLeft &&
     prev.onSwipeRight === next.onSwipeRight

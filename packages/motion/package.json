@@ -28,6 +28,7 @@
     "@vitejs/plugin-react": "^4.2.0",
     "react": "18.2.0",
     "react-native": "0.74.5",
+    "react-native-gesture-handler": "^2.29.1",
     "typescript": "~5.7.2",
     "vitest": "^1.0.0"
   }
