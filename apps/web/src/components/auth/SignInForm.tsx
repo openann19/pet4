@@ -132,7 +132,7 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
                 setEmail(e.target.value);
                 setErrors((prev) => ({ ...prev, email: '' }));
               }}
-              className={`pl-10 h-12 ${errors.email ? 'border-destructive' : ''}`}
+              className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
               disabled={isLoading}
               autoComplete="email"
             />
@@ -158,7 +158,7 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
                 setPassword(e.target.value);
                 setErrors((prev) => ({ ...prev, password: '' }));
               }}
-              className={`pl-10 pr-12 h-12 ${errors.password ? 'border-destructive' : ''}`}
+              className={`pl-10 pr-12 ${errors.password ? 'border-destructive' : ''}`}
               disabled={isLoading}
               autoComplete="current-password"
             />

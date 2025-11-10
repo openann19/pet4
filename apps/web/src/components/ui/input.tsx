@@ -8,7 +8,7 @@ function Input({ className, type, ...props }: ComponentProps<'input'>) {
       type={type}
       data-slot="input"
       className={cn(
-        'flex h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 py-1 text-base text-foreground shadow-sm transition-all duration-200 outline-none',
+        'flex h-12 w-full min-w-0 rounded-xl border border-input bg-background px-4 py-3 text-base text-foreground shadow-sm transition-all duration-200 outline-none',
         'placeholder:text-muted-foreground placeholder:transition-opacity',
         'selection:bg-primary selection:text-primary-foreground',
         'file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground',

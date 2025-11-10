@@ -220,7 +220,7 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
                 setName(e.target.value);
                 setErrors((prev) => ({ ...prev, name: '' }));
               }}
-              className={`pl-10 h-12 ${errors.name ? 'border-destructive' : ''}`}
+              className={`pl-10 ${errors.name ? 'border-destructive' : ''}`}
               disabled={isLoading}
               autoComplete="name"
             />
@@ -246,7 +246,7 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
                 setEmail(e.target.value);
                 setErrors((prev) => ({ ...prev, email: '' }));
               }}
-              className={`pl-10 h-12 ${errors.email ? 'border-destructive' : ''}`}
+              className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
               disabled={isLoading}
               autoComplete="email"
             />
@@ -272,7 +272,7 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
                 setPassword(e.target.value);
                 setErrors((prev) => ({ ...prev, password: '' }));
               }}
-              className={`pl-10 pr-12 h-12 ${errors.password ? 'border-destructive' : ''}`}
+              className={`pl-10 pr-12 ${errors.password ? 'border-destructive' : ''}`}
               disabled={isLoading}
               autoComplete="new-password"
             />
@@ -309,7 +309,7 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
                 setConfirmPassword(e.target.value);
                 setErrors((prev) => ({ ...prev, confirmPassword: '' }));
               }}
-              className={`pl-10 pr-12 h-12 ${errors.confirmPassword ? 'border-destructive' : ''}`}
+              className={`pl-10 pr-12 ${errors.confirmPassword ? 'border-destructive' : ''}`}
               disabled={isLoading}
               autoComplete="new-password"
             />

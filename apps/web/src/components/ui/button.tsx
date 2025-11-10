@@ -16,7 +16,7 @@ import { ensureFocusAppearance } from '@/core/a11y/focus-appearance';
 import { useTargetSizeRef } from '@/hooks/use-target-size';
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:cursor-default [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-invalid:ring-destructive/30 aria-invalid:border-destructive min-h-[44px] min-w-[44px]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-base font-semibold disabled:pointer-events-none disabled:cursor-default [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-invalid:ring-destructive/30 aria-invalid:border-destructive min-h-[44px] min-w-[44px]",
   {
     variants: {
       variant: {
@@ -25,7 +25,7 @@ const buttonVariants = cva(
         destructive:
           'bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] shadow-lg hover:shadow-xl hover:bg-[var(--btn-destructive-hover-bg)] hover:text-[var(--btn-destructive-hover-fg)] active:shadow-md active:bg-[var(--btn-destructive-press-bg)] active:text-[var(--btn-destructive-press-fg)] focus-visible:ring-[var(--btn-destructive-focus-ring)] disabled:bg-[var(--btn-destructive-disabled-bg)] disabled:text-[var(--btn-destructive-disabled-fg)] disabled:shadow-none',
         outline:
-          'border-[1.5px] border-[var(--btn-outline-border)] bg-[var(--btn-outline-bg)] text-[var(--btn-outline-fg)] shadow-sm hover:shadow-lg hover:bg-[var(--btn-outline-hover-bg)] hover:text-[var(--btn-outline-hover-fg)] hover:border-[var(--btn-outline-hover-border)] active:bg-[var(--btn-outline-press-bg)] active:text-[var(--btn-outline-press-fg)] active:border-[var(--btn-outline-press-border)] disabled:bg-[var(--btn-outline-disabled-bg)] disabled:text-[var(--btn-outline-disabled-fg)] disabled:border-[var(--btn-outline-disabled-border)] disabled:shadow-none focus-visible:ring-[var(--btn-outline-focus-ring)]',
+          'border-2 border-[var(--btn-outline-border)] bg-[var(--btn-outline-bg)] text-[var(--btn-outline-fg)] shadow-sm hover:shadow-lg hover:bg-[var(--btn-outline-hover-bg)] hover:text-[var(--btn-outline-hover-fg)] hover:border-[var(--btn-outline-hover-border)] active:bg-[var(--btn-outline-press-bg)] active:text-[var(--btn-outline-press-fg)] active:border-[var(--btn-outline-press-border)] disabled:bg-[var(--btn-outline-disabled-bg)] disabled:text-[var(--btn-outline-disabled-fg)] disabled:border-[var(--btn-outline-disabled-border)] disabled:shadow-none focus-visible:ring-[var(--btn-outline-focus-ring)]',
         secondary:
           'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] shadow-lg hover:shadow-xl hover:bg-[var(--btn-secondary-hover-bg)] hover:text-[var(--btn-secondary-hover-fg)] active:shadow-md active:bg-[var(--btn-secondary-press-bg)] active:text-[var(--btn-secondary-press-fg)] disabled:bg-[var(--btn-secondary-disabled-bg)] disabled:text-[var(--btn-secondary-disabled-fg)] disabled:shadow-none focus-visible:ring-[var(--btn-secondary-focus-ring)]',
         ghost:
@@ -33,10 +33,10 @@ const buttonVariants = cva(
         link: 'text-[var(--btn-link-fg)] underline-offset-4 hover:underline hover:text-[var(--btn-link-hover-fg)] disabled:text-[var(--btn-link-disabled-fg)] disabled:no-underline focus-visible:ring-[var(--btn-link-focus-ring)] bg-transparent',
       },
       size: {
-        default: 'h-11 px-4 py-2 has-[>svg]:px-3 [&_svg]:size-5',
-        sm: 'h-9 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 [&_svg]:size-4 min-h-[44px]',
-        lg: 'h-14 rounded-md px-6 has-[>svg]:px-4 text-base [&_svg]:size-6',
-        icon: 'size-11 min-w-[44px] min-h-[44px]',
+        default: 'h-12 px-6 py-2 has-[>svg]:px-4 [&_svg]:size-5 text-base font-semibold',
+        sm: 'h-11 rounded-md gap-1.5 px-4 has-[>svg]:px-3 [&_svg]:size-4 min-h-[44px]',
+        lg: 'h-14 rounded-md px-8 has-[>svg]:px-6 text-base [&_svg]:size-6 font-semibold',
+        icon: 'size-12 min-w-[44px] min-h-[44px]',
       },
     },
     defaultVariants: {

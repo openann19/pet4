@@ -130,7 +130,7 @@ export default function OAuthButtons({
           size="lg"
           onClick={handleGoogleSignIn}
           disabled={disabled}
-          className="w-full flex items-center justify-center gap-3 h-12 border-2"
+          className="w-full flex items-center justify-center gap-3"
         >
           <GoogleLogo size={20} />
           <span className="font-semibold">{'Continue with Google'}</span>
@@ -144,7 +144,7 @@ export default function OAuthButtons({
           size="lg"
           onClick={handleAppleSignIn}
           disabled={disabled}
-          className="w-full flex items-center justify-center gap-3 h-12 border-2 bg-black text-white hover:bg-black/90 hover:text-white"
+          className="w-full flex items-center justify-center gap-3 bg-black text-white hover:bg-black/90 hover:text-white"
         >
           <span className="font-semibold">{t.auth?.signInWithApple || 'Continue with Apple'}</span>
         </Button>
