@@ -1050,6 +1050,28 @@ importers:
         specifier: ^1.0.0
         version: 1.6.1(@types/node@22.19.0)(jiti@2.6.1)(jsdom@25.0.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
 
+  packages/spec-registry:
+    dependencies:
+      '@petspark/spec-core':
+        specifier: workspace:*
+        version: link:../spec-core
+      semver:
+        specifier: ^7.7.1
+        version: 7.7.3
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.5
+        version: 22.19.0
+      '@types/semver':
+        specifier: ^7.5.8
+        version: 7.7.1
+      typescript:
+        specifier: ~5.7.2
+        version: 5.7.3
+      vitest:
+        specifier: ^1.0.0
+        version: 1.6.1(@types/node@22.19.0)(jiti@2.6.1)(jsdom@25.0.1)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)
+
   packages/spec-security:
     dependencies:
       '@noble/ed25519':
