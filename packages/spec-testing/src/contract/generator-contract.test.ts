@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import type { Pack, MergedSpec } from '@petspark/spec-core'
+import type { Pack } from '@petspark/spec-core'
 import { validatePack, mergePacks } from '@petspark/spec-core'
 
 describe('Generator Contract Tests', () => {

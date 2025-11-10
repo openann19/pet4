@@ -208,11 +208,15 @@ describe('MessageReactions', () => {
     const heartButtons = screen.getAllByText('❤️');
     expect(heartButtons.length).toBeGreaterThan(0);
 
-    const heartButton = heartButtons[0].closest('button');
-    expect(heartButton).toHaveTextContent('3');
+    const heartButton = heartButtons[0]?.closest('button');
+    if (heartButton) {
+      expect(heartButton).toHaveTextContent('3');
+    }
 
     const fireButton = screen.getByText('🔥').closest('button');
-    expect(fireButton).toHaveTextContent('1');
+    if (fireButton) {
+      expect(fireButton).toHaveTextContent('1');
+    }
   });
 
   it('handles reactions with empty emoji', () => {

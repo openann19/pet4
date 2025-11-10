@@ -1,4 +1,4 @@
-import type { Pack, PackMetadata, PackDependency } from '../schemas/pack-schema.js'
+import type { Pack, PackDependency } from '../schemas/pack-schema.js'
 import { validatePackId, validateVersion } from '../validation/validator.js'
 
 /**

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, Pressable, type ViewStyle } from 'react-native'
 import Animated, {
     useSharedValue,
@@ -10,9 +10,6 @@ import { PremiumCard } from '@/components/enhanced/PremiumCard'
 import { PremiumButton } from '@/components/enhanced/PremiumButton'
 import { useTheme } from '@/hooks/use-theme'
 import { springConfigs } from '@/effects/reanimated/transitions'
-import { createLogger } from '@/utils/logger'
-
-const logger = createLogger('PaymentMethodSelector')
 
 const AnimatedView = Animated.View
 

@@ -1,5 +1,5 @@
 import { readFile, writeFile, ensureDir } from 'fs-extra'
-import { join, dirname } from 'path'
+import { dirname } from 'path'
 import { glob } from 'glob'
 import type { Pack, MergedSpec } from '@petspark/spec-core'
 import { validatePack, mergePacks } from '@petspark/spec-core'

@@ -108,6 +108,9 @@ export function MediaViewer({
   const dragX = useSharedValue(0);
   const dragStartX = useRef<number>(0);
 
+  // Get current media early for use in callbacks
+  const currentMedia = media[currentIndex];
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -402,8 +405,6 @@ export function MediaViewer({
         });
     }
   }, [currentIndex, media, authorName, t]);
-
-  const currentMedia = media[currentIndex];
 
   if (!currentMedia) {
     return null;

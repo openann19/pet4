@@ -1,5 +1,5 @@
 import { appendFile, ensureDir } from 'fs-extra'
-import { join, dirname } from 'path'
+import { dirname } from 'path'
 
 /**
  * Log level

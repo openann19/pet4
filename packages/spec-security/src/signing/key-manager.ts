@@ -1,4 +1,3 @@
-import { randomBytes } from 'crypto'
 import * as ed from '@noble/ed25519'
 
 /**

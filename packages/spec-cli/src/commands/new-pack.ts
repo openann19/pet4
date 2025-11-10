@@ -1,5 +1,5 @@
 import { writeFile, ensureDir } from 'fs-extra'
-import { join, dirname } from 'path'
+import { dirname } from 'path'
 import type { Pack } from '@petspark/spec-core'
 import { PackSchema } from '@petspark/spec-core'
 

@@ -174,13 +174,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
     triggerHaptic('selection');
 
     try {
-      interface WindowWithSpark extends Window {
-        spark?: {
-          user: () => Promise<{ id: string; name: string; avatar?: string }>;
-        };
-      }
-      const windowWithSpark = window as WindowWithSpark;
-      const spark = windowWithSpark.spark;
+      const spark = window.spark;
       if (!spark) {
         toast.error('User service not available');
         return;
@@ -191,9 +185,9 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
 
         user.id,
 
-        (user.login ?? 'User') as string,
+        user.login,
 
-        user.avatarUrl as string | undefined,
+        user.avatarUrl,
         '❤️'
       );
 
@@ -228,7 +222,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('PostCard handleSave error', err, { postId: post.id, isSaved });
-      toast.error(t.community?.saveError || 'Failed to save post. Please try again.');
+      toast.error('Failed to save post. Please try again.');
     }
   }, [isSaved, post.id, t, logger]);
 
@@ -248,7 +242,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
           if (error instanceof Error && error.name !== 'AbortError') {
             const err = error instanceof Error ? error : new Error(String(error));
             logger.error('PostCard handleShare navigator.share error', err, { postId: post.id });
-            toast.error(t.community?.shareError || 'Failed to share post. Please try again.');
+            toast.error('Failed to share post. Please try again.');
           }
         }
       } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -260,16 +254,16 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
         } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));
           logger.error('PostCard handleShare clipboard.writeText error', err, { postId: post.id });
-          toast.error(t.community?.clipboardError || 'Failed to copy link. Please try again.');
+          toast.error('Failed to copy link. Please try again.');
         }
       } else {
         logger.warn('PostCard handleShare navigator.share and navigator.clipboard not available');
-        toast.error(t.community?.shareError || 'Sharing is not supported in this browser.');
+        toast.error('Sharing is not supported in this browser.');
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('PostCard handleShare error', err, { postId: post.id });
-      toast.error(t.community?.shareError || 'Failed to share post. Please try again.');
+      toast.error('Failed to share post. Please try again.');
     }
   }, [post.authorName, post.text, post.id, t, logger]);
 

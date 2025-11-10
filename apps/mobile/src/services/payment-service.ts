@@ -5,7 +5,6 @@
  * Location: apps/mobile/src/services/payment-service.ts
  */
 
-import { Platform } from 'react-native'
 import { createLogger } from '@/utils/logger'
 import { apiClient } from '@/utils/api-client'
 import type { Subscription } from '@/components/payments/SubscriptionStatusCard'

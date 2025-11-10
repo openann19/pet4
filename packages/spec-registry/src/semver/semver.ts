@@ -1,5 +1,4 @@
 import semver from 'semver'
-import type { RegistryEntry } from '@petspark/spec-core'
 
 /**
  * Validate semver version

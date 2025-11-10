@@ -1,6 +1,6 @@
 import * as ed from '@noble/ed25519'
 import type { KeyPair } from './key-manager.js'
-import { encodePrivateKey, encodePublicKey } from './key-manager.js'
+import { encodePublicKey } from './key-manager.js'
 
 /**
  * Signature with metadata

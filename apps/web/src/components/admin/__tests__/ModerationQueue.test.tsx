@@ -36,14 +36,18 @@ describe('ModerationQueue', () => {
     {
       id: 'task1',
       photoId: 'photo1',
+      petId: 'pet1',
       ownerId: 'owner1',
+      priority: 'medium' as const,
       status: 'pending' as const,
       createdAt: new Date().toISOString(),
     },
     {
       id: 'task2',
       photoId: 'photo2',
+      petId: 'pet2',
       ownerId: 'owner2',
+      priority: 'high' as const,
       status: 'in_progress' as const,
       createdAt: new Date().toISOString(),
     },
@@ -187,7 +191,7 @@ describe('ModerationQueue', () => {
     if (!task1) {
       throw new Error('Mock task not properly initialized');
     }
-    mockModerationService.takeTask.mockResolvedValue(undefined);
+    mockModerationService.takeTask.mockResolvedValue(task1);
 
     render(<ModerationQueue />);
 
@@ -201,7 +205,7 @@ describe('ModerationQueue', () => {
     if (!task1) {
       throw new Error('Mock task not properly initialized');
     }
-    mockModerationService.makeDecision.mockResolvedValue(undefined);
+    mockModerationService.makeDecision.mockResolvedValue(task1);
 
     render(<ModerationQueue />);
 
@@ -215,7 +219,7 @@ describe('ModerationQueue', () => {
     if (!task1) {
       throw new Error('Mock task not properly initialized');
     }
-    mockModerationService.makeDecision.mockResolvedValue(undefined);
+    mockModerationService.makeDecision.mockResolvedValue(task1);
 
     render(<ModerationQueue />);
 

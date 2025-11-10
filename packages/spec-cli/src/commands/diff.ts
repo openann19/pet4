@@ -1,5 +1,4 @@
 import { readFile } from 'fs-extra'
-import type { MergedSpec } from '@petspark/spec-core'
 import { validateMergedSpec } from '@petspark/spec-core'
 
 export interface DiffOptions {

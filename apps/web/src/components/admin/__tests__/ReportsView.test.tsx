@@ -6,6 +6,14 @@ import { adminApi } from '@/api/admin-api';
 import { useStorage } from '@/hooks/use-storage';
 
 vi.mock('@/api/admin-api');
+vi.mock('@/lib/api/admin', () => ({
+  adminReportsApi: {
+    resolveReport: vi.fn(),
+    dismissReport: vi.fn(),
+    listReports: vi.fn(),
+    getReport: vi.fn(),
+  },
+}));
 vi.mock('@/hooks/use-storage');
 vi.mock('@/lib/utils', () => ({
   generateULID: vi.fn(() => 'test-ulid-123'),
@@ -20,6 +28,9 @@ vi.mock('sonner', () => ({
 
 const mockAdminApi = vi.mocked(adminApi);
 const mockUseStorage = vi.mocked(useStorage);
+
+// Import after mock setup
+const { adminReportsApi } = await import('@/lib/api/admin');
 
 describe('ReportsView', () => {
   const mockReports = [
@@ -65,8 +76,8 @@ describe('ReportsView', () => {
       }
       return [defaultValue, setValue, deleteValue];
     });
-    (mockAdminApi as { resolveReport?: ReturnType<typeof vi.fn>; dismissReport?: ReturnType<typeof vi.fn> }).resolveReport = vi.fn().mockResolvedValue(undefined);
-    (mockAdminApi as { resolveReport?: ReturnType<typeof vi.fn>; dismissReport?: ReturnType<typeof vi.fn> }).dismissReport = vi.fn().mockResolvedValue(undefined);
+    vi.mocked(adminReportsApi.resolveReport).mockResolvedValue(mockReports[0]!);
+    vi.mocked(adminReportsApi.dismissReport).mockResolvedValue(mockReports[0]!);
   });
 
   it('renders reports view', async () => {
@@ -201,7 +212,7 @@ describe('ReportsView', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect((mockAdminApi as { resolveReport?: ReturnType<typeof vi.fn> }).resolveReport).toHaveBeenCalled();
+      expect(adminReportsApi.resolveReport).toHaveBeenCalled();
     });
   });
 
@@ -235,7 +246,7 @@ describe('ReportsView', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect((mockAdminApi as { dismissReport?: ReturnType<typeof vi.fn> }).dismissReport).toHaveBeenCalled();
+      expect(adminReportsApi.dismissReport).toHaveBeenCalled();
     });
   });
 
@@ -296,7 +307,7 @@ describe('ReportsView', () => {
 
   it('handles API errors gracefully', async () => {
     const user = userEvent.setup();
-    mockAdminApi.resolveReport.mockRejectedValue(new Error('API Error'));
+    vi.mocked(adminReportsApi.resolveReport).mockRejectedValue(new Error('API Error'));
 
     render(<ReportsView />);
 
@@ -320,7 +331,7 @@ describe('ReportsView', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect((mockAdminApi as { resolveReport?: ReturnType<typeof vi.fn> }).resolveReport).toHaveBeenCalled();
+      expect(adminReportsApi.resolveReport).toHaveBeenCalled();
     });
   });
 

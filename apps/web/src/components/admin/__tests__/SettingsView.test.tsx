@@ -171,8 +171,9 @@ describe('SettingsView', () => {
     render(<SettingsView />);
 
     const switches = screen.getAllByRole('switch');
-    if (switches.length > 0) {
-      await user.click(switches[switches.length - 1]);
+    const lastSwitch = switches[switches.length - 1];
+    if (lastSwitch) {
+      await user.click(lastSwitch);
     }
   });
 

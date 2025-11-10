@@ -41,21 +41,6 @@ export const VideoQualitySettings: React.FC = () => {
   )
   const [networkRecommendation, setNetworkRecommendation] = useState<QualityPreset>('720p')
 
-  useEffect(() => {
-    checkNetworkQuality()
-
-    // Subscribe to network changes
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      if (state.isConnected) {
-        checkNetworkQuality()
-      }
-    })
-
-    return () => {
-      unsubscribe()
-    }
-  }, [])
-
   const checkNetworkQuality = useCallback(async (): Promise<void> => {
     try {
       const state = await NetInfo.fetch()
@@ -100,6 +85,21 @@ export const VideoQualitySettings: React.FC = () => {
       setNetworkRecommendation('720p')
     }
   }, [])
+
+  useEffect(() => {
+    void checkNetworkQuality()
+
+    // Subscribe to network changes
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      if (state.isConnected) {
+        void checkNetworkQuality()
+      }
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [checkNetworkQuality])
 
   const getQualityDescription = useCallback((preset: QualityPreset): string => {
     const config = QUALITY_PRESETS[preset]

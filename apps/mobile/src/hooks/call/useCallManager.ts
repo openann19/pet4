@@ -133,7 +133,7 @@ export function useCallManager(
           stunServers: webrtcConfig.stunServers,
           turnServers: webrtcConfig.turnServers,
           onSignalingData: handleSignalingDataOut,
-          onRemoteStream: (stream) => {
+          onRemoteStream: (_stream) => {
             logger.info('Remote stream received', {
               callId: currentCall.callId,
             })

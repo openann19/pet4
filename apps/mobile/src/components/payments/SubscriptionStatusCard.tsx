@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, Pressable, type ViewStyle } from 'react-native'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -10,9 +10,6 @@ import { PremiumCard } from '@/components/enhanced/PremiumCard'
 import { PremiumButton } from '@/components/enhanced/PremiumButton'
 import { useTheme } from '@/hooks/use-theme'
 import { springConfigs } from '@/effects/reanimated/transitions'
-import { createLogger } from '@/utils/logger'
-
-const logger = createLogger('SubscriptionStatusCard')
 
 const AnimatedView = Animated.View
 

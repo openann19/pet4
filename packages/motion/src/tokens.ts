@@ -8,10 +8,16 @@ import { Easing } from 'react-native-reanimated'
 // Helper for easing functions that may not exist on web
 const createPolyEasing = (power: number) => {
   if (typeof Easing.poly === 'function') {
+    // poly returns EasingFunction directly
     return Easing.poly(power)
   }
-  // Fallback for web - approximate poly behavior
-  return Easing.bezier(0.25, 0.1, 0.25, 1)
+  // Fallback for web - use bezierFn which returns EasingFunction directly
+  // bezier returns a factory, bezierFn returns the function
+  if (typeof Easing.bezierFn === 'function') {
+    return Easing.bezierFn(0.25, 0.1, 0.25, 1)
+  }
+  // Ultimate fallback - create a simple cubic easing
+  return Easing.cubic
 }
 
 export const motion = {

@@ -1,6 +1,6 @@
 import { readFile, writeFile, ensureDir } from 'fs-extra'
-import { join, dirname } from 'path'
-import type { MergedSpec, LockFile } from '@petspark/spec-core'
+import { dirname } from 'path'
+import type { LockFile } from '@petspark/spec-core'
 import { validateMergedSpec } from '@petspark/spec-core'
 import type { KeyPair } from '@petspark/spec-security'
 import { signLockFile, loadKeyPair } from '@petspark/spec-security'

@@ -11,7 +11,6 @@ import {
   IncomingCallNotification,
 } from '@mobile/components/call'
 import type { CallInfo } from '@mobile/hooks/call/useCallManager'
-import { PremiumButton } from '@mobile/components/enhanced'
 import { useCallManager } from '@mobile/hooks/call/useCallManager'
 import { useUserStore } from '@mobile/store/user-store'
 import { colors } from '@mobile/theme/colors'
