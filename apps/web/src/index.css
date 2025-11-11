@@ -26,6 +26,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    background-color: var(--background-cream);
+    color: var(--text-primary);
   }
 
   @keyframes shimmer {
@@ -839,57 +841,102 @@ html * {
 }
 
 :root {
-  --background: oklch(0.99 0.008 100);
-  --foreground: oklch(0.2 0.02 25);
+  /* PETSPARK Light Theme Design System - Color Palette */
+  --background-cream: #F5F5F0;
+  --surface-white: #FFFFFF;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --coral-primary: #FF8B7B;
+  --coral-hover: #FF7A68;
+  --coral-active: #FF6957;
+  --blue-link: #4A90E2;
+  --border-light: #E5E7EB;
+  --border-focus: #D1D5DB;
 
-  --card: oklch(1 0.01 100);
-  --card-foreground: oklch(0.2 0.02 25);
+  /* Typography */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
 
-  --popover: oklch(1 0.01 100);
-  --popover-foreground: oklch(0.2 0.02 25);
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
 
-  --primary: oklch(0.65 0.22 330);
-  --primary-foreground: oklch(1 0 0);
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
 
-  --secondary: oklch(0.68 0.2 250);
-  --secondary-foreground: oklch(1 0 0);
+  /* Legacy variables - keeping for compatibility */
+  --background: #F5F5F0;
+  --foreground: #1F2937;
 
-  --muted: oklch(0.95 0.008 100);
-  --muted-foreground: oklch(0.48 0.015 25);
+  --card: #FFFFFF;
+  --card-foreground: #1F2937;
 
-  --accent: oklch(0.7 0.24 35);
-  --accent-foreground: oklch(0.15 0.025 25);
+  --popover: #FFFFFF;
+  --popover-foreground: #1F2937;
 
-  --destructive: oklch(0.6 0.28 25);
-  --destructive-foreground: oklch(1 0 0);
+  --primary: #FF8B7B;
+  --primary-foreground: #FFFFFF;
 
-  --border: oklch(0.9 0.015 100);
-  --input: oklch(0.9 0.015 100);
-  --ring: oklch(0.65 0.22 330);
+  --secondary: #6366F1;
+  --secondary-foreground: #FFFFFF;
+
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
+
+  --accent: #FFA500;
+  --accent-foreground: #1F2937;
+
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #FF8B7B;
 
   --radius: 0.75rem;
 
   --lavender: oklch(0.72 0.15 290);
 
   /* Button tokens - Light theme */
-  --btn-hover-bg: oklch(0.62 0.24 330);
-  --btn-press-bg: oklch(0.58 0.26 330);
-  --btn-focus-ring: oklch(0.65 0.22 330);
+  --btn-hover-bg: #FF7A68;
+  --btn-press-bg: #FF6957;
+  --btn-focus-ring: #FF8B7B;
 
-  --btn-disabled-fg: oklch(0.55 0.01 25);
-  --btn-disabled-bg: oklch(0.92 0.005 85);
-  --btn-disabled-border: oklch(0.85 0.01 85);
+  --btn-disabled-fg: #9CA3AF;
+  --btn-disabled-bg: #F3F4F6;
+  --btn-disabled-border: #E5E7EB;
 
-  --btn-ghost-hover-bg: oklch(0.93 0.015 100);
-  --btn-ghost-hover-fg: oklch(0.18 0.02 25);
+  --btn-ghost-hover-bg: #F3F4F6;
+  --btn-ghost-hover-fg: #1F2937;
 
-  --btn-outline-hover-bg: oklch(0.7 0.24 35);
-  --btn-outline-hover-fg: oklch(0.15 0.025 25);
+  --btn-outline-hover-bg: #F9FAFB;
+  --btn-outline-hover-fg: #1F2937;
 
-  --btn-link-hover-fg: oklch(0.58 0.26 330);
+  --btn-link-hover-fg: #4A90E2;
 
-  --btn-destructive-hover-bg: oklch(0.58 0.28 25);
-  --btn-destructive-press-bg: oklch(0.55 0.3 25);
+  --btn-destructive-hover-bg: #DC2626;
+  --btn-destructive-press-bg: #B91C1C;
 
   --btn-secondary-hover-bg: oklch(0.65 0.22 250);
   --btn-secondary-press-bg: oklch(0.62 0.24 250);

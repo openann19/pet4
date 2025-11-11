@@ -8,6 +8,8 @@ import {
   withSpring,
   withTiming,
   withDelay,
+  withRepeat,
+  withSequence,
 } from 'react-native-reanimated';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
@@ -52,15 +54,68 @@ export default function BottomNavBar() {
     };
   }) as AnimatedStyle;
 
+  // Holographic shimmer effect
+  const shimmerX = useSharedValue(-100);
+  useEffect(() => {
+    shimmerX.value = withRepeat(
+      withSequence(
+        withTiming(300, { duration: 4000 }),
+        withTiming(-100, { duration: 0 })
+      ),
+      -1,
+      false
+    );
+  }, [shimmerX]);
+
+  const shimmerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: shimmerX.value }],
+    };
+  }) as AnimatedStyle;
+
+  const holographicGlow = useSharedValue(0.4);
+  useEffect(() => {
+    holographicGlow.value = withRepeat(
+      withSequence(
+        withTiming(0.7, { duration: 2000 }),
+        withTiming(0.4, { duration: 2000 })
+      ),
+      -1,
+      true
+    );
+  }, [holographicGlow]);
+
+  const glowStyle2 = useAnimatedStyle(() => {
+    return {
+      opacity: holographicGlow.value,
+    };
+  }) as AnimatedStyle;
+
   return (
     <AnimatedView style={barStyle} className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-      <nav className="border-t border-border/40 bg-card/80 backdrop-blur-2xl shadow-2xl">
+      <nav className="border-t border-border/40 bg-card/85 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
         <div className="relative overflow-hidden">
-          {/* Glow effect */}
-          <div className="absolute inset-0 bg-linear-to-t from-accent/5 via-transparent to-transparent pointer-events-none" />
+          {/* Holographic gradient layers */}
+          <div className="absolute inset-0 bg-linear-to-t from-primary/15 via-accent/10 to-secondary/15 opacity-60 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-b from-transparent via-accent/5 to-transparent pointer-events-none" />
 
-          {/* Glassmorphism overlay */}
-          <div className="absolute inset-0 bg-linear-to-t from-background/60 to-background/40 backdrop-blur-xl pointer-events-none" />
+          {/* Animated shimmer effect */}
+          <AnimatedView
+            style={shimmerStyle}
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent w-1/2 h-full pointer-events-none"
+          />
+
+          {/* Pulsing glow effect */}
+          <AnimatedView
+            style={glowStyle2}
+            className="absolute inset-0 bg-linear-to-t from-accent/20 via-primary/15 to-accent/20 blur-2xl pointer-events-none"
+          />
+
+          {/* Glassmorphism overlay with enhanced blur */}
+          <div className="absolute inset-0 bg-linear-to-t from-background/70 to-background/50 backdrop-blur-2xl pointer-events-none" />
+
+          {/* Holographic color shift overlay */}
+          <div className="absolute inset-0 bg-linear-to-r from-primary/10 via-accent/10 via-secondary/10 to-primary/10 opacity-40 pointer-events-none mix-blend-overlay" />
 
           <ul className="grid grid-cols-6 relative z-10">
             {items.map((item) => {

@@ -21,7 +21,20 @@ vi.mock('@/lib/community-service', () => ({
 }));
 
 vi.mock('@/lib/haptics', () => ({
-  triggerHaptic: vi.fn(),
+  haptics: {
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
+  },
+  triggerHaptic: vi.fn(() => undefined),
 }));
 
 vi.mock('sonner', () => ({
@@ -41,6 +54,16 @@ vi.mock('react-native-reanimated', () => ({
 
 vi.mock('@/effects/reanimated/animated-view', () => ({
   AnimatedView: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  useAnimatedStyleValue: vi.fn((style: unknown) => {
+    if (typeof style === 'function') {
+      try {
+        return style();
+      } catch {
+        return {};
+      }
+    }
+    return style || {};
+  }),
 }));
 
 vi.mock('@/effects/reanimated', () => ({

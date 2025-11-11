@@ -9,6 +9,12 @@ vi.mock('@/lib/payments-service', () => ({
   },
 }));
 
+vi.mock('@/lib/enhanced-auth', () => ({
+  enhancedAuth: {
+    getCurrentUser: vi.fn(),
+  },
+}));
+
 const mockPaymentsService = vi.mocked(PaymentsService);
 
 describe('useEntitlements', () => {
@@ -20,11 +26,10 @@ describe('useEntitlements', () => {
     },
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
-    global.spark = {
-      user: vi.fn().mockResolvedValue({ id: 'user1' }),
-    } as never;
+    const { enhancedAuth } = await import('@/lib/enhanced-auth');
+    vi.mocked(enhancedAuth.getCurrentUser).mockReturnValue({ id: 'user1' } as never);
     mockPaymentsService.getUserEntitlements.mockResolvedValue(mockEntitlements as never);
   });
 

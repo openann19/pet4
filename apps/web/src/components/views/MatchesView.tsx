@@ -192,7 +192,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
       <div>
         <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
           <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-bold mb-2">{t.matches.title}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold mb-2">{t.matches.title}</h2>
             <p className="text-muted-foreground">
               {matchedPets.length}{' '}
               {matchedPets.length === 1 ? t.matches.subtitle : t.matches.subtitlePlural}

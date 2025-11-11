@@ -298,7 +298,7 @@ export function ensureFocusAppearance(
     style.boxShadow = `0 0 0 ${shadowSpread}px ${activeConfig.color}, 0 0 ${shadowBlur}px ${shadowBlur}px rgba(0, 0, 0, 0.1)`;
   }
 
-  logger.debug('Applied focus appearance', {
+  logger?.debug?.('Applied focus appearance', {
     element: element.tagName,
     config: activeConfig,
   });

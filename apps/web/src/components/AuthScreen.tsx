@@ -59,33 +59,30 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
   };
 
   return (
-    <div className="fixed inset-0 bg-background overflow-auto">
+    <div className="fixed inset-0 bg-[#F5F5F0] overflow-auto">
       <div className="min-h-screen flex flex-col">
-        <AnimatedView style={headerStyle} className="p-4 flex items-center justify-between">
-          <Button
-            variant="outline"
-            size="icon"
+        {/* Header with back button and language toggle */}
+        <AnimatedView style={headerStyle} className="p-4 sm:p-6 flex items-center justify-between">
+          <button
             onClick={handleBack}
-            className="rounded-full"
-            aria-label={t.common.back || 'Back'}
+            className="w-11 h-11 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors focus:outline-none"
+            aria-label={t.common.back}
           >
-            <ArrowLeft size={24} />
-          </Button>
+            <ArrowLeft size={20} className="text-gray-700" />
+          </button>
           <AnimatedView style={languageButtonStyle}>
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={() => {
                 haptics.trigger('selection');
                 toggleLanguage();
               }}
-              className="rounded-full h-11 px-4 border-[1.5px] font-semibold text-sm"
+              className="h-11 px-4 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2 focus:outline-none"
               aria-pressed={language === 'bg'}
               aria-label={language === 'en' ? 'Switch to Bulgarian' : 'Превключи на English'}
             >
-              <Translate size={20} weight="bold" aria-hidden />
+              <Translate size={18} weight="regular" aria-hidden />
               <span>{language === 'en' ? 'БГ' : 'EN'}</span>
-            </Button>
+            </button>
           </AnimatedView>
         </AnimatedView>
 

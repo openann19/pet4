@@ -2,7 +2,7 @@
  * SignUpForm tests
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SignUpForm from '@/components/auth/SignUpForm';
 
@@ -58,13 +58,30 @@ vi.mock('@/contexts/AuthContext', () => ({
 
 vi.mock('@/lib/haptics', () => ({
   haptics: {
-    trigger: vi.fn(),
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
   },
+  triggerHaptic: vi.fn(() => undefined),
 }));
 
 vi.mock('@/lib/analytics', () => ({
   analytics: {
-    track: vi.fn(),
+    track: vi.fn(() => Promise.resolve()),
+  },
+}));
+
+vi.mock('@/api/auth-api', () => ({
+  authApi: {
+    register: vi.fn(() => Promise.resolve({ user: { id: '1' } })),
   },
 }));
 
@@ -102,22 +119,27 @@ describe('SignUpForm', () => {
     vi.clearAllMocks();
   });
 
-  it('should render sign up form', () => {
-    render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+  it('should render sign up form', async () => {
+    await act(async () => {
+      render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    });
 
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('John Doe')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument();
+    expect(screen.getAllByPlaceholderText('••••••••')).toHaveLength(2); // Password inputs
+    expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument();
   });
 
   it('should show validation errors for empty fields', async () => {
     const user = userEvent.setup();
-    render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    await act(async () => {
+      render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    });
 
-    const submitButton = screen.getByRole('button', { name: /sign up/i });
-    await user.click(submitButton);
+    const submitButton = screen.getByRole('button', { name: /create account/i });
+    await act(async () => {
+      await user.click(submitButton);
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Name is required')).toBeInTheDocument();
@@ -128,11 +150,15 @@ describe('SignUpForm', () => {
 
   it('should validate name length', async () => {
     const user = userEvent.setup();
-    render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    await act(async () => {
+      render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    });
 
-    const nameInput = screen.getByLabelText(/name/i);
-    await user.type(nameInput, 'A');
-    await user.click(screen.getByRole('button', { name: /sign up/i }));
+    const nameInput = screen.getByPlaceholderText('John Doe');
+    await act(async () => {
+      await user.type(nameInput, 'A');
+      await user.click(screen.getByRole('button', { name: /create account/i }));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Name must be at least 2 characters')).toBeInTheDocument();
@@ -141,13 +167,17 @@ describe('SignUpForm', () => {
 
   it('should validate email format', async () => {
     const user = userEvent.setup();
-    render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    await act(async () => {
+      render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    });
 
-    const nameInput = screen.getByLabelText(/name/i);
-    const emailInput = screen.getByLabelText(/email/i);
-    await user.type(nameInput, 'John Doe');
-    await user.type(emailInput, 'invalid-email');
-    await user.click(screen.getByRole('button', { name: /sign up/i }));
+    const nameInput = screen.getByPlaceholderText('John Doe');
+    const emailInput = screen.getByPlaceholderText('you@example.com');
+    await act(async () => {
+      await user.type(nameInput, 'John Doe');
+      await user.type(emailInput, 'invalid-email');
+      await user.click(screen.getByRole('button', { name: /create account/i }));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Please enter a valid email')).toBeInTheDocument();
@@ -156,18 +186,23 @@ describe('SignUpForm', () => {
 
   it('should validate password match', async () => {
     const user = userEvent.setup();
-    render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    await act(async () => {
+      render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    });
 
-    const nameInput = screen.getByLabelText(/name/i);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
+    const nameInput = screen.getByPlaceholderText('John Doe');
+    const emailInput = screen.getByPlaceholderText('you@example.com');
+    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
+    const passwordInput = passwordInputs[0]!;
+    const confirmPasswordInput = passwordInputs[1]!;
 
-    await user.type(nameInput, 'John Doe');
-    await user.type(emailInput, 'test@example.com');
-    await user.type(passwordInput, 'password123');
-    await user.type(confirmPasswordInput, 'different123');
-    await user.click(screen.getByRole('button', { name: /sign up/i }));
+    await act(async () => {
+      await user.type(nameInput, 'John Doe');
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+      await user.type(confirmPasswordInput, 'different123');
+      await user.click(screen.getByRole('button', { name: /create account/i }));
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Passwords do not match')).toBeInTheDocument();
@@ -176,20 +211,25 @@ describe('SignUpForm', () => {
 
   it('should require terms agreement', async () => {
     const user = userEvent.setup();
-    render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    await act(async () => {
+      render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    });
 
-    const nameInput = screen.getByLabelText(/name/i);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
+    const nameInput = screen.getByPlaceholderText('John Doe');
+    const emailInput = screen.getByPlaceholderText('you@example.com');
+    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
+    const passwordInput = passwordInputs[0]!;
+    const confirmPasswordInput = passwordInputs[1]!;
 
-    await user.type(nameInput, 'John Doe');
-    await user.type(emailInput, 'test@example.com');
-    await user.type(passwordInput, 'password123');
-    await user.type(confirmPasswordInput, 'password123');
+    await act(async () => {
+      await user.type(nameInput, 'John Doe');
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+      await user.type(confirmPasswordInput, 'password123');
 
-    const submitButton = screen.getByRole('button', { name: /sign up/i });
-    await user.click(submitButton);
+      const submitButton = screen.getByRole('button', { name: /create account/i });
+      await user.click(submitButton);
+    });
 
     await waitFor(() => {
       expect(
@@ -200,10 +240,14 @@ describe('SignUpForm', () => {
 
   it('should toggle password visibility', async () => {
     const user = userEvent.setup();
-    render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    await act(async () => {
+      render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    });
 
-    const passwordInput = screen.getByLabelText(/password/i) as HTMLInputElement;
-    await user.type(passwordInput, 'password123');
+    const passwordInput = screen.getAllByPlaceholderText('••••••••')[0] as HTMLInputElement;
+    await act(async () => {
+      await user.type(passwordInput, 'password123');
+    });
 
     // Button has aria-label "Show password" or "Hide password"
     const toggleButtons = screen.getAllByRole('button', { name: /show password/i });
@@ -211,41 +255,52 @@ describe('SignUpForm', () => {
     if (!toggleButton) {
       throw new Error('Toggle button not found');
     }
-    await user.click(toggleButton);
+    await act(async () => {
+      await user.click(toggleButton);
+    });
 
     expect(passwordInput.type).toBe('text');
   });
 
   it('should call onSwitchToSignIn when switch link is clicked', async () => {
     const user = userEvent.setup();
-    render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    await act(async () => {
+      render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    });
 
     const switchLink = screen.getByText(/sign in/i);
-    await user.click(switchLink);
+    await act(async () => {
+      await user.click(switchLink);
+    });
 
     expect(mockOnSwitchToSignIn).toHaveBeenCalled();
   });
 
   it('should show age gate modal when age not verified', async () => {
     const user = userEvent.setup();
-    render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    await act(async () => {
+      render(<SignUpForm onSuccess={mockOnSuccess} onSwitchToSignIn={mockOnSwitchToSignIn} />);
+    });
 
-    const nameInput = screen.getByLabelText(/name/i);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
+    const nameInput = screen.getByPlaceholderText('John Doe');
+    const emailInput = screen.getByPlaceholderText('you@example.com');
+    const passwordInputs = screen.getAllByPlaceholderText('••••••••');
+    const passwordInput = passwordInputs[0]!;
+    const confirmPasswordInput = passwordInputs[1]!;
 
-    await user.type(nameInput, 'John Doe');
-    await user.type(emailInput, 'test@example.com');
-    await user.type(passwordInput, 'password123');
-    await user.type(confirmPasswordInput, 'password123');
+    await act(async () => {
+      await user.type(nameInput, 'John Doe');
+      await user.type(emailInput, 'test@example.com');
+      await user.type(passwordInput, 'password123');
+      await user.type(confirmPasswordInput, 'password123');
 
-    // Click the label which will toggle the checkbox
-    const termsLabel = screen.getByText(/I agree to the/i);
-    await user.click(termsLabel);
+      // Click the label which will toggle the checkbox
+      const termsLabel = screen.getByText(/I agree to the/i);
+      await user.click(termsLabel);
 
-    const submitButton = screen.getByRole('button', { name: /sign up/i });
-    await user.click(submitButton);
+      const submitButton = screen.getByRole('button', { name: /create account/i });
+      await user.click(submitButton);
+    });
 
     await waitFor(
       () => {

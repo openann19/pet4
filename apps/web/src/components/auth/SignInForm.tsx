@@ -1,239 +1,296 @@
-import { useState } from 'react';
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { EnvelopeSimple, LockKey, Eye, EyeSlash } from '@phosphor-icons/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { useApp } from '@/contexts/AppContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { haptics } from '@/lib/haptics';
-import { analytics } from '@/lib/analytics';
+import { analytics, hashEmail } from '@/lib/analytics';
 import { toast } from 'sonner';
 import OAuthButtons from './OAuthButtons';
 import { createLogger } from '@/lib/logger';
 import type { APIError } from '@/lib/contracts';
+import { authApi } from '@/api/auth-api';
 
 const logger = createLogger('SignInForm');
+
+// define schema outside render
+const signInSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email'),
+  password: z
+    .string()
+    .min(1, 'Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+});
 
 interface SignInFormProps {
   onSuccess: () => void;
   onSwitchToSignUp: () => void;
 }
 
-interface UserCredentials {
-  email: string;
-  password: string;
-}
+type UserCredentials = z.infer<typeof signInSchema>;
 
 export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormProps): JSX.Element {
   const { t } = useApp();
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Partial<Record<keyof UserCredentials, string>>>({});
+  const mountedRef = useRef(true);
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const form = useForm<UserCredentials>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: { email: '', password: '' },
+  });
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  const safeSetLoading = (val: boolean) => {
+    if (mountedRef.current) setIsLoading(val);
   };
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof UserCredentials, string>> = {};
-
-    if (!email.trim()) {
-      newErrors.email = t.auth?.emailRequired || 'Email is required';
-    } else if (!validateEmail(email)) {
-      newErrors.email = t.auth?.emailInvalid || 'Please enter a valid email';
-    }
-
-    if (!password) {
-      newErrors.password = t.auth?.passwordRequired || 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = t.auth?.passwordTooShort || 'Password must be at least 6 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      haptics.trigger('error');
-      return;
-    }
-
-    setIsLoading(true);
+  const onSubmit = async (data: UserCredentials) => {
+    safeSetLoading(true);
     haptics.trigger('light');
 
     try {
-      await login(email, password);
+      const user = await login(data.email, data.password);
+      const hashedEmail = await hashEmail(data.email);
 
-      analytics.track('user_signed_in', { email, method: 'email' });
+      if (analytics?.track) {
+        try {
+          analytics.track('user_signed_in', {
+            userId: user.id,
+            emailHash: hashedEmail,
+            method: 'email',
+          });
+        } catch (aerr) {
+          logger.warn('Analytics tracking failed', aerr);
+        }
+      }
 
       toast.success(t.auth?.signInSuccess || 'Welcome back!');
       haptics.trigger('success');
-
       onSuccess();
     } catch (error) {
       const err = error as APIError | Error;
-      logger.error(
-        'Sign in error',
-        err instanceof Error ? err : new Error(err.message || 'Unknown error')
-      );
-      const errorMessage =
+      logger.error('Sign in error', err);
+      const message =
         'message' in err
           ? err.message
-          : (err as APIError).message ||
-            t.auth?.signInError ||
-            'Failed to sign in. Please try again.';
-      toast.error(errorMessage);
+          : (err as APIError).message || t.auth?.signInError || 'Failed to sign in. Please try again.';
+      toast.error(message);
       haptics.trigger('error');
     } finally {
-      setIsLoading(false);
+      safeSetLoading(false);
     }
   };
 
-  const handleForgotPassword = () => {
+  const handleForgotPassword = async () => {
     haptics.trigger('selection');
-    analytics.track('forgot_password_clicked');
-    toast.info(t.auth?.forgotPasswordInfo || 'Password reset link would be sent to your email');
+    try {
+      analytics?.track('forgot_password_clicked');
+    } catch {
+      // Analytics tracking failed, silently ignore
+    }
+
+    const email = form.getValues('email');
+    if (!email.trim()) {
+      toast.error(t.auth?.emailRequired ?? 'Please enter your email address first');
+      form.setFocus('email');
+      return;
+    }
+
+    try {
+      safeSetLoading(true);
+      await authApi.forgotPassword({ email });
+      const successMessage: string = t.auth?.forgotPasswordSuccess ?? 'Password reset link has been sent to your email';
+      toast.success(successMessage);
+      try {
+        const emailHash = await hashEmail(email);
+        analytics?.track('forgot_password_sent', { emailHash });
+      } catch {
+        // Analytics tracking failed, silently ignore
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error('Unknown error');
+      const errorMessage: string = err.message || (t.auth?.forgotPasswordError ?? 'Failed to send password reset email. Please try again.');
+      logger.error('Forgot password error', err);
+      toast.error(errorMessage);
+      haptics.trigger('error');
+    } finally {
+      safeSetLoading(false);
+    }
   };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="w-full bg-white rounded-[24px] p-8 sm:p-12">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-foreground mb-2">
+        <h2 className="text-[32px] font-bold text-gray-900 mb-2 tracking-tight">
           {t.auth?.signInTitle || 'Welcome Back'}
         </h2>
-        <p className="text-muted-foreground">
-          {t.auth?.signInSubtitle || 'Sign in to continue to PawfectMatch'}
+        <p className="text-[15px] text-gray-500">
+          {t.auth?.signInSubtitle || 'Sign in to continue'}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium">
-            {t.auth?.email || 'Email'}
-          </Label>
-          <div className="relative">
-            <EnvelopeSimple
-              size={20}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              id="email"
-              type="email"
-              placeholder={t.auth?.emailPlaceholder || 'you@example.com'}
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setErrors((prev) => ({ ...prev, email: '' }));
-              }}
-              className={`pl-10 h-12 ${errors.email ? 'border-destructive' : ''}`}
-              disabled={isLoading}
-              autoComplete="email"
-            />
-          </div>
-          {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-        </div>
+      <Form {...form}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void form.handleSubmit(onSubmit)(e);
+          }}
+          className="space-y-5"
+          noValidate
+        >
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[13px] font-medium text-gray-700 block mb-2">
+                  {t.auth?.email || 'Email'}
+                </FormLabel>
+                <div className="relative">
+                  <EnvelopeSimple
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                  />
+                  <input
+                    {...field}
+                    type="email"
+                    placeholder={t.auth?.emailPlaceholder || 'you@example.com'}
+                    className="w-full h-[50px] pl-12 pr-4 bg-white border border-[#E5E7EB] rounded-[12px] text-[15px] text-[#1F2937] placeholder:text-[#9CA3AF] focus:border-[#D1D5DB] focus:outline-none disabled:opacity-50 transition-colors"
+                    disabled={isLoading}
+                    autoComplete="email"
+                    aria-label="Email address"
+                  />
+                </div>
+                <FormMessage className="text-[13px] text-red-600 mt-1" />
+              </FormItem>
+            )}
+          />
 
-        <div className="space-y-2">
-          <Label htmlFor="password" className="text-sm font-medium">
-            {t.auth?.password || 'Password'}
-          </Label>
-          <div className="relative">
-            <LockKey
-              size={20}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder={t.auth?.passwordPlaceholder || '••••••••'}
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setErrors((prev) => ({ ...prev, password: '' }));
-              }}
-              className={`pl-10 pr-12 h-12 ${errors.password ? 'border-destructive' : ''}`}
-              disabled={isLoading}
-              autoComplete="current-password"
-            />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-[13px] font-medium text-gray-700 block mb-2">
+                  {t.auth?.password || 'Password'}
+                </FormLabel>
+                <div className="relative">
+                  <LockKey
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                  />
+                  <input
+                    {...field}
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder={t.auth?.passwordPlaceholder || '••••••••'}
+                    className="w-full h-[50px] pl-12 pr-12 bg-white border border-[#E5E7EB] rounded-[12px] text-[15px] text-[#1F2937] placeholder:text-[#9CA3AF] focus:border-[#D1D5DB] focus:outline-none disabled:opacity-50 transition-colors"
+                    disabled={isLoading}
+                    autoComplete="current-password"
+                    aria-label="Password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPassword((v) => !v);
+                      haptics.trigger('selection');
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <FormMessage className="text-[13px] text-red-600 mt-1" />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex justify-end">
             <button
               type="button"
               onClick={() => {
-                setShowPassword(!showPassword);
-                haptics.trigger('selection');
+                void handleForgotPassword();
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              disabled={isLoading}
+              className="text-[13px] text-[#4A90E2] font-medium hover:underline focus:outline-none disabled:opacity-50"
             >
-              {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+              {t.auth?.forgotPassword ?? 'Forgot password?'}
             </button>
           </div>
-          {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-        </div>
 
-        <div className="flex justify-end">
           <button
-            type="button"
-            onClick={handleForgotPassword}
-            className="text-sm text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+            type="submit"
+            disabled={isLoading}
+            className="w-full h-[50px] bg-[#FF8B7B] hover:bg-[#FF7A68] active:bg-[#FF6957] text-white text-[15px] font-semibold rounded-[12px] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
           >
-            {t.auth?.forgotPassword || 'Forgot password?'}
+            {isLoading ? t.common.loading || 'Loading...' : t.auth?.signIn || 'Sign In'}
           </button>
-        </div>
 
-        <Button
-          type="submit"
-          size="lg"
-          disabled={isLoading}
-          className="w-full text-base font-semibold"
-        >
-          {isLoading ? t.common.loading || 'Loading...' : t.auth?.signIn || 'Sign In'}
-        </Button>
-
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border" />
+          <div className="relative my-7">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-[13px]">
+              <span className="px-4 bg-white text-gray-500">
+                {t.auth?.or || 'or'}
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-background text-muted-foreground">{t.auth?.or || 'or'}</span>
+
+          <OAuthButtons
+            onGoogleSignIn={() => {
+              haptics.trigger('light');
+              if (analytics?.track) {
+                analytics.track('oauth_clicked', { provider: 'google', action: 'signin' });
+              }
+              toast.info(t.auth?.signInWithGoogle || 'Signing in with Google...');
+            }}
+            onAppleSignIn={() => {
+              haptics.trigger('light');
+              if (analytics?.track) {
+                analytics.track('oauth_clicked', { provider: 'apple', action: 'signin' });
+              }
+              toast.info(t.auth?.signInWithApple || 'Signing in with Apple...');
+            }}
+            disabled={isLoading}
+          />
+
+          <div className="text-center mt-6">
+            <p className="text-[14px] text-gray-600">
+              {t.auth?.noAccount || "Don't have an account?"}{' '}
+              <button
+                type="button"
+                onClick={onSwitchToSignUp}
+                className="text-[#4A90E2] font-medium hover:underline focus:outline-none disabled:opacity-50"
+                disabled={isLoading}
+              >
+                {t.auth?.signUp || 'Sign up'}
+              </button>
+            </p>
           </div>
-        </div>
-
-        <OAuthButtons
-          onGoogleSignIn={() => {
-            haptics.trigger('light');
-            analytics.track('oauth_clicked', { provider: 'google', action: 'signin' });
-            // OAuth flow would handle sign-in
-            toast.info(t.auth?.signInWithGoogle || 'Signing in with Google...');
-          }}
-          onAppleSignIn={() => {
-            haptics.trigger('light');
-            analytics.track('oauth_clicked', { provider: 'apple', action: 'signin' });
-            // OAuth flow would handle sign-in
-            toast.info(t.auth?.signInWithApple || 'Signing in with Apple...');
-          }}
-          disabled={isLoading}
-        />
-
-        <div className="text-center mt-6">
-          <p className="text-sm text-muted-foreground">
-            {t.auth?.noAccount || "Don't have an account?"}{' '}
-            <button
-              type="button"
-              onClick={onSwitchToSignUp}
-              className="text-primary font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-            >
-              {t.auth?.signUp || 'Sign up'}
-            </button>
-          </p>
-        </div>
-      </form>
+        </form>
+      </Form>
     </div>
   );
 }

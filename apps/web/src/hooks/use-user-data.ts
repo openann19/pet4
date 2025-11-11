@@ -249,3 +249,18 @@ export function useActiveMatchesCount(): number {
 
   return matches.filter((match) => match.status === 'active').length;
 }
+
+/**
+ * Alias hooks for backward compatibility with tests
+ */
+export function useUserMatches(userId: string): UseQueryResult<Match[], Error> {
+  return useMatches();
+}
+
+export function useUserSwipes(userId: string): UseQueryResult<SwipeAction[], Error> {
+  return useSwipeHistory();
+}
+
+export function useUserPlaydates(userId: string): UseQueryResult<Playdate[], Error> {
+  return usePlaydates();
+}

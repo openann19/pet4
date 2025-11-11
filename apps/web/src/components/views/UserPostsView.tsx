@@ -135,7 +135,7 @@ export default function UserPostsView({
               <User size={20} />
             </Avatar>
             <div>
-              <h1 className="text-xl font-bold">{authorName}'s Posts</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">{authorName}'s Posts</h1>
               <p className="text-sm text-muted-foreground">
                 {posts.length} {posts.length === 1 ? 'post' : 'posts'}
               </p>

@@ -7,6 +7,35 @@ type EventProperties = Record<string, string | number | boolean>;
 
 const logger = createLogger('Analytics');
 
+/**
+ * Hash email address using SHA-256 for privacy-compliant analytics tracking.
+ * Returns a hex-encoded hash string.
+ *
+ * @param email - Email address to hash
+ * @returns Promise resolving to hex-encoded SHA-256 hash
+ */
+export async function hashEmail(email: string): Promise<string> {
+  if (typeof window === 'undefined' || !window.crypto?.subtle) {
+    // Fallback for environments without crypto API
+    logger.warn('Crypto API not available, using fallback hashing');
+    return `hashed_${email.length}_${email.charCodeAt(0)}`;
+  }
+
+  try {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(email.toLowerCase().trim());
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  } catch (error) {
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to hash email', errorObj);
+    // Return a safe fallback that doesn't leak PII
+    return `error_${email.length}`;
+  }
+}
+
 const CONSENT_STORAGE_KEY = 'gdpr-consent';
 
 /**
@@ -62,8 +91,19 @@ class Analytics {
     logger.debug('Clearing analytics data');
 
     // Clear analytics data if provider supports it
-    if (window.spark_analytics && typeof window.spark_analytics.clear === 'function') {
-      window.spark_analytics.clear();
+    if (
+      window.spark_analytics &&
+      'clear' in window.spark_analytics &&
+      typeof window.spark_analytics.clear === 'function'
+    ) {
+      try {
+        // TypeScript-safe call after runtime check
+        (window.spark_analytics.clear as () => void)();
+      } catch (error) {
+        const errorObj =
+          error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to clear analytics data', errorObj);
+      }
     }
   }
 }
@@ -74,6 +114,7 @@ declare global {
   interface Window {
     spark_analytics?: {
       track: (eventName: string, properties?: EventProperties) => void;
+      clear?: () => void;
     };
   }
 }

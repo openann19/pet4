@@ -161,38 +161,36 @@ export default function AdoptionManagement(): JSX.Element {
 
   const handleHideProfile = useCallback(
     (profileId: string): void => {
-      void setHiddenProfiles((prev) => {
-        const current = prev || [];
-        if (current.includes(profileId)) {
-          return current;
-        }
-        return [...current, profileId];
-      })
-        .then(() => {
-          toast.success('Adoption profile hidden');
-          logger.info('Profile hidden', { profileId });
-        })
-        .catch((error) => {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('Failed to hide profile', err, { profileId });
-          toast.error('Failed to hide profile');
+      try {
+        setHiddenProfiles((prev) => {
+          const current = prev || [];
+          if (current.includes(profileId)) {
+            return current;
+          }
+          return [...current, profileId];
         });
+        toast.success('Adoption profile hidden');
+        logger.info('Profile hidden', { profileId });
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to hide profile', err, { profileId });
+        toast.error('Failed to hide profile');
+      }
     },
     [setHiddenProfiles]
   );
 
   const handleUnhideProfile = useCallback(
     (profileId: string): void => {
-      void setHiddenProfiles((prev) => (prev || []).filter((id) => id !== profileId))
-        .then(() => {
-          toast.success('Adoption profile restored');
-          logger.info('Profile unhidden', { profileId });
-        })
-        .catch((error) => {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('Failed to unhide profile', err, { profileId });
-          toast.error('Failed to restore profile');
-        });
+      try {
+        setHiddenProfiles((prev) => (prev || []).filter((id) => id !== profileId));
+        toast.success('Adoption profile restored');
+        logger.info('Profile unhidden', { profileId });
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to unhide profile', err, { profileId });
+        toast.error('Failed to unhide profile');
+      }
     },
     [setHiddenProfiles]
   );

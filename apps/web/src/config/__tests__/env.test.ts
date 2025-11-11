@@ -36,15 +36,17 @@ describe('Environment Configuration', () => {
     expect(typeof envModule.env.VITE_API_URL).toBe('string');
   });
 
-  it('should validate HTTPS in production', () => {
+  it('should validate HTTPS in production', async () => {
     // This test validates the schema logic
     // In production, the schema would reject http:// URLs
     // Since we're in test mode, we just verify the schema exists
-    const envModule = require('../env');
+    const envModule = await import('../env');
     expect(envModule.env).toBeDefined();
     // The actual validation happens at build/runtime, not in tests
     // We verify the schema is properly defined
     expect(envModule.env.VITE_API_URL).toBeDefined();
+    // Verify the URL is valid (either http in dev or https in prod)
+    expect(envModule.env.VITE_API_URL).toMatch(/^https?:\/\//);
   });
 
   it('should accept HTTP in development', async () => {
@@ -55,13 +57,16 @@ describe('Environment Configuration', () => {
     expect(envModule.env.VITE_API_URL).toBeDefined();
   });
 
-  it('should require VITE_MAPBOX_TOKEN when maps are enabled in production', () => {
+  it('should require VITE_MAPBOX_TOKEN when maps are enabled in production', async () => {
     // Schema validation test - the schema has superRefine that checks this
     // Since we can't easily mock import.meta.env, we verify the schema logic exists
-    const envModule = require('../env');
+    const envModule = await import('../env');
     expect(envModule.env).toBeDefined();
     // The validation happens at module load time in production
     expect(envModule.env.VITE_ENABLE_MAPS).toBeDefined();
+    // In test/dev mode, maps are disabled by default, so token is optional
+    // The actual validation would throw in production if maps enabled without token
+    expect(typeof envModule.env.VITE_ENABLE_MAPS).toBe('boolean');
   });
 
   it('should accept optional VITE_MAPBOX_TOKEN when maps are disabled', async () => {

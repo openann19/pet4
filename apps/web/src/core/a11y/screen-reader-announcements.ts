@@ -40,7 +40,7 @@ class AnnouncementQueue {
   add(announcement: EnhancedAnnouncement): void {
     // Check if announcement is redundant
     if (this.isRedundant(announcement)) {
-      logger.debug('Skipping redundant announcement', { message: announcement.message });
+      logger?.debug?.('Skipping redundant announcement', { message: announcement.message });
       return;
     }
 
@@ -109,7 +109,7 @@ class AnnouncementQueue {
 
     announceToScreenReader(fullMessage, announcement.priority);
 
-    logger.debug('Announced to screen reader', {
+    logger?.debug?.('Announced to screen reader', {
       message: fullMessage,
       priority: announcement.priority,
     });

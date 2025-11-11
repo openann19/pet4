@@ -25,6 +25,16 @@ vi.mock('@/effects/reanimated/use-magnetic-hover', () => ({
 }));
 vi.mock('@/effects/reanimated/animated-view', () => ({
   AnimatedView: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  useAnimatedStyleValue: vi.fn((style: unknown) => {
+    if (typeof style === 'function') {
+      try {
+        return style();
+      } catch {
+        return {};
+      }
+    }
+    return style || {};
+  }),
 }));
 vi.mock('react-native-reanimated', () => ({
   useSharedValue: vi.fn(() => ({ value: 0 })),
@@ -33,8 +43,19 @@ vi.mock('react-native-reanimated', () => ({
 }));
 vi.mock('@/lib/haptics', () => ({
   haptics: {
-    impact: vi.fn(),
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
   },
+  triggerHaptic: vi.fn(() => undefined),
 }));
 
 describe('IconButton', () => {

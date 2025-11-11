@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../Desktop/pawfectmatch-premium-main"
 		}
 	],
 	"settings": {

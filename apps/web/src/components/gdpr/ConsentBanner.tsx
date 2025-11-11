@@ -31,7 +31,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
   const [showPreferences, setShowPreferences] = useState(false);
   const consentManager = useConsentManager({ autoLoad: true });
 
-  // Check if banner should be shown
+  // Check if banner should be shown (only on mount)
   useEffect(() => {
     if (!showOnMount) {
       return;
@@ -43,12 +43,10 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
 
     // Show banner if not dismissed or if consent version changed
     if (!dismissed || dismissedVersion !== CONSENT_VERSION) {
-      // Only show if consent is not yet loaded or if preferences are pending
-      if (!consentManager.isLoaded || !consentManager.preferences.analytics) {
-        setIsVisible(true);
-      }
+      setIsVisible(true);
     }
-  }, [showOnMount, consentManager.isLoaded, consentManager.preferences]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle accept all
   const handleAcceptAll = async (): Promise<void> => {

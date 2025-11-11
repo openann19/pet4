@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SettingsView from '../SettingsView';
 import { useStorage } from '@/hooks/use-storage';
@@ -7,7 +7,20 @@ import { triggerHaptic } from '@/lib/haptics';
 
 vi.mock('@/hooks/use-storage');
 vi.mock('@/lib/haptics', () => ({
-  triggerHaptic: vi.fn(),
+  haptics: {
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
+  },
+  triggerHaptic: vi.fn(() => undefined),
 }));
 vi.mock('sonner', () => ({
   toast: {
@@ -59,22 +72,34 @@ describe('SettingsView', () => {
     });
   });
 
-  it('renders settings view', () => {
-    render(<SettingsView />);
+  it('renders settings view', async () => {
+    await act(async () => {
+      render(<SettingsView />);
+    });
 
-    expect(screen.getByText(/settings/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/settings/i)).toBeInTheDocument();
+    });
   });
 
-  it('displays feature flags', () => {
-    render(<SettingsView />);
+  it('displays feature flags', async () => {
+    await act(async () => {
+      render(<SettingsView />);
+    });
 
-    expect(screen.getByText(/feature flags/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/feature flags/i)).toBeInTheDocument();
+    });
   });
 
-  it('displays system settings', () => {
-    render(<SettingsView />);
+  it('displays system settings', async () => {
+    await act(async () => {
+      render(<SettingsView />);
+    });
 
-    expect(screen.getByText(/system settings/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/system settings/i)).toBeInTheDocument();
+    });
   });
 
   it('toggles feature flag', async () => {
@@ -115,7 +140,7 @@ describe('SettingsView', () => {
     expect(mockSetSystemSettings).toHaveBeenCalled();
   });
 
-  it('handles null feature flags gracefully', () => {
+  it('handles null feature flags gracefully', async () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-feature-flags') {
         return [null, mockSetFeatureFlags, vi.fn()];
@@ -126,12 +151,16 @@ describe('SettingsView', () => {
       return [defaultValue, vi.fn(), vi.fn()];
     });
 
-    render(<SettingsView />);
+    await act(async () => {
+      render(<SettingsView />);
+    });
 
-    expect(screen.getByText(/settings/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/settings/i)).toBeInTheDocument();
+    });
   });
 
-  it('handles null system settings gracefully', () => {
+  it('handles null system settings gracefully', async () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-feature-flags') {
         return [defaultFeatureFlags, mockSetFeatureFlags, vi.fn()];
@@ -142,9 +171,13 @@ describe('SettingsView', () => {
       return [defaultValue, vi.fn(), vi.fn()];
     });
 
-    render(<SettingsView />);
+    await act(async () => {
+      render(<SettingsView />);
+    });
 
-    expect(screen.getByText(/settings/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/settings/i)).toBeInTheDocument();
+    });
   });
 
   it('handles error when updating feature flag', async () => {

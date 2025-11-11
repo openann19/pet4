@@ -28,21 +28,29 @@ describe('useApiCache', () => {
     vi.useRealTimers();
   });
 
-  it('returns null data initially when no cache', () => {
+  it('returns null data initially when no cache', async () => {
     mockFetcher.mockResolvedValue({ data: 'test' });
     mockQueryCache.get.mockReturnValue(null);
 
     const { result } = renderHook(() => useApiCache('test-key', mockFetcher));
 
+    await act(async () => {
+      vi.advanceTimersByTime(0);
+    });
+
     expect(result.current.data).toBeNull();
     expect(result.current.isLoading).toBe(true);
   });
 
-  it('returns cached data when available', () => {
+  it('returns cached data when available', async () => {
     const cachedData = { data: 'cached' };
     mockQueryCache.get.mockReturnValue(cachedData);
 
     const { result } = renderHook(() => useApiCache('test-key', mockFetcher));
+
+    await act(async () => {
+      vi.advanceTimersByTime(0);
+    });
 
     expect(result.current.data).toEqual(cachedData);
     expect(result.current.isLoading).toBe(false);

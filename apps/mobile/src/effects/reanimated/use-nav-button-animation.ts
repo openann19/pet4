@@ -113,7 +113,7 @@ export function useNavButtonAnimation(
     }
 
     scale.value = withSequence(
-      withSpring(0.92, {
+      withSpring(0.96, {
         damping: 15,
         stiffness: 600,
       }),

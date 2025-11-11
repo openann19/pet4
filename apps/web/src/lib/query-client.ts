@@ -1,20 +1,20 @@
 /**
  * React Query Configuration with Offline Persistence
  *
- * Sets up TanStack Query with custom storage adapter for offline caching
- * using the IndexedDB storage adapter.
+ * Sets up TanStack Query with IndexedDB-based persistence for offline caching.
+ * Uses async storage adapter for better performance and larger storage capacity.
  */
 
 import { QueryClient } from '@tanstack/react-query';
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { idbStorage } from '@/lib/storage-adapter';
 
 // Create storage persister for offline caching
-export const queryPersister = createSyncStoragePersister({
+export const queryPersister = createAsyncStoragePersister({
   storage: idbStorage,
-  key: 'petspark-query-cache',
   serialize: JSON.stringify,
   deserialize: JSON.parse,
+  key: 'petspark-query-cache',
 });
 
 // Query client configuration

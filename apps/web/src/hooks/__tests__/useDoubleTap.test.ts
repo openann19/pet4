@@ -28,17 +28,21 @@ describe('useDoubleTap', () => {
     const { result } = renderHook(() => useDoubleTap({ onDoubleTap: mockOnDoubleTap }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
-      const clickEvent1 = new MouseEvent('click', { bubbles: true });
+      const clickEvent1 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent1);
       await vi.advanceTimersByTimeAsync(200);
     });
 
     await act(async () => {
-      const clickEvent2 = new MouseEvent('click', { bubbles: true });
+      const clickEvent2 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent2);
       await vi.advanceTimersByTimeAsync(50);
     });
@@ -51,11 +55,15 @@ describe('useDoubleTap', () => {
     const { result } = renderHook(() => useDoubleTap({ onSingleTap: mockOnSingleTap }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
-      const clickEvent = new MouseEvent('click', { bubbles: true });
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent);
       await vi.advanceTimersByTimeAsync(400);
     });
@@ -68,17 +76,21 @@ describe('useDoubleTap', () => {
     const { result } = renderHook(() => useDoubleTap({ onSingleTap: mockOnSingleTap }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
-      const clickEvent1 = new MouseEvent('click', { bubbles: true });
+      const clickEvent1 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent1);
       await vi.advanceTimersByTimeAsync(200);
     });
 
     await act(async () => {
-      const clickEvent2 = new MouseEvent('click', { bubbles: true });
+      const clickEvent2 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent2);
       await vi.advanceTimersByTimeAsync(400);
     });
@@ -93,17 +105,21 @@ describe('useDoubleTap', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
-      const clickEvent1 = new MouseEvent('click', { bubbles: true });
+      const clickEvent1 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent1);
       await vi.advanceTimersByTimeAsync(400);
     });
 
     await act(async () => {
-      const clickEvent2 = new MouseEvent('click', { bubbles: true });
+      const clickEvent2 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent2);
       await vi.advanceTimersByTimeAsync(50);
     });
@@ -112,7 +128,7 @@ describe('useDoubleTap', () => {
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(200);
-      const clickEvent3 = new MouseEvent('click', { bubbles: true });
+      const clickEvent3 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent3);
       await vi.advanceTimersByTimeAsync(50);
     });
@@ -125,17 +141,21 @@ describe('useDoubleTap', () => {
     const { result } = renderHook(() => useDoubleTap({ onDoubleTap: mockOnDoubleTap }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
-      const touchEndEvent1 = new TouchEvent('touchend', { bubbles: true });
+      const touchEndEvent1 = new TouchEvent('touchend', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(touchEndEvent1);
       await vi.advanceTimersByTimeAsync(200);
     });
 
     await act(async () => {
-      const touchEndEvent2 = new TouchEvent('touchend', { bubbles: true });
+      const touchEndEvent2 = new TouchEvent('touchend', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(touchEndEvent2);
       await vi.advanceTimersByTimeAsync(50);
     });
@@ -150,17 +170,21 @@ describe('useDoubleTap', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
-      const clickEvent1 = new MouseEvent('click', { bubbles: true });
+      const clickEvent1 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent1);
       await vi.advanceTimersByTimeAsync(200);
     });
 
     await act(async () => {
-      const clickEvent2 = new MouseEvent('click', { bubbles: true });
+      const clickEvent2 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent2);
       await vi.advanceTimersByTimeAsync(50);
     });
@@ -172,11 +196,15 @@ describe('useDoubleTap', () => {
     const { result, unmount } = renderHook(() => useDoubleTap());
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
-      const clickEvent = new MouseEvent('click', { bubbles: true });
+      const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent);
     });
 
@@ -192,7 +220,11 @@ describe('useDoubleTap', () => {
     const { result, unmount } = renderHook(() => useDoubleTap());
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     unmount();
@@ -206,23 +238,27 @@ describe('useDoubleTap', () => {
     const { result } = renderHook(() => useDoubleTap({ onDoubleTap: mockOnDoubleTap }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
-      const clickEvent1 = new MouseEvent('click', { bubbles: true });
+      const clickEvent1 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent1);
       await vi.advanceTimersByTimeAsync(100);
     });
 
     await act(async () => {
-      const clickEvent2 = new MouseEvent('click', { bubbles: true });
+      const clickEvent2 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent2);
       await vi.advanceTimersByTimeAsync(100);
     });
 
     await act(async () => {
-      const clickEvent3 = new MouseEvent('click', { bubbles: true });
+      const clickEvent3 = new MouseEvent('click', { bubbles: true, cancelable: true });
       mockElement.dispatchEvent(clickEvent3);
       await vi.advanceTimersByTimeAsync(50);
     });

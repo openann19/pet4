@@ -7,6 +7,16 @@ vi.mock('@/effects/reanimated/animated-view', () => ({
   AnimatedView: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
     <div {...props}>{children}</div>
   ),
+  useAnimatedStyleValue: vi.fn((style: unknown) => {
+    if (typeof style === 'function') {
+      try {
+        return style();
+      } catch {
+        return {};
+      }
+    }
+    return style || {};
+  }),
 }));
 
 vi.mock('@/effects/reanimated/use-modal-animation', () => ({

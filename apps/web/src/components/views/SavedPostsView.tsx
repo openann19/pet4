@@ -65,7 +65,7 @@ export default function SavedPostsView({ onBack, onAuthorClick }: SavedPostsView
               <BookmarkSimple size={24} className="text-white" weight="fill" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Saved Posts</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">Saved Posts</h1>
               <p className="text-sm text-muted-foreground">
                 {posts.length} {posts.length === 1 ? 'post' : 'posts'} saved
               </p>

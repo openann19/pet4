@@ -34,6 +34,11 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
     include: ['src/**/*.{test,spec}.{ts,tsx}', 'src/**/__tests__/**/*.{ts,tsx}'],
+    server: {
+      deps: {
+        inline: ['@petspark/motion', 'react-native-reanimated']
+      }
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],

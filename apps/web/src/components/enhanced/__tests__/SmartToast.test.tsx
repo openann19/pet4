@@ -16,6 +16,16 @@ vi.mock('@/effects/reanimated/animated-view', () => ({
       {children}
     </div>
   ),
+  useAnimatedStyleValue: vi.fn((style: unknown) => {
+    if (typeof style === 'function') {
+      try {
+        return style();
+      } catch {
+        return {};
+      }
+    }
+    return style || {};
+  }),
 }));
 vi.mock('@petspark/motion', () => ({
   Presence: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,

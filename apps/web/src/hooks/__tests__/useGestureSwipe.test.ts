@@ -38,7 +38,11 @@ describe('useGestureSwipe', () => {
     const { result } = renderHook(() => useGestureSwipe({ onSwipeStart: mockOnSwipeStart }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -65,7 +69,11 @@ describe('useGestureSwipe', () => {
     const { result } = renderHook(() => useGestureSwipe({ onSwipeMove: mockOnSwipeMove }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -108,7 +116,11 @@ describe('useGestureSwipe', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -152,7 +164,11 @@ describe('useGestureSwipe', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -196,7 +212,11 @@ describe('useGestureSwipe', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -240,7 +260,11 @@ describe('useGestureSwipe', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -284,7 +308,11 @@ describe('useGestureSwipe', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -326,7 +354,11 @@ describe('useGestureSwipe', () => {
     const { result } = renderHook(() => useGestureSwipe({ onSwipeEnd: mockOnSwipeEnd }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -369,7 +401,11 @@ describe('useGestureSwipe', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -413,7 +449,11 @@ describe('useGestureSwipe', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -439,7 +479,11 @@ describe('useGestureSwipe', () => {
     const { result, unmount } = renderHook(() => useGestureSwipe());
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     unmount();
@@ -453,7 +497,11 @@ describe('useGestureSwipe', () => {
     const { result } = renderHook(() => useGestureSwipe({ onSwipeStart: mockOnSwipeStart }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {

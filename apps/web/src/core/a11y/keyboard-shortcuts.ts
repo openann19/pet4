@@ -50,7 +50,7 @@ export class KeyboardShortcutsRegistry {
     }
 
     this.shortcuts.set(key, shortcut);
-    logger.debug('Registered keyboard shortcut', { key, description: shortcut.description });
+    logger?.debug?.('Registered keyboard shortcut', { key, description: shortcut.description });
 
     // Attach handler if not already attached
     if (!this.handler) {
@@ -66,7 +66,7 @@ export class KeyboardShortcutsRegistry {
 
     if (this.shortcuts.has(shortcutKey)) {
       this.shortcuts.delete(shortcutKey);
-      logger.debug('Unregistered keyboard shortcut', { key: shortcutKey });
+      logger?.debug?.('Unregistered keyboard shortcut', { key: shortcutKey });
 
       // Remove handler if no shortcuts remain
       if (this.shortcuts.size === 0 && this.handler) {
@@ -94,7 +94,7 @@ export class KeyboardShortcutsRegistry {
    */
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
-    logger.debug('Keyboard shortcuts enabled', { enabled });
+    logger?.debug?.('Keyboard shortcuts enabled', { enabled });
   }
 
   /**
@@ -125,7 +125,7 @@ export class KeyboardShortcutsRegistry {
     if (shortcut) {
       // Check if shortcut conflicts with browser shortcuts
       if (this.conflictsWithBrowserShortcut(e)) {
-        logger.debug('Shortcut conflicts with browser shortcut', { key: shortcutKey });
+        logger?.debug?.('Shortcut conflicts with browser shortcut', { key: shortcutKey });
         return;
       }
 
@@ -142,7 +142,7 @@ export class KeyboardShortcutsRegistry {
       // Execute action
       try {
         shortcut.action();
-        logger.debug('Executed keyboard shortcut', { key: shortcutKey, description: shortcut.description });
+        logger?.debug?.('Executed keyboard shortcut', { key: shortcutKey, description: shortcut.description });
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Error executing keyboard shortcut', err, { key: shortcutKey });
@@ -220,7 +220,7 @@ export class KeyboardShortcutsRegistry {
     };
 
     document.addEventListener('keydown', this.handler);
-    logger.debug('Attached keyboard shortcuts handler');
+    logger?.debug?.('Attached keyboard shortcuts handler');
   }
 
   /**
@@ -230,7 +230,7 @@ export class KeyboardShortcutsRegistry {
     if (this.handler) {
       document.removeEventListener('keydown', this.handler);
       this.handler = null;
-      logger.debug('Detached keyboard shortcuts handler');
+      logger?.debug?.('Detached keyboard shortcuts handler');
     }
   }
 
@@ -242,7 +242,7 @@ export class KeyboardShortcutsRegistry {
     if (this.handler) {
       this.detachHandler();
     }
-    logger.debug('Cleared all keyboard shortcuts');
+    logger?.debug?.('Cleared all keyboard shortcuts');
   }
 }
 

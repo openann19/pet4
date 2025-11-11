@@ -7,7 +7,7 @@ function Card({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="card"
       className={cn(
-        'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border border-border/60 shadow-lg hover:shadow-xl hover:border-border/80 hover:-translate-y-0.5 transition-all duration-300 backdrop-blur-sm',
+        'bg-white text-card-foreground flex flex-col gap-6 rounded-[24px] border border-border/60 transition-colors duration-200',
         className
       )}
       {...props}
@@ -20,7 +20,7 @@ function CardHeader({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="card-header"
       className={cn(
-        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
+        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-12 sm:px-12 md:px-12 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
         className
       )}
       {...props}
@@ -59,14 +59,14 @@ function CardAction({ className, ...props }: ComponentProps<'div'>) {
 }
 
 function CardContent({ className, ...props }: ComponentProps<'div'>) {
-  return <div data-slot="card-content" className={cn('px-6', className)} {...props} />;
+  return <div data-slot="card-content" className={cn('px-8 sm:px-12', className)} {...props} />;
 }
 
 function CardFooter({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-footer"
-      className={cn('flex items-center px-6 [.border-t]:pt-6', className)}
+      className={cn('flex items-center px-8 sm:px-12 [.border-t]:pt-6', className)}
       {...props}
     />
   );

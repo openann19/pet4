@@ -28,10 +28,16 @@ describe('useAITypingReveal', () => {
     );
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(50);
+      // Advance past revealDelay (200ms default) + first character typingSpeed (10ms) + buffer
+      await vi.advanceTimersByTimeAsync(250);
     });
 
-    expect(result.current.revealedText.length).toBeGreaterThan(0);
+    await waitFor(
+      () => {
+        expect(result.current.revealedText.length).toBeGreaterThan(0);
+      },
+      { timeout: 500 }
+    );
   });
 
   it('should reveal text character by character', async () => {
@@ -40,13 +46,15 @@ describe('useAITypingReveal', () => {
     );
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(30);
+      // Advance past revealDelay (200ms default) + first character
+      await vi.advanceTimersByTimeAsync(220);
     });
 
     const initialLength = result.current.revealedText.length;
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(30);
+      // Advance for next character
+      await vi.advanceTimersByTimeAsync(20);
     });
 
     expect(result.current.revealedText.length).toBeGreaterThan(initialLength);
@@ -58,12 +66,18 @@ describe('useAITypingReveal', () => {
     );
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(100);
+      // Advance past revealDelay (200ms) + 2 characters * typingSpeed (10ms each) + buffer
+      await vi.advanceTimersByTimeAsync(300);
+      // Allow React to process updates
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    await waitFor(() => {
-      expect(result.current.isComplete).toBe(true);
-    });
+    await waitFor(
+      () => {
+        expect(result.current.isComplete).toBe(true);
+      },
+      { timeout: 1000 }
+    );
   });
 
   it('should reset state', () => {
@@ -103,14 +117,17 @@ describe('useAITypingReveal', () => {
   it('should call start manually', async () => {
     const { result } = renderHook(() => useAITypingReveal({ text: 'Manual', enabled: false }));
 
-    act(() => {
-      result.current.start();
-    });
-
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(50);
+      result.current.start();
+      // Advance past revealDelay (200ms default) + first character typingSpeed (30ms default) + buffer
+      await vi.advanceTimersByTimeAsync(300);
     });
 
-    expect(result.current.revealedText.length).toBeGreaterThan(0);
+    await waitFor(
+      () => {
+        expect(result.current.revealedText.length).toBeGreaterThan(0);
+      },
+      { timeout: 500 }
+    );
   });
 });

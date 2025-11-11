@@ -155,18 +155,24 @@ export default function NotificationsView({
     <PageTransitionWrapper key="notifications-view" direction="up">
       <div className="flex flex-col h-full bg-background">
         {/* Header */}
-        <div className="flex items-center gap-4 p-4 border-b bg-card">
+        <header role="banner" className="flex items-center gap-4 p-4 border-b bg-card">
           {onBack && (
-            <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="rounded-full"
+              aria-label="Go back to previous page"
+            >
               <ArrowLeft size={20} />
             </Button>
           )}
           <div className="flex items-center gap-3 flex-1">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center">
               <Bell size={24} className="text-white" weight="fill" />
             </div>
             <div className="flex-1">
-              <h1 className="text-xl font-bold">Notifications</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">Notifications</h1>
               {unreadCount > 0 && (
                 <p className="text-sm text-muted-foreground">
                   {unreadCount} {unreadCount === 1 ? 'unread' : 'unread'}
@@ -180,7 +186,7 @@ export default function NotificationsView({
               </Button>
             )}
           </div>
-        </div>
+        </header>
 
         {/* Tabs */}
         <Tabs
@@ -199,86 +205,96 @@ export default function NotificationsView({
         </Tabs>
 
         {/* Content */}
-        <ScrollArea className="flex-1">
-          <div className="p-4 space-y-2">
-            {loading ? (
-              <div className="space-y-4">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="flex gap-3">
-                    <Skeleton className="w-12 h-12 rounded-full" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-3 w-1/2" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : filteredNotifications.length === 0 ? (
-              <MotionView
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col items-center justify-center py-16 text-center"
-              >
-                <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
-                  <Bell size={48} className="text-muted-foreground" />
-                </div>
-                <h2 className="text-xl font-semibold mb-2">
-                  {filter === 'unread' ? 'No unread notifications' : 'No notifications yet'}
-                </h2>
-                <p className="text-sm text-muted-foreground max-w-sm">
-                  {filter === 'unread'
-                    ? "You're all caught up!"
-                    : "When you get notifications, they'll appear here"}
-                </p>
-              </MotionView>
-            ) : (
-              filteredNotifications.map((notification, index) => {
-                const Icon = getNotificationIcon(notification.type);
-                const message = getNotificationMessage(notification);
-
-                return (
-                  <MotionView
-                    key={notification.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                    onClick={() => handleNotificationClick(notification)}
-                    className={`
-                    flex gap-3 p-3 rounded-lg cursor-pointer transition-colors
-                    ${
-                      notification.read
-                        ? 'hover:bg-muted/50'
-                        : 'bg-primary/5 hover:bg-primary/10 border border-primary/20'
-                    }
-                  `}
-                  >
-                    <Avatar
-                      {...(notification.actorAvatar && { src: notification.actorAvatar })}
-                      className="w-12 h-12"
-                    >
-                      <Icon size={20} />
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <p className="text-sm font-medium line-clamp-2">{message}</p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {formatDistanceToNow(new Date(notification.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </p>
-                        </div>
-                        {!notification.read && (
-                          <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1" />
-                        )}
+        <main role="main" aria-label="Notifications content">
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-2">
+              {loading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex gap-3">
+                      <Skeleton className="w-12 h-12 rounded-full" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-3 w-1/2" />
                       </div>
                     </div>
-                  </MotionView>
-                );
-              })
-            )}
-          </div>
-        </ScrollArea>
+                  ))}
+                </div>
+              ) : filteredNotifications.length === 0 ? (
+                <MotionView
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col items-center justify-center py-16 text-center"
+                >
+                  <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
+                    <Bell size={48} className="text-muted-foreground" />
+                  </div>
+                  <h2 className="text-xl font-semibold mb-2">
+                    {filter === 'unread' ? 'No unread notifications' : 'No notifications yet'}
+                  </h2>
+                  <p className="text-sm text-muted-foreground max-w-sm">
+                    {filter === 'unread'
+                      ? "You're all caught up!"
+                      : "When you get notifications, they'll appear here"}
+                  </p>
+                </MotionView>
+              ) : (
+                filteredNotifications.map((notification, index) => {
+                  const Icon = getNotificationIcon(notification.type);
+                  const message = getNotificationMessage(notification);
+
+                  return (
+                    <MotionView
+                      key={notification.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.03 }}
+                      onClick={() => handleNotificationClick(notification)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${notification.read ? 'Read' : 'Unread'} notification: ${message}`}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          handleNotificationClick(notification);
+                        }
+                      }}
+                      className={`
+                    flex gap-3 p-3 rounded-lg cursor-pointer transition-colors
+                    ${notification.read
+                          ? 'hover:bg-muted/50'
+                          : 'bg-primary/5 hover:bg-primary/10 border border-primary/20'
+                        }
+                  `}
+                    >
+                      <Avatar
+                        {...(notification.actorAvatar && { src: notification.actorAvatar })}
+                        className="w-12 h-12"
+                      >
+                        <Icon size={20} />
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium line-clamp-2">{message}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {formatDistanceToNow(new Date(notification.createdAt), {
+                                addSuffix: true,
+                              })}
+                            </p>
+                          </div>
+                          {!notification.read && (
+                            <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1" />
+                          )}
+                        </div>
+                      </div>
+                    </MotionView>
+                  );
+                })
+              )}
+            </div>
+          </ScrollArea>
+        </main>
 
         {/* Post Detail Dialog */}
         {selectedPostId && (

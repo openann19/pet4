@@ -1,10 +1,18 @@
-import { useState } from 'react';
-import { MotionView } from '@petspark/motion';
+import { useState, useRef, useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { EnvelopeSimple, LockKey, User, Eye, EyeSlash } from '@phosphor-icons/react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Spinner } from '@/components/ui/spinner';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { useApp } from '@/contexts/AppContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { haptics } from '@/lib/haptics';
@@ -28,72 +36,40 @@ interface SignUpData {
   email: string;
   password: string;
   confirmPassword: string;
+  agreeToTerms: boolean;
 }
 
-export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
+export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): JSX.Element {
   const { t } = useApp();
   const { register } = useAuth();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<Partial<Record<keyof SignUpData | 'terms', string>>>({});
   const [showAgeGate, setShowAgeGate] = useState(false);
   const [ageVerified, setAgeVerified] = useState(false);
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  // Localized Zod schema ensures fallback messages work when translation keys are missing
+  const signUpSchema = z
+    .object({
+      name: z.string().min(1, t.auth?.nameRequired ?? 'Name is required').min(2, t.auth?.nameTooShort ?? 'Name too short'),
+      email: z.string().min(1, t.auth?.emailRequired ?? 'Email is required').email(t.auth?.emailInvalid ?? 'Invalid email'),
+      password: z.string().min(1, t.auth?.passwordRequired ?? 'Password is required').min(6, t.auth?.passwordTooShort ?? 'Password must be at least 6 characters'),
+      confirmPassword: z.string().min(1, t.auth?.confirmPasswordRequired ?? 'Please confirm your password'),
+      agreeToTerms: z.boolean().refine((val) => val === true, { message: t.auth?.termsRequired ?? 'You must accept the terms' }),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t.auth?.passwordMismatch ?? 'Passwords do not match',
+      path: ['confirmPassword'],
+    });
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof SignUpData | 'terms', string>> = {};
+  const form = useForm<SignUpData>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: { name: '', email: '', password: '', confirmPassword: '', agreeToTerms: false },
+    mode: 'onChange',
+  });
 
-    if (!name.trim()) {
-      newErrors.name = t.auth?.nameRequired || 'Name is required';
-    } else if (name.trim().length < 2) {
-      newErrors.name = t.auth?.nameTooShort || 'Name must be at least 2 characters';
-    }
-
-    if (!email.trim()) {
-      newErrors.email = t.auth?.emailRequired || 'Email is required';
-    } else if (!validateEmail(email)) {
-      newErrors.email = t.auth?.emailInvalid || 'Please enter a valid email';
-    }
-
-    if (!password) {
-      newErrors.password = t.auth?.passwordRequired || 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = t.auth?.passwordTooShort || 'Password must be at least 6 characters';
-    }
-
-    if (!confirmPassword) {
-      newErrors.confirmPassword = t.auth?.confirmPasswordRequired || 'Please confirm your password';
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = t.auth?.passwordMismatch || 'Passwords do not match';
-    }
-
-    if (!agreeToTerms) {
-      newErrors.terms = t.auth?.termsRequired || 'You must agree to the Terms and Privacy Policy';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      haptics.trigger('error');
-      return;
-    }
-
-    // Check age verification
+  const onSubmit = useCallback(async (data: SignUpData) => {
     if (!ageVerified) {
       setShowAgeGate(true);
       return;
@@ -103,318 +79,312 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
     haptics.trigger('light');
 
     try {
-      const user = await register(email, password, name);
+      const user = await register(data.email, data.password, data.name);
 
-      // Record consents
-      await recordConsent(user.id, 'terms', '1.0', true);
-      await recordConsent(user.id, 'privacy', '1.0', true);
+      try {
+        await Promise.all([
+          recordConsent(user.id, 'terms', '1.0', true),
+          recordConsent(user.id, 'privacy', '1.0', true),
+        ]);
+      } catch (consentErr) {
+        logger.warn('Consent record failed', consentErr);
+      }
 
-      analytics.track('user_signed_up', { email, method: 'email' });
-
-      toast.success(t.auth?.signUpSuccess || 'Account created successfully!');
+      if (analytics?.track) {
+        analytics.track('user_signed_up', { email: data.email, method: 'email' });
+      }
+      toast.success(t.auth?.signUpSuccess ?? 'Welcome aboard!');
       haptics.trigger('success');
-
       onSuccess();
     } catch (error) {
       const err = error as APIError | Error;
-      logger.error(
-        'Sign up error',
-        err instanceof Error ? err : new Error(err.message || 'Unknown error')
-      );
-      const errorMessage =
+      logger.error('Sign up error', err instanceof Error ? err : new Error(err.message || 'Unknown error'));
+
+      const message =
         'message' in err
           ? err.message
-          : (err as APIError).message ||
-            t.auth?.signUpError ||
-            'Failed to create account. Please try again.';
-      toast.error(errorMessage);
+          : (err as APIError).message || t.auth?.signUpError || 'Failed to sign up. Please try again.';
+
+      toast.error(message);
       haptics.trigger('error');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [ageVerified, register, t.auth, onSuccess]);
 
-  const handleAgeVerified = (country?: string) => {
-    setAgeVerified(true);
-    setShowAgeGate(false);
-    haptics.trigger('success');
-    analytics.track('age_verified', { country: country || 'unknown' });
-
-    // Age verified - automatically continue with sign-up flow
-    // This allows seamless continuation after age gate completion
-    const form = document.querySelector('form');
-    if (form) {
-      // Trigger form submission if form data is valid
-      // This resumes the sign-up process after age verification
-      const formData = new FormData(form);
-      const hasFormData = name && email && password && confirmPassword && agreeToTerms;
-
-      if (hasFormData && validateForm()) {
-        form.requestSubmit();
-      } else {
-        // If form is incomplete, user can continue filling it after age verification
-        // The form will validate and submit normally when user clicks submit
-        logger.info('Age verified, waiting for form completion', { email });
-      }
-    }
-  };
-
-  const handleOAuthSuccess = async (provider: 'google' | 'apple') => {
-    try {
-      haptics.trigger('light');
-      analytics.track('oauth_success', { provider });
-
-      // Age verification is required for OAuth flows
-      // Server-side OAuth providers may include age data, but we verify client-side for consistency
-      // Show age gate modal if user hasn't verified age yet
-      if (!ageVerified) {
-        setShowAgeGate(true);
-        return;
-      }
-
-      // Age verified - proceed with OAuth registration
-      // Note: OAuth provider should handle user creation, this is for post-auth flow
-      toast.success(t.auth?.signUpSuccess || 'Account created successfully!');
+  const handleAgeVerified = useCallback(
+    (country?: string) => {
+      setAgeVerified(true);
+      setShowAgeGate(false);
       haptics.trigger('success');
-      onSuccess();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('OAuth error', err, { provider });
-      toast.error(t.auth?.signUpError || 'Failed to sign up. Please try again.');
-      haptics.trigger('error');
-    }
-  };
+      if (analytics?.track) {
+        analytics.track('age_verified', { country: country ?? 'unknown' });
+      }
+
+      if (form.formState.isValid && formRef.current) {
+        formRef.current.requestSubmit();
+      } else if (form.formState.isValid) {
+        void form.handleSubmit(onSubmit)();
+      } else {
+        logger.info('Age verified, waiting for form completion', { email: form.getValues('email') });
+      }
+    },
+    [form, onSubmit],
+  );
+
+  const handleOAuthSuccess = useCallback(
+    (provider: 'google' | 'apple') => {
+      try {
+        haptics.trigger('light');
+        if (analytics?.track) {
+          analytics.track('oauth_success', { provider });
+        }
+
+        if (!ageVerified) {
+          setShowAgeGate(true);
+          return;
+        }
+
+        toast.success(t.auth?.signUpSuccess ?? 'Account created');
+        haptics.trigger('success');
+        onSuccess();
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('OAuth error', err, { provider });
+        toast.error(t.auth?.signUpError ?? 'OAuth sign-up failed');
+        haptics.trigger('error');
+      }
+    },
+    [ageVerified, onSuccess, t.auth],
+  );
 
   return (
-    <MotionView
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-    >
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-foreground mb-2">
-          {t.auth?.signUpTitle || 'Create Account'}
-        </h2>
-        <p className="text-muted-foreground">
-          {t.auth?.signUpSubtitle || "Join PawfectMatch to find your pet's perfect companion"}
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="space-y-2">
-          <Label htmlFor="name" className="text-sm font-medium">
-            {t.auth?.name || 'Full Name'}
-          </Label>
-          <div className="relative">
-            <User
-              size={20}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              id="name"
-              type="text"
-              placeholder={t.auth?.namePlaceholder || 'John Doe'}
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                setErrors((prev) => ({ ...prev, name: '' }));
-              }}
-              className={`pl-10 h-12 ${errors.name ? 'border-destructive' : ''}`}
-              disabled={isLoading}
-              autoComplete="name"
-            />
+    <div className="w-full bg-white rounded-3xl p-8 sm:p-12">
+      {/* Loading indicator */}
+      {isLoading && (
+        <div className="flex justify-end mb-6">
+          <div className="bg-black rounded-full px-3 py-1 flex items-center gap-1.5">
+            <Spinner size="sm" className="w-3 h-3" />
+            <span className="text-white text-xs font-medium">Loading</span>
           </div>
-          {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+        </div>
+      )}
+
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-[32px] font-bold text-gray-900 mb-3 tracking-tight">Create Account</h1>
+          <p className="text-gray-500 text-[15px]">Join PawfectMatch to find your pet's perfect companion</p>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium">
-            {t.auth?.email || 'Email'}
-          </Label>
-          <div className="relative">
-            <EnvelopeSimple
-              size={20}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+        {/* Form */}
+        <Form {...form}>
+          <form
+            ref={formRef}
+            onSubmit={(e) => {
+              e.preventDefault();
+              void form.handleSubmit(onSubmit)(e);
+            }}
+            className="space-y-5"
+            noValidate
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[13px] font-medium text-gray-700 mb-2 block">Full Name</FormLabel>
+                  <div className="relative">
+                    <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" weight="regular" />
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="John Doe"
+                      className="w-full h-[50px] pl-12 pr-4 bg-white border border-gray-200 rounded-xl text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isLoading}
+                      autoComplete="name"
+                      aria-label="Full Name"
+                    />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <Input
-              id="email"
-              type="email"
-              placeholder={t.auth?.emailPlaceholder || 'you@example.com'}
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setErrors((prev) => ({ ...prev, email: '' }));
-              }}
-              className={`pl-10 h-12 ${errors.email ? 'border-destructive' : ''}`}
-              disabled={isLoading}
-              autoComplete="email"
-            />
-          </div>
-          {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password" className="text-sm font-medium">
-            {t.auth?.password || 'Password'}
-          </Label>
-          <div className="relative">
-            <LockKey
-              size={20}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[13px] font-medium text-gray-700 mb-2 block">Email</FormLabel>
+                  <div className="relative">
+                    <EnvelopeSimple size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" weight="regular" />
+                    <input
+                      {...field}
+                      type="email"
+                      placeholder="you@example.com"
+                      className="w-full h-[50px] pl-12 pr-4 bg-white border border-gray-200 rounded-xl text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isLoading}
+                      autoComplete="email"
+                      aria-label="Email address"
+                    />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <Input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder={t.auth?.passwordPlaceholder || '••••••••'}
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setErrors((prev) => ({ ...prev, password: '' }));
-              }}
-              className={`pl-10 pr-12 h-12 ${errors.password ? 'border-destructive' : ''}`}
-              disabled={isLoading}
-              autoComplete="new-password"
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[13px] font-medium text-gray-700 mb-2 block">Password</FormLabel>
+                  <div className="relative">
+                    <LockKey size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" weight="regular" />
+                    <input
+                      {...field}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      className="w-full h-[50px] pl-12 pr-12 bg-white border border-gray-200 rounded-xl text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isLoading}
+                      autoComplete="new-password"
+                      aria-label="Password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowPassword((p) => !p);
+                        haptics.trigger('selection');
+                      }}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeSlash size={18} weight="regular" /> : <Eye size={18} weight="regular" />}
+                    </button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-[13px] font-medium text-gray-700 mb-2 block">Confirm Password</FormLabel>
+                  <div className="relative">
+                    <LockKey size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" weight="regular" />
+                    <input
+                      {...field}
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      className="w-full h-[50px] pl-12 pr-12 bg-white border border-gray-200 rounded-xl text-[15px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={isLoading}
+                      autoComplete="new-password"
+                      aria-label="Confirm Password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowConfirmPassword((p) => !p);
+                        haptics.trigger('selection');
+                      }}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showConfirmPassword ? <EyeSlash size={18} weight="regular" /> : <Eye size={18} weight="regular" />}
+                    </button>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="agreeToTerms"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-start gap-3 pt-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked === true);
+                          haptics.trigger('selection');
+                        }}
+                        disabled={isLoading}
+                        className="mt-0.5 rounded border-gray-300"
+                      />
+                    </FormControl>
+                    <FormLabel className="text-[13px] text-gray-600 leading-relaxed cursor-pointer font-normal">
+                      I agree to the{' '}
+                      <a
+                        href="https://pawfectmatch.app/terms"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#4A90E2] hover:underline"
+                      >
+                        Terms of Service
+                      </a>{' '}
+                      and{' '}
+                      <a
+                        href="https://pawfectmatch.app/privacy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#4A90E2] hover:underline"
+                      >
+                        Privacy Policy
+                      </a>
+                    </FormLabel>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <button
-              type="button"
-              onClick={() => {
-                setShowPassword(!showPassword);
-                haptics.trigger('selection');
-              }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
-          {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword" className="text-sm font-medium">
-            {t.auth?.confirmPassword || 'Confirm Password'}
-          </Label>
-          <div className="relative">
-            <LockKey
-              size={20}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              id="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              placeholder={t.auth?.confirmPasswordPlaceholder || '••••••••'}
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                setErrors((prev) => ({ ...prev, confirmPassword: '' }));
-              }}
-              className={`pl-10 pr-12 h-12 ${errors.confirmPassword ? 'border-destructive' : ''}`}
+              type="submit"
               disabled={isLoading}
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setShowConfirmPassword(!showConfirmPassword);
-                haptics.trigger('selection');
-              }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              className="w-full h-[50px] bg-[#FF8B7B] hover:bg-[#FF7A68] active:bg-[#FF6957] text-white text-[15px] font-semibold rounded-xl transition-colors mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {showConfirmPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
-          </div>
-          {errors.confirmPassword && (
-            <p className="text-sm text-destructive">{errors.confirmPassword}</p>
-          )}
-        </div>
 
-        <div className="space-y-2">
-          <div className="flex items-start space-x-3">
-            <Checkbox
-              id="terms"
-              checked={agreeToTerms}
-              onCheckedChange={(checked) => {
-                setAgreeToTerms(checked as boolean);
-                setErrors((prev) => ({ ...prev, terms: '' }));
-                haptics.trigger('selection');
-              }}
+            <div className="relative my-7">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200" />
+              </div>
+              <div className="relative flex justify-center text-[13px]">
+                <span className="px-3 bg-white text-gray-500">or</span>
+              </div>
+            </div>
+
+            <OAuthButtons
+              onGoogleSignIn={() => handleOAuthSuccess('google')}
+              onAppleSignIn={() => handleOAuthSuccess('apple')}
               disabled={isLoading}
-              className={errors.terms ? 'border-destructive' : ''}
             />
-            <label
-              htmlFor="terms"
-              className="text-sm text-muted-foreground leading-tight cursor-pointer"
-            >
-              {t.auth?.agreeToTerms || 'I agree to the'}{' '}
-              <a
-                href="https://github.com/site/terms"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {t.auth?.terms || 'Terms of Service'}
-              </a>{' '}
-              {t.auth?.and || 'and'}{' '}
-              <a
-                href="https://github.com/site/privacy"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {t.auth?.privacyPolicy || 'Privacy Policy'}
-              </a>
-            </label>
-          </div>
-          {errors.terms && <p className="text-sm text-destructive">{errors.terms}</p>}
-        </div>
+          </form>
+        </Form>
 
-        <Button
-          type="submit"
-          size="lg"
-          disabled={isLoading}
-          className="w-full text-base font-semibold"
-        >
-          {isLoading ? t.common.loading || 'Loading...' : t.auth?.createAccount || 'Create Account'}
-        </Button>
-
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-background text-muted-foreground">{t.auth?.or || 'or'}</span>
-          </div>
-        </div>
-
-        <OAuthButtons
-          onGoogleSignIn={() => handleOAuthSuccess('google')}
-          onAppleSignIn={() => handleOAuthSuccess('apple')}
-          disabled={isLoading}
-        />
-
+        {/* Sign in link */}
         <div className="text-center mt-6">
-          <p className="text-sm text-muted-foreground">
-            {t.auth?.hasAccount || 'Already have an account?'}{' '}
+          <p className="text-[14px] text-gray-600">
+            Already have an account?{' '}
             <button
               type="button"
               onClick={onSwitchToSignIn}
-              className="text-primary font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+              disabled={isLoading}
+              className="text-[#4A90E2] font-medium hover:underline focus:outline-none disabled:opacity-50"
             >
-              {t.auth?.signIn || 'Sign in'}
+              Sign in
             </button>
           </p>
         </div>
-      </form>
 
-      <AgeGateModal
-        open={showAgeGate}
-        onVerified={handleAgeVerified}
-        onClose={() => setShowAgeGate(false)}
-      />
-    </MotionView>
+      <AgeGateModal open={showAgeGate} onVerified={handleAgeVerified} onClose={() => setShowAgeGate(false)} />
+    </div>
   );
 }

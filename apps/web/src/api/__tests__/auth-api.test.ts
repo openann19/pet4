@@ -115,6 +115,19 @@ beforeAll(async () => {
       return;
     }
 
+    if (req.method === 'POST' && url.pathname === '/auth/forgot-password') {
+      const payload = await readJson<{ email: string }>(req);
+      if (payload.email === 'invalid@example.com') {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ error: 'User not found' }));
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.statusCode = 200;
+        res.end(JSON.stringify({ data: { message: 'Password reset email sent', success: true } }));
+      }
+      return;
+    }
+
     res.statusCode = 404;
     res.end();
   });
@@ -293,5 +306,74 @@ describe('AuthAPI.updatePassword', () => {
     ).rejects.toThrow();
 
     global.fetch = originalFetch;
+  });
+
+  it('should handle empty password', async () => {
+    await expect(
+      authApi.updatePassword({
+        currentPassword: 'oldpassword',
+        newPassword: '',
+      })
+    ).resolves.not.toThrow();
+  });
+
+  it('should handle very long password', async () => {
+    const longPassword = 'a'.repeat(1000);
+    await expect(
+      authApi.updatePassword({
+        currentPassword: 'oldpassword',
+        newPassword: longPassword,
+      })
+    ).resolves.not.toThrow();
+  });
+});
+
+describe('AuthAPI.forgotPassword', () => {
+  it('should send password reset email successfully', async () => {
+    const response = await authApi.forgotPassword({
+      email: 'test@example.com',
+    });
+
+    expect(response).toMatchObject({
+      message: expect.any(String),
+      success: true,
+    });
+  });
+
+  it('should throw on invalid email', async () => {
+    await expect(
+      authApi.forgotPassword({
+        email: 'invalid@example.com',
+      })
+    ).rejects.toThrow();
+  });
+
+  it('should throw on network error', async () => {
+    const originalFetch = global.fetch;
+    global.fetch = vi.fn().mockRejectedValueOnce(new Error('Network error'));
+
+    await expect(
+      authApi.forgotPassword({
+        email: 'test@example.com',
+      })
+    ).rejects.toThrow();
+
+    global.fetch = originalFetch;
+  });
+
+  it('should handle empty email', async () => {
+    await expect(
+      authApi.forgotPassword({
+        email: '',
+      })
+    ).resolves.not.toThrow();
+  });
+
+  it('should handle malformed email', async () => {
+    await expect(
+      authApi.forgotPassword({
+        email: 'not-an-email',
+      })
+    ).resolves.not.toThrow();
   });
 });

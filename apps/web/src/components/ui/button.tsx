@@ -1,7 +1,7 @@
 'use client';
 
 import type { ComponentProps, MouseEvent } from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -16,27 +16,29 @@ import { ensureFocusAppearance } from '@/core/a11y/focus-appearance';
 import { useTargetSizeRef } from '@/hooks/use-target-size';
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:cursor-default [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background aria-invalid:ring-destructive/30 aria-invalid:border-destructive min-h-[44px] min-w-[44px]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[12px] font-semibold disabled:pointer-events-none disabled:cursor-default [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-5 shrink-0 [&_svg]:shrink-0 outline-none focus:outline-none transition-colors duration-200 min-h-[44px] min-w-[44px] focus-ring",
   {
     variants: {
       variant: {
         default:
-          'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] shadow-lg hover:shadow-xl hover:bg-[var(--btn-primary-hover-bg)] hover:text-[var(--btn-primary-hover-fg)] active:shadow-md active:bg-[var(--btn-primary-press-bg)] active:text-[var(--btn-primary-press-fg)] disabled:bg-[var(--btn-primary-disabled-bg)] disabled:text-[var(--btn-primary-disabled-fg)] disabled:shadow-none focus-visible:ring-[var(--btn-primary-focus-ring)]',
+          'h-[50px] px-6 bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-hover-bg)] active:bg-[var(--btn-primary-press-bg)] active:scale-[0.96] disabled:bg-[var(--btn-primary-disabled-bg)] disabled:text-[var(--btn-primary-disabled-fg)] disabled:opacity-50 disabled:scale-100 text-[15px]',
         destructive:
-          'bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] shadow-lg hover:shadow-xl hover:bg-[var(--btn-destructive-hover-bg)] hover:text-[var(--btn-destructive-hover-fg)] active:shadow-md active:bg-[var(--btn-destructive-press-bg)] active:text-[var(--btn-destructive-press-fg)] focus-visible:ring-[var(--btn-destructive-focus-ring)] disabled:bg-[var(--btn-destructive-disabled-bg)] disabled:text-[var(--btn-destructive-disabled-fg)] disabled:shadow-none',
+          'h-[50px] px-6 bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] hover:bg-[var(--btn-destructive-hover-bg)] active:bg-[var(--btn-destructive-press-bg)] active:scale-[0.96] disabled:bg-[var(--btn-destructive-disabled-bg)] disabled:text-[var(--btn-destructive-disabled-fg)] disabled:opacity-50 disabled:scale-100 text-[15px]',
         outline:
-          'border-[1.5px] border-[var(--btn-outline-border)] bg-[var(--btn-outline-bg)] text-[var(--btn-outline-fg)] shadow-sm hover:shadow-lg hover:bg-[var(--btn-outline-hover-bg)] hover:text-[var(--btn-outline-hover-fg)] hover:border-[var(--btn-outline-hover-border)] active:bg-[var(--btn-outline-press-bg)] active:text-[var(--btn-outline-press-fg)] active:border-[var(--btn-outline-press-border)] disabled:bg-[var(--btn-outline-disabled-bg)] disabled:text-[var(--btn-outline-disabled-fg)] disabled:border-[var(--btn-outline-disabled-border)] disabled:shadow-none focus-visible:ring-[var(--btn-outline-focus-ring)]',
+          'h-[48px] px-5 border border-[var(--btn-outline-border)] bg-[var(--btn-outline-bg)] text-[var(--btn-outline-fg)] hover:bg-[var(--btn-outline-hover-bg)] hover:text-[var(--btn-outline-hover-fg)] hover:border-[var(--btn-outline-hover-border)] active:bg-[var(--btn-outline-press-bg)] active:text-[var(--btn-outline-press-fg)] active:border-[var(--btn-outline-press-border)] active:scale-[0.96] disabled:bg-[var(--btn-outline-disabled-bg)] disabled:text-[var(--btn-outline-disabled-fg)] disabled:border-[var(--btn-outline-disabled-border)] disabled:opacity-50 disabled:scale-100 text-[14px]',
         secondary:
-          'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] shadow-lg hover:shadow-xl hover:bg-[var(--btn-secondary-hover-bg)] hover:text-[var(--btn-secondary-hover-fg)] active:shadow-md active:bg-[var(--btn-secondary-press-bg)] active:text-[var(--btn-secondary-press-fg)] disabled:bg-[var(--btn-secondary-disabled-bg)] disabled:text-[var(--btn-secondary-disabled-fg)] disabled:shadow-none focus-visible:ring-[var(--btn-secondary-focus-ring)]',
+          'h-[48px] px-5 bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] hover:bg-[var(--btn-secondary-hover-bg)] active:bg-[var(--btn-secondary-press-bg)] active:scale-[0.96] disabled:bg-[var(--btn-secondary-disabled-bg)] disabled:text-[var(--btn-secondary-disabled-fg)] disabled:opacity-50 disabled:scale-100 text-[14px]',
         ghost:
-          'bg-[var(--btn-ghost-bg)] text-[var(--btn-ghost-fg)] hover:bg-[var(--btn-ghost-hover-bg)] hover:text-[var(--btn-ghost-hover-fg)] hover:shadow-sm active:bg-[var(--btn-ghost-press-bg)] active:text-[var(--btn-ghost-press-fg)] disabled:bg-[var(--btn-ghost-disabled-bg)] disabled:text-[var(--btn-ghost-disabled-fg)] focus-visible:ring-[var(--btn-ghost-focus-ring)]',
-        link: 'text-[var(--btn-link-fg)] underline-offset-4 hover:underline hover:text-[var(--btn-link-hover-fg)] disabled:text-[var(--btn-link-disabled-fg)] disabled:no-underline focus-visible:ring-[var(--btn-link-focus-ring)] bg-transparent',
+          'h-[48px] px-5 bg-[var(--btn-ghost-bg)] text-[var(--btn-ghost-fg)] hover:bg-[var(--btn-ghost-hover-bg)] hover:text-[var(--btn-ghost-hover-fg)] active:bg-[var(--btn-ghost-press-bg)] active:text-[var(--btn-ghost-press-fg)] active:scale-[0.96] disabled:bg-[var(--btn-ghost-disabled-bg)] disabled:text-[var(--btn-ghost-disabled-fg)] disabled:opacity-50 disabled:scale-100 text-[14px]',
+        link: 'h-auto px-0 text-[var(--btn-link-fg)] underline-offset-4 hover:underline hover:text-[var(--btn-link-hover-fg)] disabled:text-[var(--btn-link-disabled-fg)] disabled:no-underline bg-transparent font-medium text-[14px]',
+        oauth:
+          'h-[48px] px-5 border border-[var(--btn-oauth-border)] bg-[var(--btn-oauth-bg)] text-[var(--btn-oauth-fg)] hover:bg-[var(--btn-oauth-hover-bg)] hover:text-[var(--btn-oauth-hover-fg)] hover:border-[var(--btn-oauth-hover-border)] active:bg-[var(--btn-oauth-press-bg)] active:text-[var(--btn-oauth-press-fg)] active:border-[var(--btn-oauth-press-border)] active:scale-[0.96] disabled:bg-[var(--btn-oauth-disabled-bg)] disabled:text-[var(--btn-oauth-disabled-fg)] disabled:border-[var(--btn-oauth-disabled-border)] disabled:opacity-50 disabled:scale-100 text-[14px]',
       },
       size: {
-        default: 'h-11 px-4 py-2 has-[>svg]:px-3 [&_svg]:size-5',
-        sm: 'h-9 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 [&_svg]:size-4 min-h-[44px]',
-        lg: 'h-14 rounded-md px-6 has-[>svg]:px-4 text-base [&_svg]:size-6',
-        icon: 'size-11 min-w-[44px] min-h-[44px]',
+        default: 'h-[50px] px-6 has-[>svg]:px-4 [&_svg]:size-5 text-[15px]',
+        sm: 'h-[48px] rounded-[12px] gap-1.5 px-4 has-[>svg]:px-3 [&_svg]:size-4 min-h-[44px] text-[14px]',
+        lg: 'h-[56px] rounded-[12px] px-6 has-[>svg]:px-5 text-[15px] [&_svg]:size-6',
+        icon: 'size-12 min-w-[44px] min-h-[44px]',
       },
     },
     defaultVariants: {
@@ -149,7 +151,7 @@ function Button({
 
   return (
     <AnimatedView
-      style={shouldAnimate ? animatedStyleValue : undefined}
+      style={animatedStyleValue}
       className="inline-block"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useSmartHighlight } from '../use-smart-highlight';
 
@@ -7,6 +7,11 @@ import { useSmartHighlight } from '../use-smart-highlight';
 describe('useSmartHighlight', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('returns highlight styles and trigger function', () => {
@@ -25,7 +30,7 @@ describe('useSmartHighlight', () => {
 
     await act(async () => {
       result.current.trigger();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await vi.advanceTimersByTimeAsync(50);
     });
 
     expect(result.current.backgroundOpacity.value).toBeGreaterThan(0);
@@ -44,7 +49,7 @@ describe('useSmartHighlight', () => {
 
     await act(async () => {
       result.current.trigger();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await vi.advanceTimersByTimeAsync(50);
     });
 
     expect(result.current.backgroundStyle).toBeDefined();
@@ -62,7 +67,7 @@ describe('useSmartHighlight', () => {
 
     await act(async () => {
       result.current.trigger();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await vi.advanceTimersByTimeAsync(50);
     });
 
     expect(result.current.glowStyle).toBeDefined();

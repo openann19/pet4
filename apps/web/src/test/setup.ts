@@ -13,6 +13,82 @@ type GlobalWithDevFlag = typeof globalThis & { __DEV__?: boolean };
 // React Native (web) minimal shims
 (globalThis as GlobalWithDevFlag).__DEV__ = true;
 
+// Mock scrollIntoView for Radix UI components
+Element.prototype.scrollIntoView = vi.fn();
+
+// Mock transitions to avoid Easing issues
+vi.mock('@/effects/reanimated/transitions', async () => {
+  const mockModule = await import('./mocks/transitions');
+  return mockModule;
+});
+
+// Mock missing native modules
+vi.mock('ffmpeg-kit-react-native', () => ({
+  FFmpegKit: {
+    execute: vi.fn(() => Promise.resolve({ getReturnCode: () => 0 })),
+    cancel: vi.fn(),
+  },
+  ReturnCode: {
+    SUCCESS: 0,
+    CANCEL: 255,
+  },
+}));
+
+vi.mock('@/types/next-server', () => ({
+  NextResponse: {
+    json: vi.fn((data) => ({ json: () => Promise.resolve(data) })),
+    redirect: vi.fn((url) => ({ redirect: url })),
+  },
+}));
+
+
+// Mock other common browser APIs
+Object.defineProperty(window, 'scrollTo', { value: vi.fn(), writable: true });
+Object.defineProperty(window, 'scroll', { value: vi.fn(), writable: true });
+Object.defineProperty(Element.prototype, 'scrollTo', { value: vi.fn(), writable: true });
+
+// Mock HTMLCanvasElement methods
+HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
+  fillRect: vi.fn(),
+  clearRect: vi.fn(),
+  getImageData: vi.fn(() => ({ data: new Array(4) })),
+  putImageData: vi.fn(),
+  createImageData: vi.fn(() => ({ data: new Array(4) })),
+  setTransform: vi.fn(),
+  drawImage: vi.fn(),
+  save: vi.fn(),
+  fillText: vi.fn(),
+  restore: vi.fn(),
+  beginPath: vi.fn(),
+  moveTo: vi.fn(),
+  lineTo: vi.fn(),
+  closePath: vi.fn(),
+  stroke: vi.fn(),
+  translate: vi.fn(),
+  scale: vi.fn(),
+  rotate: vi.fn(),
+  arc: vi.fn(),
+  fill: vi.fn(),
+  measureText: vi.fn(() => ({ width: 0 })),
+  transform: vi.fn(),
+  rect: vi.fn(),
+  clip: vi.fn(),
+})) as any;
+
+// Mock HTMLMediaElement methods
+Object.defineProperty(HTMLMediaElement.prototype, 'play', {
+  writable: true,
+  value: vi.fn(() => Promise.resolve()),
+});
+Object.defineProperty(HTMLMediaElement.prototype, 'pause', {
+  writable: true,
+  value: vi.fn(),
+});
+Object.defineProperty(HTMLMediaElement.prototype, 'load', {
+  writable: true,
+  value: vi.fn(),
+});
+
 interface HapticsShim {
   trigger: (type: string) => void;
   light: () => void;
@@ -41,57 +117,94 @@ const shim: HapticsShim = {
 globalWithHaptics.haptics = shim;
 
 // Mock the haptics module to use the global shim
-vi.mock('@/lib/haptics', () => ({
-  haptics: {
-    trigger: vi.fn(),
-    light: vi.fn(),
-    medium: vi.fn(),
-    heavy: vi.fn(),
-    selection: vi.fn(),
-    success: vi.fn(),
-    warning: vi.fn(),
-    error: vi.fn(),
-    impact: vi.fn(),
-  },
-  triggerHaptic: vi.fn((type: string) => shim.trigger(type)),
-  HapticFeedbackType: {
-    light: 'light',
-    medium: 'medium',
-    heavy: 'heavy',
-    selection: 'selection',
-    success: 'success',
-    warning: 'warning',
-    error: 'error',
-  },
-}));
+vi.mock('@/lib/haptics', () => {
+  const noop = () => undefined;
+  const createHapticsMock = () => ({
+    trigger: vi.fn(noop),
+    light: vi.fn(noop),
+    medium: vi.fn(noop),
+    heavy: vi.fn(noop),
+    selection: vi.fn(noop),
+    success: vi.fn(noop),
+    warning: vi.fn(noop),
+    error: vi.fn(noop),
+    impact: vi.fn(noop),
+    notification: vi.fn(noop),
+    isHapticSupported: vi.fn(() => false),
+  });
+
+  const hapticsMock = createHapticsMock();
+
+  // Ensure all methods are properly bound
+  const hapticsProxy = new Proxy(hapticsMock, {
+    get(target, prop) {
+      if (prop in target && typeof target[prop as keyof typeof target] === 'function') {
+        return target[prop as keyof typeof target];
+      }
+      // Return a mock function for any missing methods
+      return vi.fn(noop);
+    }
+  });
+
+  return {
+    haptics: hapticsProxy,
+    triggerHaptic: vi.fn(noop),
+    HapticFeedbackType: {
+      light: 'light',
+      medium: 'medium',
+      heavy: 'heavy',
+      selection: 'selection',
+      success: 'success',
+      warning: 'warning',
+      error: 'error',
+    },
+  };
+});
 
 // Logger mock - comprehensive mock matching actual logger implementation
-const mockLoggerInstance = {
-  warn: vi.fn(),
-  info: vi.fn(),
-  error: vi.fn(),
-  debug: vi.fn(),
-  setLevel: vi.fn(),
-  addHandler: vi.fn(),
-};
+vi.mock('@/lib/logger', () => {
+  const createMockLogger = () => {
+    const mockLogger = {
+      warn: vi.fn(),
+      info: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      setLevel: vi.fn(),
+      addHandler: vi.fn(),
+    };
+    return mockLogger;
+  };
 
-vi.mock('@/lib/logger', () => ({
-  createLogger: vi.fn(() => mockLoggerInstance),
-  logger: mockLoggerInstance,
-  log: {
-    warn: vi.fn(),
-    info: vi.fn(),
-    error: vi.fn(),
-    debug: vi.fn(),
-  },
-  LogLevel: {
-    DEBUG: 10,
-    INFO: 20,
-    WARN: 30,
-    ERROR: 40,
-    NONE: 100,
-  },
-}));
+  const mockLoggerInstance = createMockLogger();
+
+  return {
+    createLogger: vi.fn((context?: string) => {
+      const logger = createMockLogger();
+      // Ensure logger methods are always functions
+      Object.keys(logger).forEach(key => {
+        if (typeof logger[key as keyof typeof logger] !== 'function') {
+          (logger as any)[key] = vi.fn();
+        }
+      });
+      return logger;
+    }),
+    logger: mockLoggerInstance,
+    log: {
+      warn: vi.fn(),
+      info: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+    },
+    LogLevel: {
+      DEBUG: 10,
+      INFO: 20,
+      WARN: 30,
+      ERROR: 40,
+      NONE: 100,
+    },
+    default: mockLoggerInstance,
+  };
+});
 
 vi.mock('@/config/env', () => ({
   env: {
@@ -285,10 +398,16 @@ vi.mock('react-native-reanimated', () => {
       ease: (t: number) => t,
       quad: (t: number) => t * t,
       cubic: (t: number) => t * t * t,
+      sin: (t: number) => Math.sin(t * Math.PI / 2),
+      circle: (t: number) => 1 - Math.sqrt(1 - t * t),
+      exp: (t: number) => t === 0 ? 0 : Math.pow(2, 10 * (t - 1)),
+      back: (s = 1.70158) => (t: number) => t * t * ((s + 1) * t - s),
+      bounce: (t: number) => t,
+      elastic: (bounciness?: number) => (t: number) => t,
+      bezier: (x1: number, y1: number, x2: number, y2: number) => (t: number) => t,
       in: (easing: (t: number) => number) => easing,
       out: (easing: (t: number) => number) => easing,
       inOut: (easing: (t: number) => number) => easing,
-      elastic: () => (t: number) => t,
     },
     cancelAnimation: vi.fn(),
     withDecay: vi.fn((toValue: number) => toValue),
@@ -407,6 +526,28 @@ if (typeof TouchEvent === 'undefined') {
           return this[index] || null;
         }
       } as typeof TouchList;
+  }
+}
+
+// Pointer capture polyfills for jsdom (needed for Radix UI Slider)
+if (typeof Element !== 'undefined') {
+  const originalElement = Element.prototype;
+  if (!originalElement.hasPointerCapture) {
+    const pointerCaptureMap = new WeakMap<Element, Set<number>>();
+    originalElement.hasPointerCapture = function (pointerId: number): boolean {
+      const captures = pointerCaptureMap.get(this);
+      return captures?.has(pointerId) ?? false;
+    };
+    originalElement.setPointerCapture = function (pointerId: number): void {
+      if (!pointerCaptureMap.has(this)) {
+        pointerCaptureMap.set(this, new Set());
+      }
+      pointerCaptureMap.get(this)!.add(pointerId);
+    };
+    originalElement.releasePointerCapture = function (pointerId: number): void {
+      const captures = pointerCaptureMap.get(this);
+      captures?.delete(pointerId);
+    };
   }
 }
 
@@ -556,25 +697,108 @@ vi.mock('@/lib/websocket-manager', () => ({
   })),
 }));
 
+// Mock UI Context
+vi.mock('@/contexts/UIContext', () => ({
+  UIProvider: ({ children }: { children: React.ReactNode }) => children,
+  useUIContext: vi.fn(() => ({
+    config: {
+      animations: {
+        enabled: true,
+        reduceMotion: false,
+        particles: {
+          enabled: true,
+          maxCount: 100,
+        },
+        transitions: {
+          pageTransition: true,
+          microInteractions: true,
+        },
+      },
+      effects: {
+        glassmorphism: true,
+        shadows: true,
+        gradients: true,
+        blur: true,
+      },
+      interactions: {
+        hapticFeedback: true,
+        soundEffects: false,
+        gestureEnhancements: true,
+      },
+    },
+  })),
+}));
+
 // Mock query client
 vi.mock('@tanstack/react-query', async () => {
   const actual = await vi.importActual('@tanstack/react-query');
+
+  // Create a mock query result that has all the expected properties
+  const createMockQueryResult = (overrides = {}) => ({
+    data: undefined,
+    error: null,
+    isLoading: false,
+    isFetching: false,
+    isSuccess: false,
+    isError: false,
+    isPending: false,
+    status: 'pending' as const,
+    fetchStatus: 'idle' as const,
+    refetch: vi.fn(() => Promise.resolve({ data: undefined })),
+    ...overrides,
+  });
+
+  // Create a mock mutation result that has all the expected properties
+  const createMockMutationResult = (overrides = {}) => ({
+    data: undefined,
+    error: null,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    isPending: false,
+    status: 'idle' as const,
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(() => Promise.resolve()),
+    reset: vi.fn(),
+    ...overrides,
+  });
+
   return {
     ...actual,
-    useQuery: vi.fn(),
-    useMutation: vi.fn(),
+    useQuery: vi.fn(() => createMockQueryResult()),
+    useMutation: vi.fn(() => createMockMutationResult()),
     useQueryClient: vi.fn(() => ({
       invalidateQueries: vi.fn(),
       setQueryData: vi.fn(),
       getQueryData: vi.fn(),
       removeQueries: vi.fn(),
     })),
-    QueryClient: vi.fn().mockImplementation(() => ({
-      invalidateQueries: vi.fn(),
-      setQueryData: vi.fn(),
-      getQueryData: vi.fn(),
-      removeQueries: vi.fn(),
-    })),
+    QueryClient: class MockQueryClient {
+      invalidateQueries = vi.fn();
+      setQueryData = vi.fn();
+      getQueryData = vi.fn();
+      removeQueries = vi.fn();
+      clear = vi.fn();
+      mount = vi.fn();
+      unmount = vi.fn();
+      isFetching = vi.fn(() => 0);
+      isMutating = vi.fn(() => 0);
+      getQueryCache = vi.fn(() => ({
+        find: vi.fn(),
+        findAll: vi.fn(),
+        notify: vi.fn(),
+        onFocus: vi.fn(),
+        onOnline: vi.fn(),
+      }));
+      getMutationCache = vi.fn(() => ({
+        find: vi.fn(),
+        findAll: vi.fn(),
+        notify: vi.fn(),
+      }));
+      constructor(_options?: any) {
+        // Mock constructor
+      }
+    },
     QueryClientProvider: ({ children }: { children: React.ReactNode }) => children,
   };
 });
@@ -708,7 +932,18 @@ vi.mock('@petspark/motion', () => {
     getReducedMotionDuration: vi.fn((duration: number) => duration),
     getReducedMotionMultiplier: vi.fn(() => 1),
     usePerfBudget: vi.fn(() => ({ withinBudget: true, frameTime: 16 })),
-    haptic: vi.fn(),
+    haptic: {
+      trigger: vi.fn(),
+      light: vi.fn(),
+      medium: vi.fn(),
+      heavy: vi.fn(),
+      selection: vi.fn(),
+      success: vi.fn(),
+      warning: vi.fn(),
+      error: vi.fn(),
+      impact: vi.fn(),
+      notification: vi.fn(),
+    },
     usePageTransitions: vi.fn(() => ({
       transition: {},
       animatedStyle: {},
@@ -740,3 +975,29 @@ vi.mock('@/effects/reanimated/animated-view', () => {
     }),
   };
 });
+
+// Mock React Native NativeModules and NativeEventEmitter
+vi.mock('react-native', () => ({
+  NativeModules: {
+    KycModule: {
+      initialize: vi.fn(() => Promise.resolve()),
+      startVerification: vi.fn(() => Promise.resolve({ success: true })),
+      getVerificationStatus: vi.fn(() => Promise.resolve({ status: 'pending' })),
+      addListener: vi.fn(),
+      removeListeners: vi.fn(),
+    },
+  },
+  NativeEventEmitter: vi.fn(() => ({
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    removeAllListeners: vi.fn(),
+  })),
+  Platform: {
+    OS: 'web',
+    select: vi.fn((obj: Record<string, unknown>) => obj.web || obj.default),
+  },
+  requireNativeComponent: vi.fn(() => {
+    return ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) =>
+      React.createElement('div', props, children);
+  }),
+}));

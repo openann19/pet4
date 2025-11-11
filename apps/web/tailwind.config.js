@@ -84,6 +84,13 @@ const DEFAULT_THEME = {
         overlay: 'var(--color-bg-overlay)',
       },
       'focus-ring': 'var(--color-focus-ring)',
+      cream: '#F5F5F0',
+      coral: {
+        DEFAULT: '#FF8B7B',
+        hover: '#FF7A68',
+        active: '#FF6957',
+      },
+      'blue-link': '#4A90E2',
     },
     borderRadius: {
       sm: 'var(--radius-sm)',

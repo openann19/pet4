@@ -16,11 +16,11 @@
    * - 2px thick focus ring
    * - High contrast color
    * - Offset from element edge
+   * - Uses CSS variables for consistent theming
    */
   .focus-ring:focus-visible {
-    outline: 2px solid #0066cc;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px #0066cc, 0 0 4px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--btn-primary-focus-ring, rgba(255, 107, 107, 0.4));
   }
 
   /**
@@ -49,6 +49,7 @@
   /**
    * Focus ring for interactive elements
    * - Buttons, links, inputs, etc.
+   * - Uses CSS variables for consistent theming
    */
   button:focus-visible,
   a:focus-visible,
@@ -58,9 +59,8 @@
   [role='button']:focus-visible,
   [role='link']:focus-visible,
   [tabindex]:focus-visible {
-    outline: 2px solid #0066cc;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px #0066cc, 0 0 4px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--btn-primary-focus-ring, rgba(255, 107, 107, 0.4));
   }
 
   /**
@@ -84,11 +84,11 @@
   /**
    * Focus ring for custom components
    * - Use .focus-ring class on custom components
+   * - Uses CSS variables for consistent theming
    */
   .focus-visible-ring:focus-visible {
-    outline: 2px solid #0066cc;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px #0066cc, 0 0 4px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--btn-primary-focus-ring, rgba(255, 107, 107, 0.4));
   }
 
   @media (prefers-contrast: high) {
@@ -132,11 +132,11 @@
   /**
    * Focus within container
    * - Highlights container when child is focused
+   * - Uses CSS variables for consistent theming
    */
   .focus-within-ring:focus-within {
-    outline: 2px solid #0066cc;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px #0066cc, 0 0 4px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--btn-primary-focus-ring, rgba(255, 107, 107, 0.4));
   }
 
   /**

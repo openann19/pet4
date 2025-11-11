@@ -6,13 +6,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GDPRService, type UserDataExport, type DataDeletionResult } from '../gdpr-service';
 import type { UserProfile, Session } from '../enhanced-auth';
 
-const mockDbFindById = vi.fn();
-const mockDbFindMany = vi.fn();
-const mockDbFindOne = vi.fn();
-const mockDbDelete = vi.fn();
-
-const mockApiGet = vi.fn();
-const mockApiPost = vi.fn();
+const { mockDbFindById, mockDbFindMany, mockDbFindOne, mockDbDelete, mockApiGet, mockApiPost } = vi.hoisted(() => ({
+  mockDbFindById: vi.fn(),
+  mockDbFindMany: vi.fn(),
+  mockDbFindOne: vi.fn(),
+  mockDbDelete: vi.fn(),
+  mockApiGet: vi.fn(),
+  mockApiPost: vi.fn(),
+}));
 
 vi.mock('../database', () => ({
   db: {

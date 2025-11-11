@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { useTypingManager } from './use-typing-manager';
 import type { RealtimeClient } from '@/lib/realtime';
 
@@ -51,7 +51,10 @@ describe('useTypingManager', () => {
       })
     );
 
-    result.current.startTyping();
+    await act(async () => {
+      result.current.startTyping();
+      vi.advanceTimersByTime(0);
+    });
 
     await waitFor(() => {
       expect(mockEmit).toHaveBeenCalledWith('typing_start', {
@@ -72,8 +75,15 @@ describe('useTypingManager', () => {
       })
     );
 
-    result.current.startTyping();
-    result.current.stopTyping();
+    await act(async () => {
+      result.current.startTyping();
+      vi.advanceTimersByTime(0);
+    });
+
+    await act(async () => {
+      result.current.stopTyping();
+      vi.advanceTimersByTime(0);
+    });
 
     await waitFor(() => {
       expect(mockEmit).toHaveBeenCalledWith('typing_stop', {
@@ -94,10 +104,16 @@ describe('useTypingManager', () => {
       })
     );
 
-    result.current.startTyping();
+    await act(async () => {
+      result.current.startTyping();
+      vi.advanceTimersByTime(0);
+    });
+
     expect(result.current.isTyping).toBe(true);
 
-    vi.advanceTimersByTime(1000);
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
+    });
 
     await waitFor(() => {
       expect(result.current.isTyping).toBe(false);
@@ -115,9 +131,10 @@ describe('useTypingManager', () => {
       })
     );
 
-    result.current.handleInputChange('Hello');
-
-    vi.advanceTimersByTime(100);
+    await act(async () => {
+      result.current.handleInputChange('Hello');
+      vi.advanceTimersByTime(100);
+    });
 
     await waitFor(() => {
       expect(result.current.isTyping).toBe(true);
@@ -134,8 +151,15 @@ describe('useTypingManager', () => {
       })
     );
 
-    result.current.startTyping();
-    result.current.handleInputChange('');
+    await act(async () => {
+      result.current.startTyping();
+      vi.advanceTimersByTime(0);
+    });
+
+    await act(async () => {
+      result.current.handleInputChange('');
+      vi.advanceTimersByTime(0);
+    });
 
     await waitFor(() => {
       expect(result.current.isTyping).toBe(false);
@@ -152,8 +176,15 @@ describe('useTypingManager', () => {
       })
     );
 
-    result.current.startTyping();
-    result.current.handleMessageSend();
+    await act(async () => {
+      result.current.startTyping();
+      vi.advanceTimersByTime(0);
+    });
+
+    await act(async () => {
+      result.current.handleMessageSend();
+      vi.advanceTimersByTime(0);
+    });
 
     await waitFor(() => {
       expect(result.current.isTyping).toBe(false);
@@ -172,14 +203,17 @@ describe('useTypingManager', () => {
 
     const typingStartHandler = mockOn.mock.calls.find((call) => call[0] === 'typing_start')?.[1];
 
-    if (typingStartHandler) {
-      typingStartHandler({
-        roomId: 'room1',
-        userId: 'user2',
-        userName: 'User 2',
-        startedAt: new Date().toISOString(),
-      });
-    }
+    await act(async () => {
+      if (typingStartHandler) {
+        typingStartHandler({
+          roomId: 'room1',
+          userId: 'user2',
+          userName: 'User 2',
+          startedAt: new Date().toISOString(),
+        });
+      }
+      vi.advanceTimersByTime(0);
+    });
 
     await waitFor(() => {
       expect(result.current.typingUsers).toHaveLength(1);
@@ -201,25 +235,31 @@ describe('useTypingManager', () => {
 
     const typingStopHandler = mockOn.mock.calls.find((call) => call[0] === 'typing_stop')?.[1];
 
-    if (typingStartHandler) {
-      typingStartHandler({
-        roomId: 'room1',
-        userId: 'user2',
-        userName: 'User 2',
-        startedAt: new Date().toISOString(),
-      });
-    }
+    await act(async () => {
+      if (typingStartHandler) {
+        typingStartHandler({
+          roomId: 'room1',
+          userId: 'user2',
+          userName: 'User 2',
+          startedAt: new Date().toISOString(),
+        });
+      }
+      vi.advanceTimersByTime(0);
+    });
 
     await waitFor(() => {
       expect(result.current.typingUsers).toHaveLength(1);
     });
 
-    if (typingStopHandler) {
-      typingStopHandler({
-        roomId: 'room1',
-        userId: 'user2',
-      });
-    }
+    await act(async () => {
+      if (typingStopHandler) {
+        typingStopHandler({
+          roomId: 'room1',
+          userId: 'user2',
+        });
+      }
+      vi.advanceTimersByTime(0);
+    });
 
     await waitFor(() => {
       expect(result.current.typingUsers).toHaveLength(0);
@@ -238,14 +278,17 @@ describe('useTypingManager', () => {
 
     const typingStartHandler = mockOn.mock.calls.find((call) => call[0] === 'typing_start')?.[1];
 
-    if (typingStartHandler) {
-      typingStartHandler({
-        roomId: 'room1',
-        userId: 'user1',
-        userName: 'User 1',
-        startedAt: new Date().toISOString(),
-      });
-    }
+    await act(async () => {
+      if (typingStartHandler) {
+        typingStartHandler({
+          roomId: 'room1',
+          userId: 'user1',
+          userName: 'User 1',
+          startedAt: new Date().toISOString(),
+        });
+      }
+      vi.advanceTimersByTime(0);
+    });
 
     await waitFor(() => {
       expect(result.current.typingUsers).toHaveLength(0);
@@ -264,14 +307,17 @@ describe('useTypingManager', () => {
 
     const typingStartHandler = mockOn.mock.calls.find((call) => call[0] === 'typing_start')?.[1];
 
-    if (typingStartHandler) {
-      typingStartHandler({
-        roomId: 'room2',
-        userId: 'user2',
-        userName: 'User 2',
-        startedAt: new Date().toISOString(),
-      });
-    }
+    await act(async () => {
+      if (typingStartHandler) {
+        typingStartHandler({
+          roomId: 'room2',
+          userId: 'user2',
+          userName: 'User 2',
+          startedAt: new Date().toISOString(),
+        });
+      }
+      vi.advanceTimersByTime(0);
+    });
 
     await waitFor(() => {
       expect(result.current.typingUsers).toHaveLength(0);
@@ -294,7 +340,7 @@ describe('useTypingManager', () => {
     expect(mockOff).toHaveBeenCalledWith('typing_stop', expect.any(Function));
   });
 
-  it('works without realtime client', () => {
+  it('works without realtime client', async () => {
     const { result } = renderHook(() =>
       useTypingManager({
         roomId: 'room1',
@@ -306,10 +352,16 @@ describe('useTypingManager', () => {
     expect(result.current.typingUsers).toEqual([]);
     expect(result.current.isTyping).toBe(false);
 
-    result.current.startTyping();
+    await act(async () => {
+      result.current.startTyping();
+      vi.advanceTimersByTime(0);
+    });
     expect(result.current.isTyping).toBe(true);
 
-    result.current.stopTyping();
+    await act(async () => {
+      result.current.stopTyping();
+      vi.advanceTimersByTime(0);
+    });
     expect(result.current.isTyping).toBe(false);
   });
 
@@ -324,15 +376,24 @@ describe('useTypingManager', () => {
       })
     );
 
-    result.current.handleInputChange('H');
-    vi.advanceTimersByTime(100);
-    result.current.handleInputChange('He');
-    vi.advanceTimersByTime(100);
-    result.current.handleInputChange('Hel');
+    await act(async () => {
+      result.current.handleInputChange('H');
+      vi.advanceTimersByTime(100);
+    });
+    await act(async () => {
+      result.current.handleInputChange('He');
+      vi.advanceTimersByTime(100);
+    });
+    await act(async () => {
+      result.current.handleInputChange('Hel');
+      vi.advanceTimersByTime(0);
+    });
 
     expect(mockEmit).not.toHaveBeenCalled();
 
-    vi.advanceTimersByTime(500);
+    await act(async () => {
+      vi.advanceTimersByTime(500);
+    });
 
     await waitFor(() => {
       expect(mockEmit).toHaveBeenCalledTimes(1);

@@ -91,11 +91,11 @@ export default function AdoptionMarketplaceView() {
 
   const filteredListings = searchQuery
     ? listings.filter(
-        (listing) =>
-          listing.petName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          listing.petBreed.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          listing.location.city.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      (listing) =>
+        listing.petName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        listing.petBreed.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        listing.location.city.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : listings;
 
   const activeFilterCount = Object.keys(filters).filter((key) => {
@@ -110,7 +110,7 @@ export default function AdoptionMarketplaceView() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-3xl font-bold flex items-center gap-3">
+            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3">
               <Heart size={32} weight="fill" className="text-primary" />
               Adoption Marketplace
             </h2>

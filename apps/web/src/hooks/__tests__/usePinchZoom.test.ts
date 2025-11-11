@@ -18,10 +18,12 @@ describe('usePinchZoom', () => {
   beforeEach(() => {
     mockElement = document.createElement('div');
     document.body.appendChild(mockElement);
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
     document.body.removeChild(mockElement);
+    vi.useRealTimers();
   });
 
   it('returns ref', () => {
@@ -35,7 +37,11 @@ describe('usePinchZoom', () => {
     const { result } = renderHook(() => usePinchZoom());
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     expect(result.current.current).toBe(mockElement);
@@ -46,7 +52,11 @@ describe('usePinchZoom', () => {
     const { result } = renderHook(() => usePinchZoom({ onPinchStart: mockOnPinchStart }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -82,7 +92,11 @@ describe('usePinchZoom', () => {
     const { result } = renderHook(() => usePinchZoom({ onPinch: mockOnPinch }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -143,7 +157,11 @@ describe('usePinchZoom', () => {
     const { result } = renderHook(() => usePinchZoom({ onPinchEnd: mockOnPinchEnd }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -184,7 +202,11 @@ describe('usePinchZoom', () => {
     const { result } = renderHook(() => usePinchZoom({ onPinch: mockOnPinch }, { minScale: 0.8 }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -248,7 +270,11 @@ describe('usePinchZoom', () => {
     const { result } = renderHook(() => usePinchZoom({ onPinch: mockOnPinch }, { maxScale: 2 }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -314,7 +340,11 @@ describe('usePinchZoom', () => {
     );
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -350,7 +380,11 @@ describe('usePinchZoom', () => {
     const { result } = renderHook(() => usePinchZoom({ onPinchStart: mockOnPinchStart }));
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     await act(async () => {
@@ -376,7 +410,11 @@ describe('usePinchZoom', () => {
     const { result, unmount } = renderHook(() => usePinchZoom());
 
     await act(async () => {
-      (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      if (result.current) {
+        (result.current as { current: HTMLDivElement | null }).current = mockElement;
+      }
+      // Wait for useEffect to run
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     unmount();

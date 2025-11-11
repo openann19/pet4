@@ -220,7 +220,7 @@ export function ensureTargetSize(
       element.style.minWidth = `${minWidth}px`;
       element.style.minHeight = `${minHeight}px`;
 
-      logger.debug('Applied minimum target size', {
+      logger?.debug?.('Applied minimum target size', {
         element: element.tagName,
         width: minWidth,
         height: minHeight,
@@ -234,7 +234,7 @@ export function ensureTargetSize(
 
       element.style.margin = `${requiredMargin}px`;
 
-      logger.debug('Applied minimum spacing', {
+      logger?.debug?.('Applied minimum spacing', {
         element: element.tagName,
         margin: requiredMargin,
       });

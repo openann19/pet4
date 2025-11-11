@@ -166,7 +166,7 @@ export default function LostFoundView() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold flex items-center gap-3">
+            <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3">
               <MapPin size={32} weight="fill" className="text-primary" />
               {t.lostFound?.title || 'Lost & Found'}
             </h2>

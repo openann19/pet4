@@ -27,6 +27,15 @@ export interface UpdatePasswordRequest {
   newPassword: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+  success: boolean;
+}
+
 export const authApi = {
   async me(): Promise<User> {
     const response = await APIClient.get<User>(ENDPOINTS.AUTH.ME);
@@ -54,6 +63,14 @@ export const authApi = {
 
   async updatePassword(payload: UpdatePasswordRequest): Promise<void> {
     await APIClient.post(ENDPOINTS.AUTH.RESET_PASSWORD, payload);
+  },
+
+  async forgotPassword(payload: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
+    const response = await APIClient.post<ForgotPasswordResponse>(
+      ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      payload
+    );
+    return response.data;
   },
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Heart, CheckCircle, Translate } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { useApp } from '@/contexts/AppContext';
@@ -44,7 +44,6 @@ export default function WelcomeScreen({
   const { t, language } = useApp();
   const [isLoading, setIsLoading] = useState(true);
   const shouldReduceMotion = useReducedMotion();
-  const primaryBtnRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 300);
@@ -58,10 +57,6 @@ export default function WelcomeScreen({
   useEffect(() => {
     if (!isOnline) track('welcome_offline_state_shown');
   }, [isOnline]);
-
-  useEffect(() => {
-    if (!isLoading) primaryBtnRef.current?.focus();
-  }, [isLoading]);
 
   const handleGetStarted = () => {
     if (!isOnline) return;
@@ -125,10 +120,6 @@ export default function WelcomeScreen({
   useEffect(() => {
     if (!isOnline) track('welcome_offline_state_shown');
   }, [isOnline]);
-
-  useEffect(() => {
-    if (!isLoading) primaryBtnRef.current?.focus();
-  }, [isLoading]);
 
   // Initialize animations
   useEffect(() => {
@@ -281,7 +272,7 @@ export default function WelcomeScreen({
   }
 
   return (
-    <main className="fixed inset-0 bg-background overflow-auto">
+    <main className="fixed inset-0 bg-[#F5F5F0] overflow-auto">
       <div className="min-h-screen flex flex-col">
         <AnimatedView style={languageButtonStyle} className="absolute top-6 right-6 z-10">
           <Button
@@ -302,16 +293,16 @@ export default function WelcomeScreen({
             <AnimatedView style={titleStyle} className="flex flex-col items-center mb-12">
               <AnimatedView
                 style={logoStyle}
-                className="w-20 h-20 rounded-full bg-gradient-to-br from-primary via-accent to-secondary flex items-center justify-center shadow-2xl mb-6"
+                className="w-20 h-20 rounded-full bg-gradient-to-br from-primary via-accent to-secondary flex items-center justify-center mb-6"
               >
                 <Heart size={40} className="text-white" weight="fill" aria-hidden />
               </AnimatedView>
 
-              <h1 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-3">
+              <h1 className="text-3xl md:text-4xl font-bold text-center text-[#1F2937] mb-3">
                 {t.welcome.title}
               </h1>
 
-              <p className="text-lg text-muted-foreground text-center">{t.welcome.subtitle}</p>
+              <p className="text-lg text-[#6B7280] text-center">{t.welcome.subtitle}</p>
             </AnimatedView>
 
             <AnimatedView style={proofItemsStyle} className="space-y-3 mb-10">
@@ -323,7 +314,7 @@ export default function WelcomeScreen({
                     className="text-primary shrink-0"
                     aria-hidden
                   />
-                  <span className="text-foreground/80 text-sm">{text}</span>
+                  <span className="text-[#6B7280] text-sm">{text}</span>
                 </div>
               ))}
             </AnimatedView>
@@ -334,7 +325,7 @@ export default function WelcomeScreen({
                 className="mb-6 p-3 rounded-lg bg-primary/10 border border-primary/20"
                 role="note"
               >
-                <p className="text-sm text-foreground/70 text-center">{deepLinkMessage}</p>
+                <p className="text-sm text-[#6B7280] text-center">{deepLinkMessage}</p>
               </AnimatedView>
             )}
 
@@ -351,11 +342,10 @@ export default function WelcomeScreen({
 
             <AnimatedView style={buttonsStyle} className="space-y-3">
               <Button
-                ref={primaryBtnRef}
                 size="lg"
                 onClick={handleGetStarted}
                 disabled={!isOnline}
-                className="w-full text-base font-semibold shadow-lg"
+                className="w-full"
                 style={{
                   transform: shouldReduceMotion ? 'none' : undefined,
                 }}
@@ -386,24 +376,24 @@ export default function WelcomeScreen({
             </AnimatedView>
 
             <AnimatedView style={legalStyle} className="mt-8 text-center">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[#6B7280]">
                 {t.welcome.legal}{' '}
                 <a
-                  href="https://github.com/site/terms"
+                  href="https://pawfectmatch.app/terms"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => handleLegalClick('terms')}
-                  className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                  className="text-[#4A90E2] font-medium hover:underline focus:outline-none"
                 >
                   {t.welcome.terms}
                 </a>{' '}
                 {t.welcome.and}{' '}
                 <a
-                  href="https://github.com/site/privacy"
+                  href="https://pawfectmatch.app/privacy"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => handleLegalClick('privacy')}
-                  className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
+                  className="text-[#4A90E2] font-medium hover:underline focus:outline-none"
                 >
                   {t.welcome.privacy}
                 </a>

@@ -1,8 +1,9 @@
 /**
- * React Query provider for the web surface with IndexedDB persistence.
+ * React Query provider for the web surface with localStorage persistence.
  *
  * Ensures offline caching, focus/online state propagation, and background sync
  * while keeping React Query Devtools disabled in production builds.
+ * Uses synchronous localStorage persister to avoid Promise serialization issues during hydration.
  */
 
 import type { ReactNode } from 'react';

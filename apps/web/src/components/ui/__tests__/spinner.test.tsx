@@ -30,6 +30,16 @@ vi.mock('@/effects/reanimated/animated-view', () => ({
       {children}
     </div>
   ),
+  useAnimatedStyleValue: vi.fn((style: unknown) => {
+    if (typeof style === 'function') {
+      try {
+        return style();
+      } catch {
+        return {};
+      }
+    }
+    return style || {};
+  }),
 }));
 
 // Mock react-native-reanimated

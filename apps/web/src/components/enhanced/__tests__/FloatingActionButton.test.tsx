@@ -15,8 +15,19 @@ vi.mock('@/hooks/useReducedMotion', () => ({
 // Mock haptics
 vi.mock('@/lib/haptics', () => ({
   haptics: {
-    impact: vi.fn(),
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
   },
+  triggerHaptic: vi.fn(() => undefined),
 }));
 
 // Mock AnimatedView
@@ -36,7 +47,16 @@ vi.mock('@/effects/reanimated/animated-view', () => ({
       {children}
     </div>
   ),
-  useAnimatedStyleValue: vi.fn((style: unknown) => style),
+  useAnimatedStyleValue: vi.fn((style: unknown) => {
+    if (typeof style === 'function') {
+      try {
+        return style();
+      } catch {
+        return {};
+      }
+    }
+    return style || {};
+  }),
 }));
 
 // Mock react-native-reanimated

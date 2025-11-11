@@ -8,38 +8,51 @@ import AgeGateModal from '@/components/auth/AgeGateModal';
 import type { AgeVerification } from '@/lib/kyc-types';
 
 // Mock dependencies
+const mockTranslations = {
+  auth: {
+    birthDate: 'Date of Birth',
+    birthDateRequired: 'Please enter your birth date',
+    ageTooYoung: 'You must be at least 18 years old to use this app',
+    verificationError: 'Verification failed. Please try again.',
+    verify: 'Verify',
+    verifyAge: 'Verify Age',
+    enterBirthDate: 'Enter your birth date',
+    country: 'Country (Optional)',
+    countryPlaceholder: 'e.g., United States',
+    ageVerificationTitle: 'Age Verification',
+    ageVerificationDesc: 'You must be at least 18 years old to use PawfectMatch.',
+  },
+  common: {
+    cancel: 'Cancel',
+    close: 'Close',
+    confirm: 'Confirm',
+    save: 'Save',
+    loading: 'Loading...',
+    error: 'Error',
+  },
+};
+
 vi.mock('@/contexts/AppContext', () => ({
   useApp: () => ({
-    t: {
-      auth: {
-        birthDate: 'Date of Birth',
-        birthDateRequired: 'Please enter your birth date',
-        ageTooYoung: 'You must be at least 18 years old to use this app',
-        verificationError: 'Verification failed. Please try again.',
-        verify: 'Verify',
-        verifyAge: 'Verify Age',
-        enterBirthDate: 'Enter your birth date',
-        country: 'Country (Optional)',
-        countryPlaceholder: 'e.g., United States',
-        ageVerificationTitle: 'Age Verification',
-        ageVerificationDesc: 'You must be at least 18 years old to use PawfectMatch.',
-      },
-      common: {
-        cancel: 'Cancel',
-        close: 'Close',
-        confirm: 'Confirm',
-        save: 'Save',
-        loading: 'Loading...',
-        error: 'Error',
-      },
-    },
+    t: mockTranslations,
   }),
 }));
 
 vi.mock('@/lib/haptics', () => ({
   haptics: {
-    trigger: vi.fn(),
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
   },
+  triggerHaptic: vi.fn(() => undefined),
 }));
 
 vi.mock('@/lib/kyc-service', () => ({

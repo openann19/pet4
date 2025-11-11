@@ -191,7 +191,7 @@ export function ensureFocusNotObscured(element: HTMLElement): void {
         });
       }
 
-      logger.debug('Scrolled element into view', {
+      logger?.debug?.('Scrolled element into view', {
         element: element.tagName,
         offset: result.scrollOffset,
       });
@@ -211,7 +211,7 @@ export function ensureFocusNotObscured(element: HTMLElement): void {
 
         element.style.paddingTop = `${newPadding}px`;
 
-        logger.debug('Added padding to account for sticky element', {
+        logger?.debug?.('Added padding to account for sticky element', {
           element: element.tagName,
           padding: newPadding,
         });
@@ -241,11 +241,11 @@ export function setupFocusNotObscuredMonitor(options: { enabled?: boolean } = {}
 
   document.addEventListener('focusin', handleFocus);
 
-  logger.debug('Focus not obscured monitor enabled');
+  logger?.debug?.('Focus not obscured monitor enabled');
 
   return () => {
     document.removeEventListener('focusin', handleFocus);
-    logger.debug('Focus not obscured monitor disabled');
+    logger?.debug?.('Focus not obscured monitor disabled');
   };
 }
 

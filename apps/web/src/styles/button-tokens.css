@@ -1,22 +1,25 @@
 /**
  * Button Color Tokens CSS Variables
- * 
+ *
  * Replaces opacity/blend hacks with solid, AA-compliant colors
  * Automatically switches based on theme (dark/light) and locale (en/bg)
  */
 
 @layer theme {
   :root {
-    /* Default (Light theme, English) */
-    --btn-primary-bg: #2563eb;
+    /* Default (Light theme, English) - Coral solid colors */
+    --btn-primary-bg: #FF8B7B;
+    --btn-primary-bg-solid: #FF8B7B;
     --btn-primary-fg: #ffffff;
-    --btn-primary-hover-bg: #1d4ed8;
+    --btn-primary-hover-bg: #FF7A68;
+    --btn-primary-hover-bg-solid: #FF7A68;
     --btn-primary-hover-fg: #ffffff;
-    --btn-primary-press-bg: #1e40af;
+    --btn-primary-press-bg: #FF6957;
+    --btn-primary-press-bg-solid: #FF6957;
     --btn-primary-press-fg: #ffffff;
     --btn-primary-disabled-bg: #f1f5f9;
     --btn-primary-disabled-fg: #94a3b8;
-    --btn-primary-focus-ring: #3b82f6;
+    --btn-primary-focus-ring: rgba(255, 139, 123, 0.4);
 
     --btn-secondary-bg: #64748b;
     --btn-secondary-fg: #ffffff;
@@ -50,7 +53,22 @@
     --btn-outline-disabled-border: #e2e8f0;
     --btn-outline-disabled-bg: transparent;
     --btn-outline-disabled-fg: #94a3b8;
-    --btn-outline-focus-ring: #64748b;
+    --btn-outline-focus-ring: rgba(255, 107, 107, 0.3);
+
+    /* OAuth button variant - white background with brand-colored icon/text */
+    --btn-oauth-bg: #ffffff;
+    --btn-oauth-fg: #0f172a;
+    --btn-oauth-border: #e2e8f0;
+    --btn-oauth-hover-bg: #f8fafc;
+    --btn-oauth-hover-fg: #020617;
+    --btn-oauth-hover-border: #cbd5e1;
+    --btn-oauth-press-bg: #f1f5f9;
+    --btn-oauth-press-fg: #020617;
+    --btn-oauth-press-border: #cbd5e1;
+    --btn-oauth-disabled-bg: #ffffff;
+    --btn-oauth-disabled-fg: #94a3b8;
+    --btn-oauth-disabled-border: #e2e8f0;
+    --btn-oauth-focus-ring: rgba(255, 107, 107, 0.3);
 
     --btn-ghost-bg: transparent;
     --btn-ghost-fg: #0f172a;
@@ -62,26 +80,40 @@
     --btn-ghost-disabled-fg: #94a3b8;
     --btn-ghost-focus-ring: #64748b;
 
-    --btn-link-fg: #2563eb;
-    --btn-link-hover-fg: #1d4ed8;
+    --btn-link-fg: #4A90E2;
+    --btn-link-hover-fg: #4A90E2;
     --btn-link-disabled-fg: #94a3b8;
-    --btn-link-focus-ring: #3b82f6;
+    --btn-link-focus-ring: rgba(74, 144, 226, 0.3);
 
     /* Minimum touch target size */
     --btn-min-size: 44px;
+
+    /* Standardized button dimensions */
+    --btn-height-default: 50px;
+    --btn-height-secondary: 48px;
+    --btn-height-lg: 56px;
+    --btn-padding-x: 24px;
+    --btn-padding-y: 12px;
+    --btn-border-radius: 12px;
+    --btn-font-weight: 600;
+    --btn-font-size-primary: 15px;
+    --btn-font-size-secondary: 14px;
   }
 
   .dark-theme {
-    /* Dark theme, English (same as Bulgarian) */
-    --btn-primary-bg: #3b82f6;
+    /* Dark theme, English (same as Bulgarian) - Coral solid colors */
+    --btn-primary-bg: #FF8B7B;
+    --btn-primary-bg-solid: #FF8B7B;
     --btn-primary-fg: #ffffff;
-    --btn-primary-hover-bg: #2563eb;
+    --btn-primary-hover-bg: #FF7A68;
+    --btn-primary-hover-bg-solid: #FF7A68;
     --btn-primary-hover-fg: #ffffff;
-    --btn-primary-press-bg: #1d4ed8;
+    --btn-primary-press-bg: #FF6957;
+    --btn-primary-press-bg-solid: #FF6957;
     --btn-primary-press-fg: #ffffff;
     --btn-primary-disabled-bg: #1e293b;
     --btn-primary-disabled-fg: #475569;
-    --btn-primary-focus-ring: #60a5fa;
+    --btn-primary-focus-ring: rgba(255, 139, 123, 0.4);
 
     --btn-secondary-bg: #475569;
     --btn-secondary-fg: #ffffff;
@@ -115,7 +147,22 @@
     --btn-outline-disabled-border: #334155;
     --btn-outline-disabled-bg: transparent;
     --btn-outline-disabled-fg: #475569;
-    --btn-outline-focus-ring: #64748b;
+    --btn-outline-focus-ring: rgba(255, 107, 107, 0.3);
+
+    /* OAuth button variant - dark theme */
+    --btn-oauth-bg: #1e293b;
+    --btn-oauth-fg: #f1f5f9;
+    --btn-oauth-border: #475569;
+    --btn-oauth-hover-bg: #334155;
+    --btn-oauth-hover-fg: #ffffff;
+    --btn-oauth-hover-border: #64748b;
+    --btn-oauth-press-bg: #0f172a;
+    --btn-oauth-press-fg: #ffffff;
+    --btn-oauth-press-border: #64748b;
+    --btn-oauth-disabled-bg: #1e293b;
+    --btn-oauth-disabled-fg: #475569;
+    --btn-oauth-disabled-border: #334155;
+    --btn-oauth-focus-ring: rgba(255, 107, 107, 0.3);
 
     --btn-ghost-bg: transparent;
     --btn-ghost-fg: #f1f5f9;
@@ -127,14 +174,11 @@
     --btn-ghost-disabled-fg: #475569;
     --btn-ghost-focus-ring: #64748b;
 
-    --btn-link-fg: #3b82f6;
-    --btn-link-hover-fg: #60a5fa;
+    --btn-link-fg: #4A90E2;
+    --btn-link-hover-fg: #4A90E2;
     --btn-link-disabled-fg: #475569;
-    --btn-link-focus-ring: #60a5fa;
+    --btn-link-focus-ring: rgba(74, 144, 226, 0.3);
   }
 
   /* Locale-specific overrides can be added here if needed */
-  [data-locale='bg'] {
-    /* Bulgarian locale uses same colors as English for now */
-  }
 }

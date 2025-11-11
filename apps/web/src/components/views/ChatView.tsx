@@ -207,7 +207,7 @@ export default function ChatView() {
           style={emptyStateAnimation.style}
           className="glass-strong p-8 rounded-3xl max-w-md"
         >
-          <h2 className="text-2xl font-bold mb-2">{t.chat.createProfile}</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-2">{t.chat.createProfile}</h2>
           <p className="text-muted-foreground">{t.chat.createProfileDesc}</p>
         </AnimatedView>
       </div>
@@ -221,7 +221,7 @@ export default function ChatView() {
     <PageTransitionWrapper key="chat-view" direction="up">
       <div className="h-[calc(100vh-8rem)]">
         <AnimatedView style={headerAnimation.style} className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">{t.chat.title}</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-2">{t.chat.title}</h2>
           <p className="text-muted-foreground">
             {(chatRooms || []).length}{' '}
             {(chatRooms || []).length === 1 ? t.chat.subtitle : t.chat.subtitlePlural}
@@ -245,9 +245,8 @@ export default function ChatView() {
           {showChatWindow && selectedRoom && (
             <AnimatedView
               style={chatWindowAnimation.style}
-              className={`${
-                isMobile ? 'col-span-1' : 'md:col-span-8'
-              } glass-strong rounded-3xl shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden flex flex-col`}
+              className={`${isMobile ? 'col-span-1' : 'md:col-span-8'
+                } glass-strong rounded-3xl shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden flex flex-col`}
             >
               <ChatErrorBoundary>
                 <ChatWindow
@@ -270,7 +269,7 @@ export default function ChatView() {
                 <AnimatedView style={emptyChatIconStyle} className="text-6xl mb-4">
                   💬
                 </AnimatedView>
-                <h3 className="text-xl font-semibold mb-2">{t.chat.selectConversation}</h3>
+                <h3 className="text-lg font-semibold mb-2">{t.chat.selectConversation}</h3>
                 <p className="text-muted-foreground">{t.chat.selectConversationDesc}</p>
               </div>
             </AnimatedView>

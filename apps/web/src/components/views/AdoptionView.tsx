@@ -197,133 +197,135 @@ export default function AdoptionView() {
 
   return (
     <PageTransitionWrapper key="adoption-view" direction="up">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold flex items-center gap-3">
-              <Heart size={32} weight="fill" className="text-primary" />
-              {t.adoption?.title || 'Pet Adoption'}
-            </h2>
-            <p className="text-muted-foreground">
-              {t.adoption?.subtitle || 'Find your perfect companion and give them a forever home'}
-            </p>
+      <main role="main" aria-label="Pet adoption section">
+        <div className="space-y-6">
+          <header className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-3">
+                <Heart size={32} weight="fill" className="text-primary" aria-hidden="true" />
+                {t.adoption?.title || 'Pet Adoption'}
+              </h1>
+              <p className="text-muted-foreground">
+                {t.adoption?.subtitle || 'Find your perfect companion and give them a forever home'}
+              </p>
+            </div>
+
+            <nav className="flex items-center gap-2" aria-label="Adoption actions">
+              <Button
+                onClick={() => setViewMode('my-applications')}
+                variant="outline"
+                className="gap-2"
+              >
+                <ClipboardText size={20} weight="fill" />
+                {t.adoption?.myApplications || 'My Applications'}
+                {userApplicationsCount > 0 && (
+                  <Badge variant="secondary" className="ml-1">
+                    {userApplicationsCount}
+                  </Badge>
+                )}
+              </Button>
+              <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
+                <Plus size={20} weight="fill" />
+                {t.adoption?.createListing || 'Create Listing'}
+              </Button>
+            </nav>
+          </header>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex-1 relative w-full">
+              <MagnifyingGlass
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                size={20}
+              />
+              <Input
+                placeholder={'Search by pet name, breed, location...'}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
+              <TabsList>
+                <TabsTrigger value="all">
+                  All {listings.length > 0 && `(${listings.length})`}
+                </TabsTrigger>
+                <TabsTrigger value="available">
+                  {t.adoption?.available || 'Available'} {availableCount > 0 && `(${availableCount})`}
+                </TabsTrigger>
+                <TabsTrigger value="favorites">
+                  Favorites{' '}
+                  {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => setViewMode('my-applications')}
-              variant="outline"
-              className="gap-2"
-            >
-              <ClipboardText size={20} weight="fill" />
-              {t.adoption?.myApplications || 'My Applications'}
-              {userApplicationsCount > 0 && (
-                <Badge variant="secondary" className="ml-1">
-                  {userApplicationsCount}
-                </Badge>
-              )}
-            </Button>
-            <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
-              <Plus size={20} weight="fill" />
-              {t.adoption?.createListing || 'Create Listing'}
-            </Button>
+          <div className="h-[calc(100vh-320px)]">
+            {contentPresence.shouldRender && !loading && (
+              <AnimatedView style={contentPresence.animatedStyle}>
+                {filteredListings.length === 0 ? (
+                  <AnimatedView
+                    key="empty"
+                    className="flex flex-col items-center justify-center py-16"
+                  >
+                    <Heart size={64} className="text-muted-foreground mb-4" weight="thin" />
+                    <h3 className="text-lg font-semibold mb-2">
+                      {activeTab === 'favorites'
+                        ? 'No Favorites Yet'
+                        : searchQuery
+                          ? 'No Results Found'
+                          : 'No Pets Available'}
+                    </h3>
+                    <p className="text-muted-foreground text-center max-w-md">
+                      {activeTab === 'favorites'
+                        ? 'Start adding pets to your favorites to see them here.'
+                        : searchQuery
+                          ? 'Try adjusting your search terms or filters.'
+                          : 'Check back soon for new pets looking for their forever homes.'}
+                    </p>
+                  </AnimatedView>
+                ) : (
+                  <VirtualGrid
+                    items={filteredListings}
+                    renderItem={renderListingCard}
+                    columns={3}
+                    itemHeight={400}
+                    gap={24}
+                    overscan={5}
+                    containerClassName="h-full"
+                    keyExtractor={listingKeyExtractor}
+                  />
+                )}
+              </AnimatedView>
+            )}
           </div>
+
+          <CreateAdoptionListingDialog
+            open={showCreateDialog}
+            onOpenChange={setShowCreateDialog}
+            onSuccess={() => {
+              loadListings();
+              loadUserApplicationsCount();
+            }}
+          />
+
+          <AdoptionListingDetailDialog
+            listing={selectedListing}
+            open={showDetailDialog}
+            onOpenChange={(open) => {
+              setShowDetailDialog(open);
+              if (!open) {
+                setSelectedListing(null);
+              }
+              loadUserApplicationsCount();
+            }}
+            onApplicationSubmitted={() => {
+              loadUserApplicationsCount();
+            }}
+          />
         </div>
-
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="flex-1 relative w-full">
-            <MagnifyingGlass
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-              size={20}
-            />
-            <Input
-              placeholder={'Search by pet name, breed, location...'}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-            <TabsList>
-              <TabsTrigger value="all">
-                All {listings.length > 0 && `(${listings.length})`}
-              </TabsTrigger>
-              <TabsTrigger value="available">
-                {t.adoption?.available || 'Available'} {availableCount > 0 && `(${availableCount})`}
-              </TabsTrigger>
-              <TabsTrigger value="favorites">
-                Favorites{' '}
-                {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        <div className="h-[calc(100vh-320px)]">
-          {contentPresence.shouldRender && !loading && (
-            <AnimatedView style={contentPresence.animatedStyle}>
-              {filteredListings.length === 0 ? (
-                <AnimatedView
-                  key="empty"
-                  className="flex flex-col items-center justify-center py-16"
-                >
-                  <Heart size={64} className="text-muted-foreground mb-4" weight="thin" />
-                  <h3 className="text-xl font-semibold mb-2">
-                    {activeTab === 'favorites'
-                      ? 'No Favorites Yet'
-                      : searchQuery
-                        ? 'No Results Found'
-                        : 'No Pets Available'}
-                  </h3>
-                  <p className="text-muted-foreground text-center max-w-md">
-                    {activeTab === 'favorites'
-                      ? 'Start adding pets to your favorites to see them here.'
-                      : searchQuery
-                        ? 'Try adjusting your search terms or filters.'
-                        : 'Check back soon for new pets looking for their forever homes.'}
-                  </p>
-                </AnimatedView>
-              ) : (
-                <VirtualGrid
-                  items={filteredListings}
-                  renderItem={renderListingCard}
-                  columns={3}
-                  itemHeight={400}
-                  gap={24}
-                  overscan={5}
-                  containerClassName="h-full"
-                  keyExtractor={listingKeyExtractor}
-                />
-              )}
-            </AnimatedView>
-          )}
-        </div>
-
-        <CreateAdoptionListingDialog
-          open={showCreateDialog}
-          onOpenChange={setShowCreateDialog}
-          onSuccess={() => {
-            loadListings();
-            loadUserApplicationsCount();
-          }}
-        />
-
-        <AdoptionListingDetailDialog
-          listing={selectedListing}
-          open={showDetailDialog}
-          onOpenChange={(open) => {
-            setShowDetailDialog(open);
-            if (!open) {
-              setSelectedListing(null);
-            }
-            loadUserApplicationsCount();
-          }}
-          onApplicationSubmitted={() => {
-            loadUserApplicationsCount();
-          }}
-        />
-      </div>
+      </main>
     </PageTransitionWrapper>
   );
 }

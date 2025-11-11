@@ -554,6 +554,8 @@ export default defineConfig(async (): Promise<UserConfig> => {
       jsx: 'automatic',
     },
     server: {
+      host: '0.0.0.0',
+      port: 5173,
       hmr: {
         overlay: true,
       },

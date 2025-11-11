@@ -15,8 +15,19 @@ vi.mock('@/api/community-api', () => ({
 
 vi.mock('@/lib/haptics', () => ({
   haptics: {
-    trigger: vi.fn(),
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
   },
+  triggerHaptic: vi.fn(() => undefined),
 }));
 
 vi.mock('sonner', () => ({

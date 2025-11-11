@@ -45,8 +45,9 @@ describe('useOnlineStatus', () => {
 
     expect(result.current).toBe(false);
 
-    act(() => {
-      const onlineEvent = new Event('online');
+    await act(async () => {
+      mockNavigator.onLine = true;
+      const onlineEvent = new Event('online', { bubbles: true });
       window.dispatchEvent(onlineEvent);
     });
 
@@ -61,8 +62,9 @@ describe('useOnlineStatus', () => {
 
     expect(result.current).toBe(true);
 
-    act(() => {
-      const offlineEvent = new Event('offline');
+    await act(async () => {
+      mockNavigator.onLine = false;
+      const offlineEvent = new Event('offline', { bubbles: true });
       window.dispatchEvent(offlineEvent);
     });
 
@@ -77,22 +79,25 @@ describe('useOnlineStatus', () => {
 
     expect(result.current).toBe(true);
 
-    act(() => {
-      window.dispatchEvent(new Event('offline'));
+    await act(async () => {
+      mockNavigator.onLine = false;
+      window.dispatchEvent(new Event('offline', { bubbles: true }));
     });
     await waitFor(() => {
       expect(result.current).toBe(false);
     });
 
-    act(() => {
-      window.dispatchEvent(new Event('online'));
+    await act(async () => {
+      mockNavigator.onLine = true;
+      window.dispatchEvent(new Event('online', { bubbles: true }));
     });
     await waitFor(() => {
       expect(result.current).toBe(true);
     });
 
-    act(() => {
-      window.dispatchEvent(new Event('offline'));
+    await act(async () => {
+      mockNavigator.onLine = false;
+      window.dispatchEvent(new Event('offline', { bubbles: true }));
     });
     await waitFor(() => {
       expect(result.current).toBe(false);

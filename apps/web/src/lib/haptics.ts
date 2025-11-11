@@ -18,6 +18,10 @@ class HapticFeedback {
     this.isSupported = 'vibrate' in navigator;
   }
 
+  isHapticSupported(): boolean {
+    return this.isSupported;
+  }
+
   private vibrate(pattern: number | number[]) {
     if (!this.isSupported) return;
     try {
