@@ -164,7 +164,7 @@ export function MapLocationPicker({
             <p className="text-sm text-muted-foreground">Drag the map or use current location</p>
           </div>
           <AnimatedView style={closeButtonAnimation.animatedStyle}>
-            <Button variant="ghost" size="icon" onClick={closeButtonAnimation.handlePress}>
+            <Button variant="ghost" size="icon" onClick={closeButtonAnimation.handlePress} aria-label="X">
               <X size={24} />
             </Button>
           </AnimatedView>

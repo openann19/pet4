@@ -56,7 +56,7 @@ export default function SavedPostsView({ onBack, onAuthorClick }: SavedPostsView
         {/* Header */}
         <div className="flex items-center gap-4 p-4 border-b bg-card">
           {onBack && (
-            <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
+            <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full" aria-label="Arrow Left">
               <ArrowLeft size={20} />
             </Button>
           )}

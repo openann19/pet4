@@ -167,7 +167,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
+                  <Button variant="ghost" size="icon" className="rounded-full" aria-label="Dots Three Vertical">
                     <DotsThreeVertical size={20} />
                   </Button>
                 </DropdownMenuTrigger>

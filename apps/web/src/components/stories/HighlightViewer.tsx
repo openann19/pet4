@@ -113,7 +113,7 @@ export default function HighlightViewer({
               </>
             )}
 
-            <Button variant="ghost" size="icon" onClick={onClose} className="shrink-0">
+            <Button variant="ghost" size="icon" onClick={onClose} className="shrink-0" aria-label="X">
               <X size={24} weight="bold" />
             </Button>
           </div>

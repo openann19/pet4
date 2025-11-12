@@ -380,7 +380,7 @@ export default function SavedSearchesManager({
               <p className="text-sm text-muted-foreground">Quick access to your favorite filters</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={onClose} aria-label="X">
             <X size={24} />
           </Button>
         </div>

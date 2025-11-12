@@ -191,7 +191,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
             </div>
           </div>
           {onClose && (
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={onClose} aria-label="X">
               <X size={24} />
             </Button>
           )}

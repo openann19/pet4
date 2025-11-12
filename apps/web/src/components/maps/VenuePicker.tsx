@@ -165,7 +165,7 @@ export default function VenuePicker({
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="flex-1"
               />
-              <Button onClick={handleSearch} size="icon">
+              <Button onClick={handleSearch} size="icon" aria-label="Magnifying Glass">
                 <MagnifyingGlass size={20} />
               </Button>
             </div>
@@ -229,7 +229,7 @@ export default function VenuePicker({
                     )}
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => setSelectedVenue(null)}>
+                <Button variant="ghost" size="icon" onClick={() = aria-label="X"> setSelectedVenue(null)}>
                   <X size={20} />
                 </Button>
               </div>
