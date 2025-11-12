@@ -120,7 +120,7 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
     try {
       safeSetLoading(true);
       await authApi.forgotPassword({ email });
-      const successMessage: string = t.auth?.forgotPasswordSuccess ?? 'Password reset link has been sent to your email';
+      const successMessage = 'Password reset link has been sent to your email';
       toast.success(successMessage);
       try {
         const emailHash = await hashEmail(email);
@@ -130,7 +130,7 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error('Unknown error');
-      const errorMessage: string = err.message || (t.auth?.forgotPasswordError ?? 'Failed to send password reset email. Please try again.');
+      const errorMessage = err.message || 'Failed to send password reset email. Please try again.';
       logger.error('Forgot password error', err);
       toast.error(errorMessage);
       haptics.trigger('error');

@@ -2682,7 +2682,7 @@
   {
     "file": "apps/web/src/components/adoption/MyApplicationsView.tsx",
     "line": 136,
-    "issue": "onClick={onBack} className=\"rounded-full\">",
+    "issue": "onClick={onBack} className=\"rounded-full\" aria-label=\"Arrow Left\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -5050,7 +5050,7 @@
   {
     "file": "apps/web/src/components/discovery/SavedSearchesManager.tsx",
     "line": 383,
-    "issue": "onClick={onClose}>",
+    "issue": "onClick={onClose} aria-label=\"X\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -6458,7 +6458,7 @@
   {
     "file": "apps/web/src/components/health/PetHealthDashboard.tsx",
     "line": 451,
-    "issue": "onClick={closeButtonAnimation.handlePress}>",
+    "issue": "onClick={closeButtonAnimation.handlePress} aria-label=\"X\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -6570,7 +6570,7 @@
   {
     "file": "apps/web/src/components/lost-found/MapLocationPicker.tsx",
     "line": 167,
-    "issue": "onClick={closeButtonAnimation.handlePress}>",
+    "issue": "onClick={closeButtonAnimation.handlePress} aria-label=\"X\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -6650,7 +6650,7 @@
   {
     "file": "apps/web/src/components/maps/LocationSharing.tsx",
     "line": 93,
-    "issue": "onClick={() => setShowFullMap(false)}>",
+    "issue": "onClick={() = aria-label=\"X\"> setShowFullMap(false)}>",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -6706,7 +6706,7 @@
   {
     "file": "apps/web/src/components/maps/LostFoundMap.tsx",
     "line": 205,
-    "issue": "onClick={() => setSelectedAlert(null)}>",
+    "issue": "onClick={() = aria-label=\"X\"> setSelectedAlert(null)}>",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -6730,7 +6730,7 @@
   {
     "file": "apps/web/src/components/maps/VenuePicker.tsx",
     "line": 168,
-    "issue": "onClick={handleSearch} size=\"icon\">",
+    "issue": "onClick={handleSearch} size=\"icon\" aria-label=\"Magnifying Glass\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -6746,7 +6746,7 @@
   {
     "file": "apps/web/src/components/maps/VenuePicker.tsx",
     "line": 232,
-    "issue": "onClick={() => setSelectedVenue(null)}>",
+    "issue": "onClick={() = aria-label=\"X\"> setSelectedVenue(null)}>",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -7402,7 +7402,7 @@
   {
     "file": "apps/web/src/components/notifications/components/NotificationFilters.tsx",
     "line": 64,
-    "issue": "onClick={onShowSettings}>",
+    "issue": "onClick={onShowSettings} aria-label=\"Sliders Horizontal\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -7610,7 +7610,7 @@
   {
     "file": "apps/web/src/components/playdate/LocationPicker.tsx",
     "line": 194,
-    "issue": "onClick={onClose}>",
+    "issue": "onClick={onClose} aria-label=\"X\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -7666,7 +7666,7 @@
   {
     "file": "apps/web/src/components/playdate/PlaydateMap.tsx",
     "line": 152,
-    "issue": "onClick={onClose}>",
+    "issue": "onClick={onClose} aria-label=\"X\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -7690,7 +7690,7 @@
   {
     "file": "apps/web/src/components/playdate/PlaydateMap.tsx",
     "line": 325,
-    "issue": "onClick={() => setSelectedPlaydate(null)}>",
+    "issue": "onClick={() = aria-label=\"X\"> setSelectedPlaydate(null)}>",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -8202,7 +8202,7 @@
   {
     "file": "apps/web/src/components/stories/HighlightViewer.tsx",
     "line": 116,
-    "issue": "onClick={onClose} className=\"shrink-0\">",
+    "issue": "onClick={onClose} className=\"shrink-0\" aria-label=\"X\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -9466,7 +9466,7 @@
   {
     "file": "apps/web/src/components/views/SavedPostsView.tsx",
     "line": 59,
-    "issue": "onClick={onBack} className=\"rounded-full\">",
+    "issue": "onClick={onBack} className=\"rounded-full\" aria-label=\"Arrow Left\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -9482,7 +9482,7 @@
   {
     "file": "apps/web/src/components/views/UserPostsView.tsx",
     "line": 129,
-    "issue": "onClick={onBack} className=\"rounded-full\">",
+    "issue": "onClick={onBack} className=\"rounded-full\" aria-label=\"Arrow Left\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
