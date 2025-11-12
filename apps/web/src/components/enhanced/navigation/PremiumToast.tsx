@@ -6,7 +6,7 @@ import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import { X, CheckCircle, Warning, Info, XCircle } from 'lucide-react';
+import { X, CheckCircle, AlertTriangle, Info, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -33,7 +33,7 @@ export interface PremiumToastProps {
 const icons = {
   success: CheckCircle,
   error: XCircle,
-  warning: Warning,
+  warning: AlertTriangle,
   info: Info,
 };
 

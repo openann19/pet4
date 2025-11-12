@@ -91,15 +91,14 @@ export function PremiumToggle({
       >
         <AnimatedView style={[trackStyle, glowStyle]} className="absolute inset-0 rounded-full" />
         <AnimatedView
-          style={thumbStyle}
+          style={[thumbStyle, {
+            width: config.thumb,
+            height: config.thumb,
+          }]}
           className={cn(
             'absolute top-0.5 rounded-full bg-white shadow-lg',
             'transition-all duration-300'
           )}
-          style={{
-            width: config.thumb,
-            height: config.thumb,
-          }}
         />
       </button>
       {label && (
