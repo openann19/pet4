@@ -71,17 +71,17 @@ export function ToggleButton({
 
   const variantStyles = {
     primary: checked
-      ? 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)]'
-      : 'bg-transparent text-[var(--btn-ghost-fg)] border-2 border-[var(--btn-primary-bg)]',
+      ? 'bg-(--btn-primary-bg) text-(--btn-primary-fg)'
+      : 'bg-transparent text-(--btn-ghost-fg) border-2 border-(--btn-primary-bg)',
     secondary: checked
-      ? 'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)]'
-      : 'bg-transparent text-[var(--btn-ghost-fg)] border-2 border-[var(--btn-secondary-bg)]',
+      ? 'bg-(--btn-secondary-bg) text-(--btn-secondary-fg)'
+      : 'bg-transparent text-(--btn-ghost-fg) border-2 border-(--btn-secondary-bg)',
     accent: checked
-      ? 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)]'
-      : 'bg-transparent text-[var(--btn-ghost-fg)] border-2 border-[var(--btn-primary-bg)]',
+      ? 'bg-(--btn-primary-bg) text-(--btn-primary-fg)'
+      : 'bg-transparent text-(--btn-ghost-fg) border-2 border-(--btn-primary-bg)',
     ghost: checked
-      ? 'bg-[var(--btn-ghost-hover-bg)] text-[var(--btn-ghost-fg)]'
-      : 'bg-transparent text-[var(--btn-ghost-fg)]',
+      ? 'bg-(--btn-ghost-hover-bg) text-(--btn-ghost-fg)'
+      : 'bg-transparent text-(--btn-ghost-fg)',
   };
 
   const sizes = {

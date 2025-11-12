@@ -219,8 +219,8 @@ export function PremiumInput({
             className={cn(
               'absolute left-4 pointer-events-none transition-colors',
               'text-muted-foreground font-medium',
-              isFocused && 'text-[var(--coral-primary)]',
-              error && 'text-[var(--error)]',
+              isFocused && 'text-(--coral-primary)',
+              error && 'text-(--error)',
               size === 'sm' && 'text-sm',
               size === 'lg' && 'text-base'
             )}
@@ -278,10 +278,10 @@ export function PremiumInput({
             </button>
           )}
 
-          {error && <WarningCircle size={16} className="text-[var(--error)] shrink-0" />}
+          {error && <WarningCircle size={16} className="text-(--error) shrink-0" />}
 
           {!error && hasValue && !showClearButton && (
-            <CheckCircle size={16} className="text-[var(--success)] shrink-0" />
+            <CheckCircle size={16} className="text-(--success) shrink-0" />
           )}
 
           {rightIcon && <div className="shrink-0 text-muted-foreground">{rightIcon}</div>}
@@ -293,7 +293,7 @@ export function PremiumInput({
           id={error ? errorId : helperTextId}
           className={cn(
             'mt-1.5 text-xs flex items-center gap-1',
-            error ? 'text-[var(--error)]' : 'text-muted-foreground'
+            error ? 'text-(--error)' : 'text-muted-foreground'
           )}
           role={error ? 'alert' : undefined}
         >

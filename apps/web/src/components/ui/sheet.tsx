@@ -63,7 +63,7 @@ function SheetContent({
       >
         {children}
         <SheetPrimitive.Close
-          className={`ring-offset-background ${FocusRing.standard} data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 disabled:pointer-events-none text-[var(--text-secondary)] hover:text-[var(--text-primary)]`}
+          className={`ring-offset-background ${FocusRing.standard} data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 disabled:pointer-events-none text-(--text-secondary) hover:text-(--text-primary)`}
           aria-label="Close sheet"
         >
           <X className="size-4" />

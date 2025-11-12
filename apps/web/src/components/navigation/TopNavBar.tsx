@@ -365,7 +365,7 @@ function NavButton({
             {badge > 9 ? '9+' : badge}
           </span>
         )}
-        <div className="text-[var(--text-primary)] group-hover:text-[var(--coral-primary)] transition-colors">
+        <div className="text-(--text-primary) group-hover:text-(--coral-primary) transition-colors">
           {icon}
         </div>
       </AnimatedView>
@@ -385,7 +385,7 @@ function MobileNavButton({ icon, label, onClick }: MobileNavButtonProps) {
       onClick={onClick}
       className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 active:bg-primary/20 transition-colors text-left"
     >
-      <div className="text-[var(--text-primary)]">{icon}</div>
+      <div className="text-(--text-primary)">{icon}</div>
       <span className="text-sm font-medium">{label}</span>
     </button>
   );

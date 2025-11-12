@@ -142,7 +142,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
               onMouseEnter={closeButtonHover.handleEnter}
               onMouseLeave={closeButtonHover.handleLeave}
               onMouseDown={closeButtonTap.handlePress}
-              className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full glass-strong flex items-center justify-center shadow-2xl border border-white/30 backdrop-blur-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--coral-primary)] focus:ring-offset-2"
+              className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full glass-strong flex items-center justify-center shadow-2xl border border-white/30 backdrop-blur-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-(--coral-primary) focus:ring-offset-2"
               aria-label="Close dialog"
             >
               <X size={20} className="text-white drop-shadow-lg" weight="bold" />

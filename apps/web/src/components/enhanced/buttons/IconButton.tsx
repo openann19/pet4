@@ -156,12 +156,12 @@ export function IconButton({
   const config = SIZE_CONFIG[size];
   const variantStyles = {
     primary:
-      'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-hover-bg)] active:bg-[var(--btn-primary-press-bg)]',
+      'bg-(--btn-primary-bg) text-(--btn-primary-fg) hover:bg-(--btn-primary-hover-bg) active:bg-(--btn-primary-press-bg)',
     ghost:
-      'bg-transparent text-[var(--btn-ghost-fg)] hover:bg-[var(--btn-ghost-hover-bg)] active:bg-[var(--btn-ghost-press-bg)]',
+      'bg-transparent text-(--btn-ghost-fg) hover:bg-(--btn-ghost-hover-bg) active:bg-(--btn-ghost-press-bg)',
     outline:
-      'bg-transparent border-2 border-[var(--btn-primary-bg)] text-[var(--btn-primary-bg)] hover:bg-[var(--btn-primary-bg)] hover:text-[var(--btn-primary-fg)]',
-    glass: 'glass-card text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-hover-bg)]',
+      'bg-transparent border-2 border-(--btn-primary-bg) text-(--btn-primary-bg) hover:bg-(--btn-primary-bg) hover:text-(--btn-primary-fg)',
+    glass: 'glass-card text-(--btn-primary-fg) hover:bg-(--btn-primary-hover-bg)',
   };
 
   return (

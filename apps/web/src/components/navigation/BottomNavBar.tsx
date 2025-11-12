@@ -224,7 +224,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
           {isActive && (
             <AnimatedView
               style={animation.indicatorStyle}
-              className="absolute inset-0 rounded-2xl bg-[var(--coral-primary)]/20 blur-xl"
+              className="absolute inset-0 rounded-2xl bg-(--coral-primary)/20 blur-xl"
             >
               <></>
             </AnimatedView>
@@ -234,7 +234,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
           {isActive && (
             <AnimatedView
               style={glowStyle}
-              className="absolute inset-0 rounded-2xl bg-[var(--coral-primary)]/30 blur-2xl -z-10"
+              className="absolute inset-0 rounded-2xl bg-(--coral-primary)/30 blur-2xl -z-10"
             >
               <></>
             </AnimatedView>
@@ -249,7 +249,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
           <span
             className={cn(
               'text-[10px] leading-tight font-semibold transition-all duration-200 relative z-10',
-              isActive ? 'text-[var(--coral-primary)] font-bold' : 'text-[var(--text-secondary)] opacity-70'
+              isActive ? 'text-(--coral-primary) font-bold' : 'text-(--text-secondary) opacity-70'
             )}
           >
             {item.label}
@@ -259,7 +259,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
           {isActive && (
             <AnimatedView
               style={animation.indicatorStyle}
-              className="absolute bottom-0 w-1 h-1 rounded-full bg-[var(--coral-primary)]"
+              className="absolute bottom-0 w-1 h-1 rounded-full bg-(--coral-primary)"
             >
               <></>
             </AnimatedView>

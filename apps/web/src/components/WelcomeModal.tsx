@@ -154,7 +154,7 @@ export default function WelcomeModal(): JSX.Element | null {
             <button
               type="button"
               onClick={handleClose}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10 shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--coral-primary)] focus:ring-offset-2"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10 shadow-md focus:outline-none focus:ring-2 focus:ring-(--coral-primary) focus:ring-offset-2"
               aria-label="Close welcome dialog"
             >
               <X size={16} />

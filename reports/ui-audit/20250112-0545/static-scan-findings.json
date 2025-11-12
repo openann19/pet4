@@ -1985,22 +1985,6 @@
   },
   {
     "file": "apps/web/src/components/admin/MapSettingsView.tsx",
-    "line": 59,
-    "issue": "#22c55e",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/admin/MapSettingsView.tsx",
-    "line": 60,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/admin/MapSettingsView.tsx",
     "line": 61,
     "issue": "#a855f7",
     "severity": "HIGH",
@@ -2043,22 +2027,6 @@
     "file": "apps/web/src/components/admin/MapSettingsView.tsx",
     "line": 66,
     "issue": "#8b5cf6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/admin/MapSettingsView.tsx",
-    "line": 92,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/admin/MapSettingsView.tsx",
-    "line": 175,
-    "issue": "#000000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -3041,38 +3009,6 @@
   },
   {
     "file": "apps/web/src/components/auth/OAuthButtons.tsx",
-    "line": 129,
-    "issue": "className=\"flex-1 h-[",
-    "severity": "MED",
-    "type": "Hardcoded Spacing",
-    "fix": "Use spacing tokens (--space-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/OAuthButtons.tsx",
-    "line": 140,
-    "issue": "className=\"flex-1 h-[",
-    "severity": "MED",
-    "type": "Hardcoded Spacing",
-    "fix": "Use spacing tokens (--space-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/OAuthButtons.tsx",
-    "line": 129,
-    "issue": "rounded-[12px]",
-    "severity": "MED",
-    "type": "Hardcoded Radius",
-    "fix": "Use radius tokens (--radius-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/OAuthButtons.tsx",
-    "line": 140,
-    "issue": "rounded-[12px]",
-    "severity": "MED",
-    "type": "Hardcoded Radius",
-    "fix": "Use radius tokens (--radius-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/OAuthButtons.tsx",
     "line": 125,
     "issue": "<button",
     "severity": "HIGH",
@@ -3105,56 +3041,8 @@
   },
   {
     "file": "apps/web/src/components/auth/SignInForm.tsx",
-    "line": 179,
-    "issue": "className=\"w-full h-[",
-    "severity": "MED",
-    "type": "Hardcoded Spacing",
-    "fix": "Use spacing tokens (--space-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/SignInForm.tsx",
-    "line": 207,
-    "issue": "className=\"w-full h-[",
-    "severity": "MED",
-    "type": "Hardcoded Spacing",
-    "fix": "Use spacing tokens (--space-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/SignInForm.tsx",
-    "line": 245,
-    "issue": "className=\"w-full h-[",
-    "severity": "MED",
-    "type": "Hardcoded Spacing",
-    "fix": "Use spacing tokens (--space-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/SignInForm.tsx",
     "line": 143,
     "issue": "rounded-[24px]",
-    "severity": "MED",
-    "type": "Hardcoded Radius",
-    "fix": "Use radius tokens (--radius-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/SignInForm.tsx",
-    "line": 179,
-    "issue": "rounded-[12px]",
-    "severity": "MED",
-    "type": "Hardcoded Radius",
-    "fix": "Use radius tokens (--radius-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/SignInForm.tsx",
-    "line": 207,
-    "issue": "rounded-[12px]",
-    "severity": "MED",
-    "type": "Hardcoded Radius",
-    "fix": "Use radius tokens (--radius-*)"
-  },
-  {
-    "file": "apps/web/src/components/auth/SignInForm.tsx",
-    "line": 245,
-    "issue": "rounded-[12px]",
     "severity": "MED",
     "type": "Hardcoded Radius",
     "fix": "Use radius tokens (--radius-*)"
@@ -3976,14 +3864,6 @@
     "fix": "Ensure proper semantic HTML or role/aria attributes"
   },
   {
-    "file": "apps/web/src/components/chat/ReactionBurstParticles.tsx",
-    "line": 43,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/web/src/components/chat/SmartSuggestionsPanel.tsx",
     "line": 86,
     "issue": "<button",
@@ -4168,25 +4048,9 @@
     "fix": "Ensure proper semantic HTML or role/aria attributes"
   },
   {
-    "file": "apps/web/src/components/chat/VoiceWaveform.tsx",
-    "line": 33,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/web/src/components/chat/WebBubbleWrapper.tsx",
     "line": 168,
     "issue": "#9ca3af",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/chat/WebBubbleWrapper.tsx",
-    "line": 168,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -4214,14 +4078,6 @@
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
-  },
-  {
-    "file": "apps/web/src/components/chat/bubble-wrapper-god-tier/BubbleWrapperGodTier.tsx",
-    "line": 89,
-    "issue": "#EF4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
   },
   {
     "file": "apps/web/src/components/chat/bubble-wrapper-god-tier/BubbleWrapperGodTier.tsx",
@@ -4282,14 +4138,6 @@
   {
     "file": "apps/web/src/components/chat/bubble-wrapper-god-tier/effects/useParticleBurstOnEvent.ts",
     "line": 22,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/chat/bubble-wrapper-god-tier/effects/useParticleBurstOnEvent.ts",
-    "line": 22,
     "issue": "#8B5CF6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
@@ -4299,14 +4147,6 @@
     "file": "apps/web/src/components/chat/bubble-wrapper-god-tier/effects/useParticleBurstOnEvent.ts",
     "line": 22,
     "issue": "#10B981",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/chat/bubble-wrapper-god-tier/effects/useParticleBurstOnEvent.ts",
-    "line": 35,
-    "issue": "#EF4444",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -4414,22 +4254,6 @@
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
-  },
-  {
-    "file": "apps/web/src/components/chat/components/MessageItem.tsx",
-    "line": 186,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/chat/components/MessageItem.tsx",
-    "line": 186,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
   },
   {
     "file": "apps/web/src/components/chat/components/MessageItem.tsx",
@@ -4665,14 +4489,6 @@
   },
   {
     "file": "apps/web/src/components/chat/window/MessageItem.tsx",
-    "line": 161,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/chat/window/MessageItem.tsx",
     "line": 180,
     "issue": "<img",
     "severity": "BLOCKER",
@@ -4794,7 +4610,7 @@
   {
     "file": "apps/web/src/components/community/CommentsSheet.tsx",
     "line": 413,
-    "issue": "onClick={handleLike} className=\"flex items-center gap-1 group/like\">",
+    "issue": "onClick={handleLike} className=\"flex items-center gap-1 group/like focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -5066,7 +4882,7 @@
   {
     "file": "apps/web/src/components/community/PostCard.tsx",
     "line": 528,
-    "issue": "onClick={handleCommentClick} className=\"flex items-center gap-1.5 group\">",
+    "issue": "onClick={handleCommentClick} className=\"flex items-center gap-1.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -5234,7 +5050,7 @@
   {
     "file": "apps/web/src/components/community/PostComposer.tsx",
     "line": 738,
-    "issue": "onClick={() => handleRemoveTag(tag)} className=\"hover:text-destructive\">",
+    "issue": "onClick={() = className=\"focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)\"> handleRemoveTag(tag)} className=\"hover:text-destructive\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -5386,7 +5202,7 @@
   {
     "file": "apps/web/src/components/community/PostDetailView.tsx",
     "line": 391,
-    "issue": "onClick={handleSave} className=\"hover:opacity-80 transition-opacity\">",
+    "issue": "onClick={handleSave} className=\"hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -5394,7 +5210,7 @@
   {
     "file": "apps/web/src/components/community/PostDetailView.tsx",
     "line": 398,
-    "issue": "onClick={handleShare} className=\"hover:opacity-80 transition-opacity\">",
+    "issue": "onClick={handleShare} className=\"hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -6219,14 +6035,6 @@
     "file": "apps/web/src/components/enhanced/ParticleEffect.tsx",
     "line": 101,
     "issue": "#F59E0B",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/enhanced/ParticleEffect.tsx",
-    "line": 101,
-    "issue": "#EF4444",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -7290,7 +7098,7 @@
   {
     "file": "apps/web/src/components/lost-found/CreateLostAlertDialog.tsx",
     "line": 65,
-    "issue": "onClick={removeButtonAnimation.handlePress} type=\"button\">",
+    "issue": "onClick={removeButtonAnimation.handlePress} type=\"button\" className=\"focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)\">",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -7625,22 +7433,6 @@
   },
   {
     "file": "apps/web/src/components/media-editor/MediaEditor.tsx",
-    "line": 86,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/MediaEditor.tsx",
-    "line": 105,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/MediaEditor.tsx",
     "line": 115,
     "issue": "#111",
     "severity": "HIGH",
@@ -7659,14 +7451,6 @@
     "file": "apps/web/src/components/media-editor/MediaEditor.tsx",
     "line": 156,
     "issue": "#222",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/MediaEditor.tsx",
-    "line": 162,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -7699,22 +7483,6 @@
     "file": "apps/web/src/components/media-editor/MediaEditor.tsx",
     "line": 186,
     "issue": "#444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/MediaEditor.tsx",
-    "line": 187,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/MediaEditor.tsx",
-    "line": 187,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -7793,38 +7561,6 @@
   },
   {
     "file": "apps/web/src/components/media-editor/upload-and-edit-screen.tsx",
-    "line": 217,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/upload-and-edit-screen.tsx",
-    "line": 217,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/upload-and-edit-screen.tsx",
-    "line": 250,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/upload-and-edit-screen.tsx",
-    "line": 253,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/upload-and-edit-screen.tsx",
     "line": 278,
     "issue": "#222",
     "severity": "HIGH",
@@ -7870,14 +7606,6 @@
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
-  },
-  {
-    "file": "apps/web/src/components/media-editor/video-trimmer.tsx",
-    "line": 130,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
   },
   {
     "file": "apps/web/src/components/media-editor/video-trimmer.tsx",
@@ -9578,7 +9306,7 @@
   {
     "file": "apps/web/src/components/streaming/GoLiveDialog.tsx",
     "line": 207,
-    "issue": "onClick={() => removeTag(index)}>",
+    "issue": "onClick={() = className=\"focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)\"> removeTag(index)}>",
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
@@ -9712,14 +9440,6 @@
     "fix": "Add aria-label or title attribute"
   },
   {
-    "file": "apps/web/src/components/ui/card.tsx",
-    "line": 10,
-    "issue": "rounded-[24px]",
-    "severity": "MED",
-    "type": "Hardcoded Radius",
-    "fix": "Use radius tokens (--radius-*)"
-  },
-  {
     "file": "apps/web/src/components/ui/carousel.tsx",
     "line": 185,
     "issue": "onClick={scrollPrev}",
@@ -9755,22 +9475,6 @@
     "file": "apps/web/src/components/ui/chart.tsx",
     "line": 56,
     "issue": "#ccc",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/ui/chart.tsx",
-    "line": 56,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/web/src/components/ui/chart.tsx",
-    "line": 56,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -10608,30 +10312,6 @@
     "fix": "Ensure proper semantic HTML or role/aria attributes"
   },
   {
-    "file": "apps/mobile/src/components/BottomNavBar.tsx",
-    "line": 151,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/BottomSheet.tsx",
-    "line": 117,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ErrorBoundary.tsx",
-    "line": 153,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/OfflineIndicator.tsx",
     "line": 31,
     "issue": "#FFA726",
@@ -10640,33 +10320,9 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/OfflineIndicator.tsx",
-    "line": 38,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/SkeletonLoader.tsx",
     "line": 62,
     "issue": "#E0E0E0",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/auth/SignInForm.tsx",
-    "line": 217,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/auth/SignInForm.tsx",
-    "line": 246,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -10745,14 +10401,6 @@
   },
   {
     "file": "apps/mobile/src/components/auth/SignInForm.tsx",
-    "line": 318,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/auth/SignInForm.tsx",
     "line": 330,
     "issue": "#eee",
     "severity": "HIGH",
@@ -10803,22 +10451,6 @@
     "file": "apps/mobile/src/components/auth/SignUpForm.native.tsx",
     "line": 294,
     "issue": "#9CA3AF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/auth/SignUpForm.native.tsx",
-    "line": 321,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/auth/SignUpForm.native.tsx",
-    "line": 342,
-    "issue": "#FFFFFF",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -10905,14 +10537,6 @@
   },
   {
     "file": "apps/mobile/src/components/auth/SignUpForm.native.tsx",
-    "line": 411,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/auth/SignUpForm.native.tsx",
     "line": 422,
     "issue": "#6B7280",
     "severity": "HIGH",
@@ -10929,136 +10553,8 @@
   },
   {
     "file": "apps/mobile/src/components/call/CallInterface.tsx",
-    "line": 510,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/call/CallInterface.tsx",
-    "line": 530,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/call/CallInterface.tsx",
-    "line": 587,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/call/CallInterface.tsx",
     "line": 588,
     "issue": "#3a3a3a",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/call/CallInterface.tsx",
-    "line": 621,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/call/IncomingCallNotification.tsx",
-    "line": 283,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/call/VideoQualitySettings.tsx",
-    "line": 285,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/call/VideoQualitySettings.tsx",
-    "line": 309,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 239,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 272,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 296,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 309,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 321,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 335,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 339,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 348,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 358,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11073,48 +10569,8 @@
   },
   {
     "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 367,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 370,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 375,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
     "line": 381,
     "issue": "#007AFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/camera/camera-view.tsx",
-    "line": 386,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/AdvancedChatWindow.tsx",
-    "line": 145,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11153,24 +10609,8 @@
   },
   {
     "file": "apps/mobile/src/components/chat/AdvancedChatWindow.tsx",
-    "line": 176,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/AdvancedChatWindow.tsx",
     "line": 183,
     "issue": "#222",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/AdvancedChatWindow.tsx",
-    "line": 187,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11233,24 +10673,8 @@
   },
   {
     "file": "apps/mobile/src/components/chat/AdvancedChatWindow.tsx",
-    "line": 230,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/AdvancedChatWindow.tsx",
     "line": 234,
     "issue": "#007AFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/AdvancedChatWindow.tsx",
-    "line": 240,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11280,86 +10704,6 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/chat/ChatList.tsx",
-    "line": 270,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ChatList.tsx",
-    "line": 274,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ChatList.tsx",
-    "line": 281,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ChatList.tsx",
-    "line": 288,
-    "issue": "#EF4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ChatList.tsx",
-    "line": 297,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ConfettiBurst.tsx",
-    "line": 58,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ConfettiBurst.tsx",
-    "line": 185,
-    "issue": "#22c55e",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ConfettiBurst.tsx",
-    "line": 185,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ConfettiBurst.tsx",
-    "line": 185,
-    "issue": "#eab308",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ConfettiBurst.tsx",
-    "line": 185,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/chat/ConfettiBurst.tsx",
     "line": 185,
     "issue": "#a855f7",
@@ -11371,14 +10715,6 @@
     "file": "apps/mobile/src/components/chat/LinkPreview.tsx",
     "line": 99,
     "issue": "#222",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/LinkPreview.tsx",
-    "line": 103,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11400,81 +10736,9 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/chat/MediaViewer.tsx",
-    "line": 178,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageAttachments.tsx",
-    "line": 267,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageAttachments.tsx",
-    "line": 281,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/chat/MessageAttachments.tsx",
     "line": 289,
     "issue": "#666",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageAttachments.tsx",
-    "line": 314,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageAttachments.tsx",
-    "line": 324,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageAttachments.tsx",
-    "line": 331,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageAttachments.tsx",
-    "line": 335,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageAttachments.tsx",
-    "line": 357,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageAttachments.tsx",
-    "line": 366,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11489,14 +10753,6 @@
   },
   {
     "file": "apps/mobile/src/components/chat/MessageBubble.tsx",
-    "line": 265,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageBubble.tsx",
     "line": 268,
     "issue": "#E5E7EB",
     "severity": "HIGH",
@@ -11505,24 +10761,8 @@
   },
   {
     "file": "apps/mobile/src/components/chat/MessageBubble.tsx",
-    "line": 275,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessageBubble.tsx",
     "line": 278,
     "issue": "#111827",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessagePeek.tsx",
-    "line": 119,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11545,22 +10785,6 @@
   },
   {
     "file": "apps/mobile/src/components/chat/MessagePeek.tsx",
-    "line": 135,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessagePeek.tsx",
-    "line": 150,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessagePeek.tsx",
     "line": 154,
     "issue": "#888",
     "severity": "HIGH",
@@ -11571,14 +10795,6 @@
     "file": "apps/mobile/src/components/chat/MessagePeek.tsx",
     "line": 163,
     "issue": "#888",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/MessagePeek.tsx",
-    "line": 167,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11634,14 +10850,6 @@
   {
     "file": "apps/mobile/src/components/chat/PresenceAvatar.tsx",
     "line": 103,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/PresenceAvatar.tsx",
-    "line": 103,
     "issue": "#a855f7",
     "severity": "HIGH",
     "type": "Hardcoded Color",
@@ -11664,65 +10872,9 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/chat/PresenceAvatar.tsx",
-    "line": 151,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/ReactionBurstParticles.tsx",
-    "line": 149,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/TypingIndicator.tsx",
-    "line": 178,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/chat/TypingIndicator.tsx",
     "line": 180,
     "issue": "#E5E7EB",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/TypingIndicator.tsx",
-    "line": 195,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/TypingIndicator.tsx",
-    "line": 200,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/TypingIndicator.tsx",
-    "line": 209,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/TypingIndicator.tsx",
-    "line": 221,
-    "issue": "#3B82F6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11792,22 +10944,6 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/chat/window/MessageItem.tsx",
-    "line": 31,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/chat/window/MessageItem.tsx",
-    "line": 31,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/chrome/HoloBackground.tsx",
     "line": 66,
     "issue": "#141428",
@@ -11819,22 +10955,6 @@
     "file": "apps/mobile/src/components/chrome/HoloBackground.tsx",
     "line": 74,
     "issue": "#6C7CFF33",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/community/PostComposer.tsx",
-    "line": 113,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/community/PostComposer.tsx",
-    "line": 129,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11896,49 +11016,9 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/community/PostComposer.tsx",
-    "line": 188,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AchievementBadge.tsx",
-    "line": 18,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 168,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
     "line": 187,
     "issue": "#1e293b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 190,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 198,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -11977,32 +11057,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 238,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 239,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
     "line": 243,
     "issue": "#475569",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 246,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -12025,32 +11081,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 259,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 260,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
     "line": 264,
     "issue": "#64748b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 267,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -12080,38 +11112,6 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 294,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/AdvancedFilterPanel.tsx",
-    "line": 300,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/DetailedPetAnalytics.tsx",
-    "line": 226,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/DetailedPetAnalytics.tsx",
-    "line": 229,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/enhanced/DetailedPetAnalytics.tsx",
     "line": 251,
     "issue": "#2563eb",
@@ -12123,14 +11123,6 @@
     "file": "apps/mobile/src/components/enhanced/DetailedPetAnalytics.tsx",
     "line": 254,
     "issue": "#1d4ed8",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/DetailedPetAnalytics.tsx",
-    "line": 260,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -12288,30 +11280,6 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/enhanced/EnhancedCarousel.tsx",
-    "line": 232,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/EnhancedPetDetailView.tsx",
-    "line": 229,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/EnhancedPetDetailView.tsx",
-    "line": 255,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/enhanced/EnhancedPetDetailView.tsx",
     "line": 271,
     "issue": "#1e293b",
@@ -12321,32 +11289,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/EnhancedPetDetailView.tsx",
-    "line": 277,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/EnhancedPetDetailView.tsx",
-    "line": 282,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/EnhancedPetDetailView.tsx",
     "line": 288,
     "issue": "#64748b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/EnhancedPetDetailView.tsx",
-    "line": 299,
-    "issue": "#3b82f6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -12408,46 +11352,6 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/enhanced/EnhancedPetDetailView.tsx",
-    "line": 367,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/FloatingActionButton.tsx",
-    "line": 189,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/FloatingActionButton.tsx",
-    "line": 190,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/FloatingActionButton.tsx",
-    "line": 206,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/FloatingActionButton.tsx",
-    "line": 214,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/enhanced/FloatingActionButton.tsx",
     "line": 27,
     "issue": "onClick?: () => void",
@@ -12481,14 +11385,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/GlowingBadge.tsx",
-    "line": 30,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/GlowingBadge.tsx",
     "line": 36,
     "issue": "#64748b",
     "severity": "HIGH",
@@ -12499,30 +11395,6 @@
     "file": "apps/mobile/src/components/enhanced/GlowingBadge.tsx",
     "line": 42,
     "issue": "#8b5cf6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/GlowingBadge.tsx",
-    "line": 48,
-    "issue": "#22c55e",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/GlowingBadge.tsx",
-    "line": 54,
-    "issue": "#eab308",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/NotificationCenter.tsx",
-    "line": 259,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -12593,14 +11465,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/NotificationCenter.tsx",
-    "line": 312,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/NotificationCenter.tsx",
     "line": 333,
     "issue": "#6b7280",
     "severity": "HIGH",
@@ -12617,24 +11481,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/NotificationCenter.tsx",
-    "line": 356,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/NotificationCenter.tsx",
     "line": 358,
     "issue": "#e5e7eb",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/NotificationCenter.tsx",
-    "line": 359,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -12754,14 +11602,6 @@
   {
     "file": "apps/mobile/src/components/enhanced/ParticleEffect.tsx",
     "line": 45,
-    "issue": "#EF4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/ParticleEffect.tsx",
-    "line": 45,
     "issue": "#EC4899",
     "severity": "HIGH",
     "type": "Hardcoded Color",
@@ -12785,14 +11625,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/PetAnalyticsSkeleton.tsx",
-    "line": 127,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PetAnalyticsSkeleton.tsx",
     "line": 129,
     "issue": "#e2e8f0",
     "severity": "HIGH",
@@ -12803,14 +11635,6 @@
     "file": "apps/mobile/src/components/enhanced/PetAnalyticsSkeleton.tsx",
     "line": 151,
     "issue": "#f9fafb",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PetDetailSkeleton.tsx",
-    "line": 114,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -12833,14 +11657,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/PremiumButton.tsx",
-    "line": 52,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumButton.tsx",
     "line": 53,
     "issue": "#64748b",
     "severity": "HIGH",
@@ -12857,48 +11673,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/PremiumButton.tsx",
-    "line": 56,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumButton.tsx",
-    "line": 91,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumButton.tsx",
-    "line": 112,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumButton.tsx",
-    "line": 124,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumButton.tsx",
     "line": 128,
     "issue": "#64748b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumCard.tsx",
-    "line": 28,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -12913,48 +11689,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/PremiumCard.tsx",
-    "line": 38,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumCard.tsx",
     "line": 40,
     "issue": "#e2e8f0",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumCard.tsx",
-    "line": 41,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumCard.tsx",
-    "line": 48,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumCard.tsx",
-    "line": 66,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/PremiumCard.tsx",
-    "line": 104,
-    "issue": "#3b82f6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13003,22 +11739,6 @@
     "file": "apps/mobile/src/components/enhanced/SmartSearch.tsx",
     "line": 233,
     "issue": "#e2e8f0",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/SmartSearch.tsx",
-    "line": 240,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/SmartSearch.tsx",
-    "line": 244,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13105,14 +11825,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
-    "line": 33,
-    "issue": "#22c55e",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
     "line": 34,
     "issue": "#fee2e2",
     "severity": "HIGH",
@@ -13131,14 +11843,6 @@
     "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
     "line": 34,
     "issue": "#991b1b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
-    "line": 34,
-    "issue": "#ef4444",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13169,14 +11873,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
-    "line": 35,
-    "issue": "#eab308",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
     "line": 36,
     "issue": "#dbeafe",
     "severity": "HIGH",
@@ -13201,30 +11897,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
-    "line": 36,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
-    "line": 132,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
-    "line": 176,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/SmartToast.tsx",
     "line": 16,
     "issue": "onClick: () => void",
     "severity": "MED",
@@ -13238,22 +11910,6 @@
     "severity": "MED",
     "type": "Interactive without role",
     "fix": "Ensure proper semantic HTML or role/aria attributes"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/TrustBadges.tsx",
-    "line": 24,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/TrustBadges.tsx",
-    "line": 30,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
   },
   {
     "file": "apps/mobile/src/components/enhanced/TrustBadges.tsx",
@@ -13273,48 +11929,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/TrustBadges.tsx",
-    "line": 48,
-    "issue": "#eab308",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/TrustBadges.tsx",
     "line": 54,
     "issue": "#ec4899",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/TrustBadges.tsx",
-    "line": 163,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/UltraButton.tsx",
-    "line": 79,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/UltraButton.tsx",
-    "line": 80,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/UltraButton.tsx",
-    "line": 81,
-    "issue": "#3b82f6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13336,22 +11952,6 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/enhanced/UltraButton.tsx",
-    "line": 141,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/UltraCard.tsx",
-    "line": 136,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/enhanced/UltraCard.tsx",
     "line": 140,
     "issue": "#e2e8f0",
@@ -13361,40 +11961,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/UltraCard.tsx",
-    "line": 141,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/UltraCard.tsx",
     "line": 148,
     "issue": "#6366f1",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/IconButton.tsx",
-    "line": 100,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/IconButton.tsx",
-    "line": 105,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/IconButton.tsx",
-    "line": 170,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13417,96 +11985,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/buttons/SegmentedControl.tsx",
-    "line": 197,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/SegmentedControl.tsx",
-    "line": 199,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/SegmentedControl.tsx",
-    "line": 222,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/SegmentedControl.tsx",
     "line": 225,
     "issue": "#64748b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/SplitButton.tsx",
-    "line": 146,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/SplitButton.tsx",
-    "line": 202,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/SplitButton.tsx",
-    "line": 208,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/SplitButton.tsx",
-    "line": 223,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/SplitButton.tsx",
-    "line": 228,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/SplitButton.tsx",
-    "line": 252,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/ToggleButton.tsx",
-    "line": 74,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/ToggleButton.tsx",
-    "line": 75,
-    "issue": "#3b82f6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13544,38 +12024,6 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/enhanced/buttons/ToggleButton.tsx",
-    "line": 131,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/ToggleButton.tsx",
-    "line": 139,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/buttons/ToggleButton.tsx",
-    "line": 151,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumAvatar.tsx",
-    "line": 93,
-    "issue": "#22c55e",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/enhanced/display/PremiumAvatar.tsx",
     "line": 94,
     "issue": "#9ca3af",
@@ -13585,40 +12033,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/display/PremiumAvatar.tsx",
-    "line": 95,
-    "issue": "#eab308",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumAvatar.tsx",
-    "line": 96,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumAvatar.tsx",
-    "line": 176,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumAvatar.tsx",
     "line": 223,
     "issue": "#f3f4f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumAvatar.tsx",
-    "line": 225,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13648,22 +12064,6 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumAvatar.tsx",
-    "line": 248,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumAvatar.tsx",
-    "line": 251,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/enhanced/display/PremiumChip.tsx",
     "line": 80,
     "issue": "#6366f1",
@@ -13675,14 +12075,6 @@
     "file": "apps/mobile/src/components/enhanced/display/PremiumChip.tsx",
     "line": 80,
     "issue": "#6366f1",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumChip.tsx",
-    "line": 80,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13753,14 +12145,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/display/PremiumChip.tsx",
-    "line": 86,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumChip.tsx",
     "line": 87,
     "issue": "#f3f4f6",
     "severity": "HIGH",
@@ -13779,14 +12163,6 @@
     "file": "apps/mobile/src/components/enhanced/display/PremiumChip.tsx",
     "line": 89,
     "issue": "#6366f1",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumChip.tsx",
-    "line": 89,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13824,25 +12200,9 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/enhanced/display/PremiumChip.tsx",
-    "line": 112,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/enhanced/effects/ShimmerEffect.tsx",
     "line": 72,
     "issue": "#f3f4f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
-    "line": 159,
-    "issue": "#ef4444",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13889,38 +12249,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
-    "line": 246,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
-    "line": 248,
-    "issue": "#22c55e",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
-    "line": 256,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
-    "line": 274,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
     "line": 276,
     "issue": "#e5e7eb",
     "severity": "HIGH",
@@ -13931,14 +12259,6 @@
     "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
     "line": 279,
     "issue": "#f3f4f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
-    "line": 287,
-    "issue": "#ef4444",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -13961,14 +12281,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
-    "line": 309,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
     "line": 313,
     "issue": "#111827",
     "severity": "HIGH",
@@ -13979,22 +12291,6 @@
     "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
     "line": 339,
     "issue": "#6b7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumInput.tsx",
-    "line": 342,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 134,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14025,30 +12321,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 246,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 254,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 262,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
     "line": 265,
     "issue": "#94a3b8",
     "severity": "HIGH",
@@ -14065,40 +12337,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 272,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
     "line": 280,
     "issue": "#64748b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 283,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 291,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 297,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14113,48 +12353,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 313,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 340,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 344,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
     "line": 352,
     "issue": "#64748b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSelect.tsx",
-    "line": 356,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSlider.tsx",
-    "line": 151,
-    "issue": "#000000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14171,38 +12371,6 @@
     "file": "apps/mobile/src/components/enhanced/forms/PremiumSlider.tsx",
     "line": 181,
     "issue": "#e2e8f0",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSlider.tsx",
-    "line": 187,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSlider.tsx",
-    "line": 200,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSlider.tsx",
-    "line": 204,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumSlider.tsx",
-    "line": 211,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14251,22 +12419,6 @@
     "file": "apps/mobile/src/components/enhanced/forms/PremiumToggle.tsx",
     "line": 76,
     "issue": "#e5e7eb",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumToggle.tsx",
-    "line": 111,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/forms/PremiumToggle.tsx",
-    "line": 114,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14353,30 +12505,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/navigation/PremiumTabs.tsx",
-    "line": 206,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumTabs.tsx",
-    "line": 217,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumTabs.tsx",
-    "line": 218,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumTabs.tsx",
     "line": 226,
     "issue": "#f1f5f9",
     "severity": "HIGH",
@@ -14385,40 +12513,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/navigation/PremiumTabs.tsx",
-    "line": 229,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumTabs.tsx",
-    "line": 236,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumTabs.tsx",
-    "line": 248,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumTabs.tsx",
     "line": 251,
     "issue": "#64748b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumTabs.tsx",
-    "line": 270,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14457,14 +12553,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/navigation/PremiumToast.tsx",
-    "line": 38,
-    "issue": "#22c55e",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumToast.tsx",
     "line": 39,
     "issue": "#fee2e2",
     "severity": "HIGH",
@@ -14483,14 +12571,6 @@
     "file": "apps/mobile/src/components/enhanced/navigation/PremiumToast.tsx",
     "line": 39,
     "issue": "#991b1b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumToast.tsx",
-    "line": 39,
-    "issue": "#ef4444",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14521,14 +12601,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/navigation/PremiumToast.tsx",
-    "line": 40,
-    "issue": "#eab308",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumToast.tsx",
     "line": 41,
     "issue": "#dbeafe",
     "severity": "HIGH",
@@ -14552,41 +12624,9 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumToast.tsx",
-    "line": 41,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumToast.tsx",
-    "line": 176,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/PremiumToast.tsx",
-    "line": 228,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
     "line": 203,
     "issue": "#e2e8f0",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 210,
-    "issue": "#3b82f6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14603,46 +12643,6 @@
     "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
     "line": 224,
     "issue": "#cbd5e1",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 227,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 228,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 231,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 232,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 234,
-    "issue": "#3b82f6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14673,22 +12673,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 250,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 253,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
     "line": 256,
     "issue": "#64748b",
     "severity": "HIGH",
@@ -14705,24 +12689,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 277,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
     "line": 286,
     "issue": "#64748b",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/navigation/Stepper.tsx",
-    "line": 289,
-    "issue": "#000000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14761,22 +12729,6 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/overlays/PremiumDrawer.tsx",
-    "line": 194,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/overlays/PremiumDrawer.tsx",
-    "line": 196,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/overlays/PremiumDrawer.tsx",
     "line": 206,
     "issue": "#e5e7eb",
     "severity": "HIGH",
@@ -14809,32 +12761,8 @@
   },
   {
     "file": "apps/mobile/src/components/enhanced/overlays/PremiumModal.tsx",
-    "line": 101,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/overlays/PremiumModal.tsx",
-    "line": 103,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/overlays/PremiumModal.tsx",
     "line": 139,
     "issue": "#6b7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/overlays/PremiumModal.tsx",
-    "line": 165,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14875,22 +12803,6 @@
     "file": "apps/mobile/src/components/enhanced/states/PremiumEmptyState.tsx",
     "line": 94,
     "issue": "#6b7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/states/PremiumErrorState.tsx",
-    "line": 88,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/enhanced/states/PremiumErrorState.tsx",
-    "line": 104,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -14945,14 +12857,6 @@
   },
   {
     "file": "apps/mobile/src/components/gdpr/ConsentManager.tsx",
-    "line": 131,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/gdpr/ConsentManager.tsx",
     "line": 133,
     "issue": "#E5E7EB",
     "severity": "HIGH",
@@ -14971,22 +12875,6 @@
     "file": "apps/mobile/src/components/gdpr/ConsentManager.tsx",
     "line": 143,
     "issue": "#6B7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/gdpr/ConsentManager.tsx",
-    "line": 146,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/gdpr/ConsentManager.tsx",
-    "line": 154,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15025,32 +12913,8 @@
   },
   {
     "file": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx",
-    "line": 141,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx",
-    "line": 165,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx",
     "line": 178,
     "issue": "#F9FAFB",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx",
-    "line": 182,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15075,22 +12939,6 @@
     "file": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx",
     "line": 194,
     "issue": "#6B7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx",
-    "line": 197,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx",
-    "line": 202,
-    "issue": "#000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15161,72 +13009,8 @@
   },
   {
     "file": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx",
-    "line": 254,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx",
     "line": 259,
     "issue": "#DC2626",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/media/SmartImage.tsx",
-    "line": 143,
-    "issue": "#ffffff20",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/notifications/NotificationToast.tsx",
-    "line": 120,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/notifications/NotificationToast.tsx",
-    "line": 130,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/notifications/NotificationToast.tsx",
-    "line": 136,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/notifications/NotificationToast.tsx",
-    "line": 149,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/PaymentMethodSelector.tsx",
-    "line": 344,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/PaymentMethodSelector.tsx",
-    "line": 371,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15241,24 +13025,8 @@
   },
   {
     "file": "apps/mobile/src/components/payments/PricingModal.tsx",
-    "line": 178,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/PricingModal.tsx",
     "line": 195,
     "issue": "#a855f7",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/PricingModal.tsx",
-    "line": 399,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15273,48 +13041,8 @@
   },
   {
     "file": "apps/mobile/src/components/payments/PricingModal.tsx",
-    "line": 405,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/PricingModal.tsx",
     "line": 410,
     "issue": "#6b7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/PricingModal.tsx",
-    "line": 413,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/PricingModal.tsx",
-    "line": 444,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/PricingModal.tsx",
-    "line": 464,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/PricingModal.tsx",
-    "line": 515,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15323,14 +13051,6 @@
     "file": "apps/mobile/src/components/payments/SubscriptionStatusCard.tsx",
     "line": 32,
     "issue": "#6b7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/SubscriptionStatusCard.tsx",
-    "line": 33,
-    "issue": "#3b82f6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15361,14 +13081,6 @@
   },
   {
     "file": "apps/mobile/src/components/payments/SubscriptionStatusCard.tsx",
-    "line": 46,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/SubscriptionStatusCard.tsx",
     "line": 47,
     "issue": "#6b7280",
     "severity": "HIGH",
@@ -15392,33 +13104,9 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/payments/SubscriptionStatusCard.tsx",
-    "line": 252,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/payments/SubscriptionStatusCard.tsx",
-    "line": 262,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/settings/PrivacySettings.tsx",
     "line": 89,
     "issue": "#F9FAFB",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/settings/PrivacySettings.tsx",
-    "line": 93,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15443,14 +13131,6 @@
     "file": "apps/mobile/src/components/settings/PrivacySettings.tsx",
     "line": 105,
     "issue": "#6B7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/settings/PrivacySettings.tsx",
-    "line": 109,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15489,14 +13169,6 @@
   },
   {
     "file": "apps/mobile/src/components/settings/PrivacySettings.tsx",
-    "line": 137,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/settings/PrivacySettings.tsx",
     "line": 144,
     "issue": "#111827",
     "severity": "HIGH",
@@ -15521,24 +13193,8 @@
   },
   {
     "file": "apps/mobile/src/components/settings/PrivacySettings.tsx",
-    "line": 160,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/settings/PrivacySettings.tsx",
     "line": 166,
     "issue": "#6B7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/SaveToHighlightDialog.tsx",
-    "line": 534,
-    "issue": "#ffffff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15577,24 +13233,8 @@
   },
   {
     "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 354,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
     "line": 359,
     "issue": "#111827",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 372,
-    "issue": "#FFFFFF",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15609,32 +13249,8 @@
   },
   {
     "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 378,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 379,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
     "line": 387,
     "issue": "#374151",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 390,
-    "issue": "#FFFFFF",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15681,14 +13297,6 @@
   },
   {
     "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 437,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
     "line": 442,
     "issue": "#9CA3AF",
     "severity": "HIGH",
@@ -15713,38 +13321,6 @@
   },
   {
     "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 464,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 491,
-    "issue": "#FFFFFF",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 501,
-    "issue": "#3B82F6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
-    "line": 504,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/stories/StoryFilterSelector.tsx",
     "line": 519,
     "issue": "#6B7280",
     "severity": "HIGH",
@@ -15761,22 +13337,6 @@
   },
   {
     "file": "apps/mobile/src/components/swipe/MatchCelebration.tsx",
-    "line": 117,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/swipe/MatchCelebration.tsx",
-    "line": 122,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/swipe/MatchCelebration.tsx",
     "line": 138,
     "issue": "#333",
     "severity": "HIGH",
@@ -15787,62 +13347,6 @@
     "file": "apps/mobile/src/components/swipe/MatchCelebration.tsx",
     "line": 144,
     "issue": "#666",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/swipe/SwipeCard.tsx",
-    "line": 178,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/swipe/SwipeCard.tsx",
-    "line": 179,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/swipe/SwipeCard.tsx",
-    "line": 207,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/swipe/SwipeCard.tsx",
-    "line": 209,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/swipe/SwipeCard.tsx",
-    "line": 217,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/swipe/SwipeCard.tsx",
-    "line": 219,
-    "issue": "#fff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/swipe/SwipeCard.tsx",
-    "line": 230,
-    "issue": "#fff",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15873,40 +13377,8 @@
   },
   {
     "file": "apps/mobile/src/components/ui/Dialog.tsx",
-    "line": 331,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Dialog.tsx",
-    "line": 334,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Dialog.tsx",
-    "line": 356,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Dialog.tsx",
     "line": 362,
     "issue": "#666666",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Dialog.tsx",
-    "line": 378,
-    "issue": "#000000",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -15920,137 +13392,9 @@
     "fix": "Replace with CSS variable or design token"
   },
   {
-    "file": "apps/mobile/src/components/ui/Slider.tsx",
-    "line": 118,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Slider.tsx",
-    "line": 126,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Slider.tsx",
-    "line": 128,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Slider.tsx",
-    "line": 129,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Spinner.tsx",
-    "line": 99,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Spinner.tsx",
-    "line": 107,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/Spinner.tsx",
-    "line": 109,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/badge.tsx",
-    "line": 21,
-    "issue": "#3b82f6",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/badge.tsx",
-    "line": 25,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
     "file": "apps/mobile/src/components/ui/badge.tsx",
     "line": 34,
     "issue": "#6b7280",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/badge.tsx",
-    "line": 39,
-    "issue": "#ef4444",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/badge.tsx",
-    "line": 43,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/badge.tsx",
-    "line": 52,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/card.tsx",
-    "line": 85,
-    "issue": "#ffffff",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/card.tsx",
-    "line": 89,
-    "issue": "#000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/card.tsx",
-    "line": 109,
-    "issue": "#000000",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/ui/progress.tsx",
-    "line": 54,
-    "issue": "#3b82f6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -16067,14 +13411,6 @@
     "file": "apps/mobile/src/components/visuals/PresenceAuroraRing.native.tsx",
     "line": 43,
     "issue": "#22d3ee",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/visuals/PresenceAuroraRing.native.tsx",
-    "line": 44,
-    "issue": "#3b82f6",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -16099,14 +13435,6 @@
     "file": "apps/mobile/src/components/visuals/PresenceAuroraRing.native.tsx",
     "line": 50,
     "issue": "#fb7185",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/components/visuals/PresenceAuroraRing.native.tsx",
-    "line": 54,
-    "issue": "#ef4444",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"
@@ -16155,14 +13483,6 @@
     "file": "apps/mobile/src/components/visuals/PresenceAuroraRing.native.tsx",
     "line": 191,
     "issue": "#e5e7eb",
-    "severity": "HIGH",
-    "type": "Hardcoded Color",
-    "fix": "Replace with CSS variable or design token"
-  },
-  {
-    "file": "apps/mobile/src/screens/FeedScreen.tsx",
-    "line": 416,
-    "issue": "#EF4444",
     "severity": "HIGH",
     "type": "Hardcoded Color",
     "fix": "Replace with CSS variable or design token"

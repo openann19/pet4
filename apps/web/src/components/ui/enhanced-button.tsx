@@ -219,16 +219,16 @@ export function EnhancedButton({
   const variantClasses = useMemo(() => {
     const variants = {
       default:
-        'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] shadow-lg hover:shadow-xl disabled:bg-[var(--btn-primary-disabled-bg)] disabled:text-[var(--btn-primary-disabled-fg)] disabled:shadow-none focus-visible:ring-2 focus-visible:ring-[var(--btn-primary-focus-ring)] focus-visible:ring-offset-2',
+        'bg-(--btn-primary-bg) text-(--btn-primary-fg) shadow-lg hover:shadow-xl disabled:bg-(--btn-primary-disabled-bg) disabled:text-(--btn-primary-disabled-fg) disabled:shadow-none focus-visible:ring-2 focus-visible:ring-[var(--btn-primary-focus-ring)] focus-visible:ring-offset-2',
       destructive:
-        'bg-[var(--btn-destructive-bg)] text-[var(--btn-destructive-fg)] shadow-lg hover:shadow-xl disabled:bg-[var(--btn-destructive-disabled-bg)] disabled:text-[var(--btn-destructive-disabled-fg)] disabled:shadow-none focus-visible:ring-2 focus-visible:ring-[var(--btn-destructive-focus-ring)] focus-visible:ring-offset-2',
+        'bg-(--btn-destructive-bg) text-(--btn-destructive-fg) shadow-lg hover:shadow-xl disabled:bg-(--btn-destructive-disabled-bg) disabled:text-(--btn-destructive-disabled-fg) disabled:shadow-none focus-visible:ring-2 focus-visible:ring-[var(--btn-destructive-focus-ring)] focus-visible:ring-offset-2',
       outline:
-        'border-[1.5px] border-[var(--btn-outline-border)] bg-[var(--btn-outline-bg)] text-[var(--btn-outline-fg)] shadow-sm hover:shadow-lg hover:bg-[var(--btn-outline-hover-bg)] hover:text-[var(--btn-outline-hover-fg)] hover:border-[var(--btn-outline-hover-border)] disabled:bg-[var(--btn-outline-disabled-bg)] disabled:text-[var(--btn-outline-disabled-fg)] disabled:border-[var(--btn-outline-disabled-border)] disabled:shadow-none focus-visible:ring-2 focus-visible:ring-[var(--btn-outline-focus-ring)] focus-visible:ring-offset-2',
+        'border-[1.5px] border-(--btn-outline-border) bg-(--btn-outline-bg) text-(--btn-outline-fg) shadow-sm hover:shadow-lg hover:bg-(--btn-outline-hover-bg) hover:text-(--btn-outline-hover-fg) hover:border-(--btn-outline-hover-border) disabled:bg-(--btn-outline-disabled-bg) disabled:text-(--btn-outline-disabled-fg) disabled:border-(--btn-outline-disabled-border) disabled:shadow-none focus-visible:ring-2 focus-visible:ring-[var(--btn-outline-focus-ring)] focus-visible:ring-offset-2',
       secondary:
-        'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-fg)] shadow-lg hover:shadow-xl disabled:bg-[var(--btn-secondary-disabled-bg)] disabled:text-[var(--btn-secondary-disabled-fg)] disabled:shadow-none focus-visible:ring-2 focus-visible:ring-[var(--btn-secondary-focus-ring)] focus-visible:ring-offset-2',
+        'bg-(--btn-secondary-bg) text-(--btn-secondary-fg) shadow-lg hover:shadow-xl disabled:bg-(--btn-secondary-disabled-bg) disabled:text-(--btn-secondary-disabled-fg) disabled:shadow-none focus-visible:ring-2 focus-visible:ring-[var(--btn-secondary-focus-ring)] focus-visible:ring-offset-2',
       ghost:
-        'bg-[var(--btn-ghost-bg)] text-[var(--btn-ghost-fg)] hover:bg-[var(--btn-ghost-hover-bg)] hover:text-[var(--btn-ghost-hover-fg)] disabled:bg-[var(--btn-ghost-disabled-bg)] disabled:text-[var(--btn-ghost-disabled-fg)] focus-visible:ring-2 focus-visible:ring-[var(--btn-ghost-focus-ring)] focus-visible:ring-offset-2',
-      link: 'text-[var(--btn-link-fg)] underline-offset-4 hover:underline hover:text-[var(--btn-link-hover-fg)] disabled:text-[var(--btn-link-disabled-fg)] disabled:no-underline bg-transparent focus-visible:ring-2 focus-visible:ring-[var(--btn-link-focus-ring)] focus-visible:ring-offset-2',
+        'bg-(--btn-ghost-bg) text-(--btn-ghost-fg) hover:bg-(--btn-ghost-hover-bg) hover:text-(--btn-ghost-hover-fg) disabled:bg-(--btn-ghost-disabled-bg) disabled:text-(--btn-ghost-disabled-fg) focus-visible:ring-2 focus-visible:ring-[var(--btn-ghost-focus-ring)] focus-visible:ring-offset-2',
+      link: 'text-(--btn-link-fg) underline-offset-4 hover:underline hover:text-(--btn-link-hover-fg) disabled:text-(--btn-link-disabled-fg) disabled:no-underline bg-transparent focus-visible:ring-2 focus-visible:ring-[var(--btn-link-focus-ring)] focus-visible:ring-offset-2',
     };
 
     return variants[variant] ?? variants.default;

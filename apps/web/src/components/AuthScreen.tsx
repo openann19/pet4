@@ -59,7 +59,7 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
   };
 
   return (
-    <div className="fixed inset-0 bg-[var(--background-cream)] overflow-auto">
+    <div className="fixed inset-0 bg-(--background-cream) overflow-auto">
       <div className="min-h-screen flex flex-col">
         {/* Header with back button and language toggle */}
         <AnimatedView style={headerStyle} className="p-4 sm:p-6 flex items-center justify-between">
