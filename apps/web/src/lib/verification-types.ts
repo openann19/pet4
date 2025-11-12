@@ -1,50 +1,57 @@
-export type VerificationStatus = 'unverified' | 'pending' | 'verified' | 'rejected' | 'expired'
-export type DocumentType = 'pet_ownership' | 'vaccination_records' | 'microchip_registration' | 'vet_records' | 'adoption_papers' | 'photo_id' | 'address_proof'
+export type VerificationStatus = 'unverified' | 'pending' | 'verified' | 'rejected' | 'expired';
+export type DocumentType =
+  | 'pet_ownership'
+  | 'vaccination_records'
+  | 'microchip_registration'
+  | 'vet_records'
+  | 'adoption_papers'
+  | 'photo_id'
+  | 'address_proof';
 
 export interface VerificationDocument {
-  id: string
-  type: DocumentType
-  fileName: string
-  fileSize: number
-  uploadedAt: string
-  status: VerificationStatus
-  reviewedAt?: string
-  reviewedBy?: string
-  rejectionReason?: string
-  expiresAt?: string
-  fileData?: string
+  id: string;
+  type: DocumentType;
+  fileName: string;
+  fileSize: number;
+  uploadedAt: string;
+  status: VerificationStatus;
+  reviewedAt?: string;
+  reviewedBy?: string;
+  rejectionReason?: string;
+  expiresAt?: string;
+  fileData?: string;
 }
 
 export interface VerificationRequest {
-  id: string
-  petId: string
-  userId: string
-  requestedAt: string
-  status: VerificationStatus
-  documents: VerificationDocument[]
-  verificationLevel: VerificationLevel
-  completedAt?: string
-  reviewedBy?: string
-  reviewNotes?: string
-  trustScore?: number
+  id: string;
+  petId: string;
+  userId: string;
+  requestedAt: string;
+  status: VerificationStatus;
+  documents: VerificationDocument[];
+  verificationLevel: VerificationLevel;
+  completedAt?: string;
+  reviewedBy?: string;
+  reviewNotes?: string;
+  trustScore?: number;
 }
 
-export type VerificationLevel = 'basic' | 'standard' | 'premium'
+export type VerificationLevel = 'basic' | 'standard' | 'premium';
 
 export interface VerificationRequirements {
-  level: VerificationLevel
-  requiredDocuments: DocumentType[]
-  optionalDocuments: DocumentType[]
-  estimatedReviewTime: string
-  benefits: string[]
+  level: VerificationLevel;
+  requiredDocuments: DocumentType[];
+  optionalDocuments: DocumentType[];
+  estimatedReviewTime: string;
+  benefits: string[];
 }
 
 export interface VerificationStats {
-  totalRequests: number
-  pendingRequests: number
-  verifiedUsers: number
-  verificationRate: number
-  averageReviewTime: string
+  totalRequests: number;
+  pendingRequests: number;
+  verifiedUsers: number;
+  verificationRate: number;
+  averageReviewTime: string;
 }
 
 export const VERIFICATION_REQUIREMENTS: Record<VerificationLevel, VerificationRequirements> = {
@@ -57,8 +64,8 @@ export const VERIFICATION_REQUIREMENTS: Record<VerificationLevel, VerificationRe
       'Verified badge on profile',
       'Increased trust from other users',
       'Priority in search results',
-      'Access to verified-only matches'
-    ]
+      'Access to verified-only matches',
+    ],
   },
   standard: {
     level: 'standard',
@@ -71,12 +78,19 @@ export const VERIFICATION_REQUIREMENTS: Record<VerificationLevel, VerificationRe
       'Higher match priority',
       'Access to premium events',
       'Enhanced profile visibility',
-      'Verification certificate'
-    ]
+      'Verification certificate',
+    ],
   },
   premium: {
     level: 'premium',
-    requiredDocuments: ['pet_ownership', 'vaccination_records', 'microchip_registration', 'vet_records', 'photo_id', 'address_proof'],
+    requiredDocuments: [
+      'pet_ownership',
+      'vaccination_records',
+      'microchip_registration',
+      'vet_records',
+      'photo_id',
+      'address_proof',
+    ],
     optionalDocuments: ['adoption_papers'],
     estimatedReviewTime: '3-5 business days',
     benefits: [
@@ -87,10 +101,10 @@ export const VERIFICATION_REQUIREMENTS: Record<VerificationLevel, VerificationRe
       'Background check certificate',
       'Dedicated support',
       'Annual re-verification included',
-      'Trust score guarantee'
-    ]
-  }
-}
+      'Trust score guarantee',
+    ],
+  },
+};
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   pet_ownership: 'Pet Ownership Proof',
@@ -99,8 +113,8 @@ export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   vet_records: 'Veterinary Records',
   adoption_papers: 'Adoption Papers',
   photo_id: 'Photo ID',
-  address_proof: 'Proof of Address'
-}
+  address_proof: 'Proof of Address',
+};
 
 export const DOCUMENT_TYPE_DESCRIPTIONS: Record<DocumentType, string> = {
   pet_ownership: 'Proof of pet ownership (license, registration, or purchase documents)',
@@ -109,5 +123,5 @@ export const DOCUMENT_TYPE_DESCRIPTIONS: Record<DocumentType, string> = {
   vet_records: 'Recent veterinary visit records or health certificates',
   adoption_papers: 'Official adoption papers from shelter or rescue',
   photo_id: 'Government-issued photo identification',
-  address_proof: 'Utility bill, lease, or other address verification'
-}
+  address_proof: 'Utility bill, lease, or other address verification',
+};

@@ -1,28 +1,26 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
+import { useCallback } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
-  FadeIn,
-  FadeOut
-} from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import { X, Trash } from '@phosphor-icons/react'
-import { isTruthy, isDefined } from '@petspark/shared';
+} from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import { X, Trash } from '@phosphor-icons/react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface DeleteConfirmationModalProps {
-  isOpen: boolean
-  onConfirm: () => void
-  onCancel: () => void
-  messagePreview?: string
-  context?: 'self-delete' | 'admin-delete'
-  className?: string
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  messagePreview?: string;
+  context?: 'self-delete' | 'admin-delete';
+  className?: string;
 }
 
 export function DeleteConfirmationModal({
@@ -31,50 +29,49 @@ export function DeleteConfirmationModal({
   onCancel,
   messagePreview,
   context = 'self-delete',
-  className
+  className,
 }: DeleteConfirmationModalProps) {
-  const scale = useSharedValue(0)
-  const opacity = useSharedValue(0)
-  const backdropOpacity = useSharedValue(0)
+  const _uiConfig = useUIConfig();
+  const scale = useSharedValue(0);
+  const opacity = useSharedValue(0);
+  const backdropOpacity = useSharedValue(0);
 
   const modalStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [{ scale: scale.value }]
-    }
-  })
+      transform: [{ scale: scale.value }],
+    };
+  });
 
   const backdropStyle = useAnimatedStyle(() => {
     return {
-      opacity: backdropOpacity.value
-    }
-  })
+      opacity: backdropOpacity.value,
+    };
+  });
 
   const handleConfirm = useCallback(() => {
-    haptics.impact('medium')
-    onConfirm()
-  }, [onConfirm])
+    haptics.impact('medium');
+    onConfirm();
+  }, [onConfirm]);
 
   const handleCancel = useCallback(() => {
-    haptics.selection()
-    onCancel()
-  }, [onCancel])
+    haptics.selection();
+    onCancel();
+  }, [onCancel]);
 
   if (!isOpen) {
-    scale.value = 0
-    opacity.value = 0
-    backdropOpacity.value = 0
-    return null
+    scale.value = 0;
+    opacity.value = 0;
+    backdropOpacity.value = 0;
+    return null;
   }
 
-  scale.value = withSpring(1, springConfigs.bouncy)
-  opacity.value = withTiming(1, timingConfigs.fast)
-  backdropOpacity.value = withTiming(0.5, timingConfigs.fast)
+  scale.value = withSpring(1, springConfigs.bouncy);
+  opacity.value = withTiming(1, timingConfigs.fast);
+  backdropOpacity.value = withTiming(0.5, timingConfigs.fast);
 
   return (
     <AnimatedView
-      entering={FadeIn.duration(150)}
-      exiting={FadeOut.duration(100)}
       style={backdropStyle}
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',
@@ -91,8 +88,8 @@ export function DeleteConfirmationModal({
           'transform-gpu'
         )}
         onClick={(e?: React.MouseEvent) => {
-          if (isTruthy(e)) {
-            e.stopPropagation()
+          if (e) {
+            e.stopPropagation();
           }
         }}
       >
@@ -101,25 +98,17 @@ export function DeleteConfirmationModal({
             <div
               className={cn(
                 'p-2 rounded-full',
-                context === 'admin-delete'
-                  ? 'bg-destructive/20'
-                  : 'bg-muted'
+                context === 'admin-delete' ? 'bg-destructive/20' : 'bg-muted'
               )}
             >
               <Trash
                 size={24}
-                className={cn(
-                  context === 'admin-delete'
-                    ? 'text-destructive'
-                    : 'text-foreground'
-                )}
+                className={cn(context === 'admin-delete' ? 'text-destructive' : 'text-foreground')}
                 weight="bold"
               />
             </div>
             <h3 className="text-lg font-semibold text-foreground">
-              {context === 'admin-delete'
-                ? 'Delete Message'
-                : 'Delete this message?'}
+              {context === 'admin-delete' ? 'Delete Message' : 'Delete this message?'}
             </h3>
           </div>
           <button
@@ -133,9 +122,7 @@ export function DeleteConfirmationModal({
 
         {messagePreview && (
           <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {messagePreview}
-            </p>
+            <p className="text-sm text-muted-foreground line-clamp-2">{messagePreview}</p>
           </div>
         )}
 
@@ -171,6 +158,5 @@ export function DeleteConfirmationModal({
         </div>
       </AnimatedView>
     </AnimatedView>
-  )
+  );
 }
-

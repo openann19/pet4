@@ -1,11 +1,11 @@
-"use client"
+'use client';
 
-import { useMemo } from "react"
-import type { ComponentProps } from "react"
-import * as SliderPrimitive from "@radix-ui/react-slider"
-import { motion } from '@petspark/motion'
+import { useMemo } from 'react';
+import type { ComponentProps } from 'react';
+import * as SliderPrimitive from '@radix-ui/react-slider';
+import { MotionView } from '@petspark/motion';
 
-import { cn } from "../utils"
+import { cn } from '../utils';
 
 function Slider({
   className,
@@ -16,14 +16,9 @@ function Slider({
   ...props
 }: ComponentProps<typeof SliderPrimitive.Root>) {
   const _values = useMemo(
-    () =>
-      Array.isArray(value)
-        ? value
-        : Array.isArray(defaultValue)
-          ? defaultValue
-          : [min, max],
+    () => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
     [value, defaultValue, min, max]
-  )
+  );
 
   return (
     <SliderPrimitive.Root
@@ -33,10 +28,10 @@ function Slider({
       min={min}
       max={max}
       className={cn(
-        "relative flex w-full touch-none items-center select-none group",
-        "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
-        "data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
-        "py-4",
+        'relative flex w-full touch-none items-center select-none group',
+        'data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed',
+        'data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
+        'py-4',
         className
       )}
       {...props}
@@ -44,26 +39,26 @@ function Slider({
       <SliderPrimitive.Track
         data-slot="slider-track"
         className={cn(
-          "relative grow overflow-visible rounded-full",
-          "bg-muted/80 backdrop-blur-sm",
-          "shadow-inner",
-          "transition-all duration-300",
-          "group-hover:bg-muted",
-          "data-[orientation=horizontal]:h-2.5 data-[orientation=horizontal]:w-full",
-          "data-[orientation=vertical]:h-full data-[orientation=vertical]:w-2.5"
+          'relative grow overflow-visible rounded-full',
+          'bg-muted/80 backdrop-blur-sm',
+          'shadow-inner',
+          'transition-all duration-300',
+          'group-hover:bg-muted',
+          'data-[orientation=horizontal]:h-2.5 data-[orientation=horizontal]:w-full',
+          'data-[orientation=vertical]:h-full data-[orientation=vertical]:w-2.5'
         )}
       >
         <SliderPrimitive.Range
           data-slot="slider-range"
           className={cn(
-            "absolute rounded-full",
-            "bg-gradient-to-r from-primary via-primary/95 to-accent",
-            "shadow-lg shadow-primary/25",
-            "transition-all duration-300",
-            "group-hover:shadow-xl group-hover:shadow-primary/30",
-            "data-[orientation=horizontal]:h-full",
-            "data-[orientation=vertical]:w-full",
-            "relative overflow-hidden"
+            'absolute rounded-full',
+            'bg-gradient-to-r from-primary via-primary/95 to-accent',
+            'shadow-lg shadow-primary/25',
+            'transition-all duration-300',
+            'group-hover:shadow-xl group-hover:shadow-primary/30',
+            'data-[orientation=horizontal]:h-full',
+            'data-[orientation=vertical]:w-full',
+            'relative overflow-hidden'
           )}
         >
           <MotionView
@@ -74,7 +69,7 @@ function Slider({
             transition={{
               duration: 2,
               repeat: Infinity,
-              ease: "linear",
+              ease: 'linear',
               repeatDelay: 1,
             }}
           />
@@ -85,17 +80,17 @@ function Slider({
           data-slot="slider-thumb"
           key={index}
           className={cn(
-            "block size-5 shrink-0 rounded-full",
-            "border-2 border-primary",
-            "bg-background",
-            "shadow-xl shadow-primary/30",
-            "transition-all duration-200 ease-out",
-            "hover:scale-125 hover:shadow-2xl hover:shadow-primary/40 hover:border-primary/80",
-            "active:scale-110 active:shadow-lg",
-            "focus-visible:scale-125 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:shadow-2xl",
-            "disabled:pointer-events-none disabled:opacity-50",
-            "relative overflow-hidden",
-            "cursor-grab active:cursor-grabbing"
+            'block size-5 shrink-0 rounded-full',
+            'border-2 border-primary',
+            'bg-background',
+            'shadow-xl shadow-primary/30',
+            'transition-all duration-200 ease-out',
+            'hover:scale-125 hover:shadow-2xl hover:shadow-primary/40 hover:border-primary/80',
+            'active:scale-110 active:shadow-lg',
+            'focus-visible:scale-125 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25 focus-visible:shadow-2xl',
+            'disabled:pointer-events-none disabled:opacity-50',
+            'relative overflow-hidden',
+            'cursor-grab active:cursor-grabbing'
           )}
         >
           <MotionView
@@ -107,13 +102,13 @@ function Slider({
             transition={{
               duration: 2,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
             }}
           />
         </SliderPrimitive.Thumb>
       ))}
     </SliderPrimitive.Root>
-  )
+  );
 }
 
-export { Slider }
+export { Slider };

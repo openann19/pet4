@@ -100,8 +100,8 @@ function MyComponent() {
 ## Micro-Interactions
 
 All notifications include:
+
 - Spring animations on show/hide
 - Haptic feedback based on type
 - Smooth scale and fade transitions
 - Bounce effect on press
-

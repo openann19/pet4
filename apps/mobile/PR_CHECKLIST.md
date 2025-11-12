@@ -24,7 +24,7 @@ Copy this checklist into your PR description and check off items as you complete
 - [ ] Unit tests ≥85% coverage
 - [ ] Component tests present
 - [ ] Detox covers happy path (if applicable)
-- [ ] No warnings, no console.*
+- [ ] No warnings, no console.\*
 - [ ] TypeScript strict mode passes
 - [ ] ESLint passes with zero warnings
 
@@ -68,4 +68,3 @@ Copy this checklist into your PR description and check off items as you complete
 ---
 
 **Definition of Done**: All checkboxes must be checked before requesting review.
-

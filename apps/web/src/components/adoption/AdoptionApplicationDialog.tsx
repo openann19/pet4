@@ -1,103 +1,122 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Checkbox } from '@/components/ui/checkbox'
-import { toast } from 'sonner'
-import type { AdoptionProfile } from '@/lib/adoption-types'
-import { adoptionService } from '@/lib/adoption-service'
-import { useApp } from '@/contexts/AppContext'
-import { haptics } from '@/lib/haptics'
-import { PaperPlaneRight } from '@phosphor-icons/react'
-import { createLogger } from '@/lib/logger'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useRotation } from '@/effects/reanimated/use-rotation'
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
+import type { AdoptionProfile, HouseholdType } from '@/lib/adoption-types';
+import { adoptionService } from '@/lib/adoption-service';
+import { useApp } from '@/contexts/AppContext';
+import { haptics } from '@/lib/haptics';
+import { PaperPlaneRight } from '@phosphor-icons/react';
+import { createLogger } from '@/lib/logger';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useRotation } from '@/effects/reanimated/use-rotation';
+import { spark } from '@/lib/spark';
 
-const logger = createLogger('AdoptionApplicationDialog')
+const logger = createLogger('AdoptionApplicationDialog');
+
+function isValidHouseholdType(value: string): value is HouseholdType {
+  return value === 'house' || value === 'apartment' || value === 'condo' || value === 'other';
+}
+
+function isBoolean(value: boolean | 'indeterminate'): value is boolean {
+  return typeof value === 'boolean';
+}
 
 function LoadingSpinner() {
   const rotationAnimation = useRotation({
     enabled: true,
     duration: 1000,
-    repeat: true
-  })
+    repeat: true,
+  });
 
   return (
     <AnimatedView style={rotationAnimation.rotationStyle} className="inline-block">
       <PaperPlaneRight size={18} />
     </AnimatedView>
-  )
+  );
 }
 
 interface AdoptionApplicationDialogProps {
-  profile: AdoptionProfile
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmitSuccess: () => void
+  profile: AdoptionProfile;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmitSuccess: () => void;
 }
 
 export function AdoptionApplicationDialog({
   profile,
   open,
   onOpenChange,
-  onSubmitSuccess
+  onSubmitSuccess,
 }: AdoptionApplicationDialogProps) {
-  const { t } = useApp()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formData, setFormData] = useState({
+  const { t } = useApp();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<{
+    applicantName: string;
+    applicantEmail: string;
+    applicantPhone: string;
+    householdType: HouseholdType;
+    hasYard: boolean;
+    hasOtherPets: boolean;
+    otherPetsDetails: string;
+    hasChildren: boolean;
+    childrenAges: string;
+    experience: string;
+    reason: string;
+  }>({
     applicantName: '',
     applicantEmail: '',
     applicantPhone: '',
-    householdType: 'house' as 'house' | 'apartment' | 'condo' | 'other',
+    householdType: 'house',
     hasYard: false,
     hasOtherPets: false,
     otherPetsDetails: '',
     hasChildren: false,
     childrenAges: '',
     experience: '',
-    reason: ''
-  })
+    reason: '',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!formData.applicantName || !formData.applicantEmail || !formData.reason) {
-      toast.error(t.adoption?.fillRequired ?? 'Please fill in all required fields')
-      haptics.trigger('error')
-      return
+      toast.error(t.adoption?.fillRequired ?? 'Please fill in all required fields');
+      haptics.trigger('error');
+      return;
     }
 
     try {
-      setIsSubmitting(true)
-      haptics.trigger('light')
+      setIsSubmitting(true);
+      haptics.trigger('light');
 
-      const user = await spark.user()
-      
+      const user = await spark.user();
+
       await adoptionService.submitApplication({
         adoptionProfileId: profile._id,
         applicantId: user.id,
-        ...formData
-      })
+        ...formData,
+      });
 
-      haptics.trigger('success')
-      toast.success(
-        t.adoption?.applicationSubmitted ?? 'Application Submitted!',
-        {
-          description: t.adoption?.applicationSubmittedDesc ?? 
-            'The shelter will review your application and contact you soon.'
-        }
-      )
+      haptics.trigger('success');
+      toast.success(t.adoption?.applicationSubmitted ?? 'Application Submitted!', {
+        description:
+          t.adoption?.applicationSubmittedDesc ??
+          'The shelter will review your application and contact you soon.',
+      });
 
       setFormData({
         applicantName: '',
@@ -110,18 +129,23 @@ export function AdoptionApplicationDialog({
         hasChildren: false,
         childrenAges: '',
         experience: '',
-        reason: ''
-      })
+        reason: '',
+      });
 
-      onSubmitSuccess()
+      onSubmitSuccess();
     } catch (error) {
-      logger.error('Failed to submit application', error instanceof Error ? error : new Error(String(error)))
-      haptics.trigger('error')
-      toast.error(t.adoption?.applicationFailed ?? 'Failed to submit application. Please try again.')
+      logger.error(
+        'Failed to submit application',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      haptics.trigger('error');
+      toast.error(
+        t.adoption?.applicationFailed ?? 'Failed to submit application. Please try again.'
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -131,17 +155,22 @@ export function AdoptionApplicationDialog({
             {t.adoption?.applyToAdopt ?? 'Apply to Adopt'} {profile.petName}
           </DialogTitle>
           <DialogDescription>
-            {t.adoption?.applicationDesc ?? 
+            {t.adoption?.applicationDesc ??
               'Fill out this application to express your interest in adopting. The shelter will review and contact you.'}
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={(e) => {
-          void handleSubmit(e)
-        }} className="space-y-6 mt-4">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(e);
+          }}
+          className="space-y-6 mt-4"
+        >
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">{t.adoption?.contactInfo ?? 'Contact Information'}</h3>
-            
+            <h3 className="font-semibold text-lg">
+              {t.adoption?.contactInfo ?? 'Contact Information'}
+            </h3>
+
             <div className="space-y-2">
               <Label htmlFor="name">
                 {t.adoption?.fullName ?? 'Full Name'} <span className="text-destructive">*</span>
@@ -179,15 +208,22 @@ export function AdoptionApplicationDialog({
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">{t.adoption?.householdInfo ?? 'Household Information'}</h3>
-            
+            <h3 className="font-semibold text-lg">
+              {t.adoption?.householdInfo ?? 'Household Information'}
+            </h3>
+
             <div className="space-y-2">
               <Label>{t.adoption?.householdType ?? 'Household Type'}</Label>
               <RadioGroup
                 value={formData.householdType}
-                onValueChange={(value) => 
-                  { setFormData({ ...formData, householdType: value as 'house' | 'apartment' | 'condo' | 'other' }); }
-                }
+                onValueChange={(value) => {
+                  if (isValidHouseholdType(value)) {
+                    setFormData({
+                      ...formData,
+                      householdType: value,
+                    });
+                  }
+                }}
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="house" id="house" />
@@ -220,9 +256,11 @@ export function AdoptionApplicationDialog({
               <Checkbox
                 id="yard"
                 checked={formData.hasYard}
-                onCheckedChange={(checked) => 
-                  { setFormData({ ...formData, hasYard: checked as boolean }); }
-                }
+                onCheckedChange={(checked) => {
+                  if (isBoolean(checked)) {
+                    setFormData({ ...formData, hasYard: checked });
+                  }
+                }}
               />
               <Label htmlFor="yard" className="font-normal cursor-pointer">
                 {t.adoption?.hasYard ?? 'I have a yard'}
@@ -234,9 +272,11 @@ export function AdoptionApplicationDialog({
                 <Checkbox
                   id="other-pets"
                   checked={formData.hasOtherPets}
-                  onCheckedChange={(checked) => 
-                    { setFormData({ ...formData, hasOtherPets: checked as boolean }); }
-                  }
+                  onCheckedChange={(checked) => {
+                    if (isBoolean(checked)) {
+                      setFormData({ ...formData, hasOtherPets: checked });
+                    }
+                  }}
                 />
                 <Label htmlFor="other-pets" className="font-normal cursor-pointer">
                   {t.adoption?.hasOtherPets ?? 'I have other pets'}
@@ -256,9 +296,11 @@ export function AdoptionApplicationDialog({
                 <Checkbox
                   id="children"
                   checked={formData.hasChildren}
-                  onCheckedChange={(checked) => 
-                    { setFormData({ ...formData, hasChildren: checked as boolean }); }
-                  }
+                  onCheckedChange={(checked) => {
+                    if (isBoolean(checked)) {
+                      setFormData({ ...formData, hasChildren: checked });
+                    }
+                  }}
                 />
                 <Label htmlFor="children" className="font-normal cursor-pointer">
                   {t.adoption?.hasChildren ?? 'I have children'}
@@ -275,15 +317,19 @@ export function AdoptionApplicationDialog({
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">{t.adoption?.additionalInfo ?? 'Additional Information'}</h3>
-            
+            <h3 className="font-semibold text-lg">
+              {t.adoption?.additionalInfo ?? 'Additional Information'}
+            </h3>
+
             <div className="space-y-2">
               <Label htmlFor="experience">
                 {t.adoption?.petExperience ?? 'Pet ownership experience'}
               </Label>
               <Textarea
                 id="experience"
-                placeholder={t.adoption?.experiencePlaceholder ?? 'Tell us about your experience with pets...'}
+                placeholder={
+                  t.adoption?.experiencePlaceholder ?? 'Tell us about your experience with pets...'
+                }
                 value={formData.experience}
                 onChange={(e) => { setFormData({ ...formData, experience: e.target.value }); }}
                 rows={3}
@@ -292,7 +338,8 @@ export function AdoptionApplicationDialog({
 
             <div className="space-y-2">
               <Label htmlFor="reason">
-                {t.adoption?.whyAdopt ?? 'Why do you want to adopt this pet?'} <span className="text-destructive">*</span>
+                {t.adoption?.whyAdopt ?? 'Why do you want to adopt this pet?'}{' '}
+                <span className="text-destructive">*</span>
               </Label>
               <Textarea
                 id="reason"
@@ -315,11 +362,7 @@ export function AdoptionApplicationDialog({
             >
               {t.common?.cancel ?? 'Cancel'}
             </Button>
-            <Button
-              type="submit"
-              className="flex-1 gap-2"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" className="flex-1 gap-2" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <LoadingSpinner />
@@ -336,5 +379,5 @@ export function AdoptionApplicationDialog({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

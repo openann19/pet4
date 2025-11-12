@@ -93,20 +93,20 @@ export function usePullToRefresh(
   useEffect(() => {
     let mounted = true
     AccessibilityInfo.isReduceMotionEnabled()
-      .then((enabled) => {
-        if (isTruthy(mounted)) reducedMotionSV.value = !!enabled
+      .then(enabled => {
+        if (mounted) reducedMotionSV.value = !!enabled
       })
       .catch(() => {
         // Ignore; default false
       })
-    
+
     const removeListener = AccessibilityInfo.addEventListener?.(
       'reduceMotionChanged' as 'change',
       (enabled: boolean) => {
         reducedMotionSV.value = !!enabled
       }
     ) as (() => void) | { remove: () => void } | undefined
-    
+
     return () => {
       mounted = false
       if (isTruthy(removeListener)) {
@@ -179,8 +179,8 @@ export function usePullToRefresh(
         cancelAnimation(translateY)
         didHapticSV.value = false
       })
-      .onUpdate((e) => {
-        if (isTruthy(isRefreshingSV.value)) return
+      .onUpdate((e: { translationY: number }) => {
+        if (isRefreshingSV.value) return
 
         // Only consider downward drag; apply resistance
         const raw = Math.max(0, e.translationY)
@@ -215,7 +215,6 @@ export function usePullToRefresh(
           animateTo(0)
         }
       })
-      .runOnJS(true) // allow runOnJS calls above
   }, [
     animateTo,
     haptics,

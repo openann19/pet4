@@ -1,4 +1,4 @@
-import { useSharedValue, useAnimatedStyle, withTiming, withDelay, type SharedValue } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withTiming, withDelay } from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 import { isTruthy, isDefined } from '@petspark/shared';
@@ -11,21 +11,14 @@ export interface UsePageTransitionOptions {
 }
 
 export interface UsePageTransitionReturn {
-  opacity: SharedValue<number>
-  translateY: SharedValue<number>
-  scale: SharedValue<number>
+  opacity: ReturnType<typeof useSharedValue<number>>
+  translateY: ReturnType<typeof useSharedValue<number>>
+  scale: ReturnType<typeof useSharedValue<number>>
   style: AnimatedStyle
 }
 
-export function usePageTransition(
-  options: UsePageTransitionOptions
-): UsePageTransitionReturn {
-  const {
-    isVisible,
-    duration = 300,
-    delay = 0,
-    direction = 'up'
-  } = options
+export function usePageTransition(options: UsePageTransitionOptions): UsePageTransitionReturn {
+  const { isVisible, duration = 300, delay = 0, direction = 'up' } = options
 
   const opacity = useSharedValue(0)
   const translateY = useSharedValue(direction === 'up' ? 30 : direction === 'down' ? -30 : 0)
@@ -47,10 +40,7 @@ export function usePageTransition(
   const style = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [
-        { translateY: translateY.value },
-        { scale: scale.value }
-      ]
+      transform: [{ translateY: translateY.value }, { scale: scale.value }],
     }
   }) as AnimatedStyle
 
@@ -58,6 +48,6 @@ export function usePageTransition(
     opacity,
     translateY,
     scale,
-    style
+    style,
   }
 }

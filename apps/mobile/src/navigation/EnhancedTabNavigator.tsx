@@ -79,8 +79,8 @@ export function EnhancedTabNavigator(): React.JSX.Element {
 
   return (
     <Tab.Navigator screenOptions={screenOptions}>
-      <Tab.Screen 
-        name="Feed" 
+      <Tab.Screen
+        name="Feed"
         component={FeedScreen}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
@@ -92,8 +92,8 @@ export function EnhancedTabNavigator(): React.JSX.Element {
           tabPress: handleTabPress,
         }}
       />
-      <Tab.Screen 
-        name="Chat" 
+      <Tab.Screen
+        name="Chat"
         component={ChatScreen}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
@@ -104,8 +104,8 @@ export function EnhancedTabNavigator(): React.JSX.Element {
           tabPress: handleTabPress,
         }}
       />
-      <Tab.Screen 
-        name="Matches" 
+      <Tab.Screen
+        name="Matches"
         component={MatchesScreen}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
@@ -116,8 +116,8 @@ export function EnhancedTabNavigator(): React.JSX.Element {
           tabPress: handleTabPress,
         }}
       />
-      <Tab.Screen 
-        name="Adopt" 
+      <Tab.Screen
+        name="Adopt"
         component={AdoptScreen}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
@@ -128,8 +128,8 @@ export function EnhancedTabNavigator(): React.JSX.Element {
           tabPress: handleTabPress,
         }}
       />
-      <Tab.Screen 
-        name="Community" 
+      <Tab.Screen
+        name="Community"
         component={CommunityScreen}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
@@ -140,8 +140,8 @@ export function EnhancedTabNavigator(): React.JSX.Element {
           tabPress: handleTabPress,
         }}
       />
-      <Tab.Screen 
-        name="Profile" 
+      <Tab.Screen
+        name="Profile"
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
@@ -155,5 +155,3 @@ export function EnhancedTabNavigator(): React.JSX.Element {
     </Tab.Navigator>
   )
 }
-
-

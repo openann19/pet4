@@ -1,58 +1,161 @@
 declare module 'react-native-reanimated' {
-  export type SharedValue<T> = {
-    value: T
+  export interface SharedValue<T> {
+    value: T;
   }
 
-  export interface SpringAnimationConfig {
-    damping?: number
-    stiffness?: number
-    mass?: number
-    velocity?: number
+  export type AnimatedStyle<T extends object = Record<string, unknown>> = T;
+
+  export function useSharedValue<T>(initialValue: T): SharedValue<T>;
+
+  export function useAnimatedStyle<T extends object = Record<string, unknown>>(
+    factory: () => AnimatedStyle<T>
+  ): AnimatedStyle<T>;
+
+  export function useAnimatedProps<T extends object = Record<string, unknown>>(
+    updater: () => T,
+    deps?: unknown[]
+  ): T;
+
+  export function useDerivedValue<T>(processor: () => T, deps?: unknown[]): SharedValue<T>;
+
+  export function useAnimatedReaction<T>(
+    prepare: () => T,
+    react: (prepareResult: T, previousPrepareResult: T | null) => void,
+    prepareDeps?: unknown[]
+  ): void;
+
+  export function useAnimatedGestureHandler<T extends Record<string, unknown>>(handlers: T): T;
+
+  export function useAnimatedRef<T>(): React.RefObject<T>;
+
+  export interface SpringConfig {
+    damping?: number;
+    stiffness?: number;
+    mass?: number;
+    overshootClamping?: boolean;
+    restDisplacementThreshold?: number;
+    restSpeedThreshold?: number;
   }
 
-  export interface TimingAnimationConfig {
-    duration?: number
-    easing?: (value: number) => number
+  export interface TimingConfig {
+    duration?: number;
+    easing?: (value: number) => number;
   }
 
-  export interface AnimationHelpers {
-    linear(value: number): number
-    inOut(easing: (value: number) => number): (value: number) => number
-    ease(value: number): number
-    out(easing: (value: number) => number): (value: number) => number
-    in(easing: (value: number) => number): (value: number) => number
+  export type WithSpringConfig = SpringConfig;
+
+  export type WithTimingConfig = TimingConfig;
+
+  export interface DecayConfig {
+    deceleration?: number;
+    velocity?: number;
+    clamp?: [number, number];
   }
 
-  export const Easing: AnimationHelpers
+  export function withSpring<T>(
+    toValue: T,
+    config?: SpringConfig,
+    callback?: (finished?: boolean) => void
+  ): T;
 
-  export function useSharedValue<T>(initialValue: T): SharedValue<T>
+  export function withTiming<T>(
+    toValue: T,
+    config?: TimingConfig,
+    callback?: (finished?: boolean) => void
+  ): T;
 
-  export function useAnimatedStyle<Style extends Record<string, unknown>>(
-    factory: () => Style,
-    dependencies?: ReadonlyArray<unknown>
-  ): Style
+  export function withRepeat<T>(animation: T, repeatCount?: number, reverse?: boolean): T;
 
-  export function interpolateColor(
+  export function withSequence<T>(...animations: T[]): T;
+
+  export function withDelay<T>(timeMs: number, animation: T): T;
+
+  export function withDecay(config: DecayConfig): number;
+
+  export function interpolate(
     value: number,
-    inputRange: readonly number[],
-    outputRange: readonly (string | number)[],
-  ): string
+    inputRange: number[],
+    outputRange: number[],
+    extrapolation?: ExtrapolationMode | ExtrapolationConfig
+  ): number;
 
-  export function withSpring(
-    value: number,
-    config?: SpringAnimationConfig
-  ): number
+  export function cancelAnimation<T>(sharedValue: SharedValue<T>): void;
 
-  export function withTiming(
-    value: number,
-    config?: TimingAnimationConfig
-  ): number
+  export function runOnJS<Args extends unknown[], Return>(
+    fn: (...args: Args) => Return
+  ): (...args: Args) => void;
 
-  export function withRepeat<T>(animation: T, iterations?: number, reverse?: boolean): T
+  export function runOnUI<Args extends unknown[], Return>(
+    fn: (...args: Args) => Return
+  ): (...args: Args) => Return;
 
-  export function withSequence<T>(...animations: readonly T[]): T
+  export type ExtrapolationMode = 'identity' | 'clamp' | 'extend';
 
-  export function withDelay<T>(delay: number, animation: T): T
+  export const Extrapolation: {
+    readonly IDENTITY: ExtrapolationMode;
+    readonly CLAMP: ExtrapolationMode;
+    readonly EXTEND: ExtrapolationMode;
+  };
 
-  export function cancelAnimation<T>(sharedValue: SharedValue<T>): void
+  export interface ExtrapolationConfig {
+    extrapolateLeft?: ExtrapolationMode;
+    extrapolateRight?: ExtrapolationMode;
+  }
+
+  export const Easing: {
+    readonly linear: (value: number) => number;
+    readonly ease: (value: number) => number;
+    readonly quad: (value: number) => number;
+    readonly cubic: (value: number) => number;
+    readonly sin: (value: number) => number;
+    readonly circle: (value: number) => number;
+    readonly exp: (value: number) => number;
+    readonly elastic: (bounciness?: number) => (value: number) => number;
+    readonly back: (overshootClamping?: number) => (value: number) => number;
+    readonly bounce: (value: number) => number;
+    readonly bezier: (x1: number, y1: number, x2: number, y2: number) => (value: number) => number;
+    readonly poly: (exponent: number) => (value: number) => number;
+    readonly in: (easing: (value: number) => number) => (value: number) => number;
+    readonly out: (easing: (value: number) => number) => (value: number) => number;
+    readonly inOut: (easing: (value: number) => number) => (value: number) => number;
+  };
+
+  export type AnimatedViewProps = Record<string, unknown> & {
+    style?: AnimatedStyle<Record<string, unknown>>;
+    children?: unknown;
+  };
+
+  export type AnimatedTextProps = Record<string, unknown> & {
+    style?: AnimatedStyle<Record<string, unknown>>;
+    children?: unknown;
+  };
+
+  export type AnimatedProps<T extends Record<string, unknown> = Record<string, unknown>> = T;
+
+  export interface FadeInProps {
+    duration?: number;
+    delay?: number;
+  }
+
+  export interface FadeOutProps {
+    duration?: number;
+    delay?: number;
+  }
+
+  export const FadeIn: React.ComponentType<FadeInProps & AnimatedViewProps>;
+  export const FadeOut: React.ComponentType<FadeOutProps & AnimatedViewProps>;
+
+  export namespace Animated {
+    export type SharedValue<T> = import('react-native-reanimated').SharedValue<T>;
+    export const View: React.ComponentType<AnimatedViewProps>;
+    export const Text: React.ComponentType<AnimatedTextProps>;
+  }
+
+  declare const Animated: {
+    readonly SharedValue: typeof SharedValue;
+    readonly View: typeof Animated.View;
+    readonly Text: typeof Animated.Text;
+  };
+
+  export default Animated;
 }

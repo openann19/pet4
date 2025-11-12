@@ -1,24 +1,21 @@
 /**
  * React Query Configuration with Offline Persistence
  *
- * Sets up TanStack Query with custom storage adapter for offline caching
- * using the IndexedDB storage adapter.
+ * Sets up TanStack Query with IndexedDB-based persistence for offline caching.
+ * Uses async storage adapter for better performance and larger storage capacity.
  */
 
-import { QueryClient } from '@tanstack/react-query'
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
-import { idbStorage } from '@/lib/storage-adapter'
-import { createLogger } from '@/lib/logger'
-
-const logger = createLogger('QueryClient')
+import { QueryClient } from '@tanstack/react-query';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { idbStorage } from '@/lib/storage-adapter';
 
 // Create storage persister for offline caching
-export const queryPersister = createSyncStoragePersister({
+export const queryPersister = createAsyncStoragePersister({
   storage: idbStorage,
-  key: 'petspark-query-cache',
   serialize: JSON.stringify,
   deserialize: JSON.parse,
-})
+  key: 'petspark-query-cache',
+});
 
 // Query client configuration
 export const queryClient = new QueryClient({
@@ -46,7 +43,7 @@ export const queryClient = new QueryClient({
       retryDelay: 1000,
     },
   },
-})
+});
 
 // Background sync configuration
 export const backgroundSyncConfig = {
@@ -56,7 +53,7 @@ export const backgroundSyncConfig = {
   maxRetries: 3,
   // Backoff multiplier for retry delays
   backoffMultiplier: 2,
-}
+};
 
 // Query keys for consistent caching
 export const queryKeys = {
@@ -125,7 +122,7 @@ export const queryKeys = {
     list: ['notifications'] as const,
     unread: ['notifications', 'unread'] as const,
   },
-} as const
+} as const;
 
 // Mutation keys for optimistic updates
 export const mutationKeys = {
@@ -134,4 +131,4 @@ export const mutationKeys = {
   playdate: ['playdate'] as const,
   post: ['post'] as const,
   comment: ['comment'] as const,
-} as const
+} as const;

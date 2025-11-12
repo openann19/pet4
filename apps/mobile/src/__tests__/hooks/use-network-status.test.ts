@@ -52,7 +52,7 @@ describe('useNetworkStatus', () => {
     let onChangeCallback: ((state: unknown) => void) | null = null
 
     vi.mocked(NetInfo.fetch).mockResolvedValue(mockState as never)
-    vi.mocked(NetInfo.addEventListener).mockImplementation((callback) => {
+    vi.mocked(NetInfo.addEventListener).mockImplementation(callback => {
       onChangeCallback = callback as (state: unknown) => void
       return () => {}
     })
@@ -78,4 +78,3 @@ describe('useNetworkStatus', () => {
     })
   })
 })
-

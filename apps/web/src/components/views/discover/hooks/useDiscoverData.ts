@@ -1,59 +1,59 @@
 /**
  * Discover Data Hook
- * 
+ *
  * Manages data fetching and state for discover view
  */
 
-import { useState, useEffect, useMemo } from 'react'
-import { usePetDiscovery } from '@/hooks/usePetDiscovery'
-import type { Pet, SwipeAction } from '@/lib/types'
-import type { DiscoveryPreferences } from '@/components/DiscoveryFilters'
+import { useState, useEffect, useMemo } from 'react';
+import { usePetDiscovery } from '@/hooks/usePetDiscovery';
+import type { Pet, SwipeAction } from '@/lib/types';
+import type { DiscoveryPreferences } from '@/components/DiscoveryFilters';
 
 export interface UseDiscoverDataOptions {
-  preferences: DiscoveryPreferences
-  userPets: Pet[]
-  swipeHistory: SwipeAction[]
-  showAdoptableOnly?: boolean
+  preferences: DiscoveryPreferences;
+  userPets: Pet[];
+  swipeHistory: SwipeAction[];
+  showAdoptableOnly?: boolean;
 }
 
 export interface UseDiscoverDataReturn {
-  pets: Pet[]
-  currentPet: Pet | undefined
-  currentIndex: number
-  isLoading: boolean
-  hasMore: boolean
-  setCurrentIndex: (index: number) => void
-  nextPet: () => void
-  prevPet: () => void
-  resetDiscovery: () => void
+  pets: Pet[];
+  currentPet: Pet | undefined;
+  currentIndex: number;
+  isLoading: boolean;
+  hasMore: boolean;
+  setCurrentIndex: (index: number) => void;
+  nextPet: () => void;
+  prevPet: () => void;
+  resetDiscovery: () => void;
 }
 
 export function useDiscoverData(options: UseDiscoverDataOptions): UseDiscoverDataReturn {
-  const { preferences, userPets, swipeHistory, showAdoptableOnly = false } = options
-  
-  const [isLoading, setIsLoading] = useState(true)
+  const { preferences, userPets, swipeHistory, showAdoptableOnly = false } = options;
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const swipedPetIds = useMemo(
-    () => new Set(swipeHistory.map(s => s.targetPetId)),
+    () => new Set(swipeHistory.map((s) => s.targetPetId)),
     [swipeHistory]
-  )
+  );
 
   const userPet = useMemo(
     () => (Array.isArray(userPets) && userPets.length > 0 ? userPets[0] : undefined),
     [userPets]
-  )
+  );
 
   const discoveryOptions: {
-    userPet?: Pet
-    preferences?: DiscoveryPreferences
-    showAdoptableOnly?: boolean
-    swipedPetIds?: Set<string>
+    userPet?: Pet;
+    preferences?: DiscoveryPreferences;
+    showAdoptableOnly?: boolean;
+    swipedPetIds?: Set<string>;
   } = {
     ...(userPet && { userPet }),
     ...(preferences && { preferences }),
     ...(showAdoptableOnly !== undefined && { showAdoptableOnly }),
-    ...(swipedPetIds && { swipedPetIds })
-  }
+    ...(swipedPetIds && { swipedPetIds }),
+  };
 
   const {
     availablePets: pets,
@@ -63,20 +63,20 @@ export function useDiscoverData(options: UseDiscoverDataOptions): UseDiscoverDat
     nextPet,
     prevPet,
     goToPet,
-    resetDiscovery
-  } = usePetDiscovery(discoveryOptions)
+    resetDiscovery,
+  } = usePetDiscovery(discoveryOptions);
 
   useEffect(() => {
     if (userPets !== undefined) {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [userPets])
+  }, [userPets]);
 
   const setCurrentIndex = useMemo(() => {
     return (index: number) => {
-      goToPet(index)
-    }
-  }, [goToPet])
+      goToPet(index);
+    };
+  }, [goToPet]);
 
   return {
     pets,
@@ -87,6 +87,6 @@ export function useDiscoverData(options: UseDiscoverDataOptions): UseDiscoverDat
     setCurrentIndex,
     nextPet,
     prevPet,
-    resetDiscovery
-  }
+    resetDiscovery,
+  };
 }

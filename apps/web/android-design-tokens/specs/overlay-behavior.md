@@ -3,21 +3,25 @@
 ## Overlay Dismissal Rules
 
 ### Tap Outside
+
 - **Behavior**: Dismiss overlay
 - **Implementation**: `onDismissRequest` callback
 - **Exceptions**: None (all overlays dismiss on tap outside)
 
 ### Swipe Down
+
 - **Behavior**: Dismiss bottom sheet
 - **Implementation**: `ModalBottomSheet` swipe gesture
 - **Exceptions**: Dialog modals (use Back button only)
 
 ### Back Button
+
 - **Behavior**: Pop top overlay first
 - **Implementation**: `BackHandler` with priority
 - **Stack Management**: Use `BackStackEntry` for overlay stack
 
 ### Implementation
+
 ```kotlin
 @Composable
 fun OverlayStack(
@@ -25,12 +29,12 @@ fun OverlayStack(
     onDismiss: (Overlay) -> Unit
 ) {
     val backHandler = remember { mutableStateOf<(() -> Unit)?>(null) }
-    
+
     BackHandler(enabled = overlays.isNotEmpty()) {
         // Pop top overlay
         overlays.lastOrNull()?.let { onDismiss(it) }
     }
-    
+
     overlays.forEach { overlay ->
         when (overlay) {
             is Overlay.Sheet -> {
@@ -53,16 +57,19 @@ fun OverlayStack(
 ## Focus Management
 
 ### Focus Trap
+
 - **Behavior**: Trap focus inside overlay
 - **Implementation**: `semantics { isTraversalGroup = true }`
 - **Scope**: All modals and sheets
 
 ### Focus Return
+
 - **Behavior**: Return focus to trigger on close
 - **Implementation**: `FocusRequester` on trigger
 - **Timing**: After close animation completes
 
 ### Implementation
+
 ```kotlin
 @Composable
 fun SheetWithFocusReturn(
@@ -91,11 +98,13 @@ fun SheetWithFocusReturn(
 ## Scroll Lock
 
 ### Background Scroll
+
 - **Behavior**: Disable background scroll when overlay open
 - **Implementation**: `interceptTouchEvents` or `enabled = false`
 - **Scope**: All overlays
 
 ### Implementation
+
 ```kotlin
 @Composable
 fun OverlayWithScrollLock(
@@ -119,16 +128,19 @@ fun OverlayWithScrollLock(
 ## Safe Area Insets
 
 ### Cutouts
+
 - **Behavior**: Respect notch/cutout areas
 - **Implementation**: `WindowInsets` for padding
 - **Applied**: All overlays
 
 ### IME (Keyboard)
+
 - **Behavior**: Adjust layout when keyboard appears
 - **Implementation**: `WindowInsets.ime` for padding
 - **Applied**: TextField-containing overlays
 
 ### Implementation
+
 ```kotlin
 @Composable
 fun SheetWithSafeArea(
@@ -155,17 +167,19 @@ fun SheetWithSafeArea(
 ## Behavior Matrix
 
 ### Sheet Behaviors
-| Action | Bottom Sheet | Dialog | Modal |
-|--------|--------------|--------|-------|
-| Tap outside | ✅ Dismiss | ✅ Dismiss | ✅ Dismiss |
-| Swipe down | ✅ Dismiss | ❌ No | ❌ No |
-| Back button | ✅ Dismiss | ✅ Dismiss | ✅ Dismiss |
-| Focus trap | ✅ Yes | ✅ Yes | ✅ Yes |
-| Focus return | ✅ Yes | ✅ Yes | ✅ Yes |
-| Scroll lock | ✅ Yes | ✅ Yes | ✅ Yes |
-| Safe area | ✅ Yes | ✅ Yes | ✅ Yes |
+
+| Action       | Bottom Sheet | Dialog     | Modal      |
+| ------------ | ------------ | ---------- | ---------- |
+| Tap outside  | ✅ Dismiss   | ✅ Dismiss | ✅ Dismiss |
+| Swipe down   | ✅ Dismiss   | ❌ No      | ❌ No      |
+| Back button  | ✅ Dismiss   | ✅ Dismiss | ✅ Dismiss |
+| Focus trap   | ✅ Yes       | ✅ Yes     | ✅ Yes     |
+| Focus return | ✅ Yes       | ✅ Yes     | ✅ Yes     |
+| Scroll lock  | ✅ Yes       | ✅ Yes     | ✅ Yes     |
+| Safe area    | ✅ Yes       | ✅ Yes     | ✅ Yes     |
 
 ### Implementation Checklist
+
 - [ ] Tap outside dismisses overlay
 - [ ] Swipe down dismisses bottom sheet
 - [ ] Back button pops top overlay
@@ -178,31 +192,37 @@ fun SheetWithSafeArea(
 ## Maps & Location UI Behavior
 
 ### Card ↔ Map Toggle
+
 - **Behavior**: Share filters & density
 - **State**: Preserve filter state when toggling
 - **Implementation**: Shared state management
 
 ### Chip Wrapping
+
 - **Behavior**: Wrap chips without overflow
 - **Implementation**: `FlowRow` for chip layout
 - **Spacing**: Use token spacing (8dp gap)
 
 ### Search Debouncing
+
 - **Behavior**: Debounce search input (300ms)
 - **Implementation**: `LaunchedEffect` with delay
 - **Performance**: Avoid excessive API calls
 
 ### Location Privacy
+
 - **Behavior**: Never reveal precise home coords
 - **Implementation**: Round coordinates (100m precision)
 - **Copy**: Explain rounding in UI
 
 ### Sheet Behavior
+
 - **Behavior**: Matches global overlay rules
 - **Dismissal**: Tap outside, swipe down, Back button
 - **Focus**: Trap focus, return on close
 
 ### Implementation
+
 ```kotlin
 @Composable
 fun MapsScreen(
@@ -210,7 +230,7 @@ fun MapsScreen(
     onFiltersChange: (Filters) -> Unit
 ) {
     var viewMode by remember { mutableStateOf(ViewMode.Cards) }
-    
+
     Column {
         // Toggle button
         Row {
@@ -227,7 +247,7 @@ fun MapsScreen(
                 Text("Map")
             }
         }
-        
+
         // Content
         when (viewMode) {
             ViewMode.Cards -> CardsView(filters, onFiltersChange)
@@ -248,7 +268,7 @@ fun MapView(
             longitude = round(filters.location.longitude, 3)
         )
     }
-    
+
     GoogleMap(
         cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(
@@ -259,7 +279,7 @@ fun MapView(
     ) {
         // Map markers
     }
-    
+
     // Chip filters
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(Dimens.Component.Icon.SpacingSM)
@@ -279,6 +299,7 @@ fun MapView(
 ## Behavior Verification Checklist
 
 ### ✅ Overlay Behaviors
+
 - [ ] Tap outside dismisses
 - [ ] Swipe down dismisses (bottom sheet)
 - [ ] Back button pops top overlay
@@ -288,6 +309,7 @@ fun MapView(
 - [ ] Safe area insets respected
 
 ### ✅ Maps Behaviors
+
 - [ ] Card/Map toggle preserves filters
 - [ ] Chips wrap without overflow
 - [ ] Search debounced (300ms)
@@ -295,6 +317,7 @@ fun MapView(
 - [ ] Sheet behavior matches global rules
 
 ### ✅ Testing
+
 - [ ] Test overlay dismissal (all methods)
 - [ ] Test focus management
 - [ ] Test scroll lock
@@ -303,4 +326,3 @@ fun MapView(
 - [ ] Test chip wrapping
 - [ ] Test search debouncing
 - [ ] Test location privacy
-

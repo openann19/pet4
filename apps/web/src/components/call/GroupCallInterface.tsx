@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   PhoneDisconnect,
   Microphone,
@@ -15,41 +15,48 @@ import {
   Users,
   Hand,
   ChatCircle,
-  ShareNetwork
-} from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useBounceOnTap, useHoverLift, useModalAnimation } from '@/effects/reanimated'
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, Extrapolation } from 'react-native-reanimated'
-import type { GroupCallSession, CallParticipant } from '@/lib/call-types'
-import { formatCallDuration } from '@/lib/call-utils'
-import { haptics } from '@/lib/haptics'
-import { createLogger } from '@/lib/logger'
-import { cn } from '@/lib/utils'
-import { isTruthy, isDefined } from '@petspark/shared';
+  ShareNetwork,
+} from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useBounceOnTap, useHoverLift, useModalAnimation } from '@/effects/reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolate,
+  Extrapolation,
+} from 'react-native-reanimated';
+import type { GroupCallSession, CallParticipant } from '@/lib/call-types';
+import { formatCallDuration } from '@/lib/call-utils';
+import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
+import { cn } from '@/lib/utils';
 
-const logger = createLogger('GroupCallInterface')
+const logger = createLogger('GroupCallInterface');
 
 export interface GroupCallInterfaceProps {
-  session: GroupCallSession
-  onEndCall: () => void
-  onToggleMute: () => void
-  onToggleVideo: () => void
-  onToggleLayout?: () => void
-  onInviteParticipants?: () => void
+  session: GroupCallSession;
+  onEndCall: () => void;
+  onToggleMute: () => void;
+  onToggleVideo: () => void;
+  onToggleLayout?: () => void;
+  onInviteParticipants?: () => void;
 }
 
 interface ParticipantVideoProps {
-  participant: CallParticipant
-  streamId: string
-  stream?: MediaStream
-  isVideoCall: boolean
-  isRaised: boolean
-  isSpotlight: boolean
-  onVideoRef: (streamId: string, element: HTMLVideoElement | null) => void
+  participant: CallParticipant;
+  streamId: string;
+  stream?: MediaStream;
+  isVideoCall: boolean;
+  isRaised: boolean;
+  isSpotlight: boolean;
+  onVideoRef: (streamId: string, element: HTMLVideoElement | null) => void;
 }
 
 function ParticipantVideo({
@@ -59,31 +66,28 @@ function ParticipantVideo({
   isVideoCall,
   isRaised,
   isSpotlight,
-  onVideoRef
+  onVideoRef,
 }: ParticipantVideoProps): JSX.Element {
-  const hoverLift = useHoverLift({ enabled: true })
-  const pulseScale = useSharedValue(1)
+  const hoverLift = useHoverLift();
+  const pulseScale = useSharedValue(1);
 
   useEffect(() => {
     if (isTruthy(isRaised)) {
       pulseScale.value = withRepeat(
-        withSequence(
-          withTiming(1.1, { duration: 500 }),
-          withTiming(1, { duration: 500 })
-        ),
+        withSequence(withTiming(1.1, { duration: 500 }), withTiming(1, { duration: 500 })),
         -1,
         true
-      )
+      );
     } else {
-      pulseScale.value = withTiming(1, { duration: 200 })
+      pulseScale.value = withTiming(1, { duration: 200 });
     }
-  }, [isRaised, pulseScale])
+  }, [isRaised, pulseScale]);
 
   const pulseStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: pulseScale.value }]
-    }
-  }) as ReturnType<typeof useAnimatedStyle>
+      transform: [{ scale: pulseScale.value }],
+    };
+  }) as ReturnType<typeof useAnimatedStyle>;
 
   return (
     <AnimatedView
@@ -97,7 +101,7 @@ function ParticipantVideo({
     >
       {isVideoCall && participant.isVideoEnabled && stream ? (
         <video
-          ref={el => { onVideoRef(streamId, el); }}
+          ref={(el) => onVideoRef(streamId, el)}
           autoPlay
           playsInline
           className="w-full h-full object-cover"
@@ -119,9 +123,7 @@ function ParticipantVideo({
       <div className="absolute top-3 left-3 flex flex-col gap-2">
         <div className="glass-strong backdrop-blur-xl px-3 py-1.5 rounded-full">
           <p className="text-white font-semibold text-sm">{participant.name}</p>
-          {participant.petName && (
-            <p className="text-white/70 text-xs">{participant.petName}</p>
-          )}
+          {participant.petName && <p className="text-white/70 text-xs">{participant.petName}</p>}
         </div>
         {isRaised && (
           <AnimatedView
@@ -138,48 +140,46 @@ function ParticipantVideo({
 
       <div className="absolute bottom-3 right-3 flex items-center gap-2">
         {participant.isMuted && (
-          <div className="glass-strong backdrop-blur-xl p-2 rounded-full" role="status" aria-label="Muted">
+          <div
+            className="glass-strong backdrop-blur-xl p-2 rounded-full"
+            role="status"
+            aria-label="Muted"
+          >
             <MicrophoneSlash size={16} weight="fill" className="text-red-400" aria-hidden="true" />
           </div>
         )}
         {!participant.isVideoEnabled && isVideoCall && (
-          <div className="glass-strong backdrop-blur-xl p-2 rounded-full" role="status" aria-label="Video disabled">
+          <div
+            className="glass-strong backdrop-blur-xl p-2 rounded-full"
+            role="status"
+            aria-label="Video disabled"
+          >
             <VideoCameraSlash size={16} weight="fill" className="text-red-400" aria-hidden="true" />
           </div>
         )}
-        {participant.isSpeaking && (
-          <SpeakingIndicator />
-        )}
+        {participant.isSpeaking && <SpeakingIndicator />}
       </div>
     </AnimatedView>
-  )
+  );
 }
 
 function SpeakingIndicator(): JSX.Element {
-  const scale = useSharedValue(1)
+  const scale = useSharedValue(1);
 
   useEffect(() => {
     scale.value = withRepeat(
-      withSequence(
-        withTiming(1.2, { duration: 500 }),
-        withTiming(1, { duration: 500 })
-      ),
+      withSequence(withTiming(1.2, { duration: 500 }), withTiming(1, { duration: 500 })),
       -1,
       true
-    )
-  }, [scale])
+    );
+  }, [scale]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const scaleValue = interpolate(
-      scale.value,
-      [1, 1.2],
-      [1, 1.2],
-      Extrapolation.CLAMP
-    )
+    const scaleValue = interpolate(scale.value, [1, 1.2], [1, 1.2], Extrapolation.CLAMP);
     return {
-      transform: [{ scale: scaleValue }]
-    }
-  }) as ReturnType<typeof useAnimatedStyle>
+      transform: [{ scale: scaleValue }],
+    };
+  }) as ReturnType<typeof useAnimatedStyle>;
 
   return (
     <AnimatedView
@@ -188,7 +188,7 @@ function SpeakingIndicator(): JSX.Element {
       role="status"
       aria-label="Speaking"
     />
-  )
+  );
 }
 
 export default function GroupCallInterface({
@@ -197,208 +197,210 @@ export default function GroupCallInterface({
   onToggleMute,
   onToggleVideo,
   onToggleLayout,
-  onInviteParticipants
+  onInviteParticipants,
 }: GroupCallInterfaceProps): JSX.Element {
-  const [duration, setDuration] = useState<number>(0)
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(false)
-  const [showParticipants, setShowParticipants] = useState<boolean>(false)
-  const [raisedHands, setRaisedHands] = useState<Set<string>>(new Set())
-  const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map())
-  const localVideoRef = useRef<HTMLVideoElement | null>(null)
-  const durationIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [duration, setDuration] = useState<number>(0);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [showParticipants, setShowParticipants] = useState<boolean>(false);
+  const [raisedHands, setRaisedHands] = useState<Set<string>>(new Set());
+  const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map());
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const modalAnimation = useModalAnimation({ isVisible: true })
+  const modalAnimation = useModalAnimation({ isVisible: true });
 
-  const isVideoCall = useMemo<boolean>(() => session.call.type === 'video', [session.call.type])
-  const isActive = useMemo<boolean>(() => session.call.status === 'active', [session.call.status])
-  
+  const isVideoCall = useMemo<boolean>(() => session.call.type === 'video', [session.call.type]);
+  const isActive = useMemo<boolean>(() => session.call.status === 'active', [session.call.status]);
+
   const participantsArray = useMemo<CallParticipant[]>(() => {
-    return Array.isArray(session.participants) 
-      ? session.participants 
-      : Array.from(session.participants.values())
-  }, [session.participants])
+    return Array.isArray(session.participants)
+      ? session.participants
+      : Array.from(session.participants.values());
+  }, [session.participants]);
 
   const totalParticipants = useMemo<number>(
     () => participantsArray.length + 1,
     [participantsArray.length]
-  )
+  );
 
   const getGridLayout = useCallback((): string => {
-    if (totalParticipants <= 2) return 'grid-cols-1'
-    if (totalParticipants <= 4) return 'grid-cols-2'
-    if (totalParticipants <= 9) return 'grid-cols-3'
-    return 'grid-cols-4'
-  }, [totalParticipants])
+    if (totalParticipants <= 2) return 'grid-cols-1';
+    if (totalParticipants <= 4) return 'grid-cols-2';
+    if (totalParticipants <= 9) return 'grid-cols-3';
+    return 'grid-cols-4';
+  }, [totalParticipants]);
 
   useEffect(() => {
     if (isTruthy(isActive)) {
       durationIntervalRef.current = setInterval(() => {
-        setDuration(prev => prev + 1)
-      }, 1000)
+        setDuration((prev) => prev + 1);
+      }, 1000);
     } else {
-      if (isTruthy(durationIntervalRef.current)) {
-        clearInterval(durationIntervalRef.current)
-        durationIntervalRef.current = null
+      if (durationIntervalRef.current) {
+        clearInterval(durationIntervalRef.current);
+        durationIntervalRef.current = null;
       }
     }
 
     return () => {
-      if (isTruthy(durationIntervalRef.current)) {
-        clearInterval(durationIntervalRef.current)
-        durationIntervalRef.current = null
+      if (durationIntervalRef.current) {
+        clearInterval(durationIntervalRef.current);
+        durationIntervalRef.current = null;
       }
-    }
-  }, [isActive])
+    };
+  }, [isActive]);
 
   useEffect(() => {
     if (localVideoRef.current && session.localStream) {
       try {
-        localVideoRef.current.srcObject = session.localStream
-        logger.info('Local video stream attached', { participantId: session.localParticipant.id })
+        localVideoRef.current.srcObject = session.localStream;
+        logger.info('Local video stream attached', { participantId: session.localParticipant.id });
       } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error))
-        logger.error('Failed to attach local video stream', err, { participantId: session.localParticipant.id })
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to attach local video stream', err, {
+          participantId: session.localParticipant.id,
+        });
       }
     }
-  }, [session.localStream, session.localParticipant.id])
+  }, [session.localStream, session.localParticipant.id]);
 
   useEffect(() => {
     session.streams.forEach((stream, participantId) => {
-      const videoElement = videoRefs.current.get(participantId)
-      if (isTruthy(videoElement)) {
+      const videoElement = videoRefs.current.get(participantId);
+      if (videoElement) {
         try {
-          videoElement.srcObject = stream
-          logger.info('Remote video stream attached', { participantId })
+          videoElement.srcObject = stream;
+          logger.info('Remote video stream attached', { participantId });
         } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error))
-          logger.error('Failed to attach remote video stream', err, { participantId })
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('Failed to attach remote video stream', err, { participantId });
         }
       }
-    })
-  }, [session.streams])
+    });
+  }, [session.streams]);
 
   const handleVideoRef = useCallback((streamId: string, element: HTMLVideoElement | null): void => {
-    if (isTruthy(element)) {
-      videoRefs.current.set(streamId, element)
+    if (element) {
+      videoRefs.current.set(streamId, element);
     } else {
-      videoRefs.current.delete(streamId)
+      videoRefs.current.delete(streamId);
     }
-  }, [])
+  }, []);
 
   const handleToggleMute = useCallback((): void => {
     try {
-      haptics.trigger('selection')
-      onToggleMute()
-      logger.info('Mute toggled', { 
+      haptics.trigger('selection');
+      onToggleMute();
+      logger.info('Mute toggled', {
         participantId: session.localParticipant.id,
-        isMuted: !session.localParticipant.isMuted
-      })
+        isMuted: !session.localParticipant.isMuted,
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to toggle mute', err, { participantId: session.localParticipant.id })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to toggle mute', err, { participantId: session.localParticipant.id });
     }
-  }, [onToggleMute, session.localParticipant.id, session.localParticipant.isMuted])
+  }, [onToggleMute, session.localParticipant.id, session.localParticipant.isMuted]);
 
   const handleToggleVideo = useCallback((): void => {
     try {
-      haptics.trigger('selection')
-      onToggleVideo()
-      logger.info('Video toggled', { 
+      haptics.trigger('selection');
+      onToggleVideo();
+      logger.info('Video toggled', {
         participantId: session.localParticipant.id,
-        isVideoEnabled: !session.localParticipant.isVideoEnabled
-      })
+        isVideoEnabled: !session.localParticipant.isVideoEnabled,
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to toggle video', err, { participantId: session.localParticipant.id })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to toggle video', err, { participantId: session.localParticipant.id });
     }
-  }, [onToggleVideo, session.localParticipant.id, session.localParticipant.isVideoEnabled])
+  }, [onToggleVideo, session.localParticipant.id, session.localParticipant.isVideoEnabled]);
 
   const handleEndCall = useCallback((): void => {
     try {
-      haptics.trigger('heavy')
-      logger.info('Call ended', { 
+      haptics.trigger('heavy');
+      logger.info('Call ended', {
         callId: session.call.id,
         duration,
-        participantCount: totalParticipants
-      })
-      onEndCall()
+        participantCount: totalParticipants,
+      });
+      onEndCall();
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to end call', err, { callId: session.call.id })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to end call', err, { callId: session.call.id });
     }
-  }, [onEndCall, session.call.id, duration, totalParticipants])
+  }, [onEndCall, session.call.id, duration, totalParticipants]);
 
   const handleToggleFullscreen = useCallback((): void => {
     try {
-      setIsFullscreen(prev => {
-        const newValue = !prev
-        logger.info('Fullscreen toggled', { isFullscreen: newValue })
-        return newValue
-      })
+      setIsFullscreen((prev) => {
+        const newValue = !prev;
+        logger.info('Fullscreen toggled', { isFullscreen: newValue });
+        return newValue;
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to toggle fullscreen', err)
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to toggle fullscreen', err);
     }
-  }, [])
+  }, []);
 
   const handleToggleLayout = useCallback((): void => {
     try {
-      haptics.trigger('selection')
-      onToggleLayout?.()
-      logger.info('Layout toggled', { 
+      haptics.trigger('selection');
+      onToggleLayout?.();
+      logger.info('Layout toggled', {
         currentLayout: session.layout,
-        callId: session.call.id
-      })
+        callId: session.call.id,
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to toggle layout', err, { callId: session.call.id })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to toggle layout', err, { callId: session.call.id });
     }
-  }, [onToggleLayout, session.layout, session.call.id])
+  }, [onToggleLayout, session.layout, session.call.id]);
 
   const handleRaiseHand = useCallback((): void => {
     try {
-      haptics.trigger('selection')
-      setRaisedHands(prev => {
-        const newSet = new Set(prev)
+      haptics.trigger('selection');
+      setRaisedHands((prev) => {
+        const newSet = new Set(prev);
         if (newSet.has(session.localParticipant.id)) {
-          newSet.delete(session.localParticipant.id)
-          logger.info('Hand lowered', { participantId: session.localParticipant.id })
+          newSet.delete(session.localParticipant.id);
+          logger.info('Hand lowered', { participantId: session.localParticipant.id });
         } else {
-          newSet.add(session.localParticipant.id)
-          logger.info('Hand raised', { participantId: session.localParticipant.id })
+          newSet.add(session.localParticipant.id);
+          logger.info('Hand raised', { participantId: session.localParticipant.id });
         }
-        return newSet
-      })
+        return newSet;
+      });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to toggle hand raise', err, { participantId: session.localParticipant.id })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to toggle hand raise', err, {
+        participantId: session.localParticipant.id,
+      });
     }
-  }, [session.localParticipant.id])
+  }, [session.localParticipant.id]);
 
   const handleToggleParticipants = useCallback((): void => {
-    setShowParticipants(prev => !prev)
-  }, [])
+    setShowParticipants((prev) => !prev);
+  }, []);
 
   const handleInviteParticipants = useCallback((): void => {
     try {
-      onInviteParticipants?.()
-      logger.info('Invite participants triggered', { callId: session.call.id })
+      onInviteParticipants?.();
+      logger.info('Invite participants triggered', { callId: session.call.id });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to invite participants', err, { callId: session.call.id })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to invite participants', err, { callId: session.call.id });
     }
-  }, [onInviteParticipants, session.call.id])
+  }, [onInviteParticipants, session.call.id]);
 
   const statusIndicator = useMemo(() => {
     if (isTruthy(isActive)) {
       return (
         <>
           <ActiveIndicator />
-          <span className="text-muted-foreground font-medium">
-            {formatCallDuration(duration)}
-          </span>
+          <span className="text-muted-foreground font-medium">{formatCallDuration(duration)}</span>
         </>
-      )
+      );
     }
     return (
       <>
@@ -407,34 +409,34 @@ export default function GroupCallInterface({
           {session.call.status === 'ringing' ? 'Ringing...' : 'Connecting...'}
         </span>
       </>
-    )
-  }, [isActive, duration, session.call.status])
+    );
+  }, [isActive, duration, session.call.status]);
 
   const isLocalHandRaised = useMemo<boolean>(
     () => raisedHands.has(session.localParticipant.id),
     [raisedHands, session.localParticipant.id]
-  )
+  );
 
   const muteButton = useBounceOnTap({
     onPress: handleToggleMute,
-    hapticFeedback: true
-  })
+    hapticFeedback: true,
+  });
 
   const videoButton = useBounceOnTap({
     onPress: handleToggleVideo,
-    hapticFeedback: true
-  })
+    hapticFeedback: true,
+  });
 
   const endCallButton = useBounceOnTap({
     onPress: handleEndCall,
     hapticFeedback: true,
-    scale: 0.9
-  })
+    scale: 0.9,
+  });
 
   const raiseHandButton = useBounceOnTap({
     onPress: handleRaiseHand,
-    hapticFeedback: true
-  })
+    hapticFeedback: true,
+  });
 
   return (
     <AnimatedView
@@ -472,13 +474,24 @@ export default function GroupCallInterface({
             </div>
 
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="gap-2" aria-label={`Call quality: ${String(session.call.quality ?? '')}`}>
-                <div className={cn(
-                  'w-2 h-2 rounded-full',
-                  session.call.quality === 'excellent' ? 'bg-green-500' :
-                  session.call.quality === 'good' ? 'bg-blue-500' :
-                  session.call.quality === 'fair' ? 'bg-yellow-500' : 'bg-red-500'
-                )} aria-hidden="true" />
+              <Badge
+                variant="outline"
+                className="gap-2"
+                aria-label={`Call quality: ${session.call.quality}`}
+              >
+                <div
+                  className={cn(
+                    'w-2 h-2 rounded-full',
+                    session.call.quality === 'excellent'
+                      ? 'bg-green-500'
+                      : session.call.quality === 'good'
+                        ? 'bg-blue-500'
+                        : session.call.quality === 'fair'
+                          ? 'bg-yellow-500'
+                          : 'bg-red-500'
+                  )}
+                  aria-hidden="true"
+                />
                 <span className="capitalize">{session.call.quality}</span>
               </Badge>
 
@@ -529,12 +542,14 @@ export default function GroupCallInterface({
         </div>
 
         <div className="absolute top-20 bottom-24 left-0 right-0 p-6 overflow-hidden">
-          <div className={cn(
-            'grid gap-4 h-full',
-            session.layout === 'grid' ? getGridLayout() : '',
-            session.layout === 'spotlight' ? 'grid-cols-1' : '',
-            session.layout === 'sidebar' ? 'grid-cols-[1fr_300px]' : ''
-          )}>
+          <div
+            className={cn(
+              'grid gap-4 h-full',
+              session.layout === 'grid' ? getGridLayout() : '',
+              session.layout === 'spotlight' ? 'grid-cols-1' : '',
+              session.layout === 'sidebar' ? 'grid-cols-[1fr_300px]' : ''
+            )}
+          >
             {session.layout !== 'sidebar' && (
               <LocalParticipantVideo
                 session={session}
@@ -544,11 +559,11 @@ export default function GroupCallInterface({
               />
             )}
 
-            {participantsArray.map(participant => {
-              const stream = session.streams.get(participant.id)
-              const isSpotlight = session.layout === 'spotlight' && 
-                session.spotlightParticipantId === participant.id
-              
+            {participantsArray.map((participant) => {
+              const stream = session.streams.get(participant.id);
+              const isSpotlight =
+                session.layout === 'spotlight' && session.spotlightParticipantId === participant.id;
+
               return (
                 <ParticipantVideo
                   key={participant.id}
@@ -560,7 +575,7 @@ export default function GroupCallInterface({
                   isSpotlight={isSpotlight}
                   onVideoRef={handleVideoRef}
                 />
-              )
+              );
             })}
           </div>
 
@@ -594,7 +609,11 @@ export default function GroupCallInterface({
 
         <div className="absolute bottom-0 left-0 right-0 z-20 glass-strong backdrop-blur-2xl border-t border-border/50">
           <div className="px-6 py-4">
-            <div className="flex items-center justify-center gap-3" role="toolbar" aria-label="Call controls">
+            <div
+              className="flex items-center justify-center gap-3"
+              role="toolbar"
+              aria-label="Call controls"
+            >
               <AnimatedView style={muteButton.animatedStyle}>
                 <Button
                   onClick={muteButton.handlePress}
@@ -605,11 +624,18 @@ export default function GroupCallInterface({
                       ? 'bg-red-500 hover:bg-red-600'
                       : 'bg-primary hover:bg-primary/90'
                   )}
-                  aria-label={session.localParticipant.isMuted ? 'Unmute microphone' : 'Mute microphone'}
+                  aria-label={
+                    session.localParticipant.isMuted ? 'Unmute microphone' : 'Mute microphone'
+                  }
                   aria-pressed={session.localParticipant.isMuted}
                 >
                   {session.localParticipant.isMuted ? (
-                    <MicrophoneSlash size={24} weight="fill" className="text-white" aria-hidden="true" />
+                    <MicrophoneSlash
+                      size={24}
+                      weight="fill"
+                      className="text-white"
+                      aria-hidden="true"
+                    />
                   ) : (
                     <Microphone size={24} weight="fill" className="text-white" aria-hidden="true" />
                   )}
@@ -627,13 +653,25 @@ export default function GroupCallInterface({
                         ? 'bg-red-500 hover:bg-red-600'
                         : 'bg-primary hover:bg-primary/90'
                     )}
-                    aria-label={session.localParticipant.isVideoEnabled ? 'Disable video' : 'Enable video'}
+                    aria-label={
+                      session.localParticipant.isVideoEnabled ? 'Disable video' : 'Enable video'
+                    }
                     aria-pressed={!session.localParticipant.isVideoEnabled}
                   >
                     {session.localParticipant.isVideoEnabled ? (
-                      <VideoCamera size={24} weight="fill" className="text-white" aria-hidden="true" />
+                      <VideoCamera
+                        size={24}
+                        weight="fill"
+                        className="text-white"
+                        aria-hidden="true"
+                      />
                     ) : (
-                      <VideoCameraSlash size={24} weight="fill" className="text-white" aria-hidden="true" />
+                      <VideoCameraSlash
+                        size={24}
+                        weight="fill"
+                        className="text-white"
+                        aria-hidden="true"
+                      />
                     )}
                   </Button>
                 </AnimatedView>
@@ -646,7 +684,12 @@ export default function GroupCallInterface({
                   className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-2xl"
                   aria-label="End call"
                 >
-                  <PhoneDisconnect size={28} weight="fill" className="text-white" aria-hidden="true" />
+                  <PhoneDisconnect
+                    size={28}
+                    weight="fill"
+                    className="text-white"
+                    aria-hidden="true"
+                  />
                 </Button>
               </AnimatedView>
 
@@ -689,15 +732,15 @@ export default function GroupCallInterface({
         }
       `}</style>
     </AnimatedView>
-  )
+  );
 }
 
 interface LocalParticipantVideoProps {
-  session: GroupCallSession
-  isVideoCall: boolean
-  localVideoRef: React.RefObject<HTMLVideoElement>
-  isSpotlight: boolean
-  compact?: boolean
+  session: GroupCallSession;
+  isVideoCall: boolean;
+  localVideoRef: React.RefObject<HTMLVideoElement>;
+  isSpotlight: boolean;
+  compact?: boolean;
 }
 
 function LocalParticipantVideo({
@@ -705,7 +748,7 @@ function LocalParticipantVideo({
   isVideoCall,
   localVideoRef,
   isSpotlight,
-  compact = false
+  compact = false,
 }: LocalParticipantVideoProps): JSX.Element {
   return (
     <div
@@ -745,7 +788,9 @@ function LocalParticipantVideo({
       <div className="absolute top-3 left-3">
         <div className="glass-strong backdrop-blur-xl px-3 py-1.5 rounded-full flex items-center gap-2">
           <p className="text-white font-semibold text-sm">You</p>
-          <Badge variant="secondary" className="text-xs">Host</Badge>
+          <Badge variant="secondary" className="text-xs">
+            Host
+          </Badge>
         </div>
         {session.localParticipant.petName && !compact && (
           <div className="glass-strong backdrop-blur-xl px-3 py-1 rounded-full mt-2">
@@ -756,27 +801,35 @@ function LocalParticipantVideo({
 
       <div className="absolute bottom-3 right-3 flex items-center gap-2">
         {session.localParticipant.isMuted && (
-          <div className="glass-strong backdrop-blur-xl p-2 rounded-full" role="status" aria-label="Muted">
+          <div
+            className="glass-strong backdrop-blur-xl p-2 rounded-full"
+            role="status"
+            aria-label="Muted"
+          >
             <MicrophoneSlash size={16} weight="fill" className="text-red-400" aria-hidden="true" />
           </div>
         )}
         {!session.localParticipant.isVideoEnabled && isVideoCall && (
-          <div className="glass-strong backdrop-blur-xl p-2 rounded-full" role="status" aria-label="Video disabled">
+          <div
+            className="glass-strong backdrop-blur-xl p-2 rounded-full"
+            role="status"
+            aria-label="Video disabled"
+          >
             <VideoCameraSlash size={16} weight="fill" className="text-red-400" aria-hidden="true" />
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
 
 interface ParticipantsPanelProps {
-  session: GroupCallSession
-  participantsArray: CallParticipant[]
-  totalParticipants: number
-  raisedHands: Set<string>
-  onInvite: () => void
-  onClose: () => void
+  session: GroupCallSession;
+  participantsArray: CallParticipant[];
+  totalParticipants: number;
+  raisedHands: Set<string>;
+  onInvite: () => void;
+  onClose: () => void;
 }
 
 function ParticipantsPanel({
@@ -785,22 +838,22 @@ function ParticipantsPanel({
   totalParticipants,
   raisedHands,
   onInvite,
-  onClose
+  onClose: _onClose,
 }: ParticipantsPanelProps): JSX.Element {
-  const slideX = useSharedValue(400)
-  const opacity = useSharedValue(0)
+  const slideX = useSharedValue(400);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
-    slideX.value = withTiming(0, { duration: 300 })
-    opacity.value = withTiming(1, { duration: 300 })
-  }, [slideX, opacity])
+    slideX.value = withTiming(0, { duration: 300 });
+    opacity.value = withTiming(1, { duration: 300 });
+  }, [slideX, opacity]);
 
   const panelStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: slideX.value }],
-      opacity: opacity.value
-    }
-  }) as ReturnType<typeof useAnimatedStyle>
+      opacity: opacity.value,
+    };
+  }) as ReturnType<typeof useAnimatedStyle>;
 
   return (
     <AnimatedView
@@ -812,12 +865,7 @@ function ParticipantsPanel({
       <div className="p-6 h-full flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-lg">Participants ({totalParticipants})</h2>
-          <Button
-            onClick={onInvite}
-            size="sm"
-            variant="outline"
-            aria-label="Invite participants"
-          >
+          <Button onClick={onInvite} size="sm" variant="outline" aria-label="Invite participants">
             <ShareNetwork size={16} weight="fill" className="mr-2" aria-hidden="true" />
             Invite
           </Button>
@@ -835,14 +883,14 @@ function ParticipantsPanel({
               </Avatar>
               <div className="flex-1">
                 <p className="font-semibold text-sm">You</p>
-                <p className="text-xs text-muted-foreground">
-                  {session.localParticipant.petName}
-                </p>
+                <p className="text-xs text-muted-foreground">{session.localParticipant.petName}</p>
               </div>
-              <Badge variant="secondary" className="text-xs">Host</Badge>
+              <Badge variant="secondary" className="text-xs">
+                Host
+              </Badge>
             </div>
 
-            {participantsArray.map(participant => (
+            {participantsArray.map((participant) => (
               <div
                 key={participant.id}
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors"
@@ -859,7 +907,13 @@ function ParticipantsPanel({
                   )}
                 </div>
                 {raisedHands.has(participant.id) && (
-                  <Hand size={16} weight="fill" className="text-yellow-500" aria-label="Hand raised" aria-hidden="true" />
+                  <Hand
+                    size={16}
+                    weight="fill"
+                    className="text-yellow-500"
+                    aria-label="Hand raised"
+                    aria-hidden="true"
+                  />
                 )}
               </div>
             ))}
@@ -867,38 +921,32 @@ function ParticipantsPanel({
         </ScrollArea>
       </div>
     </AnimatedView>
-  )
+  );
 }
 
 function ActiveIndicator(): JSX.Element {
-  const scale = useSharedValue(1)
-  const opacity = useSharedValue(1)
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
 
   useEffect(() => {
     scale.value = withRepeat(
-      withSequence(
-        withTiming(1.2, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
-      ),
+      withSequence(withTiming(1.2, { duration: 1000 }), withTiming(1, { duration: 1000 })),
       -1,
       true
-    )
+    );
     opacity.value = withRepeat(
-      withSequence(
-        withTiming(0.5, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
-      ),
+      withSequence(withTiming(0.5, { duration: 1000 }), withTiming(1, { duration: 1000 })),
       -1,
       true
-    )
-  }, [scale, opacity])
+    );
+  }, [scale, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
-      opacity: opacity.value
-    }
-  }) as ReturnType<typeof useAnimatedStyle>
+      opacity: opacity.value,
+    };
+  }) as ReturnType<typeof useAnimatedStyle>;
 
   return (
     <AnimatedView
@@ -907,28 +955,25 @@ function ActiveIndicator(): JSX.Element {
       role="status"
       aria-label="Call active"
     />
-  )
+  );
 }
 
 function ConnectingIndicator(): JSX.Element {
-  const scale = useSharedValue(1)
+  const scale = useSharedValue(1);
 
   useEffect(() => {
     scale.value = withRepeat(
-      withSequence(
-        withTiming(1.2, { duration: 750 }),
-        withTiming(1, { duration: 750 })
-      ),
+      withSequence(withTiming(1.2, { duration: 750 }), withTiming(1, { duration: 750 })),
       -1,
       true
-    )
-  }, [scale])
+    );
+  }, [scale]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }]
-    }
-  }) as ReturnType<typeof useAnimatedStyle>
+      transform: [{ scale: scale.value }],
+    };
+  }) as ReturnType<typeof useAnimatedStyle>;
 
   return (
     <AnimatedView
@@ -937,5 +982,5 @@ function ConnectingIndicator(): JSX.Element {
       role="status"
       aria-label="Connecting"
     />
-  )
+  );
 }

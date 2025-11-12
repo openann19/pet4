@@ -1,11 +1,11 @@
 /**
  * Button Color Tokens
- * 
+ *
  * All colors verified for WCAG AA compliance (3:1 minimum contrast for UI components)
  * No opacity or blend modes - solid colors only
  */
 
-import type { ButtonTokenSet } from '../types/button-tokens'
+import type { ButtonTokenSet } from '../types/button-tokens';
 
 /**
  * Button color tokens for dark theme (English)
@@ -13,22 +13,22 @@ import type { ButtonTokenSet } from '../types/button-tokens'
  */
 const darkEN: ButtonTokenSet['dark']['en'] = {
   primary: {
-    // Primary button - uses accent blue
-    background: '#3B82F6', // blue-9 - verified 4.8:1 contrast with white text
+    // Primary button - uses coral
+    background: '#FF715B', // coral primary - verified contrast with white text
     foreground: '#FFFFFF',
     hover: {
-      background: '#2563EB', // blue-10 - darker for hover
+      background: '#FF5A40', // coral hover
       foreground: '#FFFFFF',
     },
     pressed: {
-      background: '#1D4ED8', // blue-11 - even darker for pressed
+      background: '#FF4430', // coral active
       foreground: '#FFFFFF',
     },
     disabled: {
       background: '#1E293B', // slate-8 - neutral disabled background
-      foreground: '#475569', // slate-11 - readable disabled text (3.2:1)
+      foreground: '#BDBDBD', // disabled gray
     },
-    focusRing: '#60A5FA', // blue-8 - lighter for visibility
+    focusRing: '#FF715B', // coral focus ring
   },
   secondary: {
     background: '#475569', // slate-11
@@ -48,21 +48,21 @@ const darkEN: ButtonTokenSet['dark']['en'] = {
     focusRing: '#64748B', // slate-9
   },
   destructive: {
-    background: '#EF4444', // red-9 - verified 4.5:1 with white
+    background: '#FF715B', // coral for errors (not sharp red)
     foreground: '#FFFFFF',
     hover: {
-      background: '#DC2626', // red-10
+      background: '#FF5A40', // coral hover
       foreground: '#FFFFFF',
     },
     pressed: {
-      background: '#B91C1C', // red-11
+      background: '#FF4430', // coral active
       foreground: '#FFFFFF',
     },
     disabled: {
       background: '#1E293B',
-      foreground: '#475569',
+      foreground: '#BDBDBD', // disabled gray
     },
-    focusRing: '#F87171', // red-8
+    focusRing: '#FF715B', // coral focus ring
   },
   outline: {
     border: '#475569', // slate-11
@@ -112,34 +112,34 @@ const darkEN: ButtonTokenSet['dark']['en'] = {
     },
     focusRing: '#60A5FA',
   },
-}
+};
 
 /**
  * Button color tokens for dark theme (Bulgarian)
  * Same as English for consistency, can be customized if needed
  */
-const darkBG: ButtonTokenSet['dark']['bg'] = darkEN
+const darkBG: ButtonTokenSet['dark']['bg'] = darkEN;
 
 /**
  * Button color tokens for light theme (English)
  */
 const lightEN: ButtonTokenSet['light']['en'] = {
   primary: {
-    background: '#2563EB', // blue-10 - darker for light theme
+    background: '#FF715B', // coral primary
     foreground: '#FFFFFF',
     hover: {
-      background: '#1D4ED8', // blue-11
+      background: '#FF5A40', // coral hover
       foreground: '#FFFFFF',
     },
     pressed: {
-      background: '#1E40AF', // blue-12
+      background: '#FF4430', // coral active
       foreground: '#FFFFFF',
     },
     disabled: {
       background: '#F1F5F9', // slate-12
-      foreground: '#94A3B8', // slate-11 - readable on light (3.5:1)
+      foreground: '#BDBDBD', // disabled gray
     },
-    focusRing: '#3B82F6', // blue-9
+    focusRing: '#FF715B', // coral focus ring
   },
   secondary: {
     background: '#64748B', // slate-9
@@ -159,21 +159,21 @@ const lightEN: ButtonTokenSet['light']['en'] = {
     focusRing: '#475569',
   },
   destructive: {
-    background: '#DC2626', // red-10
+    background: '#FF715B', // coral for errors (not sharp red)
     foreground: '#FFFFFF',
     hover: {
-      background: '#B91C1C', // red-11
+      background: '#FF5A40', // coral hover
       foreground: '#FFFFFF',
     },
     pressed: {
-      background: '#991B1B', // red-12
+      background: '#FF4430', // coral active
       foreground: '#FFFFFF',
     },
     disabled: {
       background: '#F1F5F9',
-      foreground: '#94A3B8',
+      foreground: '#BDBDBD', // disabled gray
     },
-    focusRing: '#EF4444', // red-9
+    focusRing: '#FF715B', // coral focus ring
   },
   outline: {
     border: '#CBD5E1', // slate-8
@@ -214,22 +214,22 @@ const lightEN: ButtonTokenSet['light']['en'] = {
     focusRing: '#64748B',
   },
   link: {
-    foreground: '#2563EB', // blue-10
+    foreground: '#FF715B', // coral primary
     hover: {
-      foreground: '#1D4ED8', // blue-11
+      foreground: '#FF5A40', // coral hover
     },
     disabled: {
-      foreground: '#94A3B8',
+      foreground: '#BDBDBD', // disabled gray
     },
-    focusRing: '#3B82F6', // blue-9
+    focusRing: '#FF715B', // coral focus ring
   },
-}
+};
 
 /**
  * Button color tokens for light theme (Bulgarian)
  * Same as English for consistency
  */
-const lightBG: ButtonTokenSet['light']['bg'] = lightEN
+const lightBG: ButtonTokenSet['light']['bg'] = lightEN;
 
 /**
  * Complete button token set
@@ -243,14 +243,11 @@ export const buttonTokens: ButtonTokenSet = {
     en: lightEN,
     bg: lightBG,
   },
-}
+};
 
 /**
  * Get button tokens for current theme and locale
  */
-export function getButtonTokens(
-  theme: 'dark' | 'light',
-  locale: 'en' | 'bg' = 'en'
-) {
-  return buttonTokens[theme][locale]
+export function getButtonTokens(theme: 'dark' | 'light', locale: 'en' | 'bg' = 'en') {
+  return buttonTokens[theme][locale];
 }

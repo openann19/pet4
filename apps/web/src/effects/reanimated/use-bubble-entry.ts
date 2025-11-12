@@ -1,109 +1,112 @@
-/**
- * Web Adapter: useBubbleEntry
- * Optimized bubble entry animations for web platform
- */
+'use client';
 
-'use client'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withDelay,
+  type SharedValue,
+} from 'react-native-reanimated';
+import { useEffect, useCallback } from 'react';
+import { springConfigs } from '@/effects/reanimated/transitions';
 
-import { useBubbleEntry as useSharedBubbleEntry, type UseBubbleEntryOptions } from '@petspark/motion'
+export type BubbleDirection = 'incoming' | 'outgoing';
 
-// Legacy compatibility types
-export type BubbleDirection = 'incoming' | 'outgoing'
-
-export interface WebBubbleEntryOptions extends Omit<UseBubbleEntryOptions, 'direction'> {
-  /**
-   * Enable GPU-accelerated transform3d for better performance on web
-   * @default true
-   */
-  useGPUAcceleration?: boolean
-
-  /**
-   * Reduce motion based on prefers-reduced-motion CSS media query
-   * @default true
-   */
-  respectCSSReducedMotion?: boolean
-
-  // Legacy compatibility props
-  direction?: BubbleDirection | UseBubbleEntryOptions['direction']
-  enabled?: boolean
-  isNew?: boolean
+export interface UseBubbleEntryOptions {
+  index?: number;
+  staggerDelay?: number;
+  direction?: BubbleDirection;
+  enabled?: boolean;
+  isNew?: boolean;
 }
 
 // Legacy compatibility interface
 export interface UseBubbleEntryReturn {
-  style: ReturnType<typeof useSharedBubbleEntry>['style']
-  enter: () => void
-  exit: () => void
-  reset: () => void
-  isVisible: boolean
-  isAnimating: boolean
-  // Legacy compatibility methods
-  trigger: () => void
-  animatedStyle: ReturnType<typeof useSharedBubbleEntry>['style']
+  opacity: SharedValue<number>;
+  translateY: SharedValue<number>;
+  translateX: SharedValue<number>;
+  scale: SharedValue<number>;
+  animatedStyle: ReturnType<typeof useAnimatedStyle>;
+  trigger: () => void;
 }
 
-const WEB_OPTIMIZED_DEFAULTS: Partial<UseBubbleEntryOptions> = {
-  // Slightly faster animations for web (feels more responsive)
-  entryDuration: 350,
-  staggerDelay: 40,
-  
-  // Less distance for tighter UI feel on web
-  distance: 24,
-  
-  // Reduced bounce effect for more professional web feel
-  springConfig: {
-    damping: 18,
-    stiffness: 220,
-    mass: 0.9
-  }
-}
+const DEFAULT_INDEX = 0;
+const DEFAULT_STAGGER_DELAY = 40;
+const DEFAULT_DIRECTION: BubbleDirection = 'outgoing';
+const DEFAULT_ENABLED = true;
+const DEFAULT_IS_NEW = true;
 
-/**
- * Web-optimized bubble entry hook with CSS reduced motion integration
- */
-export function useBubbleEntry(options: WebBubbleEntryOptions = {}): UseBubbleEntryReturn {
+export function useBubbleEntry(options: UseBubbleEntryOptions = {}): UseBubbleEntryReturn {
   const {
-    useGPUAcceleration = true,
-    respectCSSReducedMotion = true,
-    // Legacy compatibility props
-    direction,
-    enabled = true,
-    isNew = true,
-    ...sharedOptions
-  } = options
+    index = DEFAULT_INDEX,
+    staggerDelay = DEFAULT_STAGGER_DELAY,
+    direction = DEFAULT_DIRECTION,
+    enabled = DEFAULT_ENABLED,
+    isNew = DEFAULT_IS_NEW,
+  } = options;
 
-  // Check CSS prefers-reduced-motion if enabled
-  const cssReducedMotion = respectCSSReducedMotion && 
-    typeof window !== 'undefined' && 
-    window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+  const opacity = useSharedValue(isNew && enabled ? 0 : 1);
+  const translateY = useSharedValue(isNew && enabled ? 20 : 0);
+  const translateX = useSharedValue(isNew && enabled ? (direction === 'incoming' ? -30 : 30) : 0);
+  const scale = useSharedValue(isNew && enabled ? 0.95 : 1);
 
-  // Convert legacy direction to new direction prop
-  const convertedDirection = direction === 'incoming' ? 'left' : direction === 'outgoing' ? 'right' : 'bottom'
+  const trigger = useCallback(() => {
+    if (!enabled || !isNew) {
+      return;
+    }
 
-  const webOptimizedConfig: UseBubbleEntryOptions = {
-    ...WEB_OPTIMIZED_DEFAULTS,
-    ...sharedOptions,
-    direction: (sharedOptions as UseBubbleEntryOptions).direction || convertedDirection,
-    autoTrigger: enabled && isNew,
-    // Override reduced motion if CSS preference is set
-    reducedMotion: cssReducedMotion || (sharedOptions as UseBubbleEntryOptions).reducedMotion || false
-  }
+    const delay = index * staggerDelay;
 
-  const result = useSharedBubbleEntry(webOptimizedConfig)
+    opacity.value = withDelay(delay, withSpring(1, springConfigs.smooth));
 
-  // Add GPU acceleration hint to the animated style for web
-  const enhancedStyle = useGPUAcceleration ? {
-    ...result.style,
-    // Add transform3d hint for GPU acceleration on web
-    backfaceVisibility: 'hidden' as const,
-    perspective: 1000,
-  } : result.style
+    translateY.value = withDelay(delay, withSpring(0, springConfigs.smooth));
+
+    if (direction === 'incoming') {
+      translateX.value = withDelay(
+        delay,
+        withSpring(0, {
+          damping: 25,
+          stiffness: 400,
+          mass: 0.8,
+        })
+      );
+      scale.value = withDelay(
+        delay,
+        withSpring(1, {
+          damping: 20,
+          stiffness: 500,
+          mass: 0.9,
+        })
+      );
+    } else {
+      translateX.value = withDelay(delay, withSpring(0, springConfigs.smooth));
+      scale.value = withDelay(delay, withSpring(1, springConfigs.bouncy));
+    }
+  }, [enabled, isNew, index, staggerDelay, direction, opacity, translateY, translateX, scale]);
+
+  useEffect(() => {
+    if (enabled && isNew) {
+      trigger();
+    }
+  }, [enabled, isNew, trigger]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [
+        { translateY: translateY.value },
+        { translateX: translateX.value },
+        { scale: scale.value },
+      ],
+    };
+  });
 
   return {
-    ...result,
-    style: enhancedStyle,
-    // Legacy compatibility methods
-    trigger: result.enter,
-    animatedStyle: enhancedStyle
-  }
+    opacity,
+    translateY,
+    translateX,
+    scale,
+    animatedStyle,
+    trigger,
+  };
 }

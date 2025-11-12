@@ -1,6 +1,6 @@
 /**
  * Motion Facade - Reanimated Default
- * 
+ *
  * Re-exports React Native Reanimated components and hooks as default.
  * Framer Motion is only allowed in apps/web web-only paths.
  */

@@ -38,7 +38,7 @@ export async function forwardGeocode(
   try {
     const apiKey = getGeocodingApiKey();
     const baseUrl = getGeocodingUrl();
-    
+
     if (!apiKey) {
       logger.warn('No geocoding API key configured', { requestId });
       return [];
@@ -53,8 +53,8 @@ export async function forwardGeocode(
       }),
     });
 
-    const url = `${String(baseUrl ?? '')}/${String(encodeURIComponent(query) ?? '')}.json?${String(params.toString() ?? '')}&key=${String(apiKey ?? '')}`;
-    
+    const url = `${baseUrl}/${encodeURIComponent(query)}.json?${params.toString()}&key=${apiKey}`;
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -69,24 +69,26 @@ export async function forwardGeocode(
     const data = await response.json();
     const latency = Date.now() - startTime;
 
-    const results: GeocodingResult[] = (data.features || []).map((feature: {
-      id: string;
-      place_name: string;
-      center: [number, number];
-      place_type: string[];
-      relevance?: number;
-      properties?: Record<string, unknown>;
-    }) => ({
-      id: feature.id || `place_${String(Date.now() ?? '')}_${String(Math.random() ?? '')}`,
-      name: feature.place_name || query,
-      address: feature.place_name || '',
-      location: {
-        lng: feature.center[0],
-        lat: feature.center[1],
-      },
-      placeType: feature.place_type?.[0],
-      relevance: feature.relevance,
-    }));
+    const results: GeocodingResult[] = (data.features || []).map(
+      (feature: {
+        id: string;
+        place_name: string;
+        center: [number, number];
+        place_type: string[];
+        relevance?: number;
+        properties?: Record<string, unknown>;
+      }) => ({
+        id: feature.id || `place_${Date.now()}_${Math.random()}`,
+        name: feature.place_name || query,
+        address: feature.place_name || '',
+        location: {
+          lng: feature.center[0],
+          lat: feature.center[1],
+        },
+        placeType: feature.place_type?.[0],
+        relevance: feature.relevance,
+      })
+    );
 
     const metrics: GeocodingMetrics = {
       requestId,
@@ -102,7 +104,7 @@ export async function forwardGeocode(
   } catch (error) {
     const latency = Date.now() - startTime;
     const err = error instanceof Error ? error : new Error(String(error));
-    
+
     const metrics: GeocodingMetrics = {
       requestId,
       query,
@@ -128,7 +130,7 @@ export async function reverseGeocode(
   try {
     const apiKey = getGeocodingApiKey();
     const baseUrl = getGeocodingUrl();
-    
+
     if (!apiKey) {
       logger.warn('No geocoding API key configured', { requestId });
       return null;
@@ -138,8 +140,8 @@ export async function reverseGeocode(
       language,
     });
 
-    const url = `${String(baseUrl ?? '')}/${String(location.lng ?? '')},${String(location.lat ?? '')}.json?${String(params.toString() ?? '')}&key=${String(apiKey ?? '')}`;
-    
+    const url = `${baseUrl}/${location.lng},${location.lat}.json?${params.toString()}&key=${apiKey}`;
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -185,7 +187,7 @@ export async function reverseGeocode(
   } catch (error) {
     const latency = Date.now() - startTime;
     const err = error instanceof Error ? error : new Error(String(error));
-    
+
     const metrics: GeocodingMetrics = {
       requestId,
       query: `${String(location.lat ?? '')},${String(location.lng ?? '')}`,
@@ -205,7 +207,7 @@ const geocodingMetrics: GeocodingMetrics[] = [];
 
 function trackGeocodingMetrics(metrics: GeocodingMetrics): void {
   geocodingMetrics.push(metrics);
-  
+
   if (geocodingMetrics.length > 1000) {
     geocodingMetrics.shift();
   }
@@ -229,4 +231,3 @@ export function getGeocodingReport(): {
     recentMetrics: recent.slice(-20),
   };
 }
-

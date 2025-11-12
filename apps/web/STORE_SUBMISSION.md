@@ -1,9 +1,11 @@
 # App Store Submission Package
+
 ## PawfectMatch v1.0.0
 
 ### App Metadata (EN + BG)
 
 #### English
+
 **App Name**: PawfectMatch
 **Subtitle**: Find Perfect Pet Companions
 **Short Description**: AI-powered pet matching for playdates and friendships
@@ -23,6 +25,7 @@ Perfect for dogs, cats, and other social pets looking for companions!
 **Keywords**: pet, dog, cat, playdate, match, companion, social, friends, chat
 
 #### Bulgarian (Български)
+
 **App Name**: PawfectMatch
 **Subtitle**: Намерете перфектни спътници за любимци
 **Short Description**: AI подбор на любимци за игра и приятелство
@@ -46,18 +49,21 @@ PawfectMatch помага на собствениците на домашни л
 ### Privacy Labels
 
 **Data Collected**:
+
 - **Contact Info**: Email (for account creation)
 - **User Content**: Photos, messages, pet profiles
 - **Location**: Approximate location only (snapped to 500m-1km grid)
 - **Usage Data**: App interactions, feature usage analytics
 
 **Data Not Collected**:
+
 - Precise home addresses
 - Device identifiers for tracking
 - Browsing history
 - Financial information (until in-app purchases implemented)
 
 **Data Use**:
+
 - Account authentication
 - Matching algorithm
 - In-app messaging
@@ -120,11 +126,13 @@ POST_NOTIFICATIONS: "Бъдете информирани за съвпадени
 ### Reviewer Access
 
 **Test Account**:
+
 - Email: reviewer@pawfectmatch.test
 - Password: ReviewPass2024!
 - Role: Standard user with demo data
 
 **Review Path**:
+
 1. Launch app → Welcome screen appears
 2. Tap "Explore first" to browse without account
 3. Or tap "Get started" and use test credentials
@@ -140,6 +148,7 @@ POST_NOTIFICATIONS: "Бъдете информирани за съвпадени
 
 **Version**: 1.0.0 (Build 1)
 **Staged Rollout**:
+
 - Day 1: 10% (internal testing + early adopters)
 - Day 3: 50% (monitor crash-free rate ≥ 99.5%)
 - Day 7: 100% (full public release)
@@ -147,6 +156,7 @@ POST_NOTIFICATIONS: "Бъдете информирани за съвпадени
 **Rollback Trigger**: Crash rate > 0.5% or critical bug reports
 
 **Monitoring KPIs**:
+
 - Crash-free sessions ≥ 99.5%
 - Cold start time < 3s (median)
 - Frame rate ≥ 60fps steady

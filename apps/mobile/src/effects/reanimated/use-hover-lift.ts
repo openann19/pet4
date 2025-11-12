@@ -1,6 +1,11 @@
 import type { AnimatedStyle } from './animated-view'
 import { useCallback } from 'react'
-import { useAnimatedStyle, useSharedValue, withSpring, type SharedValue } from 'react-native-reanimated'
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  type SharedValue,
+} from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { springConfigs } from './transitions'
 import { isTruthy, isDefined } from '@petspark/shared';
@@ -34,7 +39,7 @@ export function useHoverLift(options: UseHoverLiftOptions = {}): UseHoverLiftRet
     translateY: translateYValue = DEFAULT_TRANSLATE_Y,
     damping = springConfigs.smooth.damping ?? DEFAULT_DAMPING,
     stiffness = springConfigs.smooth.stiffness ?? DEFAULT_STIFFNESS,
-    hapticFeedback = false
+    hapticFeedback = false,
   } = options
 
   const scale = useSharedValue(1)
@@ -42,10 +47,7 @@ export function useHoverLift(options: UseHoverLiftOptions = {}): UseHoverLiftRet
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: scale.value },
-        { translateY: translateY.value }
-      ]
+      transform: [{ scale: scale.value }, { translateY: translateY.value }],
     }
   }) as AnimatedStyle
 
@@ -79,7 +81,6 @@ export function useHoverLift(options: UseHoverLiftOptions = {}): UseHoverLiftRet
     handleEnter,
     handleLeave,
     handlePressIn,
-    handlePressOut
+    handlePressOut,
   }
 }
-

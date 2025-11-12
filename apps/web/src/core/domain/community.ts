@@ -1,73 +1,70 @@
 /**
  * Community Domain - Post Workflows and Rules
- * 
+ *
  * Core business logic for posts, comments, reactions, and visibility rules.
  * This is pure domain logic with no infrastructure dependencies.
  */
 
 /**
  * Post status
- * 
+ *
  * Valid state transitions:
  * - pending_review -> active (approved)
  * - pending_review -> rejected (moderation)
  * - active -> archived (user or system)
  * - rejected -> archived (final state)
  */
-export type PostStatus = 'active' | 'pending_review' | 'rejected' | 'archived'
+export type PostStatus = 'active' | 'pending_review' | 'rejected' | 'archived';
 
 /**
  * Comment status
- * 
+ *
  * Valid state transitions:
  * - active -> deleted (user deletion)
  * - active -> hidden (moderation)
  * - deleted -> active (restore, if allowed)
  * - hidden -> active (unhide, if allowed)
  */
-export type CommentStatus = 'active' | 'deleted' | 'hidden'
+export type CommentStatus = 'active' | 'deleted' | 'hidden';
 
 /**
  * Post visibility
  */
-export type PostVisibility = 'public' | 'matches' | 'followers' | 'private'
+export type PostVisibility = 'public' | 'matches' | 'followers' | 'private';
 
 /**
  * Post kind
  */
-export type PostKind = 'text' | 'photo' | 'video' | 'event'
+export type PostKind = 'text' | 'photo' | 'video' | 'event';
 
 /**
  * Check if a post status transition is valid
  */
-export function isValidPostStatusTransition(
-  current: PostStatus,
-  next: PostStatus
-): boolean {
+export function isValidPostStatusTransition(current: PostStatus, next: PostStatus): boolean {
   // Can't transition to the same status
   if (current === next) {
-    return false
+    return false;
   }
 
   switch (current) {
     case 'pending_review':
       // Can go to active (approved) or rejected (moderation)
-      return next === 'active' || next === 'rejected'
+      return next === 'active' || next === 'rejected';
 
     case 'active':
       // Can go to archived (user or system action)
-      return next === 'archived'
+      return next === 'archived';
 
     case 'rejected':
       // Can go to archived (final state)
-      return next === 'archived'
+      return next === 'archived';
 
     case 'archived':
       // Final state - no transitions allowed
-      return false
+      return false;
 
     default:
-      return false
+      return false;
   }
 }
 
@@ -80,24 +77,24 @@ export function isValidCommentStatusTransition(
 ): boolean {
   // Can't transition to the same status
   if (current === next) {
-    return false
+    return false;
   }
 
   switch (current) {
     case 'active':
       // Can go to deleted (user action) or hidden (moderation)
-      return next === 'deleted' || next === 'hidden'
+      return next === 'deleted' || next === 'hidden';
 
     case 'deleted':
       // Can potentially be restored (if policy allows)
-      return next === 'active'
+      return next === 'active';
 
     case 'hidden':
       // Can potentially be unhidden (if policy allows)
-      return next === 'active'
+      return next === 'active';
 
     default:
-      return false
+      return false;
   }
 }
 
@@ -106,7 +103,7 @@ export function isValidCommentStatusTransition(
  */
 export function canEditPost(status: PostStatus): boolean {
   // Can only edit if pending review or active
-  return status === 'pending_review' || status === 'active'
+  return status === 'pending_review' || status === 'active';
 }
 
 /**
@@ -114,7 +111,7 @@ export function canEditPost(status: PostStatus): boolean {
  */
 export function canReceiveComments(status: PostStatus): boolean {
   // Can only receive comments if active
-  return status === 'active'
+  return status === 'active';
 }
 
 /**
@@ -122,7 +119,7 @@ export function canReceiveComments(status: PostStatus): boolean {
  */
 export function canReceiveReactions(status: PostStatus): boolean {
   // Can only receive reactions if active
-  return status === 'active'
+  return status === 'active';
 }
 
 /**
@@ -130,7 +127,7 @@ export function canReceiveReactions(status: PostStatus): boolean {
  */
 export function canEditComment(status: CommentStatus): boolean {
   // Can only edit if active
-  return status === 'active'
+  return status === 'active';
 }
 
 /**
@@ -138,7 +135,7 @@ export function canEditComment(status: CommentStatus): boolean {
  */
 export function canCommentReceiveReactions(status: CommentStatus): boolean {
   // Can only receive reactions if active
-  return status === 'active'
+  return status === 'active';
 }
 
 /**
@@ -150,19 +147,18 @@ export function canViewPost(
 ): boolean {
   switch (visibility) {
     case 'public':
-      return true
+      return true;
 
     case 'matches':
-      return viewerRelationship === 'owner' || viewerRelationship === 'match'
+      return viewerRelationship === 'owner' || viewerRelationship === 'match';
 
     case 'followers':
-      return viewerRelationship === 'owner' || viewerRelationship === 'follower'
+      return viewerRelationship === 'owner' || viewerRelationship === 'follower';
 
     case 'private':
-      return viewerRelationship === 'owner'
+      return viewerRelationship === 'owner';
 
     default:
-      return false
+      return false;
   }
 }
-

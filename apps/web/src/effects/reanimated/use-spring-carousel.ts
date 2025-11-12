@@ -17,14 +17,7 @@ export interface UseSpringCarouselOptions {
 }
 
 export function useSpringCarousel(options: UseSpringCarouselOptions) {
-  const {
-    itemCount,
-    itemWidth,
-    gap = 16,
-    damping = 20,
-    stiffness = 120,
-    onIndexChange,
-  } = options;
+  const { itemCount, itemWidth, gap = 16, damping = 20, stiffness = 120, onIndexChange } = options;
 
   const translateX = useSharedValue(0);
   const [currentIndex, setCurrentIndex] = useState(0);

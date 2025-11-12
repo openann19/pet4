@@ -1,4 +1,10 @@
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring, withDelay, type SharedValue } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  withDelay,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import { springConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
@@ -11,20 +17,14 @@ export interface UseModalAnimationOptions {
 }
 
 export interface UseModalAnimationReturn {
-  opacity: SharedValue<number>
-  scale: SharedValue<number>
-  y: SharedValue<number>
+  opacity: ReturnType<typeof useSharedValue<number>>
+  scale: ReturnType<typeof useSharedValue<number>>
+  y: ReturnType<typeof useSharedValue<number>>
   style: AnimatedStyle
 }
 
-export function useModalAnimation(
-  options: UseModalAnimationOptions
-): UseModalAnimationReturn {
-  const {
-    isVisible,
-    duration = 300,
-    delay = 0
-  } = options
+export function useModalAnimation(options: UseModalAnimationOptions): UseModalAnimationReturn {
+  const { isVisible, duration = 300, delay = 0 } = options
 
   const opacity = useSharedValue(0)
   const scale = useSharedValue(0.9)
@@ -46,10 +46,7 @@ export function useModalAnimation(
   const style = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [
-        { scale: scale.value },
-        { translateY: y.value }
-      ]
+      transform: [{ scale: scale.value }, { translateY: y.value }],
     }
   }) as AnimatedStyle
 
@@ -57,6 +54,6 @@ export function useModalAnimation(
     opacity,
     scale,
     y,
-    style
+    style,
   }
 }

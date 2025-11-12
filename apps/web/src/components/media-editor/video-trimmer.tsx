@@ -1,19 +1,15 @@
-'use client'
+'use client';
 
-import { getVideoThumbnails } from '@/core/services/media/video/thumbnails'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, {
-    runOnJS,
-    useAnimatedStyle,
-    useSharedValue
-} from 'react-native-reanimated'
+import { getVideoThumbnails } from '@/core/services/media/video/thumbnails';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
 export interface VideoTrimmerProps {
-  uri: string
-  durationSec?: number
-  onChange: (startSec: number, endSec: number) => void
+  uri: string;
+  durationSec?: number;
+  onChange: (startSec: number, endSec: number) => void;
 }
 
 export function VideoTrimmer({
@@ -21,83 +17,83 @@ export function VideoTrimmer({
   durationSec = 0,
   onChange,
 }: VideoTrimmerProps): React.ReactElement {
-  const [thumbs, setThumbs] = useState<string[]>([])
-  const [width, setWidth] = useState(0)
-  const start = useSharedValue(0) // px from left
-  const end = useSharedValue(0) // px from left
-  const handleW = 16
+  const [thumbs, setThumbs] = useState<string[]>([]);
+  const [width, setWidth] = useState(0);
+  const start = useSharedValue(0); // px from left
+  const end = useSharedValue(0); // px from left
+  const handleW = 16;
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     getVideoThumbnails(uri, 8).then((thumbnails) => {
       if (!cancelled) {
-        setThumbs(thumbnails)
+        setThumbs(thumbnails);
       }
-    })
+    });
 
     return () => {
-      cancelled = true
-    }
-  }, [uri])
+      cancelled = true;
+    };
+  }, [uri]);
 
   const pxToSec = useMemo(() => {
     return (px: number): number => {
       if (!width || durationSec === 0) {
-        return 0
+        return 0;
       }
-      return Math.max(0, Math.min(durationSec, (px / width) * durationSec))
-    }
-  }, [width, durationSec])
+      return Math.max(0, Math.min(durationSec, (px / width) * durationSec));
+    };
+  }, [width, durationSec]);
 
   const update = useCallback(() => {
-    const startSec = pxToSec(start.value)
-    const endSec = pxToSec(end.value)
-    onChange(Math.min(startSec, endSec), Math.max(startSec, endSec))
-  }, [pxToSec, onChange, start, end])
+    const startSec = pxToSec(start.value);
+    const endSec = pxToSec(end.value);
+    onChange(Math.min(startSec, endSec), Math.max(startSec, endSec));
+  }, [pxToSec, onChange, start, end]);
 
   const onLayout = useCallback(
     (e: React.UIEvent<HTMLDivElement>) => {
-      const w = e.currentTarget.offsetWidth
-      setWidth(w)
-      end.value = w
+      const w = e.currentTarget.offsetWidth;
+      setWidth(w);
+      end.value = w;
     },
     [end]
-  )
+  );
 
   const panStart = Gesture.Pan()
     .onChange((g) => {
-      const newValue = Math.max(0, Math.min(start.value + g.changeX, end.value - handleW))
-      start.value = newValue
+      const newValue = Math.max(0, Math.min(start.value + g.changeX, end.value - handleW));
+      start.value = newValue;
     })
     .onEnd(() => {
-      runOnJS(update)()
-    })
+      runOnJS(update)();
+    });
 
   const panEnd = Gesture.Pan()
     .onChange((g) => {
-      const newValue = Math.min(width, Math.max(end.value + g.changeX, start.value + handleW))
-      end.value = newValue
+      const newValue = Math.min(width, Math.max(end.value + g.changeX, start.value + handleW));
+      end.value = newValue;
     })
     .onEnd(() => {
-      runOnJS(update)()
-    })
+      runOnJS(update)();
+    });
 
   const asStart = useAnimatedStyle(() => ({
     transform: [{ translateX: start.value }],
-  }))
+  }));
 
   const asEnd = useAnimatedStyle(() => ({
     transform: [{ translateX: end.value - handleW }],
-  }))
+  }));
 
   const asMask = useAnimatedStyle(() => {
-    const maskWidth = Math.max(handleW, end.value - start.value)
+    const maskWidth = Math.max(handleW, end.value - start.value);
     return {
       left: start.value,
       width: maskWidth,
-    }
-  })
+    };
+  });
 
   return (
     <View style={styles.container}>
@@ -123,7 +119,7 @@ export function VideoTrimmer({
         </GestureDetector>
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -131,7 +127,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    color: '#fff',
+    color: 'var(--color-bg-overlay)',
     fontWeight: '700',
     fontSize: 14,
     marginBottom: 8,
@@ -151,7 +147,6 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   thumb: {
-    width: undefined as unknown as number,
     flex: 1,
     height: '100%',
   },
@@ -178,5 +173,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)',
     pointerEvents: 'none',
   },
-})
-
+});

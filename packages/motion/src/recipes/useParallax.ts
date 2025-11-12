@@ -1,14 +1,13 @@
-import { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { useReducedMotionSV } from '../reduced-motion';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useSharedValue, useAnimatedStyle } from 'react-native-reanimated'
+import { useReducedMotionSV } from '../reduced-motion'
 
 export interface UseParallaxOptions {
-  mult?: number;
+  mult?: number
 }
 
 export interface UseParallaxReturn {
-  onScroll: (e: { nativeEvent?: { contentOffset?: { y?: number } } }) => void;
-  animatedStyle: ReturnType<typeof useAnimatedStyle>;
+  onScroll: (e: { nativeEvent?: { contentOffset?: { y?: number } } }) => void
+  animatedStyle: ReturnType<typeof useAnimatedStyle>
 }
 
 /**
@@ -16,22 +15,21 @@ export interface UseParallaxReturn {
  * Respects reduced motion preferences (no parallax when enabled).
  */
 export function useParallax(mult = 0.2): UseParallaxReturn {
-  const reducedMotion = useReducedMotionSV();
-  const offset = useSharedValue(0);
-  
+  const reducedMotion = useReducedMotionSV()
+  const offset = useSharedValue(0)
+
   const onScroll = (e: { nativeEvent?: { contentOffset?: { y?: number } } }): void => {
     if (!reducedMotion.value) {
-      offset.value = e.nativeEvent?.contentOffset?.y ?? 0;
+      offset.value = e.nativeEvent?.contentOffset?.y ?? 0
     }
-  };
-  
-  const animatedStyle = useAnimatedStyle(() => {
-    if (isTruthy(reducedMotion.value)) {
-      return {}; // No parallax when reduced motion is enabled
-    }
-    return { transform: [{ translateY: -offset.value * mult }] };
-  });
-  
-  return { onScroll, animatedStyle };
-}
+  }
 
+  const animatedStyle = useAnimatedStyle(() => {
+    if (reducedMotion.value) {
+      return {} // No parallax when reduced motion is enabled
+    }
+    return { transform: [{ translateY: -offset.value * mult }] }
+  })
+
+  return { onScroll, animatedStyle }
+}

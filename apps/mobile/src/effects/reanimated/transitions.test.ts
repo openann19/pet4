@@ -4,11 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import {
-    SPRING_RANGES,
-    springConfigs,
-    validateSpringConfig,
-} from './transitions'
+import { SPRING_RANGES, springConfigs, validateSpringConfig } from './transitions'
 
 describe('Spring Configuration Ranges', () => {
   it('should enforce correct stiffness range', () => {
@@ -86,7 +82,7 @@ describe('validateSpringConfig', () => {
     const result = validateSpringConfig(config)
     expect(result.valid).toBe(false)
     expect(result.errors.length).toBeGreaterThan(0)
-    expect(result.errors.some((e) => e.includes('below minimum'))).toBe(true)
+    expect(result.errors.some(e => e.includes('below minimum'))).toBe(true)
   })
 
   it('should reject stiffness above maximum', () => {
@@ -94,7 +90,7 @@ describe('validateSpringConfig', () => {
     const result = validateSpringConfig(config)
     expect(result.valid).toBe(false)
     expect(result.errors.length).toBeGreaterThan(0)
-    expect(result.errors.some((e) => e.includes('above maximum'))).toBe(true)
+    expect(result.errors.some(e => e.includes('above maximum'))).toBe(true)
   })
 
   it('should reject damping below minimum', () => {
@@ -102,7 +98,7 @@ describe('validateSpringConfig', () => {
     const result = validateSpringConfig(config)
     expect(result.valid).toBe(false)
     expect(result.errors.length).toBeGreaterThan(0)
-    expect(result.errors.some((e) => e.includes('below minimum'))).toBe(true)
+    expect(result.errors.some(e => e.includes('below minimum'))).toBe(true)
   })
 
   it('should reject damping above maximum', () => {
@@ -110,7 +106,7 @@ describe('validateSpringConfig', () => {
     const result = validateSpringConfig(config)
     expect(result.valid).toBe(false)
     expect(result.errors.length).toBeGreaterThan(0)
-    expect(result.errors.some((e) => e.includes('above maximum'))).toBe(true)
+    expect(result.errors.some(e => e.includes('above maximum'))).toBe(true)
   })
 
   it('should reject incorrect mass', () => {
@@ -118,7 +114,7 @@ describe('validateSpringConfig', () => {
     const result = validateSpringConfig(config)
     expect(result.valid).toBe(false)
     expect(result.errors.length).toBeGreaterThan(0)
-    expect(result.errors.some((e) => e.includes('Mass'))).toBe(true)
+    expect(result.errors.some(e => e.includes('Mass'))).toBe(true)
   })
 
   it('should accept partial configs', () => {
@@ -127,4 +123,3 @@ describe('validateSpringConfig', () => {
     expect(result.valid).toBe(true)
   })
 })
-

@@ -1,0 +1,145 @@
+{
+  "timestamp": "2025-01-12T05:45:00Z",
+  "web": {
+    "routes": [
+      {
+        "path": "/",
+        "component": "App",
+        "states": ["welcome", "auth", "main"],
+        "authStates": ["unauthenticated", "authenticated"],
+        "views": ["discover", "matches", "chat", "community", "adoption", "lost-found", "profile"]
+      },
+      {
+        "path": "/demo/pets",
+        "component": "PetsDemoPage",
+        "authRequired": false
+      }
+    ],
+    "views": [
+      {
+        "name": "discover",
+        "component": "DiscoverView",
+        "route": "/"
+      },
+      {
+        "name": "matches",
+        "component": "MatchesView",
+        "route": "/"
+      },
+      {
+        "name": "chat",
+        "component": "ChatView",
+        "route": "/"
+      },
+      {
+        "name": "community",
+        "component": "CommunityView",
+        "route": "/"
+      },
+      {
+        "name": "adoption",
+        "component": "AdoptionView",
+        "route": "/"
+      },
+      {
+        "name": "lost-found",
+        "component": "LostFoundView",
+        "route": "/"
+      },
+      {
+        "name": "profile",
+        "component": "ProfileView",
+        "route": "/"
+      }
+    ],
+    "modals": [
+      "AdminConsole",
+      "AuthScreen",
+      "GenerateProfilesButton",
+      "UltraThemeSettings",
+      "QuickActionsMenu",
+      "PlaydateMap"
+    ],
+    "breakpoints": ["xs", "sm", "md", "lg", "xl"],
+    "themes": ["light", "dark"],
+    "states": [
+      "idle",
+      "hover",
+      "active",
+      "focus",
+      "disabled",
+      "loading",
+      "success",
+      "error",
+      "empty"
+    ]
+  },
+  "mobile": {
+    "screens": [
+      {
+        "name": "HomeScreen",
+        "path": "apps/mobile/src/screens/HomeScreen.tsx"
+      },
+      {
+        "name": "FeedScreen",
+        "path": "apps/mobile/src/screens/FeedScreen.tsx"
+      },
+      {
+        "name": "MatchesScreen",
+        "path": "apps/mobile/src/screens/MatchesScreen.tsx"
+      },
+      {
+        "name": "MatchingScreen",
+        "path": "apps/mobile/src/screens/MatchingScreen.tsx"
+      },
+      {
+        "name": "ChatScreen",
+        "path": "apps/mobile/src/screens/ChatScreen.tsx"
+      },
+      {
+        "name": "CommunityScreen",
+        "path": "apps/mobile/src/screens/CommunityScreen.tsx"
+      },
+      {
+        "name": "ProfileScreen",
+        "path": "apps/mobile/src/screens/ProfileScreen.tsx"
+      },
+      {
+        "name": "AdoptScreen",
+        "path": "apps/mobile/src/screens/AdoptScreen.tsx"
+      },
+      {
+        "name": "AdoptionScreen",
+        "path": "apps/mobile/src/screens/AdoptionScreen.tsx"
+      },
+      {
+        "name": "SignUpScreen",
+        "path": "apps/mobile/src/screens/SignUpScreen.tsx"
+      },
+      {
+        "name": "EffectsPlaygroundScreen",
+        "path": "apps/mobile/src/screens/EffectsPlaygroundScreen.tsx"
+      },
+      {
+        "name": "DataRightsScreen",
+        "path": "apps/mobile/src/components/gdpr/DataRightsScreen.tsx"
+      },
+      {
+        "name": "UploadAndEditScreen",
+        "path": "apps/mobile/src/components/media-editor/UploadAndEditScreen.tsx"
+      }
+    ],
+    "platforms": ["ios", "android"],
+    "fontScales": ["default", "large"],
+    "themes": ["light", "dark"],
+    "states": [
+      "idle",
+      "pressed",
+      "disabled",
+      "loading",
+      "success",
+      "error",
+      "empty"
+    ]
+  }
+}

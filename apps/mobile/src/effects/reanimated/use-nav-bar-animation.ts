@@ -1,4 +1,12 @@
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence, withDelay, type SharedValue } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withRepeat,
+  withSequence,
+  withDelay,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import { springConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
@@ -8,12 +16,12 @@ export interface UseNavBarAnimationOptions {
 }
 
 export interface UseNavBarAnimationReturn {
-  opacity: SharedValue<number>
-  translateY: SharedValue<number>
-  scale: SharedValue<number>
+  opacity: ReturnType<typeof useSharedValue<number>>
+  translateY: ReturnType<typeof useSharedValue<number>>
+  scale: ReturnType<typeof useSharedValue<number>>
   navStyle: AnimatedStyle
-  shimmerTranslateX: SharedValue<number>
-  shimmerOpacity: SharedValue<number>
+  shimmerTranslateX: ReturnType<typeof useSharedValue<number>>
+  shimmerOpacity: ReturnType<typeof useSharedValue<number>>
   shimmerStyle: AnimatedStyle
 }
 
@@ -35,10 +43,7 @@ export function useNavBarAnimation(
     scale.value = withDelay(delayMs, withTiming(1, { duration: 300 }))
 
     shimmerTranslateX.value = withRepeat(
-      withSequence(
-        withTiming(100, { duration: 0 }),
-        withTiming(100, { duration: 4000 })
-      ),
+      withSequence(withTiming(100, { duration: 0 }), withTiming(100, { duration: 4000 })),
       -1,
       false
     )
@@ -57,19 +62,16 @@ export function useNavBarAnimation(
   const navStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [
-        { translateY: translateY.value },
-        { scale: scale.value },
-      ],
+      transform: [{ translateY: translateY.value }, { scale: scale.value }],
     }
-  }) as AnimatedStyle
+  })
 
   const shimmerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: shimmerTranslateX.value }],
       opacity: shimmerOpacity.value,
     }
-  }) as AnimatedStyle
+  })
 
   return {
     opacity,

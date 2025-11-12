@@ -2,53 +2,64 @@ import { createLogger } from './logger'
 
 const logger = createLogger('Haptics')
 
-export type HapticFeedbackType = 'light' | 'medium' | 'heavy' | 'selection' | 'success' | 'warning' | 'error'
+export type HapticFeedbackType =
+  | 'light'
+  | 'medium'
+  | 'heavy'
+  | 'selection'
+  | 'success'
+  | 'warning'
+  | 'error'
 
 class HapticFeedback {
   private isSupported: boolean
 
   constructor() {
-    this.isSupported = 'vibrate' in navigator
+    this.isSupported = typeof navigator !== 'undefined' && 'vibrate' in navigator
   }
 
-  private vibrate(pattern: number | number[]) {
+  private vibrate(pattern: number | number[]): void {
     if (!this.isSupported) return
+    if (typeof navigator === 'undefined') return
     try {
-      navigator.vibrate(pattern)
+      navigator.vibrate?.(pattern)
     } catch (error) {
-      logger.warn('Haptic feedback failed', error instanceof Error ? error : new Error(String(error)))
+      logger.warn(
+        'Haptic feedback failed',
+        error instanceof Error ? error : new Error(String(error))
+      )
     }
   }
 
-  light() {
+  light(): void {
     this.vibrate(10)
   }
 
-  medium() {
+  medium(): void {
     this.vibrate(20)
   }
 
-  heavy() {
+  heavy(): void {
     this.vibrate(40)
   }
 
-  selection() {
+  selection(): void {
     this.vibrate(5)
   }
 
-  success() {
+  success(): void {
     this.vibrate([10, 50, 10])
   }
 
-  warning() {
+  warning(): void {
     this.vibrate([20, 100, 20])
   }
 
-  error() {
+  error(): void {
     this.vibrate([30, 100, 30, 100, 30])
   }
 
-  notification(type: 'success' | 'warning' | 'error' = 'success') {
+  notification(type: 'success' | 'warning' | 'error' = 'success'): void {
     switch (type) {
       case 'success':
         this.success()
@@ -62,7 +73,7 @@ class HapticFeedback {
     }
   }
 
-  impact(type: 'light' | 'medium' | 'heavy' = 'light') {
+  impact(type: 'light' | 'medium' | 'heavy' = 'light'): void {
     switch (type) {
       case 'light':
         this.vibrate(10)
@@ -76,7 +87,7 @@ class HapticFeedback {
     }
   }
 
-  trigger(type: HapticFeedbackType) {
+  trigger(type: HapticFeedbackType): void {
     switch (type) {
       case 'light':
         this.light()
@@ -105,6 +116,6 @@ class HapticFeedback {
 
 export const haptics = new HapticFeedback()
 
-export function triggerHaptic(type: HapticFeedbackType) {
+export function triggerHaptic(type: HapticFeedbackType): void {
   haptics.trigger(type)
 }

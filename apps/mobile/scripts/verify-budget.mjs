@@ -31,16 +31,7 @@ function die(msg) {
   ERROR = 1
 }
 
-function getFileSize(filePath) {
-  try {
-    const stats = statSync(filePath)
-    return stats.size
-  } catch {
-    return 0
-  }
-}
-
-function checkDirectory(dir, budget) {
+function checkDirectory(dir) {
   let totalSize = 0
   const files = []
 
@@ -65,7 +56,7 @@ function checkDirectory(dir, budget) {
 
 // Check effects directory
 const effectsDir = join(ROOT, 'src/effects')
-const effectsStats = checkDirectory(effectsDir, BUDGETS.effects)
+const effectsStats = checkDirectory(effectsDir)
 
 if (effectsStats.totalSize > BUDGETS.effects.max) {
   die(
@@ -83,7 +74,7 @@ for (const file of effectsStats.files) {
 
 // Check chat components directory
 const chatDir = join(ROOT, 'src/components/chat')
-const chatStats = checkDirectory(chatDir, BUDGETS.chat)
+const chatStats = checkDirectory(chatDir)
 
 if (chatStats.totalSize > BUDGETS.chat.max) {
   die(
@@ -102,12 +93,11 @@ for (const file of chatStats.files) {
 if (ERROR === 0) {
   process.stdout.write('✅ Bundle size budget verified\n')
   process.stdout.write(
-    `   Effects: ${(effectsStats.totalSize / 1024).toFixed(2)} KB / ${(BUDGETS.effects.max / 1024).toFixed(2)} KB\n`                                              
+    `   Effects: ${(effectsStats.totalSize / 1024).toFixed(2)} KB / ${(BUDGETS.effects.max / 1024).toFixed(2)} KB\n`
   )
   process.stdout.write(
-    `   Chat: ${(chatStats.totalSize / 1024).toFixed(2)} KB / ${(BUDGETS.chat.max / 1024).toFixed(2)} KB\n`                                                       
+    `   Chat: ${(chatStats.totalSize / 1024).toFixed(2)} KB / ${(BUDGETS.chat.max / 1024).toFixed(2)} KB\n`
   )
 } else {
   process.exit(1)
 }
-

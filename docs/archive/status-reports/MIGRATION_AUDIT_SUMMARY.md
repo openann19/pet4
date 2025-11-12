@@ -7,13 +7,13 @@
 
 ## Quick Stats
 
-| Metric | Count | Percentage |
-|--------|-------|------------|
-| **Total Files** | 113 | 100% |
-| **Migrated** | 25 | 22% |
-| **Pending** | 88 | 78% |
-| **High Priority** | 8 | 7% |
-| **Direct framer-motion** | 8 | 7% |
+| Metric                   | Count | Percentage |
+| ------------------------ | ----- | ---------- |
+| **Total Files**          | 113   | 100%       |
+| **Migrated**             | 25    | 22%        |
+| **Pending**              | 88    | 78%        |
+| **High Priority**        | 8     | 7%         |
+| **Direct framer-motion** | 8     | 7%         |
 
 ## Files Created
 
@@ -41,15 +41,18 @@
 ## Category Breakdown
 
 ### ✅ Completed Categories
+
 - **Core Views**: 50% (4/8 files)
 - **Chat Components**: 67% (2/3 files)
 - **Stories**: 10% (1/10 files)
 
 ### ⏳ In Progress
+
 - **Core Views**: 4 files remaining
 - **Chat Components**: 1 file remaining (ChatWindowNew - high complexity)
 
 ### 🚧 Pending Categories
+
 - **Enhanced Components**: 13 files (87% pending)
 - **Admin Panels**: 11 files (100% pending)
 - **Stories**: 9 files (90% pending)
@@ -89,35 +92,41 @@ These files use direct framer-motion imports and need immediate migration:
 ## Migration Phases
 
 ### Phase 1: Core Infrastructure ✅ COMPLETE
+
 - Reanimated infrastructure
 - AnimatePresence wrapper
 - AnimatedView component
 - Core hooks
 
 ### Phase 2: High-Traffic Views 🚧 IN PROGRESS
+
 - MatchesView
 - AdoptionView
 - ChatWindowNew
 - CreatePetDialog
 
 ### Phase 3: Enhanced Components ⏳ PENDING
+
 - EnhancedPetDetailView
 - EnhancedCarousel
 - Card variants
 
 ### Phase 4: Feature Modules ⏳ PENDING
+
 - Stories components
 - Admin panels
 - Adoption components
 - Verification components
 
 ### Phase 5: Utility Components ⏳ PENDING
+
 - Remaining utility components
 - Effects and animations
 
 ## Usage Patterns
 
 ### Most Common Imports
+
 1. **`MotionView`** - Used in 45+ files
 2. **`motion`** - Used in 60+ files
 3. **`Presence`** - Used in 35+ files
@@ -125,6 +134,7 @@ These files use direct framer-motion imports and need immediate migration:
 5. **`usePressBounce, haptic`** - Used in 3 files (native)
 
 ### Import Sources
+
 - **`@petspark/motion`**: 95 files (84%)
 - **`framer-motion`**: 8 files (7%) - **NEEDS IMMEDIATE ATTENTION**
 - **Both**: 10 files (9%)
@@ -132,6 +142,7 @@ These files use direct framer-motion imports and need immediate migration:
 ## Complexity Analysis
 
 ### High Complexity (Requires Careful Migration)
+
 - `CreatePetDialog.tsx` - 80+ usages
 - `ChatWindowNew.tsx` - 50+ usages
 - `WelcomeScreen.tsx` - 30 usages
@@ -139,17 +150,20 @@ These files use direct framer-motion imports and need immediate migration:
 - `PlaydateScheduler.tsx` - 20 usages
 
 ### Medium Complexity
+
 - Most admin panels (15-20 usages)
 - Story components (10-15 usages)
 - Adoption components (12-20 usages)
 
 ### Low Complexity
+
 - Simple utility components (5-10 usages)
 - Basic UI components (3-8 usages)
 
 ## Next Steps
 
 ### Immediate Actions
+
 1. ✅ Audit complete - all 113 files categorized
 2. ✅ Tracking documents created
 3. ✅ Automated tracking script created
@@ -157,6 +171,7 @@ These files use direct framer-motion imports and need immediate migration:
 5. ⏳ Migrate direct framer-motion imports first
 
 ### Weekly Tasks
+
 1. Run migration tracker script
 2. Update tracking documents
 3. Migrate 5-10 files per week
@@ -164,6 +179,7 @@ These files use direct framer-motion imports and need immediate migration:
 5. Update progress metrics
 
 ### Monthly Goals
+
 - **Month 1**: Complete Phase 2 (high-traffic views)
 - **Month 2**: Complete Phase 3 (enhanced components)
 - **Month 3**: Complete Phase 4 (feature modules)
@@ -172,6 +188,7 @@ These files use direct framer-motion imports and need immediate migration:
 ## Testing Requirements
 
 For each migrated file:
+
 - [ ] Component renders without errors
 - [ ] Animations work correctly
 - [ ] Reduced motion respected
@@ -192,6 +209,7 @@ For each migrated file:
 ## Quick Reference
 
 ### Import Replacements
+
 ```typescript
 // OLD
 import { MotionView, MotionText, Presence } from '@petspark/motion'
@@ -204,6 +222,7 @@ import { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reani
 ```
 
 ### Component Replacements
+
 ```typescript
 // OLD
 <MotionView whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

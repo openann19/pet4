@@ -1,39 +1,33 @@
-import { useState, useEffect } from 'react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { VideoCamera, Eye, Heart, ChatCircle, X } from '@phosphor-icons/react'
-import { toast } from 'sonner'
-import { streamingService } from '@/lib/streaming-service'
-import { liveStreamingAPI } from '@/api/live-streaming-api'
-import type { LiveStream } from '@/lib/streaming-types'
-import { createLogger } from '@/lib/logger'
+import { useCallback, useEffect, useState } from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { VideoCamera, Eye, Heart, ChatCircle, X } from '@phosphor-icons/react';
+import { toast } from 'sonner';
+import { streamingService } from '@/lib/streaming-service';
+import { liveStreamingAPI } from '@/api/live-streaming-api';
+import type { LiveStream } from '@/lib/streaming-types';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('LiveStreamManagement')
+const logger = createLogger('LiveStreamManagement');
 
 export function LiveStreamManagement() {
-  const [streams, setStreams] = useState<LiveStream[]>([])
-  const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null)
+  const [streams, setStreams] = useState<LiveStream[]>([]);
+  const [selectedStream, setSelectedStream] = useState<LiveStream | null>(null);
 
-  useEffect(() => {
-    loadStreams()
-    const interval = setInterval(loadStreams, 5000)
-    return () => { clearInterval(interval); }
-  }, [])
-
-  const loadStreams = async () => {
+  const loadStreams = useCallback(async () => {
     try {
-      const apiStreams = await liveStreamingAPI.getAllStreams()
+      const apiStreams = await liveStreamingAPI.getAllStreams();
       // Convert API streams to service streams
-      const convertedStreams = apiStreams.map(apiStream => {
+      const convertedStreams = apiStreams.map((apiStream) => {
         // Map status: 'scheduled' | 'live' | 'ended' | 'cancelled' -> 'idle' | 'connecting' | 'live' | 'ending' | 'ended'
-        let status: LiveStream['status'] = 'idle'
-        if (apiStream.status === 'live') status = 'live'
-        else if (apiStream.status === 'ended') status = 'ended'
-        else if (apiStream.status === 'cancelled') status = 'ended'
-        else if (apiStream.status === 'scheduled') status = 'connecting'
+        let status: LiveStream['status'] = 'idle';
+        if (apiStream.status === 'live') status = 'live';
+        else if (apiStream.status === 'ended') status = 'ended';
+        else if (apiStream.status === 'cancelled') status = 'ended';
+        else if (apiStream.status === 'scheduled') status = 'connecting';
 
         return {
           id: apiStream.id,
@@ -55,44 +49,65 @@ export function LiveStreamManagement() {
           roomToken: apiStream.roomId,
           recordingUrl: apiStream.vodUrl,
           thumbnailUrl: apiStream.posterUrl || apiStream.thumbnail,
-          tags: []
-        } as LiveStream
-      })
-      setStreams(convertedStreams.sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()))
+          tags: [],
+        } as LiveStream;
+      });
+      setStreams(
+        convertedStreams.sort(
+          (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
+        )
+      );
     } catch (error) {
-      logger.error('Failed to load streams', error instanceof Error ? error : new Error(String(error)))
-      toast.error('Failed to load streams')
+      logger.error(
+        'Failed to load streams',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      toast.error('Failed to load streams');
     }
-  }
+  }, []);
 
-  const handleEndStream = async (streamId: string) => {
-    try {
-      await streamingService.endStream(streamId)
-      toast.success('Stream ended')
-      await loadStreams()
-      setSelectedStream(null)
-    } catch (error) {
-      logger.error('Failed to end stream', error instanceof Error ? error : new Error(String(error)))
-      toast.error('Failed to end stream')
-    }
-  }
+  useEffect(() => {
+    void loadStreams();
+    const interval = setInterval(() => {
+      void loadStreams();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [loadStreams]);
+
+  const handleEndStream = useCallback(
+    async (streamId: string) => {
+      try {
+        await streamingService.endStream(streamId);
+        toast.success('Stream ended');
+        await loadStreams();
+        setSelectedStream(null);
+      } catch (error) {
+        logger.error(
+          'Failed to end stream',
+          error instanceof Error ? error : new Error(String(error))
+        );
+        toast.error('Failed to end stream');
+      }
+    },
+    [loadStreams]
+  );
 
   const getStatusColor = (status: LiveStream['status']) => {
     switch (status) {
       case 'live':
-        return 'bg-red-500 animate-pulse'
+        return 'bg-red-500 animate-pulse';
       case 'connecting':
-        return 'bg-yellow-500'
+        return 'bg-yellow-500';
       case 'ending':
-        return 'bg-orange-500'
+        return 'bg-orange-500';
       case 'ended':
-        return 'bg-gray-500'
+        return 'bg-gray-500';
       default:
-        return 'bg-gray-500'
+        return 'bg-gray-500';
     }
-  }
+  };
 
-  const liveStreams = streams.filter(s => s.status === 'live' || s.status === 'connecting')
+  const liveStreams = streams.filter((s) => s.status === 'live' || s.status === 'connecting');
 
   return (
     <div className="space-y-6">
@@ -123,7 +138,9 @@ export function LiveStreamManagement() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-3xl font-bold">{streams.reduce((sum, s) => sum + s.totalViews, 0)}</div>
+              <div className="text-3xl font-bold">
+                {streams.reduce((sum, s) => sum + s.totalViews, 0)}
+              </div>
               <div className="text-sm text-muted-foreground mt-1">Total Views</div>
             </div>
           </CardContent>
@@ -131,7 +148,9 @@ export function LiveStreamManagement() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-3xl font-bold">{Math.max(...streams.map(s => s.peakViewerCount), 0)}</div>
+              <div className="text-3xl font-bold">
+                {Math.max(...streams.map((s) => s.peakViewerCount), 0)}
+              </div>
               <div className="text-sm text-muted-foreground mt-1">Peak Viewers</div>
             </div>
           </CardContent>
@@ -145,9 +164,9 @@ export function LiveStreamManagement() {
             <CardDescription>Click to view details</CardDescription>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[600px]">
+            <ScrollArea className="h-150">
               <div className="space-y-3">
-                {streams.map(stream => (
+                {streams.map((stream) => (
                   <button
                     key={stream.id}
                     onClick={() => { setSelectedStream(stream); }}
@@ -164,8 +183,12 @@ export function LiveStreamManagement() {
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <div className={`w-2 h-2 rounded-full ${String(getStatusColor(stream.status) ?? '')}`} />
-                          <Badge variant="outline" className="text-xs">{stream.status}</Badge>
+                          <div
+                            className={`w-2 h-2 rounded-full ${getStatusColor(stream.status)}`}
+                          />
+                          <Badge variant="outline" className="text-xs">
+                            {stream.status}
+                          </Badge>
                         </div>
                         <h4 className="font-semibold line-clamp-1">{stream.title}</h4>
                         <p className="text-sm text-muted-foreground">{stream.hostName}</p>
@@ -199,7 +222,7 @@ export function LiveStreamManagement() {
                 <p className="text-muted-foreground">Select a stream to view details</p>
               </div>
             ) : (
-              <ScrollArea className="h-[600px] pr-4">
+              <ScrollArea className="h-150 pr-4">
                 <div className="space-y-6">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
@@ -230,18 +253,24 @@ export function LiveStreamManagement() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-muted-foreground">Category</p>
-                      <p className="font-medium capitalize">{selectedStream.category.replace('_', ' ')}</p>
+                      <p className="font-medium capitalize">
+                        {selectedStream.category.replace('_', ' ')}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Started</p>
-                      <p className="font-medium">{new Date(selectedStream.startedAt).toLocaleString()}</p>
+                      <p className="font-medium">
+                        {new Date(selectedStream.startedAt).toLocaleString()}
+                      </p>
                     </div>
                   </div>
 
                   {selectedStream.endedAt && (
                     <div>
                       <p className="text-sm text-muted-foreground">Ended</p>
-                      <p className="font-medium">{new Date(selectedStream.endedAt).toLocaleString()}</p>
+                      <p className="font-medium">
+                        {new Date(selectedStream.endedAt).toLocaleString()}
+                      </p>
                     </div>
                   )}
 
@@ -301,8 +330,10 @@ export function LiveStreamManagement() {
                     <div>
                       <p className="text-sm text-muted-foreground mb-2">Tags</p>
                       <div className="flex flex-wrap gap-2">
-                        {selectedStream.tags.map(tag => (
-                          <Badge key={tag} variant="outline">{tag}</Badge>
+                        {selectedStream.tags.map((tag) => (
+                          <Badge key={tag} variant="outline">
+                            {tag}
+                          </Badge>
                         ))}
                       </div>
                     </div>
@@ -310,7 +341,9 @@ export function LiveStreamManagement() {
 
                   <div className="border-t pt-4">
                     <p className="text-sm text-muted-foreground mb-1">Max Duration</p>
-                    <p className="font-medium">{Math.floor(selectedStream.maxDuration / 60)} minutes</p>
+                    <p className="font-medium">
+                      {Math.floor(selectedStream.maxDuration / 60)} minutes
+                    </p>
                   </div>
 
                   {(selectedStream.status === 'live' || selectedStream.status === 'connecting') && (
@@ -332,5 +365,5 @@ export function LiveStreamManagement() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -30,4 +30,3 @@ export interface RequestOptions {
   body?: unknown
   timeout?: number
 }
-

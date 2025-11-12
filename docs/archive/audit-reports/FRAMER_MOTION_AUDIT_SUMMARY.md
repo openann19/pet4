@@ -6,17 +6,18 @@
 
 ## Quick Stats
 
-| Metric | Count | Percentage |
-|--------|-------|------------|
-| **Total Files** | 105 | 100% |
-| **Needs Migration** | 92 | 87.6% |
-| **Partial Migration** | 8 | 7.6% |
-| **Native Files** | 5 | 4.8% |
-| **Migrated** | 0 | 0% |
+| Metric                | Count | Percentage |
+| --------------------- | ----- | ---------- |
+| **Total Files**       | 105   | 100%       |
+| **Needs Migration**   | 92    | 87.6%      |
+| **Partial Migration** | 8     | 7.6%       |
+| **Native Files**      | 5     | 4.8%       |
+| **Migrated**          | 0     | 0%         |
 
 ## Files by Category
 
 ### High Priority (Core Features)
+
 - **Chat**: 5 files (18 hours)
 - **Enhanced Components**: 8 files (32 hours)
 - **Stories**: 9 files (36 hours)
@@ -25,6 +26,7 @@
 - **Auth**: 4 files (6 hours)
 
 ### Medium Priority (Supporting Features)
+
 - **Admin**: 11 files (25 hours)
 - **Community**: 4 files (10 hours)
 - **Verification**: 4 files (6 hours)
@@ -35,6 +37,7 @@
 - **Lost & Found**: 1 file (2 hours)
 
 ### Low Priority (Polish)
+
 - **Other Components**: 33 files (66 hours)
 - **Streaming**: 1 file (5 hours)
 - **Native**: 5 files (varies)
@@ -42,21 +45,25 @@
 ## Migration Phases
 
 ### Phase 1: Core Features (80 hours)
+
 **Priority**: High  
 **Files**: 8  
 **Focus**: Chat, dialogs, enhanced components
 
 ### Phase 2: User-Facing Features (120 hours)
+
 **Priority**: High-Medium  
 **Files**: 27  
 **Focus**: Stories, views, adoption, auth
 
 ### Phase 3: Supporting Features (80 hours)
+
 **Priority**: Medium  
 **Files**: 25  
 **Focus**: Admin, community, verification, maps
 
 ### Phase 4: Polish & Cleanup (75 hours)
+
 **Priority**: Low-Medium  
 **Files**: 25+  
 **Focus**: Other components, native files, cleanup
@@ -114,6 +121,7 @@ These files use React Reanimated but still have MotionView imports:
 ## Migration Guidelines
 
 See `FRAMER_MOTION_MIGRATION_TRACKING.md` for:
+
 - Animation pattern examples
 - Code conversion templates
 - Performance best practices

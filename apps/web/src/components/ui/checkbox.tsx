@@ -1,20 +1,21 @@
-"use client"
+'use client';
 
-import type { ComponentProps } from "react"
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
-import { Check } from "lucide-react"
+import type { ComponentProps } from 'react';
+import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
+import { Check } from 'lucide-react';
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils';
 
-function Checkbox({
-  className,
-  ...props
-}: ComponentProps<typeof CheckboxPrimitive.Root>) {
+function Checkbox({ className, ...props }: ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        "peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:shadow-md focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive aria-invalid:animate-pulse size-4 shrink-0 rounded-[4px] border bg-background shadow-xs transition-all duration-200 outline-none focus-visible:ring-[3px] hover:border-ring/50 hover:shadow-md active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/30",
+        'peer size-[18px] shrink-0 rounded-[4px] border border-(--border-light) bg-white transition-colors duration-200 outline-none',
+        'data-[state=checked]:bg-(--coral-primary) data-[state=checked]:border-(--coral-primary) data-[state=checked]:text-white',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--coral-primary)] focus-visible:ring-offset-2',
+        'aria-invalid:border-destructive',
+        'disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}
       {...props}
@@ -26,7 +27,7 @@ function Checkbox({
         <Check className="size-3.5" />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
-  )
+  );
 }
 
-export { Checkbox }
+export { Checkbox };

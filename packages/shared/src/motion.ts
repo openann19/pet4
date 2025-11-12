@@ -1,9 +1,9 @@
 /**
  * Global Motion Configuration
- * 
+ *
  * Shared motion constants and configurations for consistent animations
  * across web and mobile platforms.
- * 
+ *
  * Location: packages/shared/src/motion.ts
  */
 
@@ -28,13 +28,13 @@ export const MOTION: MotionConfig = {
   base: {
     stiffness: 280,
     damping: 20,
-    mass: 1
+    mass: 1,
   },
   durations: {
     tap: 150,
     toast: 220,
-    modal: 260
-  }
+    modal: 260,
+  },
 } as const
 
 /**
@@ -44,4 +44,3 @@ export function getMotionConfig(_platform: 'web' | 'mobile'): MotionConfig {
   // Platform-specific adjustments can be added here
   return MOTION
 }
-

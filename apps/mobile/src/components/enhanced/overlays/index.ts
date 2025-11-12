@@ -1,3 +1,2 @@
-export { PremiumModal, type PremiumModalProps } from './PremiumModal.native'
-export { PremiumDrawer, type PremiumDrawerProps } from './PremiumDrawer.native'
-
+export { PremiumModal, type PremiumModalProps } from './PremiumModal'
+export { PremiumDrawer, type PremiumDrawerProps } from './PremiumDrawer'

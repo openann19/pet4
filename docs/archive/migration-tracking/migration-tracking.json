@@ -1005,11 +1005,7 @@
     "phase5": {
       "name": "Utility Components",
       "status": "pending",
-      "files": [
-        "apps/web/src/components/*",
-        "apps/web/src/effects/*"
-      ]
+      "files": ["apps/web/src/components/*", "apps/web/src/effects/*"]
     }
   }
 }
-

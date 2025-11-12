@@ -4,11 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import {
-  isPWA,
-  canInstallPWA,
-  promptPWAInstall,
-} from '../lib/pwa/service-worker-registration';
+import { isPWA, canInstallPWA, promptPWAInstall } from '../lib/pwa/service-worker-registration';
 
 interface UsePWAResult {
   isInstalled: boolean;
@@ -61,7 +57,7 @@ export function usePWA(): UsePWAResult {
     }
 
     const result = await promptPWAInstall(deferredPrompt);
-    
+
     if (result?.outcome === 'accepted') {
       setDeferredPrompt(null);
       setCanInstall(false);

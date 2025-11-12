@@ -1,9 +1,18 @@
-import { useState } from 'react'
-import { motion, Presence } from '@petspark/motion'
-import { Sparkle, Eye, ArrowRight } from '@phosphor-icons/react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { useState, useEffect } from 'react';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  withSequence,
+} from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { Sparkle, Eye, ArrowRight } from '@phosphor-icons/react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const DEMO_PETS = [
   {
@@ -30,48 +39,114 @@ const DEMO_PETS = [
     personality: ['Loyal', 'Protective', 'Energetic', 'Social'],
     confidence: 95,
   },
-]
+];
 
-export default function VisualAnalysisDemo() {
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [analyzing, setAnalyzing] = useState(false)
-  const [showResult, setShowResult] = useState(false)
+export default function VisualAnalysisDemo(): JSX.Element | null {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
-  const currentPet = DEMO_PETS[selectedIndex]
-  if (!currentPet) return null
+  // Animated values
+  const iconRotate = useSharedValue(0);
+  const iconBoxShadow = useSharedValue(0);
+  const photoOpacity = useSharedValue(0);
+  const photoScale = useSharedValue(0.95);
+  const sparkleRotate = useSharedValue(0);
+  const dotScale = useSharedValue(1);
 
-  const runDemo = () => {
-    setShowResult(false)
-    setAnalyzing(true)
+  const iconStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${iconRotate.value}deg` }],
+    boxShadow: `0 0 ${20 + iconBoxShadow.value * 10}px rgba(245,158,11,${0.3 + iconBoxShadow.value * 0.2})`,
+  })) as AnimatedStyle;
+
+  const photoStyle = useAnimatedStyle(() => ({
+    opacity: photoOpacity.value,
+    transform: [{ scale: photoScale.value }],
+  })) as AnimatedStyle;
+
+  const sparkleStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${sparkleRotate.value}deg` }],
+  })) as AnimatedStyle;
+
+  const dotStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: dotScale.value }],
+  })) as AnimatedStyle;
+
+  const promptPresence = useAnimatePresence({
+    isVisible: !showResult && !analyzing,
+    enterTransition: 'slideUp',
+    exitTransition: 'slideDown',
+  });
+
+  const analyzingPresence = useAnimatePresence({
+    isVisible: analyzing,
+    enterTransition: 'slideUp',
+    exitTransition: 'slideDown',
+  });
+
+  const resultPresence = useAnimatePresence({
+    isVisible: showResult,
+    enterTransition: 'scale',
+    exitTransition: 'fade',
+  });
+
+  useEffect(() => {
+    iconRotate.value = withRepeat(withTiming(360, { duration: 2000 }), -1, false);
+    iconBoxShadow.value = withRepeat(
+      withSequence(withTiming(1, { duration: 1000 }), withTiming(0, { duration: 1000 })),
+      -1,
+      true
+    );
+    photoOpacity.value = withTiming(1, { duration: 300 });
+    photoScale.value = withTiming(1, { duration: 300 });
+  }, [selectedIndex, iconRotate, iconBoxShadow, photoOpacity, photoScale]);
+
+  useEffect(() => {
+    if (analyzing) {
+      sparkleRotate.value = withRepeat(withTiming(360, { duration: 1000 }), -1, false);
+      dotScale.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 500 }),
+          withTiming(1.5, { duration: 500 }),
+          withTiming(1, { duration: 500 })
+        ),
+        -1,
+        false
+      );
+    } else {
+      sparkleRotate.value = 0;
+      dotScale.value = 1;
+    }
+  }, [analyzing, sparkleRotate, dotScale]);
+
+  const currentPet = DEMO_PETS[selectedIndex];
+  if (!currentPet) return null;
+
+  const runDemo = (): void => {
+    setShowResult(false);
+    setAnalyzing(true);
 
     setTimeout(() => {
-      setAnalyzing(false)
-      setShowResult(true)
-    }, 2000)
-  }
+      setAnalyzing(false);
+      setShowResult(true);
+    }, 2000);
+  };
 
-  const nextPet = () => {
-    setSelectedIndex((prev) => (prev + 1) % DEMO_PETS.length)
-    setShowResult(false)
-    setAnalyzing(false)
-  }
+  const nextPet = (): void => {
+    setSelectedIndex((prev) => (prev + 1) % DEMO_PETS.length);
+    setShowResult(false);
+    setAnalyzing(false);
+  };
 
   return (
     <Card className="p-6 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5">
       <div className="flex items-start gap-4 mb-6">
-        <MotionView
+        <AnimatedView
+          style={iconStyle}
           className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shrink-0"
-          animate={{
-            boxShadow: [
-              '0 0 20px rgba(245,158,11,0.3)',
-              '0 0 30px rgba(245,158,11,0.5)',
-              '0 0 20px rgba(245,158,11,0.3)',
-            ],
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
         >
           <Eye size={24} weight="fill" className="text-white" />
-        </MotionView>
+        </AnimatedView>
         <div className="flex-1">
           <h3 className="text-xl font-bold mb-1">AI Visual Analysis Demo</h3>
           <p className="text-sm text-muted-foreground">
@@ -82,10 +157,9 @@ export default function VisualAnalysisDemo() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <MotionView
+          <AnimatedView
             key={selectedIndex}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            style={photoStyle}
             className="relative aspect-square rounded-lg overflow-hidden bg-muted mb-4"
           >
             <img src={currentPet.photo} alt="Demo pet" className="w-full h-full object-cover" />
@@ -94,15 +168,19 @@ export default function VisualAnalysisDemo() {
                 Sample {selectedIndex + 1}/{DEMO_PETS.length}
               </Badge>
             </div>
-          </MotionView>
+          </AnimatedView>
 
           <div className="flex gap-2">
-            <Button onClick={runDemo} disabled={analyzing} className="flex-1 bg-gradient-to-r from-primary to-accent">
+            <Button
+              onClick={runDemo}
+              disabled={analyzing}
+              className="flex-1 bg-gradient-to-r from-primary to-accent"
+            >
               {analyzing ? (
                 <>
-                  <MotionView animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+                  <AnimatedView style={sparkleStyle}>
                     <Sparkle size={18} weight="fill" />
-                  </MotionView>
+                  </AnimatedView>
                   <span className="ml-2">Analyzing...</span>
                 </>
               ) : (
@@ -119,134 +197,117 @@ export default function VisualAnalysisDemo() {
         </div>
 
         <div>
-          <Presence mode="wait">
-            {!showResult && !analyzing && (
-              <MotionView
-                key="prompt"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="flex items-center justify-center h-full text-center p-8"
-              >
-                <div>
-                  <Eye size={48} className="text-muted-foreground/30 mx-auto mb-4" weight="duotone" />
-                  <p className="text-muted-foreground">Click "Analyze This Photo" to see AI in action</p>
+          {promptPresence.shouldRender && !showResult && !analyzing && (
+            <AnimatedView
+              style={promptPresence.animatedStyle}
+              className="flex items-center justify-center h-full text-center p-8"
+            >
+              <div>
+                <Eye size={48} className="text-muted-foreground/30 mx-auto mb-4" weight="duotone" />
+                <p className="text-muted-foreground">
+                  Click "Analyze This Photo" to see AI in action
+                </p>
+              </div>
+            </AnimatedView>
+          )}
+
+          {analyzingPresence.shouldRender && analyzing && (
+            <AnimatedView style={analyzingPresence.animatedStyle} className="space-y-4">
+              <Card className="p-4 bg-background/50">
+                <div className="flex items-center gap-3 mb-4">
+                  <AnimatedView style={sparkleStyle}>
+                    <Sparkle size={24} weight="fill" className="text-primary" />
+                  </AnimatedView>
+                  <div>
+                    <h4 className="font-semibold">Analyzing photo...</h4>
+                    <p className="text-xs text-muted-foreground">Processing visual features</p>
+                  </div>
                 </div>
-              </MotionView>
-            )}
 
-            {analyzing && (
-              <MotionView
-                key="analyzing"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="space-y-4"
-              >
-                <Card className="p-4 bg-background/50">
-                  <div className="flex items-center gap-3 mb-4">
-                    <MotionView animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
-                      <Sparkle size={24} weight="fill" className="text-primary" />
-                    </MotionView>
-                    <div>
-                      <h4 className="font-semibold">Analyzing photo...</h4>
-                      <p className="text-xs text-muted-foreground">Processing visual features</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    {['Detecting breed...', 'Estimating age...', 'Analyzing personality...', 'Calculating confidence...'].map(
-                      (text, idx) => (
-                        <MotionView
-                          key={text}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.4 }}
-                          className="flex items-center gap-2 text-sm"
-                        >
-                          <MotionView
-                            className="w-1.5 h-1.5 rounded-full bg-primary"
-                            animate={{ scale: [1, 1.5, 1] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                          />
-                          {text}
-                        </MotionView>
-                      )
-                    )}
-                  </div>
-                </Card>
-              </MotionView>
-            )}
-
-            {showResult && (
-              <MotionView
-                key="result"
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                className="h-full"
-              >
-                <Card className="p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800 h-full">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-lg">Analysis Results</h4>
-                    <Badge variant="secondary" className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
-                      {currentPet.confidence}% confidence
-                    </Badge>
-                  </div>
-
-                  <div className="space-y-4">
-                    <MotionView initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-                      <div className="text-xs text-muted-foreground mb-1">Breed</div>
-                      <div className="font-semibold text-lg">{currentPet.breed}</div>
-                    </MotionView>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <MotionView initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }}>
-                        <div className="text-xs text-muted-foreground mb-1">Age</div>
-                        <div className="font-semibold">{currentPet.age} years</div>
-                      </MotionView>
-
-                      <MotionView initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                        <div className="text-xs text-muted-foreground mb-1">Size</div>
-                        <div className="font-semibold capitalize">{currentPet.size.replace('-', ' ')}</div>
-                      </MotionView>
-                    </div>
-
-                    <MotionView initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-                      <div className="text-xs text-muted-foreground mb-2">Personality Traits</div>
-                      <div className="flex flex-wrap gap-2">
-                        {currentPet.personality.map((trait, idx) => (
-                          <MotionView
-                            key={trait}
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.25 + idx * 0.05 }}
-                          >
-                            <Badge className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800">
-                              {trait}
-                            </Badge>
-                          </MotionView>
-                        ))}
-                      </div>
-                    </MotionView>
-
-                    <MotionView
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 }}
-                      className="pt-2 border-t border-green-200 dark:border-green-800"
+                <div className="space-y-2">
+                  {[
+                    'Detecting breed...',
+                    'Estimating age...',
+                    'Analyzing personality...',
+                    'Calculating confidence...',
+                  ].map((text, idx) => (
+                    <div
+                      key={text}
+                      className="flex items-center gap-2 text-sm animate-in fade-in slide-in-from-left duration-300"
+                      style={{ animationDelay: `${idx * 400}ms` }}
                     >
-                      <p className="text-xs text-muted-foreground">
-                        💡 This information would be automatically filled in when creating a pet profile
-                      </p>
-                    </MotionView>
+                      <AnimatedView
+                        style={dotStyle}
+                        className="w-1.5 h-1.5 rounded-full bg-primary"
+                      />
+                      {text}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </AnimatedView>
+          )}
+
+          {resultPresence.shouldRender && showResult && (
+            <AnimatedView style={resultPresence.animatedStyle} className="h-full">
+              <Card className="p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800 h-full">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-lg">Analysis Results</h4>
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300"
+                  >
+                    {currentPet.confidence}% confidence
+                  </Badge>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="animate-in fade-in slide-in-from-left duration-300 delay-100">
+                    <div className="text-xs text-muted-foreground mb-1">Breed</div>
+                    <div className="font-semibold text-lg">{currentPet.breed}</div>
                   </div>
-                </Card>
-              </MotionView>
-            )}
-          </Presence>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="animate-in fade-in slide-in-from-left duration-300 delay-150">
+                      <div className="text-xs text-muted-foreground mb-1">Age</div>
+                      <div className="font-semibold">{currentPet.age} years</div>
+                    </div>
+
+                    <div className="animate-in fade-in slide-in-from-left duration-300 delay-200">
+                      <div className="text-xs text-muted-foreground mb-1">Size</div>
+                      <div className="font-semibold capitalize">
+                        {currentPet.size.replace('-', ' ')}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="animate-in fade-in slide-in-from-bottom duration-300 delay-250">
+                    <div className="text-xs text-muted-foreground mb-2">Personality Traits</div>
+                    <div className="flex flex-wrap gap-2">
+                      {currentPet.personality.map((trait, idx) => (
+                        <Badge
+                          key={trait}
+                          className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 animate-in zoom-in duration-300"
+                          style={{ animationDelay: `${250 + idx * 50}ms` }}
+                        >
+                          {trait}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-green-200 dark:border-green-800 animate-in fade-in slide-in-from-bottom duration-300 delay-400">
+                    <p className="text-xs text-muted-foreground">
+                      💡 This information would be automatically filled in when creating a pet
+                      profile
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </AnimatedView>
+          )}
         </div>
       </div>
     </Card>
-  )
+  );
 }

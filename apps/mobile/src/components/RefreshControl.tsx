@@ -5,11 +5,7 @@
 
 import React from 'react'
 import { ActivityIndicator, StyleSheet, Text } from 'react-native'
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-} from 'react-native-reanimated'
+import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated'
 import type { UsePullToRefreshReturn } from '../hooks/use-pull-to-refresh'
 import { colors } from '../theme/colors'
 
@@ -29,48 +25,26 @@ export function RefreshControl({
   const animatedStyle = useAnimatedStyle(() => {
     // Use progress if available, otherwise calculate from translateY
     const progressValue = progress?.value ?? Math.min(1, Math.max(0, translateY.value / threshold))
-    
-    const opacity = interpolate(
-      progressValue,
-      [0, 1],
-      [0, 1],
-      Extrapolation.CLAMP
-    )
-    
-    const scale = interpolate(
-      progressValue,
-      [0, 0.5, 1],
-      [0.8, 1, 1],
-      Extrapolation.CLAMP
-    )
-    
-    const rotation = interpolate(
-      progressValue,
-      [0, 1],
-      [0, 360],
-      Extrapolation.CLAMP
-    )
+
+    const opacity = interpolate(progressValue, [0, 1], [0, 1], Extrapolation.CLAMP)
+
+    const scale = interpolate(progressValue, [0, 0.5, 1], [0.8, 1, 1], Extrapolation.CLAMP)
+
+    const rotation = interpolate(progressValue, [0, 1], [0, 360], Extrapolation.CLAMP)
 
     return {
       opacity,
-      transform: [
-        { translateY: translateY.value },
-        { scale },
-        { rotate: `${String(rotation ?? '')}deg` },
-      ],
+      transform: [{ translateY: translateY.value }, { scale }, { rotate: `${rotation}deg` }],
     } as const
   })
 
   const textAnimatedStyle = useAnimatedStyle(() => {
     const progressValue = progress?.value ?? Math.min(1, Math.max(0, translateY.value / threshold))
-    
+
     return {
-      opacity: refreshing ? 0 : interpolate(
-        progressValue,
-        [0, 0.3, 1],
-        [0, 0.5, 1],
-        Extrapolation.CLAMP
-      ),
+      opacity: refreshing
+        ? 0
+        : interpolate(progressValue, [0, 0.3, 1], [0, 0.5, 1], Extrapolation.CLAMP),
     }
   })
 
@@ -112,4 +86,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 })
-

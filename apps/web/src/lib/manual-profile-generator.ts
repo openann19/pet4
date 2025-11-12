@@ -1,15 +1,15 @@
 /**
  * Manual Profile Generator
- * 
+ *
  * Generates 15 diverse pet profiles without AI/LLM
  * Useful when AI is unavailable or for consistent testing data
  */
 
-import { FixerError } from './fixer-error'
-import { logger } from './logger'
-import { calculateTrustProfile, generateRatings, generateTrustBadges } from './trust-utils'
-import type { Pet } from './types'
-import { userService } from './user-service'
+import { FixerError } from './fixer-error';
+import { logger } from './logger';
+import { calculateTrustProfile, generateRatings, generateTrustBadges } from './trust-utils';
+import type { Pet } from './types';
+import { userService } from './user-service';
 
 const MANUAL_PROFILES = [
   {
@@ -169,7 +169,7 @@ const MANUAL_PROFILES = [
     gender: 'male' as const,
     size: 'large' as const,
     photo: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800&q=80',
-    bio: 'Whiskers is a gentle giant with a playful spirit. He loves interactive toys and cuddling sessions, but also enjoys exploring the backyard. He\'s great with other pets and has a calm, friendly demeanor.',
+    bio: "Whiskers is a gentle giant with a playful spirit. He loves interactive toys and cuddling sessions, but also enjoys exploring the backyard. He's great with other pets and has a calm, friendly demeanor.",
     personality: ['Gentle', 'Playful', 'Social', 'Calm', 'Curious'],
     interests: ['Toys', 'Cuddling', 'Exploring', 'Napping', 'Treats'],
     lookingFor: ['Playdate', 'Best Friend', 'Cuddle Companion'],
@@ -184,7 +184,7 @@ const MANUAL_PROFILES = [
     gender: 'female' as const,
     size: 'medium' as const,
     photo: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&q=80',
-    bio: 'Luna is a vocal and affectionate Siamese who loves to chat with her humans. She\'s curious about everything and enjoys puzzle toys. She\'s very social and gets along well with other pets.',
+    bio: "Luna is a vocal and affectionate Siamese who loves to chat with her humans. She's curious about everything and enjoys puzzle toys. She's very social and gets along well with other pets.",
     personality: ['Social', 'Affectionate', 'Curious', 'Playful', 'Friendly'],
     interests: ['Toys', 'Cuddling', 'Exploring', 'Treats', 'Napping'],
     lookingFor: ['Playdate', 'Best Friend', 'Cuddle Companion'],
@@ -199,7 +199,7 @@ const MANUAL_PROFILES = [
     gender: 'male' as const,
     size: 'medium' as const,
     photo: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=800&q=80',
-    bio: 'Oliver is a regal and calm Persian who enjoys quiet moments and gentle pets. He\'s not too active but loves watching birds and napping in sunny spots. Perfect companion for a relaxed lifestyle.',
+    bio: "Oliver is a regal and calm Persian who enjoys quiet moments and gentle pets. He's not too active but loves watching birds and napping in sunny spots. Perfect companion for a relaxed lifestyle.",
     personality: ['Calm', 'Gentle', 'Quiet', 'Affectionate', 'Independent'],
     interests: ['Napping', 'Cuddling', 'Sunbathing', 'Treats', 'Toys'],
     lookingFor: ['Cuddle Companion', 'Best Friend'],
@@ -214,7 +214,7 @@ const MANUAL_PROFILES = [
     gender: 'male' as const,
     size: 'large' as const,
     photo: 'https://images.unsplash.com/photo-1573865526739-10c1de0fa28b?w=800&q=80',
-    bio: 'Shadow is an energetic Bengal with a wild side. He loves climbing, playing fetch, and exploring high places. He\'s very intelligent and needs lots of stimulation. Great for active families!',
+    bio: "Shadow is an energetic Bengal with a wild side. He loves climbing, playing fetch, and exploring high places. He's very intelligent and needs lots of stimulation. Great for active families!",
     personality: ['Energetic', 'Curious', 'Playful', 'Independent', 'Adventurous'],
     interests: ['Toys', 'Exploring', 'Running', 'Fetch', 'Climbing'],
     lookingFor: ['Playdate', 'Adventure Buddy', 'Training Partner'],
@@ -229,7 +229,7 @@ const MANUAL_PROFILES = [
     gender: 'female' as const,
     size: 'large' as const,
     photo: 'https://images.unsplash.com/photo-1529778873920-4da4926a72c2?w=800&q=80',
-    bio: 'Princess is a beautiful Ragdoll with a sweet, docile personality. She goes limp when picked up and loves being held. She\'s very gentle and gets along with everyone - humans, dogs, and other cats!',
+    bio: "Princess is a beautiful Ragdoll with a sweet, docile personality. She goes limp when picked up and loves being held. She's very gentle and gets along with everyone - humans, dogs, and other cats!",
     personality: ['Gentle', 'Affectionate', 'Calm', 'Social', 'Friendly'],
     interests: ['Cuddling', 'Napping', 'Toys', 'Treats', 'Sunbathing'],
     lookingFor: ['Cuddle Companion', 'Best Friend', 'Playdate'],
@@ -237,18 +237,18 @@ const MANUAL_PROFILES = [
     ownerName: 'Christopher Moore',
     verified: true,
   },
-]
+];
 
-export async function generateManualProfiles(count: number = 15): Promise<Pet[]> {
-  const currentUser = await userService.user().catch(() => null)
-  const profilesToUse = MANUAL_PROFILES.slice(0, Math.min(count, MANUAL_PROFILES.length))
-  
+export async function generateManualProfiles(count = 15): Promise<Pet[]> {
+  const currentUser = await userService.user().catch(() => null);
+  const profilesToUse = MANUAL_PROFILES.slice(0, Math.min(count, MANUAL_PROFILES.length));
+
   return profilesToUse.map((pet, idx) => {
-    const petId = `pet-manual-${String(Date.now() ?? '')}-${String(idx ?? '')}`
-    const badges = generateTrustBadges(petId, pet.verified)
-    const ratingCount = Math.floor(Math.random() * 15) + 3
-    const ratings = generateRatings(petId, ratingCount)
-    const trustProfile = calculateTrustProfile(ratings, badges)
+    const petId = `pet-manual-${Date.now()}-${idx}`;
+    const badges = generateTrustBadges(petId, pet.verified);
+    const ratingCount = Math.floor(Math.random() * 15) + 3;
+    const ratings = generateRatings(petId, ratingCount);
+    const trustProfile = calculateTrustProfile(ratings, badges);
 
     return {
       id: petId,
@@ -271,51 +271,57 @@ export async function generateManualProfiles(count: number = 15): Promise<Pet[]>
       createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
       trustProfile,
       ratings,
-    }
-  })
+    };
+  });
 }
 
 /**
  * Generate and save profiles to KV storage
  */
-export async function generateAndSaveManualProfiles(count: number = 15): Promise<Pet[]> {
+export async function generateAndSaveManualProfiles(count = 15): Promise<Pet[]> {
   try {
-    logger.info('Generating manual profiles', { count })
-    
+    logger.info('Generating manual profiles', { count });
+
     // Get current pets
-    const { storage } = await import('./storage')
-    const currentPets = await storage.get<Pet[]>('all-pets') || []
-    
+    const { storage } = await import('./storage');
+    const currentPets = (await storage.get<Pet[]>('all-pets')) || [];
+
     // Generate new profiles
-    const newPets = await generateManualProfiles(count)
-    
+    const newPets = await generateManualProfiles(count);
+
     // Avoid duplicates by ID
-    const existingIds = new Set(currentPets.map(p => p.id))
-    const uniqueNewPets = newPets.filter(p => !existingIds.has(p.id))
-    
+    const existingIds = new Set(currentPets.map((p) => p.id));
+    const uniqueNewPets = newPets.filter((p) => !existingIds.has(p.id));
+
     // Save to storage
-    const allPets = [...currentPets, ...uniqueNewPets]
-    await storage.set('all-pets', allPets)
-    
-    logger.info('Generated manual profiles', { 
-      newProfiles: uniqueNewPets.length, 
-      totalProfiles: allPets.length 
-    })
-    
-    return uniqueNewPets
+    const allPets = [...currentPets, ...uniqueNewPets];
+    await storage.set('all-pets', allPets);
+
+    logger.info('Generated manual profiles', {
+      newProfiles: uniqueNewPets.length,
+      totalProfiles: allPets.length,
+    });
+
+    return uniqueNewPets;
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to generate manual profiles', err, { action: 'generateAndSaveManualProfiles', count })
-    throw new FixerError('Failed to generate manual profiles', { action: 'generateAndSaveManualProfiles', count }, 'MANUAL_PROFILE_GENERATION_ERROR')
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to generate manual profiles', err, {
+      action: 'generateAndSaveManualProfiles',
+      count,
+    });
+    throw new FixerError(
+      'Failed to generate manual profiles',
+      { action: 'generateAndSaveManualProfiles', count },
+      'MANUAL_PROFILE_GENERATION_ERROR'
+    );
   }
 }
 
 // Expose to window
 if (typeof window !== 'undefined') {
   interface WindowWithManualProfiles extends Window {
-    generateManualProfiles?: (count?: number) => Promise<Pet[]>
+    generateManualProfiles?: (count?: number) => Promise<Pet[]>;
   }
-  const win = window as WindowWithManualProfiles
-  win.generateManualProfiles = generateAndSaveManualProfiles
+  const win = window as WindowWithManualProfiles;
+  win.generateManualProfiles = generateAndSaveManualProfiles;
 }
-

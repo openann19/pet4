@@ -86,4 +86,3 @@ describe('Type Guards', () => {
     })
   })
 })
-

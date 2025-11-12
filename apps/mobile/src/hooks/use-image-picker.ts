@@ -26,9 +26,7 @@ export interface UseImagePickerReturn {
 export function useImagePicker(): UseImagePickerReturn {
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const pickImage = async (
-    source: 'camera' | 'gallery'
-  ): Promise<ImagePickerResult | null> => {
+  const pickImage = async (source: 'camera' | 'gallery'): Promise<ImagePickerResult | null> => {
     try {
       setIsProcessing(true)
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
@@ -61,7 +59,7 @@ export function useImagePicker(): UseImagePickerReturn {
         })
       }
 
-      if (result.canceled || !result.assets[0]) {
+      if (result.canceled || !result.assets || result.assets.length === 0 || !result.assets[0]) {
         return null
       }
 
@@ -91,9 +89,7 @@ export function useImagePicker(): UseImagePickerReturn {
     }
   }
 
-  const pickMultipleImages = async (
-    maxCount: number = 5
-  ): Promise<ImagePickerResult[]> => {
+  const pickMultipleImages = async (maxCount: number = 5): Promise<ImagePickerResult[]> => {
     try {
       setIsProcessing(true)
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
@@ -110,7 +106,7 @@ export function useImagePicker(): UseImagePickerReturn {
         quality: 0.8,
       })
 
-      if (result.canceled || !result.assets.length) {
+      if (result.canceled || !result.assets || result.assets.length === 0) {
         return []
       }
 
@@ -149,4 +145,3 @@ export function useImagePicker(): UseImagePickerReturn {
     isProcessing,
   }
 }
-

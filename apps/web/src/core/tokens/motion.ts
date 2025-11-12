@@ -12,7 +12,7 @@ export const Motion = {
     slow: 400,
     slower: 600,
   },
-  
+
   easing: {
     standard: [0.2, 0, 0, 1],
     decelerate: [0, 0, 0.2, 1],
@@ -24,7 +24,7 @@ export const Motion = {
       mass: 0.9,
     },
   },
-  
+
   transitions: {
     fade: {
       duration: 240,
@@ -47,7 +47,7 @@ export const Motion = {
       easing: 'accelerate' as const,
     },
   },
-  
+
   components: {
     button: {
       press: {
@@ -102,4 +102,3 @@ export const Motion = {
     },
   },
 } as const;
-

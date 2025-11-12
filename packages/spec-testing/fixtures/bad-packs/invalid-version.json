@@ -1,0 +1,7 @@
+{
+  "metadata": {
+    "packId": "test.pack",
+    "name": "Test Pack",
+    "version": "invalid-version"
+  }
+}

@@ -1,13 +1,12 @@
-import { describe, it, expect } from 'vitest'
-import { ParticleEffect } from '../visual/particle-effect'
+import { describe, it, expect } from 'vitest';
+import { ParticleEffect } from '../visual/particle-effect';
 
 describe('ParticleEffect', () => {
   it('should be defined', () => {
-    expect(ParticleEffect).toBeDefined()
-  })
+    expect(ParticleEffect).toBeDefined();
+  });
 
   it('should be a function component', () => {
-    expect(typeof ParticleEffect).toBe('function')
-  })
-})
-
+    expect(typeof ParticleEffect).toBe('function');
+  });
+});

@@ -1,43 +1,58 @@
-'use client'
+'use client';
 
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withDelay, withSequence, interpolate, Extrapolation, type SharedValue } from 'react-native-reanimated'
-import { useEffect, useCallback, useRef } from 'react'
-import { haptics } from '@/lib/haptics'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import { isTruthy, isDefined } from '@petspark/shared';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withDelay,
+  withSequence,
+  interpolate,
+  Extrapolation,
+  Easing,
+  type SharedValue,
+} from 'react-native-reanimated';
+import { useEffect, useCallback, useRef } from 'react';
+import { haptics } from '@/lib/haptics';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { useReducedMotionSV, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 
 export interface UseMessageBubbleAnimationOptions {
-  index?: number
-  staggerDelay?: number
-  isHighlighted?: boolean
-  isNew?: boolean
-  highlightedColor?: string
-  onPress?: () => void
-  onLongPress?: () => void
-  hapticFeedback?: boolean
+  index?: number;
+  staggerDelay?: number;
+  isHighlighted?: boolean;
+  isNew?: boolean;
+  highlightedColor?: string;
+  onPress?: () => void;
+  onLongPress?: () => void;
+  hapticFeedback?: boolean;
 }
 
 export interface UseMessageBubbleAnimationReturn {
-  opacity: SharedValue<number>
-  translateY: SharedValue<number>
-  scale: SharedValue<number>
-  glowOpacity: SharedValue<number>
-  glowScale: SharedValue<number>
-  backgroundOpacity: SharedValue<number>
-  animatedStyle: ReturnType<typeof useAnimatedStyle>
-  glowStyle: ReturnType<typeof useAnimatedStyle>
-  backgroundStyle: ReturnType<typeof useAnimatedStyle>
-  handlePress: () => void
-  handlePressIn: () => void
-  handlePressOut: () => void
-  handleLongPressStart: () => void
-  handleLongPressEnd: () => void
-  animateReaction: (emoji: string) => void
-  animateHighlight: () => void
+  opacity: SharedValue<number>;
+  translateY: SharedValue<number>;
+  scale: SharedValue<number>;
+  glowOpacity: SharedValue<number>;
+  glowScale: SharedValue<number>;
+  backgroundOpacity: SharedValue<number>;
+  reactionScale: SharedValue<number>;
+  reactionTranslateY: SharedValue<number>;
+  reactionOpacity: SharedValue<number>;
+  animatedStyle: ReturnType<typeof useAnimatedStyle>;
+  glowStyle: ReturnType<typeof useAnimatedStyle>;
+  backgroundStyle: ReturnType<typeof useAnimatedStyle>;
+  reactionStyle: ReturnType<typeof useAnimatedStyle>;
+  handlePress: () => void;
+  handlePressIn: () => void;
+  handlePressOut: () => void;
+  handleLongPressStart: () => void;
+  handleLongPressEnd: () => void;
+  animateReaction: (emoji: string) => void;
+  animateHighlight: () => void;
 }
 
-const DEFAULT_STAGGER_DELAY = 50
-const DEFAULT_HIGHLIGHT_COLOR = 'rgba(255, 215, 0, 0.3)'
+const DEFAULT_STAGGER_DELAY = 50;
+const DEFAULT_HIGHLIGHT_COLOR = 'rgba(255, 215, 0, 0.3)';
 
 export function useMessageBubbleAnimation(
   options: UseMessageBubbleAnimationOptions = {}
@@ -50,193 +65,354 @@ export function useMessageBubbleAnimation(
     highlightedColor = DEFAULT_HIGHLIGHT_COLOR,
     onPress,
     onLongPress,
-    hapticFeedback = true
-  } = options
+    hapticFeedback = true,
+  } = options;
 
-  const opacity = useSharedValue(isNew ? 0 : 1)
-  const translateY = useSharedValue(isNew ? 20 : 0)
-  const scale = useSharedValue(1)
-  const glowOpacity = useSharedValue(0)
-  const glowScale = useSharedValue(1)
-  const backgroundOpacity = useSharedValue(0)
-  const reactionScale = useSharedValue(1)
-  const reactionTranslateY = useSharedValue(0)
-  const reactionOpacity = useSharedValue(0)
+  const reducedMotion = useReducedMotionSV();
 
-  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  const isPressedRef = useRef(false)
+  // Initialize values - ensure initial state is set correctly before animations
+  const opacity = useSharedValue(isNew ? 0 : 1);
+  const translateY = useSharedValue(isNew ? 20 : 0);
+  const scale = useSharedValue(1);
+  const glowOpacity = useSharedValue(0);
+  const glowScale = useSharedValue(1);
+  const backgroundOpacity = useSharedValue(0);
+  const reactionScale = useSharedValue(1);
+  const reactionTranslateY = useSharedValue(0);
+  const reactionOpacity = useSharedValue(0);
 
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const isPressedRef = useRef(false);
+
+  // Entry animation effect
   useEffect(() => {
-    if (isTruthy(isNew)) {
-      const delay = index * staggerDelay
-      opacity.value = withDelay(delay, withSpring(1, springConfigs.smooth))
-      translateY.value = withDelay(
-        delay,
-        withSpring(0, {
-          damping: 25,
-          stiffness: 400
-        })
-      )
+    if (isNew) {
+      const isReducedMotion = reducedMotion.value;
+      const delay = isReducedMotion ? 0 : index * staggerDelay;
+      const duration = getReducedMotionDuration(300, isReducedMotion);
+
+      if (isReducedMotion) {
+        // Reduced motion: instant state change
+        opacity.value = withTiming(1, {
+          duration: duration,
+          easing: Easing.linear,
+        });
+        translateY.value = withTiming(0, {
+          duration: duration,
+          easing: Easing.linear,
+        });
+      } else {
+        // Normal motion: staggered spring animation
+        opacity.value = withDelay(delay, withSpring(1, springConfigs.smooth));
+        translateY.value = withDelay(
+          delay,
+          withSpring(0, {
+            damping: 25,
+            stiffness: 400,
+          })
+        );
+      }
+    } else {
+      // Ensure values are set correctly when not new
+      opacity.value = 1;
+      translateY.value = 0;
     }
 
     return () => {
-      if (isTruthy(longPressTimerRef.current)) {
-        clearTimeout(longPressTimerRef.current)
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
       }
-    }
-  }, [isNew, index, staggerDelay, opacity, translateY])
+    };
+  }, [isNew, index, staggerDelay, opacity, translateY, reducedMotion]);
 
+  // Highlight animation effect
   useEffect(() => {
-    if (isTruthy(isHighlighted)) {
-      backgroundOpacity.value = withSequence(
-        withTiming(1, timingConfigs.fast),
-        withDelay(2000, withTiming(0, timingConfigs.smooth))
-      )
+    const isReducedMotion = reducedMotion.value;
+    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+    const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+
+    if (isHighlighted) {
+      if (isReducedMotion) {
+        // Reduced motion: instant highlight, quick fade
+        backgroundOpacity.value = withSequence(
+          withTiming(1, {
+            duration: fastDuration,
+            easing: Easing.linear,
+          }),
+          withDelay(
+            1500,
+            withTiming(0, {
+              duration: smoothDuration,
+              easing: Easing.linear,
+            })
+          )
+        );
+      } else {
+        // Normal motion: smooth sequence
+        backgroundOpacity.value = withSequence(
+          withTiming(1, timingConfigs.fast),
+          withDelay(2000, withTiming(0, timingConfigs.smooth))
+        );
+      }
     } else {
-      backgroundOpacity.value = withTiming(0, timingConfigs.fast)
+      backgroundOpacity.value = withTiming(0, {
+        duration: fastDuration,
+        easing: Easing.linear,
+      });
     }
-  }, [isHighlighted, backgroundOpacity])
+  }, [isHighlighted, backgroundOpacity, reducedMotion]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [
-        { translateY: translateY.value },
-        { scale: scale.value }
-      ]
-    }
-  })
+      transform: [{ translateY: translateY.value }, { scale: scale.value }],
+    };
+  });
 
   const glowStyle = useAnimatedStyle(() => {
-    const shadowRadius = interpolate(
-      glowOpacity.value,
-      [0, 1],
-      [0, 20],
-      Extrapolation.CLAMP
-    )
-    const shadowOpacity = interpolate(
-      glowOpacity.value,
-      [0, 1],
-      [0, 0.5],
-      Extrapolation.CLAMP
-    )
+    const shadowRadius = interpolate(glowOpacity.value, [0, 1], [0, 20], Extrapolation.CLAMP);
+    const shadowOpacity = interpolate(glowOpacity.value, [0, 1], [0, 0.5], Extrapolation.CLAMP);
 
     return {
       opacity: glowOpacity.value,
       transform: [{ scale: glowScale.value }],
-      boxShadow: `0 0 ${String(shadowRadius ?? '')}px rgba(59, 130, 246, ${String(shadowOpacity ?? '')})`
-    }
-  })
+      boxShadow: `0 0 ${shadowRadius}px rgba(59, 130, 246, ${shadowOpacity})`,
+    };
+  });
 
   const backgroundStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: backgroundOpacity.value > 0 ? highlightedColor : 'transparent',
-      opacity: backgroundOpacity.value
-    }
-  })
+      opacity: backgroundOpacity.value,
+    };
+  });
+
+  const reactionStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: reactionScale.value }, { translateY: reactionTranslateY.value }],
+      opacity: reactionOpacity.value,
+    };
+  });
 
   const triggerHaptic = useCallback(() => {
-    if (isTruthy(hapticFeedback)) {
-      haptics.selection()
+    if (hapticFeedback) {
+      haptics.selection();
     }
-  }, [hapticFeedback])
+  }, [hapticFeedback]);
 
   const triggerLongPress = useCallback(() => {
-    if (isTruthy(onLongPress)) {
-      onLongPress()
+    if (onLongPress) {
+      onLongPress();
     }
-  }, [onLongPress])
+  }, [onLongPress]);
 
   const handlePressIn = useCallback(() => {
-    triggerHaptic()
-    isPressedRef.current = true
-    scale.value = withSpring(0.96, {
-      damping: 20,
-      stiffness: 500
-    })
-    glowOpacity.value = withSpring(1, springConfigs.smooth)
-    glowScale.value = withSpring(1.05, springConfigs.smooth)
+    triggerHaptic();
+    isPressedRef.current = true;
+    const isReducedMotion = reducedMotion.value;
+
+    if (isReducedMotion) {
+      const duration = getReducedMotionDuration(120, true);
+      scale.value = withTiming(0.96, {
+        duration: duration,
+        easing: Easing.linear,
+      });
+      glowOpacity.value = withTiming(1, {
+        duration: duration,
+        easing: Easing.linear,
+      });
+      glowScale.value = withTiming(1.05, {
+        duration: duration,
+        easing: Easing.linear,
+      });
+    } else {
+      scale.value = withSpring(0.96, {
+        damping: 20,
+        stiffness: 500,
+      });
+      glowOpacity.value = withSpring(1, springConfigs.smooth);
+      glowScale.value = withSpring(1.05, springConfigs.smooth);
+    }
 
     if (isTruthy(onLongPress)) {
       longPressTimerRef.current = setTimeout(() => {
-        if (isTruthy(isPressedRef.current)) {
-          triggerLongPress()
+        if (isPressedRef.current) {
+          triggerLongPress();
         }
-      }, 500)
+      }, 500);
     }
-  }, [scale, glowOpacity, glowScale, onLongPress, triggerHaptic, triggerLongPress])
+  }, [scale, glowOpacity, glowScale, onLongPress, triggerHaptic, triggerLongPress, reducedMotion]);
 
   const handlePressOut = useCallback(() => {
-    isPressedRef.current = false
-    if (isTruthy(longPressTimerRef.current)) {
-      clearTimeout(longPressTimerRef.current)
-      longPressTimerRef.current = undefined as unknown as ReturnType<typeof setTimeout>
+    isPressedRef.current = false;
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = undefined;
     }
 
-    scale.value = withSpring(1, springConfigs.smooth)
-    glowOpacity.value = withTiming(0, timingConfigs.fast)
-    glowScale.value = withTiming(1, timingConfigs.fast)
-  }, [scale, glowOpacity, glowScale])
+    const isReducedMotion = reducedMotion.value;
+    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+
+    if (isReducedMotion) {
+      scale.value = withTiming(1, {
+        duration: fastDuration,
+        easing: Easing.linear,
+      });
+      glowOpacity.value = withTiming(0, {
+        duration: fastDuration,
+        easing: Easing.linear,
+      });
+      glowScale.value = withTiming(1, {
+        duration: fastDuration,
+        easing: Easing.linear,
+      });
+    } else {
+      scale.value = withSpring(1, springConfigs.smooth);
+      glowOpacity.value = withTiming(0, timingConfigs.fast);
+      glowScale.value = withTiming(1, timingConfigs.fast);
+    }
+  }, [scale, glowOpacity, glowScale, reducedMotion]);
 
   const handlePress = useCallback(() => {
     if (!isPressedRef.current) {
-      return
+      return;
     }
 
-    if (isTruthy(onPress)) {
-      onPress()
+    if (onPress) {
+      onPress();
     }
 
-    scale.value = withSequence(
-      withSpring(0.94, {
-        damping: 15,
-        stiffness: 600
-      }),
-      withSpring(1, springConfigs.smooth)
-    )
+    const isReducedMotion = reducedMotion.value;
 
-    handlePressOut()
-  }, [onPress, scale, handlePressOut])
+    if (isReducedMotion) {
+      const duration = getReducedMotionDuration(120, true);
+      scale.value = withTiming(
+        0.94,
+        {
+          duration: duration,
+          easing: Easing.linear,
+        },
+        () => {
+          scale.value = withTiming(1, {
+            duration: duration,
+            easing: Easing.linear,
+          });
+        }
+      );
+    } else {
+      scale.value = withSequence(
+        withSpring(0.94, {
+          damping: 15,
+          stiffness: 600,
+        }),
+        withSpring(1, springConfigs.smooth)
+      );
+    }
+
+    handlePressOut();
+  }, [onPress, scale, handlePressOut, reducedMotion]);
 
   const handleLongPressStart = useCallback(() => {
-    handlePressIn()
-  }, [handlePressIn])
+    handlePressIn();
+  }, [handlePressIn]);
 
   const handleLongPressEnd = useCallback(() => {
-    handlePressOut()
-  }, [handlePressOut])
+    handlePressOut();
+  }, [handlePressOut]);
 
-  const animateReaction = useCallback((_emoji: string) => {
-    reactionScale.value = 1
-    reactionTranslateY.value = 0
-    reactionOpacity.value = 1
+  const animateReaction = useCallback(
+    (_emoji: string) => {
+      const isReducedMotion = reducedMotion.value;
+      const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+      const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
 
-    reactionScale.value = withSequence(
-      withSpring(1.5, {
-        damping: 10,
-        stiffness: 400
-      }),
-      withSpring(1.2, springConfigs.bouncy)
-    )
+      reactionScale.value = 1;
+      reactionTranslateY.value = 0;
+      reactionOpacity.value = 1;
 
-    reactionTranslateY.value = withTiming(-30, {
-      duration: 800
-    })
+      if (isReducedMotion) {
+        // Reduced motion: simplified animation
+        reactionScale.value = withTiming(
+          1.2,
+          {
+            duration: fastDuration,
+            easing: Easing.linear,
+          },
+          () => {
+            reactionScale.value = withTiming(1, {
+              duration: smoothDuration,
+              easing: Easing.linear,
+            });
+          }
+        );
+        reactionTranslateY.value = withTiming(-15, {
+          duration: fastDuration,
+          easing: Easing.linear,
+        });
+        reactionOpacity.value = withSequence(
+          withTiming(1, {
+            duration: fastDuration,
+            easing: Easing.linear,
+          }),
+          withDelay(
+            300,
+            withTiming(0, {
+              duration: smoothDuration,
+              easing: Easing.linear,
+            })
+          )
+        );
+      } else {
+        // Normal motion: full spring animation
+        reactionScale.value = withSequence(
+          withSpring(1.5, {
+            damping: 10,
+            stiffness: 400,
+          }),
+          withSpring(1.2, springConfigs.bouncy)
+        );
 
-    reactionOpacity.value = withSequence(
-      withTiming(1, timingConfigs.fast),
-      withDelay(400, withTiming(0, timingConfigs.smooth))
-    )
+        reactionTranslateY.value = withTiming(-30, {
+          duration: 800,
+        });
 
-    triggerHaptic()
-  }, [reactionScale, reactionTranslateY, reactionOpacity, triggerHaptic])
+        reactionOpacity.value = withSequence(
+          withTiming(1, timingConfigs.fast),
+          withDelay(400, withTiming(0, timingConfigs.smooth))
+        );
+      }
+
+      triggerHaptic();
+    },
+    [reactionScale, reactionTranslateY, reactionOpacity, triggerHaptic, reducedMotion]
+  );
 
   const animateHighlight = useCallback(() => {
-    backgroundOpacity.value = withSequence(
-      withTiming(1, timingConfigs.fast),
-      withDelay(1500, withTiming(0, timingConfigs.smooth))
-    )
-  }, [backgroundOpacity])
+    const isReducedMotion = reducedMotion.value;
+    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+    const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+
+    if (isReducedMotion) {
+      backgroundOpacity.value = withSequence(
+        withTiming(1, {
+          duration: fastDuration,
+          easing: Easing.linear,
+        }),
+        withDelay(
+          1500,
+          withTiming(0, {
+            duration: smoothDuration,
+            easing: Easing.linear,
+          })
+        )
+      );
+    } else {
+      backgroundOpacity.value = withSequence(
+        withTiming(1, timingConfigs.fast),
+        withDelay(1500, withTiming(0, timingConfigs.smooth))
+      );
+    }
+  }, [backgroundOpacity, reducedMotion]);
 
   return {
     opacity,
@@ -245,15 +421,19 @@ export function useMessageBubbleAnimation(
     glowOpacity,
     glowScale,
     backgroundOpacity,
+    reactionScale,
+    reactionTranslateY,
+    reactionOpacity,
     animatedStyle,
     glowStyle,
     backgroundStyle,
+    reactionStyle,
     handlePress,
     handlePressIn,
     handlePressOut,
     handleLongPressStart,
     handleLongPressEnd,
     animateReaction,
-    animateHighlight
-  }
+    animateHighlight,
+  };
 }

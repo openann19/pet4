@@ -30,8 +30,9 @@ export function useLocation(
   const [location, setLocation] = useState<LocationCoordinates | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const [watchSubscription, setWatchSubscription] =
-    useState<Location.LocationSubscription | null>(null)
+  const [watchSubscription, setWatchSubscription] = useState<Location.LocationSubscription | null>(
+    null
+  )
 
   const requestPermission = async (): Promise<boolean> => {
     try {
@@ -78,10 +79,7 @@ export function useLocation(
       setLocation(coordinates)
       return coordinates
     } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : 'Failed to get current location'
+      const errorMessage = err instanceof Error ? err.message : 'Failed to get current location'
       setError(errorMessage)
       return null
     } finally {
@@ -90,7 +88,7 @@ export function useLocation(
   }
 
   const watchPosition = (): void => {
-    void requestPermission().then((hasPermission) => {
+    void requestPermission().then(hasPermission => {
       if (!hasPermission) {
         return
       }
@@ -165,4 +163,3 @@ export function calculateDistance(
 function toRad(degrees: number): number {
   return (degrees * Math.PI) / 180
 }
-

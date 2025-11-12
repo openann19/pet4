@@ -1,121 +1,117 @@
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { PaymentsService } from '@/lib/payments-service'
-import type { Subscription, AuditLogEntry, RevenueMetrics } from '@/lib/payments-types'
-import { MagnifyingGlass, CurrencyDollar, Users, TrendUp, Gift, X, ArrowCounterClockwise } from '@phosphor-icons/react'
-import { toastSuccess, toastError } from '@/effects/confetti-web'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import type { Subscription } from '@/lib/payments-types';
+import {
+  MagnifyingGlass,
+  CurrencyDollar,
+  Users,
+  TrendUp,
+  Gift,
+  X,
+  ArrowCounterClockwise,
+} from '@phosphor-icons/react';
+import { toast } from 'sonner';
+import { useSubscriptionAdmin } from '@/hooks/admin/use-subscription-admin';
 
 export function SubscriptionAdminPanel() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
-  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([])
-  const [metrics, setMetrics] = useState<RevenueMetrics | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [loading, setLoading] = useState(true)
-  
-  const [compDialogOpen, setCompDialogOpen] = useState(false)
-  const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null)
-  const [compMonths, setCompMonths] = useState('1')
-  const [compReason, setCompReason] = useState('')
+  const {
+    subscriptions,
+    auditLogs,
+    metrics,
+    loading,
+    searchQuery,
+    setSearchQuery,
+    compSubscription: compSubscriptionHook,
+    cancelSubscription: cancelSubscriptionHook,
+  } = useSubscriptionAdmin();
 
-  useEffect(() => {
-    loadData()
-  }, [])
-
-  const loadData = async () => {
-    setLoading(true)
-    try {
-      const [subs, logs, rev] = await Promise.all([
-        PaymentsService.getAllSubscriptions(),
-        PaymentsService.getAuditLogs(100),
-        PaymentsService.getRevenueMetrics(),
-      ])
-      setSubscriptions(subs)
-      setAuditLogs(logs)
-      setMetrics(rev)
-    } catch {
-      toastError('Failed to load data')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const [compDialogOpen, setCompDialogOpen] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
+  const [compMonths, setCompMonths] = useState('1');
+  const [compReason, setCompReason] = useState('');
 
   const handleCompSubscription = async () => {
     if (!selectedSubscription || !compReason.trim()) {
-      toastError('Please fill in all fields')
-      return
+      toast.error('Please fill in all fields');
+      return;
     }
 
     try {
-      const user = await spark.user()
-      await PaymentsService.compSubscription(
-        selectedSubscription.userId,
-        selectedSubscription.planId,
-        parseInt(compMonths),
-        user.id,
-        compReason
-      )
-
-  toastSuccess('Subscription comped successfully')
-      setCompDialogOpen(false)
-      setCompReason('')
-      setCompMonths('1')
-      setSelectedSubscription(null)
-      await loadData()
+      await compSubscriptionHook(selectedSubscription, parseInt(compMonths), compReason);
+      setCompDialogOpen(false);
+      setCompReason('');
+      setCompMonths('1');
+      setSelectedSubscription(null);
     } catch {
-      toastError('Failed to comp subscription')
+      // Error already handled in hook
     }
-  }
+  };
 
   const handleCancelSubscription = async (subscription: Subscription) => {
     if (!confirm('Are you sure you want to cancel this subscription?')) {
-      return
+      return;
     }
 
     try {
-      const user = await spark.user()
-      await PaymentsService.cancelSubscription(
-        subscription.id,
-        true,
-        user.id,
-        'Admin cancellation'
-      )
-
-  toastSuccess('Subscription canceled')
-      await loadData()
+      await cancelSubscriptionHook(subscription);
     } catch {
-      toastError('Failed to cancel subscription')
+      // Error already handled in hook
     }
-  }
+  };
 
-  const filteredSubscriptions = subscriptions.filter(sub =>
-    String(sub.userId || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    String(sub.planId || '').toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredSubscriptions = subscriptions.filter(
+    (sub) =>
+      String(sub.userId || '')
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      String(sub.planId || '')
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+  );
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-    })
-  }
+    });
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -124,16 +120,16 @@ export function SubscriptionAdminPanel() {
       canceled: 'destructive',
       expired: 'outline',
       past_due: 'destructive',
-    }
-    return <Badge variant={variants[status] || 'outline'}>{status}</Badge>
-  }
+    };
+    return <Badge variant={variants[status] || 'outline'}>{status}</Badge>;
+  };
 
   if (isTruthy(loading)) {
     return (
       <div className="flex items-center justify-center p-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -146,7 +142,9 @@ export function SubscriptionAdminPanel() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics ? formatCurrency(metrics.mrr) : '$0'}</div>
-            <p className="text-xs text-muted-foreground">ARR: {metrics ? formatCurrency(metrics.arr) : '$0'}</p>
+            <p className="text-xs text-muted-foreground">
+              ARR: {metrics ? formatCurrency(metrics.arr) : '$0'}
+            </p>
           </CardContent>
         </Card>
 
@@ -169,7 +167,9 @@ export function SubscriptionAdminPanel() {
             <TrendUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics ? formatCurrency(metrics.arpu) : '$0'}</div>
+            <div className="text-2xl font-bold">
+              {metrics ? formatCurrency(metrics.arpu) : '$0'}
+            </div>
             <p className="text-xs text-muted-foreground">Per active subscriber</p>
           </CardContent>
         </Card>
@@ -180,7 +180,9 @@ export function SubscriptionAdminPanel() {
             <ArrowCounterClockwise className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics ? metrics.churnRate.toFixed(1) : '0'}%</div>
+            <div className="text-2xl font-bold">
+              {metrics ? metrics.churnRate.toFixed(1) : '0'}%
+            </div>
             <p className="text-xs text-muted-foreground">
               {metrics?.canceledSubscriptionsThisMonth || 0} canceled this month
             </p>
@@ -250,8 +252,8 @@ export function SubscriptionAdminPanel() {
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                              setSelectedSubscription(subscription)
-                              setCompDialogOpen(true)
+                              setSelectedSubscription(subscription);
+                              setCompDialogOpen(true);
                             }}
                           >
                             <Gift className="h-4 w-4" />
@@ -309,7 +311,9 @@ export function SubscriptionAdminPanel() {
                           {log.actorRole}
                         </Badge>
                       </TableCell>
-                      <TableCell className="capitalize">{String(log.action || '').replace(/_/g, ' ')}</TableCell>
+                      <TableCell className="capitalize">
+                        {String(log.action || '').replace(/_/g, ' ')}
+                      </TableCell>
                       <TableCell className="font-mono text-xs">
                         {log.targetUserId ? `${String(log.targetUserId).slice(0, 12)}...` : '-'}
                       </TableCell>
@@ -322,9 +326,7 @@ export function SubscriptionAdminPanel() {
               </Table>
 
               {auditLogs.length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  No audit logs found
-                </div>
+                <div className="text-center py-12 text-muted-foreground">No audit logs found</div>
               )}
             </CardContent>
           </Card>
@@ -335,9 +337,7 @@ export function SubscriptionAdminPanel() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Comp Subscription</DialogTitle>
-            <DialogDescription>
-              Grant a complimentary subscription to this user
-            </DialogDescription>
+            <DialogDescription>Grant a complimentary subscription to this user</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -376,12 +376,10 @@ export function SubscriptionAdminPanel() {
             <Button variant="outline" onClick={() => { setCompDialogOpen(false); }}>
               Cancel
             </Button>
-            <Button onClick={handleCompSubscription}>
-              Comp Subscription
-            </Button>
+            <Button onClick={handleCompSubscription}>Comp Subscription</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

@@ -8,6 +8,7 @@ import {
   ViewStyle,
   TextStyle,
   TouchableOpacityProps,
+  type GestureResponderEvent,
 } from 'react-native';
 import { useHaptics } from '@/hooks/use-haptics';
 
@@ -32,7 +33,7 @@ export enum ButtonVariant {
 
 /**
  * Premium Button Component
- * 
+ *
  * Features:
  * - All sizes (sm/md/lg) with token-based dimensions
  * - All variants (primary/outline/ghost/glass)
@@ -63,13 +64,13 @@ export function AppButton({
   ...props
 }: AppButtonProps) {
   const haptics = useHaptics();
-  
+
   const paddingHorizontal = size === ButtonSize.SM ? 12 : size === ButtonSize.MD ? 16 : 20;
   const paddingVertical = size === ButtonSize.MD ? 12 : size === ButtonSize.LG ? 16 : 8;
   const minHeight = 48; // Touch target minimum
   const borderRadius = size === ButtonSize.SM ? 8 : size === ButtonSize.MD ? 12 : 16;
   const fontSize = 14; // sp
-  
+
   const getVariantStyles = (): { container: ViewStyle; text: TextStyle } => {
     switch (variant) {
       case ButtonVariant.PRIMARY:
@@ -117,17 +118,17 @@ export function AppButton({
         };
     }
   };
-  
+
   const variantStyles = getVariantStyles();
   const isDisabled = disabled || loading;
-  
-  const handlePress = (e: any) => {
+
+  const handlePress = (e: GestureResponderEvent): void => {
     if (!isDisabled && onPress) {
       haptics.impact('light');
       onPress(e);
     }
   };
-  
+
   return (
     <TouchableOpacity
       onPress={handlePress}
@@ -152,10 +153,7 @@ export function AppButton({
     >
       <View style={styles.content}>
         {loading ? (
-          <ActivityIndicator
-            size="small"
-            color={variantStyles.text.color}
-          />
+          <ActivityIndicator size="small" color={variantStyles.text.color} />
         ) : (
           <>
             {icon && <View style={styles.icon}>{icon}</View>}
@@ -198,4 +196,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-

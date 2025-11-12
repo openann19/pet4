@@ -31,4 +31,4 @@ module.exports = Object.freeze({
   verbose: true,
   detectOpenHandles: true,
   maxWorkers: '50%',
-});
+})

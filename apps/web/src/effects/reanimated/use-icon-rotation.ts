@@ -1,51 +1,42 @@
-'use client'
+'use client';
 
-import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
-import { useEffect } from 'react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useEffect } from 'react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface UseIconRotationOptions {
-  enabled?: boolean
-  targetRotation?: number
-  duration?: number
-  enablePulse?: boolean
+  enabled?: boolean;
+  targetRotation?: number;
+  duration?: number;
+  enablePulse?: boolean;
 }
 
 export interface UseIconRotationReturn {
-  rotation: ReturnType<typeof useSharedValue<number>>
-  style: AnimatedStyle
+  rotation: ReturnType<typeof useSharedValue<number>>;
+  style: AnimatedStyle;
 }
 
-export function useIconRotation(
-  options: UseIconRotationOptions = {}
-): UseIconRotationReturn {
-  const {
-    enabled = false,
-    targetRotation = 360,
-    duration = 500,
-    enablePulse = false
-  } = options
+export function useIconRotation(options: UseIconRotationOptions = {}): UseIconRotationReturn {
+  const { enabled = false, targetRotation = 360, duration = 500, enablePulse = false } = options;
 
-  const rotationValue = useSharedValue(0)
+  const rotationValue = useSharedValue(0);
 
   useEffect(() => {
-    if (isTruthy(enabled)) {
-      rotationValue.value = withTiming(targetRotation, { duration })
+    if (enabled) {
+      rotationValue.value = withTiming(targetRotation, { duration });
     } else {
-      rotationValue.value = withTiming(0, { duration })
+      rotationValue.value = withTiming(0, { duration });
     }
-  }, [enabled, duration, targetRotation, rotationValue, enablePulse])
+  }, [enabled, duration, targetRotation, rotationValue, enablePulse]);
 
   const style = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${String(rotationValue.value ?? '')}deg` }]
-    }
-  }) as AnimatedStyle
+      transform: [{ rotate: `${rotationValue.value}deg` }],
+    };
+  }) as AnimatedStyle;
 
   return {
     rotation: rotationValue,
-    style
-  }
+    style,
+  };
 }
-

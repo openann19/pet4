@@ -1,30 +1,35 @@
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service'
-import type { CreateAdoptionListingData } from '@/lib/adoption-marketplace-types'
-import { createLogger } from '@/lib/logger'
-import { userService } from '@/lib/user-service'
-import { ArrowLeft, ArrowRight, Check, MapPin, Upload, X } from '@phosphor-icons/react'
-import { Presence, motion } from '@petspark/motion'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service';
+import type { CreateAdoptionListingData } from '@/lib/adoption-marketplace-types';
+import { createLogger } from '@/lib/logger';
+import { userService } from '@/lib/user-service';
+import { ArrowLeft, ArrowRight, Check, MapPin, Upload, X } from '@phosphor-icons/react';
+import { Presence, MotionView } from '@petspark/motion';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('CreateAdoptionListingWizard')
+const logger = createLogger('CreateAdoptionListingWizard');
 
 interface CreateAdoptionListingWizardProps {
-  onClose: () => void
-  onSuccess: () => void
+  onClose: () => void;
+  onSuccess: () => void;
 }
 
-type WizardStep = 'basic' | 'details' | 'health' | 'requirements' | 'location' | 'review'
+type WizardStep = 'basic' | 'details' | 'health' | 'requirements' | 'location' | 'review';
 
 const STEPS: { id: WizardStep; label: string; description: string }[] = [
   { id: 'basic', label: 'Basic Info', description: 'Pet details' },
@@ -32,23 +37,43 @@ const STEPS: { id: WizardStep; label: string; description: string }[] = [
   { id: 'health', label: 'Health', description: 'Medical records' },
   { id: 'requirements', label: 'Requirements', description: 'Adoption criteria' },
   { id: 'location', label: 'Location', description: 'Where to meet' },
-  { id: 'review', label: 'Review', description: 'Confirm & submit' }
-]
+  { id: 'review', label: 'Review', description: 'Confirm & submit' },
+];
 
 const TEMPERAMENT_OPTIONS = [
-  'Friendly', 'Playful', 'Calm', 'Energetic', 'Affectionate', 'Independent',
-  'Loyal', 'Gentle', 'Curious', 'Protective', 'Social', 'Shy'
-]
+  'Friendly',
+  'Playful',
+  'Calm',
+  'Energetic',
+  'Affectionate',
+  'Independent',
+  'Loyal',
+  'Gentle',
+  'Curious',
+  'Protective',
+  'Social',
+  'Shy',
+];
 
 const REQUIREMENT_OPTIONS = [
-  'Fenced yard required', 'No small children', 'No other pets', 'Experience with breed required',
-  'Active lifestyle required', 'Home check required', 'References required', 'Indoor only',
-  'Regular grooming commitment', 'Special diet needs'
-]
+  'Fenced yard required',
+  'No small children',
+  'No other pets',
+  'Experience with breed required',
+  'Active lifestyle required',
+  'Home check required',
+  'References required',
+  'Indoor only',
+  'Regular grooming commitment',
+  'Special diet needs',
+];
 
-export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdoptionListingWizardProps) {
-  const [currentStep, setCurrentStep] = useState<WizardStep>('basic')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export function CreateAdoptionListingWizard({
+  onClose,
+  onSuccess,
+}: CreateAdoptionListingWizardProps) {
+  const [currentStep, setCurrentStep] = useState<WizardStep>('basic');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<Partial<CreateAdoptionListingData>>({
     petPhotos: [],
@@ -61,102 +86,116 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
     goodWithKids: true,
     goodWithPets: true,
     energyLevel: 'medium',
-    locationCountry: 'USA'
-  })
+    locationCountry: 'USA',
+  });
 
-  const currentStepIndex = STEPS.findIndex(s => s.id === currentStep)
-  const progress = ((currentStepIndex + 1) / STEPS.length) * 100
+  const currentStepIndex = STEPS.findIndex((s) => s.id === currentStep);
+  const progress = ((currentStepIndex + 1) / STEPS.length) * 100;
 
   const updateField = <K extends keyof CreateAdoptionListingData>(
     field: K,
     value: CreateAdoptionListingData[K]
   ) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-  const toggleArrayItem = <K extends keyof CreateAdoptionListingData>(
-    field: K,
-    value: string
-  ) => {
-    setFormData(prev => {
-      const current = (prev[field] as string[]) || []
+  const toggleArrayItem = <K extends keyof CreateAdoptionListingData>(field: K, value: string) => {
+    setFormData((prev) => {
+      const current = (prev[field] as string[]) || [];
       const updated = current.includes(value)
-        ? current.filter(item => item !== value)
-        : [...current, value]
-      return { ...prev, [field]: updated }
-    })
-  }
+        ? current.filter((item) => item !== value)
+        : [...current, value];
+      return { ...prev, [field]: updated };
+    });
+  };
 
   const handleNext = () => {
     if (currentStepIndex < STEPS.length - 1) {
-      const nextStep = STEPS[currentStepIndex + 1]
-      if (isTruthy(nextStep)) {
-        setCurrentStep(nextStep.id)
+      const nextStep = STEPS[currentStepIndex + 1];
+      if (nextStep) {
+        setCurrentStep(nextStep.id);
       }
     }
-  }
+  };
 
   const handleBack = () => {
     if (currentStepIndex > 0) {
-      const prevStep = STEPS[currentStepIndex - 1]
-      if (isTruthy(prevStep)) {
-        setCurrentStep(prevStep.id)
+      const prevStep = STEPS[currentStepIndex - 1];
+      if (prevStep) {
+        setCurrentStep(prevStep.id);
       }
     }
-  }
+  };
 
   const handleSubmit = async () => {
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
 
-      if (!formData.petName || !formData.petBreed || !formData.petAge || !formData.petGender ||
-          !formData.petSize || !formData.petSpecies || !formData.petDescription ||
-          !formData.locationCity || !formData.reasonForAdoption) {
-        toast.error('Please fill in all required fields')
-        return
+      if (
+        !formData.petName ||
+        !formData.petBreed ||
+        !formData.petAge ||
+        !formData.petGender ||
+        !formData.petSize ||
+        !formData.petSpecies ||
+        !formData.petDescription ||
+        !formData.locationCity ||
+        !formData.reasonForAdoption
+      ) {
+        toast.error('Please fill in all required fields');
+        return;
       }
 
-      const user = await userService.user()
+      const user = await userService.user();
       if (!user) {
-        throw new Error('User context unavailable')
+        throw new Error('User context unavailable');
       }
-      
-      await adoptionMarketplaceService.createListing({
-        ...formData,
-        ownerId: user.id,
-        ownerName: user.displayName ?? user.login ?? 'Guest User'
-      })
 
-      toast.success('Adoption listing submitted for review!')
-      onSuccess()
-      onClose()
+      await adoptionMarketplaceService.createListing({
+        ...(formData as CreateAdoptionListingData),
+        ownerId: user.id,
+        ownerName: user.displayName ?? user.login ?? 'Guest User',
+      });
+
+      toast.success('Adoption listing submitted for review!');
+      onSuccess();
+      onClose();
     } catch (error) {
-      logger.error('Failed to create listing', error instanceof Error ? error : new Error(String(error)))
-      toast.error('Failed to create listing. Please try again.')
+      logger.error(
+        'Failed to create listing',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      toast.error('Failed to create listing. Please try again.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const canProceed = () => {
     switch (currentStep) {
       case 'basic':
-        return formData.petName && formData.petBreed && formData.petAge && 
-               formData.petGender && formData.petSize && formData.petSpecies
+        return (
+          formData.petName &&
+          formData.petBreed &&
+          formData.petAge &&
+          formData.petGender &&
+          formData.petSize &&
+          formData.petSpecies
+        );
       case 'details':
-        return formData.petDescription && (formData.temperament?.length || 0) > 0
+        return formData.petDescription && (formData.temperament?.length || 0) > 0;
       case 'health':
-        return true
+        return true;
       case 'requirements':
-        return formData.reasonForAdoption
+        return formData.reasonForAdoption;
       case 'location':
-        return formData.locationCity && formData.locationCountry
+        return formData.locationCity && formData.locationCountry;
       case 'review':
-        return true
+        return true;
       default:
-        return false
+        return false;
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-lg overflow-auto">
@@ -165,10 +204,18 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
           <div>
             <h2 className="text-2xl font-bold">Create Adoption Listing</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Step {currentStepIndex + 1} of {STEPS.length}: {currentStepIndex >= 0 && currentStepIndex < STEPS.length ? STEPS[currentStepIndex]?.description ?? '' : ''}
+              Step {currentStepIndex + 1} of {STEPS.length}:{' '}
+              {currentStepIndex >= 0 && currentStepIndex < STEPS.length
+                ? (STEPS[currentStepIndex]?.description ?? '')
+                : ''}
             </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label="Close adoption listing wizard"
+          >
             <X size={24} />
           </Button>
         </div>
@@ -179,22 +226,22 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
             {STEPS.map((step, index) => (
               <button
                 key={step.id}
-                onClick={() => { setCurrentStep(step.id); }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all whitespace-nowrap ${
-                  String(currentStep === step.id
-                                        ? 'border-primary bg-primary/10 text-primary'
-                                        : index < currentStepIndex
-                                        ? 'border-green-500/50 bg-green-500/5 text-green-600 dark:text-green-400'
-                                        : 'border-border bg-card hover:border-primary/50' ?? '')
-                }`}
+                onClick={() => setCurrentStep(step.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all whitespace-nowrap ${currentStep === step.id
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : index < currentStepIndex
+                    ? 'border-green-500/50 bg-green-500/5 text-green-600 dark:text-green-400'
+                    : 'border-border bg-card hover:border-primary/50'
+                  }`}
               >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                  String(index < currentStepIndex
-                                            ? 'bg-green-500 text-white'
-                                            : currentStep === step.id
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'bg-muted text-muted-foreground' ?? '')
-                }`}>
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index < currentStepIndex
+                    ? 'bg-green-500 text-white'
+                    : currentStep === step.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground'
+                    }`}
+                >
                   {index < currentStepIndex ? <Check size={14} weight="bold" /> : index + 1}
                 </div>
                 <span className="text-sm font-medium">{step.label}</span>
@@ -203,7 +250,7 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
           </div>
         </div>
 
-        <Presence mode="wait">
+        <Presence visible={true}>
           <MotionView
             key={currentStep}
             initial={{ opacity: 0, x: 20 }}
@@ -213,8 +260,16 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
           >
             <Card>
               <CardHeader>
-                <CardTitle>{currentStepIndex >= 0 && currentStepIndex < STEPS.length ? STEPS[currentStepIndex]?.label ?? '' : ''}</CardTitle>
-                <CardDescription>{currentStepIndex >= 0 && currentStepIndex < STEPS.length ? STEPS[currentStepIndex]?.description ?? '' : ''}</CardDescription>
+                <CardTitle>
+                  {currentStepIndex >= 0 && currentStepIndex < STEPS.length
+                    ? (STEPS[currentStepIndex]?.label ?? '')
+                    : ''}
+                </CardTitle>
+                <CardDescription>
+                  {currentStepIndex >= 0 && currentStepIndex < STEPS.length
+                    ? (STEPS[currentStepIndex]?.description ?? '')
+                    : ''}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {currentStep === 'basic' && (
@@ -233,7 +288,12 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         <Label htmlFor="petSpecies">Species *</Label>
                         <Select
                           value={formData.petSpecies || ''}
-                          onValueChange={(value) => { updateField('petSpecies', value as CreateAdoptionListingData['petSpecies']); }}
+                          onValueChange={(value) =>
+                            updateField(
+                              'petSpecies',
+                              value as CreateAdoptionListingData['petSpecies']
+                            )
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select species" />
@@ -277,7 +337,12 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         <Label htmlFor="petGender">Gender *</Label>
                         <Select
                           value={formData.petGender || ''}
-                          onValueChange={(value) => { updateField('petGender', value as CreateAdoptionListingData['petGender']); }}
+                          onValueChange={(value) =>
+                            updateField(
+                              'petGender',
+                              value as CreateAdoptionListingData['petGender']
+                            )
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select" />
@@ -295,7 +360,9 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         <Label htmlFor="petSize">Size *</Label>
                         <Select
                           value={formData.petSize || ''}
-                          onValueChange={(value) => { updateField('petSize', value as CreateAdoptionListingData['petSize']); }}
+                          onValueChange={(value) =>
+                            updateField('petSize', value as CreateAdoptionListingData['petSize'])
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select size" />
@@ -325,7 +392,9 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                       <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer">
                         <Upload size={32} className="mx-auto mb-2 text-muted-foreground" />
                         <p className="text-sm text-muted-foreground">Click or drag photos here</p>
-                        <p className="text-xs text-muted-foreground mt-1">Up to 6 photos, max 5MB each</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Up to 6 photos, max 5MB each
+                        </p>
                       </div>
                     </div>
                   </>
@@ -350,16 +419,15 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                     <div className="space-y-2">
                       <Label>Temperament * (Select all that apply)</Label>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                        {TEMPERAMENT_OPTIONS.map(option => (
+                        {TEMPERAMENT_OPTIONS.map((option) => (
                           <button
                             key={option}
                             type="button"
-                            onClick={() => { toggleArrayItem('temperament', option); }}
-                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
-                              String(formData.temperament?.includes(option)
-                                                                ? 'border-primary bg-primary/10 text-primary'
-                                                                : 'border-border hover:border-primary/50' ?? '')
-                            }`}
+                            onClick={() => toggleArrayItem('temperament', option)}
+                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all ${formData.temperament?.includes(option)
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border hover:border-primary/50'
+                              }`}
                           >
                             {option}
                           </button>
@@ -371,7 +439,12 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                       <Label htmlFor="energyLevel">Energy Level *</Label>
                       <Select
                         value={formData.energyLevel || 'medium'}
-                        onValueChange={(value) => { updateField('energyLevel', value as CreateAdoptionListingData['energyLevel']); }}
+                        onValueChange={(value) =>
+                          updateField(
+                            'energyLevel',
+                            value as CreateAdoptionListingData['energyLevel']
+                          )
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select energy level" />
@@ -380,7 +453,9 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                           <SelectItem value="low">Low - Prefers calm activities</SelectItem>
                           <SelectItem value="medium">Medium - Balanced activity</SelectItem>
                           <SelectItem value="high">High - Very active</SelectItem>
-                          <SelectItem value="very-high">Very High - Needs constant activity</SelectItem>
+                          <SelectItem value="very-high">
+                            Very High - Needs constant activity
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -391,8 +466,10 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="goodWithKids"
-                            {...(formData.goodWithKids !== undefined ? { checked: formData.goodWithKids } : {})}
-                            onCheckedChange={(checked) => { updateField('goodWithKids', !!checked); }}
+                            {...(formData.goodWithKids !== undefined
+                              ? { checked: formData.goodWithKids }
+                              : {})}
+                            onCheckedChange={(checked) => updateField('goodWithKids', !!checked)}
                           />
                           <Label htmlFor="goodWithKids" className="cursor-pointer">
                             Children
@@ -401,8 +478,10 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="goodWithPets"
-                            {...(formData.goodWithPets !== undefined ? { checked: formData.goodWithPets } : {})}
-                            onCheckedChange={(checked) => { updateField('goodWithPets', !!checked); }}
+                            {...(formData.goodWithPets !== undefined
+                              ? { checked: formData.goodWithPets }
+                              : {})}
+                            onCheckedChange={(checked) => updateField('goodWithPets', !!checked)}
                           />
                           <Label htmlFor="goodWithPets" className="cursor-pointer">
                             Other Pets
@@ -413,8 +492,12 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                             <div className="flex items-center space-x-2 ml-6">
                               <Checkbox
                                 id="goodWithDogs"
-                                {...(formData.goodWithDogs !== undefined ? { checked: formData.goodWithDogs } : {})}
-                                onCheckedChange={(checked) => { updateField('goodWithDogs', !!checked); }}
+                                {...(formData.goodWithDogs !== undefined
+                                  ? { checked: formData.goodWithDogs }
+                                  : {})}
+                                onCheckedChange={(checked) =>
+                                  updateField('goodWithDogs', !!checked)
+                                }
                               />
                               <Label htmlFor="goodWithDogs" className="cursor-pointer">
                                 Specifically good with dogs
@@ -423,8 +506,12 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                             <div className="flex items-center space-x-2 ml-6">
                               <Checkbox
                                 id="goodWithCats"
-                                {...(formData.goodWithCats !== undefined ? { checked: formData.goodWithCats } : {})}
-                                onCheckedChange={(checked) => { updateField('goodWithCats', !!checked); }}
+                                {...(formData.goodWithCats !== undefined
+                                  ? { checked: formData.goodWithCats }
+                                  : {})}
+                                onCheckedChange={(checked) =>
+                                  updateField('goodWithCats', !!checked)
+                                }
                               />
                               <Label htmlFor="goodWithCats" className="cursor-pointer">
                                 Specifically good with cats
@@ -445,8 +532,10 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="vaccinated"
-                            {...(formData.vaccinated !== undefined ? { checked: formData.vaccinated } : {})}
-                            onCheckedChange={(checked) => { updateField('vaccinated', !!checked); }}
+                            {...(formData.vaccinated !== undefined
+                              ? { checked: formData.vaccinated }
+                              : {})}
+                            onCheckedChange={(checked) => updateField('vaccinated', !!checked)}
                           />
                           <Label htmlFor="vaccinated" className="cursor-pointer">
                             Up-to-date on vaccinations
@@ -455,8 +544,10 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="spayedNeutered"
-                            {...(formData.spayedNeutered !== undefined ? { checked: formData.spayedNeutered } : {})}
-                            onCheckedChange={(checked) => { updateField('spayedNeutered', !!checked); }}
+                            {...(formData.spayedNeutered !== undefined
+                              ? { checked: formData.spayedNeutered }
+                              : {})}
+                            onCheckedChange={(checked) => updateField('spayedNeutered', !!checked)}
                           />
                           <Label htmlFor="spayedNeutered" className="cursor-pointer">
                             Spayed/Neutered
@@ -465,8 +556,10 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="microchipped"
-                            {...(formData.microchipped !== undefined ? { checked: formData.microchipped } : {})}
-                            onCheckedChange={(checked) => { updateField('microchipped', !!checked); }}
+                            {...(formData.microchipped !== undefined
+                              ? { checked: formData.microchipped }
+                              : {})}
+                            onCheckedChange={(checked) => updateField('microchipped', !!checked)}
                           />
                           <Label htmlFor="microchipped" className="cursor-pointer">
                             Microchipped
@@ -490,8 +583,12 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                       <Label>Veterinary Documents</Label>
                       <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
                         <Upload size={28} className="mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">Upload vaccination records, medical documents</p>
-                        <p className="text-xs text-muted-foreground mt-1">PDF, JPG, or PNG - Max 10MB</p>
+                        <p className="text-sm text-muted-foreground">
+                          Upload vaccination records, medical documents
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          PDF, JPG, or PNG - Max 10MB
+                        </p>
                       </div>
                     </div>
                   </>
@@ -513,16 +610,15 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                     <div className="space-y-2">
                       <Label>Adoption Requirements (Select all that apply)</Label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {REQUIREMENT_OPTIONS.map(option => (
+                        {REQUIREMENT_OPTIONS.map((option) => (
                           <button
                             key={option}
                             type="button"
-                            onClick={() => { toggleArrayItem('requirements', option); }}
-                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all text-left ${
-                              String(formData.requirements?.includes(option)
-                                                                ? 'border-primary bg-primary/10 text-primary'
-                                                                : 'border-border hover:border-primary/50' ?? '')
-                            }`}
+                            onClick={() => toggleArrayItem('requirements', option)}
+                            className={`px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all text-left ${formData.requirements?.includes(option)
+                              ? 'border-primary bg-primary/10 text-primary'
+                              : 'border-border hover:border-primary/50'
+                              }`}
                           >
                             {option}
                           </button>
@@ -538,19 +634,23 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                           type="number"
                           min="0"
                           value={formData.fee?.amount || ''}
-                          onChange={(e) => { updateField('fee', {
-                            amount: parseFloat(e.target.value) || 0,
-                            currency: formData.fee?.currency || 'USD'
-                          }); }}
+                          onChange={(e) =>
+                            updateField('fee', {
+                              amount: parseFloat(e.target.value) || 0,
+                              currency: formData.fee?.currency || 'USD',
+                            })
+                          }
                           placeholder="0"
                           className="flex-1"
                         />
                         <Select
                           value={formData.fee?.currency || 'USD'}
-                          onValueChange={(value) => { updateField('fee', {
-                            amount: formData.fee?.amount || 0,
-                            currency: value
-                          }); }}
+                          onValueChange={(value) =>
+                            updateField('fee', {
+                              amount: formData.fee?.amount || 0,
+                              currency: value,
+                            })
+                          }
                         >
                           <SelectTrigger className="w-24">
                             <SelectValue />
@@ -611,7 +711,8 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         </Button>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Only city will be shown publicly. Exact location shared after application approval.
+                        Only city will be shown publicly. Exact location shared after application
+                        approval.
                       </p>
                     </div>
                   </>
@@ -621,7 +722,7 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                   <div className="space-y-6">
                     <div className="bg-muted/30 rounded-lg p-6 space-y-4">
                       <h3 className="font-semibold text-lg">Review Your Listing</h3>
-                      
+
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-muted-foreground">Pet Name</p>
@@ -652,8 +753,10 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                       <div>
                         <p className="text-muted-foreground text-sm mb-1">Temperament</p>
                         <div className="flex flex-wrap gap-1">
-                          {formData.temperament?.map(trait => (
-                            <Badge key={trait} variant="secondary">{trait}</Badge>
+                          {formData.temperament?.map((trait) => (
+                            <Badge key={trait} variant="secondary">
+                              {trait}
+                            </Badge>
                           ))}
                         </div>
                       </div>
@@ -662,20 +765,26 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                         <p className="text-muted-foreground text-sm mb-1">Health Status</p>
                         <div className="flex flex-wrap gap-2">
                           {formData.vaccinated && <Badge variant="outline">Vaccinated</Badge>}
-                          {formData.spayedNeutered && <Badge variant="outline">Spayed/Neutered</Badge>}
+                          {formData.spayedNeutered && (
+                            <Badge variant="outline">Spayed/Neutered</Badge>
+                          )}
                           {formData.microchipped && <Badge variant="outline">Microchipped</Badge>}
                         </div>
                       </div>
 
                       <div>
                         <p className="text-muted-foreground text-sm mb-1">Location</p>
-                        <p className="font-medium">{formData.locationCity}, {formData.locationCountry}</p>
+                        <p className="font-medium">
+                          {formData.locationCity}, {formData.locationCountry}
+                        </p>
                       </div>
 
                       {formData.fee && formData.fee.amount > 0 && (
                         <div>
                           <p className="text-muted-foreground text-sm mb-1">Adoption Fee</p>
-                          <p className="font-medium">{formData.fee.currency} {formData.fee.amount}</p>
+                          <p className="font-medium">
+                            {formData.fee.currency} {formData.fee.amount}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -685,7 +794,9 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
                       <ul className="text-sm space-y-2 text-muted-foreground">
                         <li className="flex items-start gap-2">
                           <Check size={16} className="text-primary mt-0.5 shrink-0" />
-                          <span>Your listing will be reviewed by our team (usually within 24 hours)</span>
+                          <span>
+                            Your listing will be reviewed by our team (usually within 24 hours)
+                          </span>
                         </li>
                         <li className="flex items-start gap-2">
                           <Check size={16} className="text-primary mt-0.5 shrink-0" />
@@ -719,16 +830,18 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
               Cancel
             </Button>
             {currentStepIndex < STEPS.length - 1 ? (
-              <Button
-                onClick={handleNext}
-                disabled={!canProceed() || isSubmitting}
-              >
+              <Button onClick={handleNext} disabled={!canProceed() || isSubmitting}>
                 Next
                 <ArrowRight size={16} className="ml-2" />
               </Button>
             ) : (
               <Button
-                onClick={handleSubmit}
+                onClick={() => {
+                  void handleSubmit().catch((error) => {
+                    const err = error instanceof Error ? error : new Error(String(error));
+                    logger.error('Failed to submit adoption listing from button', err);
+                  });
+                }}
                 disabled={!canProceed() || isSubmitting}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit for Review'}
@@ -738,5 +851,5 @@ export function CreateAdoptionListingWizard({ onClose, onSuccess }: CreateAdopti
         </div>
       </div>
     </div>
-  )
+  );
 }

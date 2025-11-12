@@ -18,4 +18,3 @@ describe('ChatScreen', () => {
     expect(getByText('Your messages will appear here.')).toBeTruthy()
   })
 })
-

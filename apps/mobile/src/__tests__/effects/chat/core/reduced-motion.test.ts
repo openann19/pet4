@@ -1,8 +1,8 @@
 /**
  * Unit Tests for Chat Effects Core Utilities
- * 
+ *
  * Tests for reduced motion, haptics, performance, and telemetry
- * 
+ *
  * Location: apps/mobile/src/__tests__/effects/chat/core/reduced-motion.test.ts
  */
 
@@ -31,24 +31,33 @@ describe('Reduced Motion', () => {
 
   describe('isReduceMotionEnabled', () => {
     it('should return false when window is undefined (SSR)', () => {
-      // @ts-expect-error - test mock
-      global.window = undefined
+      Object.defineProperty(global, 'window', {
+        value: undefined,
+        configurable: true,
+        writable: true,
+      })
       expect(isReduceMotionEnabled()).toBe(false)
     })
 
     it('should return false when matchMedia is not available', () => {
-      // @ts-expect-error - test mock
-      global.window = { matchMedia: undefined }
+      Object.defineProperty(global, 'window', {
+        value: { matchMedia: undefined },
+        configurable: true,
+        writable: true,
+      })
       expect(isReduceMotionEnabled()).toBe(false)
     })
 
     it('should return false on error', () => {
-      // @ts-expect-error - test mock
-      global.window = {
-        matchMedia: () => {
-          throw new Error('Test error')
-        }
-      }
+      Object.defineProperty(global, 'window', {
+        value: {
+          matchMedia: () => {
+            throw new Error('Test error')
+          },
+        },
+        configurable: true,
+        writable: true,
+      })
       expect(isReduceMotionEnabled()).toBe(false)
     })
   })

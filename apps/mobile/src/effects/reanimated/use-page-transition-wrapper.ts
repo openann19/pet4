@@ -13,18 +13,14 @@ export interface UsePageTransitionWrapperReturn {
   opacity: ReturnType<typeof useSharedValue<number>>
   translateY: ReturnType<typeof useSharedValue<number>>
   scale: ReturnType<typeof useSharedValue<number>>
-  animatedStyle: AnimatedStyle
+  style: AnimatedStyle
   isVisible: boolean
 }
 
 export function usePageTransitionWrapper(
   options: UsePageTransitionWrapperOptions
 ): UsePageTransitionWrapperReturn {
-  const {
-    key,
-    duration = 300,
-    direction = 'up'
-  } = options
+  const { key, duration = 300, direction = 'up' } = options
 
   const [isVisible, setIsVisible] = useState(false)
   const opacity = useSharedValue(0)
@@ -45,13 +41,10 @@ export function usePageTransitionWrapper(
     }
   }, [key, duration, direction, opacity, translateY, scale])
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const style = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [
-        { translateY: translateY.value },
-        { scale: scale.value }
-      ]
+      transform: [{ translateY: translateY.value }, { scale: scale.value }],
     }
   }) as AnimatedStyle
 
@@ -59,7 +52,7 @@ export function usePageTransitionWrapper(
     opacity,
     translateY,
     scale,
-    animatedStyle,
-    isVisible
+    style,
+    isVisible,
   }
 }

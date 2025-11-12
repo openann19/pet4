@@ -47,17 +47,17 @@ export function useMagneticHover(options: UseMagneticHoverOptions = {}) {
 
       const centerX = elementRect.left + elementRect.width / 2;
       const centerY = elementRect.top + elementRect.height / 2;
-      
+
       const deltaX = event.clientX - centerX;
       const deltaY = event.clientY - centerY;
-      
+
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
       const maxDist = elementRect.width / 2;
-      
+
       if (distance < maxDist) {
         const normalizedX = Math.max(-maxDistance, Math.min(maxDistance, deltaX * strength));
         const normalizedY = Math.max(-maxDistance, Math.min(maxDistance, deltaY * strength));
-        
+
         translateX.value = withSpring(normalizedX, { damping, stiffness });
         translateY.value = withSpring(normalizedY, { damping, stiffness });
       }

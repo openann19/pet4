@@ -1,70 +1,70 @@
 /**
  * Notification Item Component
- * 
+ *
  * Individual notification item with animations
  */
 
-import { useEffect } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { Button } from '@/components/ui/button'
-import { Check, Trash, Archive } from '@phosphor-icons/react'
-import { formatDistanceToNow } from 'date-fns'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useHoverTap } from '@/effects/reanimated'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { cn } from '@/lib/utils'
-import type { PremiumNotification, NotificationPreferences } from '../types'
+import { memo, useEffect } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { Button } from '@/components/ui/button';
+import { Check, Trash, Archive } from '@phosphor-icons/react';
+import { formatDistanceToNow } from 'date-fns';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useHoverTap } from '@/effects/reanimated';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { cn } from '@/lib/utils';
+import type { PremiumNotification, NotificationPreferences } from '../types';
 
-export type GetIconFunction = (type: PremiumNotification['type'], priority: PremiumNotification['priority']) => React.ReactNode
-export type GetPriorityStylesFunction = (priority: PremiumNotification['priority']) => string
+export type GetIconFunction = (
+  type: PremiumNotification['type'],
+  priority: PremiumNotification['priority']
+) => React.ReactNode;
+export type GetPriorityStylesFunction = (priority: PremiumNotification['priority']) => string;
 
 export interface NotificationItemProps {
-  notification: PremiumNotification
-  onMarkAsRead: (id: string) => void
-  onArchive: (id: string) => void
-  onDelete: (id: string) => void
-  getIcon: GetIconFunction
-  getPriorityStyles?: GetPriorityStylesFunction
-  preferences?: NotificationPreferences | null
+  notification: PremiumNotification;
+  onMarkAsRead: (id: string) => void;
+  onArchive: (id: string) => void;
+  onDelete: (id: string) => void;
+  getIcon: GetIconFunction;
+  getPriorityStyles?: GetPriorityStylesFunction;
+  preferences?: NotificationPreferences | null;
 }
 
-export function NotificationItem({
+function NotificationItemComponent({
   notification,
   onMarkAsRead,
   onArchive,
   onDelete,
-  getIcon
+  getIcon,
 }: NotificationItemProps): JSX.Element {
-  const itemOpacity = useSharedValue(0)
-  const itemTranslateY = useSharedValue(20)
+  const itemOpacity = useSharedValue(0);
+  const itemTranslateY = useSharedValue(20);
   const hover = useHoverTap({
     hoverScale: 1.005,
-    tapScale: 1
-  })
+    tapScale: 1,
+  });
 
   useEffect(() => {
-    itemOpacity.value = withTiming(1, timingConfigs.smooth)
-    itemTranslateY.value = withSpring(0, springConfigs.smooth)
-  }, [itemOpacity, itemTranslateY])
+    itemOpacity.value = withTiming(1, timingConfigs.smooth);
+    itemTranslateY.value = withSpring(0, springConfigs.smooth);
+  }, [itemOpacity, itemTranslateY]);
 
   const itemStyle = useAnimatedStyle(() => ({
     opacity: itemOpacity.value,
-    transform: [
-      { translateY: itemTranslateY.value },
-      { scale: hover.scale.value }
-    ]
-  })) as AnimatedStyle
+    transform: [{ translateY: itemTranslateY.value }, { scale: hover.scale.value }],
+  })) as AnimatedStyle;
 
-  const unreadDotScale = useSharedValue(notification.read ? 0 : 1)
+  const unreadDotScale = useSharedValue(notification.read ? 0 : 1);
 
   useEffect(() => {
-    unreadDotScale.value = withSpring(notification.read ? 0 : 1, springConfigs.bouncy)
-  }, [notification.read, unreadDotScale])
+    unreadDotScale.value = withSpring(notification.read ? 0 : 1, springConfigs.bouncy);
+  }, [notification.read, unreadDotScale]);
 
   const unreadDotStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: unreadDotScale.value }]
-  })) as AnimatedStyle
+    transform: [{ scale: unreadDotScale.value }],
+  })) as AnimatedStyle;
 
   return (
     <AnimatedView
@@ -80,7 +80,10 @@ export function NotificationItem({
         <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 relative">
           {getIcon(notification.type, notification.priority)}
           {!notification.read && (
-            <AnimatedView style={unreadDotStyle} className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-primary">
+            <AnimatedView
+              style={unreadDotStyle}
+              className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-primary"
+            >
               {null}
             </AnimatedView>
           )}
@@ -89,19 +92,20 @@ export function NotificationItem({
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
-              <h4 className="font-semibold text-sm leading-tight">
-                {notification.title}
-              </h4>
+              <h4 className="font-semibold text-sm leading-tight">{notification.title}</h4>
               <p className="text-sm mt-1 text-muted-foreground leading-relaxed">
                 {notification.message}
               </p>
             </div>
 
-                {!notification.read && (
-                  <AnimatedView style={unreadDotStyle} className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1">
-                    {null}
-                  </AnimatedView>
-                )}
+            {!notification.read && (
+              <AnimatedView
+                style={unreadDotStyle}
+                className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1"
+              >
+                {null}
+              </AnimatedView>
+            )}
           </div>
 
           <div className="flex items-center justify-between mt-3 gap-2">
@@ -120,7 +124,7 @@ export function NotificationItem({
                   <Check size={16} />
                 </Button>
               )}
-              
+
               <Button
                 variant="ghost"
                 size="icon"
@@ -129,7 +133,7 @@ export function NotificationItem({
               >
                 <Archive size={16} />
               </Button>
-              
+
               <Button
                 variant="ghost"
                 size="icon"
@@ -143,5 +147,20 @@ export function NotificationItem({
         </div>
       </div>
     </AnimatedView>
-  )
+  );
 }
+
+// Memoize NotificationItem to prevent unnecessary re-renders
+export const NotificationItem = memo(NotificationItemComponent, (prev, next) => {
+  return (
+    prev.notification.id === next.notification.id &&
+    prev.notification.read === next.notification.read &&
+    prev.notification.timestamp === next.notification.timestamp &&
+    prev.notification.title === next.notification.title &&
+    prev.notification.message === next.notification.message &&
+    prev.onMarkAsRead === next.onMarkAsRead &&
+    prev.onArchive === next.onArchive &&
+    prev.onDelete === next.onDelete &&
+    prev.getIcon === next.getIcon
+  );
+});

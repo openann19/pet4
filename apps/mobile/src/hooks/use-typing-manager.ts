@@ -40,15 +40,11 @@ export function useTypingManager({
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([])
   const [isTyping, setIsTyping] = useState(false)
 
-  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  )
-  const debounceTimeoutRef = useRef<
-    ReturnType<typeof setTimeout> | undefined
-  >(undefined)
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const lastTypingEmitRef = useRef<number>(0)
 
-  const emitTypingStart = useCallback(() => {
+  const emitTypingStart = useCallback((): void => {
     if (!realtimeClient) return
 
     const now = Date.now()
@@ -58,7 +54,7 @@ export function useTypingManager({
 
     lastTypingEmitRef.current = now
 
-    realtimeClient
+    void realtimeClient
       .emit('typing_start', {
         roomId,
         userId: currentUserId,
@@ -69,10 +65,10 @@ export function useTypingManager({
       })
   }, [realtimeClient, roomId, currentUserId, currentUserName, debounceDelay])
 
-  const emitTypingStop = useCallback(() => {
+  const emitTypingStop = useCallback((): void => {
     if (!realtimeClient) return
 
-    realtimeClient
+    void realtimeClient
       .emit('typing_stop', {
         roomId,
         userId: currentUserId,
@@ -82,51 +78,57 @@ export function useTypingManager({
       })
   }, [realtimeClient, roomId, currentUserId])
 
-  const startTyping = useCallback(() => {
-    if (isTruthy(isTyping)) return
+  const stopTyping = useCallback((): void => {
+    setIsTyping(prevIsTyping => {
+      if (!prevIsTyping) return prevIsTyping
 
-    setIsTyping(true)
-    emitTypingStart()
+      emitTypingStop()
 
-    if (isTruthy(typingTimeoutRef.current)) {
-      clearTimeout(typingTimeoutRef.current)
-    }
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current)
+        typingTimeoutRef.current = undefined
+      }
 
-    typingTimeoutRef.current = setTimeout(() => {
-      stopTyping()
-    }, typingTimeout)
-  }, [isTyping, typingTimeout, emitTypingStart])
+      return false
+    })
+  }, [emitTypingStop])
 
-  const stopTyping = useCallback(() => {
-    if (!isTyping) return
+  const startTyping = useCallback((): void => {
+    setIsTyping(prevIsTyping => {
+      if (prevIsTyping) return prevIsTyping
 
-    setIsTyping(false)
-    emitTypingStop()
+      emitTypingStart()
 
-    if (isTruthy(typingTimeoutRef.current)) {
-      clearTimeout(typingTimeoutRef.current)
-      typingTimeoutRef.current = undefined
-    }
-  }, [isTyping, emitTypingStop])
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current)
+      }
+
+      typingTimeoutRef.current = setTimeout(() => {
+        stopTyping()
+      }, typingTimeout)
+
+      return true
+    })
+  }, [typingTimeout, emitTypingStart, stopTyping])
 
   const handleInputChange = useCallback(
-    (value: string) => {
-      if (isTruthy(debounceTimeoutRef.current)) {
+    (value: string): void => {
+      if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current)
       }
 
       if (value.trim().length > 0) {
-        startTyping()
-      } else {
         debounceTimeoutRef.current = setTimeout(() => {
-          stopTyping()
+          startTyping()
         }, debounceDelay)
+      } else {
+        stopTyping()
       }
     },
     [startTyping, stopTyping, debounceDelay]
   )
 
-  const handleMessageSend = useCallback(() => {
+  const handleMessageSend = useCallback((): void => {
     stopTyping()
     if (isTruthy(debounceTimeoutRef.current)) {
       clearTimeout(debounceTimeoutRef.current)
@@ -137,35 +139,52 @@ export function useTypingManager({
   useEffect(() => {
     if (!realtimeClient) return
 
-    const handleTypingStart = (data: {
-      roomId: string
-      userId: string
-      userName: string
-    }): void => {
-      if (data.roomId !== roomId || data.userId === currentUserId) return
+    const handleTypingStart = (data: unknown): void => {
+      const payload = data as {
+        roomId?: string
+        userId?: string
+        userName?: string
+        startedAt?: string
+      }
 
-      setTypingUsers((prev) => {
-        const existing = prev.find((u) => u.userId === data.userId)
-        if (isTruthy(existing)) return prev
+      if (
+        payload.roomId !== roomId ||
+        payload.userId === currentUserId ||
+        !payload.userId ||
+        !payload.userName
+      ) {
+        return
+      }
+
+      const userId = payload.userId
+      const userName = payload.userName
+
+      setTypingUsers(prev => {
+        const exists = prev.some(u => u.userId === userId)
+        if (exists) return prev
 
         return [
           ...prev,
           {
-            userId: data.userId,
-            userName: data.userName,
-            startedAt: new Date().toISOString(),
+            userId,
+            userName,
+            startedAt: payload.startedAt ?? new Date().toISOString(),
           },
         ]
       })
     }
 
-    const handleTypingStop = (data: {
-      roomId: string
-      userId: string
-    }): void => {
-      if (data.roomId !== roomId || data.userId === currentUserId) return
+    const handleTypingStop = (data: unknown): void => {
+      const payload = data as {
+        roomId?: string
+        userId?: string
+      }
 
-      setTypingUsers((prev) => prev.filter((u) => u.userId !== data.userId))
+      if (payload.roomId !== roomId || !payload.userId) {
+        return
+      }
+
+      setTypingUsers(prev => prev.filter(u => u.userId !== payload.userId))
     }
 
     realtimeClient.on('typing_start', handleTypingStart)
@@ -185,8 +204,14 @@ export function useTypingManager({
       if (isTruthy(debounceTimeoutRef.current)) {
         clearTimeout(debounceTimeoutRef.current)
       }
+      setIsTyping(prevIsTyping => {
+        if (prevIsTyping) {
+          emitTypingStop()
+        }
+        return false
+      })
     }
-  }, [])
+  }, [emitTypingStop])
 
   return {
     typingUsers,

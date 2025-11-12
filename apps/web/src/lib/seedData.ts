@@ -1,38 +1,38 @@
-import { buildLLMPrompt } from './llm-prompt'
-import { llmService } from './llm-service'
-import { parseLLMError } from './llm-utils'
-import { createLogger } from './logger'
-import { calculateTrustProfile, generateRatings, generateTrustBadges } from './trust-utils'
-import type { Pet } from './types'
-import { userService } from './user-service'
+import { buildLLMPrompt } from './llm-prompt';
+import { llmService } from './llm-service';
+import { parseLLMError } from './llm-utils';
+import { createLogger } from './logger';
+import { calculateTrustProfile, generateRatings, generateTrustBadges } from './trust-utils';
+import type { Pet } from './types';
+import { userService } from './user-service';
 
-const logger = createLogger('seedData')
+const logger = createLogger('seedData');
 
 interface LLMGeneratedPet {
-  name: string
-  breed: string
-  age: number
-  gender: 'male' | 'female'
-  size: 'small' | 'medium' | 'large' | 'extra-large'
-  photo: string
-  bio: string
-  personality: string[]
-  interests: string[]
-  lookingFor: string[]
-  location: string
-  ownerName: string
-  verified: boolean
+  name: string;
+  breed: string;
+  age: number;
+  gender: 'male' | 'female';
+  size: 'small' | 'medium' | 'large' | 'extra-large';
+  photo: string;
+  bio: string;
+  personality: string[];
+  interests: string[];
+  lookingFor: string[];
+  location: string;
+  ownerName: string;
+  verified: boolean;
 }
 
-
-export async function generateSamplePets(count: number = 15): Promise<Pet[]> {
+export async function generateSamplePets(count = 15): Promise<Pet[]> {
   // Validate count parameter
-  const validCount = typeof count === 'number' && count > 0 && count <= 100 ? Math.floor(count) : 15
+  const validCount =
+    typeof count === 'number' && count > 0 && count <= 100 ? Math.floor(count) : 15;
   if (typeof count !== 'number' || count <= 0 || count > 100) {
-    logger.warn(`Invalid count provided to generateSamplePets: ${String(count ?? '')}, using default: 15`)
+    logger.warn(`Invalid count provided to generateSamplePets: ${count}, using default: 15`);
   }
-  
-  const prompt = buildLLMPrompt`Generate exactly ${String(validCount ?? '')} diverse and realistic pet profiles for a premium pet matching platform. Create a rich mix of dogs and cats with varied breeds, ages, personalities, and interests that feel authentic and engaging. Return the result as a valid JSON object with a single property called "pets" that contains the pet list.
+
+  const prompt = buildLLMPrompt`Generate exactly ${validCount} diverse and realistic pet profiles for a premium pet matching platform. Create a rich mix of dogs and cats with varied breeds, ages, personalities, and interests that feel authentic and engaging. Return the result as a valid JSON object with a single property called "pets" that contains the pet list.
 
 Requirements for maximum diversity and realism:
 
@@ -91,25 +91,25 @@ Return ONLY valid JSON in this exact structure:
       "verified": boolean
     }
   ]
-}`
+}`;
 
   try {
-  const result = await llmService.llm(prompt, 'gpt-4o', true)
-  const data = JSON.parse(result)
+    const result = await llmService.llm(prompt, 'gpt-4o', true);
+    const data = JSON.parse(result) as { pets?: LLMGeneratedPet[] };
 
-  const currentUser = await userService.user().catch(() => null)
-    
+    const currentUser = await userService.user().catch(() => null);
+
     if (!data.pets || !Array.isArray(data.pets) || data.pets.length === 0) {
-      logger.warn('AI generated invalid or empty pet data, using fallback')
-      return getFallbackPets()
+      logger.warn('AI generated invalid or empty pet data, using fallback');
+      return getFallbackPets();
     }
-    
+
     return data.pets.map((pet: LLMGeneratedPet, idx: number) => {
-      const petId = `pet-${String(Date.now() ?? '')}-${String(idx ?? '')}`
-      const badges = generateTrustBadges(petId, Boolean(pet.verified))
-      const ratingCount = Math.floor(Math.random() * 15) + 3
-      const ratings = generateRatings(petId, ratingCount)
-      const trustProfile = calculateTrustProfile(ratings, badges)
+      const petId = `pet-${Date.now()}-${idx}`;
+      const badges = generateTrustBadges(petId, Boolean(pet.verified));
+      const ratingCount = Math.floor(Math.random() * 15) + 3;
+      const ratings = generateRatings(petId, ratingCount);
+      const trustProfile = calculateTrustProfile(ratings, badges);
 
       return {
         id: petId,
@@ -125,27 +125,27 @@ Return ONLY valid JSON in this exact structure:
         interests: Array.isArray(pet.interests) ? pet.interests : [],
         lookingFor: Array.isArray(pet.lookingFor) ? pet.lookingFor : [],
         location: pet.location,
-        ownerId: currentUser?.id || `owner-${String(idx ?? '')}`,
+        ownerId: currentUser?.id ?? `owner-${idx}`,
         ownerName: pet.ownerName,
         ownerAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${String(pet.ownerName ?? '')}`,
         verified: Boolean(pet.verified),
         createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
         trustProfile,
         ratings,
-      }
-    })
+      };
+    });
   } catch (error) {
-    const errorInfo = parseLLMError(error)
+    const errorInfo = parseLLMError(error);
     // Debug only - expected fallback behavior when LLM service is unavailable
-    logger.debug(errorInfo.technicalMessage)
+    logger.debug(errorInfo.technicalMessage);
     // User-friendly message for expected fallback
-    logger.info(errorInfo.userMessage)
-    return getFallbackPets()
+    logger.info(errorInfo.userMessage);
+    return getFallbackPets();
   }
 }
 
 function getFallbackPets(): Pet[] {
-  const fallbackPetsData: Array<Omit<Pet, 'trustProfile' | 'ratings'>> = [
+  const fallbackPetsData: Omit<Pet, 'trustProfile' | 'ratings'>[] = [
     {
       id: 'sample-pet-1',
       name: 'Luna',
@@ -434,18 +434,18 @@ function getFallbackPets(): Pet[] {
       verified: true,
       createdAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
     },
-  ]
+  ];
 
   return fallbackPetsData.map((pet) => {
-    const badges = generateTrustBadges(pet.id, pet.verified)
-    const ratingCount = Math.floor(Math.random() * 15) + 3
-    const ratings = generateRatings(pet.id, ratingCount)
-    const trustProfile = calculateTrustProfile(ratings, badges)
+    const badges = generateTrustBadges(pet.id, pet.verified);
+    const ratingCount = Math.floor(Math.random() * 15) + 3;
+    const ratings = generateRatings(pet.id, ratingCount);
+    const trustProfile = calculateTrustProfile(ratings, badges);
 
     return {
       ...pet,
       trustProfile,
       ratings,
-    }
-  })
+    };
+  });
 }

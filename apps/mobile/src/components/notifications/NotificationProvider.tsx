@@ -1,9 +1,9 @@
 /**
  * Notification Provider Component
- * 
+ *
  * Provides notification context and UI for displaying toast notifications.
  * Also configures notification categories for push notifications.
- * 
+ *
  * Location: apps/mobile/src/components/notifications/NotificationProvider.tsx
  */
 
@@ -82,14 +82,14 @@ export function NotificationProvider({
   const [notifications, setNotifications] = useState<Notification[]>([])
 
   useEffect(() => {
-    configureNotificationCategories().catch((error) => {
+    configureNotificationCategories().catch(error => {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to setup notification categories', err)
     })
   }, [])
 
   const dismissNotification = useCallback((id: string): void => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id))
+    setNotifications(prev => prev.filter(n => n.id !== id))
   }, [])
 
   const showNotification = useCallback(
@@ -101,7 +101,7 @@ export function NotificationProvider({
         duration: notification.duration ?? 4000,
       }
 
-      setNotifications((prev) => {
+      setNotifications(prev => {
         const updated = [newNotification, ...prev].slice(0, maxNotifications)
         return updated
       })
@@ -131,7 +131,7 @@ export function NotificationProvider({
   return (
     <NotificationContext.Provider value={value}>
       {children}
-      {notifications.map((notification) => (
+      {notifications.map(notification => (
         <NotificationToast
           key={notification.id}
           notification={notification}

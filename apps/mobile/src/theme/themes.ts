@@ -30,19 +30,19 @@ export const themes: Record<string, Theme> = {
     id: 'default-light',
     name: 'Default Light',
     colors: {
-      background: '#FFFFFF',
-      foreground: '#F5F5F5',
-      primary: '#E89D5C',
-      secondary: '#8B7355',
-      accent: '#FF6B6B',
+      background: '#FFF9F0',
+      foreground: '#FFF9F0',
+      primary: '#FF715B',
+      secondary: '#FFE4B2',
+      accent: '#FFD580',
       card: '#FFFFFF',
-      textPrimary: '#1A1A1A',
+      textPrimary: '#222222',
       textSecondary: '#666666',
-      border: '#E0E0E0',
-      success: '#4CAF50',
-      danger: '#F44336',
-      warning: '#FFA726',
-      info: '#2196F3',
+      border: '#E5E5E5',
+      success: '#28C76F',
+      danger: '#FF715B',
+      warning: '#FFC107',
+      info: '#FF715B',
     },
   },
   'default-dark': {
@@ -143,4 +143,3 @@ export const allThemes: Record<string, Theme> = {
     {}
   ),
 }
-

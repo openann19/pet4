@@ -1,25 +1,25 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import { X } from 'lucide-react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import { X } from 'lucide-react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumChipProps {
-  label: string
-  variant?: 'default' | 'outlined' | 'filled' | 'gradient'
-  size?: 'sm' | 'md' | 'lg'
-  icon?: React.ReactNode
-  onClose?: () => void
-  selected?: boolean
-  disabled?: boolean
-  className?: string
-  'aria-label': string
+  label: string;
+  variant?: 'default' | 'outlined' | 'filled' | 'gradient';
+  size?: 'sm' | 'md' | 'lg';
+  icon?: React.ReactNode;
+  onClose?: () => void;
+  selected?: boolean;
+  disabled?: boolean;
+  className?: string;
+  'aria-label': string;
 }
 
 export function PremiumChip({
@@ -33,30 +33,31 @@ export function PremiumChip({
   className,
   'aria-label': ariaLabel,
 }: PremiumChipProps): React.JSX.Element {
-  const scale = useSharedValue(1)
-  const opacity = useSharedValue(1)
+    const _uiConfig = useUIConfig();
+    const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const handleClose = useCallback(() => {
-    if (disabled || !onClose) return
+    if (disabled || !onClose) return;
 
-    scale.value = withSpring(0.8, springConfigs.smooth)
-    opacity.value = withTiming(0, { duration: 200 })
-    haptics.impact('light')
+    scale.value = withSpring(0.8, springConfigs.smooth);
+    opacity.value = withTiming(0, { duration: 200 });
+    haptics.impact('light');
 
     setTimeout(() => {
-      onClose()
-    }, 200)
-  }, [disabled, onClose, scale, opacity])
+      onClose();
+    }, 200);
+  }, [disabled, onClose, scale, opacity]);
 
   const handleClick = useCallback(() => {
-    if (isTruthy(disabled)) return
-    haptics.selection()
-  }, [disabled])
+    if (disabled) return;
+    haptics.selection();
+  }, [disabled]);
 
   const variants = {
     default: selected
@@ -71,13 +72,13 @@ export function PremiumChip({
     gradient: selected
       ? 'bg-linear-to-r from-primary via-primary/80 to-primary text-primary-foreground border-transparent'
       : 'bg-muted text-muted-foreground border-muted',
-  }
+  };
 
   const sizes = {
     sm: 'px-2 py-0.5 text-xs h-6',
     md: 'px-3 py-1 text-sm h-8',
     lg: 'px-4 py-1.5 text-base h-10',
-  }
+  };
 
   return (
     <AnimatedView style={animatedStyle}>
@@ -103,8 +104,8 @@ export function PremiumChip({
           <button
             type="button"
             onClick={(e) => {
-              e.stopPropagation()
-              handleClose()
+              e.stopPropagation();
+              handleClose();
             }}
             disabled={disabled}
             className="ml-1 opacity-70 hover:opacity-100 transition-opacity shrink-0"
@@ -115,5 +116,5 @@ export function PremiumChip({
         )}
       </div>
     </AnimatedView>
-  )
+  );
 }

@@ -1,9 +1,9 @@
 /**
  * Additive Bloom Component
- * 
+ *
  * Fast additive glow effect for send trails/reactions.
  * Uses Skia blur + blend mode for GPU-accelerated rendering.
- * 
+ *
  * Location: apps/mobile/src/effects/chat/shaders/additiveBloom.tsx
  */
 
@@ -14,7 +14,7 @@ import { useAnimatedReaction } from 'react-native-reanimated'
 
 /**
  * Draws a circular additive glow. Cheap and pretty.
- * 
+ *
  * Props:
  *  - centerX, centerY: px
  *  - radius: px
@@ -61,25 +61,25 @@ export function AdditiveBloom({
   // Sync SharedValues to state
   useAnimatedReaction(
     () => centerX.value,
-    (value) => {
+    value => {
       setXVal(value)
     }
   )
   useAnimatedReaction(
     () => centerY.value,
-    (value) => {
+    value => {
       setYVal(value)
     }
   )
   useAnimatedReaction(
     () => radius.value,
-    (value) => {
+    value => {
       setRVal(value)
     }
   )
   useAnimatedReaction(
     () => intensity.value,
-    (value) => {
+    value => {
       setAVal(value)
     }
   )
@@ -88,9 +88,7 @@ export function AdditiveBloom({
     const p = Skia.Paint()
     const blurRadius = Math.max(1, Math.min(24, rVal))
     // Use numeric constant for Clamp tile mode (0 = Clamp)
-    p.setImageFilter(
-      Skia.ImageFilter.MakeBlur(blurRadius, blurRadius, 0, null)
-    )
+    p.setImageFilter(Skia.ImageFilter.MakeBlur(blurRadius, blurRadius, 0, null))
     p.setAlphaf(Math.max(0, Math.min(1, aVal)))
     return p
   }, [rVal, aVal])
@@ -111,4 +109,3 @@ export function AdditiveBloom({
     </Canvas>
   )
 }
-

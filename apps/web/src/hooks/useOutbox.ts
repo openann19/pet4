@@ -1,53 +1,52 @@
 /**
  * useOutbox Hook - React Query Version
- * 
+ *
  * Offline message queue with:
  * - Exponential backoff with jitter
  * - Idempotent clientId
  * - Auto-flush on reconnect
  * - React Query persistence (IndexedDB)
- * 
+ *
  * Location: apps/web/src/hooks/useOutbox.ts
  */
 
-import { useEffect, useRef, useCallback } from 'react'
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
-import { queryKeys } from '@/lib/query-client'
-import { idbStorage } from '@/lib/storage-adapter'
-import { createLogger } from '@/lib/logger'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useEffect, useRef, useCallback } from 'react';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-client';
+import { idbStorage } from '@/lib/storage-adapter';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('useOutbox')
+const logger = createLogger('useOutbox');
 
 export interface OutboxItem {
-  clientId: string
-  payload: unknown
-  attempt: number
-  nextAt: number
-  createdAt: number
-  idempotencyKey?: string
+  clientId: string;
+  payload: unknown;
+  attempt: number;
+  nextAt: number;
+  createdAt: number;
+  idempotencyKey?: string;
 }
 
 export interface UseOutboxOptions {
-  sendFn: (payload: unknown) => Promise<void>
-  storageKey?: string
-  baseRetryDelay?: number
-  maxAttempts?: number
-  maxDelay?: number
-  jitter?: boolean
-  onFlush?: () => void
+  sendFn: (payload: unknown) => Promise<void>;
+  storageKey?: string;
+  baseRetryDelay?: number;
+  maxAttempts?: number;
+  maxDelay?: number;
+  jitter?: boolean;
+  onFlush?: () => void;
 }
 
 export interface UseOutboxReturn {
-  enqueue: (clientId: string, payload: unknown, idempotencyKey?: string) => void
-  queue: OutboxItem[]
-  clear: () => void
-  flush: () => Promise<void>
-  isOnline: boolean
+  enqueue: (clientId: string, payload: unknown, idempotencyKey?: string) => void;
+  queue: OutboxItem[];
+  clear: () => void;
+  flush: () => Promise<void>;
+  isOnline: boolean;
 }
 
 function generateIdempotencyKey(): string {
-  return `${String(Date.now() ?? '')}-${String(Math.random().toString(36).substring(2, 15) ?? '')}`
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 }
 
 function calculateExponentialBackoff(
@@ -56,12 +55,12 @@ function calculateExponentialBackoff(
   maxDelay: number,
   jitter: boolean
 ): number {
-  const exponentialDelay = Math.min(2 ** attempt * baseDelay, maxDelay)
-  if (isTruthy(jitter)) {
-    const jitterAmount = exponentialDelay * 0.1 * Math.random()
-    return Math.floor(exponentialDelay + jitterAmount)
+  const exponentialDelay = Math.min(2 ** attempt * baseDelay, maxDelay);
+  if (jitter) {
+    const jitterAmount = exponentialDelay * 0.1 * Math.random();
+    return Math.floor(exponentialDelay + jitterAmount);
   }
-  return exponentialDelay
+  return exponentialDelay;
 }
 
 export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
@@ -73,135 +72,133 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
     maxDelay = 15_000,
     jitter = true,
     onFlush,
-  } = options
+  } = options;
 
-  const queryClient = useQueryClient()
-  const timerRef = useRef<number | null>(null)
-  const sendFnRef = useRef(sendFn)
-  const isProcessingRef = useRef(false)
-  const isOnlineRef = useRef(
-    typeof navigator !== 'undefined' ? navigator.onLine : true
-  )
+  const queryClient = useQueryClient();
+  const timerRef = useRef<number | null>(null);
+  const sendFnRef = useRef(sendFn);
+  const isProcessingRef = useRef(false);
+  const isOnlineRef = useRef(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
   // Load queue from IndexedDB via React Query
   const { data: queue = [] } = useQuery<OutboxItem[]>({
     queryKey: ['outbox', storageKey],
     queryFn: async () => {
-      const stored = await idbStorage.getItem(storageKey)
-      if (!stored) return []
+      const stored = await idbStorage.getItem(storageKey);
+      if (!stored) return [];
       try {
-        return JSON.parse(stored) as OutboxItem[]
+        return JSON.parse(stored) as OutboxItem[];
       } catch {
-        logger.warn('Failed to parse outbox queue, resetting')
-        return []
+        logger.warn('Failed to parse outbox queue, resetting');
+        return [];
       }
     },
     staleTime: Infinity, // Queue is source of truth
     gcTime: Infinity, // Keep queue indefinitely
-  })
+  });
 
   // Mutation to persist queue
   const persistQueueMutation = useMutation({
     mutationFn: async (newQueue: OutboxItem[]) => {
-      await idbStorage.setItem(storageKey, JSON.stringify(newQueue))
-      return newQueue
+      await idbStorage.setItem(storageKey, JSON.stringify(newQueue));
+      return newQueue;
     },
     onSuccess: (newQueue) => {
-      queryClient.setQueryData(['outbox', storageKey], newQueue)
+      queryClient.setQueryData(['outbox', storageKey], newQueue);
     },
-  })
+  });
 
   useEffect(() => {
-    sendFnRef.current = sendFn
-  }, [sendFn])
+    sendFnRef.current = sendFn;
+  }, [sendFn]);
 
   const persistQueue = useCallback(
     (newQueue: OutboxItem[]) => {
-      persistQueueMutation.mutate(newQueue)
+      persistQueueMutation.mutate(newQueue);
     },
     [persistQueueMutation]
-  )
+  );
 
   const processQueue = useCallback(async (): Promise<void> => {
     if (isProcessingRef.current || !isOnlineRef.current) {
-      return
+      return;
     }
 
-    const currentQueue = queue || []
+    const currentQueue = queue || [];
     if (currentQueue.length === 0) {
-      return
+      return;
     }
 
-    isProcessingRef.current = true
-    const now = Date.now()
-    const ready = currentQueue.filter((item: OutboxItem) => item.nextAt <= now)
+    isProcessingRef.current = true;
+    const now = Date.now();
+    const ready = currentQueue.filter((item: OutboxItem) => item.nextAt <= now);
 
     if (ready.length === 0) {
-      isProcessingRef.current = false
-      scheduleNext()
-      return
+      isProcessingRef.current = false;
+      scheduleNext();
+      return;
     }
 
-    logger.debug('Processing outbox queue', { readyCount: ready.length, totalCount: currentQueue.length })
+    logger.debug('Processing outbox queue', {
+      readyCount: ready.length,
+      totalCount: currentQueue.length,
+    });
 
     const results = await Promise.allSettled(
       ready.map(async (item: OutboxItem) => {
         try {
-          await sendFnRef.current(item.payload)
-          logger.debug('Successfully sent outbox item', { clientId: item.clientId })
-          return { success: true, clientId: item.clientId }
+          await sendFnRef.current(item.payload);
+          logger.debug('Successfully sent outbox item', { clientId: item.clientId });
+          return { success: true, clientId: item.clientId };
         } catch (error) {
-          const nextAttempt = Math.min(item.attempt + 1, maxAttempts)
+          const nextAttempt = Math.min(item.attempt + 1, maxAttempts);
           if (nextAttempt >= maxAttempts) {
-            logger.error('Outbox item failed after max attempts', error instanceof Error ? error : new Error(String(error)), {
-              clientId: item.clientId,
-              attempts: nextAttempt,
-            })
-            return { success: false, clientId: item.clientId, failed: true }
+            logger.error(
+              'Outbox item failed after max attempts',
+              error instanceof Error ? error : new Error(String(error)),
+              {
+                clientId: item.clientId,
+                attempts: nextAttempt,
+              }
+            );
+            return { success: false, clientId: item.clientId, failed: true };
           }
-          const delay = calculateExponentialBackoff(
-            nextAttempt,
-            baseRetryDelay,
-            maxDelay,
-            jitter
-          )
+          const delay = calculateExponentialBackoff(nextAttempt, baseRetryDelay, maxDelay, jitter);
           logger.warn('Outbox item failed, will retry', {
             clientId: item.clientId,
             attempt: nextAttempt,
             delay,
-          })
+          });
           return {
             success: false,
             clientId: item.clientId,
             nextAttempt,
             delay,
-          }
+          };
         }
       })
-    )
+    );
 
     const updatedQueue = currentQueue
       .map((item: OutboxItem) => {
         const result = results.find(
-          (r) =>
-            r.status === 'fulfilled' &&
-            r.value.clientId === item.clientId
+          (r) => r.status === 'fulfilled' && r.value.clientId === item.clientId
         ) as
           | PromiseFulfilledResult<{
-              success: boolean
-              clientId: string
-              failed?: boolean
-              nextAttempt?: number
-              delay?: number
+              success: boolean;
+              clientId: string;
+              failed?: boolean;
+              nextAttempt?: number;
+              delay?: number;
             }>
-          | undefined
+          | undefined;
 
         if (!result) {
-          return item
+          return item;
         }
 
         if (result.value.success || result.value.failed) {
-          return null
+          return null;
         }
 
         if (result.value.nextAttempt != null && result.value.delay != null) {
@@ -209,67 +206,61 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
             ...item,
             attempt: result.value.nextAttempt,
             nextAt: Date.now() + result.value.delay,
-          }
+          };
         }
 
-        return item
+        return item;
       })
-      .filter((item): item is OutboxItem => item != null)
+      .filter((item): item is OutboxItem => item != null);
 
-    persistQueue(updatedQueue)
-    isProcessingRef.current = false
-    scheduleNext()
+    persistQueue(updatedQueue);
+    isProcessingRef.current = false;
+    scheduleNext();
 
     if (ready.length > 0 && onFlush) {
-      onFlush()
+      onFlush();
     }
-  }, [queue, baseRetryDelay, maxAttempts, maxDelay, jitter, onFlush, persistQueue])
+  }, [queue, baseRetryDelay, maxAttempts, maxDelay, jitter, onFlush, persistQueue]);
 
   const scheduleNext = useCallback((): void => {
     if (timerRef.current != null) {
-      return
+      return;
     }
 
-    const currentQueue = queue || []
+    const currentQueue = queue || [];
     if (currentQueue.length === 0) {
-      return
+      return;
     }
 
-    const now = Date.now()
+    const now = Date.now();
     const nextItem = currentQueue
       .filter((item: OutboxItem) => item.nextAt > now)
-      .sort((a: OutboxItem, b: OutboxItem) => a.nextAt - b.nextAt)[0]
+      .sort((a: OutboxItem, b: OutboxItem) => a.nextAt - b.nextAt)[0];
 
-    if (isTruthy(nextItem)) {
-      const delay = Math.max(nextItem.nextAt - now, 100)
+    if (nextItem) {
+      const delay = Math.max(nextItem.nextAt - now, 100);
       timerRef.current = window.setTimeout(() => {
-        timerRef.current = null
-        void processQueue()
-      }, delay) as unknown as number
+        timerRef.current = null;
+        void processQueue();
+      }, delay);
     } else {
       timerRef.current = window.setTimeout(() => {
-        timerRef.current = null
-        void processQueue()
-      }, 300) as unknown as number
+        timerRef.current = null;
+        void processQueue();
+      }, 300);
     }
-  }, [queue, processQueue])
+  }, [queue, processQueue]);
 
   const enqueue = useCallback(
-    (
-      clientId: string,
-      payload: unknown,
-      idempotencyKey?: string
-    ): void => {
-      const key = idempotencyKey ?? generateIdempotencyKey()
+    (clientId: string, payload: unknown, idempotencyKey?: string): void => {
+      const key = idempotencyKey ?? generateIdempotencyKey();
 
-      const currentQueue = queue || []
+      const currentQueue = queue || [];
       const existingIndex = currentQueue.findIndex(
-        (item: OutboxItem) =>
-          item.clientId === clientId ||
-          item.idempotencyKey === key
-      )
+        (item: OutboxItem) => item.clientId === clientId || item.idempotencyKey === key
+      );
 
-      let updatedQueue: OutboxItem[]
+      let updatedQueue: OutboxItem[];
       if (existingIndex >= 0) {
         updatedQueue = currentQueue.map((item: OutboxItem, index: number) =>
           index === existingIndex
@@ -281,7 +272,7 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
                 idempotencyKey: key,
               }
             : item
-        )
+        );
       } else {
         updatedQueue = [
           ...currentQueue,
@@ -293,64 +284,64 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
             createdAt: Date.now(),
             idempotencyKey: key,
           },
-        ]
+        ];
       }
 
-      persistQueue(updatedQueue)
+      persistQueue(updatedQueue);
 
-      if (isTruthy(isOnlineRef.current)) {
-        scheduleNext()
+      if (isOnlineRef.current) {
+        scheduleNext();
       }
     },
     [queue, persistQueue, scheduleNext]
-  )
+  );
 
   const clear = useCallback((): void => {
-    persistQueue([])
+    persistQueue([]);
     if (timerRef.current != null) {
-      window.clearTimeout(timerRef.current)
-      timerRef.current = null
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
     }
-    isProcessingRef.current = false
-  }, [persistQueue])
+    isProcessingRef.current = false;
+  }, [persistQueue]);
 
   const flush = useCallback(async (): Promise<void> => {
     if (!isOnlineRef.current) {
-      return
+      return;
     }
-    await processQueue()
-  }, [processQueue])
+    await processQueue();
+  }, [processQueue]);
 
   useEffect(() => {
     const handleOnline = (): void => {
-      logger.debug('Network connection restored, flushing outbox')
-      isOnlineRef.current = true
-      void processQueue()
-    }
+      logger.debug('Network connection restored, flushing outbox');
+      isOnlineRef.current = true;
+      void processQueue();
+    };
 
     const handleOffline = (): void => {
-      logger.debug('Network connection lost, pausing outbox')
-      isOnlineRef.current = false
-    }
+      logger.debug('Network connection lost, pausing outbox');
+      isOnlineRef.current = false;
+    };
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('online', handleOnline)
-      window.addEventListener('offline', handleOffline)
-      isOnlineRef.current = navigator.onLine
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+      isOnlineRef.current = navigator.onLine;
 
       if (isOnlineRef.current && queue.length > 0) {
-        scheduleNext()
+        scheduleNext();
       }
 
       return () => {
-        window.removeEventListener('online', handleOnline)
-        window.removeEventListener('offline', handleOffline)
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
         if (timerRef.current != null) {
-          window.clearTimeout(timerRef.current)
+          window.clearTimeout(timerRef.current);
         }
-      }
+      };
     }
-  }, [processQueue, scheduleNext, queue.length])
+  }, [processQueue, scheduleNext, queue.length]);
 
   return {
     enqueue,
@@ -358,6 +349,5 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
     clear,
     flush,
     isOnline: isOnlineRef.current,
-  }
+  };
 }
-

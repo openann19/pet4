@@ -1,21 +1,18 @@
 /**
  * ChatList Component
- * 
+ *
  * Premium chat list component with:
  * - Layout Animations for message insertions
  * - Scroll-to-bottom FAB with magnetic effect
  * - Typing indicator with liquid dots
  * - Optimized FlashList rendering
- * 
+ *
  * Location: apps/mobile/src/components/chat/ChatList.tsx
  */
 
 import { FlashList } from '@shopify/flash-list'
 import React, { useCallback, useRef, useState } from 'react'
-import {
-  StyleSheet,
-  View,
-} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Animated, {
   FadeIn,
@@ -32,15 +29,17 @@ import { isTruthy } from '@petspark/shared';
 /**
  * Typing dot component
  */
-function TypingDot({ dot }: { dot: { yOffset: SharedValue<number>; opacity: SharedValue<number> } }): React.ReactElement {
+function TypingDot({
+  dot,
+}: {
+  dot: { yOffset: SharedValue<number>; opacity: SharedValue<number> }
+}): React.ReactElement {
   const dotStyle = useAnimatedStyle(() => ({
     width: 6,
     height: 6,
     borderRadius: 3,
     backgroundColor: '#666666',
-    transform: [
-      { translateY: dot.yOffset.value },
-    ],
+    transform: [{ translateY: dot.yOffset.value }],
     opacity: dot.opacity.value,
   }))
 
@@ -79,7 +78,13 @@ export function ChatList({
 
   // Handle scroll (for FAB visibility logic)
   const handleScroll = useCallback(
-    (event: { nativeEvent: { contentOffset: { y: number }; contentSize: { height: number }; layoutMeasurement: { height: number } } }) => {
+    (event: {
+      nativeEvent: {
+        contentOffset: { y: number }
+        contentSize: { height: number }
+        layoutMeasurement: { height: number }
+      }
+    }) => {
       const offsetY = event.nativeEvent.contentOffset.y
       const contentHeight = event.nativeEvent.contentSize.height
       const visibleHeight = event.nativeEvent.layoutMeasurement.height
@@ -188,12 +193,24 @@ export function ChatList({
       />
 
       {/* Scroll to bottom FAB */}
-      <MagneticScrollFab
-        onPress={handleScrollToBottom}
-        isVisible={showScrollFab}
-        badgeCount={badgeCount}
-        previousBadgeCount={previousBadgeCountRef.current}
-      />
+      {showScrollFab && (
+        <Animated.View
+          style={[styles.fabContainer, fabAnimatedStyle]}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(150)}
+        >
+          <TouchableOpacity style={styles.fab} onPress={handleScrollToBottom} activeOpacity={0.8} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)">
+            <Text style={styles.fabIcon}>↓</Text>
+            {badgeCount > 0 && (
+              <Animated.View style={[styles.badge, badgeAnimatedStyle]}>
+                <Text style={styles.badgeText}>
+                  {badgeCount > 99 ? '99+' : badgeCount.toString()}
+                </Text>
+              </Animated.View>
+            )}
+          </TouchableOpacity>
+        </Animated.View>
+      )}
     </GestureHandlerRootView>
   )
 }
@@ -228,5 +245,45 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
   },
+  fabContainer: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    zIndex: 1000,
+  },
+  fab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'var(--color-accent-secondary-9)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: 'var(--color-fg)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  fabIcon: {
+    fontSize: 24,
+    color: 'var(--color-bg-overlay)',
+    fontWeight: '600',
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    backgroundColor: 'var(--color-error-9)',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+  },
+  badgeText: {
+    color: 'var(--color-bg-overlay)',
+    fontSize: 12,
+    fontWeight: '600',
+  },
 })
-

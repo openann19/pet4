@@ -1,15 +1,15 @@
 /**
  * KYC Service
- * 
+ *
  * Handles identity verification, age gate, consent management, and KYC pipeline.
  * Migrated from legacy KV mocks to use backend API endpoints.
  */
 
-import type { KYCSubmission, KYCStatus, ConsentRecord, AgeVerification } from './kyc-types'
-import { kycApi } from '@/api/kyc-api'
-import { createLogger } from './logger'
+import type { KYCSubmission, KYCStatus, ConsentRecord, AgeVerification } from './kyc-types';
+import { kycApi } from '@/api/kyc-api';
+import { createLogger } from './logger';
 
-const logger = createLogger('KYCService')
+const logger = createLogger('KYCService');
 
 /**
  * Start KYC process
@@ -19,16 +19,16 @@ export async function startKYC(
   provider: 'onfido' | 'veriff' | 'jumio' | 'manual' = 'onfido'
 ): Promise<{ sessionId: string; providerToken?: string; url?: string }> {
   try {
-    const result = await kycApi.startKYC({ userId, provider })
+    const result = await kycApi.startKYC({ userId, provider });
     return {
       sessionId: result.submissionId,
       ...(result.providerToken ? { providerToken: result.providerToken } : {}),
       ...(result.url ? { url: result.url } : {}),
-    }
+    };
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('KYC start failed', err, { action: 'startKYC', userId, provider })
-    throw err
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('KYC start failed', err, { action: 'startKYC', userId, provider });
+    throw err;
   }
 }
 
@@ -39,11 +39,11 @@ export async function handleKYCWebhook(
   submissionId: string,
   status: 'verified' | 'rejected',
   data: {
-    reference?: string
-    reason?: string
-    riskScore?: number
-    country?: string
-    documentType?: string
+    reference?: string;
+    reason?: string;
+    riskScore?: number;
+    country?: string;
+    documentType?: string;
   }
 ): Promise<void> {
   try {
@@ -51,11 +51,11 @@ export async function handleKYCWebhook(
       submissionId,
       status,
       ...data,
-    })
+    });
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('KYC webhook handling failed', err, { submissionId, status })
-    throw err
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('KYC webhook handling failed', err, { submissionId, status });
+    throw err;
   }
 }
 
@@ -64,11 +64,11 @@ export async function handleKYCWebhook(
  */
 export async function getKYCStatus(userId: string): Promise<KYCStatus> {
   try {
-    return await kycApi.getKYCStatus(userId)
+    return await kycApi.getKYCStatus(userId);
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to get KYC status', err, { userId })
-    return 'not_started'
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to get KYC status', err, { userId });
+    return 'not_started';
   }
 }
 
@@ -77,11 +77,11 @@ export async function getKYCStatus(userId: string): Promise<KYCStatus> {
  */
 export async function getKYCSubmission(submissionId: string): Promise<KYCSubmission | null> {
   try {
-    return await kycApi.getKYCSubmission(submissionId)
+    return await kycApi.getKYCSubmission(submissionId);
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to get KYC submission', err, { submissionId })
-    return null
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to get KYC submission', err, { submissionId });
+    return null;
   }
 }
 
@@ -100,11 +100,11 @@ export async function manualKYCReview(
       decision,
       actorUserId,
       ...(reason ? { reason } : {}),
-    })
+    });
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Manual KYC review failed', err, { submissionId, decision, actorUserId })
-    throw err
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Manual KYC review failed', err, { submissionId, decision, actorUserId });
+    throw err;
   }
 }
 
@@ -121,11 +121,11 @@ export async function recordAgeVerification(
       userId,
       ageVerified,
       ...(country ? { country } : {}),
-    })
+    });
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to record age verification', err, { userId, ageVerified })
-    throw err
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to record age verification', err, { userId, ageVerified });
+    throw err;
   }
 }
 
@@ -148,11 +148,11 @@ export async function recordConsent(
       accepted,
       ...(ipAddress ? { ipAddress } : {}),
       ...(userAgent ? { userAgent } : {}),
-    })
+    });
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to record consent', err, { userId, type, version })
-    throw err
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to record consent', err, { userId, type, version });
+    throw err;
   }
 }
 
@@ -161,11 +161,11 @@ export async function recordConsent(
  */
 export async function getUserConsents(userId: string): Promise<ConsentRecord[]> {
   try {
-    return await kycApi.getUserConsents(userId)
+    return await kycApi.getUserConsents(userId);
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to get user consents', err, { userId })
-    return []
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error('Failed to get user consents', err, { userId });
+    return [];
   }
 }
 
@@ -173,11 +173,9 @@ export async function getUserConsents(userId: string): Promise<ConsentRecord[]> 
  * Check if user has required consents
  */
 export async function hasRequiredConsents(userId: string): Promise<boolean> {
-  const consents = await getUserConsents(userId)
-  const terms = consents.find(c => c.type === 'terms' && c.accepted)
-  const privacy = consents.find(c => c.type === 'privacy' && c.accepted)
-  
-  return !!(terms && privacy)
+  const consents = await getUserConsents(userId);
+  const terms = consents.find((c) => c.type === 'terms' && c.accepted);
+  const privacy = consents.find((c) => c.type === 'privacy' && c.accepted);
+
+  return !!(terms && privacy);
 }
-
-

@@ -1,70 +1,70 @@
-import { useState, useEffect } from 'react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Warning, CreditCard, X } from '@phosphor-icons/react'
-import { PaymentsService } from '@/lib/payments-service'
-import type { BillingIssue } from '@/lib/payments-types'
-import { toast } from 'sonner'
-import { logger } from '@/lib/logger'
+import { useState, useEffect } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Warning, CreditCard, X } from '@phosphor-icons/react';
+import { PaymentsService } from '@/lib/payments-service';
+import type { BillingIssue } from '@/lib/payments-types';
+import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export function BillingIssueBanner() {
-  const [issue, setIssue] = useState<BillingIssue | null>(null)
-  const [dismissed, setDismissed] = useState(false)
-  const [retrying, setRetrying] = useState(false)
+  const [issue, setIssue] = useState<BillingIssue | null>(null);
+  const [dismissed, setDismissed] = useState(false);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
-    checkBillingIssues()
-  }, [])
+    checkBillingIssues();
+  }, []);
 
   const checkBillingIssues = async () => {
     try {
-      const user = await spark.user()
-      const billingIssue = await PaymentsService.getUserBillingIssue(user.id)
+      const user = await spark.user();
+      const billingIssue = await PaymentsService.getUserBillingIssue(user.id);
       if (billingIssue && !billingIssue.resolved) {
-        setIssue(billingIssue)
+        setIssue(billingIssue);
       }
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to check billing issues', err, { action: 'checkBillingIssues' })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to check billing issues', err, { action: 'checkBillingIssues' });
     }
-  }
+  };
 
   const handleRetry = async () => {
-    if (!issue) return
+    if (!issue) return;
 
-    setRetrying(true)
+    setRetrying(true);
     try {
-      await PaymentsService.resolveBillingIssue(issue.id)
-      toast.success('Payment updated successfully')
-      setIssue(null)
+      await PaymentsService.resolveBillingIssue(issue.id);
+      toast.success('Payment updated successfully');
+      setIssue(null);
     } catch {
-      toast.error('Failed to update payment method')
+      toast.error('Failed to update payment method');
     } finally {
-      setRetrying(false)
+      setRetrying(false);
     }
-  }
+  };
 
   if (!issue || dismissed) {
-    return null
+    return null;
   }
 
   const daysLeft = Math.max(
     0,
     Math.ceil((new Date(issue.gracePeriodEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-  )
+  );
 
   const getIssueMessage = () => {
     switch (issue.type) {
       case 'payment_failed':
-        return 'Your last payment failed. Please update your payment method.'
+        return 'Your last payment failed. Please update your payment method.';
       case 'card_expired':
-        return 'Your payment card has expired. Please add a new card.'
+        return 'Your payment card has expired. Please add a new card.';
       case 'insufficient_funds':
-        return 'Payment could not be processed due to insufficient funds.'
+        return 'Payment could not be processed due to insufficient funds.';
       default:
-        return 'There is an issue with your subscription payment.'
+        return 'There is an issue with your subscription payment.';
     }
-  }
+  };
 
   return (
     <div className="sticky top-16 z-30 px-4 sm:px-6 lg:px-8 py-4">
@@ -98,5 +98,5 @@ export function BillingIssueBanner() {
         </AlertDescription>
       </Alert>
     </div>
-  )
+  );
 }

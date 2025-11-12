@@ -1,12 +1,20 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { MapPin, X, Plus, Clock, Funnel } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type { Location, LostPetAlert } from '@/lib/maps/types';
-import { getCurrentLocation, snapToGrid, calculateDistance, formatDistance } from '@/lib/maps/utils';
+
+const logger = createLogger('LostFoundMap');
+import {
+  getCurrentLocation,
+  snapToGrid,
+  calculateDistance,
+  formatDistance,
+} from '@/lib/maps/utils';
 import MapLibreMap from '@/components/maps/MapLibreMap';
 import type { MapMarker } from '@/lib/maps/useMapLibreMap';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
@@ -34,10 +42,19 @@ export default function LostFoundMap({
   useEffect(() => {
     getCurrentLocation()
       .then((location) => {
-        const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
-        setUserLocation(coarse);
+        try {
+          const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
+          setUserLocation(coarse);
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('LostFoundMap snapToGrid error', err);
+          setUserLocation({ lat: 40.7128, lng: -74.006 });
+        }
       })
-      .catch(() => {
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('LostFoundMap getCurrentLocation error', err);
+        // Fallback to default location (New York)
         setUserLocation({ lat: 40.7128, lng: -74.006 });
       });
   }, [mapSettings.PRIVACY_GRID_METERS]);
@@ -79,10 +96,12 @@ export default function LostFoundMap({
 
   const handleReportSighting = async (): Promise<void> => {
     if (!selectedAlert || !userLocation || !onReportSighting) return;
-    
+
     haptics.trigger('success');
     onReportSighting(selectedAlert.id, userLocation);
-    toast.success((t.lostFound as { sightingReported?: string })?.sightingReported || 'Sighting reported');
+    toast.success(
+      (t.lostFound as { sightingReported?: string })?.sightingReported || 'Sighting reported'
+    );
   };
 
   const mapCenter = useMemo((): Location => {
@@ -105,7 +124,6 @@ export default function LostFoundMap({
 
   return (
     <div className="space-y-4">
-
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="secondary" className="gap-2">
@@ -122,10 +140,18 @@ export default function LostFoundMap({
               }}
               className="text-sm border rounded px-2 py-1"
             >
-              <option value="all">{(t.lostFound as { allTime?: string })?.allTime || 'All time'}</option>
-              <option value="24h">{(t.lostFound as { last24h?: string })?.last24h || 'Last 24h'}</option>
-              <option value="7d">{(t.lostFound as { last7d?: string })?.last7d || 'Last 7 days'}</option>
-              <option value="30d">{(t.lostFound as { last30d?: string })?.last30d || 'Last 30 days'}</option>
+              <option value="all">
+                {(t.lostFound as { allTime?: string })?.allTime || 'All time'}
+              </option>
+              <option value="24h">
+                {(t.lostFound as { last24h?: string })?.last24h || 'Last 24h'}
+              </option>
+              <option value="7d">
+                {(t.lostFound as { last7d?: string })?.last7d || 'Last 7 days'}
+              </option>
+              <option value="30d">
+                {(t.lostFound as { last30d?: string })?.last30d || 'Last 30 days'}
+              </option>
             </select>
           </div>
         </div>
@@ -137,7 +163,7 @@ export default function LostFoundMap({
         )}
       </div>
 
-      <div className="relative h-[500px] rounded-lg overflow-hidden border">
+      <div className="relative h-125 rounded-lg overflow-hidden border">
         <MapLibreMap
           center={mapCenter}
           zoom={12}
@@ -177,10 +203,11 @@ export default function LostFoundMap({
                 </div>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => { setSelectedAlert(null); }}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setSelectedAlert(null)}
+              aria-label="Close alert"
             >
               <X size={20} />
             </Button>
@@ -189,10 +216,7 @@ export default function LostFoundMap({
           <p className="text-sm text-foreground">{selectedAlert.description}</p>
 
           {onReportSighting && (
-            <Button
-              className="w-full"
-              onClick={handleReportSighting}
-            >
+            <Button className="w-full" onClick={handleReportSighting}>
               <MapPin size={18} className="mr-2" />
               {t.lostFound?.reportSighting || 'Report Sighting'}
             </Button>
@@ -202,4 +226,3 @@ export default function LostFoundMap({
     </div>
   );
 }
-

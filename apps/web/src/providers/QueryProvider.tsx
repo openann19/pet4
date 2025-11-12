@@ -1,8 +1,9 @@
 /**
- * React Query provider for the web surface with IndexedDB persistence.
+ * React Query provider for the web surface with localStorage persistence.
  *
  * Ensures offline caching, focus/online state propagation, and background sync
  * while keeping React Query Devtools disabled in production builds.
+ * Uses synchronous localStorage persister to avoid Promise serialization issues during hydration.
  */
 
 import type { ReactNode } from 'react';
@@ -13,9 +14,9 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient, queryPersister, backgroundSyncConfig } from '@/lib/query-client';
 import { createLogger } from '@/lib/logger';
 
-type QueryProviderProps = {
+interface QueryProviderProps {
   readonly children: ReactNode;
-};
+}
 
 const logger = createLogger('web.QueryProvider');
 
@@ -91,7 +92,8 @@ export function QueryProvider({ children }: QueryProviderProps): React.JSX.Eleme
 
     const syncInterval = window.setInterval(() => {
       const isOnline = window.navigator.onLine;
-      const isVisible = typeof document !== 'undefined' ? document.visibilityState === 'visible' : true;
+      const isVisible =
+        typeof document !== 'undefined' ? document.visibilityState === 'visible' : true;
 
       if (!isOnline || !isVisible) {
         return;
@@ -116,15 +118,14 @@ export function QueryProvider({ children }: QueryProviderProps): React.JSX.Eleme
       persister: queryPersister,
       maxAge: 24 * 60 * 60 * 1000,
       dehydrateOptions: {
-        shouldDehydrateQuery: (query: { state: { status: string } }) => query.state.status === 'success',
+        shouldDehydrateQuery: (query: { state: { status: string } }) =>
+          query.state.status === 'success',
       },
     }),
-    [],
+    []
   );
 
-  const showDevtools = Boolean(
-    (import.meta as unknown as { env?: { DEV?: boolean } })?.env?.DEV,
-  );
+  const showDevtools = Boolean(import.meta.env.DEV);
 
   return (
     <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>

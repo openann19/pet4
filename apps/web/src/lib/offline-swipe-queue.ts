@@ -1,114 +1,134 @@
-'use client'
+'use client';
 
-import { createLogger } from '@/lib/logger'
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('OfflineSwipeQueue')
+const logger = createLogger('OfflineSwipeQueue');
 
 export interface SwipeAction {
-  petId: string
-  targetId: string
-  action: 'like' | 'pass'
-  timestamp: string
+  petId: string;
+  targetId: string;
+  action: 'like' | 'pass';
+  timestamp: string;
 }
 
 export interface OfflineSwipeQueue {
-  enqueue(action: SwipeAction): Promise<void>
-  dequeue(): Promise<SwipeAction | null>
-  peek(): Promise<SwipeAction | null>
-  clear(): Promise<void>
-  size(): Promise<number>
-  isEmpty(): Promise<boolean>
+  enqueue(action: SwipeAction): void;
+  dequeue(): SwipeAction | null;
+  peek(): SwipeAction | null;
+  clear(): void;
+  size(): number;
+  isEmpty(): boolean;
 }
 
 class LocalStorageSwipeQueue implements OfflineSwipeQueue {
-  private readonly storageKey = 'swipe-offline-queue'
+  private readonly storageKey = 'swipe-offline-queue';
 
-  async enqueue(action: SwipeAction): Promise<void> {
+  enqueue(action: SwipeAction): void {
     try {
-      const queue = await this.getQueue()
-      queue.push(action)
-      await this.saveQueue(queue)
+      const queue = this.getQueue();
+      queue.push(action);
+      this.saveQueue(queue);
     } catch (error) {
-      logger.error('Failed to enqueue swipe action', error instanceof Error ? error : new Error(String(error)))
-      throw error
+      logger.error(
+        'Failed to enqueue swipe action',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      throw error;
     }
   }
 
-  async dequeue(): Promise<SwipeAction | null> {
+  dequeue(): SwipeAction | null {
     try {
-      const queue = await this.getQueue()
+      const queue = this.getQueue();
       if (queue.length === 0) {
-        return null
+        return null;
       }
-      const action = queue.shift()
-      await this.saveQueue(queue)
-      return action ? action : null
+      const action = queue.shift();
+      this.saveQueue(queue);
+      return action ? action : null;
     } catch (error) {
-      logger.error('Failed to dequeue swipe action', error instanceof Error ? error : new Error(String(error)))
-      return null
+      logger.error(
+        'Failed to dequeue swipe action',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      return null;
     }
   }
 
-  async peek(): Promise<SwipeAction | null> {
+  peek(): SwipeAction | null {
     try {
-      const queue = await this.getQueue()
-      return queue.length > 0 ? queue[0]! : null
+      const queue = this.getQueue();
+      return queue.length > 0 ? queue[0]! : null;
     } catch (error) {
-      logger.error('Failed to peek swipe queue', error instanceof Error ? error : new Error(String(error)))
-      return null
+      logger.error(
+        'Failed to peek swipe queue',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      return null;
     }
   }
 
-  async clear(): Promise<void> {
+  clear(): void {
     try {
-      localStorage.removeItem(this.storageKey)
+      localStorage.removeItem(this.storageKey);
     } catch (error) {
-      logger.error('Failed to clear swipe queue', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        'Failed to clear swipe queue',
+        error instanceof Error ? error : new Error(String(error))
+      );
     }
   }
 
-  async size(): Promise<number> {
+  size(): number {
     try {
-      const queue = await this.getQueue()
-      return queue.length
+      const queue = this.getQueue();
+      return queue.length;
     } catch (error) {
-      logger.error('Failed to get queue size', error instanceof Error ? error : new Error(String(error)))
-      return 0
+      logger.error(
+        'Failed to get queue size',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      return 0;
     }
   }
 
-  async isEmpty(): Promise<boolean> {
-    const size = await this.size()
-    return size === 0
+  isEmpty(): boolean {
+    const queueSize = this.size();
+    return queueSize === 0;
   }
 
-  private async getQueue(): Promise<SwipeAction[]> {
+  private getQueue(): SwipeAction[] {
     try {
-      const stored = localStorage.getItem(this.storageKey)
+      const stored = localStorage.getItem(this.storageKey);
       if (!stored) {
-        return []
+        return [];
       }
-      const parsed = JSON.parse(stored) as SwipeAction[]
-      return Array.isArray(parsed) ? parsed : []
+      const parsed = JSON.parse(stored) as SwipeAction[];
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
-      logger.warn('Failed to parse swipe queue', error instanceof Error ? error : new Error(String(error)))
-      return []
+      logger.warn(
+        'Failed to parse swipe queue',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      return [];
     }
   }
 
-  private async saveQueue(queue: SwipeAction[]): Promise<void> {
+  private saveQueue(queue: SwipeAction[]): void {
     try {
-      localStorage.setItem(this.storageKey, JSON.stringify(queue))
+      localStorage.setItem(this.storageKey, JSON.stringify(queue));
     } catch (error) {
-      logger.error('Failed to save swipe queue', error instanceof Error ? error : new Error(String(error)))
-      throw error
+      logger.error(
+        'Failed to save swipe queue',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      throw error;
     }
   }
 }
 
 export function createOfflineSwipeQueue(): OfflineSwipeQueue {
-  return new LocalStorageSwipeQueue()
+  return new LocalStorageSwipeQueue();
 }
 
-export const offlineSwipeQueue = createOfflineSwipeQueue()
-
+export const offlineSwipeQueue = createOfflineSwipeQueue();

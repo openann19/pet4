@@ -24,9 +24,7 @@ describe('usePressAnimation', () => {
   })
 
   it('should trigger haptic feedback on press', () => {
-    const { result } = renderHook(() =>
-      usePressAnimation({ hapticFeedback: true })
-    )
+    const { result } = renderHook(() => usePressAnimation({ hapticFeedback: true }))
 
     act(() => {
       result.current.handlePress()
@@ -51,4 +49,3 @@ describe('usePressAnimation', () => {
     expect(result.current.scale.value).toBe(1)
   })
 })
-

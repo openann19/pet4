@@ -2,22 +2,50 @@ import { FeatureCard } from '@mobile/components/FeatureCard'
 import { SectionHeader } from '@mobile/components/SectionHeader'
 import { colors } from '@mobile/theme/colors'
 import type { PetProfile } from '@mobile/types/pet'
+import type { PetApiResponse } from '@mobile/types/api'
 import { matchingApi } from '@mobile/utils/api-client'
 import { createLogger } from '@mobile/utils/logger'
 import * as Haptics from 'expo-haptics'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList, Platform, StyleSheet, Text, View } from 'react-native'
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-} from 'react-native-reanimated'
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { isTruthy, isDefined } from '@petspark/shared';
 
 const logger = createLogger('FeedScreen')
 
 type Tab = 'discovery' | 'map'
+
+/**
+ * Valid species types
+ */
+type PetSpecies = 'dog' | 'cat' | 'bird' | 'rabbit' | 'other'
+
+/**
+ * Map API response pet to UI PetProfile
+ */
+function mapApiPetToProfile(apiPet: PetApiResponse): PetProfile {
+  // Validate species - default to 'other' if invalid
+  const validSpecies: PetSpecies[] = ['dog', 'cat', 'bird', 'rabbit', 'other']
+  const species = validSpecies.includes(apiPet.species as PetSpecies)
+    ? (apiPet.species as PetSpecies)
+    : 'other'
+
+  // Filter and map media to photos
+  const photos = apiPet.media.filter(media => media.type === 'photo').map(media => media.url)
+
+  return {
+    id: apiPet.id,
+    ownerId: apiPet.ownerId,
+    name: apiPet.name,
+    species,
+    breed: apiPet.breedName,
+    age: Math.floor(apiPet.ageMonths / 12),
+    photos,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+}
 
 interface SegmentBtnProps {
   label: string
@@ -49,26 +77,14 @@ function DiscoveryList(): React.ReactElement {
       setLoading(true)
       setError(null)
       const response = await matchingApi.getAvailablePets({ limit: 20 })
-      
-      // Map API response to PetProfile format
-      const mappedPets: PetProfile[] = response.pets.map((pet) => ({
-        id: pet.id,
-        ownerId: pet.ownerId,
-        name: pet.name,
-        species: (pet.species as 'dog' | 'cat' | 'bird' | 'rabbit' | 'other') || 'other',
-        breed: pet.breedName,
-        age: Math.floor(pet.ageMonths / 12),
-        photos: pet.media
-          .filter((m: { type: string }) => m.type === 'photo')
-          .map((m: { url: string }) => m.url),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }))
-      
+
+      // Map API response to PetProfile format using type-safe mapper
+      const mappedPets: PetProfile[] = response.pets.map(mapApiPetToProfile)
+
       setPets(mappedPets)
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load pets'                                                                           
-      logger.error('Failed to load pets', err instanceof Error ? err : new Error(String(err)))                                                                  
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load pets'
+      logger.error('Failed to load pets', err instanceof Error ? err : new Error(String(err)))
       setError(errorMessage)
     } finally {
       setLoading(false)
@@ -91,7 +107,12 @@ function DiscoveryList(): React.ReactElement {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
-        <Text onPress={() => { void loadPets() }} style={styles.retryText}>
+        <Text
+          onPress={() => {
+            void loadPets()
+          }}
+          style={styles.retryText}
+        >
           Retry
         </Text>
       </View>
@@ -102,7 +123,7 @@ function DiscoveryList(): React.ReactElement {
     <FlatList
       contentContainerStyle={{ padding: 16, paddingBottom: 28 }}
       data={pets}
-      keyExtractor={(p) => String(p.id)}
+      keyExtractor={p => String(p.id)}
       renderItem={({ item }) => (
         <FeatureCard title={item.name} subtitle={`${String(item.breed ?? '')} • ${String(item.age ?? '')} years old`}>
           <View style={styles.row}>
@@ -141,7 +162,7 @@ function MapPane(): React.ReactElement {
   const pendingRegionRef = useRef<typeof initialRegion | null>(null)
 
   // Optional dynamic MapView (no hard dep). If the package is missing, we fall back gracefully.
-  const [MapView, setMapView] = useState<React.ComponentType<{
+  type MapViewProps = {
     style?: unknown
     initialRegion?: {
       latitude: number
@@ -156,59 +177,68 @@ function MapPane(): React.ReactElement {
       longitudeDelta: number
     }) => void
     children?: React.ReactNode
-  }> | null>(null)
+  }
+  const [MapView, setMapView] = useState<React.ComponentType<MapViewProps> | null>(null)
 
   useEffect(() => {
-    try {
-      // Dynamic import for optional dependency
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const mapsModule = require('react-native-maps') as {
-        default: React.ComponentType<{
-          style?: unknown
-          initialRegion?: {
-            latitude: number
-            longitude: number
-            latitudeDelta: number
-            longitudeDelta: number
+    let mounted = true
+
+    async function loadMapView() {
+      try {
+        // Dynamic import for optional dependency
+        const mapsModule = await import('react-native-maps').catch(() => null)
+        if (!mounted) return
+
+        if (mapsModule) {
+          const MapComponent = mapsModule.default
+          if (MapComponent && typeof MapComponent === 'function') {
+            setMapView(() => MapComponent as unknown as React.ComponentType<MapViewProps>)
+          } else {
+            setMapView(null)
           }
-          onRegionChange?: (region: {
-            latitude: number
-            longitude: number
-            latitudeDelta: number
-            longitudeDelta: number
-          }) => void
-          children?: React.ReactNode
-        }>
+        } else {
+          setMapView(null)
+        }
+      } catch {
+        if (mounted) {
+          setMapView(null)
+        }
       }
-      setMapView(() => mapsModule.default)
-    } catch {
-      setMapView(null)
+    }
+
+    loadMapView()
+
+    return () => {
+      mounted = false
     }
   }, [])
 
-  const onRegionChange = useCallback((region: typeof initialRegion) => {
-    // Store pending region
-    pendingRegionRef.current = region
+  const onRegionChange = useCallback(
+    (region: typeof initialRegion) => {
+      // Store pending region
+      pendingRegionRef.current = region
 
-    // Clear existing timeout
-    if (isTruthy(throttleTimeoutRef.current)) {
-      clearTimeout(throttleTimeoutRef.current)
-    }
-
-    // Set new timeout with trailing behavior
-    throttleTimeoutRef.current = setTimeout(() => {
-      if (isTruthy(pendingRegionRef.current)) {
-        regionSV.value = {
-          latitude: pendingRegionRef.current.latitude,
-          longitude: pendingRegionRef.current.longitude,
-          latitudeDelta: pendingRegionRef.current.latitudeDelta,
-          longitudeDelta: pendingRegionRef.current.longitudeDelta,
-        }
-        pendingRegionRef.current = null
+      // Clear existing timeout
+      if (throttleTimeoutRef.current) {
+        clearTimeout(throttleTimeoutRef.current)
       }
-      throttleTimeoutRef.current = null
-    }, 120)
-  }, [regionSV])
+
+      // Set new timeout with trailing behavior
+      throttleTimeoutRef.current = setTimeout(() => {
+        if (pendingRegionRef.current) {
+          regionSV.value = {
+            latitude: pendingRegionRef.current.latitude,
+            longitude: pendingRegionRef.current.longitude,
+            latitudeDelta: pendingRegionRef.current.latitudeDelta,
+            longitudeDelta: pendingRegionRef.current.longitudeDelta,
+          }
+          pendingRegionRef.current = null
+        }
+        throttleTimeoutRef.current = null
+      }, 120)
+    },
+    [regionSV]
+  )
 
   useEffect(() => {
     return () => {
@@ -232,8 +262,8 @@ function MapPane(): React.ReactElement {
   return (
     <View style={styles.mapWrap}>
       {MapView && (
-        <MapView 
-          style={StyleSheet.absoluteFill} 
+        <MapView
+          style={StyleSheet.absoluteFill}
           initialRegion={initialRegion}
           onRegionChange={onRegionChange}
         >
@@ -263,7 +293,7 @@ export function FeedScreen(): React.ReactElement {
   )
 
   const indicator = useAnimatedStyle(() => {
-    const translateX = (x.value ?? 0) * 100
+    const translateX = x.value * 100
     return {
       transform: [{ translateX }],
     }
@@ -272,10 +302,7 @@ export function FeedScreen(): React.ReactElement {
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
       <View style={styles.container}>
-        <SectionHeader
-          title="Discover"
-          description="Browse nearby pets or switch to map view."
-        />
+        <SectionHeader title="Discover" description="Browse nearby pets or switch to map view." />
 
         <View style={styles.segment} accessibilityRole="tablist">
           <View style={styles.segmentTrack}>
@@ -387,7 +414,7 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   errorText: {
-    color: colors.danger || '#EF4444',
+    color: colors.danger || 'var(--color-error-9)',
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 16,
@@ -398,4 +425,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 })
-

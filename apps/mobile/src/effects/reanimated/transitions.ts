@@ -1,6 +1,6 @@
 /**
  * Reanimated Spring & Timing Configurations
- * 
+ *
  * Centralized animation configurations following ultra-premium chat effects spec:
  * - Springs: stiffness 250-320, damping 18-22, mass 1.0
  * - All configs validated by tests to ensure compliance
@@ -139,41 +139,32 @@ export const timingConfigs = {
 /**
  * Validate a spring configuration against allowed ranges
  */
-export function validateSpringConfig(
-  config: WithSpringConfig
-): { valid: boolean; errors: string[] } {
+export function validateSpringConfig(config: WithSpringConfig): {
+  valid: boolean
+  errors: string[]
+} {
   const errors: string[] = []
 
   if (config.stiffness !== undefined) {
     if (config.stiffness < SPRING_RANGES.stiffnessMin) {
-      errors.push(
-        `Stiffness ${String(config.stiffness ?? '')} below minimum ${String(SPRING_RANGES.stiffnessMin ?? '')}`
-      )
+      errors.push(`Stiffness ${config.stiffness} below minimum ${SPRING_RANGES.stiffnessMin}`)
     }
     if (config.stiffness > SPRING_RANGES.stiffnessMax) {
-      errors.push(
-        `Stiffness ${String(config.stiffness ?? '')} above maximum ${String(SPRING_RANGES.stiffnessMax ?? '')}`
-      )
+      errors.push(`Stiffness ${config.stiffness} above maximum ${SPRING_RANGES.stiffnessMax}`)
     }
   }
 
   if (config.damping !== undefined) {
     if (config.damping < SPRING_RANGES.dampingMin) {
-      errors.push(
-        `Damping ${String(config.damping ?? '')} below minimum ${String(SPRING_RANGES.dampingMin ?? '')}`
-      )
+      errors.push(`Damping ${config.damping} below minimum ${SPRING_RANGES.dampingMin}`)
     }
     if (config.damping > SPRING_RANGES.dampingMax) {
-      errors.push(
-        `Damping ${String(config.damping ?? '')} above maximum ${String(SPRING_RANGES.dampingMax ?? '')}`
-      )
+      errors.push(`Damping ${config.damping} above maximum ${SPRING_RANGES.dampingMax}`)
     }
   }
 
   if (config.mass !== undefined && config.mass !== SPRING_RANGES.mass) {
-    errors.push(
-      `Mass ${String(config.mass ?? '')} must be ${String(SPRING_RANGES.mass ?? '')}`
-    )
+    errors.push(`Mass ${config.mass} must be ${SPRING_RANGES.mass}`)
   }
 
   return {
@@ -181,4 +172,3 @@ export function validateSpringConfig(
     errors,
   }
 }
-

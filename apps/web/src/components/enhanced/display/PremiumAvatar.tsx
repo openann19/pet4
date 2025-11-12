@@ -1,28 +1,28 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
-export type AvatarStatus = 'online' | 'offline' | 'away' | 'busy'
+export type AvatarStatus = 'online' | 'offline' | 'away' | 'busy';
 
 export interface PremiumAvatarProps {
-  src?: string
-  alt?: string
-  fallback?: string
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-  status?: AvatarStatus
-  badge?: number | string
-  variant?: 'default' | 'ring' | 'glow'
-  onClick?: () => void
-  className?: string
-  'aria-label'?: string
+  src?: string;
+  alt?: string;
+  fallback?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  status?: AvatarStatus;
+  badge?: number | string;
+  variant?: 'default' | 'ring' | 'glow';
+  onClick?: () => void;
+  className?: string;
+  'aria-label'?: string;
 }
 
 const SIZE_CONFIG = {
@@ -30,14 +30,14 @@ const SIZE_CONFIG = {
   md: { size: 48, ring: 3, status: 10 },
   lg: { size: 64, ring: 4, status: 12 },
   xl: { size: 96, ring: 5, status: 16 },
-} as const
+} as const;
 
 const STATUS_COLORS: Record<AvatarStatus, string> = {
   online: 'bg-green-500',
   offline: 'bg-gray-400',
   away: 'bg-yellow-500',
   busy: 'bg-red-500',
-}
+};
 
 export function PremiumAvatar({
   src,
@@ -51,47 +51,48 @@ export function PremiumAvatar({
   className,
   'aria-label': ariaLabel,
 }: PremiumAvatarProps): React.JSX.Element {
-  const scale = useSharedValue(1)
-  const glowOpacity = useSharedValue(0)
+    const _uiConfig = useUIConfig();
+    const scale = useSharedValue(1);
+  const glowOpacity = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const glowStyle = useAnimatedStyle(() => ({
     opacity: glowOpacity.value,
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const handleMouseEnter = useCallback(() => {
-    scale.value = withSpring(1.05, springConfigs.smooth)
+    scale.value = withSpring(1.05, springConfigs.smooth);
     if (variant === 'glow') {
-      glowOpacity.value = withSpring(1, springConfigs.smooth)
+      glowOpacity.value = withSpring(1, springConfigs.smooth);
     }
-  }, [scale, glowOpacity, variant])
+  }, [scale, glowOpacity, variant]);
 
   const handleMouseLeave = useCallback(() => {
-    scale.value = withSpring(1, springConfigs.smooth)
-    glowOpacity.value = withSpring(0, springConfigs.smooth)
-  }, [scale, glowOpacity])
+    scale.value = withSpring(1, springConfigs.smooth);
+    glowOpacity.value = withSpring(0, springConfigs.smooth);
+  }, [scale, glowOpacity]);
 
   const handleClick = useCallback(() => {
-    if (isTruthy(onClick)) {
-      haptics.impact('light')
-      onClick()
+    if (onClick) {
+      haptics.impact('light');
+      onClick();
     }
-  }, [onClick])
+  }, [onClick]);
 
   const handleLongPress = useCallback(() => {
     if (variant === 'glow') {
-      glowOpacity.value = withSpring(1, springConfigs.smooth)
+      glowOpacity.value = withSpring(1, springConfigs.smooth);
       setTimeout(() => {
-        glowOpacity.value = withSpring(0, springConfigs.smooth)
-      }, 500)
+        glowOpacity.value = withSpring(0, springConfigs.smooth);
+      }, 500);
     }
-    haptics.impact('medium')
-  }, [variant, glowOpacity])
+    haptics.impact('medium');
+  }, [variant, glowOpacity]);
 
-  const config = SIZE_CONFIG[size]
+  const config = SIZE_CONFIG[size];
 
   return (
     <div
@@ -166,12 +167,10 @@ export function PremiumAvatar({
       )}
 
       {badge !== undefined && (
-        <div
-          className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-xs font-bold rounded-full border-2 border-background shadow-lg"
-        >
+        <div className="absolute -top-1 -right-1 flex items-center justify-center min-w-5 h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full border-2 border-background shadow-lg">
           {typeof badge === 'number' && badge > 99 ? '99+' : badge}
         </div>
       )}
     </div>
-  )
+  );
 }

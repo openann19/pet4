@@ -1,110 +1,110 @@
-/**
- * Mobile Adapter: useBubbleEntry
- * Optimized bubble entry animations for mobile platform
- */
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withDelay,
+  type SharedValue,
+} from 'react-native-reanimated'
+import { useCallback, useEffect } from 'react'
+import { springConfigs } from './transitions'
+import type { AnimatedStyle } from './animated-view'
 
-import { useBubbleEntry as useSharedBubbleEntry, type UseBubbleEntryOptions } from '@petspark/motion'
-
-// Legacy compatibility types
 export type BubbleDirection = 'incoming' | 'outgoing'
 
-export interface MobileBubbleEntryOptions extends Omit<UseBubbleEntryOptions, 'direction'> {
-  /**
-   * Use native driver for better performance
-   * @default true
-   */
-  useNativeDriver?: boolean
-
-  /**
-   * Optimize for screen reader accessibility
-   * @default true
-   */
-  accessibilityOptimized?: boolean
-
-  // Legacy compatibility props
-  direction?: BubbleDirection | UseBubbleEntryOptions['direction']
+export interface UseBubbleEntryOptions {
+  index?: number
+  staggerDelay?: number
+  direction?: BubbleDirection
   enabled?: boolean
   isNew?: boolean
 }
 
-// Legacy compatibility interface
 export interface UseBubbleEntryReturn {
-  style: ReturnType<typeof useSharedBubbleEntry>['style']
-  enter: () => void
-  exit: () => void
-  reset: () => void
-  isVisible: boolean
-  isAnimating: boolean
-  // Legacy compatibility methods
+  opacity: SharedValue<number>
+  translateY: SharedValue<number>
+  translateX: SharedValue<number>
+  scale: SharedValue<number>
+  animatedStyle: AnimatedStyle
   trigger: () => void
-  animatedStyle: ReturnType<typeof useSharedBubbleEntry>['style']
 }
 
-const MOBILE_OPTIMIZED_DEFAULTS: Partial<UseBubbleEntryOptions> = {
-  // Faster animations for mobile (more responsive feel)
-  entryDuration: 300,
-  staggerDelay: 30,
-  
-  // Larger distance for more dramatic effect on mobile
-  distance: 36,
-  
-  // More pronounced bounce for touch interfaces
-  springConfig: {
-    damping: 12,
-    stiffness: 180,
-    mass: 1.1
-  }
-}
+const DEFAULT_INDEX = 0
+const DEFAULT_STAGGER_DELAY = 40
+const DEFAULT_DIRECTION: BubbleDirection = 'outgoing'
+const DEFAULT_ENABLED = true
+const DEFAULT_IS_NEW = true
 
-/**
- * Mobile-optimized bubble entry hook with accessibility and performance focus
- */
-export function useBubbleEntry(options: MobileBubbleEntryOptions = {}): UseBubbleEntryReturn {
+export function useBubbleEntry(options: UseBubbleEntryOptions = {}): UseBubbleEntryReturn {
   const {
-    useNativeDriver = true,
-    accessibilityOptimized = true,
-    // Legacy compatibility props
-    direction,
-    enabled = true,
-    isNew = true,
-    ...sharedOptions
+    index = DEFAULT_INDEX,
+    staggerDelay = DEFAULT_STAGGER_DELAY,
+    direction = DEFAULT_DIRECTION,
+    enabled = DEFAULT_ENABLED,
+    isNew = DEFAULT_IS_NEW,
   } = options
 
-  // Convert legacy direction to new direction prop
-  const convertedDirection = direction === 'incoming' ? 'left' : direction === 'outgoing' ? 'right' : 'bottom'
+  const opacity = useSharedValue(isNew && enabled ? 0 : 1)
+  const translateY = useSharedValue(isNew && enabled ? 20 : 0)
+  const translateX = useSharedValue(isNew && enabled ? (direction === 'incoming' ? -30 : 30) : 0)
+  const scale = useSharedValue(isNew && enabled ? 0.95 : 1)
 
-  const mobileOptimizedConfig: UseBubbleEntryOptions = {
-    ...MOBILE_OPTIMIZED_DEFAULTS,
-    ...sharedOptions,
-    direction: (sharedOptions as UseBubbleEntryOptions).direction || convertedDirection,
-    autoTrigger: enabled && isNew,
-    // Enhanced spring config for mobile responsiveness
-    springConfig: {
-      ...MOBILE_OPTIMIZED_DEFAULTS.springConfig,
-      ...(sharedOptions as UseBubbleEntryOptions).springConfig
+  const trigger = useCallback(() => {
+    if (!enabled || !isNew) {
+      return
     }
-  }
 
-  const result = useSharedBubbleEntry(mobileOptimizedConfig)
+    const delay = index * staggerDelay
 
-  // Enhanced style for mobile with native driver hints
-  const enhancedStyle = useNativeDriver ? {
-    ...result.style,
-    // Hint for native driver optimization
-    transform: result.style.transform || [
-      { translateX: 0 },
-      { translateY: 0 },
-      { scale: 1 }
-    ]
-  } : result.style
+    opacity.value = withDelay(delay, withSpring(1, springConfigs.smooth))
+
+    translateY.value = withDelay(delay, withSpring(0, springConfigs.smooth))
+
+    if (direction === 'incoming') {
+      translateX.value = withDelay(
+        delay,
+        withSpring(0, {
+          damping: 25,
+          stiffness: 400,
+          mass: 0.8,
+        })
+      )
+      scale.value = withDelay(
+        delay,
+        withSpring(1, {
+          damping: 20,
+          stiffness: 500,
+          mass: 0.9,
+        })
+      )
+    } else {
+      translateX.value = withDelay(delay, withSpring(0, springConfigs.smooth))
+      scale.value = withDelay(delay, withSpring(1, springConfigs.bouncy))
+    }
+  }, [enabled, isNew, index, staggerDelay, direction, opacity, translateY, translateX, scale])
+
+  useEffect(() => {
+    if (enabled && isNew) {
+      trigger()
+    }
+  }, [enabled, isNew, trigger])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [
+        { translateY: translateY.value },
+        { translateX: translateX.value },
+        { scale: scale.value },
+      ],
+    }
+  }) as AnimatedStyle
 
   return {
-    ...result,
-    style: enhancedStyle,
-    // Legacy compatibility methods
-    trigger: result.enter,
-    animatedStyle: enhancedStyle
+    opacity,
+    translateY,
+    translateX,
+    scale,
+    animatedStyle,
+    trigger,
   }
 }
-
-export type { UseBubbleEntryOptions } from '@petspark/motion'

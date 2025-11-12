@@ -4,11 +4,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import {
-  getStorageItem,
-  removeStorageItem,
-  setStorageItem,
-} from '../lib/cache/local-storage';
+import { getStorageItem, removeStorageItem, setStorageItem } from '../lib/cache/local-storage';
 import { createLogger } from '../lib/logger';
 
 const logger = createLogger('useLocalStorage');
@@ -39,7 +35,7 @@ export function useLocalStorage<T>(
         setStoredValue(valueToStore);
         setStorageItem(key, valueToStore, ttl !== undefined ? { ttl } : {});
       } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
+        const err = error instanceof Error ? error : new Error(String(error));
         logger.error(`Error setting localStorage key`, err, { key });
       }
     },

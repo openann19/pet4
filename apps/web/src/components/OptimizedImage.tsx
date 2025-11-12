@@ -1,19 +1,18 @@
-import { useState, useEffect, useRef } from 'react'
-import { cn } from '@/lib/utils'
-import { supportsWebP, supportsAVIF } from '@/lib/image-loader'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { cn } from '@/lib/utils';
+import { supportsWebP, supportsAVIF } from '@/lib/image-loader';
 
 interface OptimizedImageProps {
-  src: string
-  alt: string
-  className?: string
-  width?: number
-  height?: number
-  loading?: 'lazy' | 'eager'
-  quality?: number
-  format?: 'webp' | 'avif' | 'auto'
-  onLoad?: () => void
-  onError?: () => void
+  src: string;
+  alt: string;
+  className?: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  quality?: number;
+  format?: 'webp' | 'avif' | 'auto';
+  onLoad?: () => void;
+  onError?: () => void;
 }
 
 export function OptimizedImage({
@@ -28,95 +27,93 @@ export function OptimizedImage({
   onLoad,
   onError,
 }: OptimizedImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [hasError, setHasError] = useState(false)
-  const [optimizedSrc, setOptimizedSrc] = useState(src)
-  const imgRef = useRef<HTMLImageElement>(null)
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [optimizedSrc, setOptimizedSrc] = useState(src);
+  const imgRef = useRef<HTMLImageElement>(null);
 
-  const getOptimizedSrc = (originalSrc: string, imgFormat: 'webp' | 'avif' | 'original'): string => {
-    if (imgFormat === 'original') return originalSrc
-    
-    try {
-      const url = new URL(originalSrc, window.location.origin)
-      const params = new URLSearchParams(url.search)
-      
-      if (isTruthy(width)) params.set('w', width.toString())
-      if (isTruthy(height)) params.set('h', height.toString())
-      if (isTruthy(quality)) params.set('q', quality.toString())
-      params.set('fm', imgFormat)
-      
-      return `${String(url.pathname ?? '')}?${String(params.toString() ?? '')}`
-    } catch {
-      return originalSrc
-    }
-  }
+  const getOptimizedSrc = useCallback(
+    (originalSrc: string, imgFormat: 'webp' | 'avif' | 'original'): string => {
+      if (imgFormat === 'original') return originalSrc;
+
+      try {
+        const url = new URL(originalSrc, window.location.origin);
+        const params = new URLSearchParams(url.search);
+
+        if (width) params.set('w', width.toString());
+        if (height) params.set('h', height.toString());
+        if (quality) params.set('q', quality.toString());
+        params.set('fm', imgFormat);
+
+        return `${url.pathname}?${params.toString()}`;
+      } catch {
+        return originalSrc;
+      }
+    },
+    [width, height, quality]
+  );
 
   // Detect and set best format
   useEffect(() => {
     if (format === 'auto') {
-      supportsAVIF().then((avifSupported) => {
-        if (isTruthy(avifSupported)) {
-          setOptimizedSrc(getOptimizedSrc(src, 'avif'))
+      void supportsAVIF().then((avifSupported) => {
+        if (avifSupported) {
+          setOptimizedSrc(getOptimizedSrc(src, 'avif'));
         } else if (supportsWebP()) {
-          setOptimizedSrc(getOptimizedSrc(src, 'webp'))
+          setOptimizedSrc(getOptimizedSrc(src, 'webp'));
         } else {
-          setOptimizedSrc(src)
+          setOptimizedSrc(src);
         }
-      })
+      });
     } else {
-      setOptimizedSrc(getOptimizedSrc(src, format))
+      setOptimizedSrc(getOptimizedSrc(src, format));
     }
-  }, [src, format, width, height, quality])
+  }, [src, format, getOptimizedSrc]);
 
   useEffect(() => {
-    if (!imgRef.current) return
+    if (!imgRef.current) return;
 
-    if (isTruthy(imgRef.current.complete)) {
-      setIsLoaded(true)
-      onLoad?.()
+    if (imgRef.current.complete) {
+      setIsLoaded(true);
+      onLoad?.();
     }
-  }, [onLoad])
+  }, [onLoad]);
 
   const handleLoad = () => {
-    setIsLoaded(true)
-    onLoad?.()
-  }
+    setIsLoaded(true);
+    onLoad?.();
+  };
 
   const handleError = () => {
     // Fallback to original if optimized fails
     if (optimizedSrc !== src) {
-      setOptimizedSrc(src)
+      setOptimizedSrc(src);
       // Try again with original
       setTimeout(() => {
-        if (isTruthy(imgRef.current)) {
-          imgRef.current.src = src
+        if (imgRef.current) {
+          imgRef.current.src = src;
         }
-      }, 0)
+      }, 0);
     } else {
-      setHasError(true)
-      onError?.()
+      setHasError(true);
+      onError?.();
     }
-  }
+  };
 
   if (isTruthy(hasError)) {
     return (
       <div
-        className={cn(
-          'flex items-center justify-center bg-muted text-muted-foreground',
-          className
-        )}
+        className={cn('flex items-center justify-center bg-muted text-muted-foreground', className)}
         style={{ width, height }}
       >
         <span className="text-sm">Image not available</span>
       </div>
-    )
+    );
   }
 
   return (
     <div className={cn('relative overflow-hidden', className)}>
-      {!isLoaded && (
-        <div className="absolute inset-0 bg-muted animate-pulse" />
-      )}
+      {!isLoaded && <div className="absolute inset-0 bg-muted animate-pulse" />}
       <img
         ref={imgRef}
         src={optimizedSrc}
@@ -134,5 +131,5 @@ export function OptimizedImage({
         )}
       />
     </div>
-  )
+  );
 }

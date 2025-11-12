@@ -6,7 +6,7 @@ import type { LayoutShiftEntry } from '@/lib/types/performance-api';
 import { createLogger } from '../logger';
 import { isTruthy, isDefined } from '@petspark/shared';
 
-const logger = createLogger('PerformanceMonitoring')
+const logger = createLogger('PerformanceMonitoring');
 
 interface PerformanceMetric {
   name: string;
@@ -20,19 +20,26 @@ type MetricCallback = (metric: PerformanceMetric) => void;
 // Core Web Vitals thresholds
 const THRESHOLDS = {
   LCP: { good: 2500, poor: 4000 }, // Largest Contentful Paint
-  FID: { good: 100, poor: 300 },   // First Input Delay
-  CLS: { good: 0.1, poor: 0.25 },  // Cumulative Layout Shift
+  FID: { good: 100, poor: 300 }, // First Input Delay
+  CLS: { good: 0.1, poor: 0.25 }, // Cumulative Layout Shift
   FCP: { good: 1800, poor: 3000 }, // First Contentful Paint
   TTFB: { good: 800, poor: 1800 }, // Time to First Byte
 };
 
-function getRating(value: number, thresholds: { good: number; poor: number }): 'good' | 'needs-improvement' | 'poor' {
+function getRating(
+  value: number,
+  thresholds: { good: number; poor: number }
+): 'good' | 'needs-improvement' | 'poor' {
   if (value <= thresholds.good) return 'good';
   if (value <= thresholds.poor) return 'needs-improvement';
   return 'poor';
 }
 
-function createMetric(name: string, value: number, thresholds: { good: number; poor: number }): PerformanceMetric {
+function createMetric(
+  name: string,
+  value: number,
+  thresholds: { good: number; poor: number }
+): PerformanceMetric {
   return {
     name,
     value,
@@ -51,13 +58,13 @@ export function observeLCP(callback: MetricCallback): void {
 
   try {
     const observer = new PerformanceObserver((list) => {
-      const entries = list.getEntries()
-      const lastEntry = entries[entries.length - 1]
-      if (isTruthy(lastEntry)) {
-        const lcp = lastEntry.startTime
-        callback(createMetric('LCP', lcp, THRESHOLDS.LCP))
+      const entries = list.getEntries();
+      const lastEntry = entries[entries.length - 1];
+      if (lastEntry) {
+        const lcp = lastEntry.startTime;
+        callback(createMetric('LCP', lcp, THRESHOLDS.LCP));
       }
-    })
+    });
 
     observer.observe({ type: 'largest-contentful-paint', buffered: true });
   } catch (error) {
@@ -79,7 +86,9 @@ export function observeFID(callback: MetricCallback): void {
       const entries = list.getEntries();
       entries.forEach((entry: PerformanceEntry) => {
         if ('processingStart' in entry && 'startTime' in entry) {
-          const fid = (entry as { processingStart: number; startTime: number }).processingStart - entry.startTime;
+          const fid =
+            (entry as { processingStart: number; startTime: number }).processingStart -
+            entry.startTime;
           callback(createMetric('FID', fid, THRESHOLDS.FID));
         }
       });
@@ -102,25 +111,25 @@ export function observeCLS(callback: MetricCallback): void {
 
   let clsValue = 0;
   let sessionValue = 0;
-  let sessionEntries: PerformanceEntry[] = [];
+  const sessionEntries: PerformanceEntry[] = [];
 
   try {
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      
+
       entries.forEach((entry) => {
-        const layoutShiftEntry = entry as LayoutShiftEntry
+        const layoutShiftEntry = entry as LayoutShiftEntry;
         if ('value' in layoutShiftEntry && !layoutShiftEntry.hadRecentInput) {
-          const value = layoutShiftEntry.value
-          sessionValue += value
-          sessionEntries.push(entry)
-          
+          const value = layoutShiftEntry.value;
+          sessionValue += value;
+          sessionEntries.push(entry);
+
           if (sessionValue > clsValue) {
-            clsValue = sessionValue
-            callback(createMetric('CLS', clsValue, THRESHOLDS.CLS))
+            clsValue = sessionValue;
+            callback(createMetric('CLS', clsValue, THRESHOLDS.CLS));
           }
         }
-      })
+      });
     });
 
     observer.observe({ type: 'layout-shift', buffered: true });
@@ -164,8 +173,10 @@ export function observeTTFB(callback: MetricCallback): void {
   }
 
   try {
-    const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    if (isTruthy(navigationEntry)) {
+    const navigationEntry = performance.getEntriesByType(
+      'navigation'
+    )[0] as PerformanceNavigationTiming;
+    if (navigationEntry) {
       const ttfb = navigationEntry.responseStart - navigationEntry.requestStart;
       callback(createMetric('TTFB', ttfb, THRESHOLDS.TTFB));
     }

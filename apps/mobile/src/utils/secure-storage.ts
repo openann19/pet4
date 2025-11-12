@@ -1,6 +1,6 @@
 /**
  * Ultra-Premium Secure Storage Utilities
- * 
+ *
  * Production-grade secure storage with:
  * - Type-safe keychain access configurations
  * - In-memory caching for frequently accessed values
@@ -10,7 +10,7 @@
  * - Retry logic for transient failures
  * - Key existence checking
  * - Comprehensive error handling
- * 
+ *
  * Location: src/utils/secure-storage.ts
  */
 
@@ -67,7 +67,12 @@ export interface SecureStorageError extends Error {
   originalError?: Error
 }
 
-const DEFAULT_OPTIONS: Required<Omit<SecureStorageOptions, 'keychainAccessible' | 'requireAuthentication' | 'authenticationPrompt'>> = {
+const DEFAULT_OPTIONS: Required<
+  Omit<
+    SecureStorageOptions,
+    'keychainAccessible' | 'requireAuthentication' | 'authenticationPrompt'
+  >
+> = {
   skipCache: false,
   retryAttempts: DEFAULT_RETRY_ATTEMPTS,
   retryDelayMs: DEFAULT_RETRY_DELAY_MS,
@@ -80,11 +85,11 @@ function validateKey(key: string): void {
   if (!key || typeof key !== 'string') {
     throw createError('INVALID_KEY', 'Key must be a non-empty string', { key })
   }
-  
+
   if (key.length > MAX_KEY_LENGTH) {
     throw createError('INVALID_KEY', `Key exceeds maximum length of ${String(MAX_KEY_LENGTH ?? '')}`, { key })
   }
-  
+
   // Ensure key uses safe characters (alphanumeric, underscore, dash, dot)
   if (!/^[a-zA-Z0-9_.-]+$/.test(key)) {
     throw createError('INVALID_KEY', 'Key contains invalid characters', { key })
@@ -99,7 +104,7 @@ function getByteLength(value: string): number {
   if (typeof TextEncoder !== 'undefined') {
     return new TextEncoder().encode(value).length
   }
-  
+
   // Fallback: estimate UTF-8 bytes (most characters are 1-3 bytes)
   let length = 0
   for (let i = 0; i < value.length; i++) {
@@ -126,7 +131,7 @@ function validateValue(value: string): void {
   if (typeof value !== 'string') {
     throw createError('INVALID_VALUE', 'Value must be a string', {})
   }
-  
+
   const sizeBytes = getByteLength(value)
   if (sizeBytes > MAX_VALUE_SIZE) {
     throw createError('SIZE_EXCEEDED', `Value exceeds maximum size of ${String(MAX_VALUE_SIZE ?? '')} bytes`, {
@@ -166,7 +171,7 @@ function createError(
  * Sleep utility for retry delays
  */
 function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 /**
@@ -178,28 +183,32 @@ async function withRetry<T>(
   delayMs: number = DEFAULT_RETRY_DELAY_MS
 ): Promise<T> {
   let lastError: Error | undefined
-  
+
   for (let attempt = 0; attempt < attempts; attempt++) {
     try {
       return await operation()
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error))
-      
+
       // Don't retry on validation errors
       if (lastError instanceof Error && 'code' in lastError) {
         const storageError = lastError as SecureStorageError
-        if (storageError.code === 'INVALID_KEY' || storageError.code === 'INVALID_VALUE' || storageError.code === 'SIZE_EXCEEDED') {
+        if (
+          storageError.code === 'INVALID_KEY' ||
+          storageError.code === 'INVALID_VALUE' ||
+          storageError.code === 'SIZE_EXCEEDED'
+        ) {
           throw lastError
         }
       }
-      
+
       if (attempt < attempts - 1) {
         const backoffDelay = delayMs * Math.pow(2, attempt)
         await sleep(backoffDelay)
       }
     }
   }
-  
+
   throw lastError || new Error('Operation failed after retries')
 }
 
@@ -209,19 +218,19 @@ async function withRetry<T>(
 function cleanCache(): void {
   const now = Date.now()
   const entries = Array.from(valueCache.entries())
-  
+
   for (const [key, entry] of entries) {
     if (now - entry.timestamp > CACHE_TTL_MS) {
       valueCache.delete(key)
     }
   }
-  
+
   // If still over limit, remove oldest entries
   if (valueCache.size > MAX_CACHE_SIZE) {
     const sortedEntries = Array.from(valueCache.entries()).sort(
       (a, b) => a[1].timestamp - b[1].timestamp
     )
-    
+
     const toRemove = sortedEntries.slice(0, valueCache.size - MAX_CACHE_SIZE)
     for (const [key] of toRemove) {
       valueCache.delete(key)
@@ -235,17 +244,17 @@ function cleanCache(): void {
 function getCachedValue(key: string): string | null {
   cleanCache()
   const entry = valueCache.get(key)
-  
+
   if (!entry) {
     return null
   }
-  
+
   const now = Date.now()
   if (now - entry.timestamp > CACHE_TTL_MS) {
     valueCache.delete(key)
     return null
   }
-  
+
   return entry.value
 }
 
@@ -270,23 +279,21 @@ function clearCachedValue(key: string): void {
 /**
  * Build secure store options from user options
  */
-function buildSecureOptions(
-  options: SecureStorageOptions = {}
-): SecureStore.SecureStoreOptions {
+function buildSecureOptions(options: SecureStorageOptions = {}): SecureStore.SecureStoreOptions {
   const secureOptions: SecureStore.SecureStoreOptions = {}
-  
+
   if (options.keychainAccessible !== undefined) {
     secureOptions.keychainAccessible = options.keychainAccessible
   }
-  
+
   if (options.requireAuthentication !== undefined) {
     secureOptions.requireAuthentication = options.requireAuthentication
   }
-  
+
   if (options.authenticationPrompt !== undefined) {
     secureOptions.authenticationPrompt = options.authenticationPrompt
   }
-  
+
   return secureOptions
 }
 
@@ -300,12 +307,12 @@ export async function saveSecureValue(
 ): Promise<void> {
   validateKey(key)
   validateValue(value)
-  
+
   const normalizedKey = normalizeKey(key)
   const secureOptions = buildSecureOptions(options)
   const retryAttempts = options.retryAttempts ?? DEFAULT_OPTIONS.retryAttempts
   const retryDelayMs = options.retryDelayMs ?? DEFAULT_OPTIONS.retryDelayMs
-  
+
   try {
     await withRetry(
       async () => {
@@ -314,14 +321,14 @@ export async function saveSecureValue(
       retryAttempts,
       retryDelayMs
     )
-    
+
     // Update cache if not skipping
     if (!options.skipCache) {
       setCachedValue(normalizedKey, value)
     } else {
       clearCachedValue(normalizedKey)
     }
-    
+
     logger.debug('Secure value saved', { key: normalizedKey, sizeBytes: getByteLength(value) })
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
@@ -329,7 +336,7 @@ export async function saveSecureValue(
       key: normalizedKey,
       originalError: err,
     })
-    
+
     logger.error('Failed to save secure value', storageError, { key: normalizedKey })
     throw storageError
   }
@@ -343,11 +350,11 @@ export async function getSecureValue(
   options: SecureStorageOptions = {}
 ): Promise<string | null> {
   validateKey(key)
-  
+
   const normalizedKey = normalizeKey(key)
   const retryAttempts = options.retryAttempts ?? DEFAULT_OPTIONS.retryAttempts
   const retryDelayMs = options.retryDelayMs ?? DEFAULT_OPTIONS.retryDelayMs
-  
+
   // Check cache first if not skipping
   if (!options.skipCache) {
     const cached = getCachedValue(normalizedKey)
@@ -356,19 +363,19 @@ export async function getSecureValue(
       return cached
     }
   }
-  
+
   try {
     const value = await withRetry(
       () => SecureStore.getItemAsync(normalizedKey),
       retryAttempts,
       retryDelayMs
     )
-    
+
     // Update cache if not skipping and value exists
     if (!options.skipCache && value !== null) {
       setCachedValue(normalizedKey, value)
     }
-    
+
     logger.debug('Secure value retrieved', { key: normalizedKey, hasValue: value !== null })
     return value
   } catch (error) {
@@ -377,7 +384,7 @@ export async function getSecureValue(
       key: normalizedKey,
       originalError: err,
     })
-    
+
     logger.error('Failed to get secure value', storageError, { key: normalizedKey })
     return null
   }
@@ -391,11 +398,11 @@ export async function deleteSecureValue(
   options: SecureStorageOptions = {}
 ): Promise<void> {
   validateKey(key)
-  
+
   const normalizedKey = normalizeKey(key)
   const retryAttempts = options.retryAttempts ?? DEFAULT_OPTIONS.retryAttempts
   const retryDelayMs = options.retryDelayMs ?? DEFAULT_OPTIONS.retryDelayMs
-  
+
   try {
     await withRetry(
       async () => {
@@ -404,10 +411,10 @@ export async function deleteSecureValue(
       retryAttempts,
       retryDelayMs
     )
-    
+
     // Clear from cache
     clearCachedValue(normalizedKey)
-    
+
     logger.debug('Secure value deleted', { key: normalizedKey })
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error))
@@ -415,7 +422,7 @@ export async function deleteSecureValue(
       key: normalizedKey,
       originalError: err,
     })
-    
+
     logger.error('Failed to delete secure value', storageError, { key: normalizedKey })
     throw storageError
   }
@@ -426,9 +433,9 @@ export async function deleteSecureValue(
  */
 export async function hasSecureValue(key: string): Promise<boolean> {
   validateKey(key)
-  
+
   const normalizedKey = normalizeKey(key)
-  
+
   try {
     const value = await getSecureValue(normalizedKey, { skipCache: true })
     return value !== null
@@ -444,9 +451,9 @@ export async function getMultipleSecureValues(
   keys: readonly string[]
 ): Promise<Map<string, string | null>> {
   const results = new Map<string, string | null>()
-  
+
   await Promise.all(
-    keys.map(async (key) => {
+    keys.map(async key => {
       try {
         const value = getSecureValue(key)
         results.set(key, await value)
@@ -455,7 +462,7 @@ export async function getMultipleSecureValues(
       }
     })
   )
-  
+
   return results
 }
 
@@ -466,21 +473,19 @@ export async function saveMultipleSecureValues(
   entries: ReadonlyArray<{ key: string; value: string }>,
   options: SecureStorageOptions = {}
 ): Promise<void> {
-  await Promise.all(
-    entries.map(({ key, value }) => saveSecureValue(key, value, options))
-  )
+  await Promise.all(entries.map(({ key, value }) => saveSecureValue(key, value, options)))
 }
 
 /**
  * Delete multiple values in batch
  */
-export async function deleteMultipleSecureValues(
-  keys: readonly string[]
-): Promise<void> {
+export async function deleteMultipleSecureValues(keys: readonly string[]): Promise<void> {
   await Promise.all(
-    keys.map((key) => deleteSecureValue(key).catch(() => {
-      // Ignore individual failures in batch delete
-    }))
+    keys.map(key =>
+      deleteSecureValue(key).catch(() => {
+        // Ignore individual failures in batch delete
+      })
+    )
   )
 }
 
@@ -525,6 +530,38 @@ export function hasAuthToken(): Promise<boolean> {
 }
 
 /**
+ * Save refresh token securely with the same guarantees as the access token
+ */
+export async function saveRefreshToken(token: string): Promise<void> {
+  await saveSecureValue('refresh_token', token, {
+    keychainAccessible: KeychainAccessibility.WHEN_UNLOCKED,
+    requireAuthentication: false,
+    skipCache: false,
+  })
+}
+
+/**
+ * Get refresh token securely
+ */
+export function getRefreshToken(): Promise<string | null> {
+  return getSecureValue('refresh_token')
+}
+
+/**
+ * Delete refresh token
+ */
+export async function deleteRefreshToken(): Promise<void> {
+  await deleteSecureValue('refresh_token')
+}
+
+/**
+ * Check if a refresh token exists
+ */
+export function hasRefreshToken(): Promise<boolean> {
+  return hasSecureValue('refresh_token')
+}
+
+/**
  * Secure storage interface with getItem/setItem/removeItem methods for compatibility
  */
 export const secureStorage = {
@@ -532,19 +569,19 @@ export const secureStorage = {
     const result = await getSecureValue(key)
     return result
   },
-  
+
   async setItem(key: string, value: string): Promise<void> {
     await saveSecureValue(key, value)
   },
-  
+
   async removeItem(key: string): Promise<void> {
     await deleteSecureValue(key)
   },
-  
+
   async hasItem(key: string): Promise<boolean> {
     const result = await hasSecureValue(key)
     return result
   },
-  
+
   clearCache,
 } as const

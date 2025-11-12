@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   useSharedValue,
@@ -6,52 +6,45 @@ import {
   withRepeat,
   withSequence,
   withTiming,
-  cancelAnimation,
-  Easing,
-} from 'react-native-reanimated'
-import { useEffect } from 'react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+} from 'react-native-reanimated';
+import { useEffect } from 'react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface UseShimmerSweepOptions {
-  duration?: number
-  delay?: number
-  opacityRange?: [number, number]
-  /** measured container width in px */
-  width: number
-  /** pause animation (e.g., reduced-motion) */
-  paused?: boolean
-  easing?: (value: number) => number
+  duration?: number;
+  delay?: number;
+  opacityRange?: [number, number];
 }
 
 export interface UseShimmerSweepReturn {
-  x: ReturnType<typeof useSharedValue<number>>
-  opacity: ReturnType<typeof useSharedValue<number>>
-  animatedStyle: AnimatedStyle
+  x: ReturnType<typeof useSharedValue<number>>;
+  opacity: ReturnType<typeof useSharedValue<number>>;
+  style: AnimatedStyle;
 }
 
-export function useShimmerSweep(options: UseShimmerSweepOptions): UseShimmerSweepReturn {
-  const {
-    duration = 3000,
-    delay = 0,
-    opacityRange = [0, 0.5],
-    width,
-    paused = false,
-    easing = Easing.inOut(Easing.quad),
-  } = options
+export function useShimmerSweep(options: UseShimmerSweepOptions = {}): UseShimmerSweepReturn {
+  const { duration = 3000, delay = 0, opacityRange = [0, 0.5] } = options;
 
-  const [minOpacity, maxOpacity] = opacityRange
-  const initialWidth = Math.max(width, 0)
-
-  const x = useSharedValue<number>(-initialWidth)
-  const opacity = useSharedValue<number>(minOpacity)
+  const x = useSharedValue(-100);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
-    const sweepWidth = Math.max(width, 0)
+    x.value = withRepeat(
+      withSequence(withTiming(-100, { duration: 0 }), withTiming(100, { duration })),
+      -1,
+      false
+    );
 
-    const start = () => {
-      if (sweepWidth <= 0) {
-        return
-      }
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(opacityRange[0], { duration: delay }),
+        withTiming(opacityRange[1], { duration: duration * 0.5 }),
+        withTiming(opacityRange[0], { duration: duration * 0.5 })
+      ),
+      -1,
+      false
+    );
+  }, [duration, delay, opacityRange, x, opacity]);
 
       x.value = withRepeat(
         withSequence(
@@ -91,15 +84,14 @@ export function useShimmerSweep(options: UseShimmerSweepOptions): UseShimmerSwee
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: `${String(x.value ?? '')}px` }],
-      opacity: opacity.value
-    }
-  }) as AnimatedStyle
+      transform: [{ translateX: `${x.value}%` }],
+      opacity: opacity.value,
+    };
+  }) as AnimatedStyle;
 
   return {
     x,
     opacity,
-    animatedStyle,
-  }
+    style,
+  };
 }
-

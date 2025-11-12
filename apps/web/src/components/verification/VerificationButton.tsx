@@ -1,73 +1,77 @@
-import { useState } from 'react'
-import { motion } from '@petspark/motion'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ShieldCheck, CheckCircle, Clock, XCircle } from '@phosphor-icons/react'
-import { useStorage } from '@/hooks/useStorage'
-import type { VerificationRequest } from '@/lib/verification-types'
-import { VerificationDialog } from './VerificationDialog'
-import { cn } from '@/lib/utils'
+import { useState } from 'react';
+import { motion, MotionView } from '@petspark/motion';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ShieldCheck, CheckCircle, Clock, XCircle } from '@phosphor-icons/react';
+import { useStorage } from '@/hooks/use-storage';
+import type { VerificationRequest } from '@/lib/verification-types';
+import { VerificationDialog } from './VerificationDialog';
+import { cn } from '@/lib/utils';
 
 interface VerificationButtonProps {
-  petId: string
-  userId: string
-  variant?: 'default' | 'card'
-  className?: string
+  petId: string;
+  userId: string;
+  variant?: 'default' | 'card';
+  className?: string;
 }
 
 export function VerificationButton({
   petId,
   userId,
   variant = 'default',
-  className
+  className,
 }: VerificationButtonProps) {
-  const [showDialog, setShowDialog] = useState(false)
-  const [verificationRequests] = useStorage<Record<string, VerificationRequest>>('verification-requests', {})
+  const [showDialog, setShowDialog] = useState(false);
+  const [verificationRequests] = useStorage<Record<string, VerificationRequest>>(
+    'verification-requests',
+    {}
+  );
 
-  const request = verificationRequests?.[petId]
+  const request = verificationRequests?.[petId];
 
   const statusConfig = {
     unverified: {
       icon: ShieldCheck,
       label: 'Get Verified',
       color: 'bg-primary text-primary-foreground hover:bg-primary/90',
-      badgeColor: 'bg-muted text-muted-foreground'
+      badgeColor: 'bg-muted text-muted-foreground',
     },
     pending: {
       icon: Clock,
       label: 'Verification Pending',
       color: 'bg-secondary text-secondary-foreground hover:bg-secondary/90',
-      badgeColor: 'bg-secondary text-secondary-foreground'
+      badgeColor: 'bg-secondary text-secondary-foreground',
     },
     verified: {
       icon: CheckCircle,
       label: 'Verified Owner',
       color: 'bg-primary/10 text-primary border-primary/30 hover:bg-primary/20',
-      badgeColor: 'bg-primary/20 text-primary'
+      badgeColor: 'bg-primary/20 text-primary',
     },
     rejected: {
       icon: XCircle,
       label: 'Verification Issues',
       color: 'bg-destructive/10 text-destructive border-destructive/30 hover:bg-destructive/20',
-      badgeColor: 'bg-destructive/20 text-destructive'
+      badgeColor: 'bg-destructive/20 text-destructive',
     },
     expired: {
       icon: Clock,
       label: 'Verification Expired',
       color: 'bg-muted text-muted-foreground hover:bg-muted/80',
-      badgeColor: 'bg-muted text-muted-foreground'
-    }
-  }
+      badgeColor: 'bg-muted text-muted-foreground',
+    },
+  };
 
-  const status = request?.status || 'unverified'
-  const config = statusConfig[status]
-  const Icon = config.icon
+  const status = request?.status || 'unverified';
+  const config = statusConfig[status];
+  const Icon = config.icon;
 
   if (variant === 'card') {
     return (
       <>
-        <MotionView as="button"
-          onClick={() => { setShowDialog(true); }}
+        <MotionView
+          as="button"
+          onClick={() => setShowDialog(true)}
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
           className={cn(
@@ -80,10 +84,12 @@ export function VerificationButton({
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={cn(
-                'p-2.5 rounded-lg',
-                status === 'verified' ? 'bg-primary/20' : 'bg-muted'
-              )}>
+              <div
+                className={cn(
+                  'p-2.5 rounded-lg',
+                  status === 'verified' ? 'bg-primary/20' : 'bg-muted'
+                )}
+              >
                 <Icon
                   size={20}
                   weight={status === 'verified' ? 'fill' : 'regular'}
@@ -93,7 +99,9 @@ export function VerificationButton({
               <div>
                 <h4 className="font-semibold text-sm">{config.label}</h4>
                 <p className="text-xs text-muted-foreground">
-                  {status === 'verified' && request?.trustScore && `Trust score: ${String(request.trustScore ?? '')}/100`}
+                  {status === 'verified' &&
+                    request?.trustScore &&
+                    `Trust score: ${request.trustScore}/100`}
                   {status === 'pending' && 'Under review'}
                   {status === 'unverified' && 'Verify your pet ownership'}
                   {status === 'rejected' && 'Action required'}
@@ -115,7 +123,7 @@ export function VerificationButton({
           userId={userId}
         />
       </>
-    )
+    );
   }
 
   return (
@@ -142,5 +150,5 @@ export function VerificationButton({
         userId={userId}
       />
     </>
-  )
+  );
 }

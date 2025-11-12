@@ -3,25 +3,26 @@
  * - Skeleton shimmer → content crossfade
  * - Reduced motion instant crossfade (≤120ms)
  * - No duplicate style props; accessible & trimmed
- * 
+ *
  * Location: apps/web/src/components/chat/LinkPreview.tsx
  */
 
-import { useMemo } from 'react'
-import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated'
-import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { safeHref } from '@/lib/url-safety'
-import { SmartImage } from '@/components/media/SmartImage'
+import { useMemo } from 'react';
+import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
+import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { safeHref } from '@/lib/url-safety';
+import { SmartImage } from '@/components/media/SmartImage';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface LinkPreviewProps {
-  url: string
-  title?: string
-  description?: string
-  image?: string
-  isLoading?: boolean
-  className?: string
+  url: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  isLoading?: boolean;
+  className?: string;
 }
 
 export function LinkPreview({
@@ -32,21 +33,22 @@ export function LinkPreview({
   isLoading = false,
   className,
 }: LinkPreviewProps) {
-  const reduced = useReducedMotion()
-  const safeUrl = useMemo(() => safeHref(url), [url])
-  const showContent = !isLoading && (!!title || !!image) && safeUrl !== null
+    const _uiConfig = useUIConfig();
+    const reduced = useReducedMotion();
+  const safeUrl = useMemo(() => safeHref(url), [url]);
+  const showContent = !isLoading && (!!title || !!image) && safeUrl !== null;
 
-  const s = useSharedValue(showContent ? 1 : 0)
-  const dur = getReducedMotionDuration(360, reduced)
+  const s = useSharedValue(showContent ? 1 : 0);
+  const dur = getReducedMotionDuration(360, reduced);
 
   useMemo(() => {
-    s.value = withTiming(showContent ? 1 : 0, { duration: dur })
-  }, [showContent, dur, s])
+    s.value = withTiming(showContent ? 1 : 0, { duration: dur });
+  }, [showContent, dur, s]);
 
-  const skeletonStyle = useAnimatedStyle(() => ({ opacity: 1 - s.value })) as AnimatedStyle
-  const contentStyle = useAnimatedStyle(() => ({ opacity: s.value })) as AnimatedStyle
+  const skeletonStyle = useAnimatedStyle(() => ({ opacity: 1 - s.value })) as AnimatedStyle;
+  const contentStyle = useAnimatedStyle(() => ({ opacity: s.value })) as AnimatedStyle;
 
-  if (!safeUrl) return null
+  if (!safeUrl) return null;
 
   return (
     <div
@@ -93,14 +95,11 @@ export function LinkPreview({
               {description && (
                 <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{description}</p>
               )}
-              <p className="text-xs text-muted-foreground mt-1 truncate">
-                {new URL(url).hostname}
-              </p>
+              <p className="text-xs text-muted-foreground mt-1 truncate">{new URL(url).hostname}</p>
             </div>
           </a>
         </AnimatedView>
       )}
     </div>
-  )
+  );
 }
-

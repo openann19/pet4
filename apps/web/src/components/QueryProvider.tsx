@@ -4,78 +4,170 @@
  * Provides React Query client with offline persistence and background sync
  */
 
-import { QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import { onlineManager, focusManager } from '@tanstack/react-query'
-import { useEffect } from 'react'
-import { queryClient, queryPersister, backgroundSyncConfig } from '@/lib/query-client'
-import { createLogger } from '@/lib/logger'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { onlineManager, focusManager } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { queryClient, queryPersister, backgroundSyncConfig } from '@/lib/query-client';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('QueryProvider')
+const logger = createLogger('QueryProvider');
 
 interface QueryProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function QueryProvider({ children }: QueryProviderProps) {
   // Setup online/offline detection
   useEffect(() => {
-    const handleOnline = () => {
-      logger.debug('Network connection restored')
-      onlineManager.setOnline(true)
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      return;
     }
+
+    const handleOnline = () => {
+      try {
+        logger.debug('Network connection restored');
+        onlineManager.setOnline(true);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider handleOnline error', err);
+      }
+    };
 
     const handleOffline = () => {
-      logger.debug('Network connection lost')
-      onlineManager.setOnline(false)
+      try {
+        logger.debug('Network connection lost');
+        onlineManager.setOnline(false);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider handleOffline error', err);
+      }
+    };
+
+    try {
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+
+      // Set initial online state - navigator.onLine is always defined in browsers
+      if (typeof navigator.onLine === 'boolean') {
+        onlineManager.setOnline(navigator.onLine);
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('QueryProvider setup online/offline listeners error', err);
     }
-
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-
-    // Set initial online state
-    onlineManager.setOnline(navigator.onLine)
 
     return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  }, [])
+      try {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider cleanup online/offline listeners error', err);
+      }
+    };
+  }, []);
 
   // Setup focus management for background tabs
   useEffect(() => {
-    const handleFocus = () => { focusManager.setFocused(true); }
-    const handleBlur = () => { focusManager.setFocused(false); }
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
 
-    window.addEventListener('focus', handleFocus)
-    window.addEventListener('blur', handleBlur)
+    const handleFocus = () => {
+      try {
+        focusManager.setFocused(true);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider handleFocus error', err);
+      }
+    };
 
-    // Set initial focus state
-    focusManager.setFocused(document.hasFocus())
+    const handleBlur = () => {
+      try {
+        focusManager.setFocused(false);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider handleBlur error', err);
+      }
+    };
+
+    try {
+      window.addEventListener('focus', handleFocus);
+      window.addEventListener('blur', handleBlur);
+
+      // Set initial focus state - document.hasFocus() is always defined in browsers
+      if (typeof document.hasFocus === 'function') {
+        try {
+          focusManager.setFocused(document.hasFocus());
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('QueryProvider document.hasFocus error', err);
+          // Default to focused if hasFocus fails
+          focusManager.setFocused(true);
+        }
+      }
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('QueryProvider setup focus/blur listeners error', err);
+    }
 
     return () => {
-      window.removeEventListener('focus', handleFocus)
-      window.removeEventListener('blur', handleBlur)
-    }
-  }, [])
+      try {
+        window.removeEventListener('focus', handleFocus);
+        window.removeEventListener('blur', handleBlur);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider cleanup focus/blur listeners error', err);
+      }
+    };
+  }, []);
 
   // Setup background sync
   useEffect(() => {
-    const syncInterval = setInterval(() => {
-      if (navigator.onLine && document.visibilityState === 'visible') {
-        logger.debug('Running background sync')
-        queryClient.invalidateQueries({
-          refetchType: 'active',
-        })
-      }
-    }, backgroundSyncConfig.syncInterval)
+    if (
+      typeof window === 'undefined' ||
+      typeof navigator === 'undefined' ||
+      typeof document === 'undefined'
+    ) {
+      return;
+    }
 
-    return () => { clearInterval(syncInterval); }
-  }, [])
+    const syncInterval = setInterval(() => {
+      try {
+        const isOnline = typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
+        const isVisible =
+          typeof document.visibilityState === 'string' && document.visibilityState === 'visible';
+
+        if (isOnline && isVisible) {
+          logger.debug('Running background sync');
+          void queryClient
+            .invalidateQueries({
+              refetchType: 'active',
+            })
+            .catch((error: unknown) => {
+              const err = error instanceof Error ? error : new Error(String(error));
+              logger.error('Background sync failed', err);
+            });
+        }
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Background sync interval error', err);
+      }
+    }, backgroundSyncConfig.syncInterval);
+
+    return () => {
+      try {
+        clearInterval(syncInterval);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('QueryProvider cleanup sync interval error', err);
+      }
+    };
+  }, [queryClient]);
 
   // In development, show React Query devtools
-  const showDevtools = import.meta.env.DEV
+  const showDevtools = import.meta.env.DEV;
 
   return (
     <PersistQueryClientProvider
@@ -88,21 +180,16 @@ export function QueryProvider({ children }: QueryProviderProps) {
         dehydrateOptions: {
           shouldDehydrateQuery: (query: { state: { status: string } }) => {
             // Only persist successful queries
-            return query.state.status === 'success'
+            return query.state.status === 'success';
           },
         },
       }}
     >
       {children}
-      {showDevtools && (
-        <ReactQueryDevtools
-          initialIsOpen={false}
-          position="bottom-right"
-        />
-      )}
+      {showDevtools && <ReactQueryDevtools initialIsOpen={false} />}
     </PersistQueryClientProvider>
-  )
+  );
 }
 
 // Legacy provider for backwards compatibility
-export const ReactQueryProvider = QueryProvider
+export const ReactQueryProvider = QueryProvider;

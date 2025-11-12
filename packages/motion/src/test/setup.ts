@@ -2,7 +2,7 @@
  * Test setup for @petspark/motion package
  */
 
-import { vi } from 'vitest';
+import { vi } from 'vitest'
 
 // Mock react-native-reanimated (no async import to avoid Promise spread)
 vi.mock('react-native-reanimated', () => {
@@ -23,8 +23,8 @@ vi.mock('react-native-reanimated', () => {
       cubic: (t: number) => t * t * t,
       linear: (t: number) => t,
     },
-  };
-});
+  }
+})
 
 // Mock react-native
 vi.mock('react-native', () => {
@@ -37,8 +37,8 @@ vi.mock('react-native', () => {
       isReduceMotionEnabled: () => Promise.resolve(false),
       addEventListener: () => ({ remove: () => {} }),
     },
-  };
-});
+  }
+})
 
 // Mock window.matchMedia for reduced motion
 Object.defineProperty(window, 'matchMedia', {
@@ -53,4 +53,4 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-});
+})

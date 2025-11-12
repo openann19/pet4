@@ -1,28 +1,27 @@
-import { Avatar } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Textarea } from '@/components/ui/textarea'
-import { useApp } from '@/contexts/AppContext'
-import { communityService } from '@/lib/community-service'
-import type { Comment } from '@/lib/community-types'
-import { haptics } from '@/lib/haptics'
-import { createLogger } from '@/lib/logger'
-import { ArrowBendUpLeft, DotsThree, Heart, PaperPlaneRight, X } from '@phosphor-icons/react'
-import { formatDistanceToNow } from 'date-fns'
-import { useEffect, useRef, useState } from 'react'
-import { toastSuccess, toastError } from '@/effects/confetti-web'
-import { isTruthy } from '@petspark/shared'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence'
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
-import { useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence } from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { timingConfigs } from '@/effects/reanimated/transitions'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
+import { Avatar } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import { useApp } from '@/contexts/AppContext';
+import { communityService } from '@/lib/community-service';
+import type { Comment } from '@/lib/community-types';
+import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
+import { ArrowBendUpLeft, DotsThree, Heart, PaperPlaneRight, X } from '@phosphor-icons/react';
+import { formatDistanceToNow } from 'date-fns';
+import { Presence, motion, MotionView } from '@petspark/motion';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('CommentsSheet')
+const logger = createLogger('CommentsSheet');
 
 function EmptyCommentsView({ t }: { t: ReturnType<typeof useApp>['t'] }) {
   const entry = useEntryAnimation({ initialY: 20, initialOpacity: 0 })
@@ -114,126 +113,123 @@ function CommentListItem({
 }
 
 interface CommentsSheetProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  postId: string
-  postAuthor: string
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  postId: string;
+  postAuthor: string;
 }
 
-export function CommentsSheet({ 
-  open, 
-  onOpenChange, 
-  postId, 
-  postAuthor
-}: CommentsSheetProps) {
-  const { t } = useApp()
-  const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(false)
-  const [commentText, setCommentText] = useState('')
-  const [replyingTo, setReplyingTo] = useState<Comment | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const scrollAreaRef = useRef<HTMLDivElement>(null)
-  const replyPresence = useAnimatePresence({
-    isVisible: !!replyingTo,
-    enterTransition: 'fade',
-    exitTransition: 'fade'
-  })
+export function CommentsSheet({ open, onOpenChange, postId, postAuthor }: CommentsSheetProps) {
+  const { t } = useApp();
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [replyingTo, setReplyingTo] = useState<Comment | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isTruthy(open)) {
-      loadComments()
+    if (open) {
+      loadComments();
     } else {
-      setCommentText('')
-      setReplyingTo(null)
+      setCommentText('');
+      setReplyingTo(null);
     }
-  }, [open, postId])
+  }, [open, postId]);
 
   const loadComments = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await communityService.getComments(postId)
-      setComments(response)
+      const response = await communityService.getComments(postId);
+      setComments(response);
     } catch (error) {
-      logger.error('Failed to load comments', error instanceof Error ? error : new Error(String(error)))
-      toastError(t.community?.commentsLoadError || 'Failed to load comments')
+      logger.error(
+        'Failed to load comments',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      toast.error(t.community?.commentsLoadError || 'Failed to load comments');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmit = async () => {
-    if (!commentText.trim() || submitting) return
+    if (!commentText.trim() || submitting) return;
 
-    haptics.impact()
-    setSubmitting(true)
+    haptics.impact();
+    setSubmitting(true);
 
     try {
       const commentData: Parameters<typeof communityService.addComment>[1] = {
         text: commentText.trim(),
+      };
+      const parentId = replyingTo?._id ?? replyingTo?.id;
+      if (parentId) {
+        commentData.parentId = parentId;
       }
-      const parentId = replyingTo?._id ?? replyingTo?.id
-      if (isTruthy(parentId)) {
-        commentData.parentId = parentId
-      }
-      const newComment = await communityService.addComment(postId, commentData)
+      const newComment = await communityService.addComment(postId, commentData);
 
-      setComments((currentComments) => replyingTo 
-        ? [...(currentComments || []), newComment]
-        : [newComment, ...(currentComments || [])]
-      )
+      setComments((currentComments) =>
+        replyingTo
+          ? [...(currentComments || []), newComment]
+          : [newComment, ...(currentComments || [])]
+      );
 
-      setCommentText('')
-      setReplyingTo(null)
-      
-      haptics.success()
-      toastSuccess(t.community?.commentPosted || 'Comment posted!')
+      setCommentText('');
+      setReplyingTo(null);
+
+      haptics.success();
+      toast.success(t.community?.commentPosted || 'Comment posted!');
 
       setTimeout(() => {
-        scrollAreaRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-      }, 100)
+        scrollAreaRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
     } catch (error) {
-      logger.error('Failed to post comment', error instanceof Error ? error : new Error(String(error)))
-      toastError(t.community?.commentError || 'Failed to post comment')
-      haptics.error()
+      logger.error(
+        'Failed to post comment',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      toast.error(t.community?.commentError || 'Failed to post comment');
+      haptics.error();
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   const handleReply = (comment: Comment) => {
-    setReplyingTo(comment)
-    textareaRef.current?.focus()
-    haptics.selection()
-  }
+    setReplyingTo(comment);
+    textareaRef.current?.focus();
+    haptics.selection();
+  };
 
   const handleCancelReply = () => {
-    setReplyingTo(null)
-    haptics.selection()
-  }
+    setReplyingTo(null);
+    haptics.selection();
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault()
-      handleSubmit()
+      e.preventDefault();
+      handleSubmit();
     }
-  }
+  };
 
-  const topLevelComments = comments.filter(c => !c.parentId)
-  const getReplies = (parentId: string) => comments.filter(c => c.parentId === parentId)
+  const topLevelComments = comments.filter((c) => !c.parentId);
+  const getReplies = (parentId: string) => comments.filter((c) => c.parentId === parentId);
+
+  // Helper function to extract comment ID
+  const getCommentId = (comment: Comment): string | null => {
+    return comment._id ?? comment.id ?? null;
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent 
-        side="bottom" 
-        className="h-[85vh] flex flex-col p-0 gap-0"
-      >
+      <SheetContent side="bottom" className="h-[85vh] flex flex-col p-0 gap-0">
         <SheetHeader className="px-6 py-4 border-b border-border shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <SheetTitle className="text-xl">
-                {t.community?.comments || 'Comments'}
-              </SheetTitle>
+              <SheetTitle className="text-xl">{t.community?.comments || 'Comments'}</SheetTitle>
               <SheetDescription className="text-sm text-muted-foreground mt-1">
                 {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
               </SheetDescription>
@@ -264,43 +260,78 @@ export function CommentsSheet({
                 </div>
               ))
             ) : comments.length === 0 ? (
-              <EmptyCommentsView t={t} />
+              <MotionView
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-16"
+              >
+                <MotionView
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                  className="text-6xl mb-4"
+                >
+                  💬
+                </MotionView>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {t.community?.noComments || 'No comments yet'}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t.community?.beFirst || 'Be the first to share your thoughts!'}
+                </p>
+              </MotionView>
             ) : (
-              topLevelComments.map((comment, index) => {
-                const commentId = comment._id ?? comment.id
-                if (!commentId) return null
-                const replies = getReplies(commentId)
-                return (
-                  <CommentListItem
-                    key={commentId}
-                    comment={comment}
-                    index={index}
-                    onReply={handleReply}
-                    isAuthor={comment.authorName === postAuthor}
-                    replies={replies}
-                    postAuthor={postAuthor}
-                  />
-                )
-              })
+              <Presence visible={topLevelComments.length > 0}>
+                {topLevelComments.map((comment, index) => {
+                  const commentId = getCommentId(comment);
+                  if (!commentId) return null;
+                  return (
+                    <CommentThread
+                      key={commentId}
+                      comment={comment}
+                      index={index}
+                      postAuthor={postAuthor}
+                      getReplies={getReplies}
+                      onReply={handleReply}
+                      getCommentId={getCommentId}
+                    />
+                  );
+                })}
+              </Presence>
             )}
           </div>
         </ScrollArea>
 
         <div className="shrink-0 border-t border-border bg-card/50 backdrop-blur-xl">
-          {replyPresence.shouldRender && replyingTo && (
-            <AnimatedView
-              style={replyPresence.animatedStyle}
-              className="overflow-hidden"
-            >
-              <div className="px-6 py-3 bg-muted/50 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm">
-                  <ArrowBendUpLeft size={16} className="text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    {t.community?.replyingTo || 'Replying to'}
-                  </span>
-                  <span className="font-medium text-foreground">
-                    @{replyingTo.authorName}
-                  </span>
+          <Presence visible={!!replyingTo}>
+            {replyingTo && (
+              <MotionView
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="px-6 py-3 bg-muted/50 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm">
+                    <ArrowBendUpLeft size={16} className="text-muted-foreground" />
+                    <span className="text-muted-foreground">
+                      {t.community?.replyingTo || 'Replying to'}
+                    </span>
+                    <span className="font-medium text-foreground">@{replyingTo.authorName}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCancelReply}
+                    className="h-7 text-xs"
+                  >
+                    {t.common?.cancel || 'Cancel'}
+                  </Button>
                 </div>
                 <Button
                   variant="ghost"
@@ -322,11 +353,11 @@ export function CommentsSheet({
                 onChange={(e) => { setCommentText(e.target.value); }}
                 onKeyDown={handleKeyDown}
                 placeholder={
-                  replyingTo 
+                  replyingTo
                     ? t.community?.replyPlaceholder || 'Write a reply...'
                     : t.community?.commentPlaceholder || 'Write a comment...'
                 }
-                className="min-h-[44px] max-h-[120px] resize-none"
+                className="min-h-11 max-h-30 resize-none"
                 maxLength={500}
               />
               <Button
@@ -336,7 +367,12 @@ export function CommentsSheet({
                 className="h-11 w-11 shrink-0"
               >
                 {submitting ? (
-                  <RotatingIcon />
+                  <MotionView
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  >
+                    <PaperPlaneRight size={20} weight="bold" />
+                  </MotionView>
                 ) : (
                   <PaperPlaneRight size={20} weight="bold" />
                 )}
@@ -349,14 +385,71 @@ export function CommentsSheet({
         </div>
       </SheetContent>
     </Sheet>
-  )
+  );
+}
+
+interface CommentThreadProps {
+  comment: Comment;
+  index: number;
+  postAuthor: string;
+  getReplies: (parentId: string) => Comment[];
+  onReply: (comment: Comment) => void;
+  getCommentId: (comment: Comment) => string | null;
+}
+
+function CommentThread({
+  comment,
+  index,
+  postAuthor,
+  getReplies,
+  onReply,
+  getCommentId,
+}: CommentThreadProps): React.ReactElement {
+  const commentId = getCommentId(comment);
+  if (!commentId) {
+    return <></>;
+  }
+
+  const replies = getReplies(commentId);
+
+  return (
+    <MotionView
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+    >
+      <CommentItem
+        comment={comment}
+        onReply={onReply}
+        isAuthor={comment.authorName === postAuthor}
+      />
+
+      {replies.length > 0 && (
+        <div className="ml-12 mt-4 space-y-4 pl-4 border-l-2 border-border/50">
+          {replies.map((reply) => {
+            const replyId = getCommentId(reply);
+            if (!replyId) return null;
+            return (
+              <CommentItem
+                key={replyId}
+                comment={reply}
+                onReply={onReply}
+                isReply
+                isAuthor={reply.authorName === postAuthor}
+              />
+            );
+          })}
+        </div>
+      )}
+    </MotionView>
+  );
 }
 
 interface CommentItemProps {
-  comment: Comment
-  onReply: (comment: Comment) => void
-  isReply?: boolean
-  isAuthor?: boolean
+  comment: Comment;
+  onReply: (comment: Comment) => void;
+  isReply?: boolean;
+  isAuthor?: boolean;
 }
 
 function RotatingIcon() {
@@ -403,23 +496,22 @@ function CharacterCount({ count }: { count: number }) {
 }
 
 function CommentItem({ comment, onReply, isReply = false, isAuthor = false }: CommentItemProps) {
-  const { t } = useApp()
-  const [isLiked, setIsLiked] = useState(false)
-  const [likesCount, setLikesCount] = useState(comment.reactionsCount ?? 0)
-  const bounceTap = useBounceOnTap({ scale: 0.85, hapticFeedback: false })
+  const { t } = useApp();
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(comment.reactionsCount ?? 0);
 
   const handleLike = async () => {
-    haptics.selection()
-    
-    if (isTruthy(isLiked)) {
-      setIsLiked(false)
-      setLikesCount((prev: number) => Math.max(0, prev - 1))
+    haptics.selection();
+
+    if (isLiked) {
+      setIsLiked(false);
+      setLikesCount((prev: number) => Math.max(0, prev - 1));
     } else {
-      setIsLiked(true)
-      setLikesCount((prev: number) => prev + 1)
-      haptics.success()
+      setIsLiked(true);
+      setLikesCount((prev: number) => prev + 1);
+      haptics.success();
     }
-  }
+  };
 
   return (
     <div className="flex gap-3 group">
@@ -427,7 +519,7 @@ function CommentItem({ comment, onReply, isReply = false, isAuthor = false }: Co
         {comment.authorAvatar ? (
           <img src={comment.authorAvatar} alt={comment.authorName} className="object-cover" />
         ) : (
-          <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">                                     
+          <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
             {comment.authorName?.[0]?.toUpperCase() ?? '?'}
           </div>
         )}
@@ -436,9 +528,7 @@ function CommentItem({ comment, onReply, isReply = false, isAuthor = false }: Co
       <div className="flex-1 min-w-0">
         <div className="bg-muted/50 rounded-2xl px-4 py-3">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-sm text-foreground">
-              {comment.authorName}
-            </span>
+            <span className="font-semibold text-sm text-foreground">{comment.authorName}</span>
             {isAuthor && (
               <span className="text-xs px-1.5 py-0.5 bg-primary/15 text-primary font-medium rounded">
                 {t.community?.author || 'Author'}
@@ -454,14 +544,8 @@ function CommentItem({ comment, onReply, isReply = false, isAuthor = false }: Co
         </div>
 
         <div className="flex items-center gap-4 mt-2 ml-4">
-          <button
-            onClick={() => {
-              bounceTap.handlePress()
-              handleLike()
-            }}
-            className="flex items-center gap-1 group/like"
-          >
-            <AnimatedView style={bounceTap.animatedStyle}>
+          <button onClick={handleLike} className="flex items-center gap-1 group/like focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
+            <MotionView whileTap={{ scale: 0.85 }}>
               <Heart
                 size={16}
                 weight={isLiked ? 'fill' : 'regular'}
@@ -471,9 +555,7 @@ function CommentItem({ comment, onReply, isReply = false, isAuthor = false }: Co
               />
             </AnimatedView>
             {likesCount > 0 && (
-              <span className="text-xs font-medium text-muted-foreground">
-                {likesCount}
-              </span>
+              <span className="text-xs font-medium text-muted-foreground">{likesCount}</span>
             )}
           </button>
 
@@ -486,11 +568,11 @@ function CommentItem({ comment, onReply, isReply = false, isAuthor = false }: Co
             </button>
           )}
 
-          <button className="opacity-0 group-hover:opacity-100 transition-opacity ml-auto">
+          <button className="opacity-0 group-hover:opacity-100 transition-opacity ml-auto focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
             <DotsThree size={16} weight="bold" className="text-muted-foreground" />
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }

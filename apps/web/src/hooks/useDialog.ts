@@ -1,11 +1,10 @@
-import { useState, useCallback } from 'react'
-import { haptics } from '@/lib/haptics'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useState, useCallback } from 'react';
+import { haptics } from '@/lib/haptics';
 
 interface UseDialogOptions {
-  initialOpen?: boolean
-  onOpenChange?: (open: boolean) => void
-  hapticFeedback?: boolean
+  initialOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hapticFeedback?: boolean;
 }
 
 export function useDialog({
@@ -13,39 +12,42 @@ export function useDialog({
   onOpenChange,
   hapticFeedback = true,
 }: UseDialogOptions = {}) {
-  const [isOpen, setIsOpen] = useState(initialOpen)
+  const [isOpen, setIsOpen] = useState(initialOpen);
 
   const open = useCallback(() => {
-    if (isTruthy(hapticFeedback)) {
-      haptics.trigger('light')
+    if (hapticFeedback) {
+      haptics.trigger('light');
     }
-    setIsOpen(true)
-    onOpenChange?.(true)
-  }, [hapticFeedback, onOpenChange])
+    setIsOpen(true);
+    onOpenChange?.(true);
+  }, [hapticFeedback, onOpenChange]);
 
   const close = useCallback(() => {
-    if (isTruthy(hapticFeedback)) {
-      haptics.trigger('light')
+    if (hapticFeedback) {
+      haptics.trigger('light');
     }
-    setIsOpen(false)
-    onOpenChange?.(false)
-  }, [hapticFeedback, onOpenChange])
+    setIsOpen(false);
+    onOpenChange?.(false);
+  }, [hapticFeedback, onOpenChange]);
 
   const toggle = useCallback(() => {
-    if (isTruthy(isOpen)) {
-      close()
+    if (isOpen) {
+      close();
     } else {
-      open()
+      open();
     }
-  }, [isOpen, open, close])
+  }, [isOpen, open, close]);
 
-  const setOpen = useCallback((shouldOpen: boolean) => {
-    if (isTruthy(shouldOpen)) {
-      open()
-    } else {
-      close()
-    }
-  }, [open, close])
+  const setOpen = useCallback(
+    (shouldOpen: boolean) => {
+      if (shouldOpen) {
+        open();
+      } else {
+        close();
+      }
+    },
+    [open, close]
+  );
 
   return {
     isOpen,
@@ -53,6 +55,5 @@ export function useDialog({
     close,
     toggle,
     setOpen,
-  }
+  };
 }
-

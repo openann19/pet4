@@ -1,34 +1,47 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import SettingsView from '../SettingsView'
-import { useStorage } from '@/hooks/useStorage'
-import { triggerHaptic } from '@/lib/haptics'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, act, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import SettingsView from '@/components/admin/SettingsView';
+import { useStorage } from '@/hooks/use-storage';
+import { triggerHaptic } from '@/lib/haptics';
 
-vi.mock('@/hooks/useStorage')
+vi.mock('@/hooks/use-storage');
 vi.mock('@/lib/haptics', () => ({
-  triggerHaptic: vi.fn(),
-}))
+  haptics: {
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
+  },
+  triggerHaptic: vi.fn(() => undefined),
+}));
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
   },
-}))
+}));
 vi.mock('@/lib/logger', () => ({
   createLogger: () => ({
     warn: vi.fn(),
     info: vi.fn(),
     error: vi.fn(),
   }),
-}))
+}));
 
-const mockUseStorage = vi.mocked(useStorage)
-const mockTriggerHaptic = vi.mocked(triggerHaptic)
+const mockUseStorage = vi.mocked(useStorage);
+const mockTriggerHaptic = vi.mocked(triggerHaptic);
 
 describe('SettingsView', () => {
-  const mockSetFeatureFlags = vi.fn()
-  const mockSetSystemSettings = vi.fn()
+  const mockSetFeatureFlags = vi.fn();
+  const mockSetSystemSettings = vi.fn();
 
   const defaultFeatureFlags = {
     enableChat: true,
@@ -36,7 +49,7 @@ describe('SettingsView', () => {
     enableMatching: true,
     enableReporting: true,
     enableVerification: true,
-  }
+  };
 
   const defaultSystemSettings = {
     maxReportsPerUser: 10,
@@ -44,147 +57,176 @@ describe('SettingsView', () => {
     requireVerification: false,
     matchDistanceRadius: 50,
     messagingEnabled: true,
-  }
+  };
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.clearAllMocks();
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-feature-flags') {
-        return [defaultFeatureFlags, mockSetFeatureFlags, vi.fn()]
+        return [defaultFeatureFlags, mockSetFeatureFlags, vi.fn()];
       }
       if (key === 'admin-system-settings') {
-        return [defaultSystemSettings, mockSetSystemSettings, vi.fn()]
+        return [defaultSystemSettings, mockSetSystemSettings, vi.fn()];
       }
-      return [defaultValue, vi.fn(), vi.fn()]
-    })
-  })
+      return [defaultValue, vi.fn(), vi.fn()];
+    });
+  });
 
-  it('renders settings view', () => {
-    render(<SettingsView />)
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
 
-    expect(screen.getByText(/settings/i)).toBeInTheDocument()
-  })
+  it('renders settings view', async () => {
+    await act(async () => {
+      render(<SettingsView />);
+    });
 
-  it('displays feature flags', () => {
-    render(<SettingsView />)
+    await waitFor(() => {
+      expect(screen.getByText(/settings/i)).toBeInTheDocument();
+    });
+  });
 
-    expect(screen.getByText(/feature flags/i)).toBeInTheDocument()
-  })
+  it('displays feature flags', async () => {
+    await act(async () => {
+      render(<SettingsView />);
+    });
 
-  it('displays system settings', () => {
-    render(<SettingsView />)
+    await waitFor(() => {
+      expect(screen.getByText(/feature flags/i)).toBeInTheDocument();
+    });
+  });
 
-    expect(screen.getByText(/system settings/i)).toBeInTheDocument()
-  })
+  it('displays system settings', async () => {
+    await act(async () => {
+      render(<SettingsView />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/system settings/i)).toBeInTheDocument();
+    });
+  });
 
   it('toggles feature flag', async () => {
-    const user = userEvent.setup()
-    render(<SettingsView />)
+    const user = userEvent.setup();
+    render(<SettingsView />);
 
-    const switches = screen.getAllByRole('switch')
-    if (switches.length > 0) {
-      await user.click(switches[0])
+    const switches = screen.getAllByRole('switch');
+    const firstSwitch = switches[0];
+    if (firstSwitch) {
+      await user.click(firstSwitch);
     }
 
-    expect(mockSetFeatureFlags).toHaveBeenCalled()
-    expect(mockTriggerHaptic).toHaveBeenCalledWith('selection')
-  })
+    expect(mockSetFeatureFlags).toHaveBeenCalled();
+    expect(mockTriggerHaptic).toHaveBeenCalledWith('selection');
+  });
 
   it('updates system setting slider', async () => {
-    const user = userEvent.setup()
-    render(<SettingsView />)
+    const user = userEvent.setup();
+    render(<SettingsView />);
 
-    const sliders = screen.getAllByRole('slider')
-    if (sliders.length > 0) {
-      await user.click(sliders[0])
+    const sliders = screen.getAllByRole('slider');
+    const firstSlider = sliders[0];
+    if (firstSlider) {
+      await user.click(firstSlider);
     }
-  })
+  });
 
   it('toggles system setting switch', async () => {
-    const user = userEvent.setup()
-    render(<SettingsView />)
+    const user = userEvent.setup();
+    render(<SettingsView />);
 
-    const switches = screen.getAllByRole('switch')
-    if (switches.length > 0) {
-      await user.click(switches[switches.length - 1])
+    const switches = screen.getAllByRole('switch');
+    const lastSwitch = switches[switches.length - 1];
+    if (lastSwitch) {
+      await user.click(lastSwitch);
     }
 
-    expect(mockSetSystemSettings).toHaveBeenCalled()
-  })
+    expect(mockSetSystemSettings).toHaveBeenCalled();
+  });
 
-  it('handles null feature flags gracefully', () => {
+  it('handles null feature flags gracefully', async () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-feature-flags') {
-        return [null, mockSetFeatureFlags, vi.fn()]
+        return [null, mockSetFeatureFlags, vi.fn()];
       }
       if (key === 'admin-system-settings') {
-        return [defaultSystemSettings, mockSetSystemSettings, vi.fn()]
+        return [defaultSystemSettings, mockSetSystemSettings, vi.fn()];
       }
-      return [defaultValue, vi.fn(), vi.fn()]
-    })
+      return [defaultValue, vi.fn(), vi.fn()];
+    });
 
-    render(<SettingsView />)
+    await act(async () => {
+      render(<SettingsView />);
+    });
 
-    expect(screen.getByText(/settings/i)).toBeInTheDocument()
-  })
+    await waitFor(() => {
+      expect(screen.getByText(/settings/i)).toBeInTheDocument();
+    });
+  });
 
-  it('handles null system settings gracefully', () => {
+  it('handles null system settings gracefully', async () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-feature-flags') {
-        return [defaultFeatureFlags, mockSetFeatureFlags, vi.fn()]
+        return [defaultFeatureFlags, mockSetFeatureFlags, vi.fn()];
       }
       if (key === 'admin-system-settings') {
-        return [null, mockSetSystemSettings, vi.fn()]
+        return [null, mockSetSystemSettings, vi.fn()];
       }
-      return [defaultValue, vi.fn(), vi.fn()]
-    })
+      return [defaultValue, vi.fn(), vi.fn()];
+    });
 
-    render(<SettingsView />)
+    await act(async () => {
+      render(<SettingsView />);
+    });
 
-    expect(screen.getByText(/settings/i)).toBeInTheDocument()
-  })
+    await waitFor(() => {
+      expect(screen.getByText(/settings/i)).toBeInTheDocument();
+    });
+  });
 
   it('handles error when updating feature flag', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     mockSetFeatureFlags.mockImplementation(() => {
-      throw new Error('Update failed')
-    })
+      throw new Error('Update failed');
+    });
 
-    render(<SettingsView />)
+    render(<SettingsView />);
 
-    const switches = screen.getAllByRole('switch')
-    if (switches.length > 0) {
-      await user.click(switches[0])
+    const switches = screen.getAllByRole('switch');
+    const firstSwitch = switches[0];
+    if (firstSwitch) {
+      await user.click(firstSwitch);
     }
-  })
+  });
 
   it('handles error when updating system setting', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     mockSetSystemSettings.mockImplementation(() => {
-      throw new Error('Update failed')
-    })
+      throw new Error('Update failed');
+    });
 
-    render(<SettingsView />)
+    render(<SettingsView />);
 
-    const switches = screen.getAllByRole('switch')
-    if (switches.length > 0) {
-      await user.click(switches[switches.length - 1])
+    const switches = screen.getAllByRole('switch');
+    const lastSwitch = switches[switches.length - 1];
+    if (lastSwitch) {
+      await user.click(lastSwitch);
     }
-  })
+  });
 
   it('displays all feature flag switches', () => {
-    render(<SettingsView />)
+    render(<SettingsView />);
 
-    expect(screen.getByText(/enable chat/i)).toBeInTheDocument()
-    expect(screen.getByText(/enable visual analysis/i)).toBeInTheDocument()
-    expect(screen.getByText(/enable matching/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/enable chat/i)).toBeInTheDocument();
+    expect(screen.getByText(/enable visual analysis/i)).toBeInTheDocument();
+    expect(screen.getByText(/enable matching/i)).toBeInTheDocument();
+  });
 
   it('displays all system setting controls', () => {
-    render(<SettingsView />)
+    render(<SettingsView />);
 
-    expect(screen.getByText(/max reports per user/i)).toBeInTheDocument()
-    expect(screen.getByText(/match distance radius/i)).toBeInTheDocument()
-  })
-})
-
+    expect(screen.getByText(/max reports per user/i)).toBeInTheDocument();
+    expect(screen.getByText(/match distance radius/i)).toBeInTheDocument();
+  });
+});

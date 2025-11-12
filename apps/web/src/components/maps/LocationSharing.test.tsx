@@ -28,14 +28,14 @@ describe('LocationSharing', () => {
   describe('LocationBubble', () => {
     it('renders location bubble', () => {
       render(<LocationBubble location={mockLocation} />);
-      expect(screen.getByRole('button', { hidden: true })).toBeInTheDocument();
+      // LocationBubble uses MotionView (div) with cursor-pointer, not a button element
+      const bubble = screen.getByText('Location').closest('.cursor-pointer');
+      expect(bubble).toBeInTheDocument();
     });
 
     it('calls onTap when provided', () => {
       const handleTap = vi.fn();
-      const { container } = render(
-        <LocationBubble location={mockLocation} onTap={handleTap} />
-      );
+      const { container } = render(<LocationBubble location={mockLocation} onTap={handleTap} />);
       const bubble = container.querySelector('.cursor-pointer');
       if (isTruthy(bubble)) {
         (bubble as HTMLElement).click();
@@ -46,14 +46,8 @@ describe('LocationSharing', () => {
 
   describe('LocationPicker', () => {
     it('renders location picker', () => {
-      render(
-        <LocationPicker
-          onSelectLocation={vi.fn()}
-          onClose={vi.fn()}
-        />
-      );
+      render(<LocationPicker onSelectLocation={vi.fn()} onClose={vi.fn()} />);
       expect(screen.getByText(/share location/i)).toBeInTheDocument();
     });
   });
 });
-

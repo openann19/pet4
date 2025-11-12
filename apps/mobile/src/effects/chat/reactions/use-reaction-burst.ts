@@ -1,24 +1,24 @@
 /**
  * Reactions "Burst + Settle" Effect Hook
- * 
+ *
  * Creates a premium reaction animation with:
  * - Tap-and-hold pops reaction ring (8 particles, 280ms, ease-out)
  * - Emoji lifts with spring to badge on bubble corner
  * - Shadow 2→8dp
  * - Haptics: Impact.Light on attach, Success on long-press menu confirm
- * 
+ *
  * Location: apps/mobile/src/effects/chat/reactions/use-reaction-burst.ts
  */
 
 import { useCallback, useMemo } from 'react'
 import {
-    Easing,
-    useAnimatedStyle,
-    useSharedValue,
-    withSequence,
-    withSpring,
-    withTiming,
-    type SharedValue,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+  type SharedValue,
 } from 'react-native-reanimated'
 import { triggerHaptic } from '../core/haptic-manager'
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion'
@@ -66,9 +66,7 @@ const PARTICLE_COUNT = 8
 const BURST_DURATION = 280 // ms
 const EMOJI_LIFT_DURATION = 300 // ms
 
-export function useReactionBurst(
-  options: UseReactionBurstOptions = {}
-): UseReactionBurstReturn {
+export function useReactionBurst(options: UseReactionBurstOptions = {}): UseReactionBurstReturn {
   const { enabled = DEFAULT_ENABLED, onComplete, onLongPressConfirm } = options
 
   const reducedMotion = useReducedMotionSV()
@@ -79,37 +77,37 @@ export function useReactionBurst(
   const particle0Y = useSharedValue(0)
   const particle0Opacity = useSharedValue(0)
   const particle0Scale = useSharedValue(0)
-  
+
   const particle1X = useSharedValue(0)
   const particle1Y = useSharedValue(0)
   const particle1Opacity = useSharedValue(0)
   const particle1Scale = useSharedValue(0)
-  
+
   const particle2X = useSharedValue(0)
   const particle2Y = useSharedValue(0)
   const particle2Opacity = useSharedValue(0)
   const particle2Scale = useSharedValue(0)
-  
+
   const particle3X = useSharedValue(0)
   const particle3Y = useSharedValue(0)
   const particle3Opacity = useSharedValue(0)
   const particle3Scale = useSharedValue(0)
-  
+
   const particle4X = useSharedValue(0)
   const particle4Y = useSharedValue(0)
   const particle4Opacity = useSharedValue(0)
   const particle4Scale = useSharedValue(0)
-  
+
   const particle5X = useSharedValue(0)
   const particle5Y = useSharedValue(0)
   const particle5Opacity = useSharedValue(0)
   const particle5Scale = useSharedValue(0)
-  
+
   const particle6X = useSharedValue(0)
   const particle6Y = useSharedValue(0)
   const particle6Opacity = useSharedValue(0)
   const particle6Scale = useSharedValue(0)
-  
+
   const particle7X = useSharedValue(0)
   const particle7Y = useSharedValue(0)
   const particle7Opacity = useSharedValue(0)
@@ -128,14 +126,38 @@ export function useReactionBurst(
       { x: particle7X, y: particle7Y, opacity: particle7Opacity, scale: particle7Scale },
     ],
     [
-      particle0X, particle0Y, particle0Opacity, particle0Scale,
-      particle1X, particle1Y, particle1Opacity, particle1Scale,
-      particle2X, particle2Y, particle2Opacity, particle2Scale,
-      particle3X, particle3Y, particle3Opacity, particle3Scale,
-      particle4X, particle4Y, particle4Opacity, particle4Scale,
-      particle5X, particle5Y, particle5Opacity, particle5Scale,
-      particle6X, particle6Y, particle6Opacity, particle6Scale,
-      particle7X, particle7Y, particle7Opacity, particle7Scale,
+      particle0X,
+      particle0Y,
+      particle0Opacity,
+      particle0Scale,
+      particle1X,
+      particle1Y,
+      particle1Opacity,
+      particle1Scale,
+      particle2X,
+      particle2Y,
+      particle2Opacity,
+      particle2Scale,
+      particle3X,
+      particle3Y,
+      particle3Opacity,
+      particle3Scale,
+      particle4X,
+      particle4Y,
+      particle4Opacity,
+      particle4Scale,
+      particle5X,
+      particle5Y,
+      particle5Opacity,
+      particle5Scale,
+      particle6X,
+      particle6Y,
+      particle6Opacity,
+      particle6Scale,
+      particle7X,
+      particle7Y,
+      particle7Opacity,
+      particle7Scale,
     ]
   )
 
@@ -216,15 +238,7 @@ export function useReactionBurst(
         success: true,
       })
     }, burstDuration)
-  }, [
-    enabled,
-    reducedMotion,
-    particles,
-    emojiScale,
-    emojiTranslateY,
-    shadowRadius,
-    onComplete,
-  ])
+  }, [enabled, reducedMotion, particles, emojiScale, emojiTranslateY, shadowRadius, onComplete])
 
   const triggerLongPress = useCallback(() => {
     // Haptic: Success on long-press menu confirm
@@ -234,10 +248,7 @@ export function useReactionBurst(
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: emojiScale.value },
-        { translateY: emojiTranslateY.value },
-      ],
+      transform: [{ scale: emojiScale.value }, { translateY: emojiTranslateY.value }],
       shadowRadius: shadowRadius.value,
       elevation: shadowRadius.value, // Android shadow
     }
@@ -253,4 +264,3 @@ export function useReactionBurst(
     triggerLongPress,
   }
 }
-

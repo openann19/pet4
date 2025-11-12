@@ -1,17 +1,18 @@
-'use client'
+'use client';
 
-import { type ReactNode } from 'react'
-import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useAiReplyAnimation } from './effects/useAiReplyAnimation'
-import { cn } from '@/lib/utils'
+import { type ReactNode } from 'react';
+import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useAiReplyAnimation } from './effects/use-ai-reply-animation';
+import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface AnimatedAIWrapperProps {
-  children: ReactNode
-  enabled?: boolean
-  showShimmer?: boolean
-  showSparkles?: boolean
-  showGlow?: boolean
-  className?: string
+  children: ReactNode;
+  enabled?: boolean;
+  showShimmer?: boolean;
+  showSparkles?: boolean;
+  showGlow?: boolean;
+  className?: string;
 }
 
 export function AnimatedAIWrapper({
@@ -20,14 +21,15 @@ export function AnimatedAIWrapper({
   showShimmer = true,
   showSparkles = true,
   showGlow = true,
-  className
+  className,
 }: AnimatedAIWrapperProps): React.JSX.Element {
-  const aiAnimation = useAiReplyAnimation({
-    enabled,
-    showShimmer,
-    showSparkles,
-    showGlow
-  })
+    const _uiConfig = useUIConfig();
+    const aiAnimation = useAiReplyAnimation({
+        enabled,
+        showShimmer,
+        showSparkles,
+        showGlow,
+      });
 
   return (
     <AnimatedView
@@ -63,6 +65,5 @@ export function AnimatedAIWrapper({
 
       {children}
     </AnimatedView>
-  )
+  );
 }
-

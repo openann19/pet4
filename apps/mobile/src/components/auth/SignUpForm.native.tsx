@@ -1,234 +1,333 @@
-import { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
-import { createLogger } from '../../utils/logger'
-import { apiClient, APIError } from '../../utils/api-client'
-import { useStorage } from '../../hooks/use-storage'
+/**
+ * Mobile SignUp form with validation and API integration.
+ * Location: apps/mobile/src/components/auth/SignUpForm.tsx
+ */
+
+import { useCallback, useState } from 'react'
+import type React from 'react'
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { apiClient } from '@/utils/api-client'
+import { createLogger } from '@/utils/logger'
+import { saveAuthToken, saveRefreshToken } from '@/utils/secure-storage'
+import { useStorage } from '@/hooks/use-storage'
+
+type SignUpFormProps = {
+  readonly onSuccess: () => void
+  readonly onSwitchToSignIn: () => void
+}
+
+type SignUpFormErrors = Partial<Record<'email' | 'password' | 'confirmPassword', string>> & {
+  form?: string
+}
+
+type SignUpResponse = {
+  accessToken?: string
+  refreshToken?: string
+  user?: {
+    id: string
+    email: string
+    name?: string
+  }
+}
 
 const logger = createLogger('SignUpForm')
 
-const useApp = () => ({
+const useApp = (): {
   t: {
     auth: {
-      signUpTitle: 'Create your account',
-      signUpSubtitle: 'Join PawfectMatch to meet new furry friends',
-      displayName: 'Display name',
-      displayNamePlaceholder: 'Alex & Luna',
+      signUpTitle: string
+      signUpSubtitle: string
+      email: string
+      emailPlaceholder: string
+      emailRequired: string
+      emailInvalid: string
+      password: string
+      passwordPlaceholder: string
+      passwordRequired: string
+      passwordTooShort: string
+      confirmPassword: string
+      confirmPasswordPlaceholder: string
+      confirmPasswordRequired: string
+      passwordMismatch: string
+      signUp: string
+      signUpSuccess: string
+      signUpError: string
+      signIn: string
+      alreadyHaveAccount: string
+    }
+    common: {
+      loading: string
+    }
+  }
+} => ({
+  t: {
+    auth: {
+      signUpTitle: 'Create Account',
+      signUpSubtitle: 'Join the community and find the perfect match for your pet.',
       email: 'Email',
       emailPlaceholder: 'you@example.com',
-      password: 'Password',
-      passwordPlaceholder: '••••••••',
-      confirmPassword: 'Confirm password',
-      confirmPasswordPlaceholder: 'Repeat password',
-      signUp: 'Sign Up',
-      haveAccount: 'Already have an account?',
-      signIn: 'Sign in',
       emailRequired: 'Email is required',
-      emailInvalid: 'Please enter a valid email',
+      emailInvalid: 'Please enter a valid email address',
+      password: 'Password',
+      passwordPlaceholder: 'Enter a strong password',
       passwordRequired: 'Password is required',
       passwordTooShort: 'Password must be at least 8 characters',
-      passwordMismatch: 'Passwords must match',
-      displayNameRequired: 'Display name is required',
-      signUpSuccess: 'Welcome to PawfectMatch! 🎉',
+      confirmPassword: 'Confirm password',
+      confirmPasswordPlaceholder: 'Repeat your password',
+      confirmPasswordRequired: 'Please confirm your password',
+      passwordMismatch: 'Passwords do not match',
+      signUp: 'Sign Up',
+      signUpSuccess: 'Account created successfully!',
       signUpError: 'Unable to create your account. Please try again.',
+      signIn: 'Sign in',
+      alreadyHaveAccount: 'Already have an account?',
+    },
+    common: {
+      loading: 'Loading...',
     },
   },
 })
 
-const haptics = { trigger: (_: string) => {} }
-const analytics = { track: (_: string, _p?: Record<string, unknown>) => {} }
-const toast = { success: (_: string) => {}, error: (_: string) => {} }
-
-export type SignUpFormProps = {
-  onSuccess: () => void
-  onSwitchToSignIn: () => void
+const haptics = {
+  trigger: (_: 'success' | 'error' | 'light' | 'selection') => {},
 }
 
-type SignUpValues = {
-  email: string
-  password: string
-  confirmPassword: string
-  displayName: string
+const analytics = {
+  track: (_: string, __?: Record<string, unknown>) => {},
 }
 
-const isEmailValid = (email: string): boolean => {
+const toast = {
+  success: (_: string) => {},
+  error: (_: string) => {},
+}
+
+const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
 }
 
-export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps) {
+export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): React.JSX.Element {
   const { t } = useApp()
-  const [values, setValues] = useState<SignUpValues>({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    displayName: '',
-  })
-  const [errors, setErrors] = useState<Partial<Record<keyof SignUpValues, string>>>({})
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [errors, setErrors] = useState<SignUpFormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [, setAuthToken] = useStorage<string>('auth-token', '')
+  const [, setRefreshToken] = useStorage<string>('refresh-token', '')
   const [, setUserEmail] = useStorage<string>('user-email', '')
-  const [, setDisplayName] = useStorage<string>('user-display-name', '')
   const [, setIsAuthenticated] = useStorage<boolean>('is-authenticated', false)
 
-  const validate = (): boolean => {
-    const validationErrors: Partial<Record<keyof SignUpValues, string>> = {}
+  const clearError = useCallback((key: keyof SignUpFormErrors) => {
+    setErrors(prev => {
+      if (!(key in prev)) {
+        return prev
+      }
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
+  }, [])
 
-    if (!values.displayName.trim()) {
-      validationErrors.displayName = t.auth?.displayNameRequired || 'Display name is required'
+  const validate = useCallback((): boolean => {
+    const nextErrors: SignUpFormErrors = {}
+
+    if (!email.trim()) {
+      nextErrors.email = t.auth.emailRequired
+    } else if (!validateEmail(email.trim())) {
+      nextErrors.email = t.auth.emailInvalid
     }
 
-    if (!values.email.trim()) {
-      validationErrors.email = t.auth?.emailRequired || 'Email is required'
-    } else if (!isEmailValid(values.email)) {
-      validationErrors.email = t.auth?.emailInvalid || 'Please enter a valid email'
+    if (!password) {
+      nextErrors.password = t.auth.passwordRequired
+    } else if (password.length < 8) {
+      nextErrors.password = t.auth.passwordTooShort
     }
 
-    if (!values.password) {
-      validationErrors.password = t.auth?.passwordRequired || 'Password is required'
-    } else if (values.password.length < 8) {
-      validationErrors.password = t.auth?.passwordTooShort || 'Password must be at least 8 characters'
+    if (!confirmPassword) {
+      nextErrors.confirmPassword = t.auth.confirmPasswordRequired
+    } else if (password !== confirmPassword) {
+      nextErrors.confirmPassword = t.auth.passwordMismatch
     }
 
-    if (!values.confirmPassword) {
-      validationErrors.confirmPassword = t.auth?.passwordRequired || 'Please confirm your password'
-    } else if (values.password !== values.confirmPassword) {
-      validationErrors.confirmPassword = t.auth?.passwordMismatch || 'Passwords must match'
-    }
+    setErrors(nextErrors)
+    return Object.keys(nextErrors).length === 0
+  }, [
+    confirmPassword,
+    email,
+    password,
+    t.auth.confirmPasswordRequired,
+    t.auth.emailInvalid,
+    t.auth.emailRequired,
+    t.auth.passwordMismatch,
+    t.auth.passwordRequired,
+    t.auth.passwordTooShort,
+  ])
 
-    setErrors(validationErrors)
-    return Object.keys(validationErrors).length === 0
-  }
-
-  const updateField = (field: keyof SignUpValues, value: string) => {
-    setValues(prev => ({ ...prev, [field]: value }))
-    setErrors(prev => ({ ...prev, [field]: '' }))
-  }
-
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!validate()) {
       haptics.trigger('error')
       return
     }
 
     setIsSubmitting(true)
+    clearError('form')
     haptics.trigger('light')
 
     try {
       const payload = {
-        email: values.email.trim(),
-        password: values.password,
-        displayName: values.displayName.trim(),
+        email: email.trim(),
+        password,
       }
 
-      let token = ''
-      try {
-        const response = await apiClient.post<{ token?: string; accessToken?: string; user?: { email?: string; displayName?: string } }>(
-          '/auth/signup',
-          payload,
-          { skipAuth: true }
-        )
-        token = response?.token ?? response?.accessToken ?? ''
-        if (response?.user?.email) {
-          await setUserEmail(response.user.email)
-        } else {
-          await setUserEmail(payload.email)
-        }
-        if (response?.user?.displayName) {
-          await setDisplayName(response.user.displayName)
-        } else {
-          await setDisplayName(payload.displayName)
-        }
-      } catch (apiError) {
-        if (apiError instanceof APIError && apiError.statusCode === 409) {
-          throw apiError
-        }
-        logger.warn('Signup API not available, falling back to local bootstrap', { error: apiError })
-        token = `mock_signup_token_${Date.now()}`
-        await setUserEmail(payload.email)
-        await setDisplayName(payload.displayName)
+      const response = await apiClient.post<SignUpResponse>('/auth/register', payload)
+
+      const accessToken = response?.accessToken ?? null
+      const refreshToken = response?.refreshToken ?? null
+
+      if (accessToken) {
+        await Promise.all([
+          setAuthToken(accessToken),
+          saveAuthToken(accessToken),
+          refreshToken ? setRefreshToken(refreshToken) : Promise.resolve(),
+          refreshToken ? saveRefreshToken(refreshToken) : Promise.resolve(),
+        ])
+        analytics.track('auth_tokens_saved')
       }
 
-      await setAuthToken(token)
+      await setUserEmail(payload.email)
       await setIsAuthenticated(true)
 
-      analytics.track('user_signed_up', { method: 'email' })
-      toast.success(t.auth?.signUpSuccess || 'Welcome to PawfectMatch! 🎉')
+      analytics.track('user_signed_up', { email: payload.email })
+      toast.success(t.auth.signUpSuccess)
       haptics.trigger('success')
       onSuccess()
     } catch (error) {
-      const err = error instanceof APIError ? error : error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to sign up', err)
-      toast.error(t.auth?.signUpError || 'Unable to create your account. Please try again.')
+      const message = error instanceof Error && error.message ? error.message : t.auth.signUpError
+      logger.error('Sign up failed', error instanceof Error ? error : new Error(String(error)))
+      setErrors(prev => ({ ...prev, form: message }))
+      toast.error(message)
       haptics.trigger('error')
     } finally {
       setIsSubmitting(false)
     }
-  }
+  }, [
+    clearError,
+    email,
+    onSuccess,
+    password,
+    setAuthToken,
+    setIsAuthenticated,
+    setRefreshToken,
+    setUserEmail,
+    t.auth.signUpError,
+    t.auth.signUpSuccess,
+    validate,
+  ])
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.keyboardAvoider}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>{t.auth?.signUpTitle || 'Create your account'}</Text>
-        <Text style={styles.subtitle}>{t.auth?.signUpSubtitle || 'Join PawfectMatch to meet new furry friends'}</Text>
+        <View style={styles.container}>
+          <Text style={styles.title}>{t.auth.signUpTitle}</Text>
+          <Text style={styles.subtitle}>{t.auth.signUpSubtitle}</Text>
 
-        <View style={styles.form}>
-          <Text style={styles.label}>{t.auth?.displayName || 'Display name'}</Text>
-          <TextInput
-            style={[styles.input, errors.displayName ? styles.inputError : null]}
-            placeholder={t.auth?.displayNamePlaceholder || 'Alex & Luna'}
-            value={values.displayName}
-            onChangeText={(text) => updateField('displayName', text)}
-            editable={!isSubmitting}
-          />
-          {errors.displayName ? <Text style={styles.error}>{errors.displayName}</Text> : null}
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>{t.auth.email}</Text>
+            <TextInput
+              accessibilityLabel={t.auth.email}
+              autoCapitalize="none"
+              autoComplete="email"
+              keyboardType="email-address"
+              placeholder={t.auth.emailPlaceholder}
+              placeholderTextColor="#9CA3AF"
+              style={[styles.input, errors.email ? styles.inputError : null]}
+              value={email}
+              onChangeText={value => {
+                setEmail(value)
+                clearError('email')
+                clearError('form')
+              }}
+              editable={!isSubmitting}
+            />
+            {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+          </View>
 
-          <Text style={styles.label}>{t.auth?.email || 'Email'}</Text>
-          <TextInput
-            style={[styles.input, errors.email ? styles.inputError : null]}
-            placeholder={t.auth?.emailPlaceholder || 'you@example.com'}
-            value={values.email}
-            onChangeText={(text) => updateField('email', text)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            editable={!isSubmitting}
-          />
-          {errors.email ? <Text style={styles.error}>{errors.email}</Text> : null}
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>{t.auth.password}</Text>
+            <TextInput
+              accessibilityLabel={t.auth.password}
+              placeholder={t.auth.passwordPlaceholder}
+              placeholderTextColor="#9CA3AF"
+              secureTextEntry
+              style={[styles.input, errors.password ? styles.inputError : null]}
+              value={password}
+              onChangeText={value => {
+                setPassword(value)
+                clearError('password')
+                clearError('form')
+              }}
+              editable={!isSubmitting}
+            />
+            {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+          </View>
 
-          <Text style={styles.label}>{t.auth?.password || 'Password'}</Text>
-          <TextInput
-            style={[styles.input, errors.password ? styles.inputError : null]}
-            placeholder={t.auth?.passwordPlaceholder || '••••••••'}
-            value={values.password}
-            onChangeText={(text) => updateField('password', text)}
-            secureTextEntry
-            editable={!isSubmitting}
-          />
-          {errors.password ? <Text style={styles.error}>{errors.password}</Text> : null}
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>{t.auth.confirmPassword}</Text>
+            <TextInput
+              accessibilityLabel={t.auth.confirmPassword}
+              placeholder={t.auth.confirmPasswordPlaceholder}
+              placeholderTextColor="#9CA3AF"
+              secureTextEntry
+              style={[styles.input, errors.confirmPassword ? styles.inputError : null]}
+              value={confirmPassword}
+              onChangeText={value => {
+                setConfirmPassword(value)
+                clearError('confirmPassword')
+                clearError('form')
+              }}
+              editable={!isSubmitting}
+            />
+            {errors.confirmPassword ? (
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            ) : null}
+          </View>
 
-          <Text style={styles.label}>{t.auth?.confirmPassword || 'Confirm password'}</Text>
-          <TextInput
-            style={[styles.input, errors.confirmPassword ? styles.inputError : null]}
-            placeholder={t.auth?.confirmPasswordPlaceholder || 'Repeat password'}
-            value={values.confirmPassword}
-            onChangeText={(text) => updateField('confirmPassword', text)}
-            secureTextEntry
-            editable={!isSubmitting}
-          />
-          {errors.confirmPassword ? <Text style={styles.error}>{errors.confirmPassword}</Text> : null}
+          {errors.form ? <Text style={styles.formErrorText}>{errors.form}</Text> : null}
 
           <TouchableOpacity
+            accessibilityRole="button"
+            onPress={() => {
+              void handleSubmit()
+            }}
             style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
-            onPress={handleSubmit}
             disabled={isSubmitting}
           >
-            {isSubmitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitText}>{t.auth?.signUp || 'Sign Up'}</Text>}
+            {isSubmitting ? (
+              <ActivityIndicator color="var(--color-bg-overlay)" />
+            ) : (
+              <Text style={styles.submitButtonText}>{t.auth.signUp}</Text>
+            )}
           </TouchableOpacity>
 
           <View style={styles.switchRow}>
-            <Text style={styles.switchText}>{t.auth?.haveAccount || 'Already have an account?'} </Text>
-            <TouchableOpacity onPress={onSwitchToSignIn} disabled={isSubmitting}>
-              <Text style={styles.signInText}>{t.auth?.signIn || 'Sign in'}</Text>
+            <Text style={styles.switchText}>{t.auth.alreadyHaveAccount} </Text>
+            <TouchableOpacity onPress={onSwitchToSignIn} disabled={isSubmitting} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)">
+              <Text style={styles.switchLink}>{t.auth.signIn}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -238,63 +337,78 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
 }
 
 const styles = StyleSheet.create({
-  container: {
+  keyboardAvoider: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'var(--color-bg-overlay)',
   },
   scrollContent: {
-    padding: 24,
-    paddingBottom: 48,
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    justifyContent: 'center',
+  },
+  container: {
+    width: '100%',
+    maxWidth: 420,
+    alignSelf: 'center',
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 8,
     color: '#111827',
+    marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
+    fontSize: 15,
     color: '#6B7280',
     marginBottom: 24,
+    textAlign: 'center',
   },
-  form: {
-    gap: 16,
+  formGroup: {
+    marginBottom: 16,
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '500',
+    marginBottom: 6,
     color: '#111827',
   },
   input: {
+    height: 50,
     borderWidth: 1,
     borderColor: '#D1D5DB',
-    borderRadius: 12,
-    padding: 14,
-    fontSize: 16,
+    borderRadius: 10,
+    paddingHorizontal: 14,
     backgroundColor: '#F9FAFB',
     color: '#111827',
   },
   inputError: {
-    borderColor: '#EF4444',
+    borderColor: '#DC2626',
   },
-  error: {
-    color: '#EF4444',
+  errorText: {
+    marginTop: 6,
+    color: '#DC2626',
     fontSize: 12,
   },
+  formErrorText: {
+    color: '#DC2626',
+    fontSize: 13,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
   submitButton: {
-    backgroundColor: '#6366F1',
-    borderRadius: 12,
-    paddingVertical: 16,
+    backgroundColor: '#2563EB',
+    borderRadius: 10,
+    paddingVertical: 14,
     alignItems: 'center',
     marginTop: 8,
   },
   submitButtonDisabled: {
-    opacity: 0.6,
+    opacity: 0.7,
   },
-  submitText: {
-    color: '#fff',
+  submitButtonText: {
+    color: 'var(--color-bg-overlay)',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -302,13 +416,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 18,
   },
   switchText: {
     color: '#6B7280',
+    fontSize: 13,
   },
-  signInText: {
-    color: '#4F46E5',
+  switchLink: {
+    color: '#2563EB',
     fontWeight: '600',
+    fontSize: 13,
   },
 })
+
+export default SignUpForm

@@ -1,7 +1,6 @@
 import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 export interface UseIconRotationOptions {
   enabled?: boolean
@@ -12,37 +11,30 @@ export interface UseIconRotationOptions {
 
 export interface UseIconRotationReturn {
   rotation: ReturnType<typeof useSharedValue<number>>
-  animatedStyle: AnimatedStyle
+  style: AnimatedStyle
 }
 
-export function useIconRotation(
-  options: UseIconRotationOptions = {}
-): UseIconRotationReturn {
-  const {
-    enabled = false,
-    targetRotation = 360,
-    duration = 500,
-    enablePulse = false
-  } = options
+export function useIconRotation(options: UseIconRotationOptions = {}): UseIconRotationReturn {
+  const { enabled = false, targetRotation = 360, duration = 500, enablePulse = false } = options
 
   const rotationValue = useSharedValue(0)
 
   useEffect(() => {
-    if (isTruthy(enabled)) {
+    if (enabled) {
       rotationValue.value = withTiming(targetRotation, { duration })
     } else {
       rotationValue.value = withTiming(0, { duration })
     }
   }, [enabled, duration, targetRotation, rotationValue, enablePulse])
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const style = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${String(rotationValue.value ?? '')}deg` }]
+      transform: [{ rotate: `${rotationValue.value}deg` }],
     }
   }) as AnimatedStyle
 
   return {
     rotation: rotationValue,
-    animatedStyle
+    style,
   }
 }

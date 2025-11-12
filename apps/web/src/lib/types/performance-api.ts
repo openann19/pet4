@@ -8,45 +8,45 @@
  * Chrome-specific extension for Cumulative Layout Shift metric
  */
 export interface LayoutShiftEntry extends PerformanceEntry {
-  readonly value: number
-  readonly hadRecentInput: boolean
-  readonly sources: ReadonlyArray<LayoutShiftAttribution>
+  readonly value: number;
+  readonly hadRecentInput: boolean;
+  readonly sources: readonly LayoutShiftAttribution[];
 }
 
 /**
  * Attribution for layout shift sources
  */
 export interface LayoutShiftAttribution {
-  readonly node?: Node
-  readonly previousRect: DOMRectReadOnly
-  readonly currentRect: DOMRectReadOnly
+  readonly node?: Node;
+  readonly previousRect: DOMRectReadOnly;
+  readonly currentRect: DOMRectReadOnly;
 }
 
 /**
  * PerformanceEventTiming entry for First Input Delay metric
  */
 export interface PerformanceEventTiming extends PerformanceEntry {
-  readonly processingStart: number
-  readonly processingEnd: number
-  readonly cancelable: boolean
-  readonly target?: Node
-  readonly interactionId?: number
+  readonly processingStart: number;
+  readonly processingEnd: number;
+  readonly cancelable: boolean;
+  readonly target?: Node;
+  readonly interactionId?: number;
 }
 
 /**
  * PerformanceMemory interface for Chrome-specific memory API
  */
 export interface PerformanceMemory {
-  readonly usedJSHeapSize: number
-  readonly totalJSHeapSize: number
-  readonly jsHeapSizeLimit: number
+  readonly usedJSHeapSize: number;
+  readonly totalJSHeapSize: number;
+  readonly jsHeapSizeLimit: number;
 }
 
 /**
  * Extended Performance interface with memory property
  */
 export interface PerformanceWithMemory extends Performance {
-  readonly memory?: PerformanceMemory
+  readonly memory?: PerformanceMemory;
 }
 
 /**
@@ -61,12 +61,11 @@ export type ExtendedPermissionName =
   | 'persistent-storage'
   | 'accelerometer'
   | 'gyroscope'
-  | 'magnetometer'
+  | 'magnetometer';
 
 /**
  * Extended PermissionDescriptor for non-standard permission names
  */
 export interface ExtendedPermissionDescriptor {
-  name: ExtendedPermissionName
+  name: ExtendedPermissionName;
 }
-

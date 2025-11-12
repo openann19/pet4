@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  ViewStyle,
-  TouchableOpacityProps,
-} from 'react-native';
+import { TouchableOpacity, View, StyleSheet, ViewStyle, TouchableOpacityProps } from 'react-native';
 
 /**
  * Card Variant Enum
@@ -18,7 +12,7 @@ export enum CardVariant {
 
 /**
  * Premium Card Component
- * 
+ *
  * Features:
  * - All variants (default/elevated/glass)
  * - All states (default/hover/pressed)
@@ -41,7 +35,7 @@ export function AppCard({
   const paddingHorizontal = 16;
   const paddingVertical = 12;
   const borderRadius = variant === CardVariant.ELEVATED ? 20 : 16;
-  
+
   const getVariantStyles = (): ViewStyle => {
     switch (variant) {
       case CardVariant.DEFAULT:
@@ -63,11 +57,11 @@ export function AppCard({
         return {};
     }
   };
-  
+
   const variantStyles = getVariantStyles();
-  
+
   const Component = onPress ? TouchableOpacity : View;
-  
+
   return (
     <Component
       onPress={onPress}
@@ -97,4 +91,3 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
-

@@ -7,9 +7,11 @@ This document details all animations, micro-interactions, and performance optimi
 ## Core Animation Components
 
 ### 1. AnimatedButton
+
 **File:** `apps/native/src/components/AnimatedButton.tsx`
 
 **Features:**
+
 - Scale animation on press (0.95x → 1.0x)
 - Opacity fade (1.0 → 0.8 → 1.0)
 - Spring physics for natural feel
@@ -17,24 +19,24 @@ This document details all animations, micro-interactions, and performance optimi
 - Disabled state handling
 
 **Usage:**
+
 ```tsx
-<AnimatedButton
-  title="Like"
-  onPress={handleLike}
-  variant="primary"
-/>
+<AnimatedButton title="Like" onPress={handleLike} variant="primary" />
 ```
 
 ### 2. AnimatedCard
+
 **File:** `apps/native/src/components/AnimatedCard.tsx`
 
 **Features:**
+
 - Scale animation on press (1.0 → 0.98 → 1.0)
 - Elevation increase on press (2 → 8)
 - Shadow opacity animation
 - Bouncy spring return
 
 **Usage:**
+
 ```tsx
 <AnimatedCard onPress={handlePress}>
   <YourContent />
@@ -42,15 +44,18 @@ This document details all animations, micro-interactions, and performance optimi
 ```
 
 ### 3. FadeInView
+
 **File:** `apps/native/src/components/FadeInView.tsx`
 
 **Features:**
+
 - Opacity fade (0 → 1)
 - TranslateY slide (20px → 0)
 - Configurable delay for staggering
 - Cubic easing for smooth entrance
 
 **Usage:**
+
 ```tsx
 <FadeInView delay={100}>
   <YourContent />
@@ -58,23 +63,28 @@ This document details all animations, micro-interactions, and performance optimi
 ```
 
 ### 4. LoadingSkeleton
+
 **File:** `apps/native/src/components/LoadingSkeleton.tsx`
 
 **Features:**
+
 - Shimmer pulse effect
 - Opacity animation (0.3 ↔ 1.0)
 - Configurable dimensions
 - Pre-built card skeleton
 
 **Usage:**
+
 ```tsx
 <LoadingSkeleton width="100%" height={200} borderRadius={12} />
 ```
 
 ### 5. SwipeableCard
+
 **File:** `apps/native/src/components/SwipeableCard.tsx`
 
 **Features:**
+
 - Pan gesture detection
 - Real-time rotation interpolation (-15° to +15°)
 - Swipe threshold detection
@@ -83,20 +93,19 @@ This document details all animations, micro-interactions, and performance optimi
 - Smooth return-to-center animation
 
 **Usage:**
+
 ```tsx
-<SwipeableCard
-  onSwipeLeft={handlePass}
-  onSwipeRight={handleLike}
-  onSwipeUp={handleSuperlike}
->
+<SwipeableCard onSwipeLeft={handlePass} onSwipeRight={handleLike} onSwipeUp={handleSuperlike}>
   <PetCard />
 </SwipeableCard>
 ```
 
 ### 6. PullToRefreshIndicator
+
 **File:** `apps/native/src/components/PullToRefresh.tsx`
 
 **Features:**
+
 - Rotation animation on refresh
 - Scale interpolation based on pull progress
 - Opacity fade-in
@@ -105,77 +114,91 @@ This document details all animations, micro-interactions, and performance optimi
 ## Screen-by-Screen Animation Breakdown
 
 ### 1. Welcome Screen
+
 **Animations:**
+
 - Staggered fade-in for feature cards (100ms delays)
 - Button hover effects
 - Smooth page transitions
 
 ### 2. Login Screen
+
 **Animations:**
+
 - Input field focus animations
 - Error shake animation
 - Button press feedback
 - Keyboard-aware transitions
 
 ### 3. Signup Screen
+
 **Animations:**
+
 - Form validation visual feedback
 - Success checkmark animation
 - Progressive form reveal
 
 ### 4. Discover Screen ⭐ (Most Animated)
+
 **File:** `apps/native/src/screens/DiscoverScreen.tsx`
 
 **Animations:**
+
 - **Swipe Cards:**
   - Pan gesture with rotation (-15° to +15°)
   - Real-time badge overlays (LIKE/NOPE/SUPER)
   - Interpolated opacity for badges
   - Smooth card exit animation
-  
 - **Next Card Preview:**
   - Scaled to 0.95x
   - Opacity 0.5
   - Positioned underneath current card
-  
 - **Action Buttons:**
   - Synchronized with swipe actions
   - Spring-based scale animation
   - Color-coded feedback
-  
 - **Content:**
   - Staggered fade-in for pet info (50-100ms delays)
   - Gradient text overlay
   - Tap-to-view hint animation
 
 **Performance:**
+
 - 60fps guaranteed (UI thread execution)
 - Hardware-accelerated transforms
 - Gesture Handler integration
 
 ### 5. Pet Detail Screen
+
 **Animations:**
+
 - Parallax image scroll effect
 - Content fade-in on mount
 - Info section staggered reveal
 - Back button scale feedback
 
 ### 6. Matches Screen
+
 **Animations:**
+
 - List item staggered fade-in
 - Compatibility badge pulse
 - Card press animations
 - Empty state fade-in
 
 ### 7. Chat List Screen
+
 **Animations:**
+
 - Unread count badge pulse (scale animation)
 - List item hover effects
 - Avatar fade-in
 - Swipe-to-delete gesture (if implemented)
 
 ### 8. Chat Screen
+
 **Animations:**
+
 - Message bubble entrance (slide + fade)
 - Send button press animation
 - Typing indicator animation
@@ -183,78 +206,80 @@ This document details all animations, micro-interactions, and performance optimi
 - Message timestamp fade-in
 
 ### 9. Community Screen ⭐ (Highly Animated)
+
 **File:** `apps/native/src/screens/CommunityScreen.tsx`
 
 **Animations:**
+
 - **Pull-to-Refresh:**
   - Custom indicator rotation
   - Scale based on pull distance
   - Smooth spring return
-  
 - **Post Like Button:**
   - Scale animation (1.0 → 1.5 → 1.0)
   - Color change (gray → red)
   - Bounce effect
-  
 - **Create Post Modal:**
   - Spring scale entrance (0 → 1)
   - Backdrop fade-in
   - Keyboard-aware positioning
   - Exit animation
-  
 - **Post List:**
   - Staggered fade-in (50ms delays)
   - Card press feedback
   - Image lazy load with fade-in
-  
 - **Loading States:**
   - Skeleton screens with shimmer
   - Smooth transition to content
 
 ### 10. Profile Screen
+
 **Animations:**
+
 - Avatar tap-to-zoom
 - Settings menu slide
 - Pet card carousel
 - Logout confirmation modal spring
 
 ### 11. Adoption Screen
+
 **Animations:**
+
 - Grid card stagger animation
 - Status badge pulse
 - Filter button feedback
 - Card press scale
 
 ### 12. Lost & Found Screen
+
 **Animations:**
+
 - Form field focus animations
 - Photo upload progress
 - Submit button loading state
 - Success/error toast animations
 
 ### 13. Admin Console Screen ⭐ (New)
+
 **File:** `apps/native/src/screens/AdminConsoleScreen.tsx`
 
 **Animations:**
+
 - **Tab Navigation:**
   - Animated indicator slide (spring physics)
   - Tab text color transition
   - Smooth content switching
-  
 - **Stat Cards:**
   - Bouncy entrance animation
   - Staggered delays (150ms, 200ms, 250ms, 300ms)
   - Scale from 0 to 1
   - Border color accent
-  
 - **Activity Feed:**
   - Cascading fade-in
   - Icon bounce on new activity
-  
 - **User Cards:**
   - Avatar scale on press
   - Status badge color transition
-  
 - **Report Cards:**
   - Severity badge pulse
   - Approve/reject button press feedback
@@ -269,10 +294,11 @@ export const SpringConfig = {
   snappy: { damping: 15, stiffness: 150, mass: 0.8 },
   bouncy: { damping: 10, stiffness: 100, mass: 1.2 },
   smooth: { damping: 25, stiffness: 120, mass: 1 },
-};
+}
 ```
 
 **Usage:**
+
 - **Gentle:** Subtle transitions, content reveals
 - **Snappy:** Button presses, quick feedback
 - **Bouncy:** Attention-grabbing, playful interactions
@@ -281,12 +307,14 @@ export const SpringConfig = {
 ## Performance Metrics
 
 ### React Native Reanimated 3
+
 - **UI Thread Execution:** All animations run on UI thread
 - **Frame Rate:** 60fps guaranteed
 - **JavaScript Thread:** Freed for business logic
 - **Hardware Acceleration:** All transforms use GPU
 
 ### Optimization Techniques
+
 1. **Shared Values:** Minimize re-renders
 2. **useNativeDriver:** Where applicable
 3. **Gesture Handler:** Native gesture recognition
@@ -330,6 +358,7 @@ export const SpringConfig = {
 ## Testing Animations
 
 ### Manual Testing
+
 1. Enable "Show Performance Monitor" in Expo
 2. Verify 60fps during animations
 3. Test on low-end devices
@@ -337,6 +366,7 @@ export const SpringConfig = {
 5. Verify gesture responsiveness
 
 ### Performance Profiling
+
 ```bash
 # Monitor frame rate
 npx react-native log-android | grep "FPS"
@@ -348,6 +378,7 @@ npx react-native doctor
 ## Future Animation Enhancements
 
 Potential additions (not yet implemented):
+
 - [ ] Parallax scroll effects on Profile
 - [ ] Confetti animation on successful match
 - [ ] Lottie animations for empty states

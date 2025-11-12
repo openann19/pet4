@@ -1,30 +1,25 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing
-} from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useUIConfig } from '@/hooks/useUIConfig'
+import { useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from '@/hooks/use-ui-config';
 
 export interface UseReactionParticleTrailOptions {
-  enabled?: boolean
+  enabled?: boolean;
 }
 
 export interface UseReactionParticleTrailReturn {
-  animatedStyle: AnimatedStyle
-  trigger: (x: number, y: number) => void
-  particles: ReturnType<typeof useSharedValue<number>>
+  animatedStyle: AnimatedStyle;
+  trigger: (x: number, y: number) => void;
+  particles: ReturnType<typeof useSharedValue<number>>;
 }
 
 /**
  * Reaction particle trail effect
- * 
+ *
  * Creates particle trail when reactions are added
- * 
+ *
  * @example
  * ```tsx
  * const { trigger } = useReactionParticleTrail({ emoji: '❤️' })
@@ -34,46 +29,45 @@ export interface UseReactionParticleTrailReturn {
 export function useReactionParticleTrail(
   options: UseReactionParticleTrailOptions = {}
 ): UseReactionParticleTrailReturn {
-  const { enabled = true } = options
-  const { animation } = useUIConfig()
+  const { enabled = true } = options;
+  const { animation } = useUIConfig();
 
-  const particles = useSharedValue(0)
+  const particles = useSharedValue(0);
 
   const trigger = useCallback(
     (_x: number, _y: number): void => {
       if (!enabled || !animation.showParticles || !animation.showTrails) {
-        return
+        return;
       }
 
       particles.value = withTiming(1, {
         duration: 100,
-        easing: Easing.out(Easing.ease)
-      })
+        easing: Easing.out(Easing.ease),
+      });
 
       setTimeout(() => {
         particles.value = withTiming(0, {
           duration: 200,
-          easing: Easing.in(Easing.ease)
-        })
-      }, 100)
+          easing: Easing.in(Easing.ease),
+        });
+      }, 100);
     },
     [enabled, animation.showParticles, animation.showTrails, particles]
-  )
+  );
 
   const animatedStyle = useAnimatedStyle(() => {
     if (!enabled || !animation.showTrails) {
-      return {}
+      return {};
     }
 
     return {
-      opacity: particles.value
-    }
-  }) as AnimatedStyle
+      opacity: particles.value,
+    };
+  }) as AnimatedStyle;
 
   return {
     animatedStyle,
     trigger,
-    particles
-  }
+    particles,
+  };
 }
-

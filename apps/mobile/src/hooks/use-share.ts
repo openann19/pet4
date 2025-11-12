@@ -49,31 +49,28 @@ export function useShare(): UseShareReturn {
     }
   }, [])
 
-  const shareFile = useCallback(
-    async (uri: string, options?: ShareOptions): Promise<boolean> => {
-      try {
+  const shareFile = useCallback(async (uri: string, options?: ShareOptions): Promise<boolean> => {
+    try {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
 
-        const isAvailable = await Sharing.isAvailableAsync()
-        if (!isAvailable) {
-          return false
-        }
-
-        const sharingOptions: Sharing.SharingOptions = {
-          ...(options?.mimeType !== undefined ? { mimeType: options.mimeType } : {}),
-          ...(options?.title !== undefined ? { dialogTitle: options.title } : {}),
-        }
-        await Sharing.shareAsync(uri, sharingOptions)
-
-        return true
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error))
-        logger.error('Share file failed', err)
+      const isAvailable = await Sharing.isAvailableAsync()
+      if (!isAvailable) {
         return false
       }
-    },
-    []
-  )
+
+      const sharingOptions: Sharing.SharingOptions = {
+        ...(options?.mimeType !== undefined ? { mimeType: options.mimeType } : {}),
+        ...(options?.title !== undefined ? { dialogTitle: options.title } : {}),
+      }
+      await Sharing.shareAsync(uri, sharingOptions)
+
+      return true
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Share file failed', err)
+      return false
+    }
+  }, [])
 
   const canShare = useCallback(async (): Promise<boolean> => {
     try {
@@ -89,4 +86,3 @@ export function useShare(): UseShareReturn {
     canShare,
   }
 }
-

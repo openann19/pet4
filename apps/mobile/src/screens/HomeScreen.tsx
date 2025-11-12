@@ -13,7 +13,7 @@ export function HomeScreen(): React.JSX.Element {
 
   const handleRefresh = useCallback(async (): Promise<void> => {
     // Simulate network delay for better UX
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise(resolve => setTimeout(resolve, 500))
   }, [])
 
   return (
@@ -31,19 +31,23 @@ export function HomeScreen(): React.JSX.Element {
 
           <FeatureCard title="Adoption" subtitle="Marketplace governance and workflows">
             <Text style={styles.bodyText}>
-              Active listings can be edited: {snapshots.adoption.canEditActiveListing ? 'Yes' : 'No'}
+              Active listings can be edited:{' '}
+              {snapshots.adoption.canEditActiveListing ? 'Yes' : 'No'}
             </Text>
             <Text style={styles.bodyText}>
-              Accepting new applications: {snapshots.adoption.canReceiveApplications ? 'Enabled' : 'Paused'}
+              Accepting new applications:{' '}
+              {snapshots.adoption.canReceiveApplications ? 'Enabled' : 'Paused'}
             </Text>
           </FeatureCard>
 
           <FeatureCard title="Community" subtitle="Engagement guardrails">
             <Text style={styles.bodyText}>
-              Pending posts editable: {snapshots.community.canEditPendingPost ? 'Allowed' : 'Locked'}
+              Pending posts editable:{' '}
+              {snapshots.community.canEditPendingPost ? 'Allowed' : 'Locked'}
             </Text>
             <Text style={styles.bodyText}>
-              Comments on live posts: {snapshots.community.canReceiveCommentsOnActivePost ? 'Open' : 'Closed'}
+              Comments on live posts:{' '}
+              {snapshots.community.canReceiveCommentsOnActivePost ? 'Open' : 'Closed'}
             </Text>
           </FeatureCard>
 
@@ -58,7 +62,8 @@ export function HomeScreen(): React.JSX.Element {
 
           <View style={styles.footer} accessible accessibilityRole="text">
             <Text style={styles.footerText}>
-              Navigation routes map directly to production domain slices, keeping parity with the web surface.
+              Navigation routes map directly to production domain slices, keeping parity with the
+              web surface.
             </Text>
           </View>
         </ScrollView>

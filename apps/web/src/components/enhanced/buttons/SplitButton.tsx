@@ -1,42 +1,42 @@
-'use client'
+'use client';
 
-import { useState, useCallback, type ReactNode } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import { PremiumButton } from '../PremiumButton'
+import { useState, useCallback, type ReactNode } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import { PremiumButton } from '../PremiumButton';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { ChevronDown } from 'lucide-react'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+} from '@/components/ui/dropdown-menu';
+import { ChevronDown } from 'lucide-react';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface SplitButtonAction {
-  label: string
-  onClick: () => void
-  icon?: ReactNode
-  disabled?: boolean
+  label: string;
+  onClick: () => void;
+  icon?: ReactNode;
+  disabled?: boolean;
 }
 
 export interface SplitButtonProps {
   mainAction: {
-    label: string
-    onClick: () => void
-    icon?: ReactNode
-    loading?: boolean
-  }
-  secondaryActions: SplitButtonAction[]
-  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'gradient'
-  size?: 'sm' | 'md' | 'lg'
-  disabled?: boolean
-  className?: string
+    label: string;
+    onClick: () => void;
+    icon?: ReactNode;
+    loading?: boolean;
+  };
+  secondaryActions: SplitButtonAction[];
+  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'gradient';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  className?: string;
 }
 
 export function SplitButton({
@@ -47,48 +47,52 @@ export function SplitButton({
   disabled = false,
   className,
 }: SplitButtonProps): React.JSX.Element {
-  const [isOpen, setIsOpen] = useState(false)
-  const dividerOpacity = useSharedValue(1)
-  const menuScale = useSharedValue(0.95)
+    const _uiConfig = useUIConfig();
+    const [isOpen, setIsOpen] = useState(false);
+  const dividerOpacity = useSharedValue(1);
+  const menuScale = useSharedValue(0.95);
 
   const hoverLift = useHoverLift({
     scale: 1.02,
     translateY: -2,
     damping: 25,
     stiffness: 400,
-  })
+  });
 
   const dividerStyle = useAnimatedStyle(() => ({
     opacity: dividerOpacity.value,
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const menuStyle = useAnimatedStyle(() => ({
     transform: [{ scale: menuScale.value }],
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const handleMainClick = useCallback(() => {
-    if (isTruthy(disabled)) return
-    haptics.impact('light')
-    mainAction.onClick()
-  }, [disabled, mainAction])
+    if (disabled) return;
+    haptics.impact('light');
+    mainAction.onClick();
+  }, [disabled, mainAction]);
 
-  const handleMenuOpenChange = useCallback((open: boolean) => {
-    setIsOpen(open)
-    if (isTruthy(open)) {
-      dividerOpacity.value = withTiming(0.3, { duration: 200 })
-      menuScale.value = withSpring(1, springConfigs.smooth)
-      haptics.selection()
-    } else {
-      dividerOpacity.value = withSpring(1, springConfigs.smooth)
-      menuScale.value = withTiming(0.95, { duration: 150 })
-    }
-  }, [dividerOpacity, menuScale])
+  const handleMenuOpenChange = useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      if (open) {
+        dividerOpacity.value = withTiming(0.3, { duration: 200 });
+        menuScale.value = withSpring(1, springConfigs.smooth);
+        haptics.selection();
+      } else {
+        dividerOpacity.value = withSpring(1, springConfigs.smooth);
+        menuScale.value = withTiming(0.95, { duration: 150 });
+      }
+    },
+    [dividerOpacity, menuScale]
+  );
 
   const handleSecondaryAction = useCallback((action: SplitButtonAction) => {
-    haptics.impact('light')
-    action.onClick()
-    setIsOpen(false)
-  }, [])
+    haptics.impact('light');
+    action.onClick();
+    setIsOpen(false);
+  }, []);
 
   return (
     <div
@@ -125,9 +129,9 @@ export function SplitButton({
               'disabled:opacity-50 disabled:cursor-not-allowed',
               'transition-all duration-300',
               'rounded-l-none',
-              size === 'sm' && 'min-h-[44px]',
-              size === 'md' && 'min-h-[44px]',
-              size === 'lg' && 'min-h-[44px]'
+              size === 'sm' && 'min-h-11',
+              size === 'md' && 'min-h-11',
+              size === 'lg' && 'min-h-11'
             )}
             style={{
               backgroundColor: 'var(--btn-primary-bg)',
@@ -136,15 +140,12 @@ export function SplitButton({
             aria-label="More options"
           >
             <ChevronDown
-              className={cn(
-                'transition-transform duration-300',
-                isOpen && 'rotate-180'
-              )}
+              className={cn('transition-transform duration-300', isOpen && 'rotate-180')}
               size={size === 'sm' ? 16 : size === 'md' ? 20 : 24}
             />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-[200px]">
+        <DropdownMenuContent align="end" className="min-w-50">
           <AnimatedView style={menuStyle}>
             {secondaryActions.map((action, index) => (
               <DropdownMenuItem
@@ -161,6 +162,5 @@ export function SplitButton({
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
+  );
 }
-

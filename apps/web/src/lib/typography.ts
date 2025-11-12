@@ -41,7 +41,7 @@ export const typographyScale = {
     letterSpacing: 'tracking-normal',
     maxLines: 'line-clamp-2',
   },
-} as const
+} as const;
 
 export const spacingScale = {
   xs: '4px',
@@ -50,18 +50,19 @@ export const spacingScale = {
   lg: '16px',
   xl: '24px',
   '2xl': '32px',
-} as const
+} as const;
 
-export const minTouchTarget = '44px'
+export const minTouchTarget = '44px';
 
 export function getTypographyClasses(variant: keyof typeof typographyScale) {
-  const config = typographyScale[variant]
-  return `${String(config.fontSize ?? '')} ${String(config.lineHeight ?? '')} ${String(config.fontWeight ?? '')} ${String(config.letterSpacing ?? '')} ${String(config.maxLines ?? '')} break-words`
+  const config = typographyScale[variant];
+  return `${config.fontSize} ${config.lineHeight} ${config.fontWeight} ${config.letterSpacing} ${config.maxLines} break-words`;
 }
 
 export const accessibilityClasses = {
-  focusVisible: 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+  focusVisible:
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
   srOnly: 'sr-only',
   notSrOnly: 'not-sr-only',
   minTouch: 'min-h-[44px] min-w-[44px]',
-}
+};

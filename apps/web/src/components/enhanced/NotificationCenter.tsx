@@ -1,69 +1,66 @@
-import { useState } from 'react'
-import { useStorage } from '@/hooks/useStorage'
-import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item'
-import { MotionView } from '@petspark/motion'
-import { Bell, X, Check, CheckCircle } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
-import { formatDistanceToNow } from 'date-fns'
+import { useState } from 'react';
+import { useStorage } from '@/hooks/use-storage';
+import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
+import { MotionView } from '@petspark/motion';
+import { Bell, X, Check, CheckCircle } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface Notification {
-  id: string
-  type: 'match' | 'message' | 'like' | 'comment' | 'playdate' | 'system'
-  title: string
-  message: string
-  timestamp: number
-  read: boolean
-  actionUrl?: string
-  imageUrl?: string
-  priority?: 'low' | 'normal' | 'high'
+  id: string;
+  type: 'match' | 'message' | 'like' | 'comment' | 'playdate' | 'system';
+  title: string;
+  message: string;
+  timestamp: number;
+  read: boolean;
+  actionUrl?: string;
+  imageUrl?: string;
+  priority?: 'low' | 'normal' | 'high';
 }
 
 export function NotificationCenter() {
-  const [notifications, setNotifications] = useStorage<Notification[]>('notifications', [])
-  const [isOpen, setIsOpen] = useState(false)
-  const [filter, setFilter] = useState<'all' | 'unread'>('all')
+  const _uiConfig = useUIConfig();
+  const [notifications, setNotifications] = useStorage<Notification[]>('notifications', []);
+  const [isOpen, setIsOpen] = useState(false);
+  const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
-  const unreadCount = (notifications || []).filter(n => !n.read).length
+  const unreadCount = (notifications || []).filter((n) => !n.read).length;
 
-  const filteredNotifications = filter === 'unread'
-    ? (notifications || []).filter(n => !n.read)
-    : (notifications || [])
+  const filteredNotifications =
+    filter === 'unread' ? (notifications || []).filter((n) => !n.read) : notifications || [];
 
   const groupedNotifications = {
-    today: (filteredNotifications || []).filter(n => 
-      Date.now() - n.timestamp < 24 * 60 * 60 * 1000
+    today: (filteredNotifications || []).filter(
+      (n) => Date.now() - n.timestamp < 24 * 60 * 60 * 1000
     ),
-    earlier: (filteredNotifications || []).filter(n => 
-      Date.now() - n.timestamp >= 24 * 60 * 60 * 1000
-    )
-  }
+    earlier: (filteredNotifications || []).filter(
+      (n) => Date.now() - n.timestamp >= 24 * 60 * 60 * 1000
+    ),
+  };
 
   const markAsRead = (id: string) => {
-    setNotifications(current =>
-      (current || []).map(n => n.id === id ? { ...n, read: true } : n)
-    )
-  }
+    setNotifications((current) =>
+      (current || []).map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
 
   const markAllAsRead = () => {
-    setNotifications(current =>
-      (current || []).map(n => ({ ...n, read: true }))
-    )
-  }
+    setNotifications((current) => (current || []).map((n) => ({ ...n, read: true })));
+  };
 
   const deleteNotification = (id: string) => {
-    setNotifications(current =>
-      (current || []).filter(n => n.id !== id)
-    )
-  }
+    setNotifications((current) => (current || []).filter((n) => n.id !== id));
+  };
 
   const clearAll = () => {
-    setNotifications([])
-  }
+    setNotifications([]);
+  };
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -72,12 +69,14 @@ export function NotificationCenter() {
           variant="ghost"
           size="icon"
           className="relative rounded-full"
+          aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
         >
           <Bell size={20} weight={unreadCount > 0 ? 'fill' : 'regular'} />
           {unreadCount > 0 && (
             <Badge
               className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
               variant="destructive"
+              aria-hidden="true"
             >
               {unreadCount > 9 ? '9+' : unreadCount}
             </Badge>
@@ -85,40 +84,35 @@ export function NotificationCenter() {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[400px] p-0" align="end">
+      <PopoverContent className="w-100 p-0" align="end">
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold text-lg">Notifications</h3>
           {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={markAllAsRead}
-              className="text-xs"
-            >
+            <Button variant="ghost" size="sm" onClick={markAllAsRead} className="text-xs">
               <CheckCircle size={16} className="mr-1" />
               Mark all read
             </Button>
           )}
         </div>
 
-        <Tabs value={filter} onValueChange={(v) => {
-          if (v === 'all' || v === 'unread') {
-            setFilter(v)
-          }
-        }} className="w-full">
+        <Tabs
+          value={filter}
+          onValueChange={(v) => {
+            if (v === 'all' || v === 'unread') {
+              setFilter(v);
+            }
+          }}
+          className="w-full"
+        >
           <TabsList className="w-full grid grid-cols-2 px-4">
-            <TabsTrigger value="all">
-              All ({(notifications || []).length})
-            </TabsTrigger>
-            <TabsTrigger value="unread">
-              Unread ({unreadCount})
-            </TabsTrigger>
+            <TabsTrigger value="all">All ({(notifications || []).length})</TabsTrigger>
+            <TabsTrigger value="unread">Unread ({unreadCount})</TabsTrigger>
           </TabsList>
 
           <TabsContent value={filter} className="mt-0">
-            <ScrollArea className="h-[400px]">
+            <ScrollArea className="h-100">
               {filteredNotifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-[300px] text-muted-foreground">
+                <div className="flex flex-col items-center justify-center h-75 text-muted-foreground">
                   <Bell size={48} className="mb-4 opacity-50" />
                   <p>No notifications</p>
                 </div>
@@ -177,21 +171,21 @@ export function NotificationCenter() {
         )}
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
 function NotificationItem({
   notification,
   onMarkAsRead,
   onDelete,
-  index
+  index,
 }: {
-  notification: Notification
-  onMarkAsRead: (id: string) => void
-  onDelete: (id: string) => void
-  index: number
+  notification: Notification;
+  onMarkAsRead: (id: string) => void;
+  onDelete: (id: string) => void;
+  index: number;
 }) {
-  const staggered = useStaggeredItem({ index, staggerDelay: 30 })
+  const staggered = useStaggeredItem({ index, staggerDelay: 30 });
 
   return (
     <MotionView
@@ -228,9 +222,7 @@ function NotificationItem({
               </p>
             </div>
 
-            {!notification.read && (
-              <div className="shrink-0 w-2 h-2 rounded-full bg-primary" />
-            )}
+            {!notification.read && <div className="shrink-0 w-2 h-2 rounded-full bg-primary" />}
           </div>
         </div>
       </div>
@@ -241,7 +233,8 @@ function NotificationItem({
             variant="ghost"
             size="icon"
             className="h-6 w-6"
-            onClick={() => { onMarkAsRead(notification.id); }}
+            onClick={() => onMarkAsRead(notification.id)}
+            aria-label="Mark as read"
           >
             <Check size={14} />
           </Button>
@@ -250,13 +243,14 @@ function NotificationItem({
           variant="ghost"
           size="icon"
           className="h-6 w-6"
-          onClick={() => { onDelete(notification.id); }}
+          onClick={() => onDelete(notification.id)}
+          aria-label="Delete notification"
         >
           <X size={14} />
         </Button>
       </div>
     </MotionView>
-  )
+  );
 }
 
 function getNotificationIcon(type: Notification['type']) {
@@ -266,7 +260,7 @@ function getNotificationIcon(type: Notification['type']) {
     like: '❤️',
     comment: '💭',
     playdate: '🎾',
-    system: '🔔'
-  }
-  return iconMap[type] || '🔔'
+    system: '🔔',
+  };
+  return iconMap[type] || '🔔';
 }

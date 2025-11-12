@@ -22,13 +22,13 @@ export class SeededRNG {
   }
 
   /** Uniform [min,max) */
-  range(min: number, max: number): number { 
-    return min + this.next() * (max - min) 
+  range(min: number, max: number): number {
+    return min + this.next() * (max - min)
   }
 
   /** Integer [min,max) */
-  rangeInt(min: number, max: number): number { 
-    return (min + (this.next() * (max - min)) | 0) 
+  rangeInt(min: number, max: number): number {
+    return (min + this.next() * (max - min)) | 0
   }
 
   /** Gaussian (μ, σ) using Box–Muller with spare */
@@ -54,13 +54,13 @@ export class SeededRNG {
     return mu + z0 * sigma
   }
 
-  setSeed(seed: number): void { 
+  setSeed(seed: number): void {
     this.seed = seed >>> 0
-    this._gaussSpare = null 
+    this._gaussSpare = null
   }
 
-  getSeed(): number { 
-    return this.seed >>> 0 
+  getSeed(): number {
+    return this.seed >>> 0
   }
 
   /** Derive seed from string (FNV-1a 32-bit) */
@@ -78,28 +78,28 @@ export class SeededRNG {
 
 let globalRNG: SeededRNG | null = null
 
-function getGlobalRNG(): SeededRNG { 
-  return (globalRNG ??= new SeededRNG(Date.now() >>> 0)) 
+function getGlobalRNG(): SeededRNG {
+  return (globalRNG ??= new SeededRNG(Date.now() >>> 0))
 }
 
-export function random(): number { 
-  return getGlobalRNG().next() 
+export function random(): number {
+  return getGlobalRNG().next()
 }
 
-export function randomRange(min: number, max: number): number { 
-  return getGlobalRNG().range(min, max) 
+export function randomRange(min: number, max: number): number {
+  return getGlobalRNG().range(min, max)
 }
 
-export function randomInt(min: number, max: number): number { 
-  return getGlobalRNG().rangeInt(min, max) 
+export function randomInt(min: number, max: number): number {
+  return getGlobalRNG().rangeInt(min, max)
 }
 
-export function randomGaussian(mu = 0, sigma = 1): number { 
-  return getGlobalRNG().nextGaussian(mu, sigma) 
+export function randomGaussian(mu = 0, sigma = 1): number {
+  return getGlobalRNG().nextGaussian(mu, sigma)
 }
 
 export function createSeededRNG(seed?: number | string): SeededRNG {
-  const s = typeof seed === 'string' ? SeededRNG.seedFromString(seed) : (seed ?? (Date.now() >>> 0))
+  const s = typeof seed === 'string' ? SeededRNG.seedFromString(seed) : (seed ?? Date.now() >>> 0)
   return new SeededRNG(s)
 }
 

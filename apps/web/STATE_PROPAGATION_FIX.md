@@ -12,12 +12,12 @@ When you reference state values directly in callbacks (especially async function
 
 ```typescript
 // ❌ WRONG - Stale closure
-const [items, setItems] = useKV<Item[]>('items', [])
+const [items, setItems] = useKV<Item[]>('items', []);
 
 const addItem = () => {
-  const newItem = { id: Date.now(), name: 'New' }
-  setItems([...items, newItem])  // 'items' is stale!
-}
+  const newItem = { id: Date.now(), name: 'New' };
+  setItems([...items, newItem]); // 'items' is stale!
+};
 ```
 
 When `addItem` runs multiple times quickly, or after async operations, `items` still refers to the old value from when the function was created. This causes new items to overwrite previous additions instead of appending to them.
@@ -26,12 +26,12 @@ When `addItem` runs multiple times quickly, or after async operations, `items` s
 
 ```typescript
 // ✅ CORRECT - Functional update
-const [items, setItems] = useKV<Item[]>('items', [])
+const [items, setItems] = useKV<Item[]>('items', []);
 
 const addItem = () => {
-  const newItem = { id: Date.now(), name: 'New' }
-  setItems((currentItems) => [...(currentItems || []), newItem])
-}
+  const newItem = { id: Date.now(), name: 'New' };
+  setItems((currentItems) => [...(currentItems || []), newItem]);
+};
 ```
 
 By using a functional update, React gives you the actual current value at the moment the update runs.
@@ -43,15 +43,17 @@ By using a functional update, React gives you the actual current value at the mo
 **Lines 171, 199**: Fixed feed and adoption profile infinite scroll pagination
 
 **Before:**
+
 ```typescript
-setPosts(prev => [...prev, ...response.posts])
-setAdoptionProfiles(prev => [...prev, ...response.profiles])
+setPosts((prev) => [...prev, ...response.posts]);
+setAdoptionProfiles((prev) => [...prev, ...response.profiles]);
 ```
 
 **After:**
+
 ```typescript
-setPosts((currentPosts) => [...(currentPosts || []), ...response.posts])
-setAdoptionProfiles((currentProfiles) => [...(currentProfiles || []), ...response.profiles])
+setPosts((currentPosts) => [...(currentPosts || []), ...response.posts]);
+setAdoptionProfiles((currentProfiles) => [...(currentProfiles || []), ...response.profiles]);
 ```
 
 **Impact:** Community feed and adoption profiles now properly accumulate when scrolling. Previously, rapid scrolling or async delays could cause duplicate or missing items.
@@ -61,19 +63,17 @@ setAdoptionProfiles((currentProfiles) => [...(currentProfiles || []), ...respons
 **Lines 76-79**: Fixed comment addition
 
 **Before:**
+
 ```typescript
-setComments(prev => replyingTo 
-  ? [...prev, newComment]
-  : [newComment, ...prev]
-)
+setComments((prev) => (replyingTo ? [...prev, newComment] : [newComment, ...prev]));
 ```
 
 **After:**
+
 ```typescript
-setComments((currentComments) => replyingTo 
-  ? [...(currentComments || []), newComment]
-  : [newComment, ...(currentComments || [])]
-)
+setComments((currentComments) =>
+  replyingTo ? [...(currentComments || []), newComment] : [newComment, ...(currentComments || [])]
+);
 ```
 
 **Impact:** Comments and replies now properly appear after posting. Previously, comments could disappear or fail to show up when adding multiple comments quickly.
@@ -83,23 +83,27 @@ setComments((currentComments) => replyingTo
 **Lines 150, 153-173**: Fixed swipe history and match creation
 
 **Before:**
+
 ```typescript
-setSwipeHistory([...(swipeHistory || []), newSwipe])
-setMatches([...(matches || []), newMatch])
+setSwipeHistory([...(swipeHistory || []), newSwipe]);
+setMatches([...(matches || []), newMatch]);
 ```
 
 **After:**
+
 ```typescript
-setSwipeHistory((currentHistory) => [...(currentHistory || []), newSwipe])
+setSwipeHistory((currentHistory) => [...(currentHistory || []), newSwipe]);
 setMatches((currentMatches) => {
-  const existingMatch = currentMatches?.find(m => 
-    m.matchedPetId === currentPet.id || m.petId === currentPet.id
-  )
-  if (existingMatch) return currentMatches
-  
-  const newMatch: Match = { /* ... */ }
-  return [...(currentMatches || []), newMatch]
-})
+  const existingMatch = currentMatches?.find(
+    (m) => m.matchedPetId === currentPet.id || m.petId === currentPet.id
+  );
+  if (existingMatch) return currentMatches;
+
+  const newMatch: Match = {
+    /* ... */
+  };
+  return [...(currentMatches || []), newMatch];
+});
 ```
 
 **Impact:** Swipes and matches now properly accumulate. Previously, rapid swiping would lose matches because the state wasn't updated correctly.
@@ -109,24 +113,26 @@ setMatches((currentMatches) => {
 **Lines 120-136**: Fixed pet creation and editing
 
 **Before:**
+
 ```typescript
-const updatedUserPets = (userPets || []).map(p => p.id === editingPet.id ? petData : p)
-setUserPets(updatedUserPets)
-setAllPets(updatedAllPets)
+const updatedUserPets = (userPets || []).map((p) => (p.id === editingPet.id ? petData : p));
+setUserPets(updatedUserPets);
+setAllPets(updatedAllPets);
 
 // Or for new pets:
-setUserPets([...(userPets || []), petData])
-setAllPets([...(allPets || []), petData])
+setUserPets([...(userPets || []), petData]);
+setAllPets([...(allPets || []), petData]);
 ```
 
 **After:**
+
 ```typescript
-setUserPets((current) => (current || []).map(p => p.id === editingPet.id ? petData : p))
-setAllPets((current) => (current || []).map(p => p.id === editingPet.id ? petData : p))
+setUserPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
+setAllPets((current) => (current || []).map((p) => (p.id === editingPet.id ? petData : p)));
 
 // Or for new pets:
-setUserPets((current) => [...(current || []), petData])
-setAllPets((current) => [...(current || []), petData])
+setUserPets((current) => [...(current || []), petData]);
+setAllPets((current) => [...(current || []), petData]);
 ```
 
 **Impact:** Pet profiles now save correctly. Previously, creating multiple pets quickly or editing pets could result in data loss.
@@ -137,13 +143,13 @@ setAllPets((current) => [...(current || []), petData])
 
 ```typescript
 setFavoritedProfiles((current) => {
-  const isFavorited = (current || []).includes(profileId)
+  const isFavorited = (current || []).includes(profileId);
   if (isFavorited) {
-    return (current || []).filter(id => id !== profileId)
+    return (current || []).filter((id) => id !== profileId);
   } else {
-    return [...(current || []), profileId]
+    return [...(current || []), profileId];
   }
-})
+});
 ```
 
 This pattern was already correct and serves as a good example of proper functional updates.
@@ -163,57 +169,60 @@ The following components were already using functional updates correctly:
 ### Always use functional updates when:
 
 1. **Appending to arrays:**
+
    ```typescript
-   setState((current) => [...(current || []), newItem])
+   setState((current) => [...(current || []), newItem]);
    ```
 
 2. **Removing from arrays:**
+
    ```typescript
-   setState((current) => (current || []).filter(item => item.id !== removeId))
+   setState((current) => (current || []).filter((item) => item.id !== removeId));
    ```
 
 3. **Updating items in arrays:**
+
    ```typescript
-   setState((current) => 
-     (current || []).map(item => 
-       item.id === targetId ? { ...item, updated: true } : item
-     )
-   )
+   setState((current) =>
+     (current || []).map((item) => (item.id === targetId ? { ...item, updated: true } : item))
+   );
    ```
 
 4. **Inside async functions or callbacks:**
+
    ```typescript
    const handleAsync = async () => {
-     await someOperation()
+     await someOperation();
      // Use functional update because this runs after a delay
-     setState((current) => current + 1)
-   }
+     setState((current) => current + 1);
+   };
    ```
 
 5. **Inside setTimeout/setInterval:**
    ```typescript
    setTimeout(() => {
-     setState((current) => current + 1)
-   }, 1000)
+     setState((current) => current + 1);
+   }, 1000);
    ```
 
 ### When direct reference is okay:
 
 You can reference state directly when:
+
 - Replacing the entire state (not appending/modifying)
 - Reading state for display purposes (not updating)
 - The value is used synchronously before any delays
 
 ```typescript
 // OK - replacing entire state
-setState(newCompleteValue)
+setState(newCompleteValue);
 
 // OK - just reading
-console.log(items.length)
+console.log(items.length);
 
 // OK - synchronous operation before any async
 if (items.length === 0) {
-  setState([firstItem])
+  setState([firstItem]);
 }
 ```
 
@@ -254,6 +263,7 @@ Functional updates are not slower than direct updates. React still batches updat
 ## Conclusion
 
 This fix resolves the core state propagation issues in the application. All state updates that modify existing arrays now use functional updates, ensuring changes propagate correctly even with:
+
 - Rapid user interactions
 - Async operations
 - setTimeout/debouncing

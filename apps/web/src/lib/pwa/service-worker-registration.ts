@@ -14,12 +14,27 @@ interface ServiceWorkerConfig {
   onError?: (error: Error) => void;
 }
 
+interface ServiceWorkerRegistrationResult {
+  registration: ServiceWorkerRegistration;
+  cleanup: () => void;
+}
+
 /**
  * Register service worker
  */
 export async function registerServiceWorker(
   config: ServiceWorkerConfig = {}
 ): Promise<ServiceWorkerRegistration | null> {
+  const result = await registerServiceWorkerWithCleanup(config);
+  return result?.registration ?? null;
+}
+
+/**
+ * Register service worker with cleanup function
+ */
+export async function registerServiceWorkerWithCleanup(
+  config: ServiceWorkerConfig = {}
+): Promise<ServiceWorkerRegistrationResult | null> {
   // Check if service workers are supported
   if (!('serviceWorker' in navigator)) {
     logger.warn('Service workers are not supported in this browser');
@@ -45,11 +60,11 @@ export async function registerServiceWorker(
       })
     });
 
-    registration.addEventListener('updatefound', () => {
+    const updateFoundHandler = () => {
       const newWorker = registration.installing;
       if (!newWorker) return;
 
-      newWorker.addEventListener('statechange', () => {
+      const stateChangeHandler = () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
           // New service worker available
           config.onUpdate?.(registration);
@@ -57,18 +72,37 @@ export async function registerServiceWorker(
           // Service worker activated
           config.onSuccess?.(registration);
         }
-      });
-    });
+      };
+
+      newWorker.addEventListener('statechange', stateChangeHandler);
+    };
+
+    registration.addEventListener('updatefound', updateFoundHandler);
 
     // Check for updates every hour
-    setInterval(() => {
-      registration.update();
-    }, 60 * 60 * 1000);
+    const intervalId = window.setInterval(
+      () => {
+        void registration.update();
+      },
+      60 * 60 * 1000
+    );
 
-    return registration;
+    // Cleanup function
+    const cleanup = (): void => {
+      clearInterval(intervalId);
+      registration.removeEventListener('updatefound', updateFoundHandler);
+    };
+
+    return {
+      registration,
+      cleanup,
+    };
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    logger.error('Service worker registration failed', err);
+    logger.error('Service worker registration failed', {
+      message: err.message,
+      stack: err.stack,
+    });
     config.onError?.(err);
     return null;
   }
@@ -90,7 +124,10 @@ export async function unregisterServiceWorker(): Promise<boolean> {
     return false;
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    logger.error('Service worker unregistration failed', err);
+    logger.error('Service worker unregistration failed', {
+      message: err.message,
+      stack: err.stack,
+    });
     return false;
   }
 }
@@ -99,8 +136,8 @@ export async function unregisterServiceWorker(): Promise<boolean> {
  * Check if app is running as PWA
  */
 export function isPWA(): boolean {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-    (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+  const nav = window.navigator as Navigator & { standalone?: boolean };
+  return window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true;
 }
 
 /**
@@ -121,14 +158,17 @@ export async function promptPWAInstall(
   }
 
   const promptEvent = event as BeforeInstallPromptEvent;
-  
+
   try {
-    promptEvent.prompt();
+    await promptEvent.prompt();
     const result = await promptEvent.userChoice;
     return result;
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
-    logger.error('PWA install prompt failed', err);
+    logger.error('PWA install prompt failed', {
+      message: err.message,
+      stack: err.stack,
+    });
     return null;
   }
 }

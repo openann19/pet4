@@ -32,8 +32,7 @@ export function useBiometricAuth(): UseBiometricAuthReturn {
     try {
       const hasHardware = await LocalAuthentication.hasHardwareAsync()
       const enrolled = await LocalAuthentication.isEnrolledAsync()
-      const supportedTypes =
-        await LocalAuthentication.supportedAuthenticationTypesAsync()
+      const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync()
 
       setIsSupported(hasHardware)
       setIsEnrolled(enrolled)
@@ -77,17 +76,16 @@ export function useBiometricAuth(): UseBiometricAuthReturn {
 
       if (isTruthy(result.success)) {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+        return {
+          success: true,
+        }
       }
-
       return {
-        success: result.success,
-        error: result.success ? undefined : ('Authentication failed' as string | undefined),
+        success: false,
+        error: 'Authentication failed',
       }
     } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Authentication error occurred'
+      const errorMessage = error instanceof Error ? error.message : 'Authentication error occurred'
       return {
         success: false,
         error: errorMessage,
@@ -106,4 +104,3 @@ export function useBiometricAuth(): UseBiometricAuthReturn {
     isAuthenticating,
   }
 }
-

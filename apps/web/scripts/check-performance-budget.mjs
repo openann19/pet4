@@ -49,17 +49,12 @@ function getGzippedSize(filePath) {
   }
 }
 
-function getFileSize(filePath) {
-  try {
-    const stats = statSync(filePath)
-    return Math.round(stats.size / 1024) // Convert to KB
-  } catch {
-    return 0
-  }
-}
+// File size calculation removed - not used in this script
 
 function analyzeBundles() {
+  /** @type {Record<string, number>} */
   const chunks = {}
+  /** @type {Record<string, number>} */
   const vendors = {}
   let total = 0
   let initial = 0
@@ -69,31 +64,52 @@ function analyzeBundles() {
     return { initial: 0, total: 0, chunks, vendors }
   }
 
-  const files = readdirSync(DIST_DIR).filter((file) => file.endsWith('.js'))
+  // Recursively list all files under dist
+  /**
+   * @param {string} dir
+   * @returns {string[]}
+   */
+  function walk(dir) {
+    const entries = readdirSync(dir, { withFileTypes: true })
+    /** @type {string[]} */
+    const results = []
+    for (const entry of entries) {
+      const full = join(dir, entry.name)
+      if (entry.isDirectory()) {
+        results.push(...walk(full))
+      } else {
+        results.push(full)
+      }
+    }
+    return results
+  }
+
+  const files = walk(DIST_DIR).filter((file) => file.endsWith('.js'))
 
   for (const file of files) {
-    const filePath = join(DIST_DIR, file)
-    const size = getGzippedSize(filePath)
+    const filePath = file
+    const size = getGzippedSize(file)
 
     total += size
 
     // Identify initial bundle (usually index or main)
-    if (file.includes('index') || file.includes('main') || file.match(/^[a-f0-9]+\.js$/)) {
+    const base = filePath.split('/').pop() || ''
+    if (base.includes('index') || base.includes('main') || base.match(/^[a-f0-9]+\.js$/)) {
       if (initial === 0 || size > initial) {
         initial = size
       }
     }
 
     // Identify vendor chunks
-    if (file.includes('vendor') || file.includes('chunk')) {
-      const chunkName = file.replace('.js', '')
-      if (file.includes('vendor')) {
+    if (base.includes('vendor') || base.includes('chunk')) {
+      const chunkName = base.replace('.js', '')
+      if (base.includes('vendor')) {
         vendors[chunkName] = size
       } else {
         chunks[chunkName] = size
       }
     } else {
-      chunks[file.replace('.js', '')] = size
+      chunks[base.replace('.js', '')] = size
     }
   }
 
@@ -166,4 +182,3 @@ function checkPerformanceBudget() {
 
 // Run the check
 checkPerformanceBudget()
-

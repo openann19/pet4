@@ -4,7 +4,7 @@
  */
 
 import * as Haptics from 'expo-haptics'
-import React, { useCallback } from 'react'
+import React, { memo, useCallback } from 'react'
 import { Dimensions, Image, StyleSheet, Text, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
@@ -34,7 +34,7 @@ const springConfig = {
   mass: 0.9,
 }
 
-export function SwipeCard({
+function SwipeCardComponent({
   pet,
   onSwipeLeft,
   onSwipeRight,
@@ -119,12 +119,7 @@ export function SwipeCard({
   })
 
   const likeOverlayStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      translateX.value,
-      [0, SWIPE_THRESHOLD],
-      [0, 1],
-      Extrapolation.CLAMP
-    )
+    const opacity = interpolate(translateX.value, [0, SWIPE_THRESHOLD], [0, 1], Extrapolation.CLAMP)
 
     return {
       opacity,
@@ -153,9 +148,7 @@ export function SwipeCard({
         </Animated.View>
 
         {/* Dislike overlay */}
-        <Animated.View
-          style={[styles.overlay, styles.dislikeOverlay, dislikeOverlayStyle]}
-        >
+        <Animated.View style={[styles.overlay, styles.dislikeOverlay, dislikeOverlayStyle]}>
           <Text style={styles.dislikeText}>NOPE</Text>
         </Animated.View>
 
@@ -182,8 +175,8 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     height: SCREEN_HEIGHT * 0.7,
     borderRadius: 20,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
+    backgroundColor: 'var(--color-bg-overlay)',
+    shadowColor: 'var(--color-fg)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -211,9 +204,9 @@ const styles = StyleSheet.create({
   likeText: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: '#fff',
+    color: 'var(--color-bg-overlay)',
     borderWidth: 4,
-    borderColor: '#fff',
+    borderColor: 'var(--color-bg-overlay)',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 12,
@@ -221,9 +214,9 @@ const styles = StyleSheet.create({
   dislikeText: {
     fontSize: 48,
     fontWeight: 'bold',
-    color: '#fff',
+    color: 'var(--color-bg-overlay)',
     borderWidth: 4,
-    borderColor: '#fff',
+    borderColor: 'var(--color-bg-overlay)',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 12,
@@ -234,7 +227,7 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: 'var(--color-bg-overlay)',
   },
   name: {
     fontSize: 28,
@@ -254,3 +247,14 @@ const styles = StyleSheet.create({
   },
 })
 
+// Memoize SwipeCard to prevent unnecessary re-renders
+export const SwipeCard = memo(SwipeCardComponent, (prev, next) => {
+  return (
+    prev.pet.id === next.pet.id &&
+    prev.pet.name === next.pet.name &&
+    prev.pet.photos[0] === next.pet.photos[0] &&
+    prev.isTop === next.isTop &&
+    prev.onSwipeLeft === next.onSwipeLeft &&
+    prev.onSwipeRight === next.onSwipeRight
+  );
+});

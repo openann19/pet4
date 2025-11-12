@@ -5,12 +5,14 @@ This directory contains API layer code that enforces strict optional property ty
 ## Purpose
 
 The API layer uses `OptionalWithUndef<T>` to distinguish between:
+
 - **Omitted property**: Field is not updated (keep existing value)
 - **Undefined value**: Field is explicitly cleared (set to null/empty)
 
 ## Migration from Legacy API
 
 ### Legacy Pattern (in `src/lib/api/`)
+
 ```typescript
 async updateListing(id: string, data: Partial<CreateAdoptionListingData>) {
   // Problem: Can't distinguish between omitted and undefined
@@ -18,6 +20,7 @@ async updateListing(id: string, data: Partial<CreateAdoptionListingData>) {
 ```
 
 ### Strict Pattern (in `src/api/`)
+
 ```typescript
 import type { UpdateAdoptionListingData } from './types'
 
@@ -52,12 +55,14 @@ See `src/api/types.ts` for type definitions using `OptionalWithUndef<T>`.
 STRICT MODE – NON-NEGOTIABLE
 
 You must:
-1) Write code + tests + types simultaneously. No stubs, no “TODO”, no broad “any”.
-2) Run the local strict pipeline and reach 100% pass before proposing code.
-3) If a gate fails, self-repair and re-run until green. Do not ask for approval with failing gates.
-4) Output: PR with diff, passing CI, coverage report, and short design notes.
+
+1. Write code + tests + types simultaneously. No stubs, no “TODO”, no broad “any”.
+2. Run the local strict pipeline and reach 100% pass before proposing code.
+3. If a gate fails, self-repair and re-run until green. Do not ask for approval with failing gates.
+4. Output: PR with diff, passing CI, coverage report, and short design notes.
 
 Definition of Done (all must be green):
+
 - Type safety: tsc --noEmit
 - Lint: eslint (errors only), stylelint
 - Tests: vitest with coverage >= 95% statements/branches/functions/lines

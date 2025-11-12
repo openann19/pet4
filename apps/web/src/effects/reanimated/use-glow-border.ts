@@ -3,7 +3,15 @@
  * Pulsating glow effect with customizable colors and intensity
  */
 
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, Easing } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { isTruthy, isDefined } from '@petspark/shared';
 
@@ -43,7 +51,7 @@ export function useGlowBorder(options: UseGlowBorderOptions = {}) {
 
   const animatedStyle = useAnimatedStyle(() => {
     const glowIntensity = interpolate(progress.value, [0, 0.5, 1], [0, intensity, 0]);
-    
+
     const shadowOpacity = interpolate(progress.value, [0, 0.5, 1], [0.3, 0.8, 0.3]);
 
     return {

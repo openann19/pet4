@@ -7,21 +7,17 @@ import React, { useEffect } from 'react'
 import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
-    runOnJS,
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-    withTiming,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useModalAnimation } from '@mobile/effects/reanimated'
 import { colors } from '../theme/colors'
-import { isTruthy } from '@petspark/shared';
+import { springConfigs } from '@mobile/effects/reanimated/transitions'
 
-const springConfig = {
-  damping: 20,
-  stiffness: 300,
-  mass: 0.8,
-}
+const springConfig = springConfigs.smooth
 
 export interface BottomSheetProps {
   visible: boolean
@@ -38,25 +34,28 @@ export function BottomSheet({
 }: BottomSheetProps): React.JSX.Element {
   const insets = useSafeAreaInsets()
   const translateY = useSharedValue(height)
-  const opacity = useSharedValue(0)
+  const modalAnimation = useModalAnimation({ isVisible: visible, duration: 250 })
 
   useEffect(() => {
     if (isTruthy(visible)) {
       translateY.value = withSpring(0, springConfig)
-      opacity.value = withTiming(1, { duration: 200 })
     } else {
       translateY.value = withSpring(height, springConfig)
-      opacity.value = withTiming(0, { duration: 200 })
     }
-  }, [visible, height, translateY, opacity])
+  }, [visible, height, translateY])
+
+  // Use modal animation for backdrop opacity
+  const animatedBackdropStyle = useAnimatedStyle(() => ({
+    opacity: modalAnimation.opacity.value,
+  }))
 
   const panGesture = Gesture.Pan()
-    .onUpdate((event) => {
+    .onUpdate(event => {
       if (event.translationY > 0) {
         translateY.value = event.translationY
       }
     })
-    .onEnd((event) => {
+    .onEnd((event: { translationY: number; velocityY: number }) => {
       const threshold = height * 0.3
       if (event.translationY > threshold || event.velocityY > 500) {
         translateY.value = withSpring(height, springConfig, () => {
@@ -70,12 +69,7 @@ export function BottomSheet({
   const animatedSheetStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
-    }
-  })
-
-  const animatedBackdropStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
+      opacity: modalAnimation.opacity.value,
     }
   })
 
@@ -85,19 +79,20 @@ export function BottomSheet({
 
   return (
     <Modal visible={visible} transparent animationType="none">
-      <Animated.View style={[styles.backdrop, animatedBackdropStyle]}>
+      <Animated.View style={Object.assign({}, styles.backdrop, animatedBackdropStyle)}>
         <TouchableOpacity
-          style={StyleSheet.absoluteFill}
+          style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
           activeOpacity={1}
           onPress={onClose}
         />
         <GestureDetector gesture={panGesture}>
           <Animated.View
-            style={[
+            style={Object.assign(
+              {},
               styles.sheet,
               { height, paddingBottom: insets.bottom },
-              animatedSheetStyle,
-            ]}
+              animatedSheetStyle
+            )}
           >
             <View style={styles.handle} />
             {children}
@@ -119,7 +114,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: 'var(--color-fg)',
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -134,4 +129,3 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 })
-

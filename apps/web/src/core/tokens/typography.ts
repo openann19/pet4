@@ -1,7 +1,7 @@
 /**
  * Design Token Typography - Single Source of Truth
  * Generated from android-design-tokens/tokens/typography.json
- * 
+ *
  * Fluid typography scale with clamp(min, preferred, max) per tier.
  * All sizes use sp (scale-independent pixels) for proper system font scaling.
  */
@@ -19,7 +19,7 @@ export const Typography = {
       fallbacks: ['Roboto Mono', 'monospace'],
     },
   },
-  
+
   // Typography scale
   scale: {
     display: {
@@ -93,7 +93,7 @@ export const Typography = {
       maxLines: 1,
     },
   },
-  
+
   // Truncation policy
   truncation: {
     headings: {
@@ -113,7 +113,7 @@ export const Typography = {
       overflow: 'ellipsis' as const,
     },
   },
-  
+
   // Localization settings
   localization: {
     bulgarian: {
@@ -130,4 +130,3 @@ export const Typography = {
     },
   },
 } as const;
-

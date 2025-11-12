@@ -1,8 +1,8 @@
-import type { CommunityPost } from './community-types'
-import { generateULID } from './utils'
-import { logger } from './logger'
+import type { CommunityPost } from './community-types';
+import { generateULID } from './utils';
+import { logger } from './logger';
 
-export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
+export function generateCommunitySeedData(): CommunityPost[] {
   const samplePosts: CommunityPost[] = [
     {
       id: generateULID(),
@@ -18,8 +18,8 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
           id: 'img-001',
           type: 'photo',
           url: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800',
-          thumbnail: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=320'
-        }
+          thumbnail: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=320',
+        },
       ],
       tags: ['training', 'puppy', 'goldenretriever'],
       visibility: 'public',
@@ -30,18 +30,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 5,
         saves: 8,
         shares: 2,
-        impressions: 156
+        impressions: 156,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 156,
       reactionsCount: 24,
       commentsCount: 5,
       sharesCount: 2,
-      featured: false
+      featured: false,
     },
     {
       id: generateULID(),
@@ -57,14 +57,14 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
           id: 'img-002',
           type: 'photo',
           url: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800',
-          thumbnail: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=320'
+          thumbnail: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=320',
         },
         {
           id: 'img-003',
           type: 'photo',
           url: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800',
-          thumbnail: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=320'
-        }
+          thumbnail: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=320',
+        },
       ],
       tags: ['beach', 'funday', 'labradorretriever'],
       visibility: 'public',
@@ -75,18 +75,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 8,
         saves: 12,
         shares: 5,
-        impressions: 234
+        impressions: 234,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 234,
       reactionsCount: 42,
       commentsCount: 8,
       sharesCount: 5,
-      featured: false
+      featured: false,
     },
     {
       id: generateULID(),
@@ -102,8 +102,8 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
           id: 'img-004',
           type: 'photo',
           url: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800',
-          thumbnail: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=320'
-        }
+          thumbnail: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=320',
+        },
       ],
       tags: ['fashion', 'winter', 'pomeranian'],
       visibility: 'public',
@@ -114,18 +114,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 15,
         saves: 23,
         shares: 11,
-        impressions: 389
+        impressions: 389,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 389,
       reactionsCount: 67,
       commentsCount: 15,
       sharesCount: 11,
-      featured: false
+      featured: false,
     },
     {
       id: generateULID(),
@@ -135,14 +135,14 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
       authorAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
       kind: 'photo',
       petIds: ['pet-004'],
-      text: 'Bella made a new friend at the dog park today! 🐕 They played non-stop for an hour. It\'s so important for puppies to socialize early. Does anyone know of good puppy playgroups in the area?',
+      text: "Bella made a new friend at the dog park today! 🐕 They played non-stop for an hour. It's so important for puppies to socialize early. Does anyone know of good puppy playgroups in the area?",
       media: [
         {
           id: 'img-005',
           type: 'photo',
           url: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800',
-          thumbnail: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=320'
-        }
+          thumbnail: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=320',
+        },
       ],
       tags: ['socialization', 'dogpark', 'puppyplaydate'],
       visibility: 'public',
@@ -151,7 +151,7 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         lon: -122.4194,
         lng: -122.4194,
         placeId: 'park-001',
-        placeName: 'Golden Gate Park'
+        placeName: 'Golden Gate Park',
       },
       createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
@@ -160,18 +160,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 12,
         saves: 6,
         shares: 3,
-        impressions: 178
+        impressions: 178,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 178,
       reactionsCount: 31,
       commentsCount: 12,
       sharesCount: 3,
-      featured: false
+      featured: false,
     },
     {
       id: generateULID(),
@@ -187,14 +187,14 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
           id: 'img-006',
           type: 'photo',
           url: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800',
-          thumbnail: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=320'
+          thumbnail: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=320',
         },
         {
           id: 'img-007',
           type: 'photo',
           url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800',
-          thumbnail: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=320'
-        }
+          thumbnail: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=320',
+        },
       ],
       tags: ['adoptdontshop', 'rescuecat', 'anniversary'],
       visibility: 'public',
@@ -205,18 +205,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 22,
         saves: 34,
         shares: 18,
-        impressions: 512
+        impressions: 512,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 512,
       reactionsCount: 89,
       commentsCount: 22,
       sharesCount: 18,
-      featured: false
+      featured: false,
     },
     {
       id: generateULID(),
@@ -226,16 +226,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
       authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
       kind: 'video',
       petIds: ['pet-006'],
-      text: '🎾 Watch Charlie catch his first frisbee! Took us 3 weeks of practice but he finally got it! The slow-mo replay is *chef\'s kiss* 😂 #frisbeedog #prouddogdad',
-      media: [{
-        id: 'vid-001',
-        type: 'video',
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1558788353-f76d92427f16?w=800',
-        duration: 15,
-        width: 1280,
-        height: 720
-      }],
+      text: "🎾 Watch Charlie catch his first frisbee! Took us 3 weeks of practice but he finally got it! The slow-mo replay is *chef's kiss* 😂 #frisbeedog #prouddogdad",
+      media: [
+        {
+          id: 'vid-001',
+          type: 'video',
+          url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+          thumbnail: 'https://images.unsplash.com/photo-1558788353-f76d92427f16?w=800',
+          duration: 15,
+          width: 1280,
+          height: 720,
+        },
+      ],
       tags: ['frisbee', 'training', 'bordercollie', 'slowmo'],
       visibility: 'public',
       createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
@@ -245,18 +247,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 34,
         saves: 67,
         shares: 42,
-        impressions: 892
+        impressions: 892,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 892,
       reactionsCount: 156,
       commentsCount: 34,
       sharesCount: 42,
-      featured: false
+      featured: false,
     },
     {
       id: generateULID(),
@@ -266,16 +268,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
       authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
       kind: 'video',
       petIds: ['pet-007'],
-      text: 'POV: You just told your husky it\'s time for a walk 🤣 The dramatic entrance, the spinning, the HOWLS! Koda is living his best life. Turn on sound! 🔊',
-      media: [{
-        id: 'vid-002',
-        type: 'video',
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1568572933382-74d440642117?w=800',
-        duration: 22,
-        width: 1920,
-        height: 1080
-      }],
+      text: "POV: You just told your husky it's time for a walk 🤣 The dramatic entrance, the spinning, the HOWLS! Koda is living his best life. Turn on sound! 🔊",
+      media: [
+        {
+          id: 'vid-002',
+          type: 'video',
+          url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+          thumbnail: 'https://images.unsplash.com/photo-1568572933382-74d440642117?w=800',
+          duration: 22,
+          width: 1920,
+          height: 1080,
+        },
+      ],
       tags: ['husky', 'funny', 'drama', 'walktime'],
       visibility: 'public',
       createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
@@ -285,18 +289,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 56,
         saves: 89,
         shares: 78,
-        impressions: 1453
+        impressions: 1453,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 1453,
       reactionsCount: 234,
       commentsCount: 56,
       sharesCount: 78,
-      featured: false
+      featured: false,
     },
     {
       id: generateULID(),
@@ -307,15 +311,17 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
       kind: 'video',
       petIds: ['pet-008'],
       text: '🌊 First time at the lake and Daisy is a NATURAL swimmer! She went from scared on the shore to full-on doggy paddle in 5 minutes. So proud! 💙',
-      media: [{
-        id: 'vid-003',
-        type: 'video',
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1544568104-5b7eb8189dd4?w=800',
-        duration: 18,
-        width: 1280,
-        height: 720
-      }],
+      media: [
+        {
+          id: 'vid-003',
+          type: 'video',
+          url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+          thumbnail: 'https://images.unsplash.com/photo-1544568104-5b7eb8189dd4?w=800',
+          duration: 18,
+          width: 1280,
+          height: 720,
+        },
+      ],
       tags: ['swimming', 'lake', 'goldenretriever', 'firsttime'],
       visibility: 'public',
       location: {
@@ -323,7 +329,7 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         lon: -118.2437,
         lng: -118.2437,
         placeId: 'lake-001',
-        placeName: 'Lake Tahoe'
+        placeName: 'Lake Tahoe',
       },
       createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
       updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
@@ -332,18 +338,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 41,
         saves: 52,
         shares: 29,
-        impressions: 967
+        impressions: 967,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 967,
       reactionsCount: 178,
       commentsCount: 41,
       sharesCount: 29,
-      featured: false
+      featured: false,
     },
     {
       id: generateULID(),
@@ -354,15 +360,17 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
       kind: 'video',
       petIds: ['pet-009'],
       text: 'Zoomies at 3 AM be like... 😴💨 Caught Luna on the security cam doing her nightly laps around the house. Why are cats so weird? I love her 😂',
-      media: [{
-        id: 'vid-004',
-        type: 'video',
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800',
-        duration: 12,
-        width: 1920,
-        height: 1080
-      }],
+      media: [
+        {
+          id: 'vid-004',
+          type: 'video',
+          url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+          thumbnail: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800',
+          duration: 12,
+          width: 1920,
+          height: 1080,
+        },
+      ],
       tags: ['zoomies', 'catsofinstagram', 'nightowl', 'funny'],
       visibility: 'public',
       createdAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
@@ -372,18 +380,18 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 67,
         saves: 124,
         shares: 93,
-        impressions: 2341
+        impressions: 2341,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 2341,
       reactionsCount: 312,
       commentsCount: 67,
       sharesCount: 93,
-      featured: false
+      featured: false,
     },
     {
       id: generateULID(),
@@ -394,15 +402,17 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
       kind: 'video',
       petIds: ['pet-010'],
       text: '🎉 Teaching Rocky some new tricks! He just learned how to "play dead" and I\'m DECEASED 💀 Watch till the end for the cutest thing ever! #smartdog #tricks',
-      media: [{
-        id: 'vid-005',
-        type: 'video',
-        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-        thumbnail: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=800',
-        duration: 25,
-        width: 1280,
-        height: 720
-      }],
+      media: [
+        {
+          id: 'vid-005',
+          type: 'video',
+          url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+          thumbnail: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=800',
+          duration: 25,
+          width: 1280,
+          height: 720,
+        },
+      ],
       tags: ['tricks', 'training', 'germanshepherd', 'playdead'],
       visibility: 'public',
       createdAt: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(),
@@ -412,30 +422,34 @@ export async function generateCommunitySeedData(): Promise<CommunityPost[]> {
         comments: 48,
         saves: 103,
         shares: 61,
-        impressions: 1678
+        impressions: 1678,
       },
       status: 'active',
       moderation: {
         state: 'approved',
-        reasons: []
+        reasons: [],
       },
       viewsCount: 1678,
       reactionsCount: 267,
       commentsCount: 48,
       sharesCount: 61,
-      featured: false
-    }
-  ]
+      featured: false,
+    },
+  ];
 
-  return samplePosts
+  return samplePosts;
 }
 
 export async function initializeCommunityData(): Promise<void> {
-  const existingPosts = await (window as Window & { spark?: { kv?: { get: <T>(key: string) => Promise<T | null> } } }).spark?.kv?.get<CommunityPost[]>('community:posts')
-  
+  const existingPosts = await (
+    window as Window & { spark?: { kv?: { get: <T>(key: string) => Promise<T | null> } } }
+  ).spark?.kv?.get<CommunityPost[]>('community:posts');
+
   if (!existingPosts || existingPosts.length === 0) {
-    const seedPosts = await generateCommunitySeedData()
-    await (window as Window & { spark?: { kv?: { set: <T>(key: string, value: T) => Promise<void> } } }).spark?.kv?.set('community:posts', seedPosts)
-    logger.info('Community seed data initialized', { postsCount: seedPosts.length })
+    const seedPosts = generateCommunitySeedData();
+    await (
+      window as Window & { spark?: { kv?: { set: <T>(key: string, value: T) => Promise<void> } } }
+    ).spark?.kv?.set('community:posts', seedPosts);
+    logger.info('Community seed data initialized', { postsCount: seedPosts.length });
   }
 }

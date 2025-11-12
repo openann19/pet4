@@ -2,7 +2,7 @@ import { isTruthy, isDefined } from '@petspark/shared';
 
 /**
  * Frame Drop Counter
- * 
+ *
  * Simple frame drop counter for mobile performance monitoring.
  * Logs frame drops and memory peaks around heavy effects.
  */
@@ -21,7 +21,6 @@ let metrics: FrameMetrics = {
   startTime: Date.now(),
 }
 
-let frameCount = 0
 let lastFrameTime = 0
 const FRAME_BUDGET_MS = 16.67 // 60 FPS target
 
@@ -30,7 +29,7 @@ const FRAME_BUDGET_MS = 16.67 // 60 FPS target
  */
 export function trackFrame(): void {
   const now = Date.now()
-  
+
   if (lastFrameTime > 0) {
     const frameTime = now - lastFrameTime
     if (frameTime > FRAME_BUDGET_MS * 1.5) {
@@ -38,10 +37,9 @@ export function trackFrame(): void {
       metrics.droppedFrames++
     }
   }
-  
+
   lastFrameTime = now
   metrics.totalFrames++
-  frameCount++
 
   // Track memory usage (if available)
   if (typeof performance !== 'undefined' && 'memory' in performance) {
@@ -66,7 +64,6 @@ export function startFrameTracking(): () => FrameMetrics {
 
   // Reset frame tracking
   lastFrameTime = 0
-  frameCount = 0
 
   return () => {
     const duration = Date.now() - startTime
@@ -84,24 +81,24 @@ export function startFrameTracking(): () => FrameMetrics {
     // Log if significant frame drops detected
     if (dropped > 2 && duration < 300) {
       // Send to telemetry if available
-      if (isTruthy(import.meta.env?.PROD)) {
+      const isProduction = process.env['NODE_ENV'] === 'production'
+      const telemetryEndpoint = process.env['EXPO_PUBLIC_TELEMETRY_ENDPOINT']
+
+      if (isProduction && telemetryEndpoint) {
         try {
-          const endpoint = import.meta.env.VITE_TELEMETRY_ENDPOINT
-          if (isTruthy(endpoint)) {
-            fetch(endpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                type: 'frame-drop',
-                ...result,
-                duration,
-                frameRate: total > 0 ? ((total - dropped) / total) * 60 : 60,
-              }),
-              keepalive: true,
-            }).catch(() => {
-              // Silently fail if telemetry is unavailable
-            })
-          }
+          void fetch(telemetryEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'frame-drop',
+              ...result,
+              duration,
+              frameRate: total > 0 ? ((total - dropped) / total) * 60 : 60,
+            }),
+            keepalive: true,
+          }).catch(() => {
+            // Silently fail if telemetry is unavailable
+          })
         } catch {
           // Silently fail
         }
@@ -130,6 +127,4 @@ export function resetFrameMetrics(): void {
     startTime: Date.now(),
   }
   lastFrameTime = 0
-  frameCount = 0
 }
-

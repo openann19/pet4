@@ -1,37 +1,16 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "composite": false,
-    "declaration": false,
-    "noEmit": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
     "outDir": "./dist",
-    "moduleResolution": "Bundler",
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "types": [
-      "react",
-      "react-native",
-      "react-native-reanimated",
-      "vitest/globals"
-    ],
+    "rootDir": "./src",
+    "lib": ["ES2022"],
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@/core/guards": ["../shared/src/guards.ts"],
-      "@/core/logger": ["../shared/src/logger.ts"],
-      "@petspark/shared": ["../shared/src/index.ts"]
-    }
+    "types": ["react"],
+    "typeRoots": ["./node_modules/@types", "./types", "./src/types"]
   },
-  "include": [
-    "src/**/*",
-    "vitest.config.ts"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/__tests__/**",
-    "**/__stories__/**"
-  ]
+  "include": ["src/**/*", "src/types/**/*.d.ts", "types/**/*.d.ts"],
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx", "src/test/**"]
 }

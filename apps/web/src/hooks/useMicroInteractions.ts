@@ -1,34 +1,42 @@
-import { useCallback } from 'react'
-import { haptics } from '@/lib/haptics'
+import { useCallback } from 'react';
+import { haptics } from '@/lib/haptics';
 
-export function useMicroInteractions() {
+export function useMicroInteractions(): {
+  playLightTap: () => void;
+  playMediumTap: () => void;
+  playHeavyTap: () => void;
+  playSuccess: () => void;
+  playWarning: () => void;
+  playError: () => void;
+  playSelection: () => void;
+} {
   const playLightTap = useCallback(() => {
-    haptics.impact('light')
-  }, [])
+    haptics.impact('light');
+  }, []);
 
   const playMediumTap = useCallback(() => {
-    haptics.impact('medium')
-  }, [])
+    haptics.impact('medium');
+  }, []);
 
   const playHeavyTap = useCallback(() => {
-    haptics.impact('heavy')
-  }, [])
+    haptics.impact('heavy');
+  }, []);
 
   const playSuccess = useCallback(() => {
-    haptics.notification('success')
-  }, [])
+    haptics.notification('success');
+  }, []);
 
   const playWarning = useCallback(() => {
-    haptics.notification('warning')
-  }, [])
+    haptics.notification('warning');
+  }, []);
 
   const playError = useCallback(() => {
-    haptics.notification('error')
-  }, [])
+    haptics.notification('error');
+  }, []);
 
   const playSelection = useCallback(() => {
-    haptics.selection()
-  }, [])
+    haptics.selection();
+  }, []);
 
   return {
     playLightTap,
@@ -37,6 +45,6 @@ export function useMicroInteractions() {
     playSuccess,
     playWarning,
     playError,
-    playSelection
-  }
+    playSelection,
+  };
 }

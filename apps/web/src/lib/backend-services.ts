@@ -1,4 +1,4 @@
-import { APIClient } from './api-client'
+import { APIClient } from './api-client';
 import type {
   AuditLog,
   EventPayload,
@@ -15,12 +15,12 @@ import type {
   PolicyConfig,
   UploadSession,
   UserQuota,
-} from './backend-types'
-import { ENDPOINTS, buildUrl } from './endpoints'
-import { createLogger } from './logger'
-import { generateULID } from './utils'
+} from './backend-types';
+import { ENDPOINTS, buildUrl } from './endpoints';
+import { createLogger } from './logger';
+import { generateULID } from './utils';
 
-const logger = createLogger('BackendServices')
+const logger = createLogger('BackendServices');
 
 const DEFAULT_POLICY: PolicyConfig = {
   requireKYCToPublish: false,
@@ -35,100 +35,100 @@ const DEFAULT_POLICY: PolicyConfig = {
   retentionDaysLogs: 365,
   autoApproveThreshold: 0.95,
   enableDuplicateDetection: true,
-}
+};
 
 interface UploadSessionResponse {
-  session: UploadSession
+  session: UploadSession;
 }
 
 interface PhotoResponse {
-  photo: PhotoRecord
+  photo: PhotoRecord;
 }
 
 interface PhotosResponse {
-  photos: PhotoRecord[]
+  photos: PhotoRecord[];
 }
 
 interface ModerationQueueResponse {
-  queue: ModerationQueue
+  queue: ModerationQueue;
 }
 
 interface ModerationTaskResponse {
-  task: ModerationTask
+  task: ModerationTask;
 }
 
 interface ModerationMetricsResponse {
-  metrics: ModerationMetrics
+  metrics: ModerationMetrics;
 }
 
 interface KYCSessionResponse {
-  session: KYCSession
+  session: KYCSession;
 }
 
 interface KYCSessionListResponse {
-  sessions: KYCSession[]
+  sessions: KYCSession[];
 }
 
 function unwrapPayload<T>(payload: unknown, key: string): T {
   if (payload && typeof payload === 'object' && key in (payload as Record<string, unknown>)) {
-    const value = (payload as Record<string, unknown>)[key] as T | undefined
+    const value = (payload as Record<string, unknown>)[key] as T | undefined;
     if (value === undefined || value === null) {
-      throw new Error(`Response is missing expected "${String(key ?? '')}" payload`)
+      throw new Error(`Response is missing expected "${key}" payload`);
     }
-    return value
+    return value;
   }
 
   if (payload === undefined || payload === null) {
-    throw new Error(`Response is missing expected "${String(key ?? '')}" payload`)
+    throw new Error(`Response is missing expected "${key}" payload`);
   }
 
-  return payload as T
+  return payload as T;
 }
 
 function unwrapList<T>(payload: unknown, key: string): T[] {
   if (Array.isArray(payload)) {
-    return payload as T[]
+    return payload as T[];
   }
 
   if (payload && typeof payload === 'object' && key in (payload as Record<string, unknown>)) {
-    const value = (payload as Record<string, unknown>)[key]
+    const value = (payload as Record<string, unknown>)[key];
     if (!Array.isArray(value)) {
-      throw new Error(`Response is missing expected "${String(key ?? '')}" list payload`)
+      throw new Error(`Response is missing expected "${key}" list payload`);
     }
-    return value as T[]
+    return value as T[];
   }
 
-  throw new Error(`Response is missing expected "${String(key ?? '')}" list payload`)
+  throw new Error(`Response is missing expected "${key}" list payload`);
 }
 
 export class PhotoService {
   async getPolicy(): Promise<PolicyConfig> {
     try {
       const response = await APIClient.get<PolicyConfig | { policy: PolicyConfig }>(
-        ENDPOINTS.MODERATION.POLICY,
-      )
-      const policy = unwrapPayload<PolicyConfig>(response.data, 'policy')
-      return policy ?? DEFAULT_POLICY
+        ENDPOINTS.MODERATION.POLICY
+      );
+      const policy = unwrapPayload<PolicyConfig>(response.data, 'policy');
+      return policy ?? DEFAULT_POLICY;
     } catch (error) {
-      logger.warn('Failed to load moderation policy from backend, using defaults', { error })
-      return DEFAULT_POLICY
+      logger.warn('Failed to load moderation policy from backend, using defaults', { error });
+      return DEFAULT_POLICY;
     }
   }
 
   async createUploadSession(userId: string, petId: string): Promise<UploadSession> {
-    await this.ensureQuotaWithinLimits(userId)
+    await this.ensureQuotaWithinLimits(userId);
 
     const response = await APIClient.post<UploadSessionResponse>(ENDPOINTS.UPLOADS.SIGN_URL, {
       userId,
       petId,
-    })
+    });
 
-    return unwrapPayload<UploadSession>(response.data, 'session')
+    return unwrapPayload<UploadSession>(response.data, 'session');
   }
 
   async processUpload(
     sessionId: string,
-    file: { size: number; type: string; data: string },
+    file: { size: number; type: string; data: string }
   ): Promise<PhotoRecord> {
     const response = await APIClient.post<PhotoResponse>(ENDPOINTS.PHOTOS.CREATE, {
       sessionId,
@@ -137,31 +137,31 @@ export class PhotoService {
         mimeType: file.type,
         content: file.data,
       },
-    })
+    });
 
-    const photo = unwrapPayload<PhotoRecord>(response.data, 'photo')
+    const photo = unwrapPayload<PhotoRecord>(response.data, 'photo');
 
-    await this.emitEvent('photo.uploaded', { photoId: photo.id, sessionId })
-    await this.incrementQuota(photo.ownerId, file.size)
+    await this.emitEvent('photo.uploaded', { photoId: photo.id, sessionId });
+    await this.incrementQuota(photo.ownerId, file.size);
 
-    return photo
+    return photo;
   }
 
   async getPhotosByStatus(status: PhotoStatus): Promise<PhotoRecord[]> {
-    const url = buildUrl(ENDPOINTS.PHOTOS.BY_STATUS, { status })
-    const response = await APIClient.get<PhotosResponse>(url)
-    return unwrapList<PhotoRecord>(response.data, 'photos')
+    const url = buildUrl(ENDPOINTS.PHOTOS.BY_STATUS, { status });
+    const response = await APIClient.get<PhotosResponse>(url);
+    return unwrapList<PhotoRecord>(response.data, 'photos');
   }
 
-  async getPhotosByOwner(ownerId: string, includeAll: boolean = false): Promise<PhotoRecord[]> {
-    const url = buildUrl(ENDPOINTS.PHOTOS.BY_OWNER, { ownerId, includeAll })
-    const response = await APIClient.get<PhotosResponse>(url)
-    return unwrapList<PhotoRecord>(response.data, 'photos')
+  async getPhotosByOwner(ownerId: string, includeAll = false): Promise<PhotoRecord[]> {
+    const url = buildUrl(ENDPOINTS.PHOTOS.BY_OWNER, { ownerId, includeAll });
+    const response = await APIClient.get<PhotosResponse>(url);
+    return unwrapList<PhotoRecord>(response.data, 'photos');
   }
 
   async getPublicPhotos(): Promise<PhotoRecord[]> {
-    const response = await APIClient.get<PhotosResponse>(ENDPOINTS.PHOTOS.PUBLIC)
-    return unwrapList<PhotoRecord>(response.data, 'photos')
+    const response = await APIClient.get<PhotosResponse>(ENDPOINTS.PHOTOS.PUBLIC);
+    return unwrapList<PhotoRecord>(response.data, 'photos');
   }
 
   async createModerationTask(photo: PhotoRecord): Promise<ModerationTask> {
@@ -170,52 +170,56 @@ export class PhotoService {
       ownerId: photo.ownerId,
       petId: photo.petId,
       priority: this.calculatePriority(photo),
-    })
+    });
 
-    const task = unwrapPayload<ModerationTask>(response.data, 'task')
-    await this.emitEvent('moderation.task.created', { taskId: task.id, photoId: photo.id })
-    return task
+    const task = unwrapPayload<ModerationTask>(response.data, 'task');
+    await this.emitEvent('moderation.task.created', { taskId: task.id, photoId: photo.id });
+    return task;
   }
 
   private async ensureQuotaWithinLimits(userId: string): Promise<void> {
-    const response = await APIClient.get<UserQuota>(ENDPOINTS.QUOTAS.GET(userId))
-    const quota = response.data
+    const response = await APIClient.get<UserQuota>(ENDPOINTS.QUOTAS.GET(userId));
+    const quota = response.data;
 
     if (!quota) {
-      throw new Error('Unable to resolve current upload quota')
+      throw new Error('Unable to resolve current upload quota');
     }
 
-    const policy = await this.getPolicy()
+    const policy = await this.getPolicy();
 
     if (quota.uploadsToday >= policy.maxUploadsPerDay) {
-      throw new Error('Daily upload limit reached')
+      throw new Error('Daily upload limit reached');
     }
 
     if (quota.uploadsThisHour >= policy.maxUploadsPerHour) {
-      throw new Error('Hourly upload limit reached')
+      throw new Error('Hourly upload limit reached');
     }
 
     if (quota.totalStorage >= policy.maxStoragePerUser) {
-      throw new Error('Storage limit reached')
+      throw new Error('Storage limit reached');
     }
   }
 
   private async incrementQuota(userId: string, fileSize: number): Promise<void> {
-    await APIClient.post(ENDPOINTS.QUOTAS.INCREMENT(userId), { fileSize })
+    await APIClient.post(ENDPOINTS.QUOTAS.INCREMENT(userId), { fileSize });
   }
 
   private calculatePriority(photo: PhotoRecord): 'low' | 'medium' | 'high' {
-    const flags = photo.safetyCheck?.flags ?? []
+    const flags = photo.safetyCheck?.flags ?? [];
 
     if (flags.includes('nsfw') || flags.includes('violent')) {
-      return 'high'
+      return 'high';
     }
 
-    if (flags.includes('human_dominant') || flags.includes('not_animal') || flags.includes('duplicate')) {
-      return 'medium'
+    if (
+      flags.includes('human_dominant') ||
+      flags.includes('not_animal') ||
+      flags.includes('duplicate')
+    ) {
+      return 'medium';
     }
 
-    return 'low'
+    return 'low';
   }
 
   private async emitEvent(event: string, data: Record<string, unknown>): Promise<void> {
@@ -224,46 +228,43 @@ export class PhotoService {
       data,
       correlationId: generateULID(),
       timestamp: new Date().toISOString(),
-    }
+    };
 
-    await APIClient.post(ENDPOINTS.EVENTS.CREATE, payload)
+    await APIClient.post(ENDPOINTS.EVENTS.CREATE, payload);
   }
 }
 
 export class ModerationService {
   async getQueue(): Promise<ModerationQueue> {
     const response = await APIClient.get<ModerationQueue | ModerationQueueResponse>(
-      ENDPOINTS.MODERATION.TASKS,
-    )
+      ENDPOINTS.MODERATION.TASKS
+    );
 
-    const queue =
-      'queue' in response.data
-        ? (response.data).queue
-        : (response.data)
+    const queue = 'queue' in response.data ? response.data.queue : response.data;
 
     return {
       pending: queue.pending ?? [],
       inProgress: queue.inProgress ?? [],
       completed: queue.completed ?? [],
       totalCount:
-        queue.totalCount ?? (queue.pending?.length ?? 0) + (queue.inProgress?.length ?? 0) + (queue.completed?.length ?? 0),
+        queue.totalCount ??
+        (queue.pending?.length ?? 0) +
+          (queue.inProgress?.length ?? 0) +
+          (queue.completed?.length ?? 0),
       averageReviewTime: queue.averageReviewTime ?? 0,
-    }
+    };
   }
 
   async takeTask(taskId: string, reviewerId: string): Promise<ModerationTask> {
     const response = await APIClient.post<ModerationTaskResponse | ModerationTask>(
       ENDPOINTS.MODERATION.TAKE_TASK(taskId),
-      { reviewerId },
-    )
+      { reviewerId }
+    );
 
-    const task =
-      'task' in response.data
-        ? (response.data).task
-        : (response.data)
+    const task = 'task' in response.data ? response.data.task : response.data;
 
     if (!task) {
-      throw new Error('Task assignment failed')
+      throw new Error('Task assignment failed');
     }
 
     await this.logAudit({
@@ -275,10 +276,10 @@ export class ModerationService {
       userRole: 'moderator',
       userName: 'Moderator',
       timestamp: new Date().toISOString(),
-    })
+    });
 
-    await this.emitEvent('moderation.task.claimed', { taskId, reviewerId })
-    return task
+    await this.emitEvent('moderation.task.claimed', { taskId, reviewerId });
+    return task;
   }
 
   async makeDecision(
@@ -287,7 +288,7 @@ export class ModerationService {
     reason: ModerationReason | undefined,
     reasonText: string | undefined,
     reviewerId: string,
-    reviewerName: string,
+    reviewerName: string
   ): Promise<ModerationTask> {
     const response = await APIClient.patch<ModerationTaskResponse | ModerationTask>(
       ENDPOINTS.MODERATION.TASK(taskId),
@@ -297,16 +298,13 @@ export class ModerationService {
         reasonText,
         reviewerId,
         reviewerName,
-      },
-    )
+      }
+    );
 
-    const task =
-      'task' in response.data
-        ? (response.data).task
-        : (response.data)
+    const task = 'task' in response.data ? response.data.task : response.data;
 
     if (!task) {
-      throw new Error('Moderation decision failed')
+      throw new Error('Moderation decision failed');
     }
 
     const decision: ModerationDecision = {
@@ -317,7 +315,7 @@ export class ModerationService {
       reviewerName,
       reviewedAt: new Date().toISOString(),
       requiresKYC: action === 'hold_for_kyc',
-    }
+    };
 
     await this.logAudit({
       id: generateULID(),
@@ -327,41 +325,47 @@ export class ModerationService {
       userId: reviewerId,
       userRole: 'moderator',
       userName: reviewerName,
-      after: decision as unknown as Record<string, unknown>,
+      after: {
+        action: decision.action,
+        ...(decision.reason ? { reason: decision.reason } : {}),
+        ...(decision.reasonText ? { reasonText: decision.reasonText } : {}),
+        reviewerId: decision.reviewerId,
+        reviewerName: decision.reviewerName,
+        reviewedAt: decision.reviewedAt,
+        requiresKYC: decision.requiresKYC,
+      },
       timestamp: decision.reviewedAt,
-    })
+    });
 
     if (action === 'hold_for_kyc') {
-      await this.notifyUserKYCRequired(task.ownerId, task.photoId)
+      await this.notifyUserKYCRequired(task.ownerId, task.photoId);
     } else {
-      const photo = await this.fetchPhoto(task.photoId)
-      await this.notifyUserDecision(task.ownerId, photo, decision)
+      const photo = await this.fetchPhoto(task.photoId);
+      await this.notifyUserDecision(task.ownerId, photo, decision);
     }
 
     await this.emitEvent('moderation.task.updated', {
       taskId,
       action,
       reviewerId,
-    })
+    });
 
-    return task
+    return task;
   }
 
   async getMetrics(): Promise<ModerationMetrics> {
     const response = await APIClient.get<ModerationMetrics | ModerationMetricsResponse>(
-      ENDPOINTS.MODERATION.METRICS,
-    )
+      ENDPOINTS.MODERATION.METRICS
+    );
 
-    return 'metrics' in response.data
-      ? (response.data).metrics
-      : (response.data)
+    return 'metrics' in response.data ? response.data.metrics : response.data;
   }
 
   private async fetchPhoto(photoId: string): Promise<PhotoRecord> {
-    const response = await APIClient.get<PhotoResponse | PhotoRecord>(ENDPOINTS.PHOTOS.GET(photoId))
-    return 'photo' in response.data
-      ? (response.data).photo
-      : (response.data)
+    const response = await APIClient.get<PhotoResponse | PhotoRecord>(
+      ENDPOINTS.PHOTOS.GET(photoId)
+    );
+    return 'photo' in response.data ? response.data.photo : response.data;
   }
 
   private async notifyUserKYCRequired(userId: string, photoId: string): Promise<void> {
@@ -374,15 +378,15 @@ export class ModerationService {
       data: { photoId },
       read: false,
       createdAt: new Date().toISOString(),
-    })
+    });
   }
 
   private async notifyUserDecision(
     userId: string,
     photo: PhotoRecord,
-    decision: ModerationDecision,
+    decision: ModerationDecision
   ): Promise<void> {
-    const isApproved = decision.action === 'approve'
+    const isApproved = decision.action === 'approve';
 
     await APIClient.post(ENDPOINTS.NOTIFICATIONS.LIST, {
       notificationId: generateULID(),
@@ -395,11 +399,11 @@ export class ModerationService {
       data: { photoId: photo.id, decision: decision.action },
       read: false,
       createdAt: decision.reviewedAt,
-    })
+    });
   }
 
   private async logAudit(log: AuditLog): Promise<void> {
-    await APIClient.post(ENDPOINTS.AUDIT.CREATE, log)
+    await APIClient.post(ENDPOINTS.AUDIT.CREATE, log);
   }
 
   private async emitEvent(event: string, data: Record<string, unknown>): Promise<void> {
@@ -408,9 +412,9 @@ export class ModerationService {
       data,
       correlationId: generateULID(),
       timestamp: new Date().toISOString(),
-    }
+    };
 
-    await APIClient.post(ENDPOINTS.EVENTS.CREATE, payload)
+    await APIClient.post(ENDPOINTS.EVENTS.CREATE, payload);
   }
 }
 
@@ -418,58 +422,58 @@ export class KYCService {
   async createSession(userId: string): Promise<KYCSession> {
     const response = await APIClient.post<KYCSessionResponse>(ENDPOINTS.KYC.START_VERIFICATION, {
       userId,
-    })
+    });
 
-    return unwrapPayload<KYCSession>(response.data, 'session')
+    return unwrapPayload<KYCSession>(response.data, 'session');
   }
 
   async getUserSession(userId: string): Promise<KYCSession | null> {
     const response = await APIClient.get<KYCSessionResponse | KYCSessionListResponse | null>(
-      buildUrl(ENDPOINTS.KYC.STATUS, { userId }),
-    )
+      buildUrl(ENDPOINTS.KYC.STATUS, { userId })
+    );
 
     if (!response.data) {
-      return null
+      return null;
     }
 
     if ('session' in response.data) {
-      return (response.data).session
+      return response.data.session;
     }
 
     if ('sessions' in response.data) {
-      const sessions = (response.data).sessions
-      return sessions.length > 0 ? sessions[0] ?? null : null
+      const sessions = response.data.sessions;
+      return sessions.length > 0 ? (sessions[0] ?? null) : null;
     }
 
-    return response.data as KYCSession
+    return response.data as KYCSession;
   }
 
   async updateSession(sessionId: string, updates: Partial<KYCSession>): Promise<void> {
-    await APIClient.patch(ENDPOINTS.KYC.GET_VERIFICATION(sessionId), updates)
+    await APIClient.patch(ENDPOINTS.KYC.GET_VERIFICATION(sessionId), updates);
   }
 
   async verifySession(sessionId: string, reviewerId: string): Promise<void> {
     await APIClient.post(ENDPOINTS.KYC.GET_VERIFICATION(sessionId), {
       action: 'approve',
       reviewerId,
-    })
+    });
   }
 
   async rejectSession(
     sessionId: string,
     reason: KYCRejectReason,
     reasonText: string,
-    reviewerId: string,
+    reviewerId: string
   ): Promise<void> {
     await APIClient.post(ENDPOINTS.KYC.GET_VERIFICATION(sessionId), {
       action: 'reject',
       reason,
       reasonText,
       reviewerId,
-    })
+    });
   }
 }
 
-export const photoService = new PhotoService()
-export const moderationService = new ModerationService()
-export const kycService = new KYCService()
+export const photoService = new PhotoService();
+export const moderationService = new ModerationService();
+export const kycService = new KYCService();

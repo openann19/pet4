@@ -22,6 +22,7 @@ All 4 critical services have been fully migrated:
 ## ⚠️ Remaining Files (42 files, ~266 instances)
 
 ### **API Files** (6 files)
+
 These API files still use `spark.kv` directly instead of HTTP endpoints:
 
 1. **`src/api/adoption-api-strict.ts`**
@@ -54,6 +55,7 @@ These API files still use `spark.kv` directly instead of HTTP endpoints:
 ### **Service Files** (14 files)
 
 #### High Priority Services
+
 7. **`src/lib/lost-found-service.ts`**
    - Status: Lost & found posts service
    - Priority: High
@@ -75,6 +77,7 @@ These API files still use `spark.kv` directly instead of HTTP endpoints:
     - Functionality: Marketplace-specific adoption features
 
 #### Medium Priority Services
+
 11. **`src/lib/enhanced-notification-service.ts`**
     - Status: Enhanced notification features
     - Priority: Medium
@@ -160,6 +163,7 @@ These components use spark.kv directly and should use services instead:
 ### **Compatibility Files** (3 files - ✅ ALLOWED)
 
 These files are **EXEMPT** from migration per ESLint rules:
+
 - `src/lib/spark-compat.ts` ✅
 - `src/lib/spark-fallback.ts` ✅
 - `src/lib/spark-patch.ts` ✅
@@ -177,6 +181,7 @@ These files are **EXEMPT** from migration per ESLint rules:
 ## 📊 Summary by Priority
 
 ### **High Priority** (5 files)
+
 - `src/lib/lost-found-service.ts`
 - `src/lib/notifications-service.ts`
 - `src/lib/streaming-service.ts`
@@ -184,11 +189,13 @@ These files are **EXEMPT** from migration per ESLint rules:
 - `src/lib/purchase-service.ts` (if using real payments)
 
 ### **Medium Priority** (25 files)
+
 - All API files (6 files)
 - Service files (10 files)
 - Component files (11 files)
 
 ### **Low Priority** (12 files)
+
 - Feature flags, rate limiting, config files
 - Test files
 - Build guards
@@ -198,6 +205,7 @@ These files are **EXEMPT** from migration per ESLint rules:
 ## 🎯 Recommended Migration Order
 
 ### Phase 1: High Priority Services (5 files)
+
 1. `lost-found-service.ts`
 2. `notifications-service.ts`
 3. `streaming-service.ts`
@@ -205,12 +213,15 @@ These files are **EXEMPT** from migration per ESLint rules:
 5. `purchase-service.ts` (if applicable)
 
 ### Phase 2: API Files (6 files)
+
 Migrate API files to use HTTP endpoints instead of spark.kv
 
 ### Phase 3: Components (11 files)
+
 Refactor components to use services instead of direct spark.kv
 
 ### Phase 4: Remaining Services (10 files)
+
 Migrate remaining service files incrementally
 
 ---
@@ -234,4 +245,3 @@ Migrate remaining service files incrementally
 - ✅ Error handling and retry logic in place
 
 The foundation is solid. Remaining migrations can be done incrementally without blocking development or production deployment.
-

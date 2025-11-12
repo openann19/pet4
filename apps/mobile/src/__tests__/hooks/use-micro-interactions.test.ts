@@ -24,9 +24,7 @@ describe('useMicroInteractions', () => {
   })
 
   it('should handle press with haptic feedback', () => {
-    const { result } = renderHook(() =>
-      useMicroInteractions({ hapticFeedback: true })
-    )
+    const { result } = renderHook(() => useMicroInteractions({ hapticFeedback: true }))
 
     act(() => {
       result.current.handlePress()
@@ -51,4 +49,3 @@ describe('useMicroInteractions', () => {
     expect(result.current.scale.value).toBe(1)
   })
 })
-

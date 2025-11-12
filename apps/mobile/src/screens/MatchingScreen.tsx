@@ -71,9 +71,7 @@ export function MatchingScreen(): React.JSX.Element {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.centerContainer}>
-          <Text style={styles.errorText}>
-            Error loading pets. Please try again.
-          </Text>
+          <Text style={styles.errorText}>Error loading pets. Please try again.</Text>
         </View>
       </SafeAreaView>
     )

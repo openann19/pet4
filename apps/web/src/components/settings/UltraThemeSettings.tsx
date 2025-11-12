@@ -71,10 +71,7 @@ export function UltraThemeSettings() {
             </div>
             {previewTheme && (
               <div className="flex gap-2">
-                <Button
-                  onClick={() => { handleSelectTheme(previewTheme); }}
-                  className="gap-2"
-                >
+                <Button onClick={() => handleSelectTheme(previewTheme)} className="gap-2">
                   <Check size={20} weight="bold" />
                   Apply Theme
                 </Button>
@@ -167,7 +164,7 @@ function ThemeSection({
 }
 
 interface ThemeCardProps {
-  preset: typeof themePresets[0];
+  preset: (typeof themePresets)[0];
   index: number;
   isActive: boolean;
   onPreview: (theme: ThemePreset) => void;
@@ -212,11 +209,7 @@ function ThemeCard({ preset, index, isActive, onPreview, onSelect }: ThemeCardPr
               className={`
                 relative bg-card border-2 rounded-2xl p-6 cursor-pointer
                 transition-all duration-300 hover:shadow-2xl
-                ${
-                  String(isActive
-                                      ? 'border-primary shadow-lg'
-                                      : 'border-border hover:border-primary/50' ?? '')
-                }
+                ${isActive ? 'border-primary shadow-lg' : 'border-border hover:border-primary/50'}
               `}
             >
               {isActive && (
@@ -243,9 +236,7 @@ function ThemeCard({ preset, index, isActive, onPreview, onSelect }: ThemeCardPr
                     )}
                     {preset.name}
                   </h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {preset.description}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">{preset.description}</p>
                 </div>
 
                 {/* Color Swatches */}

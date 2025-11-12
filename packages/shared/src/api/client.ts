@@ -3,12 +3,7 @@ import { ApiError } from './types'
 import { isTruthy, isDefined } from '@/core/guards';
 
 export function createApiClient(config: ApiClientConfig) {
-  const {
-    baseUrl,
-    apiKey,
-    timeout = 30000,
-    headers: defaultHeaders = {}
-  } = config
+  const { baseUrl, apiKey, timeout = 30000, headers: defaultHeaders = {} } = config
 
   async function request<T = unknown>(
     endpoint: string,
@@ -18,15 +13,15 @@ export function createApiClient(config: ApiClientConfig) {
       method = 'GET',
       headers: customHeaders = {},
       body,
-      timeout: requestTimeout = timeout
+      timeout: requestTimeout = timeout,
     } = options
 
-    const url = `${String(baseUrl.replace(/\/$/, '') ?? '')}/${String(endpoint.replace(/^\//, '') ?? '')}`
-    
+    const url = `${baseUrl.replace(/\/$/, '')}/${endpoint.replace(/^\//, '')}`
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...defaultHeaders,
-      ...customHeaders
+      ...customHeaders,
     }
 
     if (isTruthy(apiKey)) {
@@ -40,8 +35,8 @@ export function createApiClient(config: ApiClientConfig) {
       const response = await fetch(url, {
         method,
         headers,
-        body: body ? JSON.stringify(body) : undefined,
-        signal: controller.signal
+        body: body ? JSON.stringify(body) : null,
+        signal: controller.signal,
       })
 
       clearTimeout(timeoutId)
@@ -53,11 +48,11 @@ export function createApiClient(config: ApiClientConfig) {
 
       let data: T
       const contentType = response.headers.get('content-type')
-      
+
       if (contentType?.includes('application/json')) {
-        data = await response.json() as T
+        data = (await response.json()) as T
       } else {
-        data = await response.text() as unknown as T
+        data = (await response.text()) as unknown as T
       }
 
       if (!response.ok) {
@@ -73,23 +68,19 @@ export function createApiClient(config: ApiClientConfig) {
         data,
         status: response.status,
         statusText: response.statusText,
-        headers: responseHeaders
+        headers: responseHeaders,
       }
     } catch (error) {
       clearTimeout(timeoutId)
-      
+
       if (error instanceof ApiError) {
         throw error
       }
-      
+
       if (error instanceof Error && error.name === 'AbortError') {
-        throw new ApiError(
-          'Request timeout',
-          408,
-          'Request Timeout'
-        )
+        throw new ApiError('Request timeout', 408, 'Request Timeout')
       }
-      
+
       throw new ApiError(
         error instanceof Error ? error.message : 'Unknown error occurred',
         0,
@@ -102,18 +93,26 @@ export function createApiClient(config: ApiClientConfig) {
   return {
     get: <T = unknown>(endpoint: string, options?: Omit<RequestOptions, 'method' | 'body'>) =>
       request<T>(endpoint, { ...options, method: 'GET' }),
-    
-    post: <T = unknown>(endpoint: string, body?: unknown, options?: Omit<RequestOptions, 'method' | 'body'>) =>
-      request<T>(endpoint, { ...options, method: 'POST', body }),
-    
-    put: <T = unknown>(endpoint: string, body?: unknown, options?: Omit<RequestOptions, 'method' | 'body'>) =>
-      request<T>(endpoint, { ...options, method: 'PUT', body }),
-    
-    patch: <T = unknown>(endpoint: string, body?: unknown, options?: Omit<RequestOptions, 'method' | 'body'>) =>
-      request<T>(endpoint, { ...options, method: 'PATCH', body }),
-    
+
+    post: <T = unknown>(
+      endpoint: string,
+      body?: unknown,
+      options?: Omit<RequestOptions, 'method' | 'body'>
+    ) => request<T>(endpoint, { ...options, method: 'POST', body }),
+
+    put: <T = unknown>(
+      endpoint: string,
+      body?: unknown,
+      options?: Omit<RequestOptions, 'method' | 'body'>
+    ) => request<T>(endpoint, { ...options, method: 'PUT', body }),
+
+    patch: <T = unknown>(
+      endpoint: string,
+      body?: unknown,
+      options?: Omit<RequestOptions, 'method' | 'body'>
+    ) => request<T>(endpoint, { ...options, method: 'PATCH', body }),
+
     delete: <T = unknown>(endpoint: string, options?: Omit<RequestOptions, 'method' | 'body'>) =>
-      request<T>(endpoint, { ...options, method: 'DELETE' })
+      request<T>(endpoint, { ...options, method: 'DELETE' }),
   }
 }
-

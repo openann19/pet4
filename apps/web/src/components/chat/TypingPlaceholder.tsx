@@ -1,27 +1,29 @@
-'use client'
+'use client';
 
-import { useTypingPlaceholder } from '@/hooks/use-typing-placeholder'
-import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { cn } from '@/lib/utils'
+import { useTypingPlaceholder } from '@/hooks/use-typing-placeholder';
+import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface TypingPlaceholderProps {
-  enabled?: boolean
-  isOwn?: boolean
-  className?: string
+  enabled?: boolean;
+  isOwn?: boolean;
+  className?: string;
 }
 
 export function TypingPlaceholder({
   enabled = true,
   isOwn = false,
-  className
+  className,
 }: TypingPlaceholderProps): React.JSX.Element {
-  const { animatedStyles, containerStyle } = useTypingPlaceholder({
-    enabled,
-    barCount: 3,
-    barWidth: 4,
-    barHeight: 32,
-    animationDuration: 600
-  })
+    const _uiConfig = useUIConfig();
+    const { animatedStyles, containerStyle } = useTypingPlaceholder({
+        enabled,
+        barCount: 3,
+        barWidth: 4,
+        barHeight: 32,
+        animationDuration: 600,
+      });
 
   return (
     <AnimatedView
@@ -38,15 +40,11 @@ export function TypingPlaceholder({
         <AnimatedView
           key={index}
           style={style as AnimatedStyle}
-          className={cn(
-            'rounded-full',
-            isOwn ? 'bg-white/80' : 'bg-muted-foreground/60'
-          )}
+          className={cn('rounded-full', isOwn ? 'bg-white/80' : 'bg-muted-foreground/60')}
         >
           <div className="w-full h-full" />
         </AnimatedView>
       ))}
     </AnimatedView>
-  )
+  );
 }
-

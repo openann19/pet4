@@ -1,262 +1,268 @@
-'use client'
+'use client';
 
-import { communityAPI } from '@/api/community-api'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Textarea } from '@/components/ui/textarea'
-import { useApp } from '@/contexts/AppContext'
-import { communityService } from '@/lib/community-service'
-import type { Comment, Post } from '@/lib/community-types'
-import { haptics } from '@/lib/haptics'
-import { createLogger } from '@/lib/logger'
-import { userService } from '@/lib/user-service'
-import { ArrowLeft, BookmarkSimple, ChatCircle, Flag, Heart, MapPin, Share, Tag } from '@phosphor-icons/react'
-import { formatDistanceToNow } from 'date-fns'
-import { useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
-import { MediaViewer } from './MediaViewer'
-import { ReportDialog } from './ReportDialog'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { communityAPI } from '@/api/community-api';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import { useApp } from '@/contexts/AppContext';
+import { communityService } from '@/lib/community-service';
+import type { Comment, Post } from '@/lib/community-types';
+import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
+import { userService } from '@/lib/user-service';
+import {
+  ArrowLeft,
+  BookmarkSimple,
+  ChatCircle,
+  Flag,
+  Heart,
+  MapPin,
+  Share,
+  Tag,
+} from '@phosphor-icons/react';
+import { formatDistanceToNow } from 'date-fns';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { Suspense } from 'react';
+import { MediaViewer } from '@/components/lazy-exports';
+import { ReportDialog } from './ReportDialog';
 
-const logger = createLogger('PostDetailView')
+const logger = createLogger('PostDetailView');
 
 interface PostDetailViewProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  postId: string
-  onAuthorClick?: (authorId: string) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  postId: string;
+  onAuthorClick?: (authorId: string) => void;
 }
 
-export function PostDetailView({
-  open,
-  onOpenChange,
-  postId,
-  onAuthorClick
-}: PostDetailViewProps) {
-  const { t } = useApp()
-  const [post, setPost] = useState<Post | null>(null)
-  const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [commentsLoading, setCommentsLoading] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
-  const [isSaved, setIsSaved] = useState(false)
-  const [likesCount, setLikesCount] = useState(0)
-  const [commentText, setCommentText] = useState('')
-  const [submittingComment, setSubmittingComment] = useState(false)
-  const [showMediaViewer, setShowMediaViewer] = useState(false)
-  const [mediaViewerIndex, setMediaViewerIndex] = useState(0)
-  const [showReportDialog, setShowReportDialog] = useState(false)
-  const commentsEndRef = useRef<HTMLDivElement>(null)
+export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: PostDetailViewProps) {
+  const { t } = useApp();
+  const [post, setPost] = useState<Post | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [commentText, setCommentText] = useState('');
+  const [submittingComment, setSubmittingComment] = useState(false);
+  const [showMediaViewer, setShowMediaViewer] = useState(false);
+  const [mediaViewerIndex, setMediaViewerIndex] = useState(0);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const commentsEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (open && postId) {
-      loadPost()
-      loadComments()
+      loadPost();
+      loadComments();
     } else {
-      setPost(null)
-      setComments([])
-      setCommentText('')
+      setPost(null);
+      setComments([]);
+      setCommentText('');
     }
-  }, [open, postId])
+  }, [open, postId]);
 
   const loadPost = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const loadedPost = await communityAPI.getPostById(postId)
-      if (isTruthy(loadedPost)) {
-        setPost(loadedPost)
-        setLikesCount(loadedPost.reactionsCount || 0)
+      const loadedPost = await communityAPI.getPostById(postId);
+      if (loadedPost) {
+        setPost(loadedPost);
+        setLikesCount(loadedPost.reactionsCount || 0);
         // Check if user has reacted/saved by fetching current state
-        userService.user()
-          .then(user => {
-            const userId = user?.id
-            if (isTruthy(userId)) {
+        userService
+          .user()
+          .then((user) => {
+            const userId = user?.id;
+            if (userId) {
               // Check if post is saved
-              communityService.isPostSaved(postId)
-                .then(saved => { setIsSaved(saved); })
-                .catch(() => { setIsSaved(false); })
-              
+              communityService
+                .isPostSaved(postId)
+                .then((saved) => setIsSaved(saved))
+                .catch(() => setIsSaved(false));
+
               // Note: User reaction state will be updated when user interacts with the post
               // For initial load, default to false as we don't have reaction list in Post type
-              setIsLiked(false)
+              setIsLiked(false);
             } else {
               // No user logged in, default to false
-              setIsLiked(false)
-              setIsSaved(false)
+              setIsLiked(false);
+              setIsSaved(false);
             }
           })
           .catch(() => {
             // If user fetch fails, default to false
-            setIsLiked(false)
-            setIsSaved(false)
-          })
+            setIsLiked(false);
+            setIsSaved(false);
+          });
       } else {
-        toast.error('Post not found')
-        onOpenChange(false)
+        toast.error('Post not found');
+        onOpenChange(false);
       }
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load post', err, { postId })
-      toast.error('Failed to load post')
-      onOpenChange(false)
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load post', err, { postId });
+      toast.error('Failed to load post');
+      onOpenChange(false);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadComments = async () => {
-    setCommentsLoading(true)
+    setCommentsLoading(true);
     try {
-      const response = await communityService.getComments(postId)
-      setComments(response)
-      
+      const response = await communityService.getComments(postId);
+      setComments(response);
+
       // Scroll to bottom after loading
       setTimeout(() => {
-        commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-      }, 100)
+        commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load comments', err, { postId })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load comments', err, { postId });
     } finally {
-      setCommentsLoading(false)
+      setCommentsLoading(false);
     }
-  }
+  };
 
   const handleLike = async () => {
-    if (!post) return
-    
-    haptics.impact('light')
-    
+    if (!post) return;
+
+    haptics.impact('light');
+
     try {
-      const user = await userService.user()
+      const user = await userService.user();
       if (!user) {
-        toast.error('You must be logged in to react')
-        return
+        toast.error('You must be logged in to react');
+        return;
       }
-      
-      const userId = typeof user.id === 'string' ? user.id : ''
-      const userName = typeof user['name'] === 'string' ? user['name'] : 'User'
+
+      const userId = typeof user.id === 'string' ? user.id : '';
+      const userName = typeof user['name'] === 'string' ? user['name'] : 'User';
       const result = await communityAPI.toggleReaction(
         post.id,
         userId,
         userName,
         typeof user.avatarUrl === 'string' ? user.avatarUrl : undefined,
         '❤️'
-      )
-      
-      setIsLiked(result.added)
-      setLikesCount(result.reactionsCount)
-      
-      if (isTruthy(result.added)) {
-        haptics.impact('medium')
+      );
+
+      setIsLiked(result.added);
+      setLikesCount(result.reactionsCount);
+
+      if (result.added) {
+        haptics.impact('medium');
       }
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to toggle reaction', err)
-      toast.error('Failed to react to post')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to toggle reaction', err);
+      toast.error('Failed to react to post');
     }
-  }
+  };
 
   const handleSave = async () => {
-    if (!post) return
-    
-    haptics.impact('light')
-    
+    if (!post) return;
+
+    haptics.impact('light');
+
     try {
-      if (isTruthy(isSaved)) {
-        await communityService.unsavePost(post.id)
-        setIsSaved(false)
-        toast.success(t.community?.unsaved || 'Post removed from saved')
+      if (isSaved) {
+        await communityService.unsavePost(post.id);
+        setIsSaved(false);
+        toast.success(t.community?.unsaved || 'Post removed from saved');
       } else {
-        await communityService.savePost(post.id)
-        setIsSaved(true)
-        toast.success(t.community?.saved || 'Post saved')
+        await communityService.savePost(post.id);
+        setIsSaved(true);
+        toast.success(t.community?.saved || 'Post saved');
       }
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to save post', err)
-      toast.error('Failed to save post')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save post', err);
+      toast.error('Failed to save post');
     }
-  }
+  };
 
   const handleShare = async () => {
-    if (!post) return
-    
-    haptics.impact('light')
-    
+    if (!post) return;
+
+    haptics.impact('light');
+
     try {
       if (isTruthy(navigator.share)) {
         await navigator.share({
           title: `Post by ${String(post.authorName ?? '')}`,
           ...(post.text ? { text: post.text } : {}),
-          url: window.location.href
-        })
+          url: window.location.href,
+        });
       } else {
-        await navigator.clipboard.writeText(window.location.href)
-        toast.success('Link copied to clipboard')
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard');
       }
     } catch (error) {
       // User cancelled share
     }
-  }
+  };
 
   const handleSubmitComment = async () => {
-    if (!post || !commentText.trim()) return
-    
-    setSubmittingComment(true)
+    if (!post || !commentText.trim()) return;
+
+    setSubmittingComment(true);
     try {
-      const user = await userService.user()
+      const user = await userService.user();
       if (!user) {
-        toast.error('You must be logged in to comment')
-        return
+        toast.error('You must be logged in to comment');
+        return;
       }
-      
-      const userId = typeof user.id === 'string' ? user.id : ''
-      const userName = typeof user['name'] === 'string' ? user['name'] : 'User'
+
+      const userId = typeof user.id === 'string' ? user.id : '';
+      const userName = typeof user['name'] === 'string' ? user['name'] : 'User';
       const commentData: Parameters<typeof communityAPI.createComment>[0] = {
         postId: post.id,
         text: commentText.trim(),
         authorId: userId,
         authorName: userName,
-      }
-      const avatarUrl = typeof user.avatarUrl === 'string' ? user.avatarUrl : undefined
+      };
+      const avatarUrl = typeof user.avatarUrl === 'string' ? user.avatarUrl : undefined;
       if (avatarUrl !== undefined) {
-        commentData.authorAvatar = avatarUrl
+        commentData.authorAvatar = avatarUrl;
       }
-      await communityAPI.createComment(commentData)
-      
-      setCommentText('')
-      await loadComments()
-      haptics.impact('medium')
+      await communityAPI.createComment(commentData);
+
+      setCommentText('');
+      await loadComments();
+      haptics.impact('medium');
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to submit comment', err)
-      toast.error('Failed to submit comment')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to submit comment', err);
+      toast.error('Failed to submit comment');
     } finally {
-      setSubmittingComment(false)
+      setSubmittingComment(false);
     }
-  }
+  };
 
   const getTopLevelComments = (): Comment[] => {
-    return comments.filter(c => !c.parentCommentId && !c.parentId)
-  }
+    return comments.filter((c) => !c.parentCommentId && !c.parentId);
+  };
 
   const getReplies = (commentId: string): Comment[] => {
-    return comments.filter(c => (c.parentCommentId || c.parentId) === commentId)
-  }
+    return comments.filter((c) => (c.parentCommentId || c.parentId) === commentId);
+  };
 
-  if (!open) return null
+  if (!open) return null;
 
   const allMedia = (post?.media || []).map((media, index) => {
     if (typeof media === 'string') {
-      return { id: `media-${String(index ?? '')}`, url: media, type: 'photo' as const }
+      return { id: `media-${index}`, url: media, type: 'photo' as const };
     }
-    return media
-  })
+    return media;
+  });
 
   return (
     <>
@@ -277,6 +283,7 @@ export function PostDetailView({
                   size="icon"
                   onClick={() => { onOpenChange(false); }}
                   className="rounded-full"
+                  aria-label="Close post details"
                 >
                   <ArrowLeft size={20} />
                 </Button>
@@ -286,6 +293,7 @@ export function PostDetailView({
                   size="icon"
                   onClick={() => { setShowReportDialog(true); }}
                   className="rounded-full"
+                  aria-label="Report post"
                 >
                   <Flag size={20} />
                 </Button>
@@ -314,22 +322,20 @@ export function PostDetailView({
 
                   {/* Post Text */}
                   {post.text && (
-                    <p className="text-base leading-relaxed whitespace-pre-wrap">
-                      {post.text}
-                    </p>
+                    <p className="text-base leading-relaxed whitespace-pre-wrap">{post.text}</p>
                   )}
 
                   {/* Post Media */}
                   {allMedia.length > 0 && (
                     <div className="grid grid-cols-2 gap-2">
                       {allMedia.map((media, index) => {
-                        const url = typeof media === 'string' ? media : media.url
+                        const url = typeof media === 'string' ? media : media.url;
                         return (
                           <button
                             key={index}
                             onClick={() => {
-                              setMediaViewerIndex(index)
-                              setShowMediaViewer(true)
+                              setMediaViewerIndex(index);
+                              setShowMediaViewer(true);
                             }}
                             className="relative aspect-square rounded-lg overflow-hidden bg-muted"
                           >
@@ -339,7 +345,7 @@ export function PostDetailView({
                               className="w-full h-full object-cover"
                             />
                           </button>
-                        )
+                        );
                       })}
                     </div>
                   )}
@@ -347,7 +353,7 @@ export function PostDetailView({
                   {/* Tags and Location */}
                   {((post.tags && post.tags.length > 0) || post.location) && (
                     <div className="flex flex-wrap gap-2">
-                      {post.tags?.map(tag => (
+                      {post.tags?.map((tag) => (
                         <Badge key={tag} variant="secondary" className="text-xs">
                           <Tag size={12} className="mr-1" />
                           {tag}
@@ -382,20 +388,14 @@ export function PostDetailView({
                       <ChatCircle size={24} />
                       <span className="text-sm font-medium">{comments.length}</span>
                     </button>
-                    <button
-                      onClick={handleSave}
-                      className="hover:opacity-80 transition-opacity"
-                    >
+                    <button onClick={handleSave} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
                       <BookmarkSimple
                         size={24}
                         weight={isSaved ? 'fill' : 'regular'}
                         className={isSaved ? 'text-primary' : ''}
                       />
                     </button>
-                    <button
-                      onClick={handleShare}
-                      className="hover:opacity-80 transition-opacity"
-                    >
+                    <button onClick={handleShare} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
                       <Share size={24} />
                     </button>
                   </div>
@@ -403,7 +403,7 @@ export function PostDetailView({
                   {/* Comments Section */}
                   <div className="space-y-4">
                     <h3 className="font-semibold">Comments ({comments.length})</h3>
-                    
+
                     {commentsLoading ? (
                       <div className="space-y-4">
                         <Skeleton className="h-20 w-full" />
@@ -415,15 +415,20 @@ export function PostDetailView({
                       </p>
                     ) : (
                       <div className="space-y-6">
-                        {getTopLevelComments().map(comment => {
-                          const commentId = comment._id || comment.id
-                          const replies = getReplies(commentId)
+                        {getTopLevelComments().map((comment) => {
+                          const commentId = comment._id || comment.id;
+                          const replies = getReplies(commentId);
                           return (
                             <div key={commentId} className="space-y-4">
                               <div className="flex gap-3">
                                 <Avatar className="w-10 h-10">
-                                  <AvatarImage src={comment.authorAvatar} alt={comment.authorName} />
-                                  <AvatarFallback>{comment.authorName.charAt(0).toUpperCase()}</AvatarFallback>
+                                  <AvatarImage
+                                    src={comment.authorAvatar}
+                                    alt={comment.authorName}
+                                  />
+                                  <AvatarFallback>
+                                    {comment.authorName.charAt(0).toUpperCase()}
+                                  </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1">
                                   <div className="bg-muted rounded-lg p-3">
@@ -431,37 +436,48 @@ export function PostDetailView({
                                     <p className="text-sm mt-1">{comment.text}</p>
                                   </div>
                                   <p className="text-xs text-muted-foreground mt-1">
-                                    {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                                    {formatDistanceToNow(new Date(comment.createdAt), {
+                                      addSuffix: true,
+                                    })}
                                   </p>
                                 </div>
                               </div>
-                              
+
                               {replies.length > 0 && (
                                 <div className="ml-12 space-y-4 pl-4 border-l-2 border-border/50">
-                                  {replies.map(reply => {
-                                    const replyId = reply._id || reply.id
+                                  {replies.map((reply) => {
+                                    const replyId = reply._id || reply.id;
                                     return (
                                       <div key={replyId} className="flex gap-3">
                                         <Avatar className="w-8 h-8">
-                                          <AvatarImage src={reply.authorAvatar} alt={reply.authorName} />
-                                          <AvatarFallback>{reply.authorName.charAt(0).toUpperCase()}</AvatarFallback>
+                                          <AvatarImage
+                                            src={reply.authorAvatar}
+                                            alt={reply.authorName}
+                                          />
+                                          <AvatarFallback>
+                                            {reply.authorName.charAt(0).toUpperCase()}
+                                          </AvatarFallback>
                                         </Avatar>
                                         <div className="flex-1">
                                           <div className="bg-muted/50 rounded-lg p-2">
-                                            <p className="font-semibold text-xs">{reply.authorName}</p>
+                                            <p className="font-semibold text-xs">
+                                              {reply.authorName}
+                                            </p>
                                             <p className="text-sm mt-1">{reply.text}</p>
                                           </div>
                                           <p className="text-xs text-muted-foreground mt-1">
-                                            {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
+                                            {formatDistanceToNow(new Date(reply.createdAt), {
+                                              addSuffix: true,
+                                            })}
                                           </p>
                                         </div>
                                       </div>
-                                    )
+                                    );
                                   })}
                                 </div>
                               )}
                             </div>
-                          )
+                          );
                         })}
                         <div ref={commentsEndRef} />
                       </div>
@@ -481,7 +497,7 @@ export function PostDetailView({
                     className="resize-none"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                        handleSubmitComment()
+                        handleSubmitComment();
                       }
                     }}
                   />
@@ -499,13 +515,17 @@ export function PostDetailView({
         </DialogContent>
       </Dialog>
 
-      <MediaViewer
-        open={showMediaViewer}
-        onOpenChange={setShowMediaViewer}
-        media={allMedia}
-        initialIndex={mediaViewerIndex}
-        authorName={post?.authorName || ''}
-      />
+      {showMediaViewer && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+          <MediaViewer
+            open={showMediaViewer}
+            onOpenChange={setShowMediaViewer}
+            media={allMedia}
+            initialIndex={mediaViewerIndex}
+            authorName={post?.authorName || ''}
+          />
+        </Suspense>
+      )}
 
       {post && (
         <ReportDialog
@@ -515,10 +535,10 @@ export function PostDetailView({
           resourceId={post.id}
           resourceName={`Post by ${String(post.authorName ?? '')}`}
           onReported={() => {
-            toast.success('Report submitted. Thank you for helping keep our community safe.')
+            toast.success('Report submitted. Thank you for helping keep our community safe.');
           }}
         />
       )}
     </>
-  )
+  );
 }

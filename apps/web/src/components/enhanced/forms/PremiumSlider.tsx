@@ -1,29 +1,29 @@
-'use client'
+'use client';
 
-import { useCallback, useState } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import * as SliderPrimitive from '@radix-ui/react-slider'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useCallback, useState } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import * as SliderPrimitive from '@radix-ui/react-slider';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumSliderProps {
-  value?: number[]
-  onValueChange?: (value: number[]) => void
-  min?: number
-  max?: number
-  step?: number
-  size?: 'sm' | 'md' | 'lg'
-  showValue?: boolean
-  showSteps?: boolean
-  gradientTrack?: boolean
-  disabled?: boolean
-  label?: string
-  className?: string
-  'aria-label': string
+  value?: number[];
+  onValueChange?: (value: number[]) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  size?: 'sm' | 'md' | 'lg';
+  showValue?: boolean;
+  showSteps?: boolean;
+  gradientTrack?: boolean;
+  disabled?: boolean;
+  label?: string;
+  className?: string;
+  'aria-label': string;
 }
 
 export function PremiumSlider({
@@ -41,61 +41,58 @@ export function PremiumSlider({
   className,
   'aria-label': ariaLabel,
 }: PremiumSliderProps): React.JSX.Element {
-  const [isDragging, setIsDragging] = useState(false)
-  const tooltipOpacity = useSharedValue(0)
-  const tooltipScale = useSharedValue(0.8)
+    const _uiConfig = useUIConfig();
+    const [isDragging, setIsDragging] = useState(false);
+  const tooltipOpacity = useSharedValue(0);
+  const tooltipScale = useSharedValue(0.8);
 
-  const currentValue = value[0] ?? min
-  const percentage = ((currentValue - min) / (max - min)) * 100
+  const currentValue = value[0] ?? min;
+  const percentage = ((currentValue - min) / (max - min)) * 100;
 
   const tooltipStyle = useAnimatedStyle(() => ({
     opacity: tooltipOpacity.value,
     transform: [{ scale: tooltipScale.value }],
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const handleValueChange = useCallback(
     (newValue: number[]) => {
-      if (isTruthy(disabled)) return
-      onValueChange?.(newValue)
-      haptics.impact('light')
+      if (disabled) return;
+      onValueChange?.(newValue);
+      haptics.impact('light');
     },
     [disabled, onValueChange]
-  )
+  );
 
   const handleDragStart = useCallback(() => {
-    setIsDragging(true)
-    tooltipOpacity.value = withSpring(1, springConfigs.smooth)
-    tooltipScale.value = withSpring(1, springConfigs.smooth)
-  }, [tooltipOpacity, tooltipScale])
+    setIsDragging(true);
+    tooltipOpacity.value = withSpring(1, springConfigs.smooth);
+    tooltipScale.value = withSpring(1, springConfigs.smooth);
+  }, [tooltipOpacity, tooltipScale]);
 
   const handleDragEnd = useCallback(() => {
-    setIsDragging(false)
-    tooltipOpacity.value = withTiming(0, { duration: 200 })
-    tooltipScale.value = withTiming(0.8, { duration: 200 })
-  }, [tooltipOpacity, tooltipScale])
+    setIsDragging(false);
+    tooltipOpacity.value = withTiming(0, { duration: 200 });
+    tooltipScale.value = withTiming(0.8, { duration: 200 });
+  }, [tooltipOpacity, tooltipScale]);
 
   const sizes = {
     sm: 'h-1',
     md: 'h-2',
     lg: 'h-3',
-  }
+  };
 
   const thumbSizes = {
     sm: 'w-3 h-3',
     md: 'w-4 h-4',
     lg: 'w-5 h-5',
-  }
+  };
 
   return (
     <div className={cn('w-full', className)}>
       {(label || showValue) && (
         <div className="flex items-center justify-between mb-2">
-          {label && (
-            <label className="text-sm font-medium text-foreground">{label}</label>
-          )}
-          {showValue && (
-            <span className="text-sm text-muted-foreground">{currentValue}</span>
-          )}
+          {label && <label className="text-sm font-medium text-foreground">{label}</label>}
+          {showValue && <span className="text-sm text-muted-foreground">{currentValue}</span>}
         </div>
       )}
 
@@ -132,10 +129,7 @@ export function PremiumSlider({
           {showSteps && (
             <div className="absolute inset-0 flex items-center justify-between px-1">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="w-0.5 h-2 bg-muted-foreground/30 rounded-full"
-                />
+                <div key={i} className="w-0.5 h-2 bg-muted-foreground/30 rounded-full" />
               ))}
             </div>
           )}
@@ -165,5 +159,5 @@ export function PremiumSlider({
         </SliderPrimitive.Root>
       </div>
     </div>
-  )
+  );
 }

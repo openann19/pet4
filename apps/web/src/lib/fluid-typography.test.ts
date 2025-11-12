@@ -101,7 +101,7 @@ describe('fluid-typography', () => {
   describe('buttonSizeUtilities', () => {
     it('should have all size options', () => {
       const expectedSizes = ['xs', 'sm', 'md', 'lg', 'xl'];
-      
+
       expectedSizes.forEach((size) => {
         expect(buttonSizeUtilities).toHaveProperty(size);
       });

@@ -3,69 +3,76 @@
 ## State Inventory
 
 ### Discover Screen
-| State | Copy Key (EN) | Copy Key (BG) | Icon | Action |
-|-------|---------------|---------------|------|--------|
-| Empty | `discover.empty.title` | `discover.empty.title.bg` | Search | Refresh |
-| Empty | `discover.empty.message` | `discover.empty.message.bg` | - | - |
-| Error | `discover.error.title` | `discover.error.title.bg` | Error | Retry |
-| Error | `discover.error.message` | `discover.error.message.bg` | - | - |
-| Loading | Skeleton cards | - | - | - |
+
+| State   | Copy Key (EN)            | Copy Key (BG)               | Icon    | Action           |
+| ------- | ------------------------ | --------------------------- | ------- | ---------------- |
+| Empty   | `discover.empty.title`   | `discover.empty.title.bg`   | Search  | Refresh          |
+| Empty   | `discover.empty.message` | `discover.empty.message.bg` | -       | -                |
+| Error   | `discover.error.title`   | `discover.error.title.bg`   | Error   | Retry            |
+| Error   | `discover.error.message` | `discover.error.message.bg` | -       | -                |
+| Loading | Skeleton cards           | -                           | -       | -                |
 | Offline | `discover.offline.title` | `discover.offline.title.bg` | WifiOff | Check Connection |
 
 ### Matches Screen
-| State | Copy Key (EN) | Copy Key (BG) | Icon | Action |
-|-------|---------------|---------------|------|--------|
-| Empty | `matches.empty.title` | `matches.empty.title.bg` | Heart | Start Swiping |
-| Empty | `matches.empty.message` | `matches.empty.message.bg` | - | - |
-| Error | `matches.error.title` | `matches.error.title.bg` | Error | Retry |
-| Error | `matches.error.message` | `matches.error.message.bg` | - | - |
-| Loading | Skeleton cards | - | - | - |
+
+| State   | Copy Key (EN)           | Copy Key (BG)              | Icon    | Action           |
+| ------- | ----------------------- | -------------------------- | ------- | ---------------- |
+| Empty   | `matches.empty.title`   | `matches.empty.title.bg`   | Heart   | Start Swiping    |
+| Empty   | `matches.empty.message` | `matches.empty.message.bg` | -       | -                |
+| Error   | `matches.error.title`   | `matches.error.title.bg`   | Error   | Retry            |
+| Error   | `matches.error.message` | `matches.error.message.bg` | -       | -                |
+| Loading | Skeleton cards          | -                          | -       | -                |
 | Offline | `matches.offline.title` | `matches.offline.title.bg` | WifiOff | Check Connection |
 
 ### Chat Screen
-| State | Copy Key (EN) | Copy Key (BG) | Icon | Action |
-|-------|---------------|---------------|------|--------|
-| Empty | `chat.empty.title` | `chat.empty.title.bg` | Message | Start Chatting |
-| Empty | `chat.empty.message` | `chat.empty.message.bg` | - | - |
-| Error | `chat.error.title` | `chat.error.title.bg` | Error | Retry |
-| Error | `chat.error.message` | `chat.error.message.bg` | - | - |
-| Loading | Skeleton messages | - | - | - |
+
+| State   | Copy Key (EN)        | Copy Key (BG)           | Icon    | Action           |
+| ------- | -------------------- | ----------------------- | ------- | ---------------- |
+| Empty   | `chat.empty.title`   | `chat.empty.title.bg`   | Message | Start Chatting   |
+| Empty   | `chat.empty.message` | `chat.empty.message.bg` | -       | -                |
+| Error   | `chat.error.title`   | `chat.error.title.bg`   | Error   | Retry            |
+| Error   | `chat.error.message` | `chat.error.message.bg` | -       | -                |
+| Loading | Skeleton messages    | -                       | -       | -                |
 | Offline | `chat.offline.title` | `chat.offline.title.bg` | WifiOff | Check Connection |
 
 ### Profile Screen
-| State | Copy Key (EN) | Copy Key (BG) | Icon | Action |
-|-------|---------------|---------------|------|--------|
-| Empty | `profile.empty.title` | `profile.empty.title.bg` | Person | Edit Profile |
-| Empty | `profile.empty.message` | `profile.empty.message.bg` | - | - |
-| Error | `profile.error.title` | `profile.error.title.bg` | Error | Retry |
-| Error | `profile.error.message` | `profile.error.message.bg` | - | - |
-| Loading | Skeleton profile | - | - | - |
+
+| State   | Copy Key (EN)           | Copy Key (BG)              | Icon    | Action           |
+| ------- | ----------------------- | -------------------------- | ------- | ---------------- |
+| Empty   | `profile.empty.title`   | `profile.empty.title.bg`   | Person  | Edit Profile     |
+| Empty   | `profile.empty.message` | `profile.empty.message.bg` | -       | -                |
+| Error   | `profile.error.title`   | `profile.error.title.bg`   | Error   | Retry            |
+| Error   | `profile.error.message` | `profile.error.message.bg` | -       | -                |
+| Loading | Skeleton profile        | -                          | -       | -                |
 | Offline | `profile.offline.title` | `profile.offline.title.bg` | WifiOff | Check Connection |
 
 ### AI Analysis Panel
-| State | Copy Key (EN) | Copy Key (BG) | Icon | Action |
-|-------|---------------|---------------|------|--------|
-| Empty | `ai.empty.title` | `ai.empty.title.bg` | Image | Upload Photo |
-| Empty | `ai.empty.message` | `ai.empty.message.bg` | - | - |
-| Error | `ai.error.title` | `ai.error.title.bg` | Error | Retry |
-| Error | `ai.error.message` | `ai.error.message.bg` | - | - |
-| Loading | Skeleton analysis | - | - | - |
-| Analyzing | `ai.analyzing.title` | `ai.analyzing.title.bg` | Loading | Cancel |
-| Offline | `ai.offline.title` | `ai.offline.title.bg` | WifiOff | Check Connection |
+
+| State     | Copy Key (EN)        | Copy Key (BG)           | Icon    | Action           |
+| --------- | -------------------- | ----------------------- | ------- | ---------------- |
+| Empty     | `ai.empty.title`     | `ai.empty.title.bg`     | Image   | Upload Photo     |
+| Empty     | `ai.empty.message`   | `ai.empty.message.bg`   | -       | -                |
+| Error     | `ai.error.title`     | `ai.error.title.bg`     | Error   | Retry            |
+| Error     | `ai.error.message`   | `ai.error.message.bg`   | -       | -                |
+| Loading   | Skeleton analysis    | -                       | -       | -                |
+| Analyzing | `ai.analyzing.title` | `ai.analyzing.title.bg` | Loading | Cancel           |
+| Offline   | `ai.offline.title`   | `ai.offline.title.bg`   | WifiOff | Check Connection |
 
 ### Maps Screen
-| State | Copy Key (EN) | Copy Key (BG) | Icon | Action |
-|-------|---------------|---------------|------|--------|
-| Empty | `maps.empty.title` | `maps.empty.title.bg` | Map | Enable Location |
-| Empty | `maps.empty.message` | `maps.empty.message.bg` | - | - |
-| Error | `maps.error.title` | `maps.error.title.bg` | Error | Retry |
-| Error | `maps.error.message` | `maps.error.message.bg` | - | - |
-| Loading | Skeleton map | - | - | - |
+
+| State   | Copy Key (EN)        | Copy Key (BG)           | Icon    | Action           |
+| ------- | -------------------- | ----------------------- | ------- | ---------------- |
+| Empty   | `maps.empty.title`   | `maps.empty.title.bg`   | Map     | Enable Location  |
+| Empty   | `maps.empty.message` | `maps.empty.message.bg` | -       | -                |
+| Error   | `maps.error.title`   | `maps.error.title.bg`   | Error   | Retry            |
+| Error   | `maps.error.message` | `maps.error.message.bg` | -       | -                |
+| Loading | Skeleton map         | -                       | -       | -                |
 | Offline | `maps.offline.title` | `maps.offline.title.bg` | WifiOff | Check Connection |
 
 ## String Resources
 
 ### English (strings.xml)
+
 ```xml
 <!-- Discover -->
 <string name="discover.empty.title">No pets to discover</string>
@@ -112,6 +119,7 @@
 ```
 
 ### Bulgarian (strings-bg.xml)
+
 ```xml
 <!-- Discover -->
 <string name="discover.empty.title">Няма животни за откриване</string>
@@ -160,12 +168,14 @@
 ## Skeleton States
 
 ### Skeleton Dimensions
+
 - **Card**: Match final card dimensions exactly
 - **Text**: Match line height and width
 - **Image**: Match aspect ratio (16:9)
 - **Avatar**: Match size (40dp)
 
 ### Implementation
+
 ```kotlin
 @Composable
 fun CardSkeleton() {
@@ -195,12 +205,14 @@ fun CardSkeleton() {
 ## Offline Banner
 
 ### Behavior
+
 - **Show**: When network unavailable
 - **Position**: Top of screen (below app bar)
 - **Dismissible**: No (auto-dismiss when online)
 - **Actions**: Check Connection button
 
 ### Implementation
+
 ```kotlin
 @Composable
 fun OfflineBanner(visible: Boolean, onCheckConnection: () -> Unit) {
@@ -237,12 +249,14 @@ fun OfflineBanner(visible: Boolean, onCheckConnection: () -> Unit) {
 ## Retry Patterns
 
 ### Consistent Retry
+
 - **Button**: Primary button style
 - **Label**: "Retry" (EN) / "Опитайте отново" (BG)
 - **Icon**: Refresh icon
 - **Action**: Retry failed operation
 
 ### Implementation
+
 ```kotlin
 @Composable
 fun ErrorState(
@@ -284,6 +298,7 @@ fun ErrorState(
 ## State Transitions
 
 ### Transitions
+
 - **Loading → Content**: Fade + scale in
 - **Content → Error**: Fade out, fade in error
 - **Error → Loading**: Fade out, fade in loading
@@ -291,6 +306,7 @@ fun ErrorState(
 - **Offline → Online**: Slide up banner
 
 ### Implementation
+
 ```kotlin
 @Composable
 fun StateContent(
@@ -314,6 +330,7 @@ fun StateContent(
 ## Implementation Checklist
 
 ### ✅ Requirements
+
 - [ ] All states have explicit copy (EN/BG)
 - [ ] Skeletons match final dimensions
 - [ ] No content jump on state change
@@ -324,6 +341,7 @@ fun StateContent(
 - [ ] Error states have retry
 
 ### ✅ Testing
+
 - [ ] Test empty states
 - [ ] Test error states
 - [ ] Test loading states
@@ -332,4 +350,3 @@ fun StateContent(
 - [ ] Test retry actions
 - [ ] Test in EN locale
 - [ ] Test in BG locale
-

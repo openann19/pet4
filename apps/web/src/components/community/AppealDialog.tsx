@@ -3,8 +3,8 @@
  * Allows users to appeal moderation decisions
  */
 
-import { useState } from 'react'
-import { Scales, FileText } from '@phosphor-icons/react'
+import { useState } from 'react';
+import { Scales, FileText } from '@phosphor-icons/react';
 import {
   Dialog,
   DialogContent,
@@ -12,23 +12,23 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { communityAPI } from '@/api/community-api'
-import { haptics } from '@/lib/haptics'
-import { toastSuccess, toastError } from '@/effects/confetti-web'
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { communityAPI } from '@/api/community-api';
+import { haptics } from '@/lib/haptics';
+import { toast } from 'sonner';
 
 interface AppealDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  resourceType: 'post' | 'comment' | 'user'
-  resourceId: string
-  reportId?: string
-  moderationReason?: string
-  onAppealed?: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  resourceType: 'post' | 'comment' | 'user';
+  resourceId: string;
+  reportId?: string;
+  moderationReason?: string;
+  onAppealed?: () => void;
 }
 
 export function AppealDialog({
@@ -38,28 +38,28 @@ export function AppealDialog({
   resourceId,
   reportId,
   moderationReason,
-  onAppealed
+  onAppealed,
 }: AppealDialogProps) {
-  const [appealText, setAppealText] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [appealText, setAppealText] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (!appealText.trim()) {
-  toastError('Please provide a reason for your appeal')
-      return
+      toast.error('Please provide a reason for your appeal');
+      return;
     }
 
     if (appealText.trim().length < 50) {
-  toastError('Please provide more details (at least 50 characters)')
-      return
+      toast.error('Please provide more details (at least 50 characters)');
+      return;
     }
 
-    setIsSubmitting(true)
-    haptics.trigger('medium')
+    setIsSubmitting(true);
+    haptics.trigger('medium');
 
     try {
-      const user = await spark.user()
-      
+      const user = await spark.user();
+
       await communityAPI.appealModeration(
         resourceId,
         resourceType,
@@ -67,42 +67,40 @@ export function AppealDialog({
         user.login || 'User',
         appealText.trim(),
         reportId
-      )
+      );
 
-  toastSuccess('Appeal submitted successfully. Our team will review it within 24-48 hours.', {
-        duration: 4000
-      })
+      toast.success('Appeal submitted successfully. Our team will review it within 24-48 hours.', {
+        duration: 4000,
+      });
 
-      onAppealed?.()
-      handleClose()
+      onAppealed?.();
+      handleClose();
     } catch (error) {
-  toastError('Failed to submit appeal. Please try again.')
+      toast.error('Failed to submit appeal. Please try again.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleClose = () => {
-    setAppealText('')
-    onOpenChange(false)
-  }
+    setAppealText('');
+    onOpenChange(false);
+  };
 
-  const resourceLabel = resourceType === 'post' 
-    ? 'post' 
-    : resourceType === 'comment' 
-    ? 'comment' 
-    : 'account'
+  const resourceLabel =
+    resourceType === 'post' ? 'post' : resourceType === 'comment' ? 'comment' : 'account';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]" aria-describedby="appeal-description">
+      <DialogContent className="sm:max-w-125" aria-describedby="appeal-description">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Scales className="w-5 h-5 text-primary" />
             Appeal Moderation Decision
           </DialogTitle>
           <DialogDescription id="appeal-description">
-            If you believe this {resourceLabel} was incorrectly moderated, you can submit an appeal for review.
+            If you believe this {resourceLabel} was incorrectly moderated, you can submit an appeal
+            for review.
           </DialogDescription>
         </DialogHeader>
 
@@ -132,9 +130,7 @@ export function AppealDialog({
             />
             <div id="appeal-help" className="text-sm text-muted-foreground">
               {appealText.length}/50 characters minimum
-              {appealText.length >= 50 && (
-                <span className="text-green-600 ml-2">✓</span>
-              )}
+              {appealText.length >= 50 && <span className="text-green-600 ml-2">✓</span>}
             </div>
           </div>
 
@@ -142,7 +138,9 @@ export function AppealDialog({
             <div className="flex items-start gap-2">
               <FileText className="w-4 h-4 mt-0.5 text-muted-foreground" />
               <div className="text-sm text-muted-foreground space-y-1">
-                <p><strong>What happens next?</strong></p>
+                <p>
+                  <strong>What happens next?</strong>
+                </p>
                 <ul className="list-disc list-inside space-y-1 ml-2">
                   <li>Your appeal will be reviewed by our moderation team</li>
                   <li>Review typically takes 24-48 hours</li>
@@ -173,6 +171,5 @@ export function AppealDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

@@ -1,9 +1,9 @@
 /**
  * Chromatic Aberration Runtime Shader Component
- * 
+ *
  * GPU-accelerated chromatic aberration effect with per-channel RGB offset.
  * Creates a center-weighted distortion effect for premium visual polish.
- * 
+ *
  * Location: apps/mobile/src/effects/chat/shaders/chromaticAberration.tsx
  */
 
@@ -84,19 +84,19 @@ export function ChromaticAberrationFX({
   // Sync SharedValues to state for Skia uniforms
   useAnimatedReaction(
     () => center.value,
-    (value) => {
+    value => {
       setCenterVal(value)
     }
   )
   useAnimatedReaction(
     () => radius.value,
-    (value) => {
+    value => {
       setRadiusVal(value)
     }
   )
   useAnimatedReaction(
     () => intensity.value,
-    (value) => {
+    value => {
       setIntensityVal(value)
     }
   )
@@ -126,4 +126,3 @@ export function ChromaticAberrationFX({
     </Canvas>
   )
 }
-

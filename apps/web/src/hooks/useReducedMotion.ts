@@ -10,7 +10,7 @@ export function useReducedMotion(): boolean {
     if (typeof window === 'undefined') {
       return false;
     }
-    
+
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     return mediaQuery.matches;
   });
@@ -21,7 +21,7 @@ export function useReducedMotion(): boolean {
     }
 
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    
+
     const handleChange = (event: MediaQueryListEvent): void => {
       setPrefersReducedMotion(event.matches);
     };
@@ -31,7 +31,7 @@ export function useReducedMotion(): boolean {
       mediaQuery.addEventListener('change', handleChange);
       return () => { mediaQuery.removeEventListener('change', handleChange); };
     }
-    
+
     // Fallback for older browsers
     mediaQuery.addListener(handleChange);
     return () => { mediaQuery.removeListener(handleChange); };

@@ -1,32 +1,32 @@
-export { default as AdvancedChatWindow } from './AdvancedChatWindow.native'
-export type { AdvancedChatWindowProps } from './AdvancedChatWindow.native'
+export { default as AdvancedChatWindow } from './AdvancedChatWindow'
+export type { AdvancedChatWindowProps } from './AdvancedChatWindow'
 
-export { StickerButton, ReactionButton, SendButtonIcon } from './Buttons.native'
-export type { StickerButtonProps, ReactionButtonProps } from './Buttons.native'
+export { StickerButton, ReactionButton, SendButtonIcon } from './Buttons'
+export type { StickerButtonProps, ReactionButtonProps } from './Buttons'
 
-export { TemplatePanel } from './TemplatePanel.native'
-export type { TemplatePanelProps } from './TemplatePanel.native'
+export { TemplatePanel } from './TemplatePanel'
+export type { TemplatePanelProps } from './TemplatePanel'
 
-export { ChatHeader } from './ChatHeader.native'
-export type { ChatHeaderProps } from './ChatHeader.native'
+export { ChatHeader } from './ChatHeader'
+export type { ChatHeaderProps } from './ChatHeader'
 
-export { MessageItem } from './MessageItem.native'
-export type { MessageItemProps } from './MessageItem.native'
+export { MessageItem } from './MessageItem'
+export type { MessageItemProps } from './MessageItem'
 
-export { MessageList } from './MessageList.native'
-export type { MessageListProps } from './MessageList.native'
+export { MessageList } from './MessageList'
+export type { MessageListProps } from './MessageList'
 
-export { VirtualMessageList } from './VirtualMessageList.native'
-export type { VirtualMessageListProps } from './VirtualMessageList.native'
+export { VirtualMessageList } from './VirtualMessageList'
+export type { VirtualMessageListProps } from './VirtualMessageList'
 
-export { ChatErrorBoundary } from './ChatErrorBoundary.native'
-export type { ChatErrorBoundaryProps } from './ChatErrorBoundary.native'
+export { ChatErrorBoundary } from './ChatErrorBoundary'
+export type { ChatErrorBoundaryProps } from './ChatErrorBoundary'
 
-export { AnnounceNewMessage, AnnounceTyping } from './LiveRegions.native'
-export type { AnnounceNewMessageProps, AnnounceTypingProps } from './LiveRegions.native'
+export { AnnounceNewMessage, AnnounceTyping } from './LiveRegions'
+export type { AnnounceNewMessageProps, AnnounceTypingProps } from './LiveRegions'
 
-export { Overlays } from './Overlays.native'
-export type { OverlaysProps } from './Overlays.native'
+export { Overlays } from './Overlays'
+export type { OverlaysProps } from './Overlays'
 
-export { ChatInputBar } from './ChatInputBar.native'
-export type { ChatInputBarProps } from './ChatInputBar.native'
+export { ChatInputBar } from './ChatInputBar'
+export type { ChatInputBarProps } from './ChatInputBar'

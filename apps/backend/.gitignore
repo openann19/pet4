@@ -1,38 +1,9 @@
-# Dependencies
 node_modules/
-
-# Build output
 dist/
-*.tsbuildinfo
-
-# Environment variables
+*.log
 .env
 .env.local
-.env.*.local
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-
-# Database
-*.db
-*.sqlite
-
-# IDE
+.DS_Store
+coverage/
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Testing
-coverage/
-.nyc_output/
-
-# Prisma
-prisma/migrations/
-

@@ -3,15 +3,16 @@ trigger: always_on
 ---
 
 ---
-applyTo: '**'
----
+
+## applyTo: '\*\*'
+
 Rule: Paste-to-Integrate (TS/TSX) — Web & Mobile
 
 Trigger: When I paste any .ts/.tsx file content.
 Goal: If file exists → AST-merge safely. If not → create the best-practice enhanced React version and wire it across Web (React/Next/Vite) and Mobile (React Native/Expo).
-Zero warnings, zero console.*, strict TypeScript, deterministic output.
+Zero warnings, zero console.\*, strict TypeScript, deterministic output.
 
-1) Locate & Classify
+1. Locate & Classify
 
 IF WE HAVE IT IN WEB OR MOBILE - WIRE IT OPTIMIZE IT ENHANCE IT PROPERLY ! , IF WE DONT HAVE IT CONSIDER OF BUILDING IT NEW AS PER STANDARDS !
 Infer path & role from filename, imports, and component shape:
@@ -20,13 +21,13 @@ Page (route/screens), UI (reusable components), Hook, Util, Store, Native module
 
 Platform detection:
 
-If imports include react-native/expo-* → Mobile.
+If imports include react-native/expo-\* → Mobile.
 
-If imports include next/* or DOM APIs → Web.
+If imports include next/\* or DOM APIs → Web.
 
 Otherwise → Shared with platform files: Component.tsx + Component.native.tsx if needed.
 
-2) Merge-if-Exists (AST, not text)
+2. Merge-if-Exists (AST, not text)
 
 Normalize both versions (Prettier) → parse with TypeScript compiler/ts-morph.
 
@@ -38,7 +39,7 @@ Union named exports; if name collision:
 
 Prefer new implementation if it adds types/props/tests/perf.
 
-Keep old behind suffix Old_ only if behavior differs; open a TODO-free diff note in PR body.
+Keep old behind suffix Old\_ only if behavior differs; open a TODO-free diff note in PR body.
 
 Props & types:
 
@@ -54,9 +55,9 @@ Collapse duplicate effects by dependency comparison; avoid double-subscribe.
 
 Replace internal fetchers with our unified data layer (RTK Query/React Query or app standard).
 
-Side-effects: remove console.*; convert to typed logger or devWarning() gate if project uses one.
+Side-effects: remove console.\*; convert to typed logger or devWarning() gate if project uses one.
 
-3) Create-if-Missing (Best Enhanced React)
+3. Create-if-Missing (Best Enhanced React)
 
 Component shell:
 
@@ -76,7 +77,7 @@ I18n: Text via t('…'); add keys to locales.
 
 Analytics/telemetry: Use central track() if app defines it; no ad-hoc events.
 
-4) Wire-Up (Project Integration)
+4. Wire-Up (Project Integration)
 
 Web
 
@@ -86,7 +87,7 @@ Add lazy import to router, code-split friendly.
 
 Export from nearest barrel (index.ts) in src/components/... or feature package.
 
-Add Storybook story in *.stories.tsx using canonical controls and tokens.
+Add Storybook story in \*.stories.tsx using canonical controls and tokens.
 
 Mobile
 
@@ -94,15 +95,15 @@ If Screen: register in navigator (AppNavigator.tsx) with typed params.
 
 If UI: export via packages/ui-mobile/index.ts.
 
-If shared, generate *.native.tsx variant only when DOM/Platform-specific APIs differ.
+If shared, generate \*.native.tsx variant only when DOM/Platform-specific APIs differ.
 
 Shared State/Data
 
-Connect to our data client (React Query/RTK Query). Define useXxxQuery/useXxxMutation hooks in src/api/*.
+Connect to our data client (React Query/RTK Query). Define useXxxQuery/useXxxMutation hooks in src/api/\*.
 
 Apply error boundaries + retry policy per app standard.
 
-5) Quality Gates (must pass)
+5. Quality Gates (must pass)
 
 TypeScript: no errors, no warnings.
 
@@ -110,11 +111,11 @@ ESLint: clean (strict rules incl. “no console”, “no unused”, “no impli
 
 Tests: add/merge unit tests with React Testing Library:
 
-Web: *.test.tsx covers render, a11y role, basic interaction.
+Web: \*.test.tsx covers render, a11y role, basic interaction.
 
-Mobile: *.native.test.tsx with @testing-library/react-native.
+Mobile: \*.native.test.tsx with @testing-library/react-native.
 
-Hooks: *.test.ts.
+Hooks: \*.test.ts.
 
 Stories: Storybook renders without a11y violations (axe rules enabled).
 
@@ -122,7 +123,7 @@ Bundle/Perf: no new deps without justification; keep component pure and tree-sha
 
 Accessibility: at least one test asserting role/label or focus behavior.
 
-6) Commit & Traceability
+6. Commit & Traceability
 
 Single atomic commit per pasted file:
 
@@ -140,11 +141,11 @@ Stories/tests added.
 
 Risk + mitigation checklist.
 
-7) Failure Handling (no stubs)
+7. Failure Handling (no stubs)
 
 If AST merge yields conflicting behavior that cannot be reconciled safely:
 
-Keep new code, move conflicting old export to Legacy__<Name> inside the same file (not a second file).
+Keep new code, move conflicting old export to Legacy\_\_<Name> inside the same file (not a second file).
 
 Add a typed adapter layer to preserve old callers.
 
@@ -194,7 +195,7 @@ React Native/Expo; use our design tokens bridge; no inline magic numbers.
 
 A11y: roles/labels, focus, TalkBack/VoiceOver friendly.
 
-Performance: pure where possible (memo), stable callbacks, avoid re-renders, no console.*.
+Performance: pure where possible (memo), stable callbacks, avoid re-renders, no console.\*.
 
 I18n via t().
 
@@ -210,7 +211,7 @@ If it’s a shared UI, ensure shared types are in @/types and tokens from @/core
 
 Tests (must pass):
 
-*.native.test.tsx with @testing-library/react-native: renders, a11y role, key interaction.
+\*.native.test.tsx with @testing-library/react-native: renders, a11y role, key interaction.
 
 Keep coverage ≥ existing thresholds; zero warnings.
 
@@ -238,30 +239,35 @@ scripts/check_mobile_parity.sh
 set -euo pipefail
 
 # Find web components without a native counterpart.
+
 # Adjust roots/globs to your layout.
+
 missing=0
 while IFS= read -r webfile; do
-  base="${webfile%.tsx}"
-  # Skip files that *are* native or test/story files
-  [[ "$webfile" =~ (\.native\.tsx|\.test\.tsx|\.stories\.tsx)$ ]] && continue
-  # If a platform-agnostic shared variant exists, skip check (assume dual renderers)
-  shared_candidate="${base/web\/|src\/components\/shared\/}/shared/${webfile##*/}"
-  native1="${base}.native.tsx"
+base="${webfile%.tsx}"
+
+# Skip files that _are_ native or test/story files
+
+[["$webfile" =~ (\.native\.tsx|\.test\.tsx|\.stories\.tsx)$]] && continue
+
+# If a platform-agnostic shared variant exists, skip check (assume dual renderers)
+
+shared*candidate="${base/web\/|src\/components\/shared\/}/shared/${webfile##*/}"
+native1="${base}.native.tsx"
   native2="${base/\/web\//\/mobile\/}.native.tsx"
-  if [[ ! -f "$native1" && ! -f "$native2" ]]; then
-    echo "❌ Missing mobile parity for: $webfile"
+if [[! -f "$native1" && ! -f "$native2"]]; then
+echo "❌ Missing mobile parity for: $webfile"
     missing=$((missing+1))
-  fi
-done < <(git ls-files 'src/**/*.tsx' ':!:**/*.native.tsx' ':!:**/*.stories.tsx' ':!:**/*.test.tsx')
-
-if [[ "$missing" -gt 0 ]]; then
-  echo "----"
-  echo "Mobile parity check failed ($missing file(s)). Create corresponding .native.tsx implementations."
-  exit 1
-else
-  echo "✅ Mobile parity OK"
 fi
+done < <(git ls-files 'src/\*\*/_.tsx' ':!:**/\*.native.tsx' ':!:**/_.stories.tsx' ':!:\*\*/\_.test.tsx')
 
+if [["$missing" -gt 0]]; then
+echo "----"
+echo "Mobile parity check failed ($missing file(s)). Create corresponding .native.tsx implementations."
+exit 1
+else
+echo "✅ Mobile parity OK"
+fi
 
 Add to CI (example GitHub Actions step):
 

@@ -3,8 +3,8 @@
  * Allows users to report posts, comments, or users with moderation reasons
  */
 
-import { communityAPI } from '@/api/community-api'
-import { Button } from '@/components/ui/button'
+import { communityAPI } from '@/api/community-api';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -12,38 +12,57 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Textarea } from '@/components/ui/textarea'
-import type { ReportReason } from '@/lib/community-types'
-import { haptics } from '@/lib/haptics'
-import { usePrefersReducedMotion } from '@/utils/reduced-motion'
-import { Warning } from '@phosphor-icons/react'
-import { motion } from '@petspark/motion'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { isTruthy, isDefined } from '@petspark/shared';
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import type { ReportReason } from '@/lib/community-types';
+import { haptics } from '@/lib/haptics';
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
+import { Warning } from '@phosphor-icons/react';
+import { motion, MotionView } from '@petspark/motion';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface ReportDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  resourceType: 'post' | 'comment' | 'user'
-  resourceId: string
-  resourceName?: string
-  onReported?: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  resourceType: 'post' | 'comment' | 'user';
+  resourceId: string;
+  resourceName?: string;
+  onReported?: () => void;
 }
 
-const REPORT_REASONS: Array<{ value: ReportReason; label: string; description: string }> = [
+const REPORT_REASONS: { value: ReportReason; label: string; description: string }[] = [
   { value: 'spam', label: 'Spam', description: 'Repetitive, unwanted, or promotional content' },
-  { value: 'harassment', label: 'Harassment', description: 'Bullying, threats, or personal attacks' },
-  { value: 'inappropriate', label: 'Inappropriate Content', description: 'Content that violates community guidelines' },
-  { value: 'misleading', label: 'Misleading Information', description: 'False or deceptive information' },
+  {
+    value: 'harassment',
+    label: 'Harassment',
+    description: 'Bullying, threats, or personal attacks',
+  },
+  {
+    value: 'inappropriate',
+    label: 'Inappropriate Content',
+    description: 'Content that violates community guidelines',
+  },
+  {
+    value: 'misleading',
+    label: 'Misleading Information',
+    description: 'False or deceptive information',
+  },
   { value: 'violence', label: 'Violence', description: 'Depicts or promotes violence' },
-  { value: 'hate-speech', label: 'Hate Speech', description: 'Discriminatory or offensive language' },
-  { value: 'copyright', label: 'Copyright Violation', description: 'Unauthorized use of copyrighted material' },
-  { value: 'other', label: 'Other', description: 'Other reason not listed above' }
-]
+  {
+    value: 'hate-speech',
+    label: 'Hate Speech',
+    description: 'Discriminatory or offensive language',
+  },
+  {
+    value: 'copyright',
+    label: 'Copyright Violation',
+    description: 'Unauthorized use of copyrighted material',
+  },
+  { value: 'other', label: 'Other', description: 'Other reason not listed above' },
+];
 
 export function ReportDialog({
   open,
@@ -51,68 +70,65 @@ export function ReportDialog({
   resourceType,
   resourceId,
   resourceName,
-  onReported
+  onReported,
 }: ReportDialogProps) {
-  const [selectedReason, setSelectedReason] = useState<ReportReason | ''>('')
-  const [details, setDetails] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const prefersReducedMotion = usePrefersReducedMotion()
+  const [selectedReason, setSelectedReason] = useState<ReportReason | ''>('');
+  const [details, setDetails] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  const transitionConfig = prefersReducedMotion 
-    ? { duration: 0 } 
-    : { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const }
+  const transitionConfig = prefersReducedMotion
+    ? { duration: 0 }
+    : { duration: 0.2, ease: [0.4, 0, 0.2, 1] as const };
 
   const handleSubmit = async () => {
     if (!selectedReason) {
-      toast.error('Please select a reason for reporting')
-      return
+      toast.error('Please select a reason for reporting');
+      return;
     }
 
-    setIsSubmitting(true)
-    haptics.trigger('medium')
+    setIsSubmitting(true);
+    haptics.trigger('medium');
 
     try {
-      const user = await spark.user()
+      const user = await spark.user();
       const reportData: Parameters<typeof communityAPI.reportContent>[0] = {
         resourceType,
         resourceId,
         reason: selectedReason,
-        reporterId: user.id
+        reporterId: user.id,
+      };
+      const trimmedDetails = details.trim();
+      if (trimmedDetails) {
+        reportData.details = trimmedDetails;
       }
-      const trimmedDetails = details.trim()
-      if (isTruthy(trimmedDetails)) {
-        reportData.details = trimmedDetails
-      }
-      await communityAPI.reportContent(reportData)
+      await communityAPI.reportContent(reportData);
 
       toast.success('Report submitted successfully. Our team will review it.', {
-        duration: 3000
-      })
+        duration: 3000,
+      });
 
-      onReported?.()
-      handleClose()
+      onReported?.();
+      handleClose();
     } catch (error) {
-      toast.error('Failed to submit report. Please try again.')
+      toast.error('Failed to submit report. Please try again.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleClose = () => {
-    setSelectedReason('')
-    setDetails('')
-    onOpenChange(false)
-  }
+    setSelectedReason('');
+    setDetails('');
+    onOpenChange(false);
+  };
 
-  const resourceLabel = resourceType === 'post' 
-    ? 'post' 
-    : resourceType === 'comment' 
-    ? 'comment' 
-    : 'user'
+  const resourceLabel =
+    resourceType === 'post' ? 'post' : resourceType === 'comment' ? 'comment' : 'user';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]" aria-describedby="report-description">
+      <DialogContent className="sm:max-w-125" aria-describedby="report-description">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Warning className="w-5 h-5 text-destructive" />
@@ -120,7 +136,9 @@ export function ReportDialog({
           </DialogTitle>
           <DialogDescription id="report-description">
             {resourceName && (
-              <span className="block mb-2">Reporting: <strong>{resourceName}</strong></span>
+              <span className="block mb-2">
+                Reporting: <strong>{resourceName}</strong>
+              </span>
             )}
             Help us maintain a safe community by reporting content that violates our guidelines.
           </DialogDescription>
@@ -143,10 +161,7 @@ export function ReportDialog({
                   transition={transitionConfig}
                 >
                   <RadioGroupItem value={reason.value} id={reason.value} className="mt-1" />
-                  <Label
-                    htmlFor={reason.value}
-                    className="flex-1 cursor-pointer space-y-1"
-                  >
+                  <Label htmlFor={reason.value} className="flex-1 cursor-pointer space-y-1">
                     <div className="font-medium">{reason.label}</div>
                     <div className="text-sm text-muted-foreground">{reason.description}</div>
                   </Label>
@@ -199,6 +214,5 @@ export function ReportDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

@@ -1,46 +1,33 @@
-import { useState, useRef } from 'react'
-import { motion } from '@petspark/motion'
-import {
-  Camera,
-  Image as ImageIcon,
-  X,
-  Smiley,
-  MapPin
-} from '@phosphor-icons/react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import type { Story, StoryVisibility } from '@/lib/stories-types'
-import { STORY_MUSIC_TRACKS } from '@/lib/stories-types'
-import { ADVANCED_STORY_TEMPLATES, STORY_FILTERS } from '@/lib/story-templates'
-import type { AdvancedTemplate, StoryFilter } from '@/lib/story-templates'
-import { createStory } from '@/lib/stories-utils'
-import { toast } from 'sonner'
-import { haptics } from '@/lib/haptics'
-import StoryTemplateSelector from './StoryTemplateSelector'
-import StoryFilterSelector from './StoryFilterSelector'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useState, useRef } from 'react';
+import { motion, MotionView } from '@petspark/motion';
+import { Camera, Image as ImageIcon, X, Smiley, MapPin } from '@phosphor-icons/react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import type { Story, StoryVisibility } from '@/lib/stories-types';
+import { STORY_MUSIC_TRACKS } from '@/lib/stories-types';
+import { ADVANCED_STORY_TEMPLATES, STORY_FILTERS } from '@/lib/story-templates';
+import type { AdvancedTemplate, StoryFilter } from '@/lib/story-templates';
+import { createStory } from '@/lib/stories-utils';
+import { toast } from 'sonner';
+import { haptics } from '@/lib/haptics';
+import StoryTemplateSelector from './StoryTemplateSelector';
+import StoryFilterSelector from './StoryFilterSelector';
 
 interface CreateStoryDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  userId: string
-  userName: string
-  petId: string
-  petName: string
-  petPhoto: string
-  userAvatar?: string
-  onStoryCreated: (story: Story) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  userId: string;
+  userName: string;
+  petId: string;
+  petName: string;
+  petPhoto: string;
+  userAvatar?: string;
+  onStoryCreated: (story: Story) => void;
 }
-
 
 export default function CreateStoryDialog({
   open,
@@ -51,88 +38,76 @@ export default function CreateStoryDialog({
   petName,
   petPhoto,
   userAvatar,
-  onStoryCreated
+  onStoryCreated,
 }: CreateStoryDialogProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [mediaFile, setMediaFile] = useState<File | null>(null)
-  const [mediaPreview, setMediaPreview] = useState<string>('')
-  const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo')
-  const [caption, setCaption] = useState('')
-  const [visibility, setVisibility] = useState<StoryVisibility>('everyone')
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [mediaPreview, setMediaPreview] = useState<string>('');
+  const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
+  const [caption, setCaption] = useState('');
+  const [visibility, setVisibility] = useState<StoryVisibility>('everyone');
   const [selectedTemplate, setSelectedTemplate] = useState<AdvancedTemplate>(() => {
-    const firstTemplate = ADVANCED_STORY_TEMPLATES[0]
+    const firstTemplate = ADVANCED_STORY_TEMPLATES[0];
     if (!firstTemplate) {
-      throw new Error('ADVANCED_STORY_TEMPLATES array is empty')
+      throw new Error('ADVANCED_STORY_TEMPLATES array is empty');
     }
-    return firstTemplate
-  })
+    return firstTemplate;
+  });
   const [selectedFilter, setSelectedFilter] = useState<StoryFilter>(() => {
-    const firstFilter = STORY_FILTERS[0]
+    const firstFilter = STORY_FILTERS[0];
     if (!firstFilter) {
-      throw new Error('STORY_FILTERS array is empty')
+      throw new Error('STORY_FILTERS array is empty');
     }
-    return firstFilter
-  })
-  const [filterIntensity, setFilterIntensity] = useState(1)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return firstFilter;
+  });
+  const [filterIntensity, setFilterIntensity] = useState(1);
   const [selectedMusic, setSelectedMusic] = useState(() => {
-    const firstMusic = STORY_MUSIC_TRACKS[0]
+    const firstMusic = STORY_MUSIC_TRACKS[0];
     if (!firstMusic) {
-      throw new Error('STORY_MUSIC_TRACKS array is empty')
+      throw new Error('STORY_MUSIC_TRACKS array is empty');
     }
-    return firstMusic
-  })
-  const [isProcessing, setIsProcessing] = useState(false)
+    return firstMusic;
+  });
+  const [isProcessing, setIsProcessing] = useState(false);
 
-
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const cameraInputRef = useRef<HTMLInputElement>(null)
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0];
+    if (!file) return;
 
+    const isVideo = file.type.startsWith('video/');
+    setMediaType(isVideo ? 'video' : 'photo');
+    setMediaFile(file);
 
-    const isVideo = file.type.startsWith('video/')
-    setMediaType(isVideo ? 'video' : 'photo')
-    setMediaFile(file)
-
-
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onloadend = () => {
-      setMediaPreview(reader.result as string)
-    }
-    reader.readAsDataURL(file)
-  }
-
+      setMediaPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleCameraCapture = () => {
-    cameraInputRef.current?.click()
-  }
-
+    cameraInputRef.current?.click();
+  };
 
   const handleGallerySelect = () => {
-    fileInputRef.current?.click()
-  }
-
+    fileInputRef.current?.click();
+  };
 
   const handleRemoveMedia = () => {
-    setMediaFile(null)
-    setMediaPreview('')
-  }
-
+    setMediaFile(null);
+    setMediaPreview('');
+  };
 
   const handleCreate = async () => {
     if (!mediaPreview) {
-      toast.error('Please select a photo or video')
-      return
+      toast.error('Please select a photo or video');
+      return;
     }
 
-
-    setIsProcessing(true)
-    haptics.trigger('success')
-
+    setIsProcessing(true);
+    haptics.trigger('success');
 
     try {
       const newStory = createStory(
@@ -145,18 +120,15 @@ export default function CreateStoryDialog({
         mediaType,
         visibility,
         userAvatar
-      )
+      );
 
-
-      if (isTruthy(caption)) {
-        newStory.caption = caption
+      if (caption) {
+        newStory.caption = caption;
       }
-
 
       if (selectedTemplate.id !== 'template-classic') {
-        newStory.template = selectedTemplate
+        newStory.template = selectedTemplate;
       }
-
 
       if (selectedMusic && selectedMusic.id !== 'music-1') {
         newStory.music = {
@@ -166,36 +138,32 @@ export default function CreateStoryDialog({
           provider: selectedMusic.provider ?? 'licensed',
           duration: selectedMusic.duration ?? 30,
           previewUrl: selectedMusic.previewUrl ?? '',
-          startTime: 0
-        }
+          startTime: 0,
+        };
       }
 
+      onStoryCreated(newStory);
 
-      onStoryCreated(newStory)
-      
       toast.success('Story created!', {
         description: 'Your story is now live for 24 hours',
-        duration: 3000
-      })
+        duration: 3000,
+      });
 
-
-      handleClose()
+      handleClose();
     } catch (error) {
-      toast.error('Failed to create story')
+      toast.error('Failed to create story');
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
-
+  };
 
   const handleClose = () => {
-    setMediaFile(null)
-    setMediaPreview('')
-    setCaption('')
-    setVisibility('everyone')
-    onOpenChange(false)
-  }
-
+    setMediaFile(null);
+    setMediaPreview('');
+    setCaption('');
+    setVisibility('everyone');
+    onOpenChange(false);
+  };
 
   return (
     <>
@@ -215,13 +183,11 @@ export default function CreateStoryDialog({
         onChange={handleFileSelect}
       />
 
-
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden glass-strong">
           <DialogHeader>
             <DialogTitle>Create Story</DialogTitle>
           </DialogHeader>
-
 
           <Tabs defaultValue="content" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
@@ -231,12 +197,12 @@ export default function CreateStoryDialog({
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
-
             <TabsContent value="content" className="space-y-4">
               {!mediaPreview ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <MotionView as="button"
+                    <MotionView
+                      as="button"
                       onClick={handleCameraCapture}
                       className="glass-effect p-8 rounded-2xl flex flex-col items-center gap-3 hover:bg-white/20 transition-colors"
                       whileHover={{ scale: 1.02 }}
@@ -251,8 +217,8 @@ export default function CreateStoryDialog({
                       </div>
                     </MotionView>
 
-
-                    <MotionView as="button"
+                    <MotionView
+                      as="button"
                       onClick={handleGallerySelect}
                       className="glass-effect p-8 rounded-2xl flex flex-col items-center gap-3 hover:bg-white/20 transition-colors"
                       whileHover={{ scale: 1.02 }}
@@ -278,11 +244,7 @@ export default function CreateStoryDialog({
                         className="w-full h-full object-contain"
                       />
                     ) : (
-                      <video
-                        src={mediaPreview}
-                        className="w-full h-full object-contain"
-                        controls
-                      />
+                      <video src={mediaPreview} className="w-full h-full object-contain" controls />
                     )}
                     <Button
                       size="icon"
@@ -293,7 +255,6 @@ export default function CreateStoryDialog({
                       <X size={20} />
                     </Button>
                   </div>
-
 
                   <div className="space-y-2">
                     <Label htmlFor="caption">Caption (optional)</Label>
@@ -306,14 +267,11 @@ export default function CreateStoryDialog({
                       maxLength={150}
                       className="resize-none"
                     />
-                    <p className="text-xs text-muted-foreground text-right">
-                      {caption.length}/150
-                    </p>
+                    <p className="text-xs text-muted-foreground text-right">{caption.length}/150</p>
                   </div>
                 </div>
               )}
             </TabsContent>
-
 
             <TabsContent value="templates" className="space-y-4">
               <StoryTemplateSelector
@@ -321,7 +279,6 @@ export default function CreateStoryDialog({
                 onSelectTemplate={setSelectedTemplate}
               />
             </TabsContent>
-
 
             <TabsContent value="filters" className="space-y-4">
               <StoryFilterSelector
@@ -333,16 +290,20 @@ export default function CreateStoryDialog({
               />
             </TabsContent>
 
-
             <TabsContent value="settings" className="space-y-4">
               <div className="space-y-3">
                 <Label>Privacy</Label>
-                <RadioGroup value={visibility} onValueChange={(v) => { setVisibility(v as StoryVisibility); }}>
+                <RadioGroup
+                  value={visibility}
+                  onValueChange={(v) => setVisibility(v as StoryVisibility)}
+                >
                   <div className="flex items-center space-x-2 p-3 rounded-lg glass-effect">
                     <RadioGroupItem value="everyone" id="everyone" />
                     <Label htmlFor="everyone" className="flex-1 cursor-pointer">
                       <div className="font-semibold">Everyone</div>
-                      <p className="text-xs text-muted-foreground">All PawfectMatch users can view</p>
+                      <p className="text-xs text-muted-foreground">
+                        All PawfectMatch users can view
+                      </p>
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2 p-3 rounded-lg glass-effect">
@@ -362,7 +323,6 @@ export default function CreateStoryDialog({
                 </RadioGroup>
               </div>
 
-
               <div className="glass-effect p-4 rounded-lg space-y-2">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <MapPin size={16} />
@@ -376,13 +336,8 @@ export default function CreateStoryDialog({
             </TabsContent>
           </Tabs>
 
-
           <div className="flex gap-2 justify-end pt-4 border-t">
-            <Button
-              variant="outline"
-              onClick={handleClose}
-              disabled={isProcessing}
-            >
+            <Button variant="outline" onClick={handleClose} disabled={isProcessing}>
               Cancel
             </Button>
             <Button
@@ -396,5 +351,5 @@ export default function CreateStoryDialog({
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }

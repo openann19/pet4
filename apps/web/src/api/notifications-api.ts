@@ -1,36 +1,36 @@
 /**
  * Notifications API Service
- * 
+ *
  * Handles user location queries and geofencing through backend API.
  */
 
-import { APIClient } from '@/lib/api-client'
-import { ENDPOINTS } from '@/lib/endpoints'
-import { createLogger } from '@/lib/logger'
+import { APIClient } from '@/lib/api-client';
+import { ENDPOINTS } from '@/lib/endpoints';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('NotificationsApi')
+const logger = createLogger('NotificationsApi');
 
 export interface UpdateUserLocationRequest {
-  userId: string
-  lat: number
-  lon: number
+  userId: string;
+  lat: number;
+  lon: number;
 }
 
 export interface QueryNearbyUsersRequest {
-  centerLat: number
-  centerLon: number
-  radiusKm: number
+  centerLat: number;
+  centerLon: number;
+  radiusKm: number;
 }
 
 export interface QueryNearbyUsersResponse {
-  userIds: string[]
+  userIds: string[];
 }
 
 export interface TriggerGeofenceRequest {
-  alertId: string
-  lat: number
-  lon: number
-  radiusKm: number
+  alertId: string;
+  lat: number;
+  lon: number;
+  radiusKm: number;
 }
 
 class NotificationsApiImpl {
@@ -38,26 +38,19 @@ class NotificationsApiImpl {
    * POST /users/location
    * Update user location
    */
-  async updateUserLocation(
-    userId: string,
-    lat: number,
-    lon: number
-  ): Promise<void> {
+  async updateUserLocation(userId: string, lat: number, lon: number): Promise<void> {
     try {
       const request: UpdateUserLocationRequest = {
         userId,
         lat,
-        lon
-      }
+        lon,
+      };
 
-      await APIClient.post(
-        ENDPOINTS.USERS.LOCATION,
-        request
-      )
+      await APIClient.post(ENDPOINTS.USERS.LOCATION, request);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to update user location', err, { userId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to update user location', err, { userId });
+      throw err;
     }
   }
 
@@ -71,13 +64,13 @@ class NotificationsApiImpl {
     radiusKm: number
   ): Promise<string[]> {
     try {
-      const url = `${String(ENDPOINTS.USERS.LOCATION_NEARBY ?? '')}?lat=${String(centerLat ?? '')}&lon=${String(centerLon ?? '')}&radius=${String(radiusKm ?? '')}`
-      const response = await APIClient.get<QueryNearbyUsersResponse>(url)
-      return response.data.userIds
+      const url = `${ENDPOINTS.USERS.LOCATION_NEARBY}?lat=${centerLat}&lon=${centerLon}&radius=${radiusKm}`;
+      const response = await APIClient.get<QueryNearbyUsersResponse>(url);
+      return response.data.userIds;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to query nearby users', err, { centerLat, centerLon, radiusKm })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to query nearby users', err, { centerLat, centerLon, radiusKm });
+      throw err;
     }
   }
 
@@ -96,17 +89,14 @@ class NotificationsApiImpl {
         alertId,
         lat,
         lon,
-        radiusKm
-      }
+        radiusKm,
+      };
 
-      await APIClient.post(
-        ENDPOINTS.NOTIFICATIONS.GEOFENCE,
-        request
-      )
+      await APIClient.post(ENDPOINTS.NOTIFICATIONS.GEOFENCE, request);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to trigger geofence', err, { alertId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to trigger geofence', err, { alertId });
+      throw err;
     }
   }
 
@@ -114,29 +104,30 @@ class NotificationsApiImpl {
    * GET /notifications/user-locations
    * Get all user locations (for geofencing)
    */
-  async getUserLocations(): Promise<Array<{
-    userId: string
-    lat: number
-    lon: number
-    lastUpdated: string
-  }>> {
+  async getUserLocations(): Promise<
+    {
+      userId: string;
+      lat: number;
+      lon: number;
+      lastUpdated: string;
+    }[]
+  > {
     try {
       const response = await APIClient.get<{
-        locations: Array<{
-          userId: string
-          lat: number
-          lon: number
-          lastUpdated: string
-        }>
-      }>(ENDPOINTS.NOTIFICATIONS.USER_LOCATIONS)
-      return response.data.locations
+        locations: {
+          userId: string;
+          lat: number;
+          lon: number;
+          lastUpdated: string;
+        }[];
+      }>(ENDPOINTS.NOTIFICATIONS.USER_LOCATIONS);
+      return response.data.locations;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get user locations', err)
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get user locations', err);
+      throw err;
     }
   }
 }
 
-export const notificationsApi = new NotificationsApiImpl()
-
+export const notificationsApi = new NotificationsApiImpl();

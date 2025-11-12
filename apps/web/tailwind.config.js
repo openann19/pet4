@@ -84,6 +84,30 @@ const DEFAULT_THEME = {
         overlay: 'var(--color-bg-overlay)',
       },
       'focus-ring': 'var(--color-focus-ring)',
+      cream: '#FFF9F0',
+      coral: {
+        DEFAULT: '#FF715B',
+        hover: '#FF5A40',
+        active: '#FF4430',
+      },
+      'secondary-accent': {
+        orange: '#FFE4B2',
+        yellow: '#FFD580',
+      },
+      'coral-link': '#FF715B',
+      success: {
+        DEFAULT: '#28C76F',
+        foreground: '#FFFFFF',
+      },
+      warning: {
+        DEFAULT: '#FFC107',
+        foreground: '#222222',
+      },
+      error: {
+        DEFAULT: '#FF715B',
+        foreground: '#FFFFFF',
+      },
+      disabled: '#BDBDBD',
     },
     borderRadius: {
       sm: 'var(--radius-sm)',

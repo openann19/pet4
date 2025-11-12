@@ -1,29 +1,25 @@
-'use client'
+'use client';
 
-import { useCallback } from 'react'
-import {
-  spawnParticles,
-  type ParticleConfig
-} from '@/effects/reanimated/particle-engine'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useCallback } from 'react';
+import { spawnParticles, type ParticleConfig } from '@/effects/reanimated/particle-engine';
 
-export type ParticleEventType = 'send' | 'delete' | 'reaction' | 'ai-reply'
+export type ParticleEventType = 'send' | 'delete' | 'reaction' | 'ai-reply';
 
 export interface UseParticleBurstOnEventOptions {
-  enabled?: boolean
-  onBurst?: (type: ParticleEventType, x: number, y: number) => void
+  enabled?: boolean;
+  onBurst?: (type: ParticleEventType, x: number, y: number) => void;
 }
 
 export interface UseParticleBurstOnEventReturn {
-  triggerBurst: (type: ParticleEventType, x: number, y: number, emoji?: string) => void
+  triggerBurst: (type: ParticleEventType, x: number, y: number, emoji?: string) => void;
 }
 
-const DEFAULT_ENABLED = true
+const DEFAULT_ENABLED = true;
 
 const EVENT_CONFIGS: Record<ParticleEventType, Partial<ParticleConfig>> = {
   send: {
     count: 12,
-    colors: ['#3B82F6', '#8B5CF6', '#10B981'],
+    colors: ['var(--color-accent-secondary-9)', '#8B5CF6', '#10B981'],
     minSize: 4,
     maxSize: 10,
     minLifetime: 500,
@@ -32,11 +28,11 @@ const EVENT_CONFIGS: Record<ParticleEventType, Partial<ParticleConfig>> = {
     maxVelocity: 300,
     gravity: 0.3,
     friction: 0.98,
-    spread: 360
+    spread: 360,
   },
   delete: {
     count: 8,
-    colors: ['#EF4444', '#DC2626'],
+    colors: ['var(--color-error-9)', '#DC2626'],
     minSize: 6,
     maxSize: 14,
     minLifetime: 400,
@@ -45,7 +41,7 @@ const EVENT_CONFIGS: Record<ParticleEventType, Partial<ParticleConfig>> = {
     maxVelocity: 400,
     gravity: 0.5,
     friction: 0.97,
-    spread: 360
+    spread: 360,
   },
   reaction: {
     count: 6,
@@ -58,7 +54,7 @@ const EVENT_CONFIGS: Record<ParticleEventType, Partial<ParticleConfig>> = {
     maxVelocity: 250,
     gravity: 0.2,
     friction: 0.99,
-    spread: 180
+    spread: 180,
   },
   'ai-reply': {
     count: 10,
@@ -71,35 +67,34 @@ const EVENT_CONFIGS: Record<ParticleEventType, Partial<ParticleConfig>> = {
     maxVelocity: 280,
     gravity: 0.25,
     friction: 0.98,
-    spread: 360
-  }
-}
+    spread: 360,
+  },
+};
 
 export function useParticleBurstOnEvent(
   options: UseParticleBurstOnEventOptions = {}
 ): UseParticleBurstOnEventReturn {
-  const { enabled = DEFAULT_ENABLED, onBurst } = options
+  const { enabled = DEFAULT_ENABLED, onBurst } = options;
 
   const triggerBurst = useCallback(
     (type: ParticleEventType, x: number, y: number, _emoji?: string) => {
       if (!enabled) {
-        return
+        return;
       }
 
-      const config = EVENT_CONFIGS[type] ?? EVENT_CONFIGS.send
-      const particles = spawnParticles(x, y, config as ParticleConfig)
+      const config = EVENT_CONFIGS[type] ?? EVENT_CONFIGS.send;
+      const particles = spawnParticles(x, y, config as ParticleConfig);
 
-      if (isTruthy(onBurst)) {
-        onBurst(type, x, y)
+      if (onBurst) {
+        onBurst(type, x, y);
       }
 
-      return particles
+      return particles;
     },
     [enabled, onBurst]
-  )
+  );
 
   return {
-    triggerBurst
-  }
+    triggerBurst,
+  };
 }
-

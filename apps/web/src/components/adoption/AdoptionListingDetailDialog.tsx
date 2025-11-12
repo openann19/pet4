@@ -1,17 +1,14 @@
-import { useState } from 'react'
-import { motion, Presence } from '@petspark/motion'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
+import { useState } from 'react';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
+import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   MapPin,
   CheckCircle,
@@ -19,32 +16,33 @@ import {
   CaretLeft,
   CaretRight,
   X,
-  PaperPlaneRight
-} from '@phosphor-icons/react'
-import type { AdoptionListing } from '@/lib/adoption-marketplace-types'
-import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service'
-import { haptics } from '@/lib/haptics'
-import { toastSuccess, toastError } from '@/effects/confetti-web'
-import { createLogger } from '@/lib/logger'
+  PaperPlaneRight,
+} from '@phosphor-icons/react';
+import type { AdoptionListing } from '@/lib/adoption-marketplace-types';
+import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service';
+import { haptics } from '@/lib/haptics';
+import { toast } from 'sonner';
+import { createLogger } from '@/lib/logger';
+import { FocusRing } from '@/core/tokens';
 
-const logger = createLogger('AdoptionListingDetailDialog')
+const logger = createLogger('AdoptionListingDetailDialog');
 
 interface AdoptionListingDetailDialogProps {
-  listing: AdoptionListing | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onApplicationSubmitted: () => void
+  listing: AdoptionListing | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onApplicationSubmitted: () => void;
 }
 
-export function AdoptionListingDetailDialog({ 
-  listing, 
-  open, 
+export function AdoptionListingDetailDialog({
+  listing,
+  open,
   onOpenChange,
-  onApplicationSubmitted 
-}: AdoptionListingDetailDialogProps) {
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
-  const [showApplicationForm, setShowApplicationForm] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  onApplicationSubmitted,
+}: AdoptionListingDetailDialogProps): JSX.Element | null {
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [applicationData, setApplicationData] = useState({
     message: '',
     homeType: 'house' as 'house' | 'apartment' | 'condo' | 'farm' | 'other',
@@ -55,48 +53,71 @@ export function AdoptionListingDetailDialog({
     hasOtherPets: false,
     otherPetsDetails: '',
     previousPetExperience: '',
-    employmentStatus: 'employed' as 'employed' | 'self-employed' | 'retired' | 'student' | 'unemployed' | 'other',
+    employmentStatus: 'employed' as
+      | 'employed'
+      | 'self-employed'
+      | 'retired'
+      | 'student'
+      | 'unemployed'
+      | 'other',
     hoursAlonePerDay: 0,
     homeCheckConsent: false,
     veterinarianReference: '',
-    personalReferences: ''
-  })
+    personalReferences: '',
+  });
 
-  if (!listing) return null
+  const photoPresence = useAnimatePresence({
+    isVisible: true,
+    enterTransition: 'fade',
+    exitTransition: 'fade',
+  });
 
-  const photos = listing.petPhotos && listing.petPhotos.length > 0 ? listing.petPhotos : ['/placeholder-pet.jpg']
+  const prevButtonHover = useHoverTap({ hoverScale: 1.1, tapScale: 0.95 });
+  const nextButtonHover = useHoverTap({ hoverScale: 1.1, tapScale: 0.95 });
+  const applicationFormPresence = useAnimatePresence({
+    isVisible: showApplicationForm,
+    enterTransition: 'slideUp',
+    exitTransition: 'fade',
+  });
 
-  const nextPhoto = () => {
-    haptics.trigger('selection')
-    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length)
-  }
+  if (!listing) return null;
 
-  const prevPhoto = () => {
-    haptics.trigger('selection')
-    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)
-  }
+  const photos =
+    listing.petPhotos && listing.petPhotos.length > 0
+      ? listing.petPhotos
+      : ['/placeholder-pet.jpg'];
 
-  const handleApply = async () => {
+  const nextPhoto = (): void => {
+    haptics.trigger('selection');
+    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length);
+  };
+
+  const prevPhoto = (): void => {
+    haptics.trigger('selection');
+    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
+  };
+
+  const handleApply = async (): Promise<void> => {
     if (!applicationData.message || !applicationData.homeCheckConsent) {
-      toastError('Please fill in all required fields')
-      haptics.trigger('error')
-      return
+      toast.error('Please fill in all required fields');
+      haptics.trigger('error');
+      return;
     }
 
     try {
-      setIsSubmitting(true)
-      haptics.trigger('light')
+      setIsSubmitting(true);
+      haptics.trigger('light');
 
-      const { userService } = await import('@/lib/user-service')
-      const user = await userService.user()
-      
+      const { userService } = await import('@/lib/user-service');
+      const user = await userService.user();
+
       if (!user) {
-        toastError('Authentication required')
-        haptics.trigger('error')
-        setIsSubmitting(false)
-        return
+        toast.error('Authentication required');
+        haptics.trigger('error');
+        setIsSubmitting(false);
+        return;
       }
-      
+
       await adoptionMarketplaceService.createApplication({
         listingId: listing.id,
         applicantId: String(user.id),
@@ -115,15 +136,17 @@ export function AdoptionListingDetailDialog({
         hoursAlonePerDay: applicationData.hoursAlonePerDay,
         homeCheckConsent: applicationData.homeCheckConsent,
         veterinarianReference: applicationData.veterinarianReference,
-        personalReferences: applicationData.personalReferences ? applicationData.personalReferences.split(',').map(r => r.trim()) : []
-      })
+        personalReferences: applicationData.personalReferences
+          ? applicationData.personalReferences.split(',').map((r) => r.trim())
+          : [],
+      });
 
-      haptics.trigger('success')
-      toastSuccess(
-        'Application submitted successfully!'
-      )
+      haptics.trigger('success');
+      toast.success('Application submitted successfully!', {
+        description: 'The owner will review your application and contact you.',
+      });
 
-      setShowApplicationForm(false)
+      setShowApplicationForm(false);
       setApplicationData({
         message: '',
         homeType: 'house',
@@ -138,65 +161,82 @@ export function AdoptionListingDetailDialog({
         hoursAlonePerDay: 0,
         homeCheckConsent: false,
         veterinarianReference: '',
-        personalReferences: ''
-      })
+        personalReferences: '',
+      });
 
-      onApplicationSubmitted()
+      onApplicationSubmitted();
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : undefined
-      logger.error('Failed to submit application', error instanceof Error ? error : new Error(String(error)))
-      haptics.trigger('error')
-  toastError(errorMessage || 'Failed to submit application. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : undefined;
+      logger.error(
+        'Failed to submit application',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      haptics.trigger('error');
+      toast.error(errorMessage || 'Failed to submit application. Please try again.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
         <div className="relative h-80 bg-muted">
-          <Presence mode="wait">
-            <motion.img
-              key={currentPhotoIndex}
-              src={photos[currentPhotoIndex]}
-              alt={`${String(listing.petName ?? '')} - Photo ${String(currentPhotoIndex + 1 ?? '')}`}
-              className="w-full h-full object-cover"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            />
-          </Presence>
+          {photoPresence.shouldRender && (
+            <AnimatedView key={currentPhotoIndex} style={photoPresence.animatedStyle}>
+              <img
+                src={photos[currentPhotoIndex]}
+                alt={`${listing.petName} - Photo ${currentPhotoIndex + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </AnimatedView>
+          )}
 
           {photos.length > 1 && (
             <>
-              <MotionView as="button"
-                whileHover={{ scale: 1.1, x: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={prevPhoto}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg z-10"
+              <AnimatedView
+                style={prevButtonHover.animatedStyle}
+                onMouseEnter={prevButtonHover.handleMouseEnter}
+                onMouseLeave={prevButtonHover.handleMouseLeave}
+                onClick={() => {
+                  prevButtonHover.handlePress();
+                  prevPhoto();
+                }}
               >
-                <CaretLeft size={20} weight="bold" />
-              </MotionView>
-              <MotionView as="button"
-                whileHover={{ scale: 1.1, x: 2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={nextPhoto}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg z-10"
+                <button
+                  type="button"
+                  className={`absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg z-10 ${FocusRing.standard}`}
+                  aria-label="Previous photo"
+                >
+                  <CaretLeft size={20} weight="bold" />
+                </button>
+              </AnimatedView>
+              <AnimatedView
+                style={nextButtonHover.animatedStyle}
+                onMouseEnter={nextButtonHover.handleMouseEnter}
+                onMouseLeave={nextButtonHover.handleMouseLeave}
+                onClick={() => {
+                  nextButtonHover.handlePress();
+                  nextPhoto();
+                }}
               >
-                <CaretRight size={20} weight="bold" />
-              </MotionView>
+                <button
+                  type="button"
+                  className={`absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg z-10 ${FocusRing.standard}`}
+                  aria-label="Next photo"
+                >
+                  <CaretRight size={20} weight="bold" />
+                </button>
+              </AnimatedView>
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                 {photos.map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => { setCurrentPhotoIndex(index); }}
-                    className={`w-2 h-2 rounded-full transition-all ${
-                      String(index === currentPhotoIndex
-                                                ? 'bg-white w-6'
-                                                : 'bg-white/50 hover:bg-white/75' ?? '')
-                    }`}
+                    onClick={() => setCurrentPhotoIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-all ${FocusRing.standard} ${index === currentPhotoIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'
+                      }`}
+                    aria-label={`Go to photo ${index + 1}`}
+                    aria-current={index === currentPhotoIndex ? 'true' : undefined}
                   />
                 ))}
               </div>
@@ -205,9 +245,7 @@ export function AdoptionListingDetailDialog({
 
           <div className="absolute top-4 right-4 z-10">
             {listing.status === 'active' && (
-              <Badge className="bg-green-500/90 text-white backdrop-blur-sm">
-                {'Available'}
-              </Badge>
+              <Badge className="bg-green-500/90 text-white backdrop-blur-sm">{'Available'}</Badge>
             )}
             {listing.status === 'pending_review' && (
               <Badge className="bg-yellow-500/90 text-white backdrop-blur-sm">
@@ -221,10 +259,15 @@ export function AdoptionListingDetailDialog({
           <div>
             <DialogHeader>
               <DialogTitle className="text-2xl">{listing.petName}</DialogTitle>
+              <DialogDescription>
+                Adoption listing for {listing.petName} located in {listing.location.city}, {listing.location.country}
+              </DialogDescription>
             </DialogHeader>
             <div className="flex items-center gap-2 mt-2 text-muted-foreground">
               <MapPin size={16} weight="fill" />
-              <span>{listing.location.city}, {listing.location.country}</span>
+              <span>
+                {listing.location.city}, {listing.location.country}
+              </span>
             </div>
           </div>
 
@@ -235,7 +278,9 @@ export function AdoptionListingDetailDialog({
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{'Age'}</p>
-              <p className="font-semibold">{listing.petAge} {listing.petAge === 1 ? 'year' : 'years'}</p>
+              <p className="font-semibold">
+                {listing.petAge} {listing.petAge === 1 ? 'year' : 'years'}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">{'Gender'}</p>
@@ -273,12 +318,8 @@ export function AdoptionListingDetailDialog({
                 {'Microchipped'}
               </Badge>
             )}
-            {listing.goodWithKids && (
-              <Badge variant="secondary">{'Good with kids'}</Badge>
-            )}
-            {listing.goodWithPets && (
-              <Badge variant="secondary">{'Good with pets'}</Badge>
-            )}
+            {listing.goodWithKids && <Badge variant="secondary">{'Good with kids'}</Badge>}
+            {listing.goodWithPets && <Badge variant="secondary">{'Good with pets'}</Badge>}
           </div>
 
           {listing.requirements && listing.requirements.length > 0 && (
@@ -295,7 +336,9 @@ export function AdoptionListingDetailDialog({
           {listing.fee && listing.fee.amount > 0 && (
             <div>
               <p className="text-sm text-muted-foreground">{'Adoption Fee'}</p>
-              <p className="text-xl font-bold">{listing.fee.currency} {listing.fee.amount.toLocaleString()}</p>
+              <p className="text-xl font-bold">
+                {listing.fee.currency} {listing.fee.amount.toLocaleString()}
+              </p>
             </div>
           )}
 
@@ -312,10 +355,9 @@ export function AdoptionListingDetailDialog({
             </div>
           )}
 
-          {showApplicationForm && (
-            <MotionView
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+          {applicationFormPresence.shouldRender && showApplicationForm && (
+            <AnimatedView
+              style={applicationFormPresence.animatedStyle}
               className="space-y-4 p-4 border rounded-lg bg-muted/50"
             >
               <div className="flex items-center justify-between">
@@ -323,7 +365,8 @@ export function AdoptionListingDetailDialog({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => { setShowApplicationForm(false); }}
+                  onClick={() => setShowApplicationForm(false)}
+                  aria-label="Close application form"
                 >
                   <X size={20} />
                 </Button>
@@ -331,12 +374,16 @@ export function AdoptionListingDetailDialog({
 
               <div className="space-y-4">
                 <div>
-                  <Label>{'Message'}</Label>
+                  <Label htmlFor="application-message">{'Message'}</Label>
                   <Textarea
+                    id="application-message"
                     placeholder={'Tell the owner why you want to adopt...'}
                     value={applicationData.message}
-                    onChange={(e) => { setApplicationData({ ...applicationData, message: e.target.value }); }}
+                    onChange={(e) =>
+                      setApplicationData({ ...applicationData, message: e.target.value })
+                    }
                     rows={4}
+                    aria-label="Application message"
                   />
                 </div>
 
@@ -355,19 +402,21 @@ export function AdoptionListingDetailDialog({
 
                 <Button
                   onClick={() => {
-                    void handleApply()
+                    void handleApply();
                   }}
-                  disabled={isSubmitting || !applicationData.message || !applicationData.homeCheckConsent}
+                  disabled={
+                    isSubmitting || !applicationData.message || !applicationData.homeCheckConsent
+                  }
                   className="w-full gap-2"
                 >
                   <PaperPlaneRight size={20} weight="fill" />
                   {isSubmitting ? 'Submitting...' : 'Submit Application'}
                 </Button>
               </div>
-            </MotionView>
+            </AnimatedView>
           )}
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

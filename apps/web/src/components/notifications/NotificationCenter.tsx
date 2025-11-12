@@ -1,13 +1,9 @@
-import { useState, useEffect } from 'react'
-import { useStorage } from '@/hooks/useStorage'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence'
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withRepeat, withSequence, Easing } from 'react-native-reanimated'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Badge } from '@/components/ui/badge'
+import { useState } from 'react';
+import { useStorage } from '@/hooks/use-storage';
+import { motion, Presence, MotionView } from '@petspark/motion';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import {
   Bell,
   BellRinging,
@@ -19,122 +15,119 @@ import {
   Trash,
   DotsThreeVertical,
   Camera,
-  ShieldCheck
-} from '@phosphor-icons/react'
-import { cn } from '@/lib/utils'
-import { haptics } from '@/lib/haptics'
-import { formatDistanceToNow } from 'date-fns'
+  ShieldCheck,
+} from '@phosphor-icons/react';
+import { cn } from '@/lib/utils';
+import { haptics } from '@/lib/haptics';
+import { formatDistanceToNow } from 'date-fns';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+} from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 export interface AppNotification {
-  id: string
-  type: 'match' | 'message' | 'like' | 'verification' | 'story' | 'system' | 'moderation'
-  title: string
-  message: string
-  timestamp: number
-  read: boolean
-  priority: 'low' | 'normal' | 'high' | 'urgent'
-  actionUrl?: string
-  actionLabel?: string
-  imageUrl?: string
+  id: string;
+  type: 'match' | 'message' | 'like' | 'verification' | 'story' | 'system' | 'moderation';
+  title: string;
+  message: string;
+  timestamp: number;
+  read: boolean;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  actionUrl?: string;
+  actionLabel?: string;
+  imageUrl?: string;
   metadata?: {
-    petName?: string
-    userName?: string
-    matchId?: string
-    messageId?: string
-    count?: number
-  }
+    petName?: string;
+    userName?: string;
+    matchId?: string;
+    messageId?: string;
+    count?: number;
+  };
 }
 
 interface NotificationCenterProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps) {
-  const [notifications, setNotifications] = useStorage<AppNotification[]>('app-notifications', [])
-  const [filter, setFilter] = useState<'all' | 'unread'>('all')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [notifications, setNotifications] = useStorage<AppNotification[]>('app-notifications', []);
+  const [filter, setFilter] = useState<'all' | 'unread'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const unreadCount = (notifications || []).filter(n => !n.read).length
+  const unreadCount = (notifications || []).filter((n) => !n.read).length;
 
   const filteredNotifications = (notifications || [])
-    .filter(n => filter === 'all' || !n.read)
-    .filter(n => selectedCategory === 'all' || n.type === selectedCategory)
-    .sort((a, b) => b.timestamp - a.timestamp)
+    .filter((n) => filter === 'all' || !n.read)
+    .filter((n) => selectedCategory === 'all' || n.type === selectedCategory)
+    .sort((a, b) => b.timestamp - a.timestamp);
 
   const markAsRead = (id: string) => {
-    haptics.trigger('light')
-    setNotifications(current =>
-      (current || []).map(n => n.id === id ? { ...n, read: true } : n)
-    )
-  }
+    haptics.trigger('light');
+    setNotifications((current) =>
+      (current || []).map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
 
   const markAllAsRead = () => {
-    haptics.trigger('medium')
-    setNotifications(current =>
-      (current || []).map(n => ({ ...n, read: true }))
-    )
-  }
+    haptics.trigger('medium');
+    setNotifications((current) => (current || []).map((n) => ({ ...n, read: true })));
+  };
 
   const deleteNotification = (id: string) => {
-    haptics.trigger('medium')
-    setNotifications(current =>
-      (current || []).filter(n => n.id !== id)
-    )
-  }
+    haptics.trigger('medium');
+    setNotifications((current) => (current || []).filter((n) => n.id !== id));
+  };
 
   const deleteAllRead = () => {
-    haptics.trigger('heavy')
-    setNotifications(current =>
-      (current || []).filter(n => !n.read)
-    )
-  }
+    haptics.trigger('heavy');
+    setNotifications((current) => (current || []).filter((n) => !n.read));
+  };
 
-  const getNotificationIcon = (type: AppNotification['type'], priority: AppNotification['priority']) => {
+  const getNotificationIcon = (
+    type: AppNotification['type'],
+    priority: AppNotification['priority']
+  ) => {
     const iconProps = {
       size: 24,
-      weight: priority === 'urgent' || priority === 'high' ? 'fill' : 'regular'
-    } as const
+      weight: priority === 'urgent' || priority === 'high' ? 'fill' : 'regular',
+    } as const;
 
     switch (type) {
       case 'match':
-        return <Heart {...iconProps} className="text-primary" />
+        return <Heart {...iconProps} className="text-primary" />;
       case 'message':
-        return <ChatCircle {...iconProps} className="text-secondary" />
+        return <ChatCircle {...iconProps} className="text-secondary" />;
       case 'like':
-        return <Heart {...iconProps} className="text-accent" />
+        return <Heart {...iconProps} className="text-accent" />;
       case 'verification':
-        return <CheckCircle {...iconProps} className="text-green-500" />
+        return <CheckCircle {...iconProps} className="text-green-500" />;
       case 'story':
-        return <Camera {...iconProps} className="text-purple-500" />
+        return <Camera {...iconProps} className="text-purple-500" />;
       case 'moderation':
-        return <ShieldCheck {...iconProps} className="text-orange-500" />
+        return <ShieldCheck {...iconProps} className="text-orange-500" />;
       case 'system':
-        return <Info {...iconProps} className="text-blue-500" />
+        return <Info {...iconProps} className="text-blue-500" />;
       default:
-        return <Bell {...iconProps} />
+        return <Bell {...iconProps} />;
     }
-  }
+  };
 
   const getPriorityStyles = (priority: AppNotification['priority']) => {
     switch (priority) {
       case 'urgent':
-        return 'border-l-4 border-l-destructive bg-destructive/5'
+        return 'border-l-4 border-l-destructive bg-destructive/5';
       case 'high':
-        return 'border-l-4 border-l-accent bg-accent/5'
+        return 'border-l-4 border-l-accent bg-accent/5';
       case 'normal':
-        return 'border-l-2 border-l-border'
+        return 'border-l-2 border-l-border';
       case 'low':
-        return 'border-l border-l-border/50'
+        return 'border-l border-l-border/50';
     }
-  }
+  };
 
   const categories = [
     { value: 'all', label: 'All', icon: Bell },
@@ -143,7 +136,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
     { value: 'like', label: 'Likes', icon: Heart },
     { value: 'verification', label: 'Verified', icon: CheckCircle },
     { value: 'story', label: 'Stories', icon: Camera },
-  ]
+  ];
 
   // Animation hooks
   const bellRotate = useSharedValue(0)
@@ -179,22 +172,29 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
           <SheetHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-br from-background via-primary/5 to-accent/5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <AnimatedView style={bellStyle}>
+                <MotionView
+                  animate={{
+                    rotate: [0, -10, 10, -10, 0],
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    ease: 'easeInOut',
+                  }}
+                >
                   <BellRinging size={28} weight="fill" className="text-primary" />
                 </AnimatedView>
                 <div>
                   <SheetTitle className="text-xl">Notifications</SheetTitle>
                   {unreadCount > 0 && (
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                      {unreadCount} unread
-                    </p>
+                    <p className="text-sm text-muted-foreground mt-0.5">{unreadCount} unread</p>
                   )}
                 </div>
               </div>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
+                  <Button variant="ghost" size="icon" className="rounded-full" aria-label="Dots Three Vertical">
                     <DotsThreeVertical size={20} />
                   </Button>
                 </DropdownMenuTrigger>
@@ -203,7 +203,10 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                     <Check size={16} className="mr-2" />
                     Mark all as read
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={deleteAllRead} disabled={(notifications || []).every(n => !n.read)}>
+                  <DropdownMenuItem
+                    onClick={deleteAllRead}
+                    disabled={(notifications || []).every((n) => !n.read)}
+                  >
                     <Trash size={16} className="mr-2" />
                     Clear read
                   </DropdownMenuItem>
@@ -213,10 +216,10 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
 
             <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-2 -mb-2">
               {categories.map((cat) => {
-                const Icon = cat.icon
-                const count = (notifications || []).filter(n => 
-                  (cat.value === 'all' || n.type === cat.value) && !n.read
-                ).length
+                const Icon = cat.icon;
+                const count = (notifications || []).filter(
+                  (n) => (cat.value === 'all' || n.type === cat.value) && !n.read
+                ).length;
 
                 return (
                   <Button
@@ -224,8 +227,8 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                     variant={selectedCategory === cat.value ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => {
-                      haptics.trigger('selection')
-                      setSelectedCategory(cat.value)
+                      haptics.trigger('selection');
+                      setSelectedCategory(cat.value);
                     }}
                     className={cn(
                       'rounded-full shrink-0 h-9',
@@ -237,13 +240,13 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                     {count > 0 && (
                       <Badge
                         variant="secondary"
-                        className="ml-2 px-1.5 min-w-[20px] h-5 rounded-full text-xs font-bold"
+                        className="ml-2 px-1.5 min-w-5 h-5 rounded-full text-xs font-bold"
                       >
                         {count}
                       </Badge>
                     )}
                   </Button>
-                )
+                );
               })}
             </div>
           </SheetHeader>
@@ -253,8 +256,8 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
               variant={filter === 'all' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => {
-                haptics.trigger('selection')
-                setFilter('all')
+                haptics.trigger('selection');
+                setFilter('all');
               }}
               className="rounded-full flex-1"
             >
@@ -264,14 +267,14 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
               variant={filter === 'unread' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => {
-                haptics.trigger('selection')
-                setFilter('unread')
+                haptics.trigger('selection');
+                setFilter('unread');
               }}
               className="rounded-full flex-1"
             >
               Unread
               {unreadCount > 0 && (
-                <Badge variant="secondary" className="ml-2 px-1.5 min-w-[20px] h-5 rounded-full">
+                <Badge variant="secondary" className="ml-2 px-1.5 min-w-5 h-5 rounded-full">
                   {unreadCount}
                 </Badge>
               )}
@@ -280,23 +283,47 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
 
           <ScrollArea className="flex-1">
             <div className="p-4">
-              {emptyPresence.shouldRender && isEmpty && (
-                <EmptyState 
-                  filter={filter}
-                  presence={emptyPresence}
-                />
-              )}
-              {listPresence.shouldRender && !isEmpty && (
-                <div className="space-y-2">
-                  {filteredNotifications.map((notification, index) => {
-                    const itemEntry = useEntryAnimation({ 
-                      initialX: 20, 
-                      delay: index * 20 
-                    })
-                    return (
-                      <AnimatedView
+              <Presence visible={true}>
+                {filteredNotifications.length === 0 ? (
+                  <MotionView
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="flex flex-col items-center justify-center py-16 px-4"
+                  >
+                    <MotionView
+                      animate={{
+                        rotate: [0, -10, 10, -10, 0],
+                        scale: [1, 1.05, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatDelay: 3,
+                      }}
+                    >
+                      <Bell size={64} weight="thin" className="text-muted-foreground/40" />
+                    </MotionView>
+                    <p className="text-muted-foreground mt-4 text-center">
+                      {filter === 'unread' ? 'No unread notifications' : 'No notifications yet'}
+                    </p>
+                    <p className="text-sm text-muted-foreground/60 mt-1 text-center">
+                      We'll notify you when something important happens
+                    </p>
+                  </MotionView>
+                ) : (
+                  <div className="space-y-2">
+                    {filteredNotifications.map((notification, index) => (
+                      <MotionView
                         key={notification.id}
-                        style={[listPresence.animatedStyle, itemEntry.animatedStyle]}
+                        layout
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20, height: 0 }}
+                        transition={{
+                          delay: index * 0.02,
+                          layout: { duration: 0.2 },
+                        }}
                       >
                         <NotificationItem
                           notification={notification}
@@ -315,15 +342,18 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
         </div>
       </SheetContent>
     </Sheet>
-  )
+  );
 }
 
 interface NotificationItemProps {
-  notification: AppNotification
-  onMarkAsRead: (id: string) => void
-  onDelete: (id: string) => void
-  getIcon: (type: AppNotification['type'], priority: AppNotification['priority']) => React.ReactNode
-  getPriorityStyles: (priority: AppNotification['priority']) => string
+  notification: AppNotification;
+  onMarkAsRead: (id: string) => void;
+  onDelete: (id: string) => void;
+  getIcon: (
+    type: AppNotification['type'],
+    priority: AppNotification['priority']
+  ) => React.ReactNode;
+  getPriorityStyles: (priority: AppNotification['priority']) => string;
 }
 
 // Empty state component
@@ -388,39 +418,9 @@ function NotificationItem({
   onMarkAsRead,
   onDelete,
   getIcon,
-  getPriorityStyles
+  getPriorityStyles,
 }: NotificationItemProps) {
-  const [isHovered, setIsHovered] = useState(false)
-  const itemHover = useHoverLift({ scale: 1.01 })
-  const iconScale = useSharedValue(1)
-  const iconStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: iconScale.value }],
-  }))
-  const urgentOpacity = useSharedValue(0.5)
-  const urgentStyle = useAnimatedStyle(() => ({
-    opacity: urgentOpacity.value,
-  }))
-
-  useEffect(() => {
-    if (!notification.read && notification.priority === 'urgent') {
-      iconScale.value = withRepeat(
-        withSequence(
-          withTiming(1.1, { duration: 500 }),
-          withTiming(1, { duration: 500 })
-        ),
-        -1,
-        true
-      )
-      urgentOpacity.value = withRepeat(
-        withSequence(
-          withTiming(1, { duration: 750 }),
-          withTiming(0.5, { duration: 750 })
-        ),
-        -1,
-        true
-      )
-    }
-  }, [notification.read, notification.priority, iconScale, urgentOpacity])
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <AnimatedView
@@ -449,7 +449,13 @@ function NotificationItem({
               notification.priority === 'normal' && 'bg-primary/10',
               notification.priority === 'low' && 'bg-muted'
             )}
-            style={iconStyle}
+            animate={{
+              scale: !notification.read && notification.priority === 'urgent' ? [1, 1.1, 1] : 1,
+            }}
+            transition={{
+              duration: 1,
+              repeat: !notification.read && notification.priority === 'urgent' ? Infinity : 0,
+            }}
           >
             {getIcon(notification.type, notification.priority)}
           </AnimatedView>
@@ -457,18 +463,22 @@ function NotificationItem({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
-                <h4 className={cn(
-                  'font-semibold text-sm leading-tight',
-                  !notification.read && 'text-foreground',
-                  notification.read && 'text-muted-foreground'
-                )}>
+                <h4
+                  className={cn(
+                    'font-semibold text-sm leading-tight',
+                    !notification.read && 'text-foreground',
+                    notification.read && 'text-muted-foreground'
+                  )}
+                >
                   {notification.title}
                 </h4>
-                <p className={cn(
-                  'text-sm mt-1 leading-relaxed',
-                  !notification.read && 'text-foreground/80',
-                  notification.read && 'text-muted-foreground/70'
-                )}>
+                <p
+                  className={cn(
+                    'text-sm mt-1 leading-relaxed',
+                    !notification.read && 'text-foreground/80',
+                    notification.read && 'text-muted-foreground/70'
+                  )}
+                >
                   {notification.message}
                 </p>
               </div>
@@ -499,12 +509,43 @@ function NotificationItem({
               </span>
 
               <div className="flex items-center gap-1">
-                <HoverActions
-                  isHovered={isHovered}
-                  isRead={notification.read}
-                  onMarkAsRead={() => onMarkAsRead(notification.id)}
-                  onDelete={() => onDelete(notification.id)}
-                />
+                <Presence visible={isHovered}>
+                  {isHovered && (
+                    <>
+                      {!notification.read && (
+                        <MotionView
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0, opacity: 0 }}
+                        >
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-full"
+                            onClick={() => onMarkAsRead(notification.id)}
+                          >
+                            <Check size={16} />
+                          </Button>
+                        </MotionView>
+                      )}
+                      <MotionView
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ delay: 0.05 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => onDelete(notification.id)}
+                        >
+                          <Trash size={16} />
+                        </Button>
+                      </MotionView>
+                    </>
+                  )}
+                </Presence>
 
                 {notification.actionLabel && (
                   <Button
@@ -525,79 +566,15 @@ function NotificationItem({
       {notification.priority === 'urgent' && !notification.read && (
         <AnimatedView
           className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-destructive via-accent to-destructive"
-          style={urgentStyle}
+          animate={{
+            opacity: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+          }}
         />
       )}
-    </AnimatedView>
-  )
-}
-
-// Unread dot component
-function UnreadDot() {
-  const dotScale = useSharedValue(0)
-  const dotStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: dotScale.value }],
-  }))
-
-  useEffect(() => {
-    dotScale.value = withSpring(1, { damping: 15, stiffness: 200 })
-  }, [dotScale])
-
-  return (
-    <AnimatedView
-      className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1"
-      style={dotStyle}
-    />
-  )
-}
-
-// Hover actions component
-function HoverActions({
-  isHovered,
-  isRead,
-  onMarkAsRead,
-  onDelete,
-}: {
-  isHovered: boolean
-  isRead: boolean
-  onMarkAsRead: () => void
-  onDelete: () => void
-}) {
-  const markReadPresence = useAnimatePresence({ isVisible: isHovered && !isRead })
-  const deletePresence = useAnimatePresence({ isVisible: isHovered })
-  const markReadEntry = useEntryAnimation({ initialScale: 0, delay: 0 })
-  const deleteEntry = useEntryAnimation({ initialScale: 0, delay: 50 })
-
-  return (
-    <>
-      {markReadPresence.shouldRender && !isRead && (
-        <AnimatedView
-          style={[markReadPresence.animatedStyle, markReadEntry.animatedStyle]}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-full"
-            onClick={onMarkAsRead}
-          >
-            <Check size={16} />
-          </Button>
-        </AnimatedView>
-      )}
-      {deletePresence.shouldRender && (
-        <AnimatedView
-          style={[deletePresence.animatedStyle, deleteEntry.animatedStyle]}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 rounded-full hover:bg-destructive/10 hover:text-destructive"
-            onClick={onDelete}
-          >
-            <Trash size={16} />
-          </Button>
-        </AnimatedView>
-      )}
-    </>
-  )
+    </MotionView>
+  );
 }

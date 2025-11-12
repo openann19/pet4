@@ -1,26 +1,40 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import ReportsView from '../ReportsView'
-import { adminApi } from '@/api/admin-api'
-import { useStorage } from '@/hooks/useStorage'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import ReportsView from '@/components/admin/ReportsView';
+import { adminApi } from '@/api/admin-api';
+import { useStorage } from '@/hooks/use-storage';
 
-vi.mock('@/api/admin-api')
-vi.mock('@/hooks/useStorage')
-vi.mock('@/lib/utils', () => ({
-  generateULID: vi.fn(() => 'test-ulid-123'),
-}))
+vi.mock('@/api/admin-api');
+vi.mock('@/lib/api/admin', () => ({
+  adminReportsApi: {
+    resolveReport: vi.fn(),
+    dismissReport: vi.fn(),
+    listReports: vi.fn(),
+    getReport: vi.fn(),
+  },
+}));
+vi.mock('@/hooks/use-storage');
+vi.mock('@/lib/utils', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/utils')>();
+  return {
+    ...actual,
+    generateULID: vi.fn(() => 'test-ulid-123'),
+  };
+});
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
     info: vi.fn(),
   },
-}))
+}));
 
-const mockAdminApi = vi.mocked(adminApi)
-const mockUseStorage = vi.mocked(useStorage)
+const mockAdminApi = vi.mocked(adminApi);
+const mockUseStorage = vi.mocked(useStorage);
+
+// Import after mock setup
+const { adminReportsApi } = await import('@/lib/api/admin');
 
 describe('ReportsView', () => {
   const mockReports = [
@@ -54,278 +68,296 @@ describe('ReportsView', () => {
       priority: 'medium' as const,
       createdAt: new Date(Date.now() - 7200000).toISOString(),
     },
-  ]
+  ];
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.clearAllMocks();
+    const setValue = vi.fn().mockResolvedValue(undefined);
+    const deleteValue = vi.fn().mockResolvedValue(undefined);
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-reports') {
-        return [[], vi.fn()]
+        return [[], setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()]
-    })
-    mockAdminApi.resolveReport = vi.fn().mockResolvedValue(undefined)
-    mockAdminApi.dismissReport = vi.fn().mockResolvedValue(undefined)
-  })
+      return [defaultValue, setValue, deleteValue];
+    });
+    vi.mocked(adminReportsApi.resolveReport).mockResolvedValue(mockReports[0]!);
+    vi.mocked(adminReportsApi.dismissReport).mockResolvedValue(mockReports[0]!);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
 
   it('renders reports view', async () => {
-    render(<ReportsView />)
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/reports/i)).toBeInTheDocument();
+    });
+  });
 
   it('displays sample reports when storage is empty', async () => {
-    render(<ReportsView />)
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+    });
+  });
 
   it('displays existing reports from storage', async () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-reports') {
-        return [mockReports, vi.fn()]
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        const deleteValue = vi.fn().mockResolvedValue(undefined);
+        return [mockReports, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()]
-    })
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      const deleteValue = vi.fn().mockResolvedValue(undefined);
+      return [defaultValue, setValue, deleteValue];
+    });
 
-    render(<ReportsView />)
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-      expect(screen.getByText(/harassment/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+      expect(screen.getByText(/harassment/i)).toBeInTheDocument();
+    });
+  });
 
   it('filters reports by status', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-reports') {
-        return [mockReports, vi.fn()]
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        const deleteValue = vi.fn().mockResolvedValue(undefined);
+        return [mockReports, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()]
-    })
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      const deleteValue = vi.fn().mockResolvedValue(undefined);
+      return [defaultValue, setValue, deleteValue];
+    });
 
-    render(<ReportsView />)
-
-    await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-    })
-
-    const pendingTab = screen.getByRole('tab', { name: /pending/i })
-    await user.click(pendingTab)
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-      expect(screen.queryByText(/harassment/i)).not.toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+    });
+
+    const pendingTab = screen.getByRole('tab', { name: /pending/i });
+    await user.click(pendingTab);
+
+    await waitFor(() => {
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+      expect(screen.queryByText(/harassment/i)).not.toBeInTheDocument();
+    });
+  });
 
   it('opens report detail dialog on click', async () => {
-    const user = userEvent.setup()
-    render(<ReportsView />)
+    const user = userEvent.setup();
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+    });
 
-    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]')
-    if (isTruthy(reportCard)) {
-      await user.click(reportCard)
+    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]');
+    if (reportCard) {
+      await user.click(reportCard);
     }
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+  });
 
   it('displays report details in dialog', async () => {
-    const user = userEvent.setup()
-    render(<ReportsView />)
+    const user = userEvent.setup();
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+    });
 
-    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]')
-    if (isTruthy(reportCard)) {
-      await user.click(reportCard)
+    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]');
+    if (reportCard) {
+      await user.click(reportCard);
     }
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-      expect(screen.getByText(/pet profile contains/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+      expect(screen.getByText(/pet profile contains/i)).toBeInTheDocument();
+    });
+  });
 
   it('resolves report with resolution text', async () => {
-    const user = userEvent.setup()
-    render(<ReportsView />)
+    const user = userEvent.setup();
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+    });
 
-    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]')
-    if (isTruthy(reportCard)) {
-      await user.click(reportCard)
+    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]');
+    if (reportCard) {
+      await user.click(reportCard);
     }
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-    })
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
 
-    const resolutionTextarea = screen.getByPlaceholderText(/resolution/i)
-    await user.type(resolutionTextarea, 'Content removed and user warned')
+    const resolutionTextarea = screen.getByPlaceholderText(/resolution/i);
+    await user.type(resolutionTextarea, 'Content removed and user warned');
 
-    const actionSelect = screen.getByRole('combobox')
-    await user.click(actionSelect)
+    const actionSelect = screen.getByRole('combobox');
+    await user.click(actionSelect);
 
-    const resolveOption = screen.getByText(/resolve/i)
-    await user.click(resolveOption)
+    const resolveOption = screen.getByText(/resolve/i);
+    await user.click(resolveOption);
 
-    const submitButton = screen.getByRole('button', { name: /submit/i })
-    await user.click(submitButton)
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+    await user.click(submitButton);
 
     await waitFor(() => {
-      expect(mockAdminApi.resolveReport).toHaveBeenCalled()
-    })
-  })
+      expect(adminReportsApi.resolveReport).toHaveBeenCalled();
+    });
+  });
 
   it('dismisses report', async () => {
-    const user = userEvent.setup()
-    render(<ReportsView />)
+    const user = userEvent.setup();
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+    });
 
-    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]')
-    if (isTruthy(reportCard)) {
-      await user.click(reportCard)
+    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]');
+    if (reportCard) {
+      await user.click(reportCard);
     }
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-    })
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
 
-    const actionSelect = screen.getByRole('combobox')
-    await user.click(actionSelect)
+    const actionSelect = screen.getByRole('combobox');
+    await user.click(actionSelect);
 
-    const dismissOption = screen.getByText(/dismiss/i)
-    await user.click(dismissOption)
+    const dismissOption = screen.getByText(/dismiss/i);
+    await user.click(dismissOption);
 
-    const resolutionTextarea = screen.getByPlaceholderText(/resolution/i)
-    await user.type(resolutionTextarea, 'No violation found')
+    const resolutionTextarea = screen.getByPlaceholderText(/resolution/i);
+    await user.type(resolutionTextarea, 'No violation found');
 
-    const submitButton = screen.getByRole('button', { name: /submit/i })
-    await user.click(submitButton)
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+    await user.click(submitButton);
 
     await waitFor(() => {
-      expect(mockAdminApi.dismissReport).toHaveBeenCalled()
-    })
-  })
+      expect(adminReportsApi.dismissReport).toHaveBeenCalled();
+    });
+  });
 
   it('displays priority badges correctly', async () => {
-    render(<ReportsView />)
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/high/i)).toBeInTheDocument()
-      expect(screen.getByText(/critical/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/high/i)).toBeInTheDocument();
+      expect(screen.getByText(/critical/i)).toBeInTheDocument();
+    });
+  });
 
   it('displays status badges correctly', async () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-reports') {
-        return [mockReports, vi.fn()]
+        const setValue = vi.fn().mockResolvedValue(undefined);
+        const deleteValue = vi.fn().mockResolvedValue(undefined);
+        return [mockReports, setValue, deleteValue];
       }
-      return [defaultValue, vi.fn()]
-    })
+      const setValue = vi.fn().mockResolvedValue(undefined);
+      const deleteValue = vi.fn().mockResolvedValue(undefined);
+      return [defaultValue, setValue, deleteValue];
+    });
 
-    render(<ReportsView />)
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/pending/i)).toBeInTheDocument()
-      expect(screen.getByText(/reviewing/i)).toBeInTheDocument()
-      expect(screen.getByText(/resolved/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/pending/i)).toBeInTheDocument();
+      expect(screen.getByText(/reviewing/i)).toBeInTheDocument();
+      expect(screen.getByText(/resolved/i)).toBeInTheDocument();
+    });
+  });
 
   it('closes dialog when close button is clicked', async () => {
-    const user = userEvent.setup()
-    render(<ReportsView />)
+    const user = userEvent.setup();
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+    });
 
-    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]')
-    if (isTruthy(reportCard)) {
-      await user.click(reportCard)
+    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]');
+    if (reportCard) {
+      await user.click(reportCard);
     }
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-    })
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
 
-    const closeButton = screen.getByRole('button', { name: /close/i })
-    await user.click(closeButton)
+    const closeButton = screen.getByRole('button', { name: /close/i });
+    await user.click(closeButton);
 
     await waitFor(() => {
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    })
-  })
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+  });
 
   it('handles API errors gracefully', async () => {
-    const user = userEvent.setup()
-    mockAdminApi.resolveReport.mockRejectedValue(new Error('API Error'))
+    const user = userEvent.setup();
+    vi.mocked(adminReportsApi.resolveReport).mockRejectedValue(new Error('API Error'));
 
-    render(<ReportsView />)
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument()
-    })
+      expect(screen.getByText(/inappropriate content/i)).toBeInTheDocument();
+    });
 
-    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]')
-    if (isTruthy(reportCard)) {
-      await user.click(reportCard)
+    const reportCard = screen.getByText(/inappropriate content/i).closest('[role="button"]');
+    if (reportCard) {
+      await user.click(reportCard);
     }
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument()
-    })
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
 
-    const resolutionTextarea = screen.getByPlaceholderText(/resolution/i)
-    await user.type(resolutionTextarea, 'Test resolution')
+    const resolutionTextarea = screen.getByPlaceholderText(/resolution/i);
+    await user.type(resolutionTextarea, 'Test resolution');
 
-    const submitButton = screen.getByRole('button', { name: /submit/i })
-    await user.click(submitButton)
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+    await user.click(submitButton);
 
     await waitFor(() => {
-      expect(mockAdminApi.resolveReport).toHaveBeenCalled()
-    })
-  })
+      expect(adminReportsApi.resolveReport).toHaveBeenCalled();
+    });
+  });
 
   it('displays report timestamp', async () => {
-    render(<ReportsView />)
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/user #1234/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText(/user #1234/i)).toBeInTheDocument();
+    });
+  });
 
   it('displays reported by information', async () => {
-    render(<ReportsView />)
+    render(<ReportsView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/user #1234/i)).toBeInTheDocument()
-      expect(screen.getByText(/user #5678/i)).toBeInTheDocument()
-    })
-  })
-})
-
+      expect(screen.getByText(/user #1234/i)).toBeInTheDocument();
+      expect(screen.getByText(/user #5678/i)).toBeInTheDocument();
+    });
+  });
+});

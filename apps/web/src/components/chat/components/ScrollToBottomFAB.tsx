@@ -1,20 +1,21 @@
 /**
  * Scroll to Bottom FAB Component
- * 
+ *
  * Floating action button to scroll to bottom
  */
 
-import { PaperPlaneRight } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { PaperPlaneRight } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ScrollToBottomFABProps {
-  isVisible: boolean
-  badgeCount?: number
-  animatedStyle: AnimatedStyle
-  badgeAnimatedStyle?: AnimatedStyle
-  onClick: () => void
+  isVisible: boolean;
+  badgeCount?: number;
+  animatedStyle: AnimatedStyle;
+  badgeAnimatedStyle?: AnimatedStyle;
+  onClick: () => void;
 }
 
 export function ScrollToBottomFAB({
@@ -22,21 +23,20 @@ export function ScrollToBottomFAB({
   badgeCount = 0,
   animatedStyle,
   badgeAnimatedStyle,
-  onClick
+  onClick,
 }: ScrollToBottomFABProps): React.ReactElement | null {
-  if (!isVisible) {
-    return null
-  }
+    const _uiConfig = useUIConfig();
+    if (!isVisible) {
+        return null;
+      }
 
   return (
-    <AnimatedView
-      style={animatedStyle}
-      className="fixed bottom-24 right-6 z-40"
-    >
+    <AnimatedView style={animatedStyle} className="fixed bottom-24 right-6 z-40">
       <Button
         size="icon"
         className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
         onClick={onClick}
+        aria-label="Scroll to bottom"
       >
         <PaperPlaneRight size={20} weight="fill" />
         {badgeCount > 0 && badgeAnimatedStyle && (
@@ -49,5 +49,5 @@ export function ScrollToBottomFAB({
         )}
       </Button>
     </AnimatedView>
-  )
+  );
 }

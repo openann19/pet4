@@ -1,141 +1,146 @@
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import { useAuth } from '@/hooks/useAuth'
-import { db, type QueryOptions } from '@/lib/database'
-import { logger } from '@/lib/logger'
-import { ArrowsClockwise, CheckCircle, Database, Eye, Trash, User, XCircle } from '@phosphor-icons/react'
-import { MotionView } from '@petspark/motion'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/hooks/useAuth';
+import { db, type QueryOptions } from '@/lib/database';
+import { logger } from '@/lib/logger';
+import {
+  ArrowsClockwise,
+  CheckCircle,
+  Database,
+  Eye,
+  Trash,
+  User,
+  XCircle,
+} from '@phosphor-icons/react';
+import { MotionView } from '@petspark/motion';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface DemoRecord {
-  id: string
-  title: string
-  content: string
-  ownerId: string
-  createdAt: string
-  updatedAt: string
+  id: string;
+  title: string;
+  content: string;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function BackendDemo() {
-  const { user, isLoading: authLoading, isAuthenticated } = useAuth()
-  const [records, setRecords] = useState<DemoRecord[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const [stats, setStats] = useState({ total: 0, myRecords: 0 })
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const [records, setRecords] = useState<DemoRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [stats, setStats] = useState({ total: 0, myRecords: 0 });
 
   useEffect(() => {
     if (!authLoading && user) {
-      loadRecords()
-      loadStats()
+      void loadRecords();
+      void loadStats();
     }
-  }, [authLoading, user])
+  }, [authLoading, user]);
 
   const loadRecords = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const queryOptions: QueryOptions<DemoRecord> = {
         sortBy: 'createdAt',
         sortOrder: 'desc',
-        limit: 10
+        limit: 10,
+      };
+      if (user) {
+        queryOptions.filter = { ownerId: user.id };
       }
-      if (isTruthy(user)) {
-        queryOptions.filter = { ownerId: user.id }
-      }
-      const result = await db.findMany<DemoRecord>('demo_records', queryOptions)
-      setRecords(result.data)
+      const result = await db.findMany<DemoRecord>('demo_records', queryOptions);
+      setRecords(result.data);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load records', err, { action: 'loadRecords', userId: user?.id })
-      toast.error('Failed to load records')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load records', err, { action: 'loadRecords', userId: user?.id });
+      toast.error('Failed to load records');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const loadStats = async () => {
     try {
-      const total = await db.count<DemoRecord>('demo_records')
-      const myRecords = user 
-        ? await db.count<DemoRecord>('demo_records', { ownerId: user.id })
-        : 0
-      setStats({ total, myRecords })
+      const total = await db.count<DemoRecord>('demo_records');
+      const myRecords = user ? await db.count<DemoRecord>('demo_records', { ownerId: user.id }) : 0;
+      setStats({ total, myRecords });
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load stats', err, { action: 'loadStats', userId: user?.id })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load stats', err, { action: 'loadStats', userId: user?.id });
     }
-  }
+  };
 
   const handleCreate = async () => {
     if (!title.trim() || !content.trim()) {
-      toast.error('Please fill in all fields')
-      return
+      toast.error('Please fill in all fields');
+      return;
     }
 
     if (!user) {
-      toast.error('You must be authenticated')
-      return
+      toast.error('You must be authenticated');
+      return;
     }
 
     try {
       await db.create<DemoRecord>('demo_records', {
         title: title.trim(),
         content: content.trim(),
-        ownerId: user.id
-      })
+        ownerId: user.id,
+      });
 
-      toast.success('Record created successfully')
-      setTitle('')
-      setContent('')
-      await loadRecords()
-      await loadStats()
+      toast.success('Record created successfully');
+      setTitle('');
+      setContent('');
+      await loadRecords();
+      await loadStats();
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to create record', err, { action: 'createRecord', userId: user?.id })
-      toast.error('Failed to create record')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to create record', err, { action: 'createRecord', userId: user?.id });
+      toast.error('Failed to create record');
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
     try {
-      await db.delete<DemoRecord>('demo_records', id)
-      toast.success('Record deleted')
-      await loadRecords()
-      await loadStats()
+      await db.delete<DemoRecord>('demo_records', id);
+      toast.success('Record deleted');
+      await loadRecords();
+      await loadStats();
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to delete record', err, { action: 'deleteRecord', recordId: id })
-      toast.error('Failed to delete record')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to delete record', err, { action: 'deleteRecord', recordId: id });
+      toast.error('Failed to delete record');
     }
-  }
+  };
 
   const handleClearAll = async () => {
-    if (!user) return
-    
+    if (!user) return;
+
     try {
-      const count = await db.deleteMany<DemoRecord>('demo_records', { ownerId: user.id })
-      toast.success(`Deleted ${String(count ?? '')} records`)
-      await loadRecords()
-      await loadStats()
+      const count = await db.deleteMany<DemoRecord>('demo_records', { ownerId: user.id });
+      toast.success(`Deleted ${count} records`);
+      await loadRecords();
+      await loadStats();
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to clear records', err, { action: 'clearRecords', userId: user?.id })
-      toast.error('Failed to clear records')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to clear records', err, { action: 'clearRecords', userId: user?.id });
+      toast.error('Failed to clear records');
     }
-  }
+  };
 
   if (isTruthy(authLoading)) {
     return (
       <div className="flex items-center justify-center p-12">
         <ArrowsClockwise className="animate-spin" size={32} />
       </div>
-    )
+    );
   }
 
   return (
@@ -175,10 +180,14 @@ export default function BackendDemo() {
               </div>
               {user && (
                 <div className="space-y-1 text-sm text-muted-foreground">
-                  <p><strong>Name:</strong> {user.displayName}</p>
-                  <p><strong>ID:</strong> {user.id.slice(0, 8)}...</p>
+                  <p>
+                    <strong>Name:</strong> {user.displayName}
+                  </p>
+                  <p>
+                    <strong>ID:</strong> {user.id.slice(0, 8)}...
+                  </p>
                   <div className="flex gap-1 flex-wrap">
-                    {user.roles.map(role => (
+                    {user.roles.map((role) => (
                       <Badge key={role} variant="secondary" className="text-xs">
                         {role}
                       </Badge>
@@ -219,20 +228,20 @@ export default function BackendDemo() {
             </div>
           </CardHeader>
           <CardContent className="space-y-2">
-            <Button 
-              onClick={loadRecords} 
-              variant="outline" 
-              size="sm" 
+            <Button
+              onClick={loadRecords}
+              variant="outline"
+              size="sm"
               className="w-full"
               disabled={isLoading}
             >
               <ArrowsClockwise size={16} className={isLoading ? 'animate-spin' : ''} />
               Refresh Data
             </Button>
-            <Button 
-              onClick={handleClearAll} 
-              variant="destructive" 
-              size="sm" 
+            <Button
+              onClick={handleClearAll}
+              variant="destructive"
+              size="sm"
               className="w-full"
               disabled={!isAuthenticated || stats.myRecords === 0}
             >
@@ -272,17 +281,15 @@ export default function BackendDemo() {
                 disabled={!isAuthenticated}
               />
             </div>
-            <Button 
-              onClick={handleCreate} 
+            <Button
+              onClick={handleCreate}
               disabled={!isAuthenticated || !title.trim() || !content.trim()}
               className="w-full"
             >
               Create Record
             </Button>
             {!isAuthenticated && (
-              <p className="text-sm text-muted-foreground text-center">
-                Sign in to create records
-              </p>
+              <p className="text-sm text-muted-foreground text-center">Sign in to create records</p>
             )}
           </div>
         </CardContent>
@@ -316,7 +323,9 @@ export default function BackendDemo() {
                   <div className="flex items-start justify-between gap-4 p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
                     <div className="flex-1 min-w-0">
                       <h4 className="font-semibold text-sm mb-1 truncate">{record.title}</h4>
-                      <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{record.content}</p>
+                      <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                        {record.content}
+                      </p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span>Created: {new Date(record.createdAt).toLocaleString()}</span>
                         <Separator orientation="vertical" className="h-3" />
@@ -328,6 +337,7 @@ export default function BackendDemo() {
                       variant="ghost"
                       size="icon"
                       className="shrink-0"
+                      aria-label={`Delete record ${record.id}`}
                     >
                       <Trash size={18} />
                     </Button>
@@ -345,7 +355,8 @@ export default function BackendDemo() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div>
-            <strong>Database Service:</strong> Full CRUD operations with filtering, sorting, and pagination
+            <strong>Database Service:</strong> Full CRUD operations with filtering, sorting, and
+            pagination
           </div>
           <div>
             <strong>Authentication:</strong> GitHub OAuth via Spark user API with role-based access
@@ -361,11 +372,12 @@ export default function BackendDemo() {
           </div>
           <div className="pt-2 border-t">
             <p className="text-muted-foreground">
-              See <code className="bg-background px-1 py-0.5 rounded">BACKEND_INTEGRATION.md</code> for complete API documentation
+              See <code className="bg-background px-1 py-0.5 rounded">BACKEND_INTEGRATION.md</code>{' '}
+              for complete API documentation
             </p>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

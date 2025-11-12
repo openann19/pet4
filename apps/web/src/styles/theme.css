@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @import './button-tokens.css';
 
 @import '@radix-ui/colors/sage-dark.css' layer(base);
@@ -204,54 +204,56 @@
     --color-neutral-a12: var(--slate-a12);
     --color-neutral-contrast: var(--slate-contrast);
 
-    /* Accent colors */
-    --color-accent-1: var(--blue-1);
-    --color-accent-2: var(--blue-2);
-    --color-accent-3: var(--blue-3);
-    --color-accent-4: var(--blue-4);
-    --color-accent-5: var(--blue-5);
-    --color-accent-6: var(--blue-6);
-    --color-accent-7: var(--blue-7);
-    --color-accent-8: var(--blue-8);
-    --color-accent-9: var(--blue-9);
-    --color-accent-10: var(--blue-10);
-    --color-accent-11: var(--blue-11);
-    --color-accent-12: var(--blue-12);
-    --color-accent-contrast: var(--blue-contrast);
+    /* Accent colors - Coral */
+    --color-accent-1: #FFF9F0;
+    --color-accent-2: #FFE4B2;
+    --color-accent-3: #FFD580;
+    --color-accent-4: #FFC966;
+    --color-accent-5: #FFB84D;
+    --color-accent-6: #FFA733;
+    --color-accent-7: #FF961A;
+    --color-accent-8: #FF8500;
+    --color-accent-9: #FF715B;
+    --color-accent-10: #FF5A40;
+    --color-accent-11: #FF4430;
+    --color-accent-12: #FF2D20;
+    --color-accent-contrast: #ffffff;
 
-    /* Secondary accent colors */
-    --color-accent-secondary-1: var(--violet-1);
-    --color-accent-secondary-2: var(--violet-2);
-    --color-accent-secondary-3: var(--violet-3);
-    --color-accent-secondary-4: var(--violet-4);
-    --color-accent-secondary-5: var(--violet-5);
-    --color-accent-secondary-6: var(--violet-6);
-    --color-accent-secondary-7: var(--violet-7);
-    --color-accent-secondary-8: var(--violet-8);
-    --color-accent-secondary-9: var(--violet-9);
-    --color-accent-secondary-10: var(--violet-10);
-    --color-accent-secondary-11: var(--violet-11);
-    --color-accent-secondary-12: var(--violet-12);
-    --color-accent-secondary-contrast: var(--violet-contrast);
+    /* Secondary accent colors - Soft orange and pastel yellow */
+    --color-accent-secondary-1: #FFF9F0;
+    --color-accent-secondary-2: #FFF5E6;
+    --color-accent-secondary-3: #FFF1DC;
+    --color-accent-secondary-4: #FFEDD2;
+    --color-accent-secondary-5: #FFE9C8;
+    --color-accent-secondary-6: #FFE5BE;
+    --color-accent-secondary-7: #FFE1B4;
+    --color-accent-secondary-8: #FFDDAA;
+    --color-accent-secondary-9: #FFE4B2;
+    --color-accent-secondary-10: #FFD580;
+    --color-accent-secondary-11: #FFC966;
+    --color-accent-secondary-12: #FFBD4D;
+    --color-accent-secondary-contrast: #222222;
 
     /* Foreground colors */
     --color-fg: var(--color-neutral-12);
     --color-fg-secondary: var(--color-neutral-a11);
 
     /* Background colors */
-    --color-bg: #ffffff;
+    --color-bg: #FFF9F0;
     --color-bg-inset: var(--color-neutral-2);
     --color-bg-overlay: #ffffff;
 
     /* Focus ring */
-    --color-focus-ring: var(--color-accent-9);
+    --color-focus-ring: #FF715B;
 
     /* Fonts */
-    --font-sans-serif: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-    --font-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-      "Liberation Mono", "Courier New", monospace;
+    --font-sans-serif:
+      ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-monospace:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+      monospace;
     --font-family: var(--font-sans-serif);
   }
 

@@ -12,16 +12,19 @@ Fixed TypeScript strict optional property type errors (`exactOptionalPropertyTyp
 ### 1. Stories Components
 
 #### `apps/web/src/components/stories/StoriesBar.tsx`
+
 - **Issue:** `currentUserAvatar?: string` prop being passed as `string | undefined`
 - **Fix:** Changed spread operator from `{...(currentUserAvatar && { currentUserAvatar })}` to `{...(currentUserAvatar !== undefined ? { currentUserAvatar } : {})}`
 - **Locations:** Lines 89, 147, 161
 
 #### `apps/web/src/components/stories/HighlightViewer.tsx`
+
 - **Issue:** Same `currentUserAvatar` optional property issue
 - **Fix:** Updated spread operator pattern
 - **Location:** Line 68
 
 #### `apps/web/src/components/stories/StoryViewer.tsx`
+
 - **Issue:** `userAvatar?: string` in StoryReaction being set to `string | undefined`
 - **Fix:** Changed from `{...(currentUserAvatar && { userAvatar: currentUserAvatar })}` to `{...(currentUserAvatar !== undefined ? { userAvatar: currentUserAvatar } : {})}`
 - **Location:** Line 250
@@ -29,6 +32,7 @@ Fixed TypeScript strict optional property type errors (`exactOptionalPropertyTyp
 ### 2. Playdate Components
 
 #### `apps/web/src/components/playdate/PlaydateScheduler.tsx`
+
 - **Issue:** `value?: PlaydateLocation` prop being passed as `PlaydateLocation | null`
 - **Fix:** Changed from `{...(selectedLocation && { value: selectedLocation })}` to `{...(selectedLocation !== null ? { value: selectedLocation } : {})}`
 - **Location:** Line 619
@@ -36,6 +40,7 @@ Fixed TypeScript strict optional property type errors (`exactOptionalPropertyTyp
 ### 3. Streaming Components
 
 #### `apps/web/src/components/streaming/GoLiveDialog.tsx`
+
 - **Issue:** `description?: string` prop being set conditionally
 - **Fix:** Changed from `{...(description.trim() && { description: description.trim() })}` to `{...(description.trim() ? { description: description.trim() } : {})}`
 - **Location:** Line 79
@@ -43,6 +48,7 @@ Fixed TypeScript strict optional property type errors (`exactOptionalPropertyTyp
 ### 4. Lost & Found Components
 
 #### `apps/web/src/components/lost-found/CreateLostAlertDialog.tsx`
+
 - **Issue:** Multiple optional properties (`ownerAvatar`, `reward`, `description`) being set to `undefined`
 - **Fix:** Updated all spread operators to properly omit properties when `undefined`:
   - `ownerAvatar`: `{...(user.avatarUrl ? { ownerAvatar: user.avatarUrl } : {})}`
@@ -53,6 +59,7 @@ Fixed TypeScript strict optional property type errors (`exactOptionalPropertyTyp
 ### 5. Admin Components
 
 #### `apps/web/src/components/admin/MapSettingsView.tsx`
+
 - **Issue:** Type narrowing issue with `'metric' | 'imperial'` union type
 - **Fix:** Added explicit type assignment to ensure proper narrowing:
   ```typescript
@@ -66,12 +73,14 @@ Fixed TypeScript strict optional property type errors (`exactOptionalPropertyTyp
 The consistent pattern for fixing strict optional property issues:
 
 ### Before (Incorrect)
+
 ```typescript
 {...(value && { prop: value })}  // ❌ Fails with exactOptionalPropertyTypes
 {...(value !== undefined && { prop: value })}  // ❌ Still fails if value is string | undefined
 ```
 
 ### After (Correct)
+
 ```typescript
 // For string | undefined → string?
 {...(value !== undefined ? { prop: value } : {})}
@@ -118,4 +127,3 @@ pnpm typecheck 2>&1 | grep -E "error TS2375|error TS2379" | grep "components/"
 ✅ Consistent pattern applied across all fixes  
 ✅ Proper handling of optional properties with `exactOptionalPropertyTypes: true`  
 ⚠️ Library/utility files still have some remaining issues (separate effort)
-

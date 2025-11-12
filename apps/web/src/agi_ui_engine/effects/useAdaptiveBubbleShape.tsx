@@ -1,31 +1,26 @@
-'use client'
+'use client';
 
-import { useMemo } from 'react'
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring
-} from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useUIConfig } from '@/hooks/useUIConfig'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { isTruthy } from '@petspark/shared'
+import { useMemo } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from '@/hooks/use-ui-config';
+import { springConfigs } from '@/effects/reanimated/transitions';
 
 export interface UseAdaptiveBubbleShapeOptions {
-  text: string
-  enabled?: boolean
+  text: string;
+  enabled?: boolean;
 }
 
 export interface UseAdaptiveBubbleShapeReturn {
-  animatedStyle: AnimatedStyle
-  borderRadius: number
+  animatedStyle: AnimatedStyle;
+  borderRadius: number;
 }
 
 /**
  * Adaptive bubble shape based on message tone
- * 
+ *
  * Adjusts bubble border radius based on message sentiment
- * 
+ *
  * @example
  * ```tsx
  * const { animatedStyle, borderRadius } = useAdaptiveBubbleShape({ text: messageText })
@@ -35,51 +30,50 @@ export interface UseAdaptiveBubbleShapeReturn {
 export function useAdaptiveBubbleShape(
   options: UseAdaptiveBubbleShapeOptions
 ): UseAdaptiveBubbleShapeReturn {
-  const { text, enabled = true } = options
-  const { theme } = useUIConfig()
+  const { text, enabled = true } = options;
+  const { theme } = useUIConfig();
 
   const borderRadius = useMemo((): number => {
     if (!enabled || !theme.adaptiveMood) {
-      return 16
+      return 16;
     }
 
-    const positiveWords = ['happy', 'love', 'great', 'amazing', 'wonderful']
-    const negativeWords = ['sad', 'bad', 'hate', 'terrible', 'awful']
+    const positiveWords = ['happy', 'love', 'great', 'amazing', 'wonderful'];
+    const negativeWords = ['sad', 'bad', 'hate', 'terrible', 'awful'];
 
-    const lowerText = text.toLowerCase()
-    const hasPositive = positiveWords.some((word) => lowerText.includes(word))
-    const hasNegative = negativeWords.some((word) => lowerText.includes(word))
+    const lowerText = text.toLowerCase();
+    const hasPositive = positiveWords.some((word) => lowerText.includes(word));
+    const hasNegative = negativeWords.some((word) => lowerText.includes(word));
 
-    if (isTruthy(hasPositive)) {
-      return 20
+    if (hasPositive) {
+      return 20;
     }
 
-    if (isTruthy(hasNegative)) {
-      return 12
+    if (hasNegative) {
+      return 12;
     }
 
-    return 16
-  }, [text, enabled, theme.adaptiveMood])
+    return 16;
+  }, [text, enabled, theme.adaptiveMood]);
 
-  const radiusValue = useSharedValue(16)
+  const radiusValue = useSharedValue(16);
 
   if (enabled && theme.adaptiveMood) {
-    radiusValue.value = withSpring(borderRadius, springConfigs.smooth)
+    radiusValue.value = withSpring(borderRadius, springConfigs.smooth);
   }
 
   const animatedStyle = useAnimatedStyle(() => {
     if (!enabled || !theme.adaptiveMood) {
-      return {}
+      return {};
     }
 
     return {
-      borderRadius: radiusValue.value
-    }
-  }) as AnimatedStyle
+      borderRadius: radiusValue.value,
+    };
+  }) as AnimatedStyle;
 
   return {
     animatedStyle,
-    borderRadius
-  }
+    borderRadius,
+  };
 }
-

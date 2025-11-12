@@ -11,8 +11,8 @@ Connect pets for playdates, companionship, and meaningful interactions through i
 **Environment**: Browser-based Progressive Web Application with AI-powered features  
 **Architecture**: Real implementations using Spark SDK (LLM AI, KV storage, user auth)
 
-
 ### Certification Complete ✅
+
 - ✅ QA Checklist: 147/147 tests passed
 - ✅ Performance Audit: All benchmarks met (< 3s cold start, 60fps steady, 99.96% crash-free)
 - ✅ i18n Coverage: 149/149 keys translated (EN + BG)
@@ -22,7 +22,9 @@ Connect pets for playdates, companionship, and meaningful interactions through i
 - ✅ Reviewer Access: Test account configured
 
 ### Deliverables
+
 See project root for complete submission package:
+
 - `STORE_SUBMISSION.md` - App metadata, privacy labels, usage strings (EN + BG)
 - `QA_CHECKLIST.md` - Comprehensive test results
 - `PERFORMANCE_AUDIT.md` - Launch times, frame rates, memory, crash reports
@@ -30,6 +32,7 @@ See project root for complete submission package:
 - `COMPLIANCE_CERTIFICATION.md` - Legal, accessibility, security compliance
 
 ### Core System Components
+
 ### Core System Components
 
 1. **Multi-Environment Configuration** (dev/staging/prod)
@@ -39,14 +42,15 @@ See project root for complete submission package:
 5. **Admin Console** for moderation, analytics, and feature flags
 6. **API Layer** with error handling and correlation IDs
 7. **Observability** with health checks and structured logging
-ical documentation.
-See [SYSTEM_ARCHITECTURE.md](./SYSTEM_ARCHITECTURE.md) for complete technical documentation.
+   ical documentation.
+   See [SYSTEM_ARCHITECTURE.md](./SYSTEM_ARCHITECTURE.md) for complete technical documentation.
 
 ## Current Implementation Status
 
 **v27.0 - Comprehensive Sticker Library Edition** 🎨✨😊🐾
 
 Enhanced chat messaging with extensive sticker library featuring emojis and animations:
+
 - **🆕 Comprehensive Sticker Library** - 64 stickers across 8 categories (Love & Hearts, Happy & Excited, Pet Life, Playful & Fun, Reactions, Activities, Food & Treats, Weather & Nature)
 - **🆕 Advanced Sticker Picker** - Full-featured sticker browser with search, categories, and favorites
 - **🆕 Category System** - Well-organized sticker categories with icons and color coding
@@ -69,6 +73,7 @@ Enhanced chat messaging with extensive sticker library featuring emojis and anim
 **v26.0 - Creative Story Templates & Filters Edition** 🎨✨🎭📸
 
 Enhanced story creation with professional templates and artistic filters for premium creative content:
+
 - **🆕 Advanced Story Templates** - 15+ professional templates with gradients, layouts, and animations
 - **🆕 Story Filter System** - 15 artistic filters across 6 categories (Natural, Vintage, Modern, Artistic, Playful, Dramatic)
 - **🆕 Template Categories** - Organized by Basic, Colorful, and Layout types with visual previews
@@ -88,6 +93,7 @@ Enhanced story creation with professional templates and artistic filters for pre
 **v25.0 - Enhanced Pet Detail Views & Visual Analytics Edition** 📊✨🎯
 
 Rich, comprehensive pet profile viewing with advanced analytics and social proof integration:
+
 - **🆕 Enhanced Pet Detail View** - Fullscreen immersive pet profile viewer with photo gallery
 - **🆕 Detailed Pet Analytics Component** - Comprehensive analytics dashboard for compatibility and trust metrics
 - **🆕 Photo Gallery Navigation** - Swipe through multiple pet photos with smooth transitions
@@ -107,6 +113,7 @@ Rich, comprehensive pet profile viewing with advanced analytics and social proof
 **v24.0 - Real-Time Video Calling for Playdates Edition** 🎥📞✨
 
 Integrated real-time video calling system directly into the playdate coordination flow:
+
 - **🆕 Video Call Integration in Matches** - Direct video call buttons on every match card for instant connection
 - **🆕 Playdate Scheduler Video Controls** - Start video or voice calls directly from the playdate scheduler
 - **🆕 One-Tap Video Calls** - Initiate 4K video calls with a single button press
@@ -126,6 +133,7 @@ Integrated real-time video calling system directly into the playdate coordinatio
 **v23.0 - Smart Recommendations & Social Trust Edition** 🎯🏆✨
 
 Intelligent recommendation engine and social proof system for enhanced matching confidence:
+
 - **🆕 Smart Recommendation Engine** - ML-style scoring algorithm analyzing personality, interests, age, size compatibility
 - **🆕 Social Proof System** - Trust badges (Verified, Health Certified, Responsive, Top Rated, Community Favorite)
 - **🆕 Trust Score Calculation** - 0-100 score based on badges, ratings, endorsements, response rate
@@ -140,6 +148,7 @@ Intelligent recommendation engine and social proof system for enhanced matching 
 **v22.0 - Complete Enhancement Overhaul Edition** 🚀✨💎🎯
 
 Comprehensive application-wide enhancements with performance optimizations, advanced interactions, and premium polish:
+
 - **🆕 Ultra-Optimized Image Loading** - Advanced lazy loading, blur-up placeholders, WebP with fallbacks, responsive srcsets
 - **🆕 Advanced Video Player** - Picture-in-picture mode, playback speed controls, quality switching, keyboard shortcuts
 - **🆕 Smart Caching System** - Service worker integration, offline-first assets, intelligent cache invalidation
@@ -175,6 +184,7 @@ Comprehensive application-wide enhancements with performance optimizations, adva
 **v21.0 - Premium UI Upscale Edition** 🎨✨🚀💎
 
 Ultra-premium visual upscaling with advanced animations, layered effects, and polished interactions across the entire application:
+
 - **🆕 Enhanced Premium Components Library** - PremiumCard, PremiumButton, FloatingActionButton, GlowingBadge, ParticleEffect
 - **🆕 Advanced Background Animations** - 4-layer animated gradient system with radial and conic gradients (12-25s durations)
 - **🆕 Glassmorphic Header** - Ultra-premium backdrop blur (2xl) with gradient overlay and multi-layer logo glow
@@ -199,6 +209,7 @@ Ultra-premium visual upscaling with advanced animations, layered effects, and po
 **v20.0 - Enhanced Features Edition** 🏥📅🔍✨
 
 Comprehensive feature enhancements with health management, playdate scheduling, and discovery improvements:
+
 - **🆕 Pet Health Dashboard** - Track vaccinations, health records, and vet reminders for each pet
 - **🆕 Vaccination Tracking** - Record vaccinations with due dates and automatic reminders
 - **🆕 Health Records Management** - Keep complete medical history including checkups, illnesses, and medications
@@ -224,8 +235,9 @@ Comprehensive feature enhancements with health management, playdate scheduling, 
 **v19.0 - Enhanced UI Polish Edition** ✨🎨🚀
 
 Comprehensive UI enhancements across the entire application with improved visual design, animations, and interaction feedback:
+
 - **✅ Enhanced Button States** - Improved hover, active, and focus states with better shadows and transitions
-- **✅ Smoother Animations** - Added cubic-bezier easing for natural motion throughout the app  
+- **✅ Smoother Animations** - Added cubic-bezier easing for natural motion throughout the app
 - **✅ Card Hover Effects** - Elevated shadows and subtle lift on hover for better depth perception
 - **✅ Enhanced Visual Components** - New reusable components for gradients, shimmer effects, and glowing borders
 - **✅ Loading Animations** - Beautiful animated dots for loading states
@@ -243,6 +255,7 @@ Comprehensive UI enhancements across the entire application with improved visual
 **v18.2 - Advanced Media Filters & Enhanced Upload Edition** 📸🎨✨
 
 Comprehensive media filtering system with crop size control and advanced upload options:
+
 - **🆕 Photo Crop Size Filters** - Filter discovery by photo aspect ratio (Any, Square 1:1, Portrait 3:4, Landscape 4:3)
 - **🆕 Photo Quality Filters** - Filter by image quality (Any, High Quality, Verified Photos)
 - **🆕 Video Content Filter** - Toggle to show only profiles with video content
@@ -262,6 +275,7 @@ Comprehensive media filtering system with crop size control and advanced upload 
 **v18.1 - Community Video Media Viewer Edition** 🎬✨📱
 
 Enhanced media viewer with full video playback support and professional controls:
+
 - **✅ Video Playback Support** - Full-screen video player with HLS streaming support
 - **✅ Professional Video Controls** - Play/pause, seek slider, mute/unmute, time display
 - **✅ Auto-Hiding Controls** - Controls fade out during playback for immersive viewing
@@ -277,6 +291,7 @@ Enhanced media viewer with full video playback support and professional controls
 **v18.0 - Community Feed & Social Features Edition** 🌐✨📱
 
 Complete community feed implementation with rich social interactions and content sharing:
+
 - **✅ Community Feed View** - For You and Following tabs with infinite scroll
 - **✅ Post Composer** - Rich post creation with text (1000 chars), images (10 max), pet tagging, and visibility controls
 - **✅ Post Card Component** - Beautiful post display with media carousels, like/comment/save/share actions
@@ -300,6 +315,7 @@ Complete community feed implementation with rich social interactions and content
 **v17.0 - Mobile App Ultra Polish & Store Readiness Edition** 📱✨🚀
 
 Complete mobile app store readiness with ultra-polished interactions and comprehensive submission package:
+
 - **✅ Haptic Feedback System** - Light, medium, heavy, and success haptics with Reduce Motion support
 - **✅ Gesture Recognition** - Native swipe, drag, pinch, long-press with physics and momentum
 - **✅ Overlay Dismissal** - Tap-outside, swipe-down, hardware Back/Esc support
@@ -322,6 +338,7 @@ Complete mobile app store readiness with ultra-polished interactions and compreh
 **v16.1 - Theme System Overhaul & UI Contrast Fix Edition** 🎨✨🔧
 
 Comprehensive theme system improvements for consistent visibility and proper contrast:
+
 - **✅ Fixed Button Visibility** - All button variants now have proper contrast in light and dark modes
 - **✅ Enhanced Input Components** - Inputs use proper background colors and foreground text for better visibility
 - **✅ Improved Label Contrast** - Labels explicitly use foreground color for consistent readability
@@ -336,6 +353,7 @@ Comprehensive theme system improvements for consistent visibility and proper con
 **v16.0 - 4K Video Call Enhancement Edition** 🎥📞✨
 
 Real-time video calling system enhanced with 4K Ultra HD support:
+
 - **✅ 4K Ultra HD Video Calls** - Supports 3840×2160 @ 60fps video streaming
 - **✅ Adaptive Quality Selection** - Auto-fallback from 4K → 1080p → 720p → 480p based on device capabilities
 - **✅ Real-Time Resolution Display** - Shows actual streaming resolution and framerate in call UI
@@ -349,6 +367,7 @@ Real-time video calling system enhanced with 4K Ultra HD support:
 **v15.0 - Real AI Implementation Edition** 🤖✨🎯
 
 All simulations replaced with real implementations using Spark runtime SDK:
+
 - **✅ Real AI Pet Generation** - Uses GPT-4o to generate diverse, realistic pet profiles on-demand
 - **✅ AI-Powered Compatibility Analysis** - GPT-4o-mini generates personalized match reasoning
 - **✅ Real User Authentication** - Uses spark.user() API for GitHub OAuth integration
@@ -361,6 +380,7 @@ All simulations replaced with real implementations using Spark runtime SDK:
 - **✅ Production-Ready Error Handling** - Graceful failures with user feedback
 
 Complete production hardening with store submission package:
+
 - **🆕 Store Submission Package** with localized metadata (EN + BG)
 - **🆕 Comprehensive QA Checklist** covering 147 test scenarios
 - **🆕 Performance Audit Report** with launch times, frame rates, memory analysis
@@ -381,6 +401,7 @@ Complete production hardening with store submission package:
 **v14.0 - Privacy-First Maps System Edition** 🗺️📍🔐
 
 Comprehensive map integration with privacy-preserving location features across discovery, matches, chat, and community:
+
 - **🆕 Discover → Cards | Map toggle** for switching between card and map views
 - **🆕 DiscoverMapMode component** showing pet locations with privacy-snapped coordinates
 - **🆕 Interactive map markers** with pet photos, compatibility scores, and distance indicators
@@ -400,6 +421,7 @@ Comprehensive map integration with privacy-preserving location features across d
 **v13.0 - System Integration & Advanced Features Edition** 🔗📊🔄
 
 Complete end-to-end system integration with advanced analytics, feature flags, and offline support:
+
 - **🆕 Advanced Feature Flag System** with A/B testing capabilities
 - **🆕 Rollout percentage control** for gradual feature releases
 - **🆕 User-based consistent flag evaluation** using hashing
@@ -422,6 +444,7 @@ Complete end-to-end system integration with advanced analytics, feature flags, a
 **v12.0 - WebSocket & Performance Monitoring Edition** 🚀📊
 
 Comprehensive real-time communication infrastructure and performance monitoring dashboards:
+
 - **🆕 WebSocket Manager with simulated real-time communication**
 - **🆕 Connection state management (disconnected/connecting/connected/reconnecting)**
 - **🆕 Message queuing for offline scenarios with automatic flush on reconnect**
@@ -442,6 +465,7 @@ Comprehensive real-time communication infrastructure and performance monitoring 
 **v11.0 - Performance & Quality Enhancements Edition** 🚀✨
 
 Comprehensive improvements to performance, accessibility, and user experience:
+
 - **🆕 Performance monitoring system with metrics tracking (FCP, LCP, FID, CLS)**
 - **🆕 Enhanced error boundary with better user feedback and recovery**
 - **🆕 Comprehensive accessibility utilities for keyboard navigation and screen readers**
@@ -519,6 +543,7 @@ Comprehensive improvements to performance, accessibility, and user experience:
 - **🆕 Multi-path onboarding (Get Started / Sign In / Explore)**
 
 **Experience Qualities**:
+
 1. **Delightful** - Every interaction should spark joy through fluid animations, playful feedback, and thoughtful micro-interactions
 2. **Trustworthy** - Clear information, honest compatibility scores, and transparent matching create confidence in connections
 3. **Effortless** - Intuitive navigation, smart defaults, and frictionless flows make finding the perfect match feel natural
@@ -529,6 +554,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 ## Essential Features
 
 ### Pet Profile Creation
+
 - **Functionality**: Users create profiles for their pets with photos, personality traits, and preferences
 - **Purpose**: Rich profiles enable accurate matching and help owners showcase their pets' unique personalities
 - **Trigger**: New user onboarding or "Add Pet" button from dashboard
@@ -536,6 +562,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Profile saves with all data persisted, appears in matching pool, shows in user's pet list
 
 ### AI-Powered Discovery
+
 - **Functionality**: Swipeable card interface showing compatible pets with compatibility scores and reasoning, featuring premium drag gestures with haptic feedback
 - **Purpose**: Makes finding compatible pets engaging and efficient through intelligent recommendations with tactile feedback
 - **Trigger**: Navigate to "Discover" from main navigation
@@ -543,6 +570,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Cards load smoothly with staggered animations, drag gestures feel natural and physics-based, haptic feedback provides appropriate tactile response, LIKE/PASS labels animate with drag distance, compatibility scores appear accurate, matches are detected with celebration haptics
 
 ### AI Visual Analysis (Photo Reading)
+
 - **Functionality**: Upload a pet photo via camera capture, file upload, or URL and have AI automatically analyze and extract breed, approximate age, size, and personality traits from the image
 - **Purpose**: Dramatically reduces profile creation friction by auto-filling information from a single photo (captured directly from device camera, uploaded from gallery, or via URL)
 - **Trigger**: Camera/Upload/URL buttons in the AI Photo Analysis section during profile creation
@@ -550,6 +578,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Camera capture works on mobile devices, file uploads support all image formats, URL input accepts standard image URLs, analysis completes within 3 seconds, extracted data is reasonably accurate, users can edit all fields, smooth loading states, clear error handling for non-pet images
 
 ### Discovery Filters & Preferences
+
 - **Functionality**: Users can filter potential matches by age range, size, and distance preferences
 - **Purpose**: Helps users find the most relevant matches based on their specific preferences
 - **Trigger**: "Filters" button in Discover view
@@ -557,6 +586,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Filters persist across sessions, filtered results update immediately, visual indicator shows active filters
 
 ### Real-Time Chat System
+
 - **Functionality**: Full-featured chat system allowing matched pet owners to communicate with text messages, stickers, and emoji reactions
 - **Purpose**: Enables pet owners to coordinate playdates, get to know each other, and build relationships before meeting in person
 - **Trigger**: Navigate to "Chat" from main navigation or tap chat button on match cards
@@ -564,6 +594,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Messages persist across sessions, chat rooms created automatically for all matches, typing indicators work smoothly, stickers and reactions enhance expression, mobile-responsive with collapsible views
 
 ### Chat Room Management
+
 - **Functionality**: Organized list of all active chat conversations with last message preview and unread counts
 - **Purpose**: Helps users stay on top of multiple conversations and prioritize responses
 - **Trigger**: Open Chat view
@@ -571,6 +602,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Rooms sort by most recent activity, unread counts accurate, last message previews update automatically, smooth navigation between rooms
 
 ### Rich Messaging Features
+
 - **Functionality**: Text messages, animated stickers (16 playful pet-themed options), emoji reactions on messages, typing indicators, all with haptic feedback
 - **Purpose**: Makes conversations engaging, expressive, and fun for pet owners with tactile responses
 - **Trigger**: Within any chat room
@@ -578,6 +610,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Messages send instantly with haptic confirmation, stickers animate smoothly, reactions appear inline with messages with tactile feedback, typing indicators feel natural
 
 ### Compatibility Breakdown Analytics
+
 - **Functionality**: Detailed visualization showing how compatibility scores are calculated across multiple factors
 - **Purpose**: Provides transparency in matching algorithm and helps users understand why pets are compatible
 - **Trigger**: Chart button on pet cards or in match details
@@ -585,6 +618,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Charts animate smoothly, percentages are accurate, breakdown is easy to understand
 
 ### Match Statistics Dashboard
+
 - **Functionality**: Personal stats showing total matches, profiles viewed, and success rate
 - **Purpose**: Gamifies the experience and provides users insight into their matching activity
 - **Trigger**: Automatically displayed in Profile view when user has activity
@@ -592,11 +626,12 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Stats update in real-time, calculations are accurate, visual presentation is engaging
 
 ### Premium Welcome Screen Experience
+
 - **Functionality**: Full-screen premium welcome experience with focused value proposition, clear CTAs, and multiple entry paths (Get Started, Sign In, Explore)
 - **Purpose**: Creates calm, trustworthy first impression while clearly communicating platform value and providing frictionless entry
 - **Trigger**: First visit to the application (before main app loads)
 - **Progression**: Branded logo animation → View title and tagline → See three value bullets (Smart Matching, Safe Chat, Trusted Community) → Select primary action (Get Started) or secondary paths (Sign In / Explore) → Legal compliance displayed → Language switcher accessible
-- **Success criteria**: 
+- **Success criteria**:
   - Loads in under 2 seconds with instant layout
   - Only shows once per device (persisted in KV storage)
   - Respects reduced motion preferences
@@ -609,17 +644,18 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - Smooth transition to main app experience
 
 ### Admin Console & Moderation System
+
 - **Functionality**: Comprehensive administrative interface for platform moderation, user management, content review, and system configuration
 - **Purpose**: Enables administrators and moderators to effectively manage the platform, respond to reports, moderate content, and maintain community standards
 - **Trigger**: Click the shield icon in the main app header to access admin console
-- **Progression**: 
+- **Progression**:
   - **Dashboard**: View system metrics → Monitor active users and matches → Check pending reports and verifications → Review system health
   - **Reports**: Filter reports by status → Review report details → Take action (dismiss, warn, remove content, suspend user) → Add resolution notes → Track in audit log
   - **Users**: Search users → View user profiles and statistics → Suspend or ban problematic users → Reactivate users → Track moderation history
   - **Content**: Browse pet profiles → Review photos and information → Approve or remove inappropriate content → Flag for further review
   - **Audit Log**: Search admin actions → Filter by action type → Review complete history → Track accountability
   - **Settings**: Toggle feature flags → Adjust system settings → Configure limits and thresholds → Monitor platform configuration
-- **Success criteria**: 
+- **Success criteria**:
   - All admin actions are logged to audit trail
   - Reports can be reviewed and resolved within 2 clicks
   - User actions (suspend/ban/reactivate) take effect immediately
@@ -630,6 +666,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - Search and filtering work smoothly across all views
 
 ### Reports Management System
+
 - **Functionality**: System generates realistic sample pet profiles using AI on first load
 - **Purpose**: Provides immediate value and functionality for new users before they create profiles
 - **Trigger**: First time application loads with no existing pets
@@ -637,11 +674,12 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: Sample pets are realistic and diverse, generation happens seamlessly in background, fallback data available if AI fails
 
 ### Pet Health Dashboard
+
 - **Functionality**: Comprehensive health management system for tracking vaccinations, medical records, and vet appointments
 - **Purpose**: Helps pet owners stay organized with their pet's health care and never miss important medical appointments
 - **Trigger**: "Health Dashboard" button on pet profile cards
 - **Progression**: Select pet → View health summary (vaccination status, last checkup, active reminders) → Navigate tabs (Vaccinations, Health Records, Reminders) → Add new records → Set reminders → Mark completed
-- **Success criteria**: 
+- **Success criteria**:
   - All health data persists across sessions
   - Vaccination due dates calculate correctly
   - Reminders show appropriate urgency (up-to-date, due-soon, overdue)
@@ -650,10 +688,11 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - Visual indicators clearly show health status
 
 ### Playdate Video Calling System
+
 - **Functionality**: Real-time video calling for pet playdates directly integrated into the match and playdate coordination flow
 - **Purpose**: Enables pet owners to have face-to-face conversations to coordinate playdates, see each other's pets live, and build trust before in-person meetings
 - **Trigger**: Video camera button on match cards, playdate scheduler header, or quick actions
-- **Progression**: 
+- **Progression**:
   - Tap video call button → Camera/microphone permission requested → Call initiates with ringing status → Connection establishes → Active video call with controls → Mute/camera/speaker toggles → End call → Call logged to history
 - **Success criteria**:
   - Video calls initiate within 2 seconds of button press
@@ -673,6 +712,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - Integration from multiple entry points (matches, playdates, chat)
 
 ### Playdate Scheduler
+
 - **Functionality**: Coordinate in-person meetups between matched pet owners with calendar and location management
 - **Purpose**: Facilitates real-world interactions and helps pets socialize safely
 - **Trigger**: Accessible from matches view or quick actions menu
@@ -686,6 +726,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - Both parties receive notifications
 
 ### Saved Searches
+
 - **Functionality**: Save custom filter combinations for quick access and reuse
 - **Purpose**: Eliminates repetitive filter setup for users with specific preferences
 - **Trigger**: "Save Current" button in saved searches manager or quick actions menu
@@ -699,6 +740,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - Search summaries display key filters
 
 ### Quick Actions Menu
+
 - **Functionality**: Floating action button providing shortcuts to common features
 - **Purpose**: Improves navigation and provides quick access to frequently used actions
 - **Trigger**: Tap floating + button in bottom right corner
@@ -712,6 +754,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - Icons and labels clearly identify each action
 
 ### Match Management
+
 - **Functionality**: View all matched pets, see compatibility details, manage connections, quick-access to chat, and schedule playdates
 - **Purpose**: Centralized place to review successful matches, plan interactions, and coordinate meetups
 - **Trigger**: Navigate to "Matches" or receive match notification
@@ -719,15 +762,16 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
 - **Success criteria**: All matches display correctly, compatibility details are comprehensive, match list updates when new matches occur, chat integration seamless, playdate scheduling accessible
 
 ### Pet Stories & Social Content
+
 - **Functionality**: Instagram-style stories featuring pet photos and videos with 24-hour expiration, customizable templates, music overlays, and privacy controls
 - **Purpose**: Creates dynamic, engaging social content that allows users to share daily pet moments and increase platform engagement
 - **Trigger**: Tap "+" button on story ring in Discovery view or on user's own story ring
-- **Progression**: 
+- **Progression**:
   - **Creation**: Choose camera/gallery → Select photo/video → Apply template and effects → Add caption → Choose music track → Set privacy level → Share story
   - **Viewing**: Tap story ring → View full-screen story → Progress automatically or tap to skip → React with emoji → Send reply message → View next story
   - **Analytics** (Own Stories): View story insights → See view count and viewer list → Check reaction distribution → Monitor completion rate
   - **Save to Highlights**: While viewing own story → Tap menu (three dots) → Select "Save to Highlight" → Choose existing highlight or create new one → Story saved permanently
-- **Success criteria**: 
+- **Success criteria**:
   - Stories appear instantly in horizontal scrollable bar at top of Discovery view
   - Unviewed stories show gradient ring, viewed stories show gray ring
   - Stories auto-advance after duration (5s for photos, 15s for videos)
@@ -740,9 +784,10 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - Stories can be saved to existing highlights or new highlights created on-the-fly
 
 ### Story Highlights (Permanent Collections)
+
 - **Functionality**: Save favorite stories to permanent, curated collections that don't expire after 24 hours
 - **Purpose**: Allows users to preserve and showcase their best moments, creating a lasting profile presence beyond temporary stories
-- **Trigger**: 
+- **Trigger**:
   - From story viewer: Tap three-dot menu → "Save to Highlight" while viewing own story
   - From profile: Tap "+" button in highlights bar to manually create highlight from past stories
 - **Progression**:
@@ -764,6 +809,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - Delete confirmations prevent accidental removal
 
 ### Advanced Chat & Rich Messaging
+
 - **Functionality**: Full-featured messaging system with voice notes, reactions, location sharing, smart suggestions, message templates, and translation
 - **Purpose**: Enables rich, expressive communication between matched pet owners with modern messaging features
 - **Trigger**: Navigate to Chat view, select conversation, or send message from match notification
@@ -787,6 +833,7 @@ This is a feature-rich matching platform with persistent user data, AI-powered r
   - All messaging features work seamlessly on mobile and desktop
 
 ### Pet Profile Viewing
+
 - **Functionality**: Detailed view of any pet profile with full information, photo gallery, and owner details
 - **Purpose**: Allow users to learn everything about a potential match before deciding
 - **Trigger**: Tap on pet card in discovery or matches
@@ -814,7 +861,7 @@ The design should feel warm, playful, and premium—like a blend of modern datin
 Triadic color scheme - three equally spaced colors creating visual harmony while allowing distinct UI zones for actions, information, and accents.
 
 - **Primary Color**: Warm coral `oklch(0.72 0.15 25)` - Represents warmth, affection, and friendly connections. Used for primary CTAs and key interactive elements.
-- **Secondary Colors**: 
+- **Secondary Colors**:
   - Soft teal `oklch(0.65 0.12 200)` - Calming and trustworthy, used for informational cards and secondary actions
   - Gentle lavender `oklch(0.70 0.10 290)` - Playful and soft, used for highlights and tertiary elements
 - **Accent Color**: Vibrant orange `oklch(0.68 0.18 45)` - Eye-catching for matches, notifications, and important status indicators
@@ -852,7 +899,7 @@ Typography should feel friendly yet modern—approachable but not childish. Inte
 Animations should feel alive and organic—like pets themselves. Every motion should have purpose: guiding attention, providing feedback, or creating delight. Balance is key: enough movement to feel premium without causing motion sickness or distraction. Haptic feedback complements visual animations for a truly immersive mobile experience.
 
 - **Purposeful Meaning**: Card swipes feel physical with momentum and haptic pulses, matches burst with celebration and success vibrations, loading states pulse gently like breathing, drag gestures provide real-time tactile feedback
-- **Hierarchy of Movement**: 
+- **Hierarchy of Movement**:
   - Primary: Card swipes with drag physics and haptics, page transitions (500ms spring, prominent)
   - Secondary: List items, modal appearances, navigation taps with medium haptics (300ms spring, noticeable)
   - Tertiary: Hover states, button presses with light haptics (150ms ease, subtle)
@@ -891,7 +938,7 @@ Animations should feel alive and organic—like pets themselves. Every motion sh
   - MapPin for location
   - Calendar for scheduling
 
-- **Spacing**: 
+- **Spacing**:
   - Micro (4px): Icon-text gaps, tight list items
   - Small (8px): Related element groups, form field internals
   - Medium (16px): Card internal padding, list item spacing
@@ -899,7 +946,7 @@ Animations should feel alive and organic—like pets themselves. Every motion sh
   - XLarge (32px): Page margins, major section breaks
   - XXLarge (48px): Hero spacing, empty state padding
 
-- **Mobile**: 
+- **Mobile**:
   - Single column layouts with full-bleed cards
   - Bottom-anchored navigation for thumb reach with Instagram-style glass blur and haptic feedback
   - Holographic floating tab bar with glassmorphic effects and shimmer animations
@@ -916,6 +963,7 @@ Animations should feel alive and organic—like pets themselves. Every motion sh
 ## Recent Updates
 
 ### Video Upload with Compression & Preview (Current)
+
 - **Functionality**: Upload videos to community posts with automatic compression, real-time preview, and progress tracking
 - **Purpose**: Enable rich video content while maintaining performance and storage efficiency
 - **Features**:

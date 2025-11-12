@@ -1,39 +1,128 @@
-// Lightweight, structured logger used to replace console.* (tree-shakeable in prod).
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-const validLevels: LogLevel[] = ['debug', 'info', 'warn', 'error'];
-let level: LogLevel = validLevels.includes(process.env.LOG_LEVEL as LogLevel) ? (process.env.LOG_LEVEL as LogLevel) : 'info';
+/**
+ * Logger Utility
+ *
+ * Structured logging for backend services.
+ * In production, this should route to a proper logging service (e.g., Winston, Pino).
+ */
 
-const order: Record<LogLevel, number> = { debug: 10, info: 20, warn: 30, error: 40 };
-function shouldLog(l: LogLevel): boolean {
-  return order[l] >= order[level];
+export type LogLevel = 'info' | 'warn' | 'error' | 'debug';
+
+export interface LogContext {
+  [key: string]: unknown;
 }
 
-// Centralized sink (replace with pino/winston later without touching call sites)
-function emit(l: LogLevel, args: readonly unknown[]): void {
-  const sink = globalThis.console;
-  const write = l === 'error' ? sink.error : l === 'warn' ? sink.warn : l === 'debug' ? sink.debug : sink.info;
-  write.call(
-    sink,
-    `[${new Date().toISOString()}] ${l.toUpperCase()}:`,
-    ...args
-  );
+interface LoggerConfig {
+  silent?: boolean;
+  level?: LogLevel;
 }
 
-export default {
-  setLevel: (l: LogLevel) => {
-    level = l;
-  },
-  debug: (...a: readonly unknown[]) => {
-    if (shouldLog('debug')) emit('debug', a);
-  },
-  info: (...a: readonly unknown[]) => {
-    if (shouldLog('info')) emit('info', a);
-  },
-  warn: (...a: readonly unknown[]) => {
-    if (shouldLog('warn')) emit('warn', a);
-  },
-  error: (...a: readonly unknown[]) => {
-    if (shouldLog('error')) emit('error', a);
-  }
+const LOG_LEVELS: Record<LogLevel, number> = {
+  debug: 0,
+  info: 1,
+  warn: 2,
+  error: 3,
 };
 
+class Logger {
+  private context: string;
+  private config: LoggerConfig;
+
+  constructor(context: string, config: LoggerConfig = {}) {
+    this.context = context;
+    this.config = {
+      silent: process.env.NODE_ENV === 'test' || config.silent === true,
+      level: (process.env.LOG_LEVEL as LogLevel) ?? config.level ?? 'info',
+      ...config,
+    };
+  }
+
+  private shouldLog(level: LogLevel): boolean {
+    if (this.config.silent === true) {
+      return false;
+    }
+    const currentLevel = LOG_LEVELS[this.config.level ?? 'info'] ?? 1;
+    const messageLevel = LOG_LEVELS[level] ?? 1;
+    return messageLevel >= currentLevel;
+  }
+
+  private formatMessage(level: LogLevel, message: string, context?: LogContext): string {
+    const timestamp = new Date().toISOString();
+    const contextStr = context ? ` ${JSON.stringify(context)}` : '';
+    return `[${timestamp}] [${level.toUpperCase()}] [${this.context}] ${message}${contextStr}`;
+  }
+
+  private write(level: LogLevel, message: string, context?: LogContext): void {
+    if (!this.shouldLog(level)) {
+      return;
+    }
+
+    const formatted = this.formatMessage(level, message, context);
+
+    if (process.env.NODE_ENV === 'production') {
+      // In production, route to structured logging service
+      // For now, use process.stderr for errors, stdout for others
+      if (level === 'error') {
+        process.stderr.write(`${formatted}\n`);
+      } else {
+        process.stdout.write(`${formatted}\n`);
+      }
+    } else {
+      // Development: use console methods for better formatting
+      switch (level) {
+        case 'error':
+          process.stderr.write(`${formatted}\n`);
+          break;
+        case 'warn':
+          process.stderr.write(`${formatted}\n`);
+          break;
+        default:
+          process.stdout.write(`${formatted}\n`);
+          break;
+      }
+    }
+  }
+
+  info(message: string, context?: LogContext): void {
+    this.write('info', message, context);
+  }
+
+  warn(message: string, context?: LogContext): void {
+    this.write('warn', message, context);
+  }
+
+  error(message: string, error?: Error | unknown, context?: LogContext): void {
+    const err = error instanceof Error ? error : new Error(String(error));
+    const errorContext: LogContext = {
+      ...context,
+      error: {
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+      },
+    };
+    this.write('error', message, errorContext);
+  }
+
+  debug(message: string, error?: Error | unknown, context?: LogContext): void {
+    if (error !== undefined) {
+      const errorContext: LogContext = {
+        ...context,
+        error:
+          error instanceof Error
+            ? {
+                message: error.message,
+                stack: error.stack,
+                name: error.name,
+              }
+            : { message: String(error) },
+      };
+      this.write('debug', message, errorContext);
+    } else {
+      this.write('debug', message, context);
+    }
+  }
+}
+
+export function createLogger(context: string, config?: LoggerConfig): Logger {
+  return new Logger(context, config);
+}

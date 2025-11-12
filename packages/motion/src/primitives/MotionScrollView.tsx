@@ -1,5 +1,5 @@
-import Animated, { type AnimatedStyle } from 'react-native-reanimated';
-import type { ScrollViewProps, ViewStyle } from 'react-native';
+import Animated, { type AnimatedStyle } from 'react-native-reanimated'
+import type { ViewStyle } from 'react-native'
 
 /**
  * Unified animated ScrollView component.
@@ -7,15 +7,14 @@ import type { ScrollViewProps, ViewStyle } from 'react-native';
  */
 export function MotionScrollView(
   props: React.ComponentProps<typeof Animated.ScrollView> & {
-    animatedStyle?: AnimatedStyle<ViewStyle>;
+    animatedStyle?: AnimatedStyle<ViewStyle>
   }
 ): JSX.Element {
-  const { style, animatedStyle, ...rest } = props;
-  
-  const styleFinal = animatedStyle ? [style, animatedStyle] : style;
-  
-  // Note: Web performance hints are handled by Reanimated automatically
-  
-  return <Animated.ScrollView {...rest} style={styleFinal} />;
-}
+  const { style, animatedStyle, ...rest } = props
 
+  const styleFinal = animatedStyle ? [style, animatedStyle] : style
+
+  // Note: Web performance hints are handled by Reanimated automatically
+
+  return <Animated.ScrollView {...rest} style={styleFinal} />
+}

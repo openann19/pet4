@@ -269,4 +269,3 @@ Per ticket:
 - ✅ Code reviewed
 - ✅ No TODO/FIXME left
 - ✅ Screenshots/GIF attached
-

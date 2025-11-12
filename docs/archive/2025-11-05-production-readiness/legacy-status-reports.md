@@ -6,19 +6,19 @@ These documents were superseded by `docs/production-readiness-status.md` but are
 
 ## docs/production-readiness.md
 
-````markdown
+```markdown
 # Production Readiness Baseline (Nov 5, 2025)
 
 The Configuration Unification Mandate requires initial telemetry for lint, type-check, test coverage, and security scans. Baseline runs have been captured for the web workspace to quantify current gaps.
 
 ## Baseline Metrics – Web
 
-| Metric | Command | Result | Log |
-| --- | --- | --- | --- |
-| Lint Violations | `pnpm lint --report-unused-disable-directives` | 1,058 errors / 65 warnings | `logs/web-lint-baseline.log` |
-| Type Errors | `pnpm type-check` | 55 TS errors (AnimatedStyle typings, verification DTO drift, unused symbols) | `logs/web-type-baseline.log` |
-| Test Coverage | `pnpm test --coverage --reporter=json` | 69 failing suites / 44 failing tests, coverage ≈6.5% statements | `logs/web-test-baseline.json` |
-| Security Audit | `pnpm audit --json` | Audit aborted (`ERR_PNPM_AUDIT_NO_LOCKFILE`; lockfile missing) | `logs/security-audit-baseline.json` |
+| Metric          | Command                                        | Result                                                                       | Log                                 |
+| --------------- | ---------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------- |
+| Lint Violations | `pnpm lint --report-unused-disable-directives` | 1,058 errors / 65 warnings                                                   | `logs/web-lint-baseline.log`        |
+| Type Errors     | `pnpm type-check`                              | 55 TS errors (AnimatedStyle typings, verification DTO drift, unused symbols) | `logs/web-type-baseline.log`        |
+| Test Coverage   | `pnpm test --coverage --reporter=json`         | 69 failing suites / 44 failing tests, coverage ≈6.5% statements              | `logs/web-test-baseline.json`       |
+| Security Audit  | `pnpm audit --json`                            | Audit aborted (`ERR_PNPM_AUDIT_NO_LOCKFILE`; lockfile missing)               | `logs/security-audit-baseline.json` |
 
 ### Observations
 
@@ -34,8 +34,7 @@ The Configuration Unification Mandate requires initial telemetry for lint, type-
 3. **Testing Stabilization:** Repair JSX-bearing `.ts` tests (rename to `.tsx` or strip JSX) and triage animation hook/effect breakages to turn the 69 failing suites green.
 4. **Security Review:** Restore `pnpm-lock.yaml`, rerun `pnpm audit --json`, and classify vulnerabilities once a valid report is produced.
 5. **Extend Baselines:** Repeat the same capture for mobile and shared packages to complete Phase 1 deliverables.
-
-````
+```
 
 ---
 
@@ -62,6 +61,7 @@ The Configuration Unification Mandate requires initial telemetry for lint, type-
 ### 1. 🔴 **BACKEND INTEGRATION** (0% Complete)
 
 #### Current State: ALL MOCKED
+
 ```typescript
 // Current (ALL files do this):
 const data = await window.spark.kv.get<T>('collection-name')
@@ -71,6 +71,7 @@ const data = await api.get<T>('/api/v1/endpoint')
 ```
 
 #### Affected Files (7 API modules):
+
 1. ✅ `src/lib/api.ts` - **APIClient EXISTS but NOT USED**
 2. ❌ `src/api/adoption-api.ts` - Uses spark.kv
 3. ❌ `src/api/matching-api.ts` - Uses spark.kv
@@ -86,6 +87,7 @@ const data = await api.get<T>('/api/v1/endpoint')
 ### 2. 🔴 **DATABASE LAYER** (0% Complete)
 
 #### Current State: localStorage Only
+
 ```typescript
 // src/lib/database.ts
 private async getCollection<T>(name: string): Promise<T[]> {
@@ -95,6 +97,7 @@ private async getCollection<T>(name: string): Promise<T[]> {
 ```
 
 #### Missing:
+
 - ❌ PostgreSQL connection
 - ❌ Database migrations
 - ❌ Query builder (Prisma/Drizzle/Kysely)
@@ -108,6 +111,7 @@ private async getCollection<T>(name: string): Promise<T[]> {
 ### 3. 🔴 **AUTHENTICATION** (50% Complete)
 
 #### Exists But Not Wired:
+
 ```typescript
 // APIClient has auth support
 ✅ setAccessToken(token: string)
@@ -121,6 +125,7 @@ private async getCollection<T>(name: string): Promise<T[]> {
 ```
 
 #### Files Affected:
+
 - `src/contexts/AuthContext.tsx` - Need to check
 - `src/hooks/useAuth.ts` - Need to wire to real API
 - `src/components/auth/*` - Need real endpoints
@@ -132,6 +137,7 @@ private async getCollection<T>(name: string): Promise<T[]> {
 ### 4. 🟠 **ENVIRONMENT CONFIGURATION** (0% Complete)
 
 #### Missing Files:
+
 ```bash
 ❌ .env.example
 ❌ .env.local
@@ -140,6 +146,7 @@ private async getCollection<T>(name: string): Promise<T[]> {
 ```
 
 #### Required Vars:
+
 ```bash
 # API
 VITE_API_URL=http://localhost:8080
@@ -173,6 +180,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### 5. 🟠 **WEBSOCKET / REALTIME** (50% Complete)
 
 #### Files:
+
 - ✅ `src/lib/websocket-manager.ts` - Class exists
 - ✅ `src/lib/realtime-events.ts` - Event system exists
 - ❌ Not connected to real WebSocket server
@@ -185,6 +193,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### 6. 🟠 **FILE UPLOADS** (30% Complete)
 
 #### Current:
+
 ```typescript
 // Image upload exists but mocked
 ✅ Image compression (browser-image-compression)
@@ -195,6 +204,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ```
 
 **Files:**
+
 - `src/lib/image-upload.ts` - Needs real backend
 - `src/lib/media-upload-service.ts` - Needs real backend
 
@@ -205,22 +215,26 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### 7. 🟡 **EXTERNAL API INTEGRATIONS** (10% Complete)
 
 #### Maps (Mapbox/MapLibre):
+
 - ✅ UI components exist
 - ✅ Token stored in config
 - ⚠️ Token management unclear
 - ❌ Not properly wired
 
 #### Payment (Stripe):
+
 - ✅ `src/lib/payments-service.ts` exists
 - ❌ Uses mock data
 - ❌ No real Stripe integration
 
 #### AI (OpenAI/Anthropic):
+
 - ✅ `src/lib/llm-service.ts` exists
 - ❌ No real API calls
 - ❌ Toxicity detection not wired
 
 #### KYC (Persona/Onfido):
+
 - ✅ `src/lib/kyc-service.ts` exists
 - ✅ Native module exists (Kotlin)
 - ❌ Not wired to real service
@@ -232,6 +246,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### 8. 🟡 **ADMIN PANEL WIRING** (40% Complete)
 
 #### UI Components:
+
 ```
 ✅ All 23 admin components exist
 ✅ Beautiful UI
@@ -241,6 +256,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ```
 
 #### Admin Features Mocked:
+
 - ❌ User management
 - ❌ Content moderation
 - ❌ Photo approval queue
@@ -256,6 +272,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### 9. 🟡 **ERROR HANDLING & MONITORING** (30% Complete)
 
 #### Exists:
+
 - ✅ Logger service (`src/lib/logger.ts`)
 - ✅ Error boundaries
 - ✅ Structured logging
@@ -270,6 +287,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### 10. 🟢 **CACHING & PERFORMANCE** (60% Complete)
 
 #### Exists:
+
 - ✅ React Query for client caching
 - ✅ Service worker ready
 - ✅ Image optimization
@@ -284,6 +302,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ## 📋 MISSING PRODUCTION INFRASTRUCTURE
 
 ### Backend Connection Layer
+
 ```typescript
 ❌ API endpoint mapping (all 50+ endpoints)
 ❌ Request interceptors
@@ -295,6 +314,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ```
 
 ### Data Persistence
+
 ```typescript
 ❌ Database schema definitions
 ❌ Migrations
@@ -304,6 +324,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ```
 
 ### Security
+
 ```typescript
 ❌ CORS configuration
 ❌ Rate limiting (client-side)
@@ -314,6 +335,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ```
 
 ### Testing
+
 ```typescript
 ✅ 65 test files exist (95% coverage target)
 ❌ E2E tests (Playwright/Cypress)
@@ -323,6 +345,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ```
 
 ### DevOps
+
 ```typescript
 ❌ Docker setup
 ❌ CI/CD pipelines
@@ -339,12 +362,14 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### **PHASE 1: CRITICAL (Week 1)** 🔴
 
 #### 1.1 Environment Configuration (Day 1)
+
 - Create `.env.example` with all required vars
 - Create `.env.local` for development
 - Create `src/config/environment.ts` for type-safe access
 - Document all environment variables
 
 #### 1.2 API Integration Layer (Days 2-3)
+
 - Create `src/lib/api-client.ts` (use existing APIClient)
 - Create endpoint mapping for all 50+ API calls
 - Add retry logic with exponential backoff
@@ -352,6 +377,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 - Wire up all API modules to use real HTTP
 
 #### 1.3 Authentication (Day 4)
+
 - Implement login/register API calls
 - Add token refresh logic
 - Wire AuthContext to APIClient
@@ -359,6 +385,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 - Test auth flow end-to-end
 
 #### 1.4 Admin Panel Wiring (Day 5)
+
 - Connect all admin components to real APIs
 - Add loading states
 - Add error handling
@@ -371,18 +398,21 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### **PHASE 2: HIGH PRIORITY (Week 2)** 🟠
 
 #### 2.1 File Upload (Days 1-2)
+
 - Implement S3/R2 signed URL generation
 - Add upload progress tracking
 - Add retry logic for failed uploads
 - Wire up image upload components
 
 #### 2.2 WebSocket/Realtime (Days 3-4)
+
 - Connect WebSocketManager to real server
 - Implement reconnection logic
 - Add heartbeat mechanism
 - Test real-time chat/notifications
 
 #### 2.3 External Services (Day 5)
+
 - Wire up Stripe payment integration
 - Connect AI services (OpenAI/Anthropic)
 - Integrate KYC service
@@ -395,18 +425,21 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### **PHASE 3: MEDIUM PRIORITY (Week 3)** 🟡
 
 #### 3.1 Error Monitoring (Days 1-2)
+
 - Add Sentry/DataDog integration
 - Set up error tracking
 - Add performance monitoring
 - Configure alerts
 
 #### 3.2 Caching & Optimization (Days 3-4)
+
 - Configure CDN (Cloudflare/Fastly)
 - Add Redis caching layer
 - Optimize bundle size
 - Add service worker caching
 
 #### 3.3 Testing (Day 5)
+
 - Add E2E tests for critical flows
 - Add API integration tests
 - Run load tests
@@ -419,12 +452,14 @@ VITE_ENABLE_LIVE_STREAMING=true
 ### **PHASE 4: POLISH (Week 4)** 🟢
 
 #### 4.1 DevOps (Days 1-3)
+
 - Create Dockerfile
 - Set up CI/CD (GitHub Actions)
 - Deploy to staging
 - Set up production deployment
 
 #### 4.2 Documentation (Days 4-5)
+
 - API documentation (OpenAPI/Swagger)
 - Deployment guide
 - Environment setup guide
@@ -437,6 +472,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 ## 🔧 IMPLEMENTATION CHECKLIST
 
 ### Core Infrastructure
+
 - [ ] Environment configuration (.env files)
 - [ ] API client with real HTTP calls
 - [ ] Authentication flow (login/register/refresh)
@@ -446,7 +482,9 @@ VITE_ENABLE_LIVE_STREAMING=true
 - [ ] Error monitoring (Sentry)
 
 ### API Endpoints (50+ endpoints to wire)
+
 **Adoption:**
+
 - [ ] `GET /api/v1/adoption/listings`
 - [ ] `POST /api/v1/adoption/listings`
 - [ ] `PATCH /api/v1/adoption/listings/:id`
@@ -454,29 +492,34 @@ VITE_ENABLE_LIVE_STREAMING=true
 - [ ] `PATCH /api/v1/adoption/applications/:id/status`
 
 **Matching:**
+
 - [ ] `GET /api/v1/matches`
 - [ ] `POST /api/v1/swipes`
 - [ ] `GET /api/v1/discovery/candidates`
 - [ ] `PATCH /api/v1/preferences`
 
 **Community:**
+
 - [ ] `GET /api/v1/posts`
 - [ ] `POST /api/v1/posts`
 - [ ] `POST /api/v1/posts/:id/like`
 - [ ] `POST /api/v1/posts/:id/comments`
 
 **Chat:**
+
 - [ ] `GET /api/v1/conversations`
 - [ ] `GET /api/v1/conversations/:id/messages`
 - [ ] `POST /api/v1/messages`
 - [ ] `WS /ws/chat` (WebSocket)
 
 **Lost & Found:**
+
 - [ ] `GET /api/v1/lost-alerts`
 - [ ] `POST /api/v1/lost-alerts`
 - [ ] `POST /api/v1/lost-alerts/:id/sightings`
 
 **Admin:**
+
 - [ ] `GET /api/v1/admin/users`
 - [ ] `GET /api/v1/admin/moderation/queue`
 - [ ] `POST /api/v1/admin/moderation/decisions`
@@ -485,6 +528,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 **Plus 30+ more endpoints...**
 
 ### External Integrations
+
 - [ ] Stripe payment flow
 - [ ] Mapbox/MapLibre token management
 - [ ] OpenAI/Anthropic AI calls
@@ -494,6 +538,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 - [ ] SMS service (Twilio)
 
 ### Admin Panel
+
 - [ ] User management CRUD
 - [ ] Content moderation workflow
 - [ ] Photo approval queue
@@ -504,6 +549,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 - [ ] Feature flag management
 
 ### Testing & Monitoring
+
 - [ ] E2E tests for auth flow
 - [ ] E2E tests for swipe/match
 - [ ] E2E tests for chat
@@ -513,6 +559,7 @@ VITE_ENABLE_LIVE_STREAMING=true
 - [ ] Uptime monitoring
 
 ### DevOps
+
 - [ ] Dockerfile (frontend)
 - [ ] CI/CD pipeline
 - [ ] Staging environment
@@ -524,13 +571,13 @@ VITE_ENABLE_LIVE_STREAMING=true
 
 ## 💰 ESTIMATED EFFORT
 
-| Phase | Days | Complexity |
-|-------|------|------------|
-| Phase 1: Critical | 5 | 🔴 High |
-| Phase 2: High Priority | 5 | 🟠 Medium |
-| Phase 3: Medium Priority | 5 | 🟡 Low |
-| Phase 4: Polish | 5 | 🟢 Easy |
-| **TOTAL** | **20 days** | **~4 weeks** |
+| Phase                    | Days        | Complexity   |
+| ------------------------ | ----------- | ------------ |
+| Phase 1: Critical        | 5           | 🔴 High      |
+| Phase 2: High Priority   | 5           | 🟠 Medium    |
+| Phase 3: Medium Priority | 5           | 🟡 Low       |
+| Phase 4: Polish          | 5           | 🟢 Easy      |
+| **TOTAL**                | **20 days** | **~4 weeks** |
 
 With 2 developers: **2 weeks**  
 With 3 developers: **10 days**
@@ -540,6 +587,7 @@ With 3 developers: **10 days**
 ## 🎬 NEXT STEPS
 
 ### Immediate Actions (Today):
+
 1. ✅ Create this audit document
 2. ⏳ Create environment configuration
 3. ⏳ Wire first API endpoint (auth/login)
@@ -547,6 +595,7 @@ With 3 developers: **10 days**
 5. ⏳ Document setup process
 
 ### Tomorrow:
+
 1. Wire all adoption APIs
 2. Wire all matching APIs
 3. Test admin panel with real data
@@ -571,7 +620,6 @@ With 3 developers: **10 days**
 
 **Last Updated:** November 4, 2025  
 **Status:** 🔴 CRITICAL - Ready to implement production infrastructure
-
 ````
 
 ---
@@ -590,6 +638,7 @@ With 3 developers: **10 days**
 ## 🎉 CLEANUP COMPLETED
 
 ### ✅ Files Deleted (503 MB saved):
+
 - ✅ `/src/` - Duplicate directory with outdated code
 - ✅ `/node_modules/` - Duplicate dependencies (500 MB)
 - ✅ `/package.json` - Minimal duplicate
@@ -597,6 +646,7 @@ With 3 developers: **10 days**
 - ✅ `/README.md` - Minimal file ("pet3")
 
 ### ✅ Clean Project Structure Now:
+
 ```
 /home/ben/Downloads/PETSPARK/
 ├── pawfectmatch-premium-main/    ← YOUR MAIN PROJECT
@@ -620,6 +670,7 @@ With 3 developers: **10 days**
 ### What You Have:
 
 #### ✅ Frontend (pawfectmatch-premium-main)
+
 - **React 19** + TypeScript (strict mode)
 - **800+ components** including:
   - Complete chat system with reactions
@@ -638,6 +689,7 @@ With 3 developers: **10 days**
 - **Accessibility** (WCAG 2.1 AA compliant)
 
 #### ✅ Backend (backend)
+
 - **Kotlin/Ktor** production backend
 - **PostgreSQL 16 + PostGIS 3** database
 - **Complete domain models** (Pet, Owner, Matching)
@@ -655,6 +707,7 @@ With 3 developers: **10 days**
 ### PHASE 1: Backend Completion (2-3 weeks)
 
 #### Week 1: API Implementation
+
 ```bash
 cd /home/ben/Downloads/PETSPARK/backend
 
@@ -676,6 +729,7 @@ src/main/kotlin/com/pawfectmatch/db/
 ```
 
 #### Week 2: Authentication & Infrastructure
+
 ```bash
 # 3. Add authentication
 src/main/kotlin/com/pawfectmatch/auth/
@@ -702,6 +756,7 @@ redis {
 ```
 
 #### Week 3: Deployment
+
 ```bash
 # 6. Deploy to staging
 # Options:
@@ -719,6 +774,7 @@ redis {
 ### PHASE 2: Frontend Deployment (1-2 weeks)
 
 #### Week 1: Integration & Optimization
+
 ```bash
 cd /home/ben/Downloads/PETSPARK/pawfectmatch-premium-main
 
@@ -739,6 +795,7 @@ npm run size
 ```
 
 #### Week 2: Deploy
+
 ```bash
 # 5. Deploy to Vercel (recommended)
 npm install -g vercel
@@ -764,6 +821,7 @@ VITE_SENTRY_DSN=your_sentry_dsn
 ### PHASE 3: Mobile APK (6-8 weeks)
 
 #### Weeks 1-2: React Native Setup
+
 ```bash
 # 1. Create new React Native project
 npx create-expo-app@latest PetSpark --template blank-typescript
@@ -781,6 +839,7 @@ npm install expo-camera expo-location expo-notifications
 ```
 
 #### Weeks 3-4: Core Features
+
 ```bash
 # 4. Implement navigation
 # Create src/navigation/
@@ -798,6 +857,7 @@ src/screens/
 ```
 
 #### Weeks 5-6: Native Features
+
 ```bash
 # 6. Add camera integration
 import * as ImagePicker from 'expo-image-picker'
@@ -814,6 +874,7 @@ import * as Location from 'expo-location'
 ```
 
 #### Weeks 7-8: Testing & Submission
+
 ```bash
 # 10. Build APK/IPA
 # Android:
@@ -839,12 +900,14 @@ eas submit --platform ios
 ## 📋 IMMEDIATE TODO LIST
 
 ### Today:
+
 - [x] Clean up duplicate files
 - [ ] Review backend OpenAPI spec (`backend/src/main/resources/openapi.yaml`)
 - [ ] Set up PostgreSQL database locally
 - [ ] Test backend matching engine
 
 ### This Week:
+
 - [ ] Implement Ktor routes for main endpoints
 - [ ] Set up database DAOs
 - [ ] Add authentication middleware
@@ -852,6 +915,7 @@ eas submit --platform ios
 - [ ] Connect frontend to backend API
 
 ### Next Week:
+
 - [ ] End-to-end testing
 - [ ] Frontend optimization
 - [ ] Deploy frontend to Vercel
@@ -859,6 +923,7 @@ eas submit --platform ios
 - [ ] Configure custom domain
 
 ### Next Month:
+
 - [ ] Start React Native project
 - [ ] Migrate core components
 - [ ] Implement native features
@@ -870,6 +935,7 @@ eas submit --platform ios
 ## 💰 COST ESTIMATES
 
 ### Infrastructure (Monthly):
+
 - **Backend hosting**: $50-200/month
   - AWS ECS/GCP Cloud Run: ~$50-100
   - PostgreSQL RDS: ~$50-100
@@ -883,6 +949,7 @@ eas submit --platform ios
 - **Total**: ~$70-300/month
 
 ### One-Time Costs:
+
 - **Domain**: $10-15/year
 - **App Store fees**:
   - Google Play: $25 one-time
@@ -890,6 +957,7 @@ eas submit --platform ios
 - **SSL Certificate**: Free (Let's Encrypt)
 
 ### Development Costs (if hiring):
+
 - **Backend completion**: $5,000-10,000
 - **Frontend integration**: $3,000-5,000
 - **Mobile app**: $15,000-25,000
@@ -901,6 +969,7 @@ eas submit --platform ios
 ## 🔧 DEVELOPMENT COMMANDS
 
 ### Backend:
+
 ```bash
 cd /home/ben/Downloads/PETSPARK/backend
 
@@ -918,6 +987,7 @@ cd /home/ben/Downloads/PETSPARK/backend
 ```
 
 ### Frontend:
+
 ```bash
 cd /home/ben/Downloads/PETSPARK/pawfectmatch-premium-main
 
@@ -951,6 +1021,7 @@ npm run strict
 ## 📊 PROJECT STATISTICS
 
 ### Current Status:
+
 - **Frontend**: 95% complete
 - **Backend**: 70% complete (models done, API routes needed)
 - **Design System**: 100% complete
@@ -958,6 +1029,7 @@ npm run strict
 - **Tests**: 50% complete (need more integration tests)
 
 ### Code Metrics:
+
 - **Total Files**: 1,000+
 - **Total Lines of Code**: ~150,000
 - **Components**: 800+
@@ -966,6 +1038,7 @@ npm run strict
 - **Languages**: TypeScript, Kotlin, SQL
 
 ### Features Implemented:
+
 - ✅ Pet discovery with AI matching
 - ✅ Real-time chat with reactions
 - ✅ Stories & social features
@@ -984,6 +1057,7 @@ npm run strict
 ## 🎯 SUCCESS CRITERIA
 
 ### Website Launch:
+
 - ✅ All features working end-to-end
 - ✅ < 2s page load time
 - ✅ > 90 Lighthouse score
@@ -993,6 +1067,7 @@ npm run strict
 - ✅ Mobile responsive
 
 ### Mobile App Launch:
+
 - ✅ Available on Google Play & App Store
 - ✅ 4.5+ star rating
 - ✅ < 3s startup time
@@ -1006,18 +1081,21 @@ npm run strict
 ## 📞 SUPPORT & RESOURCES
 
 ### Documentation:
+
 - Main README: `/pawfectmatch-premium-main/README.md`
 - Backend docs: `/backend/README.md`
 - API spec: `/backend/src/main/resources/openapi.yaml`
 - Audit results: `/DEEP_FILE_AUDIT_COMPLETE.md`
 
 ### Key Technologies:
+
 - **Frontend**: React 19, TypeScript, Tailwind CSS, Framer Motion
 - **Backend**: Kotlin, Ktor, PostgreSQL, PostGIS, Redis
 - **Deployment**: Vercel (frontend), AWS/GCP (backend)
 - **Mobile**: React Native, Expo
 
 ### Learning Resources:
+
 - Ktor docs: https://ktor.io/docs/
 - React docs: https://react.dev/
 - Expo docs: https://docs.expo.dev/
@@ -1030,17 +1108,20 @@ npm run strict
 Your project is **clean**, **organized**, and **ready for production**!
 
 ### What You've Accomplished:
+
 - ✅ Removed all duplicate/outdated code
 - ✅ Identified exact next steps
 - ✅ Have a clear deployment roadmap
 - ✅ 95% feature complete application
 
 ### Timeline to Production:
+
 - **Backend API**: 2-3 weeks
 - **Website launch**: 4-6 weeks total
 - **Mobile apps**: 10-14 weeks total
 
 ### You're Ready To:
+
 1. Complete backend API implementation
 2. Deploy to production servers
 3. Launch website to real users
@@ -1051,11 +1132,9 @@ Your project is **clean**, **organized**, and **ready for production**!
 
 **Good luck with your launch! 🚀🐾**
 
-*Generated: 2025-11-05*  
-*Project: PETSPARK / PawfectMatch*  
-*Status: Production Ready*
-
-
+_Generated: 2025-11-05_  
+_Project: PETSPARK / PawfectMatch_  
+_Status: Production Ready_
 ````
 
 ---
@@ -1073,6 +1152,7 @@ Your project is **clean**, **organized**, and **ready for production**!
 ## ✅ Phase 1: UI Foundations (COMPLETED)
 
 ### Implemented
+
 - ✅ Fluid typography system (`src/lib/fluid-typography.ts`)
 - ✅ Line clamp utilities for text overflow
 - ✅ Button sizing utilities with auto-expand
@@ -1085,6 +1165,7 @@ Your project is **clean**, **organized**, and **ready for production**!
 - ✅ i18n audit script (`audit-i18n.ts`)
 
 ###Usage Examples
+
 ```typescript
 // Fluid Typography
 import { getFluidTypographyClasses, getLineClampClass } from '@/lib/fluid-typography'
@@ -1114,7 +1195,9 @@ $ npx tsx audit-i18n.ts
 ```
 
 ### Theme Contrast Status
+
 All components use theme variables. WCAG AA compliance verified for:
+
 - Light theme: All text > 4.5:1 contrast ratio
 - Dark theme: All text > 4.5:1 contrast ratio
 - Ghost/outline buttons visible in both themes
@@ -1124,6 +1207,7 @@ All components use theme variables. WCAG AA compliance verified for:
 ## ✅ Phase 2: Real Swipe Engine (COMPLETED)
 
 ### Implemented
+
 - ✅ SwipeEngine class with physics (`src/lib/swipe-engine.ts`)
 - ✅ Configurable thresholds (15px engage, 80px intent, 150px commit)
 - ✅ Velocity-based escape (>500px/s)
@@ -1134,6 +1218,7 @@ All components use theme variables. WCAG AA compliance verified for:
 - ✅ Performance optimized with requestAnimationFrame
 
 ### Usage
+
 ```typescript
 import { createSwipeEngine } from '@/lib/swipe-engine'
 
@@ -1141,7 +1226,7 @@ const swipeEngine = createSwipeEngine({
   engageThreshold: 15,
   intentThreshold: 80,
   commitThreshold: 150,
-  velocityEscape: 500
+  velocityEscape: 500,
 })
 
 swipeEngine.setCallbacks({
@@ -1149,10 +1234,10 @@ swipeEngine.setCallbacks({
     console.log('Swipe state:', state, metrics)
     // Update UI based on state
   },
-  onCommit: (result) => {
+  onCommit: result => {
     console.log('Swipe committed:', result.direction)
     // Handle like/pass action
-  }
+  },
 })
 
 // Touch handlers
@@ -1164,11 +1249,10 @@ const handleTouchStart = (e: TouchEvent) => {
 const handleTouchMove = (e: TouchEvent) => {
   const touch = e.touches[0]
   swipeEngine.move(touch.clientX, touch.clientY)
-  
+
   const offset = swipeEngine.getClampedOffset()
   // Apply transform to card
-  cardRef.current.style.transform = 
-    `translate(${offset.x}px, ${offset.y}px) rotate(${offset.rotation}deg) scale(${offset.scale})`
+  cardRef.current.style.transform = `translate(${offset.x}px, ${offset.y}px) rotate(${offset.rotation}deg) scale(${offset.scale})`
 }
 
 const handleTouchEnd = () => {
@@ -1182,6 +1266,7 @@ const handleTouchEnd = () => {
 ```
 
 ### Integration Points
+
 - TODO: Replace swipe logic in DiscoverView
 - TODO: Add visual indicators (LIKE/PASS labels)
 - TODO: Implement optimistic UI updates
@@ -1194,6 +1279,7 @@ const handleTouchEnd = () => {
 ### Required Implementation
 
 #### Map Provider Setup
+
 ```typescript
 // src/lib/maps/provider.ts
 export const MAP_CONFIG = {
@@ -1209,6 +1295,7 @@ VITE_GOOGLE_MAPS_KEY=AIza-xxx (if using Google)
 ```
 
 #### Geocoding Service
+
 ```typescript
 // src/lib/maps/geocoding.ts
 export async function geocode(address: string): Promise<Coordinates> {
@@ -1220,16 +1307,14 @@ export async function reverseGeocode(lat: number, lng: number): Promise<Address>
   // Returns { city, country, formatted }
 }
 
-export function calculateDistance(
-  coord1: Coordinates,
-  coord2: Coordinates
-): number {
+export function calculateDistance(coord1: Coordinates, coord2: Coordinates): number {
   // Haversine formula
   // Returns distance in km
 }
 ```
 
 #### Permission Flow
+
 ```typescript
 // src/lib/maps/permissions.ts
 export type LocationPermission = 'granted' | 'denied' | 'prompt'
@@ -1244,12 +1329,12 @@ export async function requestLocationPermission(): Promise<LocationPermission> {
 }
 
 export async function getCurrentLocation(): Promise<Coordinates | null> {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      position => {
         resolve({
           lat: position.coords.latitude,
-          lng: position.coords.longitude
+          lng: position.coords.longitude,
         })
       },
       () => resolve(null),
@@ -1260,6 +1345,7 @@ export async function getCurrentLocation(): Promise<Coordinates | null> {
 ```
 
 #### Privacy-First Location Storage
+
 ```typescript
 // NEVER store raw coordinates in logs
 // Always use fuzzy/approximate locations for display
@@ -1277,13 +1363,10 @@ const [lastLocation] = useKV<Coordinates | null>('last-approx-location', null)
 ```
 
 #### Map Components
+
 ```typescript
 // src/components/maps/MapView.tsx
-export function MapView({
-  center,
-  markers,
-  onMarkerClick
-}: MapViewProps) {
+export function MapView({ center, markers, onMarkerClick }: MapViewProps) {
   // Render map with markers
   // Support clustering for many markers
   // Custom marker icons for pets/places
@@ -1305,6 +1388,7 @@ export function LocationPicker({ onSelect }: { onSelect: (loc: Coordinates) => v
 ```
 
 #### Distance Filtering
+
 ```typescript
 // Integrate into discovery filters
 // src/components/DiscoveryFilters.tsx
@@ -1320,6 +1404,7 @@ const filteredPets = pets.filter(pet => {
 ```
 
 ### Testing Checklist
+
 - [ ] Location permission prompt works
 - [ ] Manual entry fallback when permission denied
 - [ ] Distance calculation accurate
@@ -1373,10 +1458,11 @@ GET    /api/v1/openapi.json
 ```
 
 ### Auth Implementation
+
 ```typescript
 // JWT + Refresh Token Flow
 interface AuthTokens {
-  accessToken: string  // 15min expiry
+  accessToken: string // 15min expiry
   refreshToken: string // 30 day expiry
 }
 
@@ -1386,6 +1472,7 @@ interface AuthTokens {
 ```
 
 ### Rate Limiting
+
 ```typescript
 // Rate limit configuration
 const RATE_LIMITS = {
@@ -1406,12 +1493,13 @@ const RATE_LIMITS = {
 ```
 
 ### Frontend API Client
+
 ```typescript
 // src/lib/api/client.ts
 export class APIClient {
   private baseURL = import.meta.env.VITE_API_BASE_URL
   private accessToken: string | null = null
-  
+
   async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     // Add auth header
     // Handle 401 → refresh token
@@ -1419,18 +1507,18 @@ export class APIClient {
     // Handle network errors
     // Retry logic with exponential backoff
   }
-  
+
   auth = {
-    login: (credentials) => this.request('/auth/login', { method: 'POST', body: credentials }),
-    register: (data) => this.request('/auth/register', { method: 'POST', body: data })
+    login: credentials => this.request('/auth/login', { method: 'POST', body: credentials }),
+    register: data => this.request('/auth/register', { method: 'POST', body: data }),
   }
-  
+
   pets = {
     list: () => this.request<Pet[]>('/pets'),
-    create: (pet) => this.request<Pet>('/pets', { method: 'POST', body: pet }),
-    update: (id, updates) => this.request<Pet>(`/pets/${id}`, { method: 'PATCH', body: updates })
+    create: pet => this.request<Pet>('/pets', { method: 'POST', body: pet }),
+    update: (id, updates) => this.request<Pet>(`/pets/${id}`, { method: 'PATCH', body: updates }),
   }
-  
+
   // ... more endpoints
 }
 
@@ -1438,6 +1526,7 @@ export const api = new APIClient()
 ```
 
 ### Environment Configuration
+
 ```bash
 # .env.example
 VITE_API_BASE_URL=http://localhost:3000/api/v1
@@ -1458,6 +1547,7 @@ FCM_SERVER_KEY=xxx
 ```
 
 ### Testing Checklist
+
 - [ ] All endpoints return proper status codes
 - [ ] Auth flow works (login/register/refresh)
 - [ ] Rate limiting prevents abuse
@@ -1471,6 +1561,7 @@ FCM_SERVER_KEY=xxx
 ## 📋 Phase 5: Admin Approvals/KYC (ARCHITECTURE COMPLETE)
 
 ### Queue System
+
 ```typescript
 // Admin queue types
 interface PhotoApprovalQueue {
@@ -1499,6 +1590,7 @@ interface KYCVerificationQueue {
 ```
 
 ### Admin Dashboard Actions
+
 ```typescript
 // Photo Approval
 POST /api/v1/admin/photos/:id/approve
@@ -1521,10 +1613,11 @@ GET /api/v1/admin/flagged?page=1&limit=20
 ```
 
 ### KYC Integration
+
 ```typescript
 // Liveness check provider (e.g., Onfido, Jumio)
 interface KYCProvider {
-  createVerification(userId: string): Promise<{ verificationId: string, url: string }>
+  createVerification(userId: string): Promise<{ verificationId: string; url: string }>
   checkStatus(verificationId: string): Promise<KYCResult>
 }
 
@@ -1548,6 +1641,7 @@ interface UserVerification {
 ```
 
 ### User Notifications
+
 ```typescript
 // Notification events
 enum NotificationEvent {
@@ -1555,7 +1649,7 @@ enum NotificationEvent {
   PHOTO_REJECTED = 'photo_rejected',
   KYC_APPROVED = 'kyc_approved',
   KYC_REJECTED = 'kyc_rejected',
-  KYC_NEEDS_RESUBMISSION = 'kyc_needs_resubmission'
+  KYC_NEEDS_RESUBMISSION = 'kyc_needs_resubmission',
 }
 
 // Send notifications
@@ -1564,17 +1658,18 @@ await notificationService.send({
   type: NotificationEvent.PHOTO_REJECTED,
   title: 'Photo Rejected',
   body: `Your photo was rejected: ${reason}`,
-  data: { photoId, reason }
+  data: { photoId, reason },
 })
 ```
 
 ### Content Visibility Gating
+
 ```typescript
 // Hide unapproved content from feeds
 const visiblePets = pets.filter(pet => {
   // Always show to owner
   if (pet.ownerId === currentUserId) return true
-  
+
   // Show only approved photos to others
   return pet.photos.every(photo => photo.status === 'approved')
 })
@@ -1589,6 +1684,7 @@ const sortedPets = pets.sort((a, b) => {
 ```
 
 ### Testing Checklist
+
 - [ ] Submit photo → appears in admin queue
 - [ ] Admin approves → user notified → content visible
 - [ ] Admin rejects → user notified → content hidden
@@ -1602,29 +1698,30 @@ const sortedPets = pets.sort((a, b) => {
 ## 📋 Phase 6: Media Pipeline (ARCHITECTURE COMPLETE)
 
 ### Image Processing Pipeline
+
 ```typescript
 // Image upload flow
 1. Client requests signed URL
    POST /api/v1/media/upload-url
    { filename, contentType, size }
-   
+
 2. Server generates signed S3 URL + UUID
    Returns { uploadUrl, mediaId, expiresIn }
-   
+
 3. Client uploads directly to S3
    PUT <uploadUrl> with file
-   
+
 4. Client confirms upload
    POST /api/v1/media/confirm
    { mediaId }
-   
+
 5. Server triggers processing lambda
    - Download original
    - Strip EXIF data
    - Fix orientation (EXIF rotation)
    - Generate variants:
      * thumbnail: 320px WebP
-     * medium: 960px WebP  
+     * medium: 960px WebP
      * large: 1920px WebP
      * original: fallback JPEG
    - Run antivirus scan (ClamAV)
@@ -1633,6 +1730,7 @@ const sortedPets = pets.sort((a, b) => {
 ```
 
 ### Video Processing
+
 ```typescript
 // Video upload similar to images
 // Processing:
@@ -1650,6 +1748,7 @@ GET  /api/v1/media/video/:id/progress
 ```
 
 ### CDN Configuration
+
 ```typescript
 // S3 + CloudFront
 const CDN_CONFIG = {
@@ -1670,28 +1769,30 @@ https://media.pawfectmatch.app/pets/{petId}/{mediaId}-original.jpg
 ```
 
 ### Deletion Cascade
+
 ```typescript
 // When pet/user deletes media
 async function deleteMedia(mediaId: string) {
   const media = await db.media.findUnique({ where: { id: mediaId } })
-  
+
   // Delete all variants from S3
-  const deletePromises = media.variants.map(variant => 
+  const deletePromises = media.variants.map(variant =>
     s3.deleteObject({ Bucket, Key: variant.key })
   )
   await Promise.all(deletePromises)
-  
+
   // Delete DB record
   await db.media.delete({ where: { id: mediaId } })
-  
+
   // Purge from CDN cache
   await cloudfront.createInvalidation({
-    Paths: media.variants.map(v => v.url)
+    Paths: media.variants.map(v => v.url),
   })
 }
 ```
 
 ### Testing Checklist
+
 - [ ] Upload generates all variants
 - [ ] EXIF data stripped
 - [ ] Orientation correct
@@ -1707,6 +1808,7 @@ async function deleteMedia(mediaId: string) {
 ## 📋 Phase 7: Push Notifications (ARCHITECTURE COMPLETE)
 
 ### Setup
+
 ```typescript
 // APNs (iOS) + FCM (Android) configuration
 const PUSH_CONFIG = {
@@ -1714,18 +1816,19 @@ const PUSH_CONFIG = {
     keyId: process.env.APNS_KEY_ID,
     teamId: process.env.APNS_TEAM_ID,
     privateKey: process.env.APNS_PRIVATE_KEY,
-    production: process.env.NODE_ENV === 'production'
+    production: process.env.NODE_ENV === 'production',
   },
   fcm: {
-    serverKey: process.env.FCM_SERVER_KEY
-  }
+    serverKey: process.env.FCM_SERVER_KEY,
+  },
 }
 ```
 
 ### Device Registration
+
 ```typescript
 // Client registers device token
-POST /api/v1/notifications/register-device
+POST / api / v1 / notifications / register - device
 {
   deviceToken: string
   platform: 'ios' | 'android' | 'web'
@@ -1744,6 +1847,7 @@ interface DeviceToken {
 ```
 
 ### Notification Types
+
 ```typescript
 enum NotificationType {
   NEW_MATCH = 'new_match',
@@ -1752,7 +1856,7 @@ enum NotificationType {
   PHOTO_APPROVED = 'photo_approved',
   PHOTO_REJECTED = 'photo_rejected',
   KYC_RESULT = 'kyc_result',
-  PLAYDATE_REMINDER = 'playdate_reminder'
+  PLAYDATE_REMINDER = 'playdate_reminder',
 }
 
 interface PushNotification {
@@ -1769,6 +1873,7 @@ interface PushNotification {
 ```
 
 ### User Preferences
+
 ```typescript
 // Per-notification-type toggles
 interface NotificationSettings {
@@ -1783,38 +1888,36 @@ interface NotificationSettings {
 }
 
 // Stored in user preferences
-const [notifSettings, setNotifSettings] = useKV<NotificationSettings>(
-  'notification-settings',
-  {
-    matches: true,
-    messages: true,
-    comments: true,
-    likes: false,
-    system: true,
-    quietHoursEnabled: false,
-    quietHoursStart: '22:00',
-    quietHoursEnd: '08:00'
-  }
-)
+const [notifSettings, setNotifSettings] = useKV<NotificationSettings>('notification-settings', {
+  matches: true,
+  messages: true,
+  comments: true,
+  likes: false,
+  system: true,
+  quietHoursEnabled: false,
+  quietHoursStart: '22:00',
+  quietHoursEnd: '08:00',
+})
 ```
 
 ### Deep Links
+
 ```typescript
 // URL schemes
-pawf://match/:matchId
-pawf://chat/:conversationId
-pawf://pet/:petId
-pawf://post/:postId
+//match/:matchId
+//chat/:conversationId
+//pet/:petId
+//post/:postId
 
 // Universal links (iOS/Android)
-https://pawfectmatch.app/match/:matchId
-https://pawfectmatch.app/chat/:conversationId
+//pawfectmatch.app/match/:matchId
+pawf: //pawfectmatch.app/chat/:conversationId
 
 // Deep link routing
-function handleDeepLink(url: string) {
+pawf: pawf: pawf: https: https: function handleDeepLink(url: string) {
   const parsed = new URL(url)
   const path = parsed.pathname
-  
+
   if (path.startsWith('/match/')) {
     const matchId = path.split('/')[2]
     navigate(`/matches/${matchId}`)
@@ -1835,30 +1938,32 @@ useEffect(() => {
 ```
 
 ### Quiet Hours
+
 ```typescript
 function shouldSendNotification(userId: string, type: NotificationType): boolean {
   const settings = getUserNotificationSettings(userId)
-  
+
   // Check if type is enabled
   if (!settings[type]) return false
-  
+
   // Check quiet hours
   if (settings.quietHoursEnabled) {
     const now = new Date()
     const currentTime = `${now.getHours()}:${now.getMinutes()}`
     const start = settings.quietHoursStart
     const end = settings.quietHoursEnd
-    
+
     if (isTimeInRange(currentTime, start, end)) {
       return false // In quiet hours
     }
   }
-  
+
   return true
 }
 ```
 
 ### Testing Checklist
+
 - [ ] Device registration works
 - [ ] Notifications received on iOS
 - [ ] Notifications received on Android
@@ -1874,6 +1979,7 @@ function shouldSendNotification(userId: string, type: NotificationType): boolean
 ## 📋 Phase 8: Payments/Entitlements (ARCHITECTURE COMPLETE)
 
 ### Product Catalog
+
 ```typescript
 interface Product {
   id: string
@@ -1896,20 +2002,16 @@ const PRODUCTS: Product[] = [
     price: 999, // cents
     currency: 'USD',
     interval: 'month',
-    features: [
-      'Unlimited swipes',
-      'See who liked you',
-      'Boost your profile',
-      'Advanced filters'
-    ],
+    features: ['Unlimited swipes', 'See who liked you', 'Boost your profile', 'Advanced filters'],
     stripePriceId: 'price_xxx',
     appleSKU: 'com.pawfectmatch.premium.monthly',
-    googleSKU: 'premium_monthly'
-  }
+    googleSKU: 'premium_monthly',
+  },
 ]
 ```
 
 ### Purchase Flow (Web - Stripe)
+
 ```typescript
 // 1. Create checkout session
 POST /api/v1/payments/create-checkout
@@ -1930,6 +2032,7 @@ GET /api/v1/entitlements
 ```
 
 ### Purchase Flow (Mobile - IAP)
+
 ```typescript
 // Use react-native-iap or similar
 import * as IAP from 'react-native-iap'
@@ -1952,6 +2055,7 @@ POST /api/v1/payments/validate-receipt
 ```
 
 ### Entitlements Cache
+
 ```typescript
 // Client-side entitlements
 interface Entitlements {
@@ -1965,19 +2069,16 @@ interface Entitlements {
   }
 }
 
-const [entitlements, setEntitlements] = useKV<Entitlements>(
-  'user-entitlements',
-  {
-    premium: false,
-    premiumExpiresAt: null,
-    features: {
-      unlimitedSwipes: false,
-      whoLikedYou: false,
-      boost: false,
-      advancedFilters: false
-    }
-  }
-)
+const [entitlements, setEntitlements] = useKV<Entitlements>('user-entitlements', {
+  premium: false,
+  premiumExpiresAt: null,
+  features: {
+    unlimitedSwipes: false,
+    whoLikedYou: false,
+    boost: false,
+    advancedFilters: false,
+  },
+})
 
 // Refresh on app launch and periodically
 useEffect(() => {
@@ -1988,6 +2089,7 @@ useEffect(() => {
 ```
 
 ### Feature Gates
+
 ```typescript
 // Gate features behind entitlements
 function handleSwipe(direction: 'like' | 'pass') {
@@ -1998,7 +2100,7 @@ function handleSwipe(direction: 'like' | 'pass') {
       return
     }
   }
-  
+
   // Proceed with swipe
   recordSwipe(direction)
 }
@@ -2008,19 +2110,21 @@ function showWhoLikedYou() {
     showUpgradePrompt('Who Liked You')
     return
   }
-  
+
   navigate('/who-liked-you')
 }
 ```
 
 ### Grace Period
+
 ```typescript
 // Handle expired subscriptions with grace period
 if (entitlements.premium && entitlements.premiumExpiresAt) {
   const expired = new Date() > new Date(entitlements.premiumExpiresAt)
   const gracePeriodDays = 3
-  const graceExpired = new Date() > addDays(new Date(entitlements.premiumExpiresAt), gracePeriodDays)
-  
+  const graceExpired =
+    new Date() > addDays(new Date(entitlements.premiumExpiresAt), gracePeriodDays)
+
   if (expired && !graceExpired) {
     // Show banner: "Your subscription expired. Renew to keep premium features."
     showRenewalBanner()
@@ -2033,18 +2137,19 @@ if (entitlements.premium && entitlements.premiumExpiresAt) {
 ```
 
 ### Restore Purchases
+
 ```typescript
 // iOS restore button
 async function restorePurchases() {
   try {
     const purchases = await IAP.getAvailablePurchases()
-    
+
     if (purchases.length > 0) {
       // Send receipts to server for validation
       for (const purchase of purchases) {
         await validateReceipt(purchase.transactionReceipt)
       }
-      
+
       // Refresh entitlements
       await refreshEntitlements()
       toast.success('Purchases restored!')
@@ -2058,6 +2163,7 @@ async function restorePurchases() {
 ```
 
 ### Testing Checklist
+
 - [ ] Stripe checkout works (web)
 - [ ] IAP works on iOS (sandbox)
 - [ ] IAP works on Android (test)
@@ -2073,6 +2179,7 @@ async function restorePurchases() {
 ## 📋 Phase 9: Observability & Safety (ARCHITECTURE COMPLETE)
 
 ### Telemetry Schema
+
 ```typescript
 // Consistent event structure
 interface AnalyticsEvent {
@@ -2082,9 +2189,9 @@ interface AnalyticsEvent {
   sessionId: string
   properties: Record<string, any>
   context: {
-    app: { version: string, build: string }
-    device: { platform: string, os: string, model?: string }
-    screen: { width: number, height: number }
+    app: { version: string; build: string }
+    device: { platform: string; os: string; model?: string }
+    screen: { width: number; height: number }
     locale: string
   }
 }
@@ -2096,6 +2203,7 @@ trackEvent('match_created', { matchId: '456', petId: '123' })
 ```
 
 ### Sentry Integration
+
 ```typescript
 // src/lib/sentry.ts
 import * as Sentry from '@sentry/react'
@@ -2104,10 +2212,7 @@ Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
   environment: import.meta.env.VITE_ENVIRONMENT,
   release: `pawfectmatch@${import.meta.env.VITE_APP_VERSION}`,
-  integrations: [
-    new Sentry.BrowserTracing(),
-    new Sentry.Replay()
-  ],
+  integrations: [new Sentry.BrowserTracing(), new Sentry.Replay()],
   tracesSampleRate: 0.1,
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
@@ -2120,47 +2225,53 @@ Sentry.init({
       }
     }
     return event
-  }
+  },
 })
 
 // Set user context (non-PII only)
 Sentry.setUser({
   id: user.id,
-  username: user.username // No email, phone, etc
+  username: user.username, // No email, phone, etc
 })
 ```
 
 ### Security Headers
+
 ```typescript
 // Backend helmet configuration
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      imgSrc: ["'self'", 'data:', 'https://media.pawfectmatch.app'],
-      scriptSrc: ["'self'"],
-      connectSrc: ["'self'", 'https://api.pawfectmatch.app'],
-      frameSrc: ["'none'"],
-      objectSrc: ["'none'"]
-    }
-  },
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  }
-}))
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'https://media.pawfectmatch.app'],
+        scriptSrc: ["'self'"],
+        connectSrc: ["'self'", 'https://api.pawfectmatch.app'],
+        frameSrc: ["'none'"],
+        objectSrc: ["'none'"],
+      },
+    },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+  })
+)
 
 // CORS
-app.use(cors({
-  origin: ['https://pawfectmatch.app', 'https://app.pawfectmatch.app'],
-  credentials: true
-}))
+app.use(
+  cors({
+    origin: ['https://pawfectmatch.app', 'https://app.pawfectmatch.app'],
+    credentials: true,
+  })
+)
 ```
 
 ### Input Sanitization
+
 ```typescript
 // Sanitize all user input
 import DOMPurify from 'isomorphic-dompurify'
@@ -2182,12 +2293,13 @@ function isValidEmail(email: string): boolean {
 function isValidURL(url: string): boolean {
   return validator.isURL(url, {
     protocols: ['http', 'https'],
-    require_protocol: true
+    require_protocol: true,
   })
 }
 ```
 
 ### Secret Rotation
+
 ```typescript
 // JWT secrets should rotate regularly
 // Use key versioning
@@ -2219,6 +2331,7 @@ function verifyToken(token: string): any {
 ```
 
 ### Admin Audit Log
+
 ```typescript
 // Log all admin actions
 interface AuditLogEntry {
@@ -2249,6 +2362,7 @@ GET /api/v1/admin/audit-log?adminId=xxx&action=xxx&from=xxx&to=xxx
 ```
 
 ### Testing Checklist
+
 - [ ] Events tracked correctly
 - [ ] Sentry captures errors
 - [ ] PII redacted from logs
@@ -2264,6 +2378,7 @@ GET /api/v1/admin/audit-log?adminId=xxx&action=xxx&from=xxx&to=xxx
 ## 📋 Phase 10: Tests & CI (ARCHITECTURE COMPLETE)
 
 ### Unit Tests
+
 ```typescript
 // src/lib/__tests__/swipe-engine.test.ts
 describe('SwipeEngine', () => {
@@ -2273,7 +2388,7 @@ describe('SwipeEngine', () => {
     engine.move(20, 0)
     expect(engine.getState()).toBe('engaged')
   })
-  
+
   it('should commit on velocity escape', () => {
     const engine = createSwipeEngine()
     engine.start(0, 0)
@@ -2298,97 +2413,100 @@ describe('Matching Algorithm', () => {
 ```
 
 ### Integration Tests
+
 ```typescript
 // tests/integration/api.test.ts
 describe('API Integration', () => {
   it('should create pet and retrieve it', async () => {
     const pet = await api.pets.create(mockPet)
     expect(pet.id).toBeDefined()
-    
+
     const retrieved = await api.pets.get(pet.id)
     expect(retrieved).toEqual(pet)
   })
-  
+
   it('should handle rate limiting', async () => {
     // Make many requests
-    const requests = Array(100).fill(null).map(() => 
-      api.pets.list()
-    )
-    
+    const requests = Array(100)
+      .fill(null)
+      .map(() => api.pets.list())
+
     await expect(Promise.all(requests)).rejects.toThrow('rate_limit_exceeded')
   })
 })
 ```
 
 ### E2E Tests (Web - Playwright)
+
 ```typescript
 // tests/e2e/onboarding.spec.ts
 import { test, expect } from '@playwright/test'
 
 test('complete onboarding flow', async ({ page }) => {
   await page.goto('/')
-  
+
   // Welcome screen
   await expect(page.getByText('Welcome to PawfectMatch')).toBeVisible()
   await page.getByRole('button', { name: 'Get started' }).click()
-  
+
   // Sign up
   await page.fill('input[name="email"]', 'test@example.com')
   await page.fill('input[name="password"]', 'password123')
   await page.click('button[type="submit"]')
-  
+
   // Create pet profile
   await page.fill('input[name="name"]', 'Max')
   await page.selectOption('select[name="breed"]', 'Golden Retriever')
   await page.click('button[type="submit"]')
-  
+
   // Should land on discover page
   await expect(page).toHaveURL('/discover')
 })
 
 test('swipe and match', async ({ page }) => {
   await page.goto('/discover')
-  
+
   // Swipe right (like)
   const card = page.locator('[data-testid="pet-card"]').first()
   await card.swipe({ direction: 'right' })
-  
+
   // Check for match celebration
   await expect(page.getByText("It's a Match!")).toBeVisible()
 })
 ```
 
 ### E2E Tests (Mobile - Detox)
+
 ```typescript
 // e2e/mobile.spec.ts
 describe('Mobile App', () => {
   it('should handle sheet dismissal', async () => {
     await element(by.id('open-filters')).tap()
     await expect(element(by.id('filters-sheet'))).toBeVisible()
-    
+
     // Tap outside
     await element(by.id('overlay')).tap()
     await expect(element(by.id('filters-sheet'))).not.toBeVisible()
-    
+
     // Android back button
     await element(by.id('open-filters')).tap()
     await device.pressBack()
     await expect(element(by.id('filters-sheet'))).not.toBeVisible()
   })
-  
+
   it('should handle push notification', async () => {
     await device.sendUserNotification({
       trigger: {
-        type: 'push'
+        type: 'push',
       },
       title: 'New Match!',
       body: 'You matched with Max',
       payload: {
         type: 'new_match',
-        matchId: '123'
-      }
+        matchId: '123',
+      },
     })
-    
+
     await device.launchApp({ newInstance: false })
     await expect(element(by.id('match-detail'))).toBeVisible()
   })
@@ -2396,6 +2514,7 @@ describe('Mobile App', () => {
 ```
 
 ### CI Pipeline
+
 ```yaml
 # .github/workflows/ci.yml
 name: CI
@@ -2410,18 +2529,18 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
       - run: npm run test -- --coverage
       - run: npm run build
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage/coverage-final.json
-      
+
       - name: Check coverage threshold
         run: |
           COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
@@ -2429,7 +2548,7 @@ jobs:
             echo "Coverage $COVERAGE% is below 80%"
             exit 1
           fi
-  
+
   e2e:
     runs-on: ubuntu-latest
     steps:
@@ -2438,14 +2557,14 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps
       - run: npm run test:e2e
-      
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: playwright-report
           path: playwright-report/
-  
+
   lighthouse:
     runs-on: ubuntu-latest
     steps:
@@ -2454,7 +2573,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run preview &
-      
+
       - name: Run Lighthouse
         uses: treosh/lighthouse-ci-action@v9
         with:
@@ -2465,6 +2584,7 @@ jobs:
 ```
 
 ### Testing Checklist
+
 - [ ] Unit tests >80% coverage
 - [ ] Integration tests pass
 - [ ] E2E web tests pass
@@ -2479,6 +2599,7 @@ jobs:
 ## 📋 Phase 11: Store Readiness (ARCHITECTURE COMPLETE)
 
 ### App Icons & Splash
+
 ```
 Required sizes:
 iOS: 1024x1024 (App Store), 180x180, 167x167, 152x152, 120x120, 87x87, 80x80, 76x76, 60x60, 58x58, 40x40, 29x29, 20x20
@@ -2488,6 +2609,7 @@ Splash screens: iOS (2778x1284, 1284x2778, etc.), Android (res/drawable-*)
 ```
 
 ### Permission Copy
+
 ```typescript
 // Info.plist (iOS)
 <key>NSCameraUsageDescription</key>
@@ -2514,13 +2636,14 @@ Splash screens: iOS (2778x1284, 1284x2778, etc.), Android (res/drawable-*)
 ```
 
 ### In-App Review Prompt
+
 ```typescript
 // Show after positive interaction
 import { InAppReview } from 'react-native-in-app-review'
 
 async function promptReview() {
   const available = await InAppReview.isAvailable()
-  
+
   if (available) {
     await InAppReview.RequestInAppReview()
   }
@@ -2534,6 +2657,7 @@ async function promptReview() {
 ```
 
 ### Privacy Policy & Terms
+
 ```typescript
 // In-app screens
 <SettingsScreen>
@@ -2550,7 +2674,7 @@ async function requestDataDeletion() {
     confirmText: 'Delete Everything',
     cancelText: 'Cancel'
   })
-  
+
   if (confirmed) {
     await api.user.deleteAccount()
     await clearLocalData()
@@ -2560,6 +2684,7 @@ async function requestDataDeletion() {
 ```
 
 ### Crash Monitoring
+
 ```typescript
 // Target: >99.5% crash-free sessions
 // Monitor with Firebase Crashlytics or Sentry
@@ -2577,6 +2702,7 @@ interface CrashMetrics {
 ### Store Submission Checklists
 
 #### iOS App Store
+
 - [ ] App icons all sizes
 - [ ] Screenshots (6.5", 5.5", iPad)
 - [ ] App preview video
@@ -2592,6 +2718,7 @@ interface CrashMetrics {
 - [ ] App Review notes
 
 #### Google Play Store
+
 - [ ] App icons all sizes
 - [ ] Feature graphic (1024x500)
 - [ ] Screenshots (phone, tablet, 7")
@@ -2607,6 +2734,7 @@ interface CrashMetrics {
 - [ ] Pre-launch report reviewed
 
 ### Testing Checklist
+
 - [ ] All icons display correctly
 - [ ] Splash screens no flicker
 - [ ] Permission prompts localized
@@ -2621,10 +2749,12 @@ interface CrashMetrics {
 ## Summary & Next Steps
 
 ### Completed
+
 - ✅ Phase 1: UI Foundations (fluid typography, dismissible overlay, i18n audit)
 - ✅ Phase 2: Real Swipe Engine (physics-based with haptics)
 
 ### Architected (Ready for Implementation)
+
 - 📋 Phase 3: Maps Integration
 - 📋 Phase 4: Backend Wiring
 - 📋 Phase 5: Admin Approvals/KYC
@@ -2636,6 +2766,7 @@ interface CrashMetrics {
 - 📋 Phase 11: Store Readiness
 
 ### Implementation Priority
+
 1. **Phase 4: Backend Wiring** - Critical foundation
 2. **Phase 3: Maps Integration** - Core feature
 3. **Phase 7: Push Notifications** - User engagement
@@ -2647,7 +2778,9 @@ interface CrashMetrics {
 9. **Phase 11: Store Readiness** - Launch prep
 
 ### Developer Handoff
+
 Each phase has:
+
 - Clear API contracts
 - Implementation examples
 - Testing checklists
@@ -2660,14 +2793,13 @@ Developers can proceed with implementation following the architecture outlined a
 **Document Status:** Living document - update as implementation progresses
 **Maintainer:** Engineering Team
 **Last Review:** ${new Date().toISOString()}
-
 ````
 
 ---
 
 ## apps/web/CURRENT_STATUS.md
 
-````markdown
+```markdown
 # Current Migration Status - Updated
 
 **Date:** 2024-12-19  
@@ -2678,6 +2810,7 @@ Developers can proceed with implementation following the architecture outlined a
 ## ✅ **COMPLETED - All High-Priority Services**
 
 ### Critical Services (9 services - 100% complete)
+
 1. ✅ **KYC Service** - `src/lib/kyc-service.ts` (1 instance = comment only)
 2. ✅ **Chat Service** - `src/lib/chat-service.ts` (1 instance = comment only)
 3. ✅ **Adoption Service** - `src/lib/adoption-service.ts` (1 instance = comment only)
@@ -2695,6 +2828,7 @@ Developers can proceed with implementation following the architecture outlined a
 ## ⚠️ Remaining Files: 29 files (~177 instances)
 
 ### **Component Files** (11 files)
+
 Components that use spark.kv directly - should use services instead:
 
 1. `src/components/admin/AdoptionApplicationReview.tsx`
@@ -2716,6 +2850,7 @@ Components that use spark.kv directly - should use services instead:
 ### **Utility/Service Files** (15 files)
 
 **Medium Priority:**
+
 - `src/lib/adoption-marketplace-service.ts`
 - `src/lib/advanced-analytics.ts`
 - `src/lib/backend-services.ts`
@@ -2727,6 +2862,7 @@ Components that use spark.kv directly - should use services instead:
 - `src/lib/offline-sync.ts`
 
 **Low Priority:**
+
 - `src/lib/feature-flags.ts` (can use spark.kv for local flags)
 - `src/lib/rate-limiting.ts` (can use spark.kv for local rate limiting)
 - `src/lib/api-config.ts` (configuration)
@@ -2747,16 +2883,19 @@ Components that use spark.kv directly - should use services instead:
 ## 📊 Summary
 
 ### ✅ **Complete** (100%)
+
 - All 9 high-priority critical services migrated
 - All API clients created and working
 - ESLint rules active
 
 ### ⚠️ **Remaining** (29 files)
+
 - **Components:** 11 files (should use services)
 - **Utilities:** 15 files (mostly low priority)
 - **Other:** 3 files (config/build)
 
 ### 📈 **Progress**
+
 - **High Priority:** 9/9 complete (100%) ✅
 - **Overall:** ~177 instances remaining across 29 files
 - **Estimated:** ~85% of critical functionality migrated
@@ -2766,14 +2905,17 @@ Components that use spark.kv directly - should use services instead:
 ## 🎯 Next Steps (Optional)
 
 ### 1. **Refactor Components** (Medium Priority)
+
 - Update admin components to use services instead of direct spark.kv
 - Update `ChatView.tsx` to use chat-service
 
 ### 2. **Utility Services** (Low Priority)
+
 - Migrate utility services incrementally
 - Feature flags and rate limiting can stay as-is if using local storage
 
 ### 3. **Cleanup**
+
 - Remove duplicate service files if any
 - Update documentation
 
@@ -2790,9 +2932,7 @@ Components that use spark.kv directly - should use services instead:
 **The codebase is production-ready!** 🚀
 
 Remaining migrations are incremental improvements and can be done over time without blocking deployment.
-
-
-````
+```
 
 ---
 
@@ -2800,6 +2940,7 @@ Remaining migrations are incremental improvements and can be done over time with
 
 ````markdown
 # Mobile App Ultra Polish & Store Readiness
+
 ## PawfectMatch v2.0.0 - iOS + Android Complete Submission Package
 
 **Status**: ✅ PRODUCTION READY  
@@ -2814,12 +2955,14 @@ Remaining migrations are incremental improvements and can be done over time with
 ### Implemented Features ✅
 
 #### Text & Typography
+
 - **No clipping**: All text properly wrapped with `line-clamp`, `overflow-ellipsis`, and responsive containers
 - **Dynamic type support**: Scales with system font size preferences (iOS) and sp units (Android)
 - **Bilingual verification**: EN + BG strings tested at all breakpoints
 - **Long word handling**: `word-break: break-word` and `hyphens: auto` on all text containers
 
 #### Gesture System
+
 - **Tap-outside dismissal**: All overlays (Dialogs, Sheets, Dropdowns) close on backdrop click
 - **Swipe-down sheets**: Bottom sheets dismiss with downward drag gesture
 - **Hardware back button**: Android back button and Escape key close top-most overlay first
@@ -2827,6 +2970,7 @@ Remaining migrations are incremental improvements and can be done over time with
 - **Card swipe gestures**: Native-feeling drag-to-like/pass with physics-based momentum
 
 #### Haptic Feedback
+
 - **Light (10ms)**: Button taps, checkbox toggles, tab switches
 - **Medium (20ms)**: Navigation transitions, card reveals, panel openings
 - **Heavy (30ms)**: Important actions, destructive confirmations
@@ -2834,6 +2978,7 @@ Remaining migrations are incremental improvements and can be done over time with
 - **Respects Reduce Motion**: Checks `prefers-reduced-motion` before vibrating
 
 #### Native Gestures
+
 - **Drag & drop**: Photo reordering, story creation
 - **Pinch-to-zoom**: Photo galleries, pet profile images
 - **Long-press**: Context menus on messages, profile cards
@@ -2841,6 +2986,7 @@ Remaining migrations are incremental improvements and can be done over time with
 - **No accidental triggers**: 50px threshold, velocity detection, debouncing
 
 #### State Design
+
 - **Empty states**: Friendly illustrations with clear CTAs for no pets, matches, messages
 - **Loading states**: Skeleton screens maintain layout, no content jumps
 - **Error states**: Human-friendly messages with retry buttons, no raw error codes
@@ -2849,6 +2995,7 @@ Remaining migrations are incremental improvements and can be done over time with
 ### Screenshots & Videos
 
 #### Representative Screens (EN + BG)
+
 1. **Welcome Screen** - Clean onboarding, no clipping ✅
 2. **Discovery Cards** - Swipe gestures, haptics, smooth animations ✅
 3. **Match Celebration** - Success animation, confetti, haptic burst ✅
@@ -2869,24 +3016,28 @@ Remaining migrations are incremental improvements and can be done over time with
 ### Budgets & Measurements ✅
 
 #### Performance Targets
+
 - **Cold start**: < 3s (measured: 2.1s avg)
 - **Steady FPS**: 60fps (measured: 58-60fps sustained)
 - **Frame drops**: < 5% frames > 16ms (measured: 2.3%)
 - **Memory**: Steady under stress (measured: 45-80MB range, no leaks)
 
 #### Stress Test Results
+
 - **50 card swipes**: ✅ No degradation, steady 60fps
 - **20 sheet open/close cycles**: ✅ No memory spike, smooth animations
 - **Chat scroll (500 messages)**: ✅ Virtualized, maintains 60fps
 - **Offline queue (100 actions)**: ✅ Processes without blocking UI
 
 #### Crash-Free Rate
+
 - **Target**: ≥ 99.5%
 - **Measured**: 99.92% (13 crashes / 16,250 sessions)
 - **Common crashes**: None critical, all handled by ErrorBoundary
 - **Recovery**: Graceful fallbacks, user can continue
 
 #### Error Handling
+
 - **Human-friendly messages**: "Unable to load pets. Pull down to retry." (not "Error 500: Internal Server Error")
 - **Retry paths**: All network errors have retry buttons
 - **Offline tolerance**: Actions queue, sync on reconnect
@@ -2900,6 +3051,7 @@ Remaining migrations are incremental improvements and can be done over time with
 ### Localization Coverage ✅
 
 #### Full UI Translation (EN + BG)
+
 - **Navigation**: Discover, Matches, Chat, Profile - all translated
 - **Permissions**: Camera, Photos, Location, Notifications - localized rationales
 - **Push prompts**: Pre-prompt explanations in both languages
@@ -2908,6 +3060,7 @@ Remaining migrations are incremental improvements and can be done over time with
 - **Error messages**: User-facing errors in both languages
 
 #### Store Listings
+
 - **App name**: PawfectMatch (same in both)
 - **Subtitle**: EN: "Find Perfect Pet Companions" | BG: "Намерете перфектни спътници за любимци"
 - **Description**: Full translations with keywords
@@ -2917,12 +3070,14 @@ Remaining migrations are incremental improvements and can be done over time with
 ### Accessibility Features ✅
 
 #### Screen Reader Support
+
 - **ARIA labels**: All interactive elements have descriptive labels
 - **Focus order**: Logical tab sequence, keyboard navigable
 - **Announcements**: Dynamic content changes announced
 - **Image alt text**: All pet photos have descriptive captions
 
 #### Visual Accessibility
+
 - **Minimum hit area**: 44×44px (iOS), 48×48dp (Android)
 - **Color contrast**: WCAG AA+ (4.5:1 normal text, 3:1 large text)
 - **Focus indicators**: Visible outlines on all interactive elements
@@ -2937,6 +3092,7 @@ Remaining migrations are incremental improvements and can be done over time with
 ### Permission System ✅
 
 #### iOS Usage Strings (Localized)
+
 ```xml
 <!-- Camera -->
 NSCameraUsageDescription (EN): "Take photos of your pet to create their profile and share moments with matches."
@@ -2956,6 +3112,7 @@ NSUserNotificationsUsageDescription (BG): "Получавайте извести
 ```
 
 #### Android Permission Rationales (Localized)
+
 ```kotlin
 // Camera
 EN: "Take photos to create your pet's profile"
@@ -2975,6 +3132,7 @@ BG: "Бъдете информирани за съвпадения и съобщ
 ```
 
 #### Permission Flow
+
 1. **Just-in-time**: Permissions requested only when feature is accessed
 2. **Pre-prompt rationale**: Educational dialog before system prompt
 3. **Graceful denial**: App remains functional with limited features
@@ -2983,12 +3141,14 @@ BG: "Бъдете информирани за съвпадения и съобщ
 ### Privacy-First Features ✅
 
 #### Location Privacy
+
 - **Coarse location only**: Never requests precise location (iOS: When In Use, Android: COARSE)
 - **Privacy snapping**: Coordinates jittered to 500-1000m grid cells
 - **No home exposure**: Map markers never show exact addresses
 - **Manual entry**: Users can manually enter city/neighborhood
 
 #### Data Collection
+
 - **Minimal data**: Only email, photos, messages, approximate location
 - **No tracking**: No device IDs, advertising IDs, or cross-app tracking
 - **No sale**: Data never sold or shared with third parties
@@ -3003,16 +3163,19 @@ BG: "Бъдете информирани за съвпадения и съобщ
 ### Implementation Status ✅
 
 #### Purchase Flows (All Platforms)
+
 - **Web**: Stripe checkout → backend verification → entitlements granted ✅
 - **iOS**: StoreKit IAP → receipt validation → entitlements granted ✅
 - **Android**: Google Play Billing → token verification → entitlements granted ✅
 
 #### Restore Purchases
+
 - **iOS**: "Restore Purchases" button → StoreKit restore → entitlements re-sync ✅
 - **Android**: Automatic on reinstall via Play Billing API ✅
 - **Idempotency**: Duplicate receipts handled safely, no double-charges ✅
 
 #### Paywall Copy (Localized)
+
 - **Trial terms**: "7-day free trial, then $9.99/month"
 - **Price display**: Shows local currency and VAT where applicable
 - **Renewal info**: "Renews monthly unless canceled at least 24 hours before period end"
@@ -3020,12 +3183,14 @@ BG: "Бъдете информирани за съвпадения и съобщ
 - **Features list**: Clear premium features (unlimited swipes, video calls, advanced filters)
 
 #### Subscription Management
+
 - **Grace period**: 3-day dunning before downgrade
 - **Banner notifications**: "Payment issue" with retry button
 - **Downgrade schedule**: Features remain until period end, then removed
 - **Upgrade**: Immediate proration and feature unlock
 
 #### One-Time Purchases (Boosts)
+
 - **Super Likes**: Consumables with backend counter
 - **Boosts (5-pack)**: Non-consumable with usage tracking
 - **No double-spend**: Idempotency keys prevent duplicate purchases
@@ -3039,17 +3204,20 @@ BG: "Бъдете информирани за съвпадения и съобщ
 ### Push Notification System ✅
 
 #### Opt-In Timing
+
 - **Value-first**: Prompt appears after first match (user sees benefit)
 - **Pre-prompt education**: Explains what notifications user will receive
 - **Dismissible**: User can skip, prompt returns after 3 matches
 
 #### Notification Types
+
 1. **New Match**: "You matched with [Pet Name]! 🎉" → Deep links to match detail
 2. **New Message**: "[Owner Name]: [Message preview]" → Deep links to chat room
 3. **Story Reply**: "[Name] replied to your story" → Deep links to story viewer
 4. **Video Call**: "[Name] is calling..." → Deep links to call screen (if implemented)
 
 #### Deep Link Routes
+
 ```
 pawfectmatch://matches?pet=<petId>          → Match detail view
 pawfectmatch://chat?room=<chatId>           → Chat room
@@ -3059,12 +3227,14 @@ pawfectmatch://stories?story=<storyId>      → Story viewer
 ```
 
 ### Universal Links (iOS) / App Links (Android)
+
 - **Verified domain**: `https://pawfectmatch.app`
 - **Associated domains**: Configured in iOS entitlements
 - **Digital asset links**: Configured for Android
 - **Fallback**: Opens mobile web if app not installed
 
 ### Routing Across App States
+
 - **Closed app**: Launch app → Parse notification data → Navigate to target screen ✅
 - **Background app**: Resume app → Navigate to target screen ✅
 - **Foreground app**: Show in-app notification → Tappable → Navigate ✅
@@ -3078,23 +3248,27 @@ pawfectmatch://stories?story=<storyId>      → Story viewer
 ### Offline Capabilities ✅
 
 #### Offline Banner
+
 - **Detection**: Listens to `online`/`offline` events
 - **UI indicator**: Yellow banner at top: "You're offline. Some features are limited."
 - **Auto-dismiss**: Banner fades when connection restored
 
 #### Queued Actions
+
 - **Like/Pass**: Stored locally, synced when online
 - **Messages**: Queued with optimistic UI, sent on reconnect
 - **Profile updates**: Saved locally, uploaded when online
 - **Photos**: Upload queued with progress indicator
 
 #### Queue Management
+
 - **Retry logic**: Exponential backoff (1s, 2s, 4s, 8s, max 30s)
 - **Max retries**: 3 attempts, then moves to "failed" state
 - **Manual retry**: "Retry All Failed" button in settings
 - **No duplicates**: Idempotency keys prevent double-actions
 
 #### Upload Resume
+
 - **Chunked uploads**: Large files split into 1MB chunks
 - **Progress tracking**: Real-time upload percentage
 - **Resume on reconnect**: Continues from last successful chunk
@@ -3109,22 +3283,26 @@ pawfectmatch://stories?story=<storyId>      → Story viewer
 ### Map Features ✅
 
 #### Discovery Map Toggle
+
 - **Cards | Map button**: Switch between card stack and map view
 - **Filters apply**: Age, size, distance filters work on map
 - **Marker clustering**: Groups nearby pets to reduce clutter
 - **Bottom sheet details**: Tap marker → pet card slides up
 
 #### Match Playdate Planner
+
 - **Venue picker**: Shows pet-friendly parks, cafés, groomers
 - **Distance sorting**: Sorted by distance from midpoint
 - **Directions deeplink**: Opens Apple Maps (iOS) or Google Maps (Android)
 
 #### Chat Location Sharing
+
 - **Location bubble**: Shows approximate area (not exact address)
 - **Full map view**: Tap bubble → full-screen map opens
 - **Privacy grid**: Snaps to 500m-1km cells, never exact coordinates
 
 #### Privacy Safeguards
+
 - **Coarse only**: Never requests fine/precise location
 - **Jittering**: Coordinates randomly shifted within grid cell
 - **No home pins**: Markers labeled "Near [Neighborhood]" not address
@@ -3139,6 +3317,7 @@ pawfectmatch://stories?story=<storyId>      → Story viewer
 ### Reviewer Access ✅
 
 #### Test Credentials
+
 ```
 Email: reviewer@pawfectmatch.app
 Password: ReviewPass2024!
@@ -3146,12 +3325,14 @@ Role: Standard User + Reviewer Flag
 ```
 
 #### Demo Content
+
 - **20+ pet profiles**: Pre-seeded with diverse pets (dogs, cats, various breeds)
 - **5+ matches**: Pre-existing matches for testing chat and features
 - **Sample conversations**: Chat history with messages, reactions, voice notes
 - **Stories feed**: Active stories with 24hr expiration, highlights
 
 #### Admin Console Access
+
 - **Shield icon (top-right)**: Tap to open admin console
 - **Read-only mode**: Reviewer can view reports, users, analytics
 - **No destructive actions**: Can't ban/delete, only see moderation flows
@@ -3163,11 +3344,13 @@ Role: Standard User + Reviewer Flag
 # PawfectMatch Reviewer Guide
 
 ## Quick Start
+
 1. Launch app → Welcome screen
 2. Tap "Explore first" to browse without account (OR)
 3. Tap "Get started" → Use credentials above
 
 ## Core Features to Test
+
 - **Discover**: Swipe cards (drag left/right for like/pass)
 - **Map View**: Tap "Map" button in Discover
 - **Matches**: View all matches, see compatibility
@@ -3177,20 +3360,24 @@ Role: Standard User + Reviewer Flag
 - **Admin**: Tap shield icon (top-right) for moderation console
 
 ## Permissions
+
 - **Camera**: Used only when adding photos
 - **Location**: Coarse only, for finding nearby pets
 - **Notifications**: Optional, prompts after first match
 
 ## Localization
+
 - Tap language icon (bottom-left) to switch EN ↔ BG
 - All UI, errors, and prompts are translated
 
 ## Subscriptions (Test Mode)
+
 - Tap "Upgrade" → Sandbox environment (no real charges)
 - Test: Purchase, Restore, Cancel flows
 - Features unlock immediately on purchase
 
 ## Notes
+
 - All data is simulated/demo content
 - App uses real AI for pet generation and compatibility
 - No external servers, all data stored locally (KV storage)
@@ -3205,6 +3392,7 @@ Role: Standard User + Reviewer Flag
 ### App Metadata (EN + BG) ✅
 
 #### English
+
 **App Name**: PawfectMatch  
 **Subtitle**: Find Perfect Pet Companions  
 **Keywords**: pet, dog, cat, playdate, match, companion, social, friends, chat  
@@ -3228,6 +3416,7 @@ Features:
 Perfect for dogs, cats, and other social pets looking for companions!
 
 #### Bulgarian
+
 **App Name**: PawfectMatch  
 **Subtitle**: Намерете перфектни спътници за любимци  
 **Keywords**: любимец, куче, котка, среща, съвпадение, спътник, социален, приятели, чат  
@@ -3253,16 +3442,19 @@ PawfectMatch помага на собствениците на домашни л
 ### Screenshots (Required Sets) ✅
 
 #### iOS App Store
+
 - **iPhone 6.7" (Pro Max)**: 10 screenshots with captions (EN + BG)
 - **iPhone 5.5" (Plus)**: Same 10 screenshots, resized
 - **iPad Pro 12.9"**: 10 screenshots optimized for tablet
 
 #### Google Play Store
+
 - **Phone**: 8 screenshots 16:9 ratio (EN + BG)
 - **7" Tablet**: 8 screenshots optimized
 - **10" Tablet**: 8 screenshots optimized
 
 #### Screenshot List
+
 1. Welcome Screen - "Connect Your Pet with Friends"
 2. Discovery Cards - "Swipe to Find Compatible Pets"
 3. Match Celebration - "It's a Match! Start Chatting"
@@ -3273,6 +3465,7 @@ PawfectMatch помага на собствениците на домашни л
 8. Subscription Paywall - "Unlock Premium Features"
 
 ### App Preview Video (15-30s) ✅
+
 - **Format**: MP4, H.264, 1920×1080
 - **Length**: 25 seconds
 - **Content**: Welcome → Discover → Match → Chat → Map → Profile
@@ -3281,6 +3474,7 @@ PawfectMatch помага на собствениците на домашни л
 - **Music**: Upbeat, friendly, royalty-free track
 
 ### App Icon ✅
+
 - **Design**: Heart with paw print, warm coral gradient
 - **Sizes**: All required (iOS: 1024×1024, Android: 512×512)
 - **Variants**: Light and dark backgrounds tested
@@ -3289,30 +3483,35 @@ PawfectMatch помага на собствениците на домашни л
 ### Privacy Labels / Data Safety ✅
 
 #### Data Collected
+
 - **Contact Info**: Email (for account creation)
 - **User Content**: Photos, messages, pet profiles
 - **Location**: Approximate only (500m-1km grid)
 - **Usage Data**: Feature interactions, analytics
 
 #### Data NOT Collected
+
 - Precise location (never requested)
 - Device identifiers for tracking
 - Browsing history outside app
 - Financial info (handled by App Store/Play Store)
 
 #### Data Use
+
 - Account authentication
 - Matching algorithm
 - In-app messaging
 - Service improvement (anonymized)
 
 #### Data Sharing
+
 - **None**. All data stays within PawfectMatch.
 - No third-party analytics trackers
 - No advertising networks
 - No data sale
 
 ### Account Deletion ✅
+
 - **Settings → Account → Delete Account**
 - **Confirmation dialog**: "Are you sure? This cannot be undone."
 - **30-day grace period**: Data deleted after 30 days
@@ -3320,6 +3519,7 @@ PawfectMatch помага на собствениците на домашни л
 - **GDPR compliant**: Full data export available before deletion
 
 ### App Tracking Transparency (iOS) ✅
+
 - **No tracking**: App does NOT request ATT prompt
 - **Rationale**: We don't use IDFA or cross-app tracking
 - **Privacy Manifest**: Included, declares no tracking domains
@@ -3331,6 +3531,7 @@ PawfectMatch помага на собствениците на домашни л
 ## 11. Release Process
 
 ### Versioning ✅
+
 - **App Version**: 2.0.0 (SemVer)
 - **Build Number**: 100 (incremented for each build)
 - **Version History**: Documented in release notes
@@ -3338,12 +3539,14 @@ PawfectMatch помага на собствениците на домашни л
 ### TestFlight (iOS) & Internal Testing (Android) ✅
 
 #### TestFlight Setup
+
 - **Group**: Beta Testers (50 invites)
 - **What to Test**: Focus on gestures, localization, offline mode
 - **Feedback**: In-app feedback button linked to email
 - **Test Duration**: 7 days minimum before submission
 
 #### Internal Track (Google Play)
+
 - **Group**: Internal team + trusted testers (20 invites)
 - **What to Test**: Payment flows, permissions, deep links
 - **Feedback**: Google Play Console reviews
@@ -3351,23 +3554,27 @@ PawfectMatch помага на собствениците на домашни л
 ### Staged Rollout Plan ✅
 
 #### Rollout Schedule
+
 - **Day 1 (10%)**: Internal + beta testers + early adopters (~500 users)
 - **Day 3 (50%)**: Expand to half of users (~2,500 users) if metrics are green
 - **Day 7 (100%)**: Full public release (~5,000+ users)
 
 #### Monitoring KPIs
+
 - **Crash-free rate**: Must stay ≥ 99.5%
 - **ANR rate** (Android): < 0.5%
 - **Launch time**: p95 < 3.5s
 - **User ratings**: ≥ 4.0 stars average
 
 #### Rollback Triggers
+
 - Crash-free rate drops below 99%
 - Critical bug reported by > 5% of users
 - Payment processing failures > 2%
 - Location privacy leak detected
 
 #### Rollback Procedure
+
 1. Pause rollout immediately via Play Console / App Store Connect
 2. Notify users via in-app banner ("Maintenance in progress")
 3. Fix critical issue in hotfix branch
@@ -3381,6 +3588,7 @@ PawfectMatch помага на собствениците на домашни л
 ## 12. Definition of Done (Pre-Submit Checklist)
 
 ### Visual & Interaction ✅
+
 - [ ] ✅ No text clipping in EN or BG at any breakpoint
 - [ ] ✅ All overlays dismiss via tap-outside, swipe-down, or Esc/Back
 - [ ] ✅ Haptic feedback on all key interactions, respects Reduce Motion
@@ -3389,6 +3597,7 @@ PawfectMatch помага на собствениците на домашни л
 - [ ] ✅ Dark mode perfect across all screens
 
 ### Performance & Stability ✅
+
 - [ ] ✅ Cold start < 3s (measured: 2.1s)
 - [ ] ✅ Steady 60fps (measured: 58-60fps)
 - [ ] ✅ No long frames > 16ms spike (< 5% occurrence)
@@ -3397,6 +3606,7 @@ PawfectMatch помага на собствениците на домашни л
 - [ ] ✅ Error messages are human-friendly with retry paths
 
 ### Internationalization & Accessibility ✅
+
 - [ ] ✅ Full EN + BG localization (UI, permissions, errors, store)
 - [ ] ✅ Screen reader labels and logical focus order
 - [ ] ✅ Minimum 44×44px hit areas
@@ -3404,6 +3614,7 @@ PawfectMatch помага на собствениците на домашни л
 - [ ] ✅ Color contrast AA+ (4.5:1 normal, 3:1 large)
 
 ### Privacy & Permissions ✅
+
 - [ ] ✅ Permissions only when action needs them
 - [ ] ✅ Pre-prompt rationales localized (EN + BG)
 - [ ] ✅ Graceful denial with app still functional
@@ -3412,6 +3623,7 @@ PawfectMatch помага на собствениците на домашни л
 - [ ] ✅ Android permission rationales and post-deny education
 
 ### Subscriptions & Purchases ✅
+
 - [ ] ✅ Backend verifies all purchases (not client-side flags)
 - [ ] ✅ Restore purchases works after reinstall
 - [ ] ✅ Paywall copy clear on trial, price, renewal, cancel
@@ -3419,29 +3631,34 @@ PawfectMatch помага на собствениците на домашни л
 - [ ] ✅ Idempotent receipt handling (no double-charges)
 
 ### Push & Deep Links ✅
+
 - [ ] ✅ Opt-in after value shown (first match)
 - [ ] ✅ Notifications actionable with correct deep links
 - [ ] ✅ Routing works in closed, background, foreground states
 
 ### Offline & Network ✅
+
 - [ ] ✅ Offline banner with limited functionality
 - [ ] ✅ Queued actions flush on reconnect
 - [ ] ✅ Uploads show progress and resume
 - [ ] ✅ No duplicates or zombie records
 
 ### Maps & Location ✅
+
 - [ ] ✅ Cards | Map toggle in Discovery
 - [ ] ✅ Match playdate venue picker
 - [ ] ✅ Chat location sharing (privacy-snapped)
 - [ ] ✅ Never exposes precise home addresses
 
 ### Admin & Review ✅
+
 - [ ] ✅ Reviewer credentials work
 - [ ] ✅ Demo content pre-seeded
 - [ ] ✅ Admin console accessible (read-only for reviewer)
 - [ ] ✅ One-pager guide included
 
 ### Store Assets & Compliance ✅
+
 - [ ] ✅ Metadata localized (EN + BG)
 - [ ] ✅ Screenshots (phone + tablet) with captions
 - [ ] ✅ App preview video (15-30s) localized
@@ -3451,6 +3668,7 @@ PawfectMatch помага на собствениците на домашни л
 - [ ] ✅ No ATT prompt (we don't track)
 
 ### Release Process ✅
+
 - [ ] ✅ Version 2.0.0 (Build 100) consistent
 - [ ] ✅ TestFlight / Internal Track setup
 - [ ] ✅ Staged rollout plan (10% → 50% → 100%)
@@ -3467,10 +3685,12 @@ PawfectMatch помага на собствениците на домашни л
 **Next Steps**: Submit to App Store Connect (iOS) and Google Play Console (Android)
 
 ### Submission Links
+
 - **iOS**: [App Store Connect](https://appstoreconnect.apple.com)
 - **Android**: [Google Play Console](https://play.google.com/console)
 
 ### Post-Submission Monitoring
+
 - **Day 1-7**: Watch crash rates, user reviews, support tickets
 - **Day 8-14**: Monitor retention, engagement, conversion rates
 - **Day 15+**: Analyze cohort behavior, plan next iteration
@@ -3478,5 +3698,4 @@ PawfectMatch помага на собствениците на домашни л
 ---
 
 **End of Mobile Store Readiness Document**
-
 ````

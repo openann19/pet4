@@ -1,2 +1,1 @@
-export { useUploadPicker } from './use-upload-picker'
-
+export { useUploadPicker } from './use-upload-picker';

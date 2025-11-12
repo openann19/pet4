@@ -1,54 +1,49 @@
-import { useSharedValue, withSpring, withTiming, useAnimatedStyle } from 'react-native-reanimated';
-import { motion } from '../tokens';
-import { useCallback } from 'react';
-import { useReducedMotionSV, getReducedMotionDuration } from '../reduced-motion';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useSharedValue, withSpring, withTiming, useAnimatedStyle } from 'react-native-reanimated'
+import { motion } from '../tokens'
+import { useCallback } from 'react'
+import { useReducedMotionSV, getReducedMotionDuration } from '../reduced-motion'
 
 export interface UsePressBounceOptions {
-  scaleOnPress?: number;
-  scaleOnRelease?: number;
-  reducedMotion?: boolean;
+  scaleOnPress?: number
+  scaleOnRelease?: number
+  reducedMotion?: boolean
 }
 
 export interface UsePressBounceReturn {
-  onPressIn: () => void;
-  onPressOut: () => void;
-  animatedStyle: ReturnType<typeof useAnimatedStyle>;
+  onPressIn: () => void
+  onPressOut: () => void
+  animatedStyle: ReturnType<typeof useAnimatedStyle>
 }
 
 /**
  * Hook for bounce-on-tap animation.
  * Respects reduced motion preferences (instant animation when enabled).
  */
-export function usePressBounce(
-  scaleOnPress = 0.96,
-  scaleOnRelease = 1
-): UsePressBounceReturn {
-  const reducedMotion = useReducedMotionSV();
-  const s = useSharedValue(scaleOnRelease);
-  
+export function usePressBounce(scaleOnPress = 0.96, scaleOnRelease = 1): UsePressBounceReturn {
+  const reducedMotion = useReducedMotionSV()
+  const s = useSharedValue(scaleOnRelease)
+
   const onPressIn = useCallback(() => {
     if (isTruthy(reducedMotion.value)) {
       // Instant animation for reduced motion
-      s.value = withTiming(scaleOnPress, { duration: getReducedMotionDuration(120, true) });
+      s.value = withTiming(scaleOnPress, { duration: getReducedMotionDuration(120, true) })
     } else {
-      s.value = withSpring(scaleOnPress, motion.spring.crisp);
+      s.value = withSpring(scaleOnPress, motion.spring.crisp)
     }
-  }, [scaleOnPress, reducedMotion, s]);
-  
+  }, [scaleOnPress, reducedMotion, s])
+
   const onPressOut = useCallback(() => {
     if (isTruthy(reducedMotion.value)) {
       // Instant animation for reduced motion
-      s.value = withTiming(scaleOnRelease, { duration: getReducedMotionDuration(120, true) });
+      s.value = withTiming(scaleOnRelease, { duration: getReducedMotionDuration(120, true) })
     } else {
-      s.value = withSpring(scaleOnRelease, motion.spring.smooth);
+      s.value = withSpring(scaleOnRelease, motion.spring.smooth)
     }
-  }, [scaleOnRelease, reducedMotion, s]);
-  
+  }, [scaleOnRelease, reducedMotion, s])
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: s.value }],
-  }));
-  
-  return { onPressIn, onPressOut, animatedStyle };
-}
+  }))
 
+  return { onPressIn, onPressOut, animatedStyle }
+}

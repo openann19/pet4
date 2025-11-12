@@ -1,4 +1,17 @@
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, interpolate, Easing, type SharedValue } from 'react-native-reanimated'
+/**
+ * Breathing Animation
+ * Gentle, organic breathing effect for ambient UI elements
+ */
+
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 import { isTruthy, isDefined } from '@petspark/shared';
@@ -12,11 +25,13 @@ export interface UseBreathingAnimationOptions {
 }
 
 export interface UseBreathingAnimationReturn {
-  progress: SharedValue<number>
   animatedStyle: AnimatedStyle
+  progress: ReturnType<typeof useSharedValue<number>>
 }
 
-export function useBreathingAnimation(options: UseBreathingAnimationOptions = {}): UseBreathingAnimationReturn {
+export function useBreathingAnimation(
+  options: UseBreathingAnimationOptions = {}
+): UseBreathingAnimationReturn {
   const {
     minScale = 0.98,
     maxScale = 1.02,
@@ -59,7 +74,7 @@ export function useBreathingAnimation(options: UseBreathingAnimationOptions = {}
   }) as AnimatedStyle
 
   return {
-    progress,
     animatedStyle,
+    progress,
   }
 }

@@ -6,7 +6,7 @@
  * Generates a detailed breakdown by category and priority
  */
 
-import { readFileSync, writeFileSync } from 'fs'
+import { writeFileSync } from 'fs'
 import { execSync } from 'child_process'
 
 const CATEGORIES = {

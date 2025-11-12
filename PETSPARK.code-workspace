@@ -2,107 +2,12 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../Desktop/pawfectmatch-premium-main"
 		}
 	],
 	"settings": {
-		// Limit file watching to reduce WindowServer load
-		"files.watcherExclude": {
-			"**/.git/objects/**": true,
-			"**/.git/subtree-cache/**": true,
-			"**/node_modules/**": true,
-			"**/dist/**": true,
-			"**/build/**": true,
-			"**/.next/**": true,
-			"**/.expo/**": true,
-			"**/coverage/**": true,
-			"**/.turbo/**": true,
-			"**/tmp/**": true,
-			"**/android/**": true,
-			"**/ios/**": true,
-			"**/.pnpm-store/**": true
-		},
-		"files.exclude": {
-			"**/.git": false,
-			"**/node_modules": false
-		},
-		// Reduce TypeScript server resources
-		"typescript.tsserver.maxTsServerMemory": 4096,
-		"typescript.tsserver.watchOptions": {
-			"excludeDirectories": [
-				"**/node_modules",
-				"**/dist",
-				"**/build",
-				"**/.next",
-				"**/.expo",
-				"**/coverage",
-				"**/tmp"
-			]
-		},
-		"typescript.preferences.includePackageJsonAutoImports": "off",
-		"typescript.suggest.autoImports": false,
-		"typescript.updateImportsOnFileMove.enabled": "never",
-		// Limit search indexing
-		"search.exclude": {
-			"**/node_modules": true,
-			"**/dist": true,
-			"**/build": true,
-			"**/.next": true,
-			"**/.expo": true,
-			"**/coverage": true,
-			"**/tmp": true,
-			"**/android": true,
-			"**/ios": true,
-			"**/.pnpm-store": true
-		},
-		"search.followSymlinks": false,
-		"search.useIgnoreFiles": true,
-		// Reduce Git operations
-		"git.enabled": true,
-		"git.autoRepositoryDetection": false,
-		"git.autorefresh": false,
-		"git.decorations.enabled": false,
-		"git.enableSmartCommit": false,
-		// Limit extension host resources
-		"extensions.autoCheckUpdates": false,
-		"extensions.autoUpdate": false,
-		// Reduce editor resources
-		"editor.minimap.enabled": false,
-		"editor.codeLens": false,
-		"editor.semanticHighlighting.enabled": false,
-		"editor.bracketPairColorization.enabled": false,
-		"editor.guides.bracketPairs": false,
-		// Limit language features
-		"editor.quickSuggestions": {
-			"other": false,
-			"comments": false,
-			"strings": false
-		},
-		"editor.suggestOnTriggerCharacters": false,
-		"editor.acceptSuggestionOnCommitCharacter": false,
-		// Reduce UI animations (helps WindowServer)
-		"workbench.enableExperiments": false,
-		"workbench.settings.enableNaturalLanguageSearch": false,
-		"workbench.editor.enablePreview": false,
-		// Limit terminal resources
-		"terminal.integrated.enablePersistentSessions": false,
-		"terminal.integrated.enableMultiLinePasteWarning": false,
-		// ESLint optimization
-		"eslint.enable": true,
-		"eslint.lintTask.enable": false,
-		"eslint.run": "onType",
-		"eslint.validate": [
-			"javascript",
-			"javascriptreact",
-			"typescript",
-			"typescriptreact"
-		],
-		// Prettier optimization
-		"prettier.enable": true,
-		"prettier.requireConfig": true,
-		// Disable unnecessary features
-		"problems.decorations.enabled": false,
-		"scm.diffDecorations": "none",
-		"explorer.decorations.badges": false,
-		"explorer.decorations.colors": false
+		"java.project.explorer.showNonJavaResources": false
 	}
 }

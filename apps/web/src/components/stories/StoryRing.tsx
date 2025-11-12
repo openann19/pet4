@@ -1,31 +1,33 @@
-import { motion } from '@petspark/motion'
-import { Plus } from '@phosphor-icons/react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { filterActiveStories } from '@petspark/shared'
-import type { Story } from '@petspark/shared'
+import { memo, useMemo } from 'react';
+import { motion, MotionView } from '@petspark/motion';
+import { Plus } from '@phosphor-icons/react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { filterActiveStories } from '@petspark/shared';
+import type { Story } from '@petspark/shared';
 
 interface StoryRingProps {
-  stories: Story[]
-  petName: string
-  petPhoto: string
-  isOwn?: boolean
-  hasUnviewed?: boolean
-  onClick: () => void
+  stories: Story[];
+  petName: string;
+  petPhoto: string;
+  isOwn?: boolean;
+  hasUnviewed?: boolean;
+  onClick: () => void;
 }
 
-export default function StoryRing({
+function StoryRingComponent({
   stories,
   petName,
   petPhoto,
   isOwn = false,
   hasUnviewed = false,
-  onClick
+  onClick,
 }: StoryRingProps) {
-  const activeStories = filterActiveStories(stories)
-  const hasActiveStories = activeStories.length > 0
+  const activeStories = useMemo(() => filterActiveStories(stories), [stories]);
+  const hasActiveStories = activeStories.length > 0;
 
   return (
-    <MotionView as="button"
+    <MotionView
+      as="button"
       onClick={onClick}
       className="flex flex-col items-center gap-2 shrink-0"
       whileHover={{ scale: 1.05 }}
@@ -39,11 +41,8 @@ export default function StoryRing({
         ) : (
           <>
             <div
-              className={`w-16 h-16 rounded-full p-0.5 ${
-                String(hasUnviewed
-                                                    ? 'bg-gradient-to-tr from-primary via-accent to-secondary'
-                                                    : 'bg-muted' ?? '')
-              }`}
+              className={`w-16 h-16 rounded-full p-0.5 ${hasUnviewed ? 'bg-gradient-to-tr from-primary via-accent to-secondary' : 'bg-muted'
+                }`}
             >
               <Avatar className="w-full h-full border-2 border-background">
                 <AvatarImage src={petPhoto} alt={petName} />
@@ -52,7 +51,7 @@ export default function StoryRing({
                 </AvatarFallback>
               </Avatar>
             </div>
-            
+
             {isOwn && hasActiveStories && (
               <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-primary border-2 border-background flex items-center justify-center">
                 <Plus size={12} weight="bold" className="text-white" />
@@ -66,5 +65,18 @@ export default function StoryRing({
         {isOwn ? 'Your Story' : petName}
       </span>
     </MotionView>
-  )
+  );
 }
+
+// Memoize StoryRing to prevent unnecessary re-renders
+export default memo(StoryRingComponent, (prev, next) => {
+  return (
+    prev.petName === next.petName &&
+    prev.petPhoto === next.petPhoto &&
+    prev.isOwn === next.isOwn &&
+    prev.hasUnviewed === next.hasUnviewed &&
+    prev.stories.length === next.stories.length &&
+    prev.stories.every((story, index) => story.id === next.stories[index]?.id) &&
+    prev.onClick === next.onClick
+  );
+});

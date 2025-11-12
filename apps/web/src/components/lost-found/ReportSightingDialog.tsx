@@ -1,76 +1,89 @@
-import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { MapPin, Upload, Calendar, Clock } from '@phosphor-icons/react'
-import { toast } from 'sonner'
-import { lostFoundAPI } from '@/api/lost-found-api'
-import { MapLocationPicker } from './MapLocationPicker'
-import type { LostAlert } from '@/lib/lost-found-types'
-import { createLogger } from '@/lib/logger'
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { MapPin, Upload, Calendar, Clock } from '@phosphor-icons/react';
+import { toast } from 'sonner';
+import { lostFoundAPI } from '@/api/lost-found-api';
+import { MapLocationPicker } from './MapLocationPicker';
+import type { LostAlert } from '@/lib/lost-found-types';
+import { createLogger } from '@/lib/logger';
 
 interface ReportSightingDialogProps {
-  open: boolean
-  alert: LostAlert | null
-  onClose: () => void
-  onSuccess: () => void
+  open: boolean;
+  alert: LostAlert | null;
+  onClose: () => void;
+  onSuccess: () => void;
 }
 
-export function ReportSightingDialog({ open, alert, onClose, onSuccess }: ReportSightingDialogProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showMapPicker, setShowMapPicker] = useState(false)
+export function ReportSightingDialog({
+  open,
+  alert,
+  onClose,
+  onSuccess,
+}: ReportSightingDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showMapPicker, setShowMapPicker] = useState(false);
 
-  const [sightingDate, setSightingDate] = useState('')
-  const [sightingTime, setSightingTime] = useState('')
-  const [description, setDescription] = useState('')
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lon: number } | null>(null)
-  const [radiusM, setRadiusM] = useState(500)
-  const [contactInfo, setContactInfo] = useState('')
-  const [photos, setPhotos] = useState<string[]>([])
+  const [sightingDate, setSightingDate] = useState('');
+  const [sightingTime, setSightingTime] = useState('');
+  const [description, setDescription] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lon: number } | null>(
+    null
+  );
+  const [radiusM, setRadiusM] = useState(500);
+  const [contactInfo, setContactInfo] = useState('');
+  const [photos, setPhotos] = useState<string[]>([]);
 
   const handleLocationSelect = (lat: number, lon: number) => {
-    setSelectedLocation({ lat, lon })
-    setShowMapPicker(false)
-  }
+    setSelectedLocation({ lat, lon });
+    setShowMapPicker(false);
+  };
 
   const maskContactInfo = (contact: string): string => {
     if (contact.includes('@')) {
-      const [local, domain] = contact.split('@')
+      const [local, domain] = contact.split('@');
       if (local && domain) {
-        return `${String(local.substring(0, 2) ?? '')}***@${String(domain ?? '')}`
+        return `${local.substring(0, 2)}***@${domain}`;
       }
     }
     if (contact.length > 4) {
-      return `${String(contact.substring(0, 3) ?? '')}***${String(contact.substring(contact.length - 2) ?? '')}`
+      return `${contact.substring(0, 3)}***${contact.substring(contact.length - 2)}`;
     }
-    return contact
-  }
+    return contact;
+  };
 
   const handleSubmit = async () => {
-    if (!alert) return
+    if (!alert) return;
 
     if (!sightingDate || !sightingTime || !description) {
-      toast.error('Please fill in all required fields')
-      return
+      toast.error('Please fill in all required fields');
+      return;
     }
 
     if (!selectedLocation) {
-      toast.error('Please select a location on the map')
-      return
+      toast.error('Please select a location on the map');
+      return;
     }
 
     if (!contactInfo) {
-      toast.error('Please provide contact information')
-      return
+      toast.error('Please provide contact information');
+      return;
     }
 
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
 
-      const user = await spark.user()
-      const whenISO = new Date(`${String(sightingDate ?? '')}T${String(sightingTime ?? '')}`).toISOString()
+      const user = await spark.user();
+      const whenISO = new Date(`${sightingDate}T${sightingTime}`).toISOString();
 
       await lostFoundAPI.createSighting({
         alertId: alert.id,
@@ -83,31 +96,35 @@ export function ReportSightingDialog({ open, alert, onClose, onSuccess }: Report
         contactMask: maskContactInfo(contactInfo),
         reporterId: user.id,
         reporterName: user.login || 'Anonymous',
-        reporterAvatar: user.avatarUrl
-      })
+        reporterAvatar: user.avatarUrl,
+      });
 
-      toast.success('Sighting reported! The owner will be notified.')
-      onSuccess()
-      onClose()
-      
+      toast.success('Sighting reported! The owner will be notified.');
+      onSuccess();
+      onClose();
+
       // Reset form
-      setSightingDate('')
-      setSightingTime('')
-      setDescription('')
-      setSelectedLocation(null)
-      setContactInfo('')
-      setPhotos([])
+      setSightingDate('');
+      setSightingTime('');
+      setDescription('');
+      setSelectedLocation(null);
+      setContactInfo('');
+      setPhotos([]);
     } catch (error: unknown) {
-      const logger = createLogger('ReportSightingDialog')
-      const errorMessage = error instanceof Error ? error.message : 'Failed to report sighting. Please try again.'
-      logger.error('Failed to report sighting', error instanceof Error ? error : new Error(String(error)))
-      toast.error(errorMessage)
+      const logger = createLogger('ReportSightingDialog');
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to report sighting. Please try again.';
+      logger.error(
+        'Failed to report sighting',
+        error instanceof Error ? error : new Error(String(error))
+      );
+      toast.error(errorMessage);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  if (!alert) return null
+  if (!alert) return null;
 
   return (
     <>
@@ -116,7 +133,8 @@ export function ReportSightingDialog({ open, alert, onClose, onSuccess }: Report
           <DialogHeader>
             <DialogTitle>Report Sighting</DialogTitle>
             <DialogDescription>
-              Report a sighting of {alert.petSummary.name}. Your information will be shared with the owner.
+              Report a sighting of {alert.petSummary.name}. Your information will be shared with the
+              owner.
             </DialogDescription>
           </DialogHeader>
 
@@ -245,6 +263,5 @@ export function ReportSightingDialog({ open, alert, onClose, onSuccess }: Report
         />
       )}
     </>
-  )
+  );
 }
-

@@ -3,7 +3,14 @@
  * Advanced card reveal with 3D transforms, staggered content, and particle effects
  */
 
-import { useSharedValue, useAnimatedStyle, withSpring, withDelay, withSequence, interpolate } from 'react-native-reanimated';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withDelay,
+  withSequence,
+  interpolate,
+} from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { isTruthy, isDefined } from '@petspark/shared';
 
@@ -35,7 +42,7 @@ export function useUltraCardReveal(options: UseUltraCardRevealOptions = {}) {
   useEffect(() => {
     if (isTruthy(enabled)) {
       const staggerDelay = delay + index * 100;
-      
+
       progress.value = withDelay(
         staggerDelay,
         withSpring(1, {
@@ -53,26 +60,17 @@ export function useUltraCardReveal(options: UseUltraCardRevealOptions = {}) {
         )
       );
 
-      rotateX.value = withDelay(
-        staggerDelay,
-        withSpring(0, { damping: 25, stiffness: 80 })
-      );
+      rotateX.value = withDelay(staggerDelay, withSpring(0, { damping: 25, stiffness: 80 }));
 
-      rotateY.value = withDelay(
-        staggerDelay,
-        withSpring(0, { damping: 25, stiffness: 80 })
-      );
+      rotateY.value = withDelay(staggerDelay, withSpring(0, { damping: 25, stiffness: 80 }));
 
-      translateZ.value = withDelay(
-        staggerDelay,
-        withSpring(0, { damping: 20, stiffness: 100 })
-      );
+      translateZ.value = withDelay(staggerDelay, withSpring(0, { damping: 20, stiffness: 100 }));
     }
   }, [enabled, delay, index, duration]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(progress.value, [0, 0.3, 1], [0, 0.6, 1]);
-    
+
     return {
       opacity,
       transform: [

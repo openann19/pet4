@@ -1,11 +1,16 @@
-import { sampleHardGates, sampleMatchingWeights, sampleOwnerPreferences, samplePets } from '@mobile/data/mock-data'
+import {
+  sampleHardGates,
+  sampleMatchingWeights,
+  sampleOwnerPreferences,
+  samplePets,
+} from '@mobile/data/mock-data'
 import {
   canEditListing,
   canReceiveApplications,
   isValidApplicationStatusTransition,
   isValidListingStatusTransition,
   type AdoptionApplicationStatus,
-  type AdoptionListingStatus
+  type AdoptionListingStatus,
 } from '@pet/domain/adoption'
 import {
   canEditPost,
@@ -13,7 +18,7 @@ import {
   isValidCommentStatusTransition,
   isValidPostStatusTransition,
   type CommentStatus,
-  type PostStatus
+  type PostStatus,
 } from '@pet/domain/community'
 import type { MatchScore } from '@pet/domain/matching-engine'
 import { calculateMatchScore, evaluateHardGates } from '@pet/domain/matching-engine'
@@ -54,19 +59,23 @@ export function useDomainSnapshots(): DomainSnapshots {
     }
 
     const adoptionStatuses: AdoptionListingStatus[] = ['adopted', 'withdrawn']
-    const applicationStatuses: AdoptionApplicationStatus[] = ['under_review', 'accepted', 'rejected']                                                           
+    const applicationStatuses: AdoptionApplicationStatus[] = [
+      'under_review',
+      'accepted',
+      'rejected',
+    ]
 
     const adoption: AdoptionSnapshot = {
       canEditActiveListing: canEditListing('active'),
       canReceiveApplications: canReceiveApplications('active'),
       statusTransitions: adoptionStatuses.map(status => ({
         status,
-        allowed: isValidListingStatusTransition('active', status)
+        allowed: isValidListingStatusTransition('active', status),
       })),
       applicationTransitions: applicationStatuses.map(status => ({
         status,
-        allowed: isValidApplicationStatusTransition('submitted', status)
-      }))
+        allowed: isValidApplicationStatusTransition('submitted', status),
+      })),
     }
 
     const postStatuses: PostStatus[] = ['active', 'rejected', 'archived']
@@ -77,12 +86,12 @@ export function useDomainSnapshots(): DomainSnapshots {
       canReceiveCommentsOnActivePost: canReceiveComments('active'),
       postTransitions: postStatuses.map(status => ({
         status,
-        allowed: isValidPostStatusTransition('pending_review', status)
+        allowed: isValidPostStatusTransition('pending_review', status),
       })),
       commentTransitions: commentStatuses.map(status => ({
         status,
-        allowed: isValidCommentStatusTransition('active', status)
-      }))
+        allowed: isValidCommentStatusTransition('active', status),
+      })),
     }
 
     const hardGateEvaluation = evaluateHardGates(
@@ -98,9 +107,9 @@ export function useDomainSnapshots(): DomainSnapshots {
       hardGatesPassed: hardGateEvaluation.passed,
       hardGateFailures: hardGateEvaluation.failureReasons.map(reason => ({
         code: reason.code,
-        message: reason.message.en
+        message: reason.message.en,
       })),
-      score
+      score,
     }
 
     return { adoption, community, matching }

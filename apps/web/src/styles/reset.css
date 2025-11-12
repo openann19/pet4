@@ -1,0 +1,218 @@
+/**
+ * Comprehensive CSS Reset
+ *
+ * Provides consistent base styles across all browsers and themes
+ * Ensures predictable spacing, typography, and box model behavior
+ */
+
+/* Box-sizing reset - apply border-box globally */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margins and padding */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* HTML and body base styles */
+html {
+  /* Prevent font size adjustment on iOS */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  /* Consistent line height */
+  line-height: 1.5;
+}
+
+body {
+  /* Consistent font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Prevent horizontal scroll */
+  overflow-x: hidden;
+  /* Minimum height for full viewport */
+  min-height: 100vh;
+  /* Consistent font stack - defined in theme.css */
+  font-family: var(--font-family, ui-sans-serif, system-ui, sans-serif);
+}
+
+/* Remove default list styles */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Remove default button styles */
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Remove default input styles */
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+/* Remove default link styles */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Remove default image behavior */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Remove default table styles */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Remove default form element styles */
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Consistent heading styles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+/* Consistent paragraph styles */
+p {
+  margin: 0;
+}
+
+/* Remove default quote styles */
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote::before,
+blockquote::after,
+q::before,
+q::after {
+  content: '';
+  content: none;
+}
+
+/* Remove default code styles */
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-monospace, ui-monospace, monospace);
+  font-size: 1em;
+}
+
+/* Consistent spacing for form elements */
+input,
+textarea,
+select,
+button {
+  margin: 0;
+}
+
+/* Remove default appearance for form elements */
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-results-button,
+input[type='search']::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* Remove default appearance for select */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Consistent focus styles - defined in focus.css */
+:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--ring, currentColor));
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Consistent text selection */
+::selection {
+  background-color: var(--primary, currentColor);
+  color: var(--primary-foreground, white);
+}
+
+/* Consistent scrollbar styles (where supported) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted, rgba(0, 0, 0, 0.2));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground, rgba(0, 0, 0, 0.3));
+}
+
+/* Consistent spacing scale - use CSS variables from theme */
+/* These are defined in theme.css and should be used via var() */
+
+/* Consistent border radius - use CSS variables from theme */
+/* These are defined in theme.css and should be used via var() */
+
+/* Consistent typography - use CSS variables from theme */
+/* Font sizes, weights, and line heights are defined in theme.css */

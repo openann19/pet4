@@ -1,7 +1,7 @@
 /**
  * Logger utility for structured logging throughout the mobile application
  * Provides different log levels and integration with analytics/monitoring
- * Location: src/utils/logger.ts
+ * Location: apps/mobile/src/utils/logger.ts
  */
 
 import { isDefined } from '@petspark/shared';
@@ -11,7 +11,7 @@ export enum LogLevel {
   INFO = 1,
   WARN = 2,
   ERROR = 3,
-  NONE = 4
+  NONE = 4,
 }
 
 export interface LogEntry {
@@ -101,7 +101,73 @@ class Logger {
 
   constructor(context?: string) {
     this.context = context || ''
-    this.level = resolveDefaultLevel()
+
+    // Set log level from environment
+    // In development: DEBUG, In production: INFO
+    if (__DEV__) {
+      this.level = LogLevel.DEBUG
+      // Add dev handler for development (structured logging only, no console)
+      this.addDevHandler()
+    } else {
+      // In production, default to INFO level
+      this.level = LogLevel.INFO
+    }
+    // Add remote logging handler for both dev and production
+    this.addRemoteHandler()
+  }
+
+  /**
+   * Add dev handler for development mode
+   * Uses structured logging without console calls
+   * Logs are sent to remote endpoint for dev tools integration
+   */
+  private addDevHandler(): void {
+    this.addHandler(async entry => {
+      try {
+        // Send all logs to dev endpoint in development
+        const endpoint = process.env['EXPO_PUBLIC_DEV_LOG_ENDPOINT'] || '/api/logs/dev'
+
+        await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(entry),
+        }).catch(() => {
+          // Silently fail - logging should not break the app
+          // In dev mode, if endpoint is not available, logs are silently dropped
+        })
+      } catch {
+        // Silently fail - logging should not break the app
+      }
+    })
+  }
+
+  /**
+   * Add remote logging handler for production
+   */
+  private addRemoteHandler(): void {
+    this.addHandler(async entry => {
+      try {
+        // Send to remote logging service in production
+        const endpoint = process.env['EXPO_PUBLIC_ERROR_ENDPOINT'] || '/api/errors'
+
+        // Only send errors and warnings in production to reduce noise
+        if (entry.level >= LogLevel.WARN) {
+          await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(entry),
+          }).catch(() => {
+            // Silently fail - logging should not break the app
+          })
+        }
+      } catch {
+        // Silently fail - logging should not break the app
+      }
+    })
   }
 
   setLevel(level: LogLevel): void {
@@ -116,7 +182,12 @@ class Logger {
     return this.level !== LogLevel.NONE && level >= this.level
   }
 
-  private async log(level: LogLevel, message: string, data?: unknown, error?: Error): Promise<void> {
+  private async log(
+    level: LogLevel,
+    message: string,
+    data?: unknown,
+    error?: Error
+  ): Promise<void> {
     if (!this.shouldLog(level)) return
 
     const entry: LogEntry = {
@@ -128,15 +199,14 @@ class Logger {
       ...(error ? { error } : {}),
     }
 
-    const handlers = new Set<LogHandler>([...globalHandlers, ...this.handlers])
-
+    // Execute handlers in parallel
     await Promise.all(
-      Array.from(handlers).map(handler => {
+      this.handlers.map(handler => {
         try {
           return handler(entry)
-        } catch (handlerError) {
-          const err = handlerError instanceof Error ? handlerError : new Error(String(handlerError))
-          console.error('[logger] handler failure', err)
+        } catch {
+          // Silently ignore handler failures to preserve deterministic builds
+          // Handler implementations should handle their own errors internally
           return Promise.resolve()
         }
       })
@@ -171,9 +241,9 @@ export function createLogger(context: string): Logger {
 
 // Export convenience functions
 export const log = {
-  debug: (message: string, data?: unknown) => { logger.debug(message, data); },
-  info: (message: string, data?: unknown) => { logger.info(message, data); },
-  warn: (message: string, data?: unknown) => { logger.warn(message, data); },
-  error: (message: string, error?: Error | unknown, data?: unknown) => { logger.error(message, error, data); },
+  debug: (message: string, data?: unknown) => logger.debug(message, data),
+  info: (message: string, data?: unknown) => logger.info(message, data),
+  warn: (message: string, data?: unknown) => logger.warn(message, data),
+  error: (message: string, error?: Error | unknown, data?: unknown) =>
+    logger.error(message, error, data),
 }
-

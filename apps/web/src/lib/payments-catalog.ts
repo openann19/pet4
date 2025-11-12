@@ -1,4 +1,4 @@
-import type { ProductCatalog } from './payments-types'
+import type { ProductCatalog } from './payments-types';
 
 export const PRODUCT_CATALOG: ProductCatalog = {
   version: '1.0.0',
@@ -94,16 +94,16 @@ export const PRODUCT_CATALOG: ProductCatalog = {
       currency: 'USD',
     },
   ],
-}
+};
 
 export function getPlanById(planId: string) {
-  return PRODUCT_CATALOG.plans.find(p => p.id === planId)
+  return PRODUCT_CATALOG.plans.find((p) => p.id === planId);
 }
 
 export function getConsumableById(consumableId: string) {
-  return PRODUCT_CATALOG.consumables.find(c => c.id === consumableId)
+  return PRODUCT_CATALOG.consumables.find((c) => c.id === consumableId);
 }
 
 export function getPlanByTier(tier: string) {
-  return PRODUCT_CATALOG.plans.find(p => p.tier === tier)
+  return PRODUCT_CATALOG.plans.find((p) => p.tier === tier);
 }

@@ -1,15 +1,15 @@
 /**
  * Dynamic Translation Loader
- * 
+ *
  * Loads translation modules on-demand for better performance
  */
 
-import type { Language, TranslationModule } from './types'
-import { createLogger } from '@/lib/logger'
+import type { Language, TranslationModule } from './types';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('TranslationLoader')
+const logger = createLogger('TranslationLoader');
 
-const translationCache = new Map<string, TranslationModule>()
+const translationCache = new Map<string, TranslationModule>();
 
 /**
  * Load translation module for a feature
@@ -18,32 +18,32 @@ export async function loadTranslationModule(
   language: Language,
   feature: string
 ): Promise<TranslationModule> {
-  const cacheKey = `${String(language ?? '')}:${String(feature ?? '')}`
-  
+  const cacheKey = `${language}:${feature}`;
+
   if (translationCache.has(cacheKey)) {
-    return translationCache.get(cacheKey)!
+    return translationCache.get(cacheKey)!;
   }
 
   try {
     // Dynamic import based on feature
-    const module = await import(`../locales/${String(language ?? '')}/${String(feature ?? '')}.ts`) as {
-      default?: TranslationModule
-      [key: string]: TranslationModule | undefined
-    }
-    
-    const translations = module.default ?? module[feature]
-    
+    const module = (await import(`../locales/${language}/${feature}.ts`)) as {
+      default?: TranslationModule;
+      [key: string]: TranslationModule | undefined;
+    };
+
+    const translations = module.default ?? module[feature];
+
     if (translations && typeof translations === 'object') {
-      translationCache.set(cacheKey, translations)
-      return translations
+      translationCache.set(cacheKey, translations);
+      return translations;
     }
-    
-    throw new Error(`Translation module not found: ${String(feature ?? '')}`)
+
+    throw new Error(`Translation module not found: ${feature}`);
   } catch (error) {
     // Fallback to empty object if module doesn't exist
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.warn('Failed to load translation module', { feature, language, error: err.message })
-    return {}
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.warn('Failed to load translation module', { feature, language, error: err.message });
+    return {};
   }
 }
 
@@ -62,31 +62,31 @@ export async function loadAllTranslations(language: Language): Promise<Translati
     'lost-found',
     'profile',
     'admin',
-    'errors'
-  ]
+    'errors',
+  ];
 
   const modules = await Promise.all(
-    features.map(feature => loadTranslationModule(language, feature))
-  )
+    features.map((feature) => loadTranslationModule(language, feature))
+  );
 
   // Merge all modules with proper type safety
-  const merged: TranslationModule = {} as TranslationModule
+  const merged: TranslationModule = {} as TranslationModule;
   for (let i = 0; i < features.length; i++) {
-    const feature = features[i]
-    const module = modules[i]
+    const feature = features[i];
+    const module = modules[i];
     if (feature && module) {
       // Type assertion needed because TranslationModule has readonly index signature
       // but we need to write to it during construction
-      Object.assign(merged, { [feature]: module })
+      Object.assign(merged, { [feature]: module });
     }
   }
 
-  return merged
+  return merged;
 }
 
 /**
  * Clear translation cache
  */
 export function clearTranslationCache(): void {
-  translationCache.clear()
+  translationCache.clear();
 }

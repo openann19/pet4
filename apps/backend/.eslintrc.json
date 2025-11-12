@@ -1,0 +1,15 @@
+{
+  "extends": ["../../.eslintrc.json"],
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "rules": {
+    "no-console": "off"
+  }
+}

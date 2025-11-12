@@ -1,1 +1,1 @@
-export { default as SaveToHighlightDialog } from './SaveToHighlightDialog.native';
+export { default as SaveToHighlightDialog } from './SaveToHighlightDialog'

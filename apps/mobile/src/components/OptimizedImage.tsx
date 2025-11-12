@@ -26,11 +26,9 @@ export function OptimizedImage({
   placeholder,
   priority = 'normal',
 }: OptimizedImageProps): React.JSX.Element {
-  const imageStyle: ImageStyle[] = [
-    width && { width },
-    height && { height },
-    style,
-  ].filter(Boolean) as ImageStyle[]
+  const imageStyle: ImageStyle[] = [width && { width }, height && { height }, style].filter(
+    Boolean
+  ) as ImageStyle[]
 
   return (
     <ExpoImage
@@ -45,4 +43,3 @@ export function OptimizedImage({
     />
   )
 }
-

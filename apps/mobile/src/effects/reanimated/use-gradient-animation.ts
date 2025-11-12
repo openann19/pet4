@@ -1,4 +1,10 @@
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
@@ -18,7 +24,7 @@ export interface UseGradientAnimationReturn {
   x: ReturnType<typeof useSharedValue<number>>
   y: ReturnType<typeof useSharedValue<number>>
   rotation: ReturnType<typeof useSharedValue<number>>
-  animatedStyle: AnimatedStyle
+  style: AnimatedStyle
 }
 
 export function useGradientAnimation(
@@ -31,7 +37,7 @@ export function useGradientAnimation(
     opacityRange = [0.4, 0.8],
     scaleRange = [1, 1.4],
     translateRange = { x: [0, 100], y: [0, 60] },
-    rotationRange = [0, 360]
+    rotationRange = [0, 360],
   } = options
 
   const scale = useSharedValue(1)
@@ -41,12 +47,14 @@ export function useGradientAnimation(
   const rotation = useSharedValue(0)
 
   useEffect(() => {
+    const animDuration = duration * 1000
+
     if (type === 'scale' || type === 'combined') {
       scale.value = withRepeat(
         withSequence(
-          withTiming(scaleRange[0], { duration: duration * 1000 * 0.33 }),
-          withTiming(scaleRange[1], { duration: duration * 1000 * 0.33 }),
-          withTiming(scaleRange[0], { duration: duration * 1000 * 0.34 })
+          withTiming(scaleRange[0], { duration: animDuration * 0.33 }),
+          withTiming(scaleRange[1], { duration: animDuration * 0.33 }),
+          withTiming(scaleRange[0], { duration: animDuration * 0.34 })
         ),
         -1,
         false
@@ -56,9 +64,9 @@ export function useGradientAnimation(
     if (type === 'translate' || type === 'combined') {
       opacity.value = withRepeat(
         withSequence(
-          withTiming(opacityRange[0], { duration: duration * 1000 * 0.33 }),
-          withTiming(opacityRange[1], { duration: duration * 1000 * 0.33 }),
-          withTiming(opacityRange[0], { duration: duration * 1000 * 0.34 })
+          withTiming(opacityRange[0], { duration: animDuration * 0.33 }),
+          withTiming(opacityRange[1], { duration: animDuration * 0.33 }),
+          withTiming(opacityRange[0], { duration: animDuration * 0.34 })
         ),
         -1,
         false
@@ -66,9 +74,9 @@ export function useGradientAnimation(
 
       x.value = withRepeat(
         withSequence(
-          withTiming(translateRange.x[0], { duration: duration * 1000 * 0.33 }),
-          withTiming(translateRange.x[1], { duration: duration * 1000 * 0.33 }),
-          withTiming(translateRange.x[0], { duration: duration * 1000 * 0.34 })
+          withTiming(translateRange.x[0], { duration: animDuration * 0.33 }),
+          withTiming(translateRange.x[1], { duration: animDuration * 0.33 }),
+          withTiming(translateRange.x[0], { duration: animDuration * 0.34 })
         ),
         -1,
         false
@@ -76,9 +84,9 @@ export function useGradientAnimation(
 
       y.value = withRepeat(
         withSequence(
-          withTiming(translateRange.y[0], { duration: duration * 1000 * 0.33 }),
-          withTiming(translateRange.y[1], { duration: duration * 1000 * 0.33 }),
-          withTiming(translateRange.y[0], { duration: duration * 1000 * 0.34 })
+          withTiming(translateRange.y[0], { duration: animDuration * 0.33 }),
+          withTiming(translateRange.y[1], { duration: animDuration * 0.33 }),
+          withTiming(translateRange.y[0], { duration: animDuration * 0.34 })
         ),
         -1,
         false
@@ -87,15 +95,33 @@ export function useGradientAnimation(
 
     if (type === 'rotate' || type === 'combined') {
       rotation.value = withRepeat(
-        withTiming(rotationRange[1], { duration: duration * 1000 }),
+        withTiming(rotationRange[1], { duration: animDuration }),
         -1,
         false
       )
     }
-  }, [type, duration, delay, opacityRange, scaleRange, translateRange, rotationRange, scale, opacity, x, y, rotation])
+  }, [
+    type,
+    duration,
+    delay,
+    opacityRange,
+    scaleRange,
+    translateRange,
+    rotationRange,
+    scale,
+    opacity,
+    x,
+    y,
+    rotation,
+  ])
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = []
+  const style = useAnimatedStyle(() => {
+    const transforms: Array<
+      | { scale: number; translateX?: never; translateY?: never; rotate?: never }
+      | { translateX: number; scale?: never; translateY?: never; rotate?: never }
+      | { translateY: number; scale?: never; translateX?: never; rotate?: never }
+      | { rotate: string; scale?: never; translateX?: never; translateY?: never }
+    > = []
 
     if (type === 'scale' || type === 'combined') {
       transforms.push({ scale: scale.value })
@@ -107,14 +133,14 @@ export function useGradientAnimation(
     }
 
     if (type === 'rotate' || type === 'combined') {
-      transforms.push({ rotate: `${String(rotation.value ?? '')}deg` })
+      transforms.push({ rotate: `${rotation.value}deg` })
     }
 
     return {
-      transform: transforms.length > 0 ? transforms : undefined,
-      opacity: opacity.value
+      transform: transforms,
+      opacity: opacity.value,
     }
-  }) as AnimatedStyle
+  })
 
   return {
     scale,
@@ -122,6 +148,6 @@ export function useGradientAnimation(
     x,
     y,
     rotation,
-    animatedStyle
+    style,
   }
 }

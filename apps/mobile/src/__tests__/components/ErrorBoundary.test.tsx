@@ -5,7 +5,7 @@
 
 import { fireEvent, render } from '@testing-library/react-native'
 import React from 'react'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { ErrorBoundary } from '../../components/ErrorBoundary'
 import { logger } from '../../lib/logger'
 import { isTruthy } from '@petspark/shared'
@@ -19,15 +19,13 @@ const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }): React.JSX.Elemen
 }
 
 describe('ErrorBoundary', () => {
-  // Suppress console.error for these tests
-  const originalError = logger.error
+  // Suppress console.error for these tests using vitest's spy
   beforeAll(() => {
-     
-    logger.error = () => {}
+    vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   afterAll(() => {
-    logger.error = originalError
+    vi.restoreAllMocks()
   })
 
   it('should render children when there is no error', () => {
@@ -83,4 +81,3 @@ describe('ErrorBoundary', () => {
     expect(getByText('No error')).toBeTruthy()
   })
 })
-

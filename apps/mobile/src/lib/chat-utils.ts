@@ -4,7 +4,6 @@
  */
 
 import { v4 as uuidv4 } from 'uuid'
-import type { MessageTemplate } from './chat-types'
 
 /**
  * Generate a unique message ID

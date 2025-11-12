@@ -1,46 +1,66 @@
-import { memo } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Heart, MapPin, Check, CurrencyDollar, PawPrint } from '@phosphor-icons/react'
-import type { AdoptionListing } from '@/lib/adoption-marketplace-types'
-import { motion } from '@petspark/motion'
-import { useApp } from '@/contexts/AppContext'
-import { haptics } from '@/lib/haptics'
+import { memo } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Heart, MapPin, Check, CurrencyDollar, PawPrint } from '@phosphor-icons/react';
+import type { AdoptionListing } from '@/lib/adoption-marketplace-types';
+import { useApp } from '@/contexts/AppContext';
+import { haptics } from '@/lib/haptics';
+import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
 
 interface AdoptionListingCardProps {
-  listing: AdoptionListing
-  onSelect: (listing: AdoptionListing) => void
-  onFavorite?: (listingId: string) => void
-  isFavorited?: boolean
+  listing: AdoptionListing;
+  onSelect: (listing: AdoptionListing) => void;
+  onFavorite?: (listingId: string) => void;
+  isFavorited?: boolean;
 }
 
-function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorited }: AdoptionListingCardProps) {
-  const { t } = useApp()
-  const { petName, petBreed, petAge, petGender, petSize, petPhotos, location, fee, vaccinated, spayedNeutered, status } = listing
+function AdoptionListingCardComponent({
+  listing,
+  onSelect,
+  onFavorite,
+  isFavorited,
+}: AdoptionListingCardProps): JSX.Element {
+  const { t } = useApp();
+  const {
+    petName,
+    petBreed,
+    petAge,
+    petGender,
+    petSize,
+    petPhotos,
+    location,
+    fee,
+    vaccinated,
+    spayedNeutered,
+    status,
+  } = listing;
 
-  const formatFee = () => {
-    if (!fee || fee.amount === 0) return 'Free'
-    return `${String(fee.currency ?? '')} ${String(fee.amount.toLocaleString() ?? '')}`
-  }
+  const favoriteHover = useHoverTap({ hoverScale: 1.1, tapScale: 0.95 });
+
+  const formatFee = (): string => {
+    if (!fee || fee.amount === 0) return 'Free';
+    return `${fee.currency} ${fee.amount.toLocaleString()}`;
+  };
 
   return (
-    <MotionView
-      whileHover={{ y: -4 }}
-      whileTap={{ scale: 0.98 }}
-    >
+    <div className="hover:-translate-y-1 transition-transform">
       <Card className="overflow-hidden hover:shadow-xl transition-shadow duration-300 border-border/50">
-        <div className="relative aspect-[4/3] overflow-hidden bg-muted" onClick={() => {
-          haptics.trigger('selection')
-          onSelect(listing)
-        }}>
+        <div
+          className="relative aspect-[4/3] overflow-hidden bg-muted"
+          onClick={() => {
+            haptics.trigger('selection');
+            onSelect(listing);
+          }}
+        >
           <img
             src={petPhotos[0] || '/placeholder-pet.jpg'}
             alt={petName}
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
             loading="lazy"
           />
-          
+
           {/* Status Badge */}
           {status === 'pending_review' && (
             <Badge className="absolute top-3 right-3 bg-yellow-500/90 text-white backdrop-blur-sm">
@@ -50,22 +70,28 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
 
           {/* Favorite Button */}
           {onFavorite && (
-            <MotionView as="button"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+            <AnimatedView
+              style={favoriteHover.animatedStyle}
+              onMouseEnter={favoriteHover.handleMouseEnter}
+              onMouseLeave={favoriteHover.handleMouseLeave}
               onClick={(e) => {
-                e.stopPropagation()
-                haptics.trigger('light')
-                onFavorite(listing.id)
+                e.stopPropagation();
+                favoriteHover.handlePress();
+                haptics.trigger('light');
+                onFavorite(listing.id);
               }}
-              className="absolute top-3 left-3 w-9 h-9 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg"
             >
-              <Heart
-                size={20}
-                weight={isFavorited ? 'fill' : 'regular'}
-                className={isFavorited ? 'text-destructive' : 'text-foreground'}
-              />
-            </MotionView>
+              <button
+                type="button"
+                className="absolute top-3 left-3 w-9 h-9 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg"
+              >
+                <Heart
+                  size={20}
+                  weight={isFavorited ? 'fill' : 'regular'}
+                  className={isFavorited ? 'text-destructive' : 'text-foreground'}
+                />
+              </button>
+            </AnimatedView>
           )}
 
           {/* Fee Badge */}
@@ -85,13 +111,17 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
         <CardContent className="p-5 space-y-3">
           {/* Pet Name and Age */}
           <div className="flex items-start justify-between">
-            <div onClick={() => {
-              haptics.trigger('selection')
-              onSelect(listing)
-            }} className="cursor-pointer flex-1">
+            <div
+              onClick={() => {
+                haptics.trigger('selection');
+                onSelect(listing);
+              }}
+              className="cursor-pointer flex-1"
+            >
               <h3 className="text-xl font-bold leading-tight">{petName}</h3>
               <p className="text-sm text-muted-foreground">
-                {petBreed} • {petAge} {petAge === 1 ? t.common?.year_singular || 'year' : t.common?.years || 'years'}
+                {petBreed} • {petAge}{' '}
+                {petAge === 1 ? t.common?.year_singular || 'year' : t.common?.years || 'years'}
               </p>
             </div>
           </div>
@@ -99,7 +129,9 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
           {/* Location */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin size={16} weight="fill" />
-            <span>{location.city}, {location.country}</span>
+            <span>
+              {location.city}, {location.country}
+            </span>
           </div>
 
           {/* Health Badges */}
@@ -142,9 +174,7 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
 
           {/* Description Preview */}
           {listing.petDescription && (
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {listing.petDescription}
-            </p>
+            <p className="text-sm text-muted-foreground line-clamp-2">{listing.petDescription}</p>
           )}
 
           {/* View Details Button */}
@@ -152,9 +182,9 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
             size="sm"
             className="w-full gap-1.5 mt-2"
             onClick={(e) => {
-              e.stopPropagation()
-              haptics.trigger('success')
-              onSelect(listing)
+              e.stopPropagation();
+              haptics.trigger('success');
+              onSelect(listing);
             }}
           >
             <PawPrint size={16} weight="fill" />
@@ -162,8 +192,8 @@ function AdoptionListingCardComponent({ listing, onSelect, onFavorite, isFavorit
           </Button>
         </CardContent>
       </Card>
-    </MotionView>
-  )
+    </div>
+  );
 }
 
 // Memoize AdoptionListingCard to prevent unnecessary re-renders
@@ -172,5 +202,5 @@ export const AdoptionListingCard = memo(AdoptionListingCardComponent, (prev, nex
     prev.listing.id === next.listing.id &&
     prev.listing.status === next.listing.status &&
     prev.isFavorited === next.isFavorited
-  )
-})
+  );
+});

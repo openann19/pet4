@@ -1,10 +1,16 @@
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 
 export interface UseLogoAnimationReturn {
   scale: ReturnType<typeof useSharedValue<number>>
-  animatedStyle: AnimatedStyle
+  style: AnimatedStyle
 }
 
 export function useLogoAnimation(): UseLogoAnimationReturn {
@@ -22,22 +28,22 @@ export function useLogoAnimation(): UseLogoAnimationReturn {
     )
   }, [scale])
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const style = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }]
+      transform: [{ scale: scale.value }],
     }
   }) as AnimatedStyle
 
   return {
     scale,
-    animatedStyle
+    style,
   }
 }
 
 export interface UseLogoGlowReturn {
   scale: ReturnType<typeof useSharedValue<number>>
   opacity: ReturnType<typeof useSharedValue<number>>
-  animatedStyle: AnimatedStyle
+  style: AnimatedStyle
 }
 
 export function useLogoGlow(): UseLogoGlowReturn {
@@ -66,16 +72,16 @@ export function useLogoGlow(): UseLogoGlowReturn {
     )
   }, [scale, opacity])
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const style = useAnimatedStyle(() => {
     return {
       transform: [{ scale: scale.value }],
-      opacity: opacity.value
+      opacity: opacity.value,
     }
   }) as AnimatedStyle
 
   return {
     scale,
     opacity,
-    animatedStyle
+    style,
   }
 }

@@ -1,0 +1,26 @@
+{
+  "name": "@petspark/spec-registry",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:run": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@petspark/spec-core": "workspace:*",
+    "semver": "^7.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.5",
+    "@types/semver": "^7.5.8",
+    "typescript": "~5.7.2",
+    "vitest": "^1.0.0"
+  }
+}

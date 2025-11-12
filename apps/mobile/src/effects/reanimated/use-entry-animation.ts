@@ -1,6 +1,11 @@
 import { useEffect } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, type SharedValue } from 'react-native-reanimated'
-import { springConfigs, timingConfigs } from './transitions'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  type SharedValue,
+} from 'react-native-reanimated'
+import { springConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
 
 export interface UseEntryAnimationOptions {
@@ -22,11 +27,10 @@ export interface UseEntryAnimationReturn {
 export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEntryAnimationReturn {
   const {
     delay = 0,
-    duration = timingConfigs.smooth.duration ?? 250,
     initialY = 20,
     initialOpacity = 0,
     initialScale = 0.95,
-    enabled = true
+    enabled = true,
   } = options
 
   const opacity = useSharedValue(enabled ? initialOpacity : 1)
@@ -55,10 +59,7 @@ export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEn
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [
-        { translateY: translateY.value },
-        { scale: scale.value }
-      ]
+      transform: [{ translateY: translateY.value }, { scale: scale.value }],
     }
   }) as AnimatedStyle
 
@@ -66,6 +67,6 @@ export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEn
     animatedStyle,
     opacity,
     translateY,
-    scale
+    scale,
   }
 }

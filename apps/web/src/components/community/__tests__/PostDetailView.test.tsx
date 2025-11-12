@@ -1,9 +1,9 @@
 /**
  * PostDetailView tests
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import { PostDetailView } from '@/components/community/PostDetailView'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { PostDetailView } from '@/components/community/PostDetailView';
 
 // Mock dependencies
 vi.mock('@/api/community-api', () => ({
@@ -18,7 +18,7 @@ vi.mock('@/api/community-api', () => ({
     toggleReaction: vi.fn().mockResolvedValue({ added: true, reactionsCount: 1 }),
     createComment: vi.fn().mockResolvedValue({ id: 'comment-1' }),
   },
-}))
+}));
 
 vi.mock('@/lib/community-service', () => ({
   communityService: {
@@ -26,34 +26,38 @@ vi.mock('@/lib/community-service', () => ({
     savePost: vi.fn().mockResolvedValue({}),
     unsavePost: vi.fn().mockResolvedValue({}),
   },
-}))
+}));
 
 vi.mock('@/lib/user-service', () => ({
   userService: {
-    user: vi.fn().mockResolvedValue({ id: 'user-1', name: 'Test User', avatarUrl: 'https://example.com/avatar.jpg' }),
+    user: vi.fn().mockResolvedValue({
+      id: 'user-1',
+      name: 'Test User',
+      avatarUrl: 'https://example.com/avatar.jpg',
+    }),
   },
-}))
+}));
 
 vi.mock('@/lib/haptics', () => ({
   haptics: {
     impact: vi.fn(),
   },
-}))
+}));
 
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
   },
-}))
+}));
 
 vi.mock('@/components/community/MediaViewer', () => ({
   MediaViewer: () => <div data-testid="media-viewer">Media</div>,
-}))
+}));
 
 vi.mock('@/components/community/ReportDialog', () => ({
   ReportDialog: () => <div data-testid="report-dialog">Report</div>,
-}))
+}));
 
 vi.mock('@/contexts/AppContext', () => ({
   useApp: () => ({
@@ -64,15 +68,15 @@ vi.mock('@/contexts/AppContext', () => ({
       },
     },
   }),
-}))
+}));
 
 describe('PostDetailView', () => {
-  const mockOnOpenChange = vi.fn()
-  const mockOnAuthorClick = vi.fn()
+  const mockOnOpenChange = vi.fn();
+  const mockOnAuthorClick = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('should render when open', async () => {
     render(
@@ -82,12 +86,12 @@ describe('PostDetailView', () => {
         postId="post-1"
         onAuthorClick={mockOnAuthorClick}
       />
-    )
+    );
 
     await waitFor(() => {
-      expect(screen.getByText('Test post')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText('Test post')).toBeInTheDocument();
+    });
+  });
 
   it('should not render when closed', () => {
     render(
@@ -97,13 +101,13 @@ describe('PostDetailView', () => {
         postId="post-1"
         onAuthorClick={mockOnAuthorClick}
       />
-    )
+    );
 
-    expect(screen.queryByText('Test post')).not.toBeInTheDocument()
-  })
+    expect(screen.queryByText('Test post')).not.toBeInTheDocument();
+  });
 
   it('should load post data', async () => {
-    const { communityAPI } = await import('@/api/community-api')
+    const { communityAPI } = await import('@/api/community-api');
 
     render(
       <PostDetailView
@@ -112,12 +116,12 @@ describe('PostDetailView', () => {
         postId="post-1"
         onAuthorClick={mockOnAuthorClick}
       />
-    )
+    );
 
     await waitFor(() => {
-      expect(communityAPI.getPost).toHaveBeenCalledWith('post-1')
-    })
-  })
+      expect(communityAPI.getPost).toHaveBeenCalledWith('post-1');
+    });
+  });
 
   it('should display post content', async () => {
     render(
@@ -127,13 +131,13 @@ describe('PostDetailView', () => {
         postId="post-1"
         onAuthorClick={mockOnAuthorClick}
       />
-    )
+    );
 
     await waitFor(() => {
-      expect(screen.getByText('Test post')).toBeInTheDocument()
-      expect(screen.getByText('Test User')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText('Test post')).toBeInTheDocument();
+      expect(screen.getByText('Test User')).toBeInTheDocument();
+    });
+  });
 
   it('should render comment input', async () => {
     render(
@@ -143,12 +147,12 @@ describe('PostDetailView', () => {
         postId="post-1"
         onAuthorClick={mockOnAuthorClick}
       />
-    )
+    );
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText(/add a comment/i)).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByPlaceholderText(/add a comment/i)).toBeInTheDocument();
+    });
+  });
 
   it('should handle close', async () => {
     render(
@@ -158,12 +162,11 @@ describe('PostDetailView', () => {
         postId="post-1"
         onAuthorClick={mockOnAuthorClick}
       />
-    )
+    );
 
     await waitFor(() => {
-      const closeButton = screen.getByRole('button', { name: /close/i })
-      expect(closeButton).toBeInTheDocument()
-    })
-  })
-})
-
+      const closeButton = screen.getByRole('button', { name: /close/i });
+      expect(closeButton).toBeInTheDocument();
+    });
+  });
+});

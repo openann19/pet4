@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Mobile Parity Check Script
- * 
+ *
  * Ensures web components have corresponding mobile implementations
  */
 
@@ -25,7 +25,9 @@ if (!fs.existsSync(MOB_DIR)) {
   process.exit(1)
 }
 
-const webFiles = fs.readdirSync(WEB_DIR).filter((f) => f.endsWith('.tsx') && !f.includes('.test.') && !f.includes('.native.'))
+const webFiles = fs
+  .readdirSync(WEB_DIR)
+  .filter(f => f.endsWith('.tsx') && !f.includes('.test.') && !f.includes('.native.'))
 
 let failed = false
 
@@ -49,7 +51,7 @@ for (const f of webFiles) {
     const exportedDecls = src.getExportedDeclarations()
     const firstNonTypeDecl = Array.from(exportedDecls.values())
       .flat()
-      .find((d) => {
+      .find(d => {
         const k = d.getKindName()
         return k !== 'InterfaceDeclaration' && k !== 'TypeAliasDeclaration'
       })
@@ -63,14 +65,12 @@ for (const f of webFiles) {
         const maybeName = (exp as unknown as { getName?: () => string }).getName?.()
         if (maybeName) name = maybeName
       }
-      const nsrc = project.createSourceFile(
-        'tmp.native.tsx',
-        fs.readFileSync(nativePath, 'utf8'),
-        { overwrite: true }
-      )
+      const nsrc = project.createSourceFile('tmp.native.tsx', fs.readFileSync(nativePath, 'utf8'), {
+        overwrite: true,
+      })
       const nativeExports = nsrc.getExportedDeclarations()
-      const hasExport = Array.from(nativeExports.values()).some((decls) =>
-        decls.some((d) => {
+      const hasExport = Array.from(nativeExports.values()).some(decls =>
+        decls.some(d => {
           const text = d.getText()
           return (
             text.includes(`export default ${String(name ?? '')}`) ||
@@ -87,7 +87,9 @@ for (const f of webFiles) {
       }
     }
   } catch (err) {
-    logger.warn(`⚠️  Could not verify ${String(base ?? '')}: ${String(err instanceof Error ? err.message : String(err) ?? '')}`)
+    console.warn(
+      `⚠️  Could not verify ${base}: ${err instanceof Error ? err.message : String(err)}`
+    )
   }
 }
 

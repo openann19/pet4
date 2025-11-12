@@ -1,11 +1,11 @@
 /**
  * Scroll-to-Bottom FAB "Magnetic" Effect Hook
- * 
+ *
  * Creates a premium scroll FAB animation with:
  * - Magnetic hover oscillation 0.5-1px at 0.7 Hz
  * - Entry: 180ms scale spring
  * - Badge increments with spring if new messages arrive
- * 
+ *
  * Location: apps/mobile/src/effects/chat/ui/use-scroll-fab-magnetic.ts
  */
 
@@ -131,10 +131,7 @@ export function useScrollFabMagnetic(
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: scale.value },
-        { translateY: translateY.value },
-      ],
+      transform: [{ scale: scale.value }, { translateY: translateY.value }],
     }
   })
 
@@ -152,4 +149,3 @@ export function useScrollFabMagnetic(
     badgeAnimatedStyle,
   }
 }
-

@@ -1,36 +1,36 @@
-'use client'
+'use client';
 
-import { cn } from '@/lib/utils'
-import { type ReactNode, useCallback } from 'react'
-import { useAnimatedStyle } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useBubbleTilt } from '@/effects/reanimated/use-bubble-tilt'
-import { useBubbleEntry } from '@/effects/reanimated/use-bubble-entry'
-import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation'
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
-import { TypingDotsWeb } from './TypingDotsWeb'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { cn } from '@/lib/utils';
+import { type ReactNode, useCallback } from 'react';
+import { useAnimatedStyle } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useBubbleTilt } from '@/effects/reanimated/use-bubble-tilt';
+import { useBubbleEntry } from '@/effects/reanimated/use-bubble-entry';
+import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
+import { TypingDotsWeb } from './TypingDotsWeb';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface WebBubbleWrapperProps {
-  children: ReactNode
-  isIncoming?: boolean
-  index?: number
-  onClick?: () => void
-  onLongPress?: () => void
-  hasReaction?: boolean
-  reactionEmoji?: string
-  showTyping?: boolean
-  className?: string
-  bubbleClassName?: string
-  enable3DTilt?: boolean
-  enableSwipeReply?: boolean
-  staggerDelay?: number
-  glowOpacity?: number
-  glowIntensity?: number
+  children: ReactNode;
+  isIncoming?: boolean;
+  index?: number;
+  onClick?: () => void;
+  onLongPress?: () => void;
+  hasReaction?: boolean;
+  reactionEmoji?: string;
+  showTyping?: boolean;
+  className?: string;
+  bubbleClassName?: string;
+  enable3DTilt?: boolean;
+  enableSwipeReply?: boolean;
+  staggerDelay?: number;
+  glowOpacity?: number;
+  glowIntensity?: number;
 }
 
-const DEFAULT_STAGGER_DELAY = 0.04
+const DEFAULT_STAGGER_DELAY = 0.04;
 
 export function WebBubbleWrapper({
   children,
@@ -48,49 +48,56 @@ export function WebBubbleWrapper({
   glowOpacity = 0,
   glowIntensity = 0.85,
 }: WebBubbleWrapperProps) {
-  const bubbleTilt = useBubbleTilt({
-    enabled: enable3DTilt,
-    maxTilt: 10,
-  })
-  
+    const _uiConfig = useUIConfig();
+    const bubbleTilt = useBubbleTilt({
+        enabled: enable3DTilt,
+        maxTilt: 10,
+      });
+
   const bubbleEntry = useBubbleEntry({
     index,
     staggerDelay: staggerDelay * 1000,
     direction: isIncoming ? 'incoming' : 'outgoing',
     enabled: true,
     isNew: true,
-  })
-  
+  });
+
   const bubbleHover = useHoverAnimation({
     scale: 1.02,
     enabled: enable3DTilt,
-  })
-  
+  });
+
   const reactionEntry = useEntryAnimation({
     initialScale: 0,
     delay: 100,
     enabled: hasReaction,
-  })
+  });
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!enable3DTilt) return
-    const rect = e.currentTarget.getBoundingClientRect()
-    const offsetX = e.clientX - rect.left - rect.width / 2
-    const offsetY = e.clientY - rect.top - rect.height / 2
-    bubbleTilt.handleMove(offsetX, offsetY, rect.width, rect.height)
-  }, [enable3DTilt, bubbleTilt])
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!enable3DTilt) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left - rect.width / 2;
+      const offsetY = e.clientY - rect.top - rect.height / 2;
+      bubbleTilt.handleMove(offsetX, offsetY, rect.width, rect.height);
+    },
+    [enable3DTilt, bubbleTilt]
+  );
 
   const handleMouseLeave = useCallback(() => {
-    if (!enable3DTilt) return
-    bubbleTilt.handleLeave()
-  }, [enable3DTilt, bubbleTilt])
+    if (!enable3DTilt) return;
+    bubbleTilt.handleLeave();
+  }, [enable3DTilt, bubbleTilt]);
 
-  const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    if (isTruthy(onLongPress)) {
-      onLongPress()
-    }
-  }, [onLongPress])
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      if (onLongPress) {
+        onLongPress();
+      }
+    },
+    [onLongPress]
+  );
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -102,19 +109,19 @@ export function WebBubbleWrapper({
         { rotateX: `${String(bubbleTilt.rotateX.value ?? '')}deg` },
         { rotateY: `${String(bubbleTilt.rotateY.value ?? '')}deg` },
       ],
-    }
-  }) as AnimatedStyle
+    };
+  }) as AnimatedStyle;
 
-  const bubbleStyle = bubbleHover.animatedStyle
-  
+  const bubbleStyle = bubbleHover.animatedStyle;
+
   // Glow trail style for send effect
   const glowStyle = useAnimatedStyle(() => {
     if (glowOpacity <= 0) {
-      return {}
+      return {};
     }
-    
-    const glowColor = isIncoming ? 'rgba(59, 130, 246, 0.6)' : 'rgba(255, 255, 255, 0.8)'
-    
+
+    const glowColor = isIncoming ? 'rgba(59, 130, 246, 0.6)' : 'rgba(255, 255, 255, 0.8)';
+
     return {
       position: 'absolute',
       inset: '-4px',
@@ -124,8 +131,8 @@ export function WebBubbleWrapper({
       filter: `blur(8px)`,
       pointerEvents: 'none',
       zIndex: -1,
-    }
-  }) as AnimatedStyle
+    };
+  }) as AnimatedStyle;
 
   return (
     <AnimatedView
@@ -142,7 +149,7 @@ export function WebBubbleWrapper({
           <div />
         </AnimatedView>
       )}
-      
+
       <AnimatedView
         style={bubbleStyle}
         onMouseEnter={bubbleHover.handleMouseEnter}
@@ -158,10 +165,7 @@ export function WebBubbleWrapper({
         )}
       >
         {showTyping ? (
-          <TypingDotsWeb
-            dotColor={isIncoming ? '#9ca3af' : '#ffffff'}
-            dotSize={6}
-          />
+          <TypingDotsWeb dotColor={isIncoming ? '#9ca3af' : 'var(--color-bg-overlay)'} dotSize={6} />
         ) : (
           children
         )}
@@ -175,6 +179,5 @@ export function WebBubbleWrapper({
         </AnimatedView>
       )}
     </AnimatedView>
-  )
+  );
 }
-

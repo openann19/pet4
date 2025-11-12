@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { X, MagnifyingGlass, NavigationArrow, Star } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,8 +7,16 @@ import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type { Location, Place } from '@/lib/maps/types';
-import { getCurrentLocation, snapToGrid, calculateDistance, formatDistance } from '@/lib/maps/utils';
+
+const logger = createLogger('VenuePicker');
+import {
+  getCurrentLocation,
+  snapToGrid,
+  calculateDistance,
+  formatDistance,
+} from '@/lib/maps/utils';
 import MapLibreMap from '@/components/maps/MapLibreMap';
 import type { MapMarker } from '@/lib/maps/useMapLibreMap';
 import { forwardGeocode } from '@/lib/maps/geocoding';
@@ -49,10 +57,19 @@ export default function VenuePicker({
     if (isTruthy(open)) {
       getCurrentLocation()
         .then((location) => {
-          const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
-          setUserLocation(coarse);
+          try {
+            const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
+            setUserLocation(coarse);
+          } catch (error) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            logger.error('VenuePicker snapToGrid error', err);
+            setUserLocation(matchLocation || { lat: 40.7128, lng: -74.006 });
+          }
         })
-        .catch(() => {
+        .catch((error) => {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('VenuePicker getCurrentLocation error', err);
+          // Fallback to match location or default location
           setUserLocation(matchLocation || { lat: 40.7128, lng: -74.006 });
         });
     }
@@ -66,11 +83,11 @@ export default function VenuePicker({
 
   const loadVenues = async (): Promise<void> => {
     if (!userLocation) return;
-    
+
     try {
       const query = searchQuery || (selectedCategory ? `${String(selectedCategory ?? '')} pet` : 'pet friendly');
       const results = await forwardGeocode(query, 'en', userLocation);
-      
+
       const places: Place[] = results.map((result) => ({
         id: result.id,
         name: result.name,
@@ -85,7 +102,7 @@ export default function VenuePicker({
         amenities: [],
         moderationStatus: 'approved',
       }));
-      
+
       setVenues(places.slice(0, 20));
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -149,7 +166,7 @@ export default function VenuePicker({
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="flex-1"
               />
-              <Button onClick={handleSearch} size="icon">
+              <Button onClick={handleSearch} size="icon" aria-label="Magnifying Glass">
                 <MagnifyingGlass size={20} />
               </Button>
             </div>
@@ -213,11 +230,7 @@ export default function VenuePicker({
                     )}
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => { setSelectedVenue(null); }}
-                >
+                <Button variant="ghost" size="icon" onClick={() = aria-label="X"> setSelectedVenue(null)}>
                   <X size={20} />
                 </Button>
               </div>
@@ -231,10 +244,7 @@ export default function VenuePicker({
                   <NavigationArrow size={18} className="mr-2" />
                   {t.map?.openInMaps || 'Open in Maps'}
                 </Button>
-                <Button
-                  className="flex-1"
-                  onClick={handleSelectVenue}
-                >
+                <Button className="flex-1" onClick={handleSelectVenue}>
                   {t.map?.selectLocation || 'Select'}
                 </Button>
               </div>
@@ -245,4 +255,3 @@ export default function VenuePicker({
     </Sheet>
   );
 }
-

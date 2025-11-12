@@ -1,54 +1,50 @@
-'use client'
+'use client';
 
-import type { ReactNode } from 'react'
-import { createContext, useContext } from 'react'
-import type { AbsoluteMaxUIModeConfig } from '@/config/absolute-max-ui-mode'
-import { ABSOLUTE_MAX_UI_MODE } from '@/config/absolute-max-ui-mode'
+import type { ReactNode } from 'react';
+import { createContext, useContext } from 'react';
+import type { AbsoluteMaxUIModeConfig } from '@/config/absolute-max-ui-mode';
+import { ABSOLUTE_MAX_UI_MODE } from '@/config/absolute-max-ui-mode';
 
 export interface UIContextType {
-  config: AbsoluteMaxUIModeConfig
+  config: AbsoluteMaxUIModeConfig;
 }
 
-const UIContext = createContext<UIContextType | undefined>(undefined)
+const UIContext = createContext<UIContextType | undefined>(undefined);
 
 export interface UIProviderProps {
-  children: ReactNode
-  config?: Partial<AbsoluteMaxUIModeConfig>
+  children: ReactNode;
+  config?: Partial<AbsoluteMaxUIModeConfig>;
 }
 
-export function UIProvider({ children, config }: UIProviderProps): React.JSX.Element {
+export function UIProvider({ children, config }: UIProviderProps): React.JSX.Element {                                                                          
   const mergedConfig: AbsoluteMaxUIModeConfig = config
-    ? (deepMerge(ABSOLUTE_MAX_UI_MODE as unknown as Record<string, unknown>, config as Record<string, unknown>) as unknown as AbsoluteMaxUIModeConfig)
-    : ABSOLUTE_MAX_UI_MODE
+    ? deepMerge(ABSOLUTE_MAX_UI_MODE, config)
+    : ABSOLUTE_MAX_UI_MODE;
 
-  return (
-    <UIContext.Provider value={{ config: mergedConfig }}>
-      {children}
-    </UIContext.Provider>
-  )
+  return <UIContext.Provider value={{ config: mergedConfig }}>{children}</UIContext.Provider>;                                                                  
 }
 
 export function useUIContext(): UIContextType {
-  const context = useContext(UIContext)
+  const context = useContext(UIContext);
   if (context === undefined) {
-    throw new Error('useUIContext must be used within a UIProvider')
+    throw new Error('useUIContext must be used within a UIProvider');
   }
-  return context
+  return context;
 }
 
 /**
  * Deep merge utility for merging UI config
  */
-function deepMerge<T extends Record<string, unknown>>(
-  target: T,
-  source: Partial<T>
-): T {
-  const result = { ...target }
+function deepMerge(
+  target: AbsoluteMaxUIModeConfig,
+  source: Partial<AbsoluteMaxUIModeConfig>
+): AbsoluteMaxUIModeConfig {
+  const result = { ...target };
 
   for (const key in source) {
     if (source[key] !== undefined) {
-      const sourceValue = source[key]
-      const targetValue = target[key]
+      const sourceValue = source[key];
+      const targetValue = target[key as keyof AbsoluteMaxUIModeConfig];
 
       if (
         sourceValue !== null &&
@@ -58,16 +54,15 @@ function deepMerge<T extends Record<string, unknown>>(
         typeof targetValue === 'object' &&
         !Array.isArray(targetValue)
       ) {
-        result[key] = deepMerge(
-          targetValue as Record<string, unknown>,
-          sourceValue as Record<string, unknown>
-        ) as T[Extract<keyof T, string>]
-      } else {
-        result[key] = sourceValue as T[Extract<keyof T, string>]
+        (result as Record<string, unknown>)[key] = deepMerge(
+          targetValue as AbsoluteMaxUIModeConfig,
+          sourceValue as Partial<AbsoluteMaxUIModeConfig>
+        );
+      } else if (sourceValue !== undefined) {
+        (result as Record<string, unknown>)[key] = sourceValue;
       }
     }
   }
 
-  return result
+  return result;
 }
-

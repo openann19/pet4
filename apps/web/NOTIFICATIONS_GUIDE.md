@@ -42,10 +42,10 @@ PawfectMatch features a premium, production-ready notification system with a bea
 The notification bell is already integrated into the app header in `App.tsx`:
 
 ```tsx
-import { NotificationBell } from '@/components/notifications'
+import { NotificationBell } from '@/components/notifications';
 
 // In your header
-<NotificationBell />
+<NotificationBell />;
 ```
 
 ### Creating Notifications
@@ -60,33 +60,33 @@ import {
   createVerificationNotification,
   createStoryNotification,
   createModerationNotification,
-  createSystemNotification
-} from '@/lib/enhanced-notifications'
+  createSystemNotification,
+} from '@/lib/enhanced-notifications';
 
 // Create a match notification
-await createMatchNotification('Buddy', 'Max', 'match-123')
+await createMatchNotification('Buddy', 'Max', 'match-123');
 
 // Create a message notification
-await createMessageNotification('Sarah', 'Hey! Would love to set up a playdate!', 'room-456')
+await createMessageNotification('Sarah', 'Hey! Would love to set up a playdate!', 'room-456');
 
 // Create a like notification
-await createLikeNotification('Luna', 1)
+await createLikeNotification('Luna', 1);
 
 // Create a verification notification
-await createVerificationNotification('approved', 'Charlie')
+await createVerificationNotification('approved', 'Charlie');
 
 // Create a story notification
-await createStoryNotification('Mike', 1)
+await createStoryNotification('Mike', 1);
 
 // Create a moderation notification
-await createModerationNotification('Content Removed', 'Inappropriate language detected')
+await createModerationNotification('Content Removed', 'Inappropriate language detected');
 
 // Create a system notification
 await createSystemNotification(
   'Maintenance Scheduled',
   'System will be down for maintenance on Sunday at 2 AM EST',
   'high'
-)
+);
 ```
 
 ### Priority Levels
@@ -95,7 +95,7 @@ Notifications support four priority levels:
 
 - **`urgent`** - Red border, pulsing animation, highest visibility
 - **`high`** - Accent colored border, prominent display
-- **`normal`** - Standard border, regular display  
+- **`normal`** - Standard border, regular display
 - **`low`** - Subtle border, muted appearance
 
 ### Managing Notifications
@@ -104,17 +104,17 @@ Notifications support four priority levels:
 import {
   markNotificationAsRead,
   deleteNotification,
-  clearAllNotifications
-} from '@/lib/enhanced-notifications'
+  clearAllNotifications,
+} from '@/lib/enhanced-notifications';
 
 // Mark a notification as read
-await markNotificationAsRead('notification-id')
+await markNotificationAsRead('notification-id');
 
 // Delete a specific notification
-await deleteNotification('notification-id')
+await deleteNotification('notification-id');
 
 // Clear all notifications
-await clearAllNotifications()
+await clearAllNotifications();
 ```
 
 ## Component API
@@ -126,6 +126,7 @@ The bell icon component that shows unread count and opens the notification cente
 **Props:** None (self-contained)
 
 **Features:**
+
 - Animated ringing bell for new notifications
 - Badge with unread count
 - Pulsing ring effect for attention
@@ -136,10 +137,12 @@ The bell icon component that shows unread count and opens the notification cente
 The full notification management interface.
 
 **Props:**
+
 - `isOpen: boolean` - Controls visibility
 - `onClose: () => void` - Callback when closing
 
 **Features:**
+
 - Category filtering (All, Matches, Messages, etc.)
 - Read/Unread filtering
 - Individual notification actions (mark as read, delete)
@@ -151,23 +154,24 @@ The full notification management interface.
 
 ```typescript
 interface AppNotification {
-  id: string                    // Unique identifier (ULID)
-  type: NotificationType        // Category of notification
-  title: string                 // Bold headline
-  message: string               // Notification body
-  timestamp: number             // Creation time (ms since epoch)
-  read: boolean                 // Read status
-  priority: PriorityLevel       // Visual importance
-  actionUrl?: string            // Optional navigation target
-  actionLabel?: string          // Optional action button text
-  imageUrl?: string             // Optional image to display
-  metadata?: {                  // Optional additional data
-    petName?: string
-    userName?: string
-    matchId?: string
-    messageId?: string
-    count?: number
-  }
+  id: string; // Unique identifier (ULID)
+  type: NotificationType; // Category of notification
+  title: string; // Bold headline
+  message: string; // Notification body
+  timestamp: number; // Creation time (ms since epoch)
+  read: boolean; // Read status
+  priority: PriorityLevel; // Visual importance
+  actionUrl?: string; // Optional navigation target
+  actionLabel?: string; // Optional action button text
+  imageUrl?: string; // Optional image to display
+  metadata?: {
+    // Optional additional data
+    petName?: string;
+    userName?: string;
+    matchId?: string;
+    messageId?: string;
+    count?: number;
+  };
 }
 ```
 
@@ -176,6 +180,7 @@ interface AppNotification {
 ### When to Send Notifications
 
 ✅ **DO send notifications for:**
+
 - New matches (high priority)
 - Direct messages (normal priority)
 - Likes on your pet (normal priority)
@@ -184,6 +189,7 @@ interface AppNotification {
 - Important system announcements (high priority)
 
 ❌ **DON'T send notifications for:**
+
 - Every minor action
 - User's own actions
 - Routine system operations
@@ -208,6 +214,7 @@ interface AppNotification {
 ### Styling
 
 Notifications use Tailwind classes and can be customized via:
+
 - Theme colors in `index.css`
 - Priority styles in `NotificationCenter.tsx`
 - Animation timing in Framer Motion configs
@@ -228,12 +235,8 @@ When using WebSockets or Server-Sent Events:
 ```typescript
 // In your real-time event handler
 socket.on('new_match', async (matchData) => {
-  await createMatchNotification(
-    matchData.petName,
-    matchData.yourPetName,
-    matchData.matchId
-  )
-})
+  await createMatchNotification(matchData.petName, matchData.yourPetName, matchData.matchId);
+});
 ```
 
 ### Toast Notifications
@@ -241,12 +244,12 @@ socket.on('new_match', async (matchData) => {
 Combine with the existing toast system for immediate feedback:
 
 ```typescript
-import { notifications } from '@/lib/notifications'
-import { createMatchNotification } from '@/lib/enhanced-notifications'
+import { notifications } from '@/lib/notifications';
+import { createMatchNotification } from '@/lib/enhanced-notifications';
 
 // Show both a toast (immediate) and add to notification center (persistent)
-notifications.success('New Match!', 'Check your matches')
-await createMatchNotification('Buddy', 'Max', 'match-123')
+notifications.success('New Match!', 'Check your matches');
+await createMatchNotification('Buddy', 'Max', 'match-123');
 ```
 
 ## Accessibility
@@ -303,6 +306,7 @@ Potential improvements for future iterations:
 ## Support
 
 For issues or questions:
+
 - Check the component code comments
 - Review the demo implementations
 - Consult the PRD for design decisions

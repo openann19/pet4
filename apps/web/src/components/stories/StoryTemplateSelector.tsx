@@ -1,39 +1,43 @@
-import { useState } from 'react'
-import { motion, Presence } from '@petspark/motion'
-import { Check, MagnifyingGlass } from '@phosphor-icons/react'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { 
+import { useState } from 'react';
+import { motion, Presence, MotionView } from '@petspark/motion';
+import { Check, MagnifyingGlass } from '@phosphor-icons/react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
   TEMPLATE_CATEGORIES,
   getTemplatesByCategory,
-  type AdvancedTemplate 
-} from '@/lib/story-templates'
-import { cn } from '@/lib/utils'
+  type AdvancedTemplate,
+} from '@/lib/story-templates';
+import { cn } from '@/lib/utils';
 
 interface StoryTemplateSelectorProps {
-  selectedTemplate: AdvancedTemplate
-  onSelectTemplate: (template: AdvancedTemplate) => void
+  selectedTemplate: AdvancedTemplate;
+  onSelectTemplate: (template: AdvancedTemplate) => void;
 }
 
-export default function StoryTemplateSelector({ 
-  selectedTemplate, 
-  onSelectTemplate 
+export default function StoryTemplateSelector({
+  selectedTemplate,
+  onSelectTemplate,
 }: StoryTemplateSelectorProps) {
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredTemplates = getTemplatesByCategory(selectedCategory).filter(template =>
-    template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    template.description.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredTemplates = getTemplatesByCategory(selectedCategory).filter(
+    (template) =>
+      template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      template.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="space-y-4">
       <div className="space-y-3">
         <div className="relative">
-          <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+          <MagnifyingGlass
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            size={18}
+          />
           <Input
             placeholder="Search templates..."
             value={searchQuery}
@@ -51,8 +55,8 @@ export default function StoryTemplateSelector({
                 size="sm"
                 onClick={() => { setSelectedCategory(category.id); }}
                 className={cn(
-                  "whitespace-nowrap",
-                  selectedCategory === category.id && "bg-gradient-to-r from-primary to-accent"
+                  'whitespace-nowrap',
+                  selectedCategory === category.id && 'bg-gradient-to-r from-primary to-accent'
                 )}
               >
                 <span className="mr-1.5">{category.icon}</span>
@@ -63,22 +67,23 @@ export default function StoryTemplateSelector({
         </ScrollArea>
       </div>
 
-      <ScrollArea className="h-[320px]">
+      <ScrollArea className="h-80">
         <div className="grid grid-cols-3 gap-3 pr-4">
           <Presence mode="popLayout">
             {filteredTemplates.map((template, index) => (
-              <MotionView as="button"
+              <MotionView
+                as="button"
                 key={template.id}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ 
+                transition={{
                   duration: 0.2,
-                  delay: index * 0.03
+                  delay: index * 0.03,
                 }}
                 onClick={() => { onSelectTemplate(template); }}
                 className={cn(
-                  "relative aspect-[9/16] rounded-xl overflow-hidden border-2 transition-all duration-200",
+                  'relative aspect-[9/16] rounded-xl overflow-hidden border-2 transition-all duration-200',
                   selectedTemplate.id === template.id
                     ? 'border-primary ring-2 ring-primary/20'
                     : 'border-border hover:border-primary/50'
@@ -87,8 +92,8 @@ export default function StoryTemplateSelector({
                 whileTap={{ scale: 0.95 }}
                 style={{
                   background: template.backgroundGradient
-                    ? `linear-gradient(135deg, ${String(template.backgroundGradient.join(', ') ?? '')})`
-                    : template.backgroundColor
+                    ? `linear-gradient(135deg, ${template.backgroundGradient.join(', ')})`
+                    : template.backgroundColor,
                 }}
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
@@ -103,8 +108,8 @@ export default function StoryTemplateSelector({
                 </div>
 
                 {template.category !== 'Basic' && (
-                  <Badge 
-                    variant="secondary" 
+                  <Badge
+                    variant="secondary"
                     className="absolute top-1 left-1 text-[9px] px-1.5 py-0 h-4"
                   >
                     {template.category}
@@ -123,8 +128,8 @@ export default function StoryTemplateSelector({
 
                 {template.animationStyle && (
                   <div className="absolute bottom-1 right-1">
-                    <Badge 
-                      variant="secondary" 
+                    <Badge
+                      variant="secondary"
                       className="text-[8px] px-1 py-0 h-3 bg-black/40 text-white border-0"
                     >
                       {template.animationStyle}
@@ -135,7 +140,7 @@ export default function StoryTemplateSelector({
             ))}
           </Presence>
         </div>
-        
+
         {filteredTemplates.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-8">
             <p className="text-muted-foreground text-sm">No templates found</p>
@@ -144,5 +149,5 @@ export default function StoryTemplateSelector({
         )}
       </ScrollArea>
     </div>
-  )
+  );
 }

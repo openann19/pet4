@@ -1,39 +1,40 @@
-'use client'
+'use client';
 
-import { useReactionAnimation } from '@/hooks/use-reaction-animation'
-import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { cn } from '@/lib/utils'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useReactionAnimation } from '@/hooks/use-reaction-animation';
+import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { cn } from '@/lib/utils';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface AnimatedReactionProps {
-  emoji: string
-  onAnimationComplete?: () => void
-  className?: string
+  emoji: string;
+  onAnimationComplete?: () => void;
+  className?: string;
 }
 
 export function AnimatedReaction({
   emoji,
   onAnimationComplete,
-  className
+  className,
 }: AnimatedReactionProps): React.JSX.Element {
-  const { animatedStyle: rawAnimatedStyle, animate } = useReactionAnimation({
-    hapticFeedback: true
-  })
+    const _uiConfig = useUIConfig();
+    const { animatedStyle: rawAnimatedStyle, animate } = useReactionAnimation({
+        hapticFeedback: true,
+      });
 
-  const animatedStyle = rawAnimatedStyle as AnimatedStyle
+  const animatedStyle = rawAnimatedStyle as AnimatedStyle;
 
   const handleAnimationComplete = (): void => {
     if (isTruthy(onAnimationComplete)) {
       setTimeout(() => {
-        onAnimationComplete()
-      }, 800)
+        onAnimationComplete();
+      }, 800);
     }
-  }
+  };
 
   const handleClick = (): void => {
-    animate(emoji)
-    handleAnimationComplete()
-  }
+    animate(emoji);
+    handleAnimationComplete();
+  };
 
   return (
     <AnimatedView
@@ -43,6 +44,5 @@ export function AnimatedReaction({
     >
       {emoji}
     </AnimatedView>
-  )
+  );
 }
-

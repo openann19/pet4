@@ -1,42 +1,41 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Check, X, Eye, Clock, PawPrint } from '@phosphor-icons/react'
-import { toast } from 'sonner'
-import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service'
-import type { AdoptionListing } from '@/lib/adoption-marketplace-types'
-import { createLogger } from '@/lib/logger'
-import { userService } from '@/lib/user-service'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useState, useEffect, useCallback } from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Check, X, Eye, Clock, PawPrint } from '@phosphor-icons/react';
+import { toast } from 'sonner';
+import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service';
+import type { AdoptionListing } from '@/lib/adoption-marketplace-types';
+import { createLogger } from '@/lib/logger';
+import { userService } from '@/lib/user-service';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 
-const logger = createLogger('AdoptionListingReview')
+const logger = createLogger('AdoptionListingReview');
 
 interface ListingItemProps {
-  listing: AdoptionListing
-  isSelected: boolean
-  onSelect: () => void
-  animation: ReturnType<typeof useBounceOnTap>
+  listing: AdoptionListing;
+  isSelected: boolean;
+  onSelect: () => void;
+  animation: ReturnType<typeof useBounceOnTap>;
 }
 
 interface ListingItemWrapperProps {
-  listing: AdoptionListing
-  isSelected: boolean
-  onSelect: () => void
+  listing: AdoptionListing;
+  isSelected: boolean;
+  onSelect: () => void;
 }
 
 function ListingItemWrapper({ listing, isSelected, onSelect }: ListingItemWrapperProps) {
   const bounceAnimation = useBounceOnTap({
     scale: 0.98,
-    hapticFeedback: true
-  })
+    hapticFeedback: true,
+  });
 
   return (
     <ListingItem
@@ -45,23 +44,21 @@ function ListingItemWrapper({ listing, isSelected, onSelect }: ListingItemWrappe
       onSelect={onSelect}
       animation={bounceAnimation}
     />
-  )
+  );
 }
 
 function ListingItem({ listing, isSelected, onSelect, animation }: ListingItemProps) {
   const handleClick = useCallback(() => {
-    animation.handlePress()
-    onSelect()
-  }, [animation, onSelect])
+    animation.handlePress();
+    onSelect();
+  }, [animation, onSelect]);
 
   return (
     <AnimatedView
       style={animation.animatedStyle}
       onClick={handleClick}
       className={`w-full text-left p-4 rounded-lg border-2 transition-all cursor-pointer ${
-        String(isSelected
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/50' ?? '')
+        isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
       }`}
     >
       <div className="flex items-start gap-3">
@@ -77,84 +74,97 @@ function ListingItem({ listing, isSelected, onSelect, animation }: ListingItemPr
           <p className="text-sm text-muted-foreground">
             {listing.petBreed} • {listing.petAge} years
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            by {listing.ownerName}
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">by {listing.ownerName}</p>
           <p className="text-xs text-muted-foreground">
             {new Date(listing.createdAt).toLocaleDateString()}
           </p>
         </div>
       </div>
     </AnimatedView>
-  )
+  );
 }
 
 export function AdoptionListingReview() {
-  const [pendingListings, setPendingListings] = useState<AdoptionListing[]>([])
-  const [selectedListing, setSelectedListing] = useState<AdoptionListing | null>(null)
-  const [rejectionReason, setRejectionReason] = useState('')
-  const [isProcessing, setIsProcessing] = useState(false)
+  const [pendingListings, setPendingListings] = useState<AdoptionListing[]>([]);
+  const [selectedListing, setSelectedListing] = useState<AdoptionListing | null>(null);
+  const [rejectionReason, setRejectionReason] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const loadPendingListings = useCallback(async () => {
     try {
-      const listings = await adoptionMarketplaceService.getPendingListings()
-      setPendingListings(listings)
+      const listings = await adoptionMarketplaceService.getPendingListings();
+      setPendingListings(listings);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load pending listings', err, { action: 'loadPendingListings' })
-      toast.error('Failed to load listings')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load pending listings', err, { action: 'loadPendingListings' });
+      toast.error('Failed to load listings');
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    void loadPendingListings()
-  }, [loadPendingListings])
+    void loadPendingListings();
+  }, [loadPendingListings]);
 
-  const handleApprove = useCallback(async (listingId: string) => {
-    try {
-      setIsProcessing(true)
-      const user = await userService.user()
-      if (!user) {
-        throw new Error('User context unavailable')
+  const handleApprove = useCallback(
+    async (listingId: string) => {
+      try {
+        setIsProcessing(true);
+        const user = await userService.user();
+        if (!user) {
+          throw new Error('User context unavailable');
+        }
+        await adoptionMarketplaceService.updateListingStatus(listingId, 'active', user.id);
+        toast.success('Listing approved');
+        await loadPendingListings();
+        setSelectedListing(null);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to approve listing', err, { listingId, action: 'approve' });
+        toast.error('Failed to approve listing');
+      } finally {
+        setIsProcessing(false);
       }
-      await adoptionMarketplaceService.updateListingStatus(listingId, 'active', user.id)
-      toast.success('Listing approved')
-      await loadPendingListings()
-      setSelectedListing(null)
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to approve listing', err, { listingId, action: 'approve' })
-      toast.error('Failed to approve listing')
-    } finally {
-      setIsProcessing(false)
-    }
-  }, [loadPendingListings])
+    },
+    [loadPendingListings]
+  );
 
-  const handleReject = useCallback(async (listingId: string) => {
-    if (!rejectionReason.trim()) {
-      toast.error('Please provide a rejection reason')
-      return
-    }
-
-    try {
-      setIsProcessing(true)
-      const user = await userService.user()
-      if (!user) {
-        throw new Error('User context unavailable')
+  const handleReject = useCallback(
+    async (listingId: string) => {
+      if (!rejectionReason.trim()) {
+        toast.error('Please provide a rejection reason');
+        return;
       }
-      await adoptionMarketplaceService.updateListingStatus(listingId, 'withdrawn', user.id, rejectionReason)
-      toast.success('Listing rejected')
-      await loadPendingListings()
-      setSelectedListing(null)
-      setRejectionReason('')
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to reject listing', err, { listingId, action: 'reject', hasReason: !!rejectionReason.trim() })
-      toast.error('Failed to reject listing')
-    } finally {
-      setIsProcessing(false)
-    }
-  }, [rejectionReason, loadPendingListings])
+
+      try {
+        setIsProcessing(true);
+        const user = await userService.user();
+        if (!user) {
+          throw new Error('User context unavailable');
+        }
+        await adoptionMarketplaceService.updateListingStatus(
+          listingId,
+          'withdrawn',
+          user.id,
+          rejectionReason
+        );
+        toast.success('Listing rejected');
+        await loadPendingListings();
+        setSelectedListing(null);
+        setRejectionReason('');
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to reject listing', err, {
+          listingId,
+          action: 'reject',
+          hasReason: !!rejectionReason.trim(),
+        });
+        toast.error('Failed to reject listing');
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [rejectionReason, loadPendingListings]
+  );
 
   return (
     <div className="space-y-6">
@@ -175,7 +185,7 @@ export function AdoptionListingReview() {
             <CardDescription>Click to review listing details</CardDescription>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[600px]">
+            <ScrollArea className="h-150">
               <div className="space-y-3">
                 {pendingListings.length === 0 ? (
                   <div className="text-center py-12">
@@ -183,7 +193,7 @@ export function AdoptionListingReview() {
                     <p className="text-muted-foreground">No pending listings</p>
                   </div>
                 ) : (
-                  pendingListings.map(listing => (
+                  pendingListings.map((listing) => (
                     <ListingItemWrapper
                       key={listing.id}
                       listing={listing}
@@ -208,7 +218,7 @@ export function AdoptionListingReview() {
                 <p className="text-muted-foreground">Select a listing to review</p>
               </div>
             ) : (
-              <ScrollArea className="h-[600px] pr-4">
+              <ScrollArea className="h-150 pr-4">
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
                     <Avatar className="w-16 h-16">
@@ -272,8 +282,10 @@ export function AdoptionListingReview() {
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Temperament</p>
                     <div className="flex flex-wrap gap-2">
-                      {selectedListing.temperament.map(trait => (
-                        <Badge key={trait} variant="secondary">{trait}</Badge>
+                      {selectedListing.temperament.map((trait) => (
+                        <Badge key={trait} variant="secondary">
+                          {trait}
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -282,8 +294,12 @@ export function AdoptionListingReview() {
                     <p className="text-sm text-muted-foreground mb-2">Health Status</p>
                     <div className="flex flex-wrap gap-2">
                       {selectedListing.vaccinated && <Badge variant="outline">Vaccinated</Badge>}
-                      {selectedListing.spayedNeutered && <Badge variant="outline">Spayed/Neutered</Badge>}
-                      {selectedListing.microchipped && <Badge variant="outline">Microchipped</Badge>}
+                      {selectedListing.spayedNeutered && (
+                        <Badge variant="outline">Spayed/Neutered</Badge>
+                      )}
+                      {selectedListing.microchipped && (
+                        <Badge variant="outline">Microchipped</Badge>
+                      )}
                     </div>
                   </div>
 
@@ -343,8 +359,8 @@ export function AdoptionListingReview() {
                     <div className="flex gap-2">
                       <Button
                         onClick={() => {
-                          if (isTruthy(selectedListing)) {
-                            void handleReject(selectedListing.id)
+                          if (selectedListing) {
+                            void handleReject(selectedListing.id);
                           }
                         }}
                         variant="outline"
@@ -356,8 +372,8 @@ export function AdoptionListingReview() {
                       </Button>
                       <Button
                         onClick={() => {
-                          if (isTruthy(selectedListing)) {
-                            void handleApprove(selectedListing.id)
+                          if (selectedListing) {
+                            void handleApprove(selectedListing.id);
                           }
                         }}
                         className="flex-1"
@@ -375,5 +391,5 @@ export function AdoptionListingReview() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

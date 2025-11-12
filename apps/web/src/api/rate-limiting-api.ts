@@ -1,26 +1,26 @@
 /**
  * Rate Limiting API Service
- * 
+ *
  * Handles rate limiting checks through backend API.
  */
 
-import { APIClient } from '@/lib/api-client'
-import { createLogger } from '@/lib/logger'
+import { APIClient } from '@/lib/api-client';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('RateLimitingAPI')
+const logger = createLogger('RateLimitingAPI');
 
 export interface CheckRateLimitRequest {
-  userId: string
-  action: string
-  maxRequests: number
-  windowMs: number
+  userId: string;
+  action: string;
+  maxRequests: number;
+  windowMs: number;
 }
 
 export interface RateLimitResult {
-  allowed: boolean
-  remaining: number
-  resetAt: number
-  limit: number
+  allowed: boolean;
+  remaining: number;
+  resetAt: number;
+  limit: number;
 }
 
 class RateLimitingApiImpl {
@@ -39,22 +39,18 @@ class RateLimitingApiImpl {
         userId,
         action,
         maxRequests,
-        windowMs
-      }
+        windowMs,
+      };
 
-      const response = await APIClient.post<RateLimitResult>(
-        '/rate-limiting/check',
-        request
-      )
-      return response.data
+      const response = await APIClient.post<RateLimitResult>('/rate-limiting/check', request);
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to check rate limit', err, { userId, action })
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to check rate limit', err, { userId, action });
       // Fail open - allow request if rate limiting check fails
-      throw err
+      throw err;
     }
   }
 }
 
-export const rateLimitingApi = new RateLimitingApiImpl()
-
+export const rateLimitingApi = new RateLimitingApiImpl();

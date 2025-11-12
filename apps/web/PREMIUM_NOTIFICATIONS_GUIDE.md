@@ -50,10 +50,10 @@ PawfectMatch features an enterprise-grade, premium notification system with adva
 The premium notification system is ready to use. Simply import and add to your app:
 
 ```tsx
-import { PremiumNotificationBell } from '@/components/notifications'
+import { PremiumNotificationBell } from '@/components/notifications';
 
 // In your app header
-<PremiumNotificationBell />
+<PremiumNotificationBell />;
 ```
 
 ## Usage
@@ -71,84 +71,84 @@ import {
   createAchievementNotification,
   createSocialNotification,
   createEventNotification,
-  createSystemNotification
-} from '@/lib/premium-notifications'
+  createSystemNotification,
+} from '@/lib/premium-notifications';
 
 // Match notification with compatibility score
 await createMatchNotification(
-  'Buddy',              // Your pet name
-  'Max',                // Matched pet name
-  'match-123',          // Match ID
-  95,                   // Compatibility score (optional)
-  '/avatar/max.jpg'     // Avatar URL (optional)
-)
+  'Buddy', // Your pet name
+  'Max', // Matched pet name
+  'match-123', // Match ID
+  95, // Compatibility score (optional)
+  '/avatar/max.jpg' // Avatar URL (optional)
+);
 
 // Message notification
 await createMessageNotification(
-  'Sarah',              // Sender name
+  'Sarah', // Sender name
   'Hey! Would love to set up a playdate!',
-  'room-456',           // Chat room ID
-  '/avatar/sarah.jpg'   // Avatar URL (optional)
-)
+  'room-456', // Chat room ID
+  '/avatar/sarah.jpg' // Avatar URL (optional)
+);
 
 // Like notification (single or grouped)
 await createLikeNotification(
-  'Luna',               // Pet name
-  1,                    // Count (1 for single, >1 for multiple)
-  '/avatar/luna.jpg'    // Avatar URL (optional)
-)
+  'Luna', // Pet name
+  1, // Count (1 for single, >1 for multiple)
+  '/avatar/luna.jpg' // Avatar URL (optional)
+);
 
 // Verification notification
 await createVerificationNotification(
-  'approved',           // Status: 'approved' | 'rejected' | 'pending'
-  'Charlie'             // Pet name
-)
+  'approved', // Status: 'approved' | 'rejected' | 'pending'
+  'Charlie' // Pet name
+);
 
 // Story notification
 await createStoryNotification(
-  'Mike',               // Username
-  1,                    // Count
-  '/avatar/mike.jpg',   // Avatar URL (optional)
-  '/story/preview.jpg'  // Story preview image (optional)
-)
+  'Mike', // Username
+  1, // Count
+  '/avatar/mike.jpg', // Avatar URL (optional)
+  '/story/preview.jpg' // Story preview image (optional)
+);
 
 // Moderation notification
 await createModerationNotification(
-  'Content Removed',    // Title
+  'Content Removed', // Title
   'Inappropriate language detected',
-  'urgent'              // Priority (optional, defaults to 'urgent')
-)
+  'urgent' // Priority (optional, defaults to 'urgent')
+);
 
 // Achievement notification
 await createAchievementNotification(
-  'Super Matcher',      // Achievement name
+  'Super Matcher', // Achievement name
   '10 successful matches',
-  'super-matcher',      // Badge ID (optional)
+  'super-matcher', // Badge ID (optional)
   '/badges/matcher.png' // Badge image (optional)
-)
+);
 
 // Social notification
 await createSocialNotification(
-  'New Follower',       // Title
+  'New Follower', // Title
   'Emma started following you',
-  'Emma',               // Username (optional)
-  '/avatar/emma.jpg'    // Avatar URL (optional)
-)
+  'Emma', // Username (optional)
+  '/avatar/emma.jpg' // Avatar URL (optional)
+);
 
 // Event notification
 await createEventNotification(
-  'Dog Park Meetup',    // Event name
+  'Dog Park Meetup', // Event name
   'Join us this Saturday at 3 PM',
-  'Central Park',       // Location (optional)
-  '/events/meetup.jpg'  // Event image (optional)
-)
+  'Central Park', // Location (optional)
+  '/events/meetup.jpg' // Event image (optional)
+);
 
 // System notification
 await createSystemNotification(
   'Maintenance Scheduled',
   'System will be down Sunday at 2 AM EST',
-  'high'                // Priority (optional, defaults to 'normal')
-)
+  'high' // Priority (optional, defaults to 'normal')
+);
 ```
 
 ### Advanced: Grouped Notifications
@@ -156,18 +156,18 @@ await createSystemNotification(
 Create multiple related notifications that automatically group together:
 
 ```typescript
-import { createGroupedNotifications } from '@/lib/premium-notifications'
+import { createGroupedNotifications } from '@/lib/premium-notifications';
 
 // Create grouped story notifications
 await createGroupedNotifications(
-  'story',              // Notification type
+  'story', // Notification type
   [
     { name: 'Mike', avatarUrl: '/avatar/mike.jpg' },
     { name: 'Sarah', avatarUrl: '/avatar/sarah.jpg' },
-    { name: 'John', avatarUrl: '/avatar/john.jpg' }
+    { name: 'John', avatarUrl: '/avatar/john.jpg' },
   ],
-  'posted a story'      // Base message
-)
+  'posted a story' // Base message
+);
 ```
 
 ### Managing Notifications
@@ -179,55 +179,60 @@ import {
   deleteNotification,
   clearAllNotifications,
   getUnreadCount,
-  getUrgentNotifications
-} from '@/lib/premium-notifications'
+  getUrgentNotifications,
+} from '@/lib/premium-notifications';
 
 // Mark as read
-await markNotificationAsRead('notification-id')
+await markNotificationAsRead('notification-id');
 
 // Archive notification
-await archiveNotification('notification-id')
+await archiveNotification('notification-id');
 
 // Delete notification
-await deleteNotification('notification-id')
+await deleteNotification('notification-id');
 
 // Clear all notifications
-await clearAllNotifications()
+await clearAllNotifications();
 
 // Get unread count
-const unreadCount = await getUnreadCount()
+const unreadCount = await getUnreadCount();
 
 // Get urgent notifications
-const urgent = await getUrgentNotifications()
+const urgent = await getUrgentNotifications();
 ```
 
 ## Priority Levels
 
 ### Critical (Level 5)
+
 - **Use for**: Security alerts, account warnings, payment failures
 - **Behavior**: Pulsing red border, continuous animation, top of list
 - **Visual**: Red gradient bar, pulsing glow effect
 - **Example**: "Account Security Alert"
 
 ### Urgent (Level 4)
+
 - **Use for**: Time-sensitive actions, moderation warnings, report outcomes
 - **Behavior**: Animated top bar, pulsing icon, prominent display
 - **Visual**: Red border, gradient animation
 - **Example**: "Content Removed"
 
 ### High (Level 3)
+
 - **Use for**: New matches, verification approvals, achievements
 - **Behavior**: Accent-colored border, prominent placement
 - **Visual**: Accent color accent, slightly elevated
 - **Example**: "New Match Found!"
 
 ### Normal (Level 2)
+
 - **Use for**: Messages, likes, social interactions
 - **Behavior**: Standard display, primary border
 - **Visual**: Standard styling, regular placement
 - **Example**: "New Message from Sarah"
 
 ### Low (Level 1)
+
 - **Use for**: Stories, non-urgent updates, promotional content
 - **Behavior**: Subtle display, bottom of category
 - **Visual**: Muted styling, minimal emphasis
@@ -238,21 +243,25 @@ const urgent = await getUrgentNotifications()
 Users can configure their notification experience:
 
 ### Quiet Hours
+
 - Enable/disable quiet hours
 - Set start and end times
 - Notifications still arrive but won't trigger sounds/haptics
 
 ### Grouping
+
 - Toggle smart grouping on/off
 - Grouped notifications collapse similar items
 - Individual access available via expand
 
 ### Previews
+
 - Show/hide message previews
 - Privacy option for sensitive content
 - Affects message and content previews
 
 ### Sound & Haptics
+
 - Enable/disable notification sounds
 - Toggle haptic feedback
 - Per-notification-type settings (future)
@@ -262,6 +271,7 @@ Users can configure their notification experience:
 ### When to Send Notifications
 
 ✅ **DO send for:**
+
 - Real-time actions that require immediate attention (matches, messages)
 - Status changes that affect the user (verification, moderation)
 - Achievements and milestones that delight
@@ -269,6 +279,7 @@ Users can configure their notification experience:
 - Security and account-related information
 
 ❌ **DON'T send for:**
+
 - Every minor interaction or action
 - User's own actions (liking their own content)
 - Routine background operations
@@ -287,18 +298,22 @@ Users can configure their notification experience:
 ### Examples of Good Notification Copy
 
 **Matches:**
+
 - ✅ "Buddy matched with Max! 95% compatibility"
 - ❌ "You have a new match"
 
 **Messages:**
+
 - ✅ "Sarah: Hey! Would love to set up a playdate!"
 - ❌ "New message received"
 
 **Achievements:**
+
 - ✅ "Achievement Unlocked! Super Matcher - 10 successful matches"
 - ❌ "You earned a badge"
 
 **Moderation:**
+
 - ✅ "Content Removed: Inappropriate language detected in your post"
 - ❌ "Action taken on your content"
 
@@ -308,32 +323,32 @@ Users can configure their notification experience:
 
 ```typescript
 interface PremiumNotification {
-  id: string                                    // Unique ULID
-  type: NotificationType                        // Category
-  title: string                                 // Bold headline
-  message: string                               // Body text
-  timestamp: number                             // Unix timestamp (ms)
-  read: boolean                                 // Read status
-  archived: boolean                             // Archive status
-  priority: 'low' | 'normal' | 'high' | 'urgent' | 'critical'
-  actionUrl?: string                            // Navigation target
-  actionLabel?: string                          // CTA button text
-  imageUrl?: string                             // Rich media image
-  avatarUrl?: string                            // User/pet avatar
-  mediaType?: 'image' | 'video' | 'audio' | 'gif'
-  groupId?: string                              // Group identifier
+  id: string; // Unique ULID
+  type: NotificationType; // Category
+  title: string; // Bold headline
+  message: string; // Body text
+  timestamp: number; // Unix timestamp (ms)
+  read: boolean; // Read status
+  archived: boolean; // Archive status
+  priority: 'low' | 'normal' | 'high' | 'urgent' | 'critical';
+  actionUrl?: string; // Navigation target
+  actionLabel?: string; // CTA button text
+  imageUrl?: string; // Rich media image
+  avatarUrl?: string; // User/pet avatar
+  mediaType?: 'image' | 'video' | 'audio' | 'gif';
+  groupId?: string; // Group identifier
   metadata?: {
-    petName?: string
-    userName?: string
-    matchId?: string
-    messageId?: string
-    count?: number
-    compatibilityScore?: number
-    reactionType?: string
-    location?: string
-    eventType?: string
-    achievementBadge?: string
-  }
+    petName?: string;
+    userName?: string;
+    matchId?: string;
+    messageId?: string;
+    count?: number;
+    compatibilityScore?: number;
+    reactionType?: string;
+    location?: string;
+    eventType?: string;
+    achievementBadge?: string;
+  };
 }
 ```
 
@@ -370,11 +385,11 @@ socket.on('new_match', async (data) => {
     data.matchedPetName,
     data.matchId,
     data.compatibilityScore
-  )
-  
+  );
+
   // Show toast for immediate feedback
-  notifications.success('New Match!', 'Check your notifications')
-})
+  notifications.success('New Match!', 'Check your notifications');
+});
 
 socket.on('new_message', async (data) => {
   await createMessageNotification(
@@ -382,8 +397,8 @@ socket.on('new_message', async (data) => {
     data.messagePreview,
     data.roomId,
     data.avatarUrl
-  )
-})
+  );
+});
 ```
 
 ### Combined with Toast Notifications
@@ -392,10 +407,10 @@ Use both systems for optimal UX:
 
 ```typescript
 // Toast: Immediate, transient feedback
-notifications.success('Match created!')
+notifications.success('Match created!');
 
 // Premium Notification: Persistent, actionable record
-await createMatchNotification('Buddy', 'Max', 'match-123')
+await createMatchNotification('Buddy', 'Max', 'match-123');
 ```
 
 ## Accessibility
@@ -466,6 +481,7 @@ Planned features for future iterations:
 ## Support
 
 For issues or questions:
+
 - Check component code comments
 - Review demo implementations
 - Consult the PRD for design decisions

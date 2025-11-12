@@ -1,5 +1,12 @@
-import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, type SharedValue } from 'react-native-reanimated'
-import { useEffect } from 'react'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  Easing,
+  type SharedValue,
+} from 'react-native-reanimated'
+import { useCallback, useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
 import { isTruthy, isDefined } from '@petspark/shared';
 
@@ -27,7 +34,7 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
     duration = DEFAULT_DURATION,
     delay = DEFAULT_DELAY,
     shimmerWidth = DEFAULT_SHIMMER_WIDTH,
-    enabled = true
+    enabled = true,
   } = options
 
   const translateX = useSharedValue(-shimmerWidth)
@@ -36,15 +43,15 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: translateX.value }],
-      opacity: opacity.value
+      opacity: opacity.value,
     }
   }) as AnimatedStyle
 
-  const start = () => {
+  const start = useCallback(() => {
     translateX.value = withRepeat(
       withTiming(shimmerWidth, {
         duration,
-        easing: Easing.linear
+        easing: Easing.linear,
       }),
       -1,
       false
@@ -52,17 +59,17 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
     opacity.value = withRepeat(
       withTiming(0.3, {
         duration: duration / 2,
-        easing: Easing.inOut(Easing.ease)
+        easing: Easing.inOut(Easing.ease),
       }),
       -1,
       true
     )
-  }
+  }, [duration, shimmerWidth, translateX, opacity])
 
-  const stop = () => {
+  const stop = useCallback(() => {
     translateX.value = -shimmerWidth
     opacity.value = 0.3
-  }
+  }, [shimmerWidth, translateX, opacity])
 
   useEffect(() => {
     if (isTruthy(enabled)) {
@@ -75,15 +82,15 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
       }
     } else {
       stop()
-      return undefined
+      return
     }
-  }, [enabled, delay, duration, shimmerWidth])
+  }, [enabled, delay, start, stop])
 
   return {
     translateX,
     opacity,
     animatedStyle,
     start,
-    stop
+    stop,
   }
 }

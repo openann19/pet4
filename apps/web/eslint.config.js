@@ -16,6 +16,28 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const tsFiles = ['**/*.{ts,tsx}'];
 
+const typeCheckedIgnorePatterns = [
+  '**/*.config.{js,cjs,mjs,ts,cts,mts}',
+  '**/eslint.config.{js,cjs,mjs,ts,cts,mts}',
+  '**/tailwind.config.*',
+  '**/postcss.config.*',
+  '**/stylelint.config.*',
+  '**/vite.config.*',
+  '**/vitest.config.*',
+];
+
+const tsTypeCheckedConfigs = tseslint.configs.recommendedTypeChecked.map((config) => ({
+  ...config,
+  files: tsFiles,
+  ignores: [...(config.ignores ?? []), ...typeCheckedIgnorePatterns],
+}));
+
+const tsStylisticConfigs = tseslint.configs.stylisticTypeChecked.map((config) => ({
+  ...config,
+  files: tsFiles,
+  ignores: [...(config.ignores ?? []), ...typeCheckedIgnorePatterns],
+}));
+
 export default tseslint.config(
   {
     ignores: [
@@ -24,15 +46,29 @@ export default tseslint.config(
       '**/.next/**',
       '**/coverage/**',
       '**/node_modules/**',
+      '**/html/**',
       '**/kyc-native.ts',
+      '**/stylelint.config.*',
+      '**/tailwind.config.*',
+      '**/postcss.config.*',
+      '**/vite.config.*',
+      '**/e2e/**',
+      '**/android-design-tokens-rn/**',
+      '**/scripts/**',
+      '**/public/**',
+      '**/playwright.config.ts',
+      // Prevent ESLint from trying to type-check config files themselves
+      '**/*eslint.config.{js,cjs,mjs,ts}',
+      '**/*.config.{js,cjs,mjs}',
     ],
   },
   { linterOptions: { reportUnusedDisableDirectives: 'error' } },
   js.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
+  ...tsTypeCheckedConfigs,
+  ...tsStylisticConfigs,
   {
     files: ['**/*.{js,cjs,mjs}'],
+    ignores: typeCheckedIgnorePatterns,
     languageOptions: {
       ecmaVersion: 2022,
       globals: globals.browser,
@@ -62,7 +98,7 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['error', { allowConstantExport: true }],                                                                         
+      'react-refresh/only-export-components': ['error', { allowConstantExport: true }],
       'no-console': 'error', // No console.* allowed in production code
       'no-debugger': 'error',
       eqeqeq: ['error', 'smart'],
@@ -101,26 +137,31 @@ export default tseslint.config(
         'error',
         {
           selector: 'MemberExpression[object.name="window"][property.name="spark"]',
-          message: '❌ PRODUCTION BLOCKER: window.spark usage detected. Migrate to real API endpoints.',
+          message:
+            '❌ PRODUCTION BLOCKER: window.spark usage detected. Migrate to real API endpoints.',
         },
         {
           selector: 'MemberExpression[property.name="kv"]',
-          message: '❌ PRODUCTION BLOCKER: .kv usage detected. Use real database/API storage instead.',
+          message:
+            '❌ PRODUCTION BLOCKER: .kv usage detected. Use real database/API storage instead.',
         },
         {
           selector:
             'CallExpression[callee.type="MemberExpression"][callee.property.name="get"][callee.object.property.name="kv"]',
-          message: '❌ PRODUCTION BLOCKER: spark.kv.get() calls are banned. Use APIClient.get() instead.',
+          message:
+            '❌ PRODUCTION BLOCKER: spark.kv.get() calls are banned. Use APIClient.get() instead.',
         },
         {
           selector:
             'CallExpression[callee.type="MemberExpression"][callee.property.name="set"][callee.object.property.name="kv"]',
-          message: '❌ PRODUCTION BLOCKER: spark.kv.set() calls are banned. Use APIClient.post/put() instead.',
+          message:
+            '❌ PRODUCTION BLOCKER: spark.kv.set() calls are banned. Use APIClient.post/put() instead.',
         },
         {
           selector:
             'CallExpression[callee.type="MemberExpression"][callee.property.name="delete"][callee.object.property.name="kv"]',
-          message: '❌ PRODUCTION BLOCKER: spark.kv.delete() calls are banned. Use APIClient.delete() instead.',
+          message:
+            '❌ PRODUCTION BLOCKER: spark.kv.delete() calls are banned. Use APIClient.delete() instead.',
         },
       ],
       'no-restricted-imports': [
@@ -129,33 +170,50 @@ export default tseslint.config(
           paths: [
             {
               name: 'framer-motion',
-              message: 'Use @petspark/motion (Reanimated) instead. Framer Motion only allowed in apps/web/**/web-only/**',
+              message:
+                'Use @petspark/motion (Reanimated) instead. Framer Motion only allowed in apps/web/**/web-only/**',
             },
           ],
           patterns: [
             {
               group: ['framer-motion'],
-              message: 'Use @petspark/motion (Reanimated) instead. Framer Motion only allowed in apps/web/**/web-only/**',
+              message:
+                'Use @petspark/motion (Reanimated) instead. Framer Motion only allowed in apps/web/**/web-only/**',
             },
           ],
         },
       ],
+      // Disable type-aware rules for JS files (they don't have type information)
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
     },
   },
   {
     files: tsFiles,
+    ignores: typeCheckedIgnorePatterns,
     languageOptions: {
       ecmaVersion: 2022,
       globals: globals.browser,
       parserOptions: {
-        project: ['tsconfig.json'],
+        project: ['./tsconfig.json'],
         tsconfigRootDir: __dirname,
       },
     },
     plugins: {
       '@typescript-eslint': tseslint.plugin,
+      import: importPlugin,
+    },
+    settings: {
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          project: ['tsconfig.json'],
+        },
+        node: true,
+      },
     },
     rules: {
+      '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -216,5 +274,5 @@ export default tseslint.config(
     rules: {
       'no-console': 'off',
     },
-  },
+  }
 );

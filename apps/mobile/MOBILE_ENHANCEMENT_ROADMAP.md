@@ -1,6 +1,7 @@
 # 🚀 Pet3 Mobile App - Enhancement Roadmap to Top-Tier Quality
 
 ## Executive Summary
+
 This document outlines comprehensive enhancements and fixes to transform the Pet3 React Native mobile application into a top-tier, production-ready platform with zero errors, native-feeling animations, and exceptional mobile user experience.
 
 ---
@@ -8,6 +9,7 @@ This document outlines comprehensive enhancements and fixes to transform the Pet
 ## ✅ Current State Analysis
 
 ### Mobile App Stack
+
 - **Framework:** React Native 0.76.6 + Expo ~51.0.34
 - **Navigation:** React Navigation v7
 - **Animations:** React Native Reanimated ~3.16.1
@@ -16,6 +18,7 @@ This document outlines comprehensive enhancements and fixes to transform the Pet
 - **State Management:** React Context (needs enhancement)
 
 ### Existing Screens
+
 - ✅ HomeScreen
 - ✅ MatchingScreen
 - ✅ CommunityScreen
@@ -27,9 +30,11 @@ This document outlines comprehensive enhancements and fixes to transform the Pet
 ## 🎯 Critical Fixes Required
 
 ### 1. React Native Reanimated Integration (Priority: CRITICAL)
+
 **Current State:** Basic Reanimated setup, not fully utilized
 
 **Required Enhancements:**
+
 ```typescript
 // Native swipe cards for pet discovery
 import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
@@ -39,7 +44,7 @@ const SwipeCard = ({ pet, onSwipe }) => {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const rotate = useSharedValue(0);
-  
+
   const panGesture = Gesture.Pan()
     .onChange((event) => {
       translateX.value = event.translationX;
@@ -61,7 +66,7 @@ const SwipeCard = ({ pet, onSwipe }) => {
         rotate.value = withSpring(0);
       }
     });
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },
@@ -69,7 +74,7 @@ const SwipeCard = ({ pet, onSwipe }) => {
       { rotateZ: `${rotate.value}deg` },
     ],
   }));
-  
+
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={animatedStyle}>
@@ -81,6 +86,7 @@ const SwipeCard = ({ pet, onSwipe }) => {
 ```
 
 **Action Items:**
+
 - [ ] Implement native swipe card stack for MatchingScreen
 - [ ] Add spring-based animations for all gestures
 - [ ] Implement shared element transitions between screens
@@ -95,9 +101,11 @@ const SwipeCard = ({ pet, onSwipe }) => {
 ---
 
 ### 2. TypeScript & Type Safety (Priority: HIGH)
+
 **Current State:** Basic TypeScript setup, needs strict enforcement
 
 **Required Actions:**
+
 - [ ] Enable strict mode in tsconfig.json
 - [ ] Add proper type definitions for all API responses
 - [ ] Type all navigation routes and params
@@ -106,39 +114,36 @@ const SwipeCard = ({ pet, onSwipe }) => {
 - [ ] Add proper error types for error handling
 
 **Implementation:**
+
 ```typescript
 // Navigation types
 export type RootStackParamList = {
-  Home: undefined;
-  Matching: undefined;
-  PetDetail: { petId: string };
-  Chat: { matchId: string; petName: string };
-  Profile: { userId?: string };
-  Settings: undefined;
-};
+  Home: undefined
+  Matching: undefined
+  PetDetail: { petId: string }
+  Chat: { matchId: string; petName: string }
+  Profile: { userId?: string }
+  Settings: undefined
+}
 
 // API response types
 interface ApiResponse<T> {
-  data: T;
-  status: number;
-  error?: ApiError;
+  data: T
+  status: number
+  error?: ApiError
 }
 
 interface ApiError {
-  code: string;
-  message: string;
-  details?: Record<string, string[]>;
+  code: string
+  message: string
+  details?: Record<string, string[]>
 }
 
 // Type guards
 function isPetProfile(data: unknown): data is PetProfile {
   return (
-    typeof data === 'object' &&
-    data !== null &&
-    'id' in data &&
-    'name' in data &&
-    'species' in data
-  );
+    typeof data === 'object' && data !== null && 'id' in data && 'name' in data && 'species' in data
+  )
 }
 ```
 
@@ -148,9 +153,11 @@ function isPetProfile(data: unknown): data is PetProfile {
 ---
 
 ### 3. State Management Enhancement (Priority: HIGH)
+
 **Current State:** Basic Context API, no persistence or offline support
 
 **Required Enhancements:**
+
 - [ ] Implement Redux Toolkit or Zustand for global state
 - [ ] Add React Query for server state management
 - [ ] Implement optimistic updates
@@ -159,34 +166,33 @@ function isPetProfile(data: unknown): data is PetProfile {
 - [ ] Add state persistence with AsyncStorage
 
 **Implementation:**
+
 ```typescript
 // Using Zustand with persistence
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface UserStore {
-  user: User | null;
-  pets: Pet[];
-  matches: Match[];
-  setUser: (user: User) => void;
-  addPet: (pet: Pet) => void;
-  updateMatch: (matchId: string, updates: Partial<Match>) => void;
+  user: User | null
+  pets: Pet[]
+  matches: Match[]
+  setUser: (user: User) => void
+  addPet: (pet: Pet) => void
+  updateMatch: (matchId: string, updates: Partial<Match>) => void
 }
 
 export const useUserStore = create<UserStore>()(
   persist(
-    (set) => ({
+    set => ({
       user: null,
       pets: [],
       matches: [],
-      setUser: (user) => set({ user }),
-      addPet: (pet) => set((state) => ({ pets: [...state.pets, pet] })),
+      setUser: user => set({ user }),
+      addPet: pet => set(state => ({ pets: [...state.pets, pet] })),
       updateMatch: (matchId, updates) =>
-        set((state) => ({
-          matches: state.matches.map((m) =>
-            m.id === matchId ? { ...m, ...updates } : m
-          ),
+        set(state => ({
+          matches: state.matches.map(m => (m.id === matchId ? { ...m, ...updates } : m)),
         })),
     }),
     {
@@ -194,44 +200,42 @@ export const useUserStore = create<UserStore>()(
       storage: createJSONStorage(() => AsyncStorage),
     }
   )
-);
+)
 
 // Using React Query for API calls
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 const usePets = () => {
   return useQuery({
     queryKey: ['pets'],
     queryFn: fetchPets,
     staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-};
+  })
+}
 
 const useLikePet = () => {
-  const queryClient = useQueryClient();
-  
+  const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: (petId: string) => likePet(petId),
-    onMutate: async (petId) => {
+    onMutate: async petId => {
       // Optimistic update
-      await queryClient.cancelQueries({ queryKey: ['pets'] });
-      const previousPets = queryClient.getQueryData(['pets']);
-      
-      queryClient.setQueryData(['pets'], (old: Pet[]) =>
-        old.filter((p) => p.id !== petId)
-      );
-      
-      return { previousPets };
+      await queryClient.cancelQueries({ queryKey: ['pets'] })
+      const previousPets = queryClient.getQueryData(['pets'])
+
+      queryClient.setQueryData(['pets'], (old: Pet[]) => old.filter(p => p.id !== petId))
+
+      return { previousPets }
     },
     onError: (err, petId, context) => {
       // Rollback on error
-      queryClient.setQueryData(['pets'], context?.previousPets);
+      queryClient.setQueryData(['pets'], context?.previousPets)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['matches'] });
+      queryClient.invalidateQueries({ queryKey: ['matches'] })
     },
-  });
-};
+  })
+}
 ```
 
 **Estimated Time:** 8-10 hours
@@ -240,9 +244,11 @@ const useLikePet = () => {
 ---
 
 ### 4. Native Module Integration (Priority: HIGH)
+
 **Current State:** Basic Expo modules, needs native features
 
 **Required Native Features:**
+
 - [ ] Camera integration for pet photos (expo-camera)
 - [ ] Image picker with compression (expo-image-picker)
 - [ ] Location services (expo-location)
@@ -253,6 +259,7 @@ const useLikePet = () => {
 - [ ] Share functionality (expo-sharing)
 
 **Implementation:**
+
 ```typescript
 // Camera integration
 import { Camera, CameraType } from 'expo-camera';
@@ -261,25 +268,25 @@ import * as ImageManipulator from 'expo-image-manipulator';
 const PetPhotoCapture = () => {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const cameraRef = useRef<Camera>(null);
-  
+
   const takePicture = async () => {
     if (!cameraRef.current) return;
-    
+
     const photo = await cameraRef.current.takePictureAsync({
       quality: 0.8,
       skipProcessing: true,
     });
-    
+
     // Compress and resize
     const manipulated = await ImageManipulator.manipulateAsync(
       photo.uri,
       [{ resize: { width: 1080 } }],
       { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
     );
-    
+
     return manipulated.uri;
   };
-  
+
   return (
     <Camera
       ref={cameraRef}
@@ -302,15 +309,15 @@ Notifications.setNotificationHandler({
 
 const registerForPushNotifications = async () => {
   const { status } = await Notifications.requestPermissionsAsync();
-  
+
   if (status !== 'granted') {
     return null;
   }
-  
+
   const token = await Notifications.getExpoPushTokenAsync({
     projectId: 'your-project-id',
   });
-  
+
   return token.data;
 };
 
@@ -334,9 +341,11 @@ const handleMatch = () => {
 ---
 
 ### 5. Performance Optimization (Priority: HIGH)
+
 **Current State:** Basic performance, needs optimization
 
 **Required Optimizations:**
+
 - [ ] Implement FlatList with proper optimizations
 - [ ] Add image caching and lazy loading
 - [ ] Optimize re-renders with React.memo
@@ -347,6 +356,7 @@ const handleMatch = () => {
 - [ ] Reduce app startup time
 
 **Implementation:**
+
 ```typescript
 // Optimized FlatList
 import { FlashList } from '@shopify/flash-list';
@@ -356,9 +366,9 @@ const PetsList = ({ pets }) => {
     ({ item }: { item: Pet }) => <PetCard pet={item} />,
     []
   );
-  
+
   const keyExtractor = useCallback((item: Pet) => item.id, []);
-  
+
   return (
     <FlashList
       data={pets}
@@ -428,9 +438,11 @@ observer.observe({ entryTypes: ['measure'] });
 ## 🎨 User Experience Enhancements
 
 ### 6. Advanced Animation System (Priority: MEDIUM)
+
 **Current State:** Basic animations, needs native polish
 
 **Required Animations:**
+
 - [ ] Spring-based card animations
 - [ ] Shared element transitions
 - [ ] Layout animations for lists
@@ -441,6 +453,7 @@ observer.observe({ entryTypes: ['measure'] });
 - [ ] Like/dislike feedback animations
 
 **Implementation:**
+
 ```typescript
 // Shared element transition
 import { SharedElement } from 'react-navigation-shared-element';
@@ -493,7 +506,7 @@ const MatchCelebration = ({ visible, onComplete }) => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   }, [visible]);
-  
+
   return (
     <Modal visible={visible} transparent>
       <View className="flex-1 items-center justify-center bg-black/50">
@@ -519,9 +532,11 @@ const MatchCelebration = ({ visible, onComplete }) => {
 ---
 
 ### 7. Offline Mode & Data Sync (Priority: HIGH)
+
 **Current State:** No offline support
 
 **Required Features:**
+
 - [ ] Offline data storage with SQLite
 - [ ] Queue system for offline actions
 - [ ] Background sync when online
@@ -530,6 +545,7 @@ const MatchCelebration = ({ visible, onComplete }) => {
 - [ ] Cache management
 
 **Implementation:**
+
 ```typescript
 // SQLite for offline storage
 import * as SQLite from 'expo-sqlite';
@@ -545,7 +561,7 @@ const initDatabase = () => {
         cached_at INTEGER NOT NULL
       );`
     );
-    
+
     tx.executeSql(
       `CREATE TABLE IF NOT EXISTS offline_actions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -576,7 +592,7 @@ import NetInfo from '@react-native-community/netinfo';
 
 const syncOfflineActions = async () => {
   const actions = await getOfflineActions();
-  
+
   for (const action of actions) {
     try {
       await executeAction(action);
@@ -597,17 +613,17 @@ NetInfo.addEventListener((state) => {
 // Offline indicator
 const OfflineIndicator = () => {
   const [isOffline, setIsOffline] = useState(false);
-  
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
       setIsOffline(!state.isConnected);
     });
-    
+
     return () => unsubscribe();
   }, []);
-  
+
   if (!isOffline) return null;
-  
+
   return (
     <View className="bg-yellow-500 py-2 px-4">
       <Text className="text-center text-white font-semibold">
@@ -624,9 +640,11 @@ const OfflineIndicator = () => {
 ---
 
 ### 8. Theme System for Mobile (Priority: MEDIUM)
+
 **Current State:** Basic colors, needs comprehensive theming
 
 **Required Enhancements:**
+
 - [ ] Full theme system matching web (18 themes)
 - [ ] Dark mode support with system detection
 - [ ] Smooth theme transitions
@@ -635,6 +653,7 @@ const OfflineIndicator = () => {
 - [ ] Accessibility color modes
 
 **Implementation:**
+
 ```typescript
 // Theme system
 import { useColorScheme } from 'react-native';
@@ -663,25 +682,25 @@ const themes: Record<string, Theme> = {
 const useTheme = () => {
   const systemScheme = useColorScheme();
   const [themeId, setThemeId] = useState<string>('auto');
-  
+
   useEffect(() => {
     AsyncStorage.getItem('theme').then((saved) => {
       if (saved) setThemeId(saved);
     });
   }, []);
-  
+
   const activeTheme = useMemo(() => {
     if (themeId === 'auto') {
       return systemScheme === 'dark' ? themes['default-dark'] : themes['default-light'];
     }
     return themes[themeId] || themes['default-light'];
   }, [themeId, systemScheme]);
-  
+
   const setTheme = (id: string) => {
     setThemeId(id);
     AsyncStorage.setItem('theme', id);
   };
-  
+
   return { theme: activeTheme, setTheme };
 };
 
@@ -690,7 +709,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 const ThemedView = ({ children }) => {
   const { theme } = useTheme();
-  
+
   return (
     <Animated.View
       entering={FadeIn.duration(300)}
@@ -709,9 +728,11 @@ const ThemedView = ({ children }) => {
 ---
 
 ### 9. Navigation & Deep Linking (Priority: MEDIUM)
+
 **Current State:** Basic navigation, no deep linking
 
 **Required Enhancements:**
+
 - [ ] Deep linking configuration
 - [ ] Universal links for iOS
 - [ ] App links for Android
@@ -721,6 +742,7 @@ const ThemedView = ({ children }) => {
 - [ ] Custom transitions
 
 **Implementation:**
+
 ```typescript
 // Deep linking configuration
 import { Linking } from 'react-native';
@@ -753,15 +775,15 @@ const linking = {
 // Custom tab bar with animations
 const AnimatedTabBar = ({ state, descriptors, navigation }) => {
   const translateX = useSharedValue(0);
-  
+
   useEffect(() => {
     translateX.value = withSpring(state.index * (width / state.routes.length));
   }, [state.index]);
-  
+
   const indicatorStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
-  
+
   return (
     <View className="flex-row bg-white border-t border-gray-200">
       <Animated.View
@@ -792,9 +814,11 @@ const AnimatedTabBar = ({ state, descriptors, navigation }) => {
 ## 🧪 Testing & Quality
 
 ### 10. Testing Strategy (Priority: HIGH)
+
 **Current State:** Basic test setup, minimal coverage
 
 **Required Testing:**
+
 - [ ] Unit tests for utilities (80%+ coverage)
 - [ ] Integration tests for screens
 - [ ] E2E tests with Detox
@@ -803,6 +827,7 @@ const AnimatedTabBar = ({ state, descriptors, navigation }) => {
 - [ ] Accessibility tests
 
 **Implementation:**
+
 ```typescript
 // Unit tests with Jest
 import { renderHook, act } from '@testing-library/react-hooks';
@@ -812,11 +837,11 @@ describe('useSwipe', () => {
   it('handles swipe right', () => {
     const onSwipeRight = jest.fn();
     const { result } = renderHook(() => useSwipe({ onSwipeRight }));
-    
+
     act(() => {
       result.current.handleSwipe('right');
     });
-    
+
     expect(onSwipeRight).toHaveBeenCalled();
   });
 });
@@ -832,20 +857,20 @@ describe('PetCard', () => {
     breed: 'Golden Retriever',
     photos: ['https://example.com/photo.jpg'],
   };
-  
+
   it('renders pet information', () => {
     const { getByText } = render(<PetCard pet={mockPet} />);
-    
+
     expect(getByText('Buddy')).toBeTruthy();
     expect(getByText('Golden Retriever')).toBeTruthy();
   });
-  
+
   it('calls onPress when tapped', () => {
     const onPress = jest.fn();
     const { getByTestId } = render(
       <PetCard pet={mockPet} onPress={onPress} />
     );
-    
+
     fireEvent.press(getByTestId('pet-card'));
     expect(onPress).toHaveBeenCalledWith(mockPet);
   });
@@ -856,16 +881,16 @@ describe('Matching Flow', () => {
   beforeAll(async () => {
     await device.launchApp();
   });
-  
+
   it('should show pet cards', async () => {
     await expect(element(by.id('pet-card'))).toBeVisible();
   });
-  
+
   it('should swipe right to like', async () => {
     await element(by.id('pet-card')).swipe('right', 'fast');
     await expect(element(by.id('match-celebration'))).toBeVisible();
   });
-  
+
   it('should navigate to chat', async () => {
     await element(by.id('chat-button')).tap();
     await expect(element(by.id('chat-screen'))).toBeVisible();
@@ -879,9 +904,11 @@ describe('Matching Flow', () => {
 ---
 
 ### 11. Error Handling & Monitoring (Priority: HIGH)
+
 **Current State:** Basic error handling
 
 **Required Enhancements:**
+
 - [ ] Global error boundary
 - [ ] API error handling with retry
 - [ ] Crash reporting (Sentry)
@@ -890,6 +917,7 @@ describe('Matching Flow', () => {
 - [ ] User feedback mechanism
 
 **Implementation:**
+
 ```typescript
 // Error boundary
 import ErrorBoundary from 'react-native-error-boundary';
@@ -927,18 +955,18 @@ Sentry.init({
 const fetchWithRetry = async (url: string, options = {}, retries = 3) => {
   try {
     const response = await fetch(url, options);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     if (retries > 0) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       return fetchWithRetry(url, options, retries - 1);
     }
-    
+
     Sentry.captureException(error);
     throw error;
   }
@@ -954,7 +982,7 @@ const trackEvent = (event: string, params?: Record<string, any>) => {
 // Track screen views
 const useAnalytics = () => {
   const navigation = useNavigation();
-  
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('state', () => {
       const currentRoute = navigation.getCurrentRoute();
@@ -963,7 +991,7 @@ const useAnalytics = () => {
         screen_class: currentRoute?.name,
       });
     });
-    
+
     return unsubscribe;
   }, [navigation]);
 };
@@ -977,9 +1005,11 @@ const useAnalytics = () => {
 ## 🔒 Security & Privacy
 
 ### 12. Security Enhancements (Priority: HIGH)
+
 **Current State:** Basic security, needs hardening
 
 **Required Features:**
+
 - [ ] Secure token storage (Keychain/Keystore)
 - [ ] Certificate pinning for API calls
 - [ ] Biometric authentication
@@ -988,42 +1018,43 @@ const useAnalytics = () => {
 - [ ] GDPR compliance features
 
 **Implementation:**
+
 ```typescript
 // Secure storage
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from 'expo-secure-store'
 
 const saveToken = async (token: string) => {
   await SecureStore.setItemAsync('auth_token', token, {
     keychainAccessible: SecureStore.WHEN_UNLOCKED,
-  });
-};
+  })
+}
 
 const getToken = async () => {
-  return await SecureStore.getItemAsync('auth_token');
-};
+  return await SecureStore.getItemAsync('auth_token')
+}
 
 // Biometric authentication
-import * as LocalAuthentication from 'expo-local-authentication';
+import * as LocalAuthentication from 'expo-local-authentication'
 
 const authenticateWithBiometrics = async () => {
-  const hasHardware = await LocalAuthentication.hasHardwareAsync();
-  const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-  
+  const hasHardware = await LocalAuthentication.hasHardwareAsync()
+  const isEnrolled = await LocalAuthentication.isEnrolledAsync()
+
   if (!hasHardware || !isEnrolled) {
-    throw new Error('Biometric authentication not available');
+    throw new Error('Biometric authentication not available')
   }
-  
+
   const result = await LocalAuthentication.authenticateAsync({
     promptMessage: 'Authenticate to continue',
     fallbackLabel: 'Use passcode',
-  });
-  
-  return result.success;
-};
+  })
+
+  return result.success
+}
 
 // Certificate pinning
-import { NativeModules } from 'react-native';
-import axios from 'axios';
+import { NativeModules } from 'react-native'
+import axios from 'axios'
 
 const api = axios.create({
   baseURL: 'https://api.petspark.app',
@@ -1032,19 +1063,19 @@ const api = axios.create({
     rejectUnauthorized: true,
     // Add certificate pinning logic
   }),
-});
+})
 
 // Encrypted storage
-import CryptoES from 'crypto-es';
+import CryptoES from 'crypto-es'
 
 const encryptData = (data: any, key: string) => {
-  return CryptoES.AES.encrypt(JSON.stringify(data), key).toString();
-};
+  return CryptoES.AES.encrypt(JSON.stringify(data), key).toString()
+}
 
 const decryptData = (encrypted: string, key: string) => {
-  const bytes = CryptoES.AES.decrypt(encrypted, key);
-  return JSON.parse(bytes.toString(CryptoES.enc.Utf8));
-};
+  const bytes = CryptoES.AES.decrypt(encrypted, key)
+  return JSON.parse(bytes.toString(CryptoES.enc.Utf8))
+}
 ```
 
 **Estimated Time:** 8-10 hours
@@ -1055,9 +1086,11 @@ const decryptData = (encrypted: string, key: string) => {
 ## 📱 Platform-Specific Features
 
 ### 13. iOS-Specific Enhancements (Priority: MEDIUM)
+
 **Current State:** Basic iOS support
 
 **Required Features:**
+
 - [ ] iOS design language (SF Symbols)
 - [ ] Haptic feedback patterns
 - [ ] Context menus (long press)
@@ -1067,6 +1100,7 @@ const decryptData = (encrypted: string, key: string) => {
 - [ ] iCloud sync
 
 **Implementation:**
+
 ```typescript
 // iOS Haptics
 import * as Haptics from 'expo-haptics';
@@ -1123,9 +1157,11 @@ const PetCard = ({ pet }) => (
 ---
 
 ### 14. Android-Specific Enhancements (Priority: MEDIUM)
+
 **Current State:** Basic Android support
 
 **Required Features:**
+
 - [ ] Material Design 3 components
 - [ ] Android ripple effects
 - [ ] Floating Action Buttons
@@ -1135,6 +1171,7 @@ const PetCard = ({ pet }) => (
 - [ ] Android Auto support (future)
 
 **Implementation:**
+
 ```typescript
 // Material Design components
 import { FAB, Portal, Provider as PaperProvider } from 'react-native-paper';
@@ -1189,9 +1226,11 @@ const RippleButton = ({ children, onPress }) => (
 ## 🚀 Performance & Optimization
 
 ### 15. App Size Optimization (Priority: MEDIUM)
+
 **Current State:** Unoptimized bundle size
 
 **Required Optimizations:**
+
 - [ ] Enable Hermes engine
 - [ ] Remove unused dependencies
 - [ ] Optimize images (WebP format)
@@ -1201,6 +1240,7 @@ const RippleButton = ({ children, onPress }) => (
 - [ ] App thinning for iOS
 
 **Implementation:**
+
 ```javascript
 // Enable Hermes (metro.config.js)
 module.exports = {
@@ -1212,18 +1252,17 @@ module.exports = {
       },
     }),
   },
-};
+}
 
 // android/gradle.properties
-hermesEnabled=true
+hermesEnabled = true
 
 // Lazy load screens
-const LazyProfileScreen = lazy(() => import('./screens/ProfileScreen'));
+const LazyProfileScreen = lazy(() => import('./screens/ProfileScreen'))
 
 // Image optimization
-import { Image } from 'expo-image';
-
-<Image
+import { Image } from 'expo-image'
+;<Image
   source={{ uri: pet.photo }}
   placeholder={blurhash}
   contentFit="cover"
@@ -1238,9 +1277,11 @@ import { Image } from 'expo-image';
 ---
 
 ### 16. Network Optimization (Priority: MEDIUM)
+
 **Current State:** Basic API calls
 
 **Required Optimizations:**
+
 - [ ] Request batching
 - [ ] Image CDN integration
 - [ ] GraphQL for efficient queries
@@ -1250,14 +1291,15 @@ import { Image } from 'expo-image';
 - [ ] WebSocket for real-time features
 
 **Implementation:**
+
 ```typescript
 // GraphQL with Apollo
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
 
 const client = new ApolloClient({
   uri: 'https://api.petspark.app/graphql',
   cache: new InMemoryCache(),
-});
+})
 
 const GET_PETS = gql`
   query GetPets($cursor: String, $limit: Int) {
@@ -1278,28 +1320,28 @@ const GET_PETS = gql`
       }
     }
   }
-`;
+`
 
 const { data, fetchMore } = useQuery(GET_PETS, {
   variables: { limit: 20 },
-});
+})
 
 // WebSocket for chat
-import { io } from 'socket.io-client';
+import { io } from 'socket.io-client'
 
 const socket = io('https://api.petspark.app', {
   transports: ['websocket'],
   autoConnect: true,
-});
+})
 
-socket.on('new_message', (message) => {
+socket.on('new_message', message => {
   // Update chat UI
-});
+})
 
 socket.emit('send_message', {
   matchId,
   text: messageText,
-});
+})
 ```
 
 **Estimated Time:** 8-10 hours
@@ -1310,9 +1352,11 @@ socket.emit('send_message', {
 ## 📊 Analytics & Metrics
 
 ### 17. Analytics Integration (Priority: MEDIUM)
+
 **Current State:** No analytics
 
 **Required Analytics:**
+
 - [ ] Screen view tracking
 - [ ] User action tracking
 - [ ] Conversion funnel analytics
@@ -1322,32 +1366,33 @@ socket.emit('send_message', {
 - [ ] A/B testing support
 
 **Implementation:**
+
 ```typescript
 // Firebase Analytics
-import * as Analytics from 'expo-firebase-analytics';
-import * as Application from 'expo-application';
+import * as Analytics from 'expo-firebase-analytics'
+import * as Application from 'expo-application'
 
 // Initialize analytics
-Analytics.setAnalyticsCollectionEnabled(true);
-Analytics.setUserId(user.id);
+Analytics.setAnalyticsCollectionEnabled(true)
+Analytics.setUserId(user.id)
 Analytics.setUserProperties({
   user_type: user.isPremium ? 'premium' : 'free',
   pet_count: user.pets.length,
-});
+})
 
 // Track events
 const trackSwipe = (direction: 'left' | 'right', petId: string) => {
   Analytics.logEvent('swipe', {
     direction,
     pet_id: petId,
-  });
-};
+  })
+}
 
 const trackMatch = (matchId: string) => {
   Analytics.logEvent('match_made', {
     match_id: matchId,
-  });
-};
+  })
+}
 
 // Conversion tracking
 const trackSubscription = (plan: string, price: number) => {
@@ -1356,16 +1401,16 @@ const trackSubscription = (plan: string, price: number) => {
     currency: 'USD',
     item_id: plan,
     item_name: `${plan} Subscription`,
-  });
-};
+  })
+}
 
 // A/B testing
-import { useExperiment } from '@/hooks/useExperiment';
+import { useExperiment } from '@/hooks/useExperiment'
 
 const useMatchButtonColor = () => {
-  const variant = useExperiment('match_button_color', ['blue', 'red']);
-  return variant === 'blue' ? '#3B82F6' : '#EF4444';
-};
+  const variant = useExperiment('match_button_color', ['blue', 'red'])
+  return variant === 'blue' ? '#3B82F6' : '#EF4444'
+}
 ```
 
 **Estimated Time:** 5-6 hours
@@ -1376,7 +1421,9 @@ const useMatchButtonColor = () => {
 ## 📅 Implementation Timeline
 
 ### Phase 1: Foundation (Week 1-2)
+
 **Critical fixes and infrastructure**
+
 - [ ] TypeScript strict mode
 - [ ] State management (Zustand + React Query)
 - [ ] Error handling & monitoring
@@ -1387,7 +1434,9 @@ const useMatchButtonColor = () => {
 **Goal:** Stable, performant foundation
 
 ### Phase 2: Features (Week 3-4)
+
 **Core mobile features**
+
 - [ ] Advanced animations
 - [ ] Offline mode
 - [ ] Theme system
@@ -1398,7 +1447,9 @@ const useMatchButtonColor = () => {
 **Goal:** Feature-complete mobile experience
 
 ### Phase 3: Polish (Week 5-6)
+
 **Quality & optimization**
+
 - [ ] Testing (unit, integration, E2E)
 - [ ] Security hardening
 - [ ] App size optimization
@@ -1413,6 +1464,7 @@ const useMatchButtonColor = () => {
 ## 🎯 Success Metrics
 
 ### Technical Metrics
+
 - ✅ 0 TypeScript errors
 - ✅ 0 ESLint warnings
 - ✅ 80%+ test coverage
@@ -1422,6 +1474,7 @@ const useMatchButtonColor = () => {
 - ✅ Crash-free rate > 99.5%
 
 ### User Experience Metrics
+
 - ✅ Native-feeling interactions
 - ✅ Offline functionality
 - ✅ < 100ms UI response time
@@ -1429,6 +1482,7 @@ const useMatchButtonColor = () => {
 - ✅ 4.5+ star rating
 
 ### Performance Benchmarks
+
 - ✅ Time to Interactive < 2s
 - ✅ Memory usage < 150MB
 - ✅ Battery drain < 2% per hour
@@ -1439,6 +1493,7 @@ const useMatchButtonColor = () => {
 ## 📋 Priority Summary
 
 ### 🔴 Critical (Must-Have - Weeks 1-2)
+
 1. Reanimated integration (swipe cards)
 2. TypeScript strict mode
 3. State management
@@ -1451,6 +1506,7 @@ const useMatchButtonColor = () => {
 **Impact:** Production-ready core
 
 ### 🟡 High (Should-Have - Weeks 3-4)
+
 1. Advanced animations
 2. Offline mode
 3. Theme system
@@ -1461,6 +1517,7 @@ const useMatchButtonColor = () => {
 **Impact:** Complete mobile experience
 
 ### 🟢 Medium (Nice-to-Have - Weeks 5-6)
+
 1. Analytics
 2. App size optimization
 3. Network optimization
@@ -1488,6 +1545,7 @@ const useMatchButtonColor = () => {
 ## 🔗 Additional Resources
 
 ### Libraries to Add
+
 ```json
 {
   "dependencies": {
@@ -1513,6 +1571,7 @@ const useMatchButtonColor = () => {
 ```
 
 ### Documentation
+
 - React Native Reanimated: https://docs.swmansion.com/react-native-reanimated/
 - Expo Documentation: https://docs.expo.dev/
 - React Navigation: https://reactnavigation.org/
@@ -1526,4 +1585,4 @@ const useMatchButtonColor = () => {
 
 ---
 
-*This roadmap provides a complete path to transforming Pet3 mobile app into a top-tier, native-feeling application with exceptional quality, performance, and user experience.*
+_This roadmap provides a complete path to transforming Pet3 mobile app into a top-tier, native-feeling application with exceptional quality, performance, and user experience._

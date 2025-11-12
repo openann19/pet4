@@ -1,6 +1,6 @@
 /**
  * Base Service Class
- * 
+ *
  * Provides common functionality for all services:
  * - Error handling with typed errors
  * - Retry logic with exponential backoff
@@ -10,57 +10,56 @@
  * - Offline-first support with queue management
  */
 
-import type { APIClientImpl } from '@/lib/api-client'
-import { APIClient } from '@/lib/api-client'
-import { createLogger } from '@/lib/logger'
-import type { z } from 'zod'
-import { isTruthy, isDefined } from '@petspark/shared';
+import type { APIClientImpl } from '@/lib/api-client';
+import { APIClient } from '@/lib/api-client';
+import { createLogger } from '@/lib/logger';
+import type { z } from 'zod';
 
-const logger = createLogger('BaseService')
+const logger = createLogger('BaseService');
 
 export interface RetryOptions {
-  attempts?: number
-  delay?: number
-  exponentialBackoff?: boolean
-  retryableStatusCodes?: number[]
+  attempts?: number;
+  delay?: number;
+  exponentialBackoff?: boolean;
+  retryableStatusCodes?: number[];
 }
 
 export interface CacheOptions {
-  enabled?: boolean
-  ttl?: number // Time to live in milliseconds
-  key?: string
-  invalidateOnMutation?: boolean
+  enabled?: boolean;
+  ttl?: number; // Time to live in milliseconds
+  key?: string;
+  invalidateOnMutation?: boolean;
 }
 
 export interface ServiceRequestConfig {
-  retry?: RetryOptions
-  cache?: CacheOptions
-  timeout?: number
-  skipValidation?: boolean
+  retry?: RetryOptions;
+  cache?: CacheOptions;
+  timeout?: number;
+  skipValidation?: boolean;
 }
 
 export interface TelemetryEvent {
-  service: string
-  method: string
-  duration: number
-  success: boolean
-  errorCode?: string | undefined
-  cacheHit?: boolean | undefined
+  service: string;
+  method: string;
+  duration: number;
+  success: boolean;
+  errorCode?: string | undefined;
+  cacheHit?: boolean | undefined;
 }
 
 /**
  * Base class for all service implementations
  */
 export abstract class BaseService {
-  protected readonly apiClient: APIClientImpl
-  protected readonly serviceName: string
-  private readonly cache: Map<string, { data: unknown; timestamp: number; ttl: number }> = new Map()
-  private readonly telemetryEvents: TelemetryEvent[] = []
-  private readonly maxTelemetryEvents = 100
+  protected readonly apiClient: APIClientImpl;
+  protected readonly serviceName: string;
+  private readonly cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>();
+  private readonly telemetryEvents: TelemetryEvent[] = [];
+  private readonly maxTelemetryEvents = 100;
 
   constructor(serviceName: string, apiClient?: APIClientImpl) {
-    this.serviceName = serviceName
-    this.apiClient = apiClient || APIClient
+    this.serviceName = serviceName;
+    this.apiClient = apiClient || APIClient;
   }
 
   /**
@@ -69,225 +68,227 @@ export abstract class BaseService {
   protected async request<T>(
     endpoint: string,
     options: {
-      method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-      body?: unknown
-      schema?: z.ZodType<T>
-      config?: ServiceRequestConfig
+      method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+      body?: unknown;
+      schema?: z.ZodType<T>;
+      config?: ServiceRequestConfig;
     } = {}
   ): Promise<T> {
-    const {
-      method = 'GET',
-      body,
-      schema,
-      config = {}
-    } = options
+    const { method = 'GET', body, schema, config = {} } = options;
 
-    const startTime = Date.now()
-    const cacheKey = config.cache?.key || endpoint
+    const startTime = Date.now();
+    const cacheKey = config.cache?.key || endpoint;
 
     // Check cache for GET requests
-    if (method === 'GET' && (config.cache === undefined || config.cache.enabled !== false)) {
-      const cached = this.getFromCache<T>(cacheKey, config.cache?.ttl)
+    if (method === 'GET' && config.cache?.enabled !== false) {
+      const cached = this.getFromCache<T>(cacheKey, config.cache?.ttl);
       if (cached !== null) {
         this.recordTelemetry({
           service: this.serviceName,
           method,
           duration: Date.now() - startTime,
           success: true,
-          cacheHit: true
-        })
-        return cached
+          cacheHit: true,
+        });
+        return cached;
       }
     }
 
     try {
       // Execute request with retry logic
-      const response = await this.executeWithRetry(
-        async () => {
-          switch (method) {
-            case 'GET': {
-              const retryConfig = config.retry ? {
-                attempts: config.retry.attempts ?? 3,
-                delay: config.retry.delay ?? 1000,
-                exponentialBackoff: config.retry.exponentialBackoff ?? true
-              } : undefined
-              const requestConfig: {
-                timeout?: number
-                retry?: { attempts: number; delay: number; exponentialBackoff: boolean }
-              } = {}
-              if (config.timeout !== undefined) {
-                requestConfig.timeout = config.timeout
-              }
-              if (retryConfig !== undefined) {
-                requestConfig.retry = retryConfig
-              }
-              return await this.apiClient.get<T>(endpoint, requestConfig)
+      const response = await this.executeWithRetry(async () => {
+        switch (method) {
+          case 'GET': {
+            const retryConfig = config.retry
+              ? {
+                  attempts: config.retry.attempts ?? 3,
+                  delay: config.retry.delay ?? 1000,
+                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
+                }
+              : undefined;
+            const requestConfig: {
+              timeout?: number;
+              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
+            } = {};
+            if (config.timeout !== undefined) {
+              requestConfig.timeout = config.timeout;
             }
-            case 'POST': {
-              const retryConfig = config.retry ? {
-                attempts: config.retry.attempts ?? 3,
-                delay: config.retry.delay ?? 1000,
-                exponentialBackoff: config.retry.exponentialBackoff ?? true
-              } : undefined
-              const requestConfig: {
-                timeout?: number
-                retry?: { attempts: number; delay: number; exponentialBackoff: boolean }
-              } = {}
-              if (config.timeout !== undefined) {
-                requestConfig.timeout = config.timeout
-              }
-              if (retryConfig !== undefined) {
-                requestConfig.retry = retryConfig
-              }
-              return await this.apiClient.post<T>(endpoint, body, requestConfig)
+            if (retryConfig !== undefined) {
+              requestConfig.retry = retryConfig;
             }
-            case 'PUT': {
-              const retryConfig = config.retry ? {
-                attempts: config.retry.attempts ?? 3,
-                delay: config.retry.delay ?? 1000,
-                exponentialBackoff: config.retry.exponentialBackoff ?? true
-              } : undefined
-              const requestConfig: {
-                timeout?: number
-                retry?: { attempts: number; delay: number; exponentialBackoff: boolean }
-              } = {}
-              if (config.timeout !== undefined) {
-                requestConfig.timeout = config.timeout
-              }
-              if (retryConfig !== undefined) {
-                requestConfig.retry = retryConfig
-              }
-              return await this.apiClient.put<T>(endpoint, body, requestConfig)
-            }
-            case 'PATCH': {
-              const retryConfig = config.retry ? {
-                attempts: config.retry.attempts ?? 3,
-                delay: config.retry.delay ?? 1000,
-                exponentialBackoff: config.retry.exponentialBackoff ?? true
-              } : undefined
-              const requestConfig: {
-                timeout?: number
-                retry?: { attempts: number; delay: number; exponentialBackoff: boolean }
-              } = {}
-              if (config.timeout !== undefined) {
-                requestConfig.timeout = config.timeout
-              }
-              if (retryConfig !== undefined) {
-                requestConfig.retry = retryConfig
-              }
-              return await this.apiClient.patch<T>(endpoint, body, requestConfig)
-            }
-            case 'DELETE': {
-              const retryConfig = config.retry ? {
-                attempts: config.retry.attempts ?? 3,
-                delay: config.retry.delay ?? 1000,
-                exponentialBackoff: config.retry.exponentialBackoff ?? true
-              } : undefined
-              const requestConfig: {
-                timeout?: number
-                retry?: { attempts: number; delay: number; exponentialBackoff: boolean }
-              } = {}
-              if (config.timeout !== undefined) {
-                requestConfig.timeout = config.timeout
-              }
-              if (retryConfig !== undefined) {
-                requestConfig.retry = retryConfig
-              }
-              return await this.apiClient.delete<T>(endpoint, requestConfig)
-            }
-            default:
-              throw new Error(`Unsupported method: ${String(method ?? '')}`)
+            return await this.apiClient.get<T>(endpoint, requestConfig);
           }
-        },
-        config.retry
-      )
+          case 'POST': {
+            const retryConfig = config.retry
+              ? {
+                  attempts: config.retry.attempts ?? 3,
+                  delay: config.retry.delay ?? 1000,
+                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
+                }
+              : undefined;
+            const requestConfig: {
+              timeout?: number;
+              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
+            } = {};
+            if (config.timeout !== undefined) {
+              requestConfig.timeout = config.timeout;
+            }
+            if (retryConfig !== undefined) {
+              requestConfig.retry = retryConfig;
+            }
+            return await this.apiClient.post<T>(endpoint, body, requestConfig);
+          }
+          case 'PUT': {
+            const retryConfig = config.retry
+              ? {
+                  attempts: config.retry.attempts ?? 3,
+                  delay: config.retry.delay ?? 1000,
+                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
+                }
+              : undefined;
+            const requestConfig: {
+              timeout?: number;
+              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
+            } = {};
+            if (config.timeout !== undefined) {
+              requestConfig.timeout = config.timeout;
+            }
+            if (retryConfig !== undefined) {
+              requestConfig.retry = retryConfig;
+            }
+            return await this.apiClient.put<T>(endpoint, body, requestConfig);
+          }
+          case 'PATCH': {
+            const retryConfig = config.retry
+              ? {
+                  attempts: config.retry.attempts ?? 3,
+                  delay: config.retry.delay ?? 1000,
+                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
+                }
+              : undefined;
+            const requestConfig: {
+              timeout?: number;
+              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
+            } = {};
+            if (config.timeout !== undefined) {
+              requestConfig.timeout = config.timeout;
+            }
+            if (retryConfig !== undefined) {
+              requestConfig.retry = retryConfig;
+            }
+            return await this.apiClient.patch<T>(endpoint, body, requestConfig);
+          }
+          case 'DELETE': {
+            const retryConfig = config.retry
+              ? {
+                  attempts: config.retry.attempts ?? 3,
+                  delay: config.retry.delay ?? 1000,
+                  exponentialBackoff: config.retry.exponentialBackoff ?? true,
+                }
+              : undefined;
+            const requestConfig: {
+              timeout?: number;
+              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
+            } = {};
+            if (config.timeout !== undefined) {
+              requestConfig.timeout = config.timeout;
+            }
+            if (retryConfig !== undefined) {
+              requestConfig.retry = retryConfig;
+            }
+            return await this.apiClient.delete<T>(endpoint, requestConfig);
+          }
+          default:
+            throw new Error(`Unsupported method: ${method}`);
+        }
+      }, config.retry);
 
       // Validate response if schema provided
-      let data: T
+      let data: T;
       if (schema && !config.skipValidation) {
-        data = this.validateResponse(response.data, schema, endpoint)
+        data = this.validateResponse(response.data, schema, endpoint);
       } else {
-        data = response.data as T
+        data = response.data;
       }
 
       // Cache GET responses
-      if (method === 'GET' && (config.cache === undefined || config.cache.enabled !== false) && data !== undefined) {
-        this.setCache(cacheKey, data, config.cache?.ttl)
+      if (method === 'GET' && config.cache?.enabled !== false && data !== undefined) {
+        this.setCache(cacheKey, data, config.cache?.ttl);
       }
 
       // Invalidate cache on mutations
-      if (method !== 'GET' && (config.cache === undefined || config.cache.invalidateOnMutation !== false)) {
-        this.invalidateCache(cacheKey)
+      if (method !== 'GET' && config.cache?.invalidateOnMutation !== false) {
+        this.invalidateCache(cacheKey);
       }
 
-      const duration = Date.now() - startTime
+      const duration = Date.now() - startTime;
       this.recordTelemetry({
         service: this.serviceName,
         method,
         duration,
         success: true,
-        cacheHit: false
-      })
+        cacheHit: false,
+      });
 
-      return data
+      return data;
     } catch (error) {
-      const duration = Date.now() - startTime
-      const errorCode = this.getErrorCode(error)
-      
+      const duration = Date.now() - startTime;
+      const errorCode = this.getErrorCode(error);
+
       this.recordTelemetry({
         service: this.serviceName,
         method,
         duration,
         success: false,
-        ...(errorCode !== undefined ? { errorCode } : {})
-      })
+        ...(errorCode !== undefined ? { errorCode } : {}),
+      });
 
       // Re-throw with enhanced error context
-      throw this.enhanceError(error, endpoint, method)
+      throw this.enhanceError(error, endpoint, method);
     }
   }
 
   /**
    * Execute request with retry logic
    */
-  private async executeWithRetry<T>(
-    fn: () => Promise<T>,
-    retryOptions?: RetryOptions
-  ): Promise<T> {
-    const attempts = retryOptions?.attempts ?? 3
-    const baseDelay = retryOptions?.delay ?? 1000
-    const exponentialBackoff = retryOptions?.exponentialBackoff ?? true
-    const retryableStatusCodes = retryOptions?.retryableStatusCodes ?? [408, 429, 500, 502, 503, 504]
+  private async executeWithRetry<T>(fn: () => Promise<T>, retryOptions?: RetryOptions): Promise<T> {
+    const attempts = retryOptions?.attempts ?? 3;
+    const baseDelay = retryOptions?.delay ?? 1000;
+    const exponentialBackoff = retryOptions?.exponentialBackoff ?? true;
+    const retryableStatusCodes = retryOptions?.retryableStatusCodes ?? [
+      408, 429, 500, 502, 503, 504,
+    ];
 
-    let lastError: unknown
+    let lastError: unknown;
 
     for (let attempt = 0; attempt < attempts; attempt++) {
       try {
-        return await fn()
+        return await fn();
       } catch (error) {
-        lastError = error
+        lastError = error;
 
         // Check if error is retryable
-        const isRetryable = this.isRetryableError(error, retryableStatusCodes)
+        const isRetryable = this.isRetryableError(error, retryableStatusCodes);
         if (!isRetryable || attempt === attempts - 1) {
-          throw error
+          throw error;
         }
 
         // Calculate delay with exponential backoff
-        const delay = exponentialBackoff
-          ? baseDelay * Math.pow(2, attempt)
-          : baseDelay
+        const delay = exponentialBackoff ? baseDelay * Math.pow(2, attempt) : baseDelay;
 
-        logger.debug(`Request failed, retrying in ${String(delay ?? '')}ms (attempt ${String(attempt + 1 ?? '')}/${String(attempts ?? '')})`, {
-          service: this.serviceName,
-          error: error instanceof Error ? error.message : String(error)
-        })
+        logger.debug(
+          `Request failed, retrying in ${delay}ms (attempt ${attempt + 1}/${attempts})`,
+          {
+            service: this.serviceName,
+            error: error instanceof Error ? error.message : String(error),
+          }
+        );
 
-        await this.sleep(delay)
+        await this.sleep(delay);
       }
     }
 
-    throw lastError
+    throw lastError;
   }
 
   /**
@@ -295,16 +296,16 @@ export abstract class BaseService {
    */
   private isRetryableError(error: unknown, retryableStatusCodes: number[]): boolean {
     if (error && typeof error === 'object' && 'status' in error) {
-      const status = (error as { status: number }).status
-      return retryableStatusCodes.includes(status)
+      const status = (error as { status: number }).status;
+      return retryableStatusCodes.includes(status);
     }
 
     // Network errors are always retryable
     if (error instanceof Error && error.name === 'NetworkError') {
-      return true
+      return true;
     }
 
-    return false
+    return false;
   }
 
   /**
@@ -312,14 +313,14 @@ export abstract class BaseService {
    */
   private validateResponse<T>(data: unknown, schema: z.ZodType<T>, endpoint: string): T {
     try {
-      return schema.parse(data)
+      return schema.parse(data);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+      const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Response validation failed', err, {
         service: this.serviceName,
-        endpoint
-      })
-      throw new Error(`Response validation failed for ${String(endpoint ?? '')}: ${String(err.message ?? '')}`)
+        endpoint,
+      });
+      throw new Error(`Response validation failed for ${endpoint}: ${err.message}`);
     }
   }
 
@@ -329,79 +330,79 @@ export abstract class BaseService {
   private getErrorCode(error: unknown): string | undefined {
     if (error && typeof error === 'object') {
       if ('code' in error && typeof error.code === 'string') {
-        return error.code
+        return error.code;
       }
       if ('status' in error && typeof error.status === 'number') {
-        return `HTTP_${String((error as { status: number }).status ?? '')}`
+        return `HTTP_${(error as { status: number }).status}`;
       }
     }
 
     if (error instanceof Error) {
-      return error.name
+      return error.name;
     }
 
-    return undefined
+    return undefined;
   }
 
   /**
    * Enhance error with context
    */
   private enhanceError(error: unknown, endpoint: string, method: string): Error {
-    let errorMessage: string
+    let errorMessage: string;
     if (error instanceof Error) {
-      errorMessage = error.message || 'Unknown error'
+      errorMessage = error.message || 'Unknown error';
     } else {
-      errorMessage = String(error) || 'Unknown error'
+      errorMessage = String(error) || 'Unknown error';
     }
-    const enhancedMessage = `[${String(this.serviceName ?? '')}] ${String(method ?? '')} ${String(endpoint ?? '')}: ${String(errorMessage ?? '')}`
-    
+    const enhancedMessage = `[${this.serviceName}] ${method} ${endpoint}: ${errorMessage}`;
+
     if (error instanceof Error) {
-      const enhanced = new Error(enhancedMessage)
+      const enhanced = new Error(enhancedMessage);
       if (error.stack !== undefined) {
-        enhanced.stack = error.stack
+        enhanced.stack = error.stack;
       }
       if (error.cause !== undefined) {
-        enhanced.cause = error.cause
+        enhanced.cause = error.cause;
       }
-      return enhanced
+      return enhanced;
     }
 
-    return new Error(enhancedMessage)
+    return new Error(enhancedMessage);
   }
 
   /**
    * Cache management
    */
   private getFromCache<T>(key: string, ttl?: number): T | null {
-    const cached = this.cache.get(key)
+    const cached = this.cache.get(key);
     if (!cached) {
-      return null
+      return null;
     }
 
-    const now = Date.now()
-    const cacheTTL = ttl || cached.ttl
+    const now = Date.now();
+    const cacheTTL = ttl || cached.ttl;
     if (now - cached.timestamp > cacheTTL) {
-      this.cache.delete(key)
-      return null
+      this.cache.delete(key);
+      return null;
     }
 
-    return cached.data as T
+    return cached.data as T;
   }
 
   private setCache(key: string, data: unknown, ttl?: number): void {
-    const defaultTTL = 5 * 60 * 1000 // 5 minutes
+    const defaultTTL = 5 * 60 * 1000; // 5 minutes
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
-      ttl: ttl || defaultTTL
-    })
+      ttl: ttl || defaultTTL,
+    });
   }
 
   private invalidateCache(key?: string): void {
-    if (isTruthy(key)) {
-      this.cache.delete(key)
+    if (key) {
+      this.cache.delete(key);
     } else {
-      this.cache.clear()
+      this.cache.clear();
     }
   }
 
@@ -409,18 +410,18 @@ export abstract class BaseService {
    * Clear all cache for this service
    */
   public clearCache(): void {
-    this.cache.clear()
+    this.cache.clear();
   }
 
   /**
    * Telemetry management
    */
   private recordTelemetry(event: TelemetryEvent): void {
-    this.telemetryEvents.push(event)
+    this.telemetryEvents.push(event);
 
     // Keep only recent events
     if (this.telemetryEvents.length > this.maxTelemetryEvents) {
-      this.telemetryEvents.shift()
+      this.telemetryEvents.shift();
     }
 
     // Log performance metrics
@@ -428,8 +429,8 @@ export abstract class BaseService {
       logger.warn('Slow service request detected', {
         service: event.service,
         method: event.method,
-        duration: event.duration
-      })
+        duration: event.duration,
+      });
     }
   }
 
@@ -437,44 +438,44 @@ export abstract class BaseService {
    * Get telemetry data
    */
   public getTelemetry(): TelemetryEvent[] {
-    return [...this.telemetryEvents]
+    return [...this.telemetryEvents];
   }
 
   /**
    * Get performance metrics
    */
   public getPerformanceMetrics(): {
-    averageDuration: number
-    successRate: number
-    cacheHitRate: number
-    totalRequests: number
+    averageDuration: number;
+    successRate: number;
+    cacheHitRate: number;
+    totalRequests: number;
   } {
     if (this.telemetryEvents.length === 0) {
       return {
         averageDuration: 0,
         successRate: 0,
         cacheHitRate: 0,
-        totalRequests: 0
-      }
+        totalRequests: 0,
+      };
     }
 
-    const total = this.telemetryEvents.length
-    const successful = this.telemetryEvents.filter(e => e.success).length
-    const cached = this.telemetryEvents.filter(e => e.cacheHit).length
-    const totalDuration = this.telemetryEvents.reduce((sum, e) => sum + e.duration, 0)
+    const total = this.telemetryEvents.length;
+    const successful = this.telemetryEvents.filter((e) => e.success).length;
+    const cached = this.telemetryEvents.filter((e) => e.cacheHit).length;
+    const totalDuration = this.telemetryEvents.reduce((sum, e) => sum + e.duration, 0);
 
     return {
       averageDuration: totalDuration / total,
       successRate: (successful / total) * 100,
       cacheHitRate: (cached / total) * 100,
-      totalRequests: total
-    }
+      totalRequests: total,
+    };
   }
 
   /**
    * Utility: Sleep for specified milliseconds
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

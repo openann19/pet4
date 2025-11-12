@@ -1,26 +1,37 @@
-'use client'
+'use client';
 
-import { useCallback, useRef, type ReactNode, type ButtonHTMLAttributes } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withSequence } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { useRippleEffect } from '@/effects/reanimated/use-ripple-effect'
-import { useMagneticHover } from '@/effects/reanimated/use-magnetic-hover'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { Dimens } from '@/core/tokens/dimens'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useCallback, useRef, useEffect, type ReactNode, type ButtonHTMLAttributes } from 'react';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withSequence,
+} from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { useRippleEffect } from '@/effects/reanimated/use-ripple-effect';
+import { useMagneticHover } from '@/effects/reanimated/use-magnetic-hover';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import { createLogger } from '@/lib/logger';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { Dimens } from '@/core/tokens/dimens';
+import { useUIConfig } from "@/hooks/use-ui-config";
+import { ensureFocusAppearance } from '@/core/a11y/focus-appearance';
+import { useTargetSize } from '@/hooks/use-target-size';
+
+const logger = createLogger('IconButton');
 
 export interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  icon: ReactNode
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'primary' | 'ghost' | 'outline' | 'glass'
-  enableRipple?: boolean
-  enableMagnetic?: boolean
-  enableGlow?: boolean
-  'aria-label': string
+  icon: ReactNode;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'ghost' | 'outline' | 'glass';
+  enableRipple?: boolean;
+  enableMagnetic?: boolean;
+  enableGlow?: boolean;
+  'aria-label': string;
 }
 
 const SIZE_CONFIG = {
@@ -39,7 +50,7 @@ const SIZE_CONFIG = {
     iconSize: 24,
     padding: 16,
   },
-} as const
+} as const;
 
 export function IconButton({
   icon,
@@ -54,85 +65,104 @@ export function IconButton({
   'aria-label': ariaLabel,
   ...props
 }: IconButtonProps): React.JSX.Element {
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const glowOpacity = useSharedValue(0)
-  const isActive = useSharedValue(0)
+  const _uiConfig = useUIConfig();
+  // Target size validation - ensures 44x44px minimum touch target (already enforced by SIZE_CONFIG)
+  const { ensure: ensureTargetSize } = useTargetSize({ enabled: !disabled, autoFix: true });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const glowOpacity = useSharedValue(0);
+  const isActive = useSharedValue(0);
 
   const hoverLift = useHoverLift({
     scale: 1.1,
     translateY: -2,
     damping: 25,
     stiffness: 400,
-  })
+  });
 
   const magnetic = useMagneticHover({
     strength: 0.2,
     maxDistance: 8,
     enabled: enableMagnetic && !disabled,
-  })
+  });
 
   const ripple = useRippleEffect({
     duration: 600,
     color: variant === 'primary' ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.1)',
     opacity: 0.5,
-  })
+  });
 
   const glowStyle = useAnimatedStyle(() => {
-    if (!enableGlow) return {}
+    if (!enableGlow) return {};
     return {
       opacity: glowOpacity.value,
-      boxShadow: `0 0 ${String(Dimens.glowSpread * 2 ?? '')}px rgba(59, 130, 246, ${String(glowOpacity.value * 0.6 ?? '')})`,
-    }
-  }) as AnimatedStyle
+      boxShadow: `0 0 ${Dimens.glowSpread * 2}px rgba(59, 130, 246, ${glowOpacity.value * 0.6})`,
+    };
+  }) as AnimatedStyle;
 
   const handleMouseEnter = useCallback(() => {
-    if (isTruthy(disabled)) return
-    hoverLift.handleEnter()
-    magnetic.handleMouseEnter()
-    if (isTruthy(enableGlow)) {
-      glowOpacity.value = withSpring(1, springConfigs.smooth)
+    if (disabled) return;
+    hoverLift.handleEnter();
+    magnetic.handleMouseEnter();
+    if (enableGlow) {
+      glowOpacity.value = withSpring(1, springConfigs.smooth);
     }
-  }, [disabled, hoverLift, magnetic, enableGlow, glowOpacity])
+  }, [disabled, hoverLift, magnetic, enableGlow, glowOpacity]);
 
   const handleMouseLeave = useCallback(() => {
-    hoverLift.handleLeave()
-    magnetic.handleMouseLeave()
-    if (isTruthy(enableGlow)) {
-      glowOpacity.value = withSpring(0, springConfigs.smooth)
+    hoverLift.handleLeave();
+    magnetic.handleMouseLeave();
+    if (enableGlow) {
+      glowOpacity.value = withSpring(0, springConfigs.smooth);
     }
-  }, [hoverLift, magnetic, enableGlow, glowOpacity])
+  }, [hoverLift, magnetic, enableGlow, glowOpacity]);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (isTruthy(disabled)) return
+      if (disabled) return;
 
-      if (isTruthy(enableRipple)) {
-        ripple.addRipple(e)
+      try {
+        if (enableRipple) {
+          ripple.addRipple(e);
+        }
+
+        haptics.impact('light');
+
+        isActive.value = withSequence(
+          withTiming(1, { duration: 100 }),
+          withTiming(0, { duration: 200 })
+        );
+
+        onClick?.(e);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('IconButton onClick error', err);
       }
-
-      haptics.impact('light')
-
-      isActive.value = withSequence(
-        withTiming(1, { duration: 100 }),
-        withTiming(0, { duration: 200 })
-      )
-
-      onClick?.(e)
     },
     [disabled, enableRipple, ripple, onClick, isActive]
-  )
+  );
 
   const activeStyle = useAnimatedStyle(() => ({
     transform: [{ scale: 1 - isActive.value * 0.1 }],
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
-  const config = SIZE_CONFIG[size]
+  // Ensure focus appearance and target size meet WCAG 2.2 AAA requirements
+  useEffect(() => {
+    if (buttonRef.current && !disabled) {
+      ensureFocusAppearance(buttonRef.current);
+      ensureTargetSize(buttonRef.current);
+    }
+  }, [disabled, ensureTargetSize]);
+
+  const config = SIZE_CONFIG[size];
   const variantStyles = {
-    primary: 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-hover-bg)] active:bg-[var(--btn-primary-press-bg)]',
-    ghost: 'bg-transparent text-[var(--btn-ghost-fg)] hover:bg-[var(--btn-ghost-hover-bg)] active:bg-[var(--btn-ghost-press-bg)]',
-    outline: 'bg-transparent border-2 border-[var(--btn-primary-bg)] text-[var(--btn-primary-bg)] hover:bg-[var(--btn-primary-bg)] hover:text-[var(--btn-primary-fg)]',
-    glass: 'glass-card text-[var(--btn-primary-fg)] hover:bg-[var(--btn-primary-hover-bg)]',
-  }
+    primary:
+      'bg-(--btn-primary-bg) text-(--btn-primary-fg) hover:bg-(--btn-primary-hover-bg) active:bg-(--btn-primary-press-bg)',
+    ghost:
+      'bg-transparent text-(--btn-ghost-fg) hover:bg-(--btn-ghost-hover-bg) active:bg-(--btn-ghost-press-bg)',
+    outline:
+      'bg-transparent border-2 border-(--btn-primary-bg) text-(--btn-primary-bg) hover:bg-(--btn-primary-bg) hover:text-(--btn-primary-fg)',
+    glass: 'glass-card text-(--btn-primary-fg) hover:bg-(--btn-primary-hover-bg)',
+  };
 
   return (
     <div
@@ -155,18 +185,20 @@ export function IconButton({
                 'transition-all duration-300',
                 'disabled:cursor-not-allowed disabled:opacity-50',
                 'flex items-center justify-center',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-ring',
                 variantStyles[variant],
                 className
               )}
-              style={{
-                width: config.size,
-                height: config.size,
-                minWidth: config.size,
-                minHeight: config.size,
-                ...(props.style as React.CSSProperties),
-                '--tw-ring-color': 'var(--btn-primary-focus-ring)',
-              } as React.CSSProperties}
+              style={
+                {
+                  width: config.size,
+                  height: config.size,
+                  minWidth: config.size,
+                  minHeight: config.size,
+                  ...props.style!,
+                  '--tw-ring-color': 'var(--btn-primary-focus-ring)',
+                } as React.CSSProperties
+              }
               {...props}
             >
               {enableGlow && (
@@ -208,6 +240,5 @@ export function IconButton({
         </AnimatedView>
       </AnimatedView>
     </div>
-  )
+  );
 }
-

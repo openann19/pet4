@@ -69,7 +69,7 @@ export function UploadAndEditScreen(): React.ReactElement {
       try {
         // Process and compress image if needed
         let processedUri = selectedImage
-        
+
         // Try to use expo-image-manipulator for compression
         try {
           // Dynamic import to avoid bundling if not available
@@ -87,7 +87,7 @@ export function UploadAndEditScreen(): React.ReactElement {
           }
         } catch (compressError) {
           // If compression fails, use original image
-          logger.warn('Image compression not available, using original', { error: compressError })                                                              
+          logger.warn('Image compression not available, using original', { error: compressError })
         }
 
         onDone(processedUri)
@@ -114,16 +114,20 @@ export function UploadAndEditScreen(): React.ReactElement {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleCancel} style={styles.cancelButton}>
+        <TouchableOpacity onPress={handleCancel} style={styles.cancelButton} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)">
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Upload & Edit</Text>
         <TouchableOpacity
-          onPress={() => { void handleDone() }}
+          onPress={() => {
+            void handleDone()
+          }}
           disabled={!selectedImage || isProcessing}
-          style={[styles.doneButton, (!selectedImage || isProcessing) && styles.doneButtonDisabled]}                                                            
+          style={[styles.doneButton, (!selectedImage || isProcessing) && styles.doneButtonDisabled]}
         >
-          <Text style={[styles.doneText, (!selectedImage || isProcessing) && styles.doneTextDisabled]}>
+          <Text
+            style={[styles.doneText, (!selectedImage || isProcessing) && styles.doneTextDisabled]}
+          >
             {isProcessing ? 'Processing...' : 'Done'}
           </Text>
         </TouchableOpacity>
@@ -131,17 +135,27 @@ export function UploadAndEditScreen(): React.ReactElement {
 
       {!selectedImage ? (
         <View style={styles.pickerContainer}>
-          <TouchableOpacity onPress={() => { void handleCamera() }} style={styles.pickerButton}>
+          <TouchableOpacity
+            onPress={() => {
+              void handleCamera()
+            }}
+            style={styles.pickerButton}
+          >
             <Text style={styles.pickerButtonText}>📷 Take Photo</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { void handlePickImage() }} style={styles.pickerButton}>                                                                              
+          <TouchableOpacity
+            onPress={() => {
+              void handlePickImage()
+            }}
+            style={styles.pickerButton}
+          >
             <Text style={styles.pickerButtonText}>🖼️ Choose from Gallery</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.previewContainer}>
-          <Text style={styles.previewText}>Media selected: {selectedImage}</Text>                                                                               
-          <TouchableOpacity onPress={() => { setSelectedImage(null); }} style={styles.replaceButton}>                                                                
+          <Text style={styles.previewText}>Media selected: {selectedImage}</Text>
+          <TouchableOpacity onPress={() = className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)"> setSelectedImage(null)} style={styles.replaceButton}>
             <Text style={styles.replaceButtonText}>Replace</Text>
           </TouchableOpacity>
         </View>

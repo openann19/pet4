@@ -1,25 +1,25 @@
 /**
  * Notification Group List Component
- * 
+ *
  * Displays grouped notifications
  */
 
-import { useMemo } from 'react'
-import { isToday, isYesterday, isSameWeek, formatDistanceToNow } from 'date-fns'
-import type { NotificationGroup, NotificationPreferences, NotificationFilter } from '../types'
-import { NotificationGroupItem } from './NotificationGroupItem'
-import { EmptyState } from './EmptyState'
-import type { GetIconFunction, GetPriorityStylesFunction } from './NotificationItem'
+import { useMemo } from 'react';
+import { isToday, isYesterday, isSameWeek, formatDistanceToNow } from 'date-fns';
+import type { NotificationGroup, NotificationPreferences, NotificationFilter } from '../types';
+import { NotificationGroupItem } from './NotificationGroupItem';
+import { EmptyState } from './EmptyState';
+import type { GetIconFunction, GetPriorityStylesFunction } from './NotificationItem';
 
 export interface NotificationGroupListProps {
-  groups: NotificationGroup[]
-  filter: NotificationFilter
-  preferences: NotificationPreferences | null
-  onMarkAsRead: (groupId: string) => void
-  onArchive: (groupId: string) => void
-  onDelete: (groupId: string) => void
-  getIcon: GetIconFunction
-  getPriorityStyles: GetPriorityStylesFunction
+  groups: NotificationGroup[];
+  filter: NotificationFilter;
+  preferences: NotificationPreferences | null;
+  onMarkAsRead: (groupId: string) => void;
+  onArchive: (groupId: string) => void;
+  onDelete: (groupId: string) => void;
+  getIcon: GetIconFunction;
+  getPriorityStyles: GetPriorityStylesFunction;
 }
 
 export function NotificationGroupList({
@@ -30,36 +30,39 @@ export function NotificationGroupList({
   onArchive,
   onDelete,
   getIcon,
-  getPriorityStyles
+  getPriorityStyles,
 }: NotificationGroupListProps): JSX.Element {
   const groupedByTime = useMemo(() => {
-    const timeGroups = new Map<string, NotificationGroup[]>()
-    
+    const timeGroups = new Map<string, NotificationGroup[]>();
+
     groups.forEach((group) => {
-      const date = new Date(group.timestamp)
-      let timeGroup: string
-      
+      const date = new Date(group.timestamp);
+      let timeGroup: string;
+
       if (isToday(date)) {
-        timeGroup = 'Today'
+        timeGroup = 'Today';
       } else if (isYesterday(date)) {
-        timeGroup = 'Yesterday'
+        timeGroup = 'Yesterday';
       } else if (isSameWeek(date, new Date())) {
-        timeGroup = 'This Week'
+        timeGroup = 'This Week';
       } else {
-        timeGroup = formatDistanceToNow(date, { addSuffix: false })
+        timeGroup = formatDistanceToNow(date, { addSuffix: false });
       }
-      
+
       if (!timeGroups.has(timeGroup)) {
-        timeGroups.set(timeGroup, [])
+        timeGroups.set(timeGroup, []);
       }
-      timeGroups.get(timeGroup)!.push(group)
-    })
-    
-    return Array.from(timeGroups.entries())
-  }, [groups])
+      const groupList = timeGroups.get(timeGroup);
+      if (groupList) {
+        groupList.push(group);
+      }
+    });
+
+    return Array.from(timeGroups.entries());
+  }, [groups]);
 
   if (groups.length === 0) {
-    return <EmptyState filter={filter} />
+    return <EmptyState filter={filter} />;
   }
 
   return (
@@ -87,5 +90,5 @@ export function NotificationGroupList({
         </div>
       ))}
     </div>
-  )
+  );
 }

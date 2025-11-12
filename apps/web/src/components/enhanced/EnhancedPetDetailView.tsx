@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useState, useEffect } from 'react';
 import {
   Calendar,
   ChatCircle,
@@ -12,32 +12,32 @@ import {
   Star,
   TrendUp,
   Users,
-  X
-} from '@phosphor-icons/react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useSwipeGesture } from '@/hooks/use-swipe-gesture'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { haptics } from '@/lib/haptics'
-import type { Pet } from '@/lib/types'
-import { isTruthy, isDefined } from '@petspark/shared';
+  X,
+} from '@phosphor-icons/react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { useSharedValue, useAnimatedStyle, withSpring, withDelay } from '@petspark/motion';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { haptics } from '@/lib/haptics';
+import type { Pet } from '@/lib/types';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface EnhancedPetDetailViewProps {
-  pet: Pet
-  onClose: () => void
-  onLike?: () => void
-  onPass?: () => void
-  onChat?: () => void
-  compatibilityScore?: number
-  matchReasons?: string[]
-  showActions?: boolean
+  pet: Pet;
+  onClose: () => void;
+  onLike?: () => void;
+  onPass?: () => void;
+  onChat?: () => void;
+  compatibilityScore?: number;
+  matchReasons?: string[];
+  showActions?: boolean;
 }
 
 export function EnhancedPetDetailView({
@@ -48,111 +48,109 @@ export function EnhancedPetDetailView({
   onChat,
   compatibilityScore,
   matchReasons,
-  showActions = true
+  showActions = true,
 }: EnhancedPetDetailViewProps): React.JSX.Element {
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isVisible, setIsVisible] = useState(true)
-  const photos = pet.photos && pet.photos.length > 0 ? pet.photos : [pet.photo]
+  const _uiConfig = useUIConfig();
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
+  const photos = pet.photos && pet.photos.length > 0 ? pet.photos : [pet.photo];
 
   const handleClose = useCallback(() => {
-    setIsVisible(false)
+    setIsVisible(false);
     setTimeout(() => {
-      onClose()
-    }, 200)
-  }, [onClose])
+      onClose();
+    }, 200);
+  }, [onClose]);
 
   const handleNextPhoto = useCallback((): void => {
-    setIsLoading(true)
-    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length)
-    haptics.trigger('light')
-  }, [photos.length])
+    setIsLoading(true);
+    setCurrentPhotoIndex((prev) => (prev + 1) % photos.length);
+    haptics.trigger('light');
+  }, [photos.length]);
 
   const handlePrevPhoto = useCallback((): void => {
-    setIsLoading(true)
-    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length)
-    haptics.trigger('light')
-  }, [photos.length])
+    setIsLoading(true);
+    setCurrentPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
+    haptics.trigger('light');
+  }, [photos.length]);
 
   const swipeGesture = useSwipeGesture({
     onSwipeLeft: handleNextPhoto,
     onSwipeRight: handlePrevPhoto,
-    threshold: 50
-  })
+    threshold: 50,
+  });
 
   const handleImageLoad = useCallback((): void => {
-    setIsLoading(false)
-  }, [])
+    setIsLoading(false);
+  }, []);
 
   const handleImageError = useCallback((): void => {
-    setIsLoading(false)
-  }, [])
+    setIsLoading(false);
+  }, []);
 
   const handleLike = useCallback(() => {
-    haptics.trigger('medium')
-    onLike?.()
-  }, [onLike])
+    haptics.trigger('medium');
+    onLike?.();
+  }, [onLike]);
 
   const handlePass = useCallback(() => {
-    haptics.trigger('light')
-    onPass?.()
-  }, [onPass])
+    haptics.trigger('light');
+    onPass?.();
+  }, [onPass]);
 
   const handleChat = useCallback(() => {
-    haptics.trigger('light')
-    onChat?.()
-  }, [onChat])
+    haptics.trigger('light');
+    onChat?.();
+  }, [onChat]);
 
-  const trustScore = pet.trustScore ?? 0
+  const trustScore = pet.trustScore ?? 0;
   const getTrustLevel = useCallback((score: number) => {
-    if (score >= 80) return { label: 'Highly Trusted', color: 'text-green-500' }
-    if (score >= 60) return { label: 'Trusted', color: 'text-blue-500' }
-    if (score >= 40) return { label: 'Established', color: 'text-yellow-500' }
-    return { label: 'New', color: 'text-muted-foreground' }
-  }, [])
+    if (score >= 80) return { label: 'Highly Trusted', color: 'text-green-500' };
+    if (score >= 60) return { label: 'Trusted', color: 'text-blue-500' };
+    if (score >= 40) return { label: 'Established', color: 'text-yellow-500' };
+    return { label: 'New', color: 'text-muted-foreground' };
+  }, []);
 
-  const trustLevel = getTrustLevel(trustScore)
+  const trustLevel = getTrustLevel(trustScore);
 
   // Animation hooks
-  const containerOpacity = useSharedValue(0)
-  const containerScale = useSharedValue(0.95)
-  const modalOpacity = useSharedValue(0)
-  const modalScale = useSharedValue(0.95)
-  const photoOpacity = useSharedValue(0)
-  
+  const containerOpacity = useSharedValue(0);
+  const containerScale = useSharedValue(0.95);
+  const modalOpacity = useSharedValue(0);
+  const modalScale = useSharedValue(0.95);
+  const photoOpacity = useSharedValue(0);
+
   // Bounce hooks for buttons
-  const likeBounce = useBounceOnTap()
-  const passBounce = useBounceOnTap()
-  const chatBounce = useBounceOnTap()
-  
+
   useEffect(() => {
-    if (isTruthy(isVisible)) {
-      containerOpacity.value = withSpring(1, { damping: 20, stiffness: 300 })
-      containerScale.value = withSpring(1, { damping: 20, stiffness: 300 })
-      modalOpacity.value = withSpring(1, { damping: 20, stiffness: 300 })
-      modalScale.value = withSpring(1, { damping: 20, stiffness: 300 })
+    if (isVisible) {
+      containerOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
+      containerScale.value = withSpring(1, { damping: 20, stiffness: 300 });
+      modalOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
+      modalScale.value = withSpring(1, { damping: 20, stiffness: 300 });
     } else {
-      containerOpacity.value = withSpring(0, { damping: 20, stiffness: 300 })
-      modalScale.value = withSpring(0.95, { damping: 20, stiffness: 300 })
+      containerOpacity.value = withSpring(0, { damping: 20, stiffness: 300 });
+      modalScale.value = withSpring(0.95, { damping: 20, stiffness: 300 });
     }
-  }, [isVisible])
-  
+  }, [isVisible]);
+
   useEffect(() => {
-    photoOpacity.value = withSpring(1, { damping: 20, stiffness: 300 })
-  }, [currentPhotoIndex])
-  
+    photoOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
+  }, [currentPhotoIndex]);
+
   const containerStyle = useAnimatedStyle(() => ({
-    opacity: containerOpacity.value
-  })) as AnimatedStyle
-  
+    opacity: containerOpacity.value,
+  })) as AnimatedStyle;
+
   const modalStyle = useAnimatedStyle(() => ({
     opacity: modalOpacity.value,
-    transform: [{ scale: modalScale.value }]
-  })) as AnimatedStyle
-  
+    transform: [{ scale: modalScale.value }],
+  })) as AnimatedStyle;
+
   const photoStyle = useAnimatedStyle(() => ({
-    opacity: photoOpacity.value
-  })) as AnimatedStyle
+    opacity: photoOpacity.value,
+  })) as AnimatedStyle;
 
   return (
     <AnimatedView
@@ -173,20 +171,13 @@ export function EnhancedPetDetailView({
 
           <ScrollArea className="flex-1">
             {/* Photo Gallery */}
-            <div
-              className="relative h-96 bg-muted overflow-hidden"
-              {...swipeGesture.handlers}
-            >
+            <div className="relative h-96 bg-muted overflow-hidden" {...swipeGesture.handlers}>
               {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center z-10">
                   <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
               )}
-              <AnimatedView
-                className="w-full h-full"
-                key={currentPhotoIndex}
-                style={photoStyle}
-              >
+              <AnimatedView className="w-full h-full" key={currentPhotoIndex} style={photoStyle}>
                 <img
                   src={photos[currentPhotoIndex]}
                   alt={pet.name}
@@ -209,8 +200,8 @@ export function EnhancedPetDetailView({
                         index={idx}
                         isActive={idx === currentPhotoIndex}
                         onClick={() => {
-                          setIsLoading(true)
-                          setCurrentPhotoIndex(idx)
+                          setIsLoading(true);
+                          setCurrentPhotoIndex(idx);
                         }}
                       />
                     ))}
@@ -249,20 +240,20 @@ export function EnhancedPetDetailView({
         </div>
       </AnimatedView>
     </AnimatedView>
-  )
+  );
 }
 
 interface CloseButtonProps {
-  onClose: () => void
+  onClose: () => void;
 }
 
 function CloseButton({ onClose }: CloseButtonProps): React.JSX.Element {
-  const bounce = useBounceOnTap()
+  const bounce = useBounceOnTap();
 
   const handlePress = useCallback(() => {
-    haptics.trigger('light')
-    onClose()
-  }, [onClose])
+    haptics.trigger('light');
+    onClose();
+  }, [onClose]);
 
   return (
     <Button
@@ -270,25 +261,26 @@ function CloseButton({ onClose }: CloseButtonProps): React.JSX.Element {
       size="icon"
       onClick={handlePress}
       className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
+      aria-label="Close pet detail view"
     >
       <AnimatedView style={bounce.animatedStyle}>
         <X size={24} weight="bold" />
       </AnimatedView>
     </Button>
-  )
+  );
 }
 
 interface PhotoNavButtonProps {
-  onClick: () => void
+  onClick: () => void;
 }
 
 function PhotoNavButton({ onClick }: PhotoNavButtonProps): React.JSX.Element {
-  const bounce = useBounceOnTap()
+  const bounce = useBounceOnTap();
 
   const handlePress = useCallback(() => {
-    haptics.trigger('light')
-    onClick()
-  }, [onClick])
+    haptics.trigger('light');
+    onClick();
+  }, [onClick]);
 
   return (
     <Button
@@ -296,58 +288,60 @@ function PhotoNavButton({ onClick }: PhotoNavButtonProps): React.JSX.Element {
       size="icon"
       onClick={handlePress}
       className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background pointer-events-auto"
+      aria-label="Navigate to next photo"
     >
       <AnimatedView style={bounce.animatedStyle}>
         <PawPrint size={20} weight="fill" />
       </AnimatedView>
     </Button>
-  )
+  );
 }
 
 interface PhotoIndicatorProps {
-  index: number
-  isActive: boolean
-  onClick: () => void
+  index: number;
+  isActive: boolean;
+  onClick: () => void;
 }
 
 function PhotoIndicator({ index, isActive, onClick }: PhotoIndicatorProps): React.JSX.Element {
   return (
     <button
       onClick={onClick}
-      className={`h-2 rounded-full transition-all overflow-hidden ${
-        String(isActive ? 'w-6 bg-white' : 'w-2 bg-white/50' ?? '')
-      }`}
-      aria-label={`Go to photo ${String(index + 1 ?? '')}`}
+      className={`h-2 rounded-full transition-all overflow-hidden ${isActive ? 'w-6 bg-white' : 'w-2 bg-white/50'
+        }`}
+      aria-label={`Go to photo ${index + 1}`}
     >
       <AnimatedView
         className="h-full rounded-full bg-white"
-        style={useAnimatedStyle(() => ({
-          width: isActive ? 24 : 8,
-          opacity: isActive ? 1 : 0.5
-        })) as AnimatedStyle}
+        style={
+          useAnimatedStyle(() => ({
+            width: isActive ? 24 : 8,
+            opacity: isActive ? 1 : 0.5,
+          })) as AnimatedStyle
+        }
       />
     </button>
-  )
+  );
 }
 
 interface CompatibilityBadgeProps {
-  score: number
+  score: number;
 }
 
 function CompatibilityBadge({ score }: CompatibilityBadgeProps): React.JSX.Element {
-  const badgeOpacity = useSharedValue(0)
-  const badgeScale = useSharedValue(0.8)
-  
+  const badgeOpacity = useSharedValue(0);
+  const badgeScale = useSharedValue(0.8);
+
   useEffect(() => {
-    badgeOpacity.value = withSpring(1, { damping: 20, stiffness: 300 })
-    badgeScale.value = withSpring(1, { damping: 20, stiffness: 300 })
-  }, [])
-  
+    badgeOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
+    badgeScale.value = withSpring(1, { damping: 20, stiffness: 300 });
+  }, []);
+
   const badgeStyle = useAnimatedStyle(() => ({
     opacity: badgeOpacity.value,
-    transform: [{ scale: badgeScale.value }]
-  })) as AnimatedStyle
-  
+    transform: [{ scale: badgeScale.value }],
+  })) as AnimatedStyle;
+
   return (
     <div className="absolute top-4 left-4">
       <AnimatedView
@@ -358,13 +352,13 @@ function CompatibilityBadge({ score }: CompatibilityBadgeProps): React.JSX.Eleme
         <span className="text-lg font-bold text-white">{score}% Match</span>
       </AnimatedView>
     </div>
-  )
+  );
 }
 
 interface PetHeaderProps {
-  pet: Pet
-  trustScore: number
-  trustLevel: { label: string; color: string }
+  pet: Pet;
+  trustScore: number;
+  trustLevel: { label: string; color: string };
 }
 
 function PetHeader({ pet, trustScore, trustLevel }: PetHeaderProps): React.JSX.Element {
@@ -393,11 +387,11 @@ function PetHeader({ pet, trustScore, trustLevel }: PetHeaderProps): React.JSX.E
         <span>{pet.location}</span>
       </div>
     </div>
-  )
+  );
 }
 
 interface MatchReasonsCardProps {
-  reasons: string[]
+  reasons: string[];
 }
 
 function MatchReasonsCard({ reasons }: MatchReasonsCardProps): React.JSX.Element {
@@ -415,41 +409,38 @@ function MatchReasonsCard({ reasons }: MatchReasonsCardProps): React.JSX.Element
         </ul>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 interface MatchReasonItemProps {
-  reason: string
-  index: number
+  reason: string;
+  index: number;
 }
 
 function MatchReasonItem({ reason, index }: MatchReasonItemProps): React.JSX.Element {
-  const itemOpacity = useSharedValue(0)
-  const itemX = useSharedValue(-10)
-  
+  const itemOpacity = useSharedValue(0);
+  const itemX = useSharedValue(-10);
+
   useEffect(() => {
-    itemOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }))
-    itemX.value = withDelay(index * 50, withSpring(0, { damping: 20, stiffness: 300 }))
-  }, [index])
-  
+    itemOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    itemX.value = withDelay(index * 50, withSpring(0, { damping: 20, stiffness: 300 }));
+  }, [index]);
+
   const itemStyle = useAnimatedStyle(() => ({
     opacity: itemOpacity.value,
-    transform: [{ translateX: itemX.value }]
-  })) as AnimatedStyle
-  
+    transform: [{ translateX: itemX.value }],
+  })) as AnimatedStyle;
+
   return (
-    <AnimatedView
-      className="text-sm flex items-start gap-2"
-      style={itemStyle}
-    >
+    <AnimatedView className="text-sm flex items-start gap-2" style={itemStyle}>
       <Heart size={14} className="text-primary mt-0.5 shrink-0" weight="fill" />
       <span>{reason}</span>
     </AnimatedView>
-  )
+  );
 }
 
 interface PetTabsProps {
-  pet: Pet
+  pet: Pet;
 }
 
 function PetTabs({ pet }: PetTabsProps): React.JSX.Element {
@@ -558,28 +549,28 @@ function PetTabs({ pet }: PetTabsProps): React.JSX.Element {
         )}
       </TabsContent>
     </Tabs>
-  )
+  );
 }
 
 interface PersonalityTraitProps {
-  trait: string
-  index: number
+  trait: string;
+  index: number;
 }
 
 function PersonalityTrait({ trait, index }: PersonalityTraitProps): React.JSX.Element {
-  const traitOpacity = useSharedValue(0)
-  const traitScale = useSharedValue(0.9)
-  
+  const traitOpacity = useSharedValue(0);
+  const traitScale = useSharedValue(0.9);
+
   useEffect(() => {
-    traitOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }))
-    traitScale.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }))
-  }, [index])
-  
+    traitOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    traitScale.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+  }, [index]);
+
   const traitStyle = useAnimatedStyle(() => ({
     opacity: traitOpacity.value,
-    transform: [{ scale: traitScale.value }]
-  })) as AnimatedStyle
-  
+    transform: [{ scale: traitScale.value }],
+  })) as AnimatedStyle;
+
   return (
     <AnimatedView
       className="p-3 rounded-lg bg-muted/50 border border-border text-center"
@@ -588,14 +579,14 @@ function PersonalityTrait({ trait, index }: PersonalityTraitProps): React.JSX.El
       <PawPrint size={24} className="text-primary mx-auto mb-1" weight="fill" />
       <span className="text-sm font-medium">{trait}</span>
     </AnimatedView>
-  )
+  );
 }
 
 interface StatCardProps {
-  icon: React.ComponentType<React.ComponentProps<typeof Star>>
-  label: string
-  value: string
-  color: 'primary' | 'accent' | 'secondary' | 'lavender'
+  icon: React.ComponentType<React.ComponentProps<typeof Star>>;
+  label: string;
+  value: string;
+  color: 'primary' | 'accent' | 'secondary' | 'lavender';
 }
 
 function StatCard({ icon: Icon, label, value, color }: StatCardProps): React.JSX.Element {
@@ -603,8 +594,8 @@ function StatCard({ icon: Icon, label, value, color }: StatCardProps): React.JSX
     primary: 'bg-primary/10 text-primary',
     accent: 'bg-accent/10 text-accent',
     secondary: 'bg-secondary/10 text-secondary',
-    lavender: 'bg-lavender/10 text-lavender'
-  }
+    lavender: 'bg-lavender/10 text-lavender',
+  };
 
   return (
     <Card>
@@ -620,28 +611,28 @@ function StatCard({ icon: Icon, label, value, color }: StatCardProps): React.JSX
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 interface TrustBadgeItemProps {
-  badge: { label: string }
-  index: number
+  badge: { label: string };
+  index: number;
 }
 
 function TrustBadgeItem({ badge, index }: TrustBadgeItemProps): React.JSX.Element {
-  const badgeOpacity = useSharedValue(0)
-  const badgeScale = useSharedValue(0.8)
-  
+  const badgeOpacity = useSharedValue(0);
+  const badgeScale = useSharedValue(0.8);
+
   useEffect(() => {
-    badgeOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }))
-    badgeScale.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }))
-  }, [index])
-  
+    badgeOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    badgeScale.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+  }, [index]);
+
   const badgeStyle = useAnimatedStyle(() => ({
     opacity: badgeOpacity.value,
-    transform: [{ scale: badgeScale.value }]
-  })) as AnimatedStyle
-  
+    transform: [{ scale: badgeScale.value }],
+  })) as AnimatedStyle;
+
   return (
     <AnimatedView style={badgeStyle}>
       <Badge className="px-3 py-1.5">
@@ -649,34 +640,22 @@ function TrustBadgeItem({ badge, index }: TrustBadgeItemProps): React.JSX.Elemen
         {badge.label}
       </Badge>
     </AnimatedView>
-  )
+  );
 }
 
 interface ActionButtonsProps {
-  onLike?: (() => void) | undefined
-  onPass?: (() => void) | undefined
-  onChat?: (() => void) | undefined
+  onLike?: (() => void) | undefined;
+  onPass?: (() => void) | undefined;
+  onChat?: (() => void) | undefined;
 }
 
 function ActionButtons({ onLike, onPass, onChat }: ActionButtonsProps): React.JSX.Element {
   return (
     <div className="border-t border-border p-4 bg-card/95 backdrop-blur-sm">
       <div className="flex gap-3 max-w-md mx-auto">
-        {onPass && (
-          <ActionButton
-            variant="outline"
-            icon={X}
-            label="Pass"
-            onClick={onPass}
-          />
-        )}
+        {onPass && <ActionButton variant="outline" icon={X} label="Pass" onClick={onPass} />}
         {onChat && (
-          <ActionButton
-            variant="secondary"
-            icon={ChatCircle}
-            label="Chat"
-            onClick={onChat}
-          />
+          <ActionButton variant="secondary" icon={ChatCircle} label="Chat" onClick={onChat} />
         )}
         {onLike && (
           <ActionButton
@@ -689,28 +668,36 @@ function ActionButtons({ onLike, onPass, onChat }: ActionButtonsProps): React.JS
         )}
       </div>
     </div>
-  )
+  );
 }
 
 interface ActionButtonProps {
-  variant: 'outline' | 'secondary' | 'primary'
-  icon: React.ComponentType<React.ComponentProps<typeof Heart>>
-  label: string
-  onClick: () => void
-  className?: string
+  variant: 'outline' | 'secondary' | 'primary';
+  icon: React.ComponentType<React.ComponentProps<typeof Heart>>;
+  label: string;
+  onClick: () => void;
+  className?: string;
 }
 
-function ActionButton({ variant, icon: Icon, label, onClick, className }: ActionButtonProps): React.JSX.Element {
-  const bounce = useBounceOnTap()
+function ActionButton({
+  variant,
+  icon: Icon,
+  label,
+  onClick,
+  className,
+}: ActionButtonProps): React.JSX.Element {
+  const bounce = useBounceOnTap();
 
   const handlePress = useCallback(() => {
-    haptics.trigger('light')
-    onClick()
-  }, [onClick])
+    haptics.trigger('light');
+    onClick();
+  }, [onClick]);
 
   return (
     <Button
-      variant={variant === 'outline' ? 'outline' : variant === 'secondary' ? 'secondary' : 'default'}
+      variant={
+        variant === 'outline' ? 'outline' : variant === 'secondary' ? 'secondary' : 'default'
+      }
       size="lg"
       onClick={handlePress}
       className={`flex-1 rounded-full ${className ?? ''}`}
@@ -720,5 +707,5 @@ function ActionButton({ variant, icon: Icon, label, onClick, className }: Action
         {label}
       </AnimatedView>
     </Button>
-  )
+  );
 }

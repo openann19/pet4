@@ -24,7 +24,7 @@ const checkMigration = (filePath) => {
       return 'migrated';
     }
     return 'unknown';
-  } catch (e) {
+  } catch {
     return 'error';
   }
 };

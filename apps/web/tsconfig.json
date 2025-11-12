@@ -1,17 +1,42 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "noEmit": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "vite/client"
+    ],
     "baseUrl": ".",
-    "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
+    "typeRoots": [
+      "../../node_modules/@types",
+      "./node_modules/@types"
+    ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@design-system/*": ["./design-system/*"],
-      "@petspark/chat-core": ["../../packages/chat-core/src/index.ts"],
-      "@petspark/config": ["../../packages/config/src/index.ts"]
-    }
+      "@/*": [
+        "./src/*"
+      ],
+      "@design-system/*": [
+        "./design-system/*"
+      ],
+      "@petspark/chat-core": [
+        "../../packages/chat-core/src/index.ts"
+      ],
+      "@petspark/config": [
+        "../../packages/config/src/index.ts"
+      ],
+      "@petspark/shared": [
+        "../../packages/shared/src/index.ts"
+      ]
+    },
+    "resolveJsonModule": true
   },
   "include": [
     "src",
+    "src/test/utils/test-helpers.tsx",
     "src/test/vitest.d.ts",
     "src/types/**/*.d.ts",
     "*.d.ts",

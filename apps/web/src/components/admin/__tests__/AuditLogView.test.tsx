@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import AuditLogView from '../AuditLogView'
-import { useStorage } from '@/hooks/useStorage'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import AuditLogView from '../AuditLogView';
+import { useStorage } from '@/hooks/use-storage';
 
-vi.mock('@/hooks/useStorage')
+vi.mock('@/hooks/use-storage');
 
-const mockUseStorage = vi.mocked(useStorage)
+const mockUseStorage = vi.mocked(useStorage);
 
 describe('AuditLogView', () => {
   const mockAuditLog = [
@@ -38,147 +38,146 @@ describe('AuditLogView', () => {
       targetId: 'report789',
       timestamp: new Date(Date.now() - 7200000).toISOString(),
     },
-  ]
+  ];
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.clearAllMocks();
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-audit-log') {
-        return [mockAuditLog, vi.fn(), vi.fn()]
+        return [mockAuditLog, vi.fn(), vi.fn()];
       }
-      return [defaultValue, vi.fn(), vi.fn()]
-    })
-  })
+      return [defaultValue, vi.fn(), vi.fn()];
+    });
+  });
 
   it('renders audit log view', () => {
-    render(<AuditLogView />)
+    render(<AuditLogView />);
 
-    expect(screen.getByText(/audit log/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/audit log/i)).toBeInTheDocument();
+  });
 
   it('displays audit log entries', () => {
-    render(<AuditLogView />)
+    render(<AuditLogView />);
 
-    expect(screen.getByText(/john admin/i)).toBeInTheDocument()
-    expect(screen.getByText(/jane admin/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/john admin/i)).toBeInTheDocument();
+    expect(screen.getByText(/jane admin/i)).toBeInTheDocument();
+  });
 
   it('filters entries by search query', async () => {
-    const user = userEvent.setup()
-    render(<AuditLogView />)
+    const user = userEvent.setup();
+    render(<AuditLogView />);
 
-    const searchInput = screen.getByPlaceholderText(/search/i)
-    await user.type(searchInput, 'John')
+    const searchInput = screen.getByPlaceholderText(/search/i);
+    await user.type(searchInput, 'John');
 
-    expect(screen.getByText(/john admin/i)).toBeInTheDocument()
-    expect(screen.queryByText(/jane admin/i)).not.toBeInTheDocument()
-  })
+    expect(screen.getByText(/john admin/i)).toBeInTheDocument();
+    expect(screen.queryByText(/jane admin/i)).not.toBeInTheDocument();
+  });
 
   it('filters entries by action type', async () => {
-    const user = userEvent.setup()
-    render(<AuditLogView />)
+    const user = userEvent.setup();
+    render(<AuditLogView />);
 
-    const select = screen.getByRole('combobox')
-    await user.click(select)
+    const select = screen.getByRole('combobox');
+    await user.click(select);
 
-    const userSuspendedOption = screen.getByText(/user suspended/i)
-    await user.click(userSuspendedOption)
+    const userSuspendedOption = screen.getByText(/user suspended/i);
+    await user.click(userSuspendedOption);
 
-    expect(screen.getByText(/john admin/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/john admin/i)).toBeInTheDocument();
+  });
 
   it('displays all action types in filter', async () => {
-    const user = userEvent.setup()
-    render(<AuditLogView />)
+    const user = userEvent.setup();
+    render(<AuditLogView />);
 
-    const select = screen.getByRole('combobox')
-    await user.click(select)
+    const select = screen.getByRole('combobox');
+    await user.click(select);
 
-    expect(screen.getByText(/all actions/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/all actions/i)).toBeInTheDocument();
+  });
 
   it('handles empty audit log', () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-audit-log') {
-        return [[], vi.fn(), vi.fn()]
+        return [[], vi.fn(), vi.fn()];
       }
-      return [defaultValue, vi.fn(), vi.fn()]
-    })
+      return [defaultValue, vi.fn(), vi.fn()];
+    });
 
-    render(<AuditLogView />)
+    render(<AuditLogView />);
 
-    expect(screen.getByText(/audit log/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/audit log/i)).toBeInTheDocument();
+  });
 
   it('handles null audit log', () => {
     mockUseStorage.mockImplementation((key: string, defaultValue: unknown) => {
       if (key === 'admin-audit-log') {
-        return [null, vi.fn(), vi.fn()]
+        return [null, vi.fn(), vi.fn()];
       }
-      return [defaultValue, vi.fn(), vi.fn()]
-    })
+      return [defaultValue, vi.fn(), vi.fn()];
+    });
 
-    render(<AuditLogView />)
+    render(<AuditLogView />);
 
-    expect(screen.getByText(/audit log/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/audit log/i)).toBeInTheDocument();
+  });
 
   it('searches by admin name', async () => {
-    const user = userEvent.setup()
-    render(<AuditLogView />)
+    const user = userEvent.setup();
+    render(<AuditLogView />);
 
-    const searchInput = screen.getByPlaceholderText(/search/i)
-    await user.type(searchInput, 'Jane')
+    const searchInput = screen.getByPlaceholderText(/search/i);
+    await user.type(searchInput, 'Jane');
 
-    expect(screen.getByText(/jane admin/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/jane admin/i)).toBeInTheDocument();
+  });
 
   it('searches by action', async () => {
-    const user = userEvent.setup()
-    render(<AuditLogView />)
+    const user = userEvent.setup();
+    render(<AuditLogView />);
 
-    const searchInput = screen.getByPlaceholderText(/search/i)
-    await user.type(searchInput, 'suspended')
+    const searchInput = screen.getByPlaceholderText(/search/i);
+    await user.type(searchInput, 'suspended');
 
-    expect(screen.getByText(/john admin/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/john admin/i)).toBeInTheDocument();
+  });
 
   it('searches by target ID', async () => {
-    const user = userEvent.setup()
-    render(<AuditLogView />)
+    const user = userEvent.setup();
+    render(<AuditLogView />);
 
-    const searchInput = screen.getByPlaceholderText(/search/i)
-    await user.type(searchInput, 'user123')
+    const searchInput = screen.getByPlaceholderText(/search/i);
+    await user.type(searchInput, 'user123');
 
-    expect(screen.getByText(/john admin/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/john admin/i)).toBeInTheDocument();
+  });
 
   it('combines search and filter', async () => {
-    const user = userEvent.setup()
-    render(<AuditLogView />)
+    const user = userEvent.setup();
+    render(<AuditLogView />);
 
-    const searchInput = screen.getByPlaceholderText(/search/i)
-    await user.type(searchInput, 'John')
+    const searchInput = screen.getByPlaceholderText(/search/i);
+    await user.type(searchInput, 'John');
 
-    const select = screen.getByRole('combobox')
-    await user.click(select)
+    const select = screen.getByRole('combobox');
+    await user.click(select);
 
-    const option = screen.getByText(/user suspended/i)
-    await user.click(option)
+    const option = screen.getByText(/user suspended/i);
+    await user.click(option);
 
-    expect(screen.getByText(/john admin/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/john admin/i)).toBeInTheDocument();
+  });
 
   it('displays action icons correctly', () => {
-    render(<AuditLogView />)
+    render(<AuditLogView />);
 
-    expect(screen.getByText(/user_suspended/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/user_suspended/i)).toBeInTheDocument();
+  });
 
   it('displays timestamps', () => {
-    render(<AuditLogView />)
+    render(<AuditLogView />);
 
-    expect(screen.getByText(/john admin/i)).toBeInTheDocument()
-  })
-})
-
+    expect(screen.getByText(/john admin/i)).toBeInTheDocument();
+  });
+});

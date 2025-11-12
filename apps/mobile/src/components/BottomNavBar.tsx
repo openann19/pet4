@@ -1,9 +1,15 @@
 import React, { memo, useCallback, useEffect } from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming, withSequence } from 'react-native-reanimated'
+import { TouchableOpacity, StyleSheet, Text, View } from 'react-native'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withSequence,
+} from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavBarAnimation, useNavButtonAnimation } from '@mobile/effects/reanimated'
-import { colors } from '@mobile/theme/colors'
+import { useNavBarAnimation, useNavButtonAnimation } from '../effects/reanimated'
+import { colors } from '../theme/colors'
 import * as Haptics from 'expo-haptics'
 import { isTruthy } from '@petspark/shared';
 
@@ -22,11 +28,7 @@ interface BottomNavBarProps {
   onChange: (key: TabKey) => void
 }
 
-export function BottomNavBar({
-  active,
-  items,
-  onChange,
-}: BottomNavBarProps): React.ReactElement {
+export function BottomNavBar({ active, items, onChange }: BottomNavBarProps): React.ReactElement {
   const navBarAnimation = useNavBarAnimation({ delay: 200 })
 
   const handlePress = useCallback(
@@ -41,13 +43,13 @@ export function BottomNavBar({
 
   return (
     <SafeAreaView edges={['bottom']} style={styles.safe} accessibilityRole="tablist">
-      <Animated.View style={[styles.container, navBarAnimation.navStyle]}>
+      <Animated.View style={Object.assign({}, styles.container, navBarAnimation.navStyle)}>
         {/* Glow background effect */}
         <View style={styles.glowBackground} />
-        
+
         {/* Glassmorphism overlay */}
         <View style={styles.glassOverlay} />
-        
+
         {/* Content */}
         <View style={styles.bar}>
           {items.map((it, index) => {
@@ -76,7 +78,7 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: colors.surface,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: 0.5,
     borderTopColor: colors.border,
     position: 'relative',
     overflow: 'hidden',
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
     borderColor: colors.surface,
   },
   badgeText: {
-    color: '#fff',
+    color: 'var(--color-bg-overlay)',
     fontSize: 9,
     fontWeight: '700',
   },
@@ -186,7 +188,7 @@ function TabItem({ item, selected, onPress }: TabItemProps): React.ReactElement 
     enablePulse: selected,
     pulseScale: 1.2,
     enableRotation: false,
-    hapticFeedback: true
+    hapticFeedback: true,
   })
 
   const glowOpacity = useSharedValue(selected ? 1 : 0)
@@ -229,7 +231,7 @@ function TabItem({ item, selected, onPress }: TabItemProps): React.ReactElement 
 
   return (
     <Animated.View style={animation.buttonStyle}>
-      <Pressable
+      <TouchableOpacity
         onPress={() => {
           animation.handlePress()
           onPress()
@@ -240,39 +242,39 @@ function TabItem({ item, selected, onPress }: TabItemProps): React.ReactElement 
         accessibilityRole="tab"
         accessibilityState={{ selected }}
         accessibilityLabel={item.label}
+        activeOpacity={1}
       >
         {/* Glow effect for active item */}
         {selected && (
-          <Animated.View style={[styles.iconGlow, glowAnimatedStyle]} />
+          <Animated.View style={Object.assign({}, styles.iconGlow, glowAnimatedStyle)} />
         )}
 
         {/* Icon */}
         {item.icon && (
-          <Animated.Text style={[{ fontSize: 24 }, animation.iconStyle, { opacity: selected ? 1 : 0.7 }]}>
+          <Animated.Text
+            style={[{ fontSize: 24 }, animation.iconStyle, { opacity: selected ? 1 : 0.7 }]}
+          >
             {item.icon}
           </Animated.Text>
         )}
 
         {/* Label */}
-        <Text
-          style={[styles.label, selected && styles.labelActive]}
-          numberOfLines={1}
-        >
+        <Text style={[styles.label, selected && styles.labelActive]} numberOfLines={1}>
           {item.label}
         </Text>
 
         {/* Active indicator */}
-        <Animated.View style={[styles.activeIndicator, animation.indicatorStyle]} />
+        <Animated.View
+          style={Object.assign({}, styles.activeIndicator, animation.indicatorStyle)}
+        />
 
         {/* Badge */}
         {item.badge && item.badge > 0 && (
-          <Animated.View style={[styles.badge, badgeAnimatedStyle]}>
-            <Text style={styles.badgeText}>
-              {item.badge > 9 ? '9+' : String(item.badge)}
-            </Text>
+          <Animated.View style={Object.assign({}, styles.badge, badgeAnimatedStyle)}>
+            <Text style={styles.badgeText}>{item.badge > 9 ? '9+' : String(item.badge)}</Text>
           </Animated.View>
         )}
-      </Pressable>
+      </TouchableOpacity>
     </Animated.View>
   )
 }

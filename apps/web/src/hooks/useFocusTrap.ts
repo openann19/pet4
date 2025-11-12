@@ -6,17 +6,14 @@ import { isTruthy, isDefined } from '@petspark/shared';
  * Hook for trapping focus within a container (useful for modals and dialogs)
  * Improves accessibility by keeping keyboard navigation within modal bounds
  */
-export function useFocusTrap(
-  containerRef: RefObject<HTMLElement>,
-  enabled: boolean = true
-): void {
+export function useFocusTrap(containerRef: RefObject<HTMLElement>, enabled = true): void {
   useEffect(() => {
     if (!enabled || !containerRef.current) {
       return;
     }
 
     const container = containerRef.current;
-    
+
     // Get all focusable elements
     const getFocusableElements = (): HTMLElement[] => {
       const focusableSelectors = [
@@ -28,9 +25,9 @@ export function useFocusTrap(
         '[tabindex]:not([tabindex="-1"])',
       ].join(', ');
 
-      return Array.from(
-        container.querySelectorAll<HTMLElement>(focusableSelectors)
-      ).filter(el => !el.hasAttribute('disabled'));
+      return Array.from(container.querySelectorAll<HTMLElement>(focusableSelectors)).filter(
+        (el) => !el.hasAttribute('disabled')
+      );
     };
 
     const handleTabKey = (event: KeyboardEvent): void => {
@@ -39,7 +36,7 @@ export function useFocusTrap(
       }
 
       const focusableElements = getFocusableElements();
-      
+
       if (focusableElements.length === 0) {
         event.preventDefault();
         return;
@@ -47,7 +44,7 @@ export function useFocusTrap(
 
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
-      
+
       if (firstElement === undefined || lastElement === undefined) {
         return;
       }

@@ -21,7 +21,10 @@ export function generateAppDeepLink(params: DeepLinkParams): string {
   return `${String(baseUrl ?? '')}?${String(queryParams.toString() ?? '')}`;
 }
 
-export function generateMapDeepLink(location: Location, label?: string): {
+export function generateMapDeepLink(
+  location: Location,
+  label?: string
+): {
   appleMaps: string;
   googleMaps: string;
   universal: string;
@@ -38,16 +41,16 @@ export function generateMapDeepLink(location: Location, label?: string): {
 
 export function openInMaps(location: Location, label?: string): void {
   const links = generateMapDeepLink(location, label);
-  
+
   const userAgent = navigator.userAgent.toLowerCase();
   const isIOS = /iphone|ipad|ipod/.test(userAgent);
-  const isAndroid = /android/.test(userAgent);
+  const isAndroid = userAgent.includes('android');
 
   if (isTruthy(isIOS)) {
     const link = document.createElement('a');
     link.href = links.appleMaps;
     link.click();
-    
+
     setTimeout(() => {
       const universalLink = document.createElement('a');
       universalLink.href = links.googleMaps;
@@ -80,9 +83,7 @@ export function handleAppDeepLink(url: string): DeepLinkParams | null {
       return null;
     }
 
-    const location = lat && lng
-      ? { lat: parseFloat(lat), lng: parseFloat(lng) }
-      : undefined;
+    const location = lat && lng ? { lat: parseFloat(lat), lng: parseFloat(lng) } : undefined;
 
     return {
       type: type as DeepLinkParams['type'],
@@ -93,4 +94,3 @@ export function handleAppDeepLink(url: string): DeepLinkParams | null {
     return null;
   }
 }
-

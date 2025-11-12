@@ -1,123 +1,123 @@
-'use client'
+'use client';
 
-import { useEffect, useRef, useState, type ReactNode, Children, isValidElement } from 'react'
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated'
-import { AnimatedView } from './animated-view'
-import { timingConfigs, springConfigs } from './transitions'
-import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useEffect, useRef, useState, type ReactNode, Children, isValidElement } from 'react';
+import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
+import { AnimatedView } from './animated-view';
+import { timingConfigs, springConfigs } from './transitions';
+import type { AnimatedStyle } from './animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface AnimatePresenceProps {
-  children: ReactNode
-  mode?: 'wait' | 'sync'
-  initial?: boolean
-  onExitComplete?: () => void
+  children: ReactNode;
+  mode?: 'wait' | 'sync';
+  initial?: boolean;
+  onExitComplete?: () => void;
 }
 
 interface PresenceChildProps {
-  children: ReactNode
-  isVisible: boolean
-  onExitComplete?: () => void
-  childKey: string | number
+  children: ReactNode;
+  isVisible: boolean;
+  onExitComplete?: () => void;
+  childKey: string | number;
 }
 
 function PresenceChild({ children, isVisible, onExitComplete, childKey }: PresenceChildProps) {
-  const opacity = useSharedValue(isVisible ? 1 : 0)
-  const scale = useSharedValue(isVisible ? 1 : 0.95)
-  const translateY = useSharedValue(isVisible ? 0 : -8)
-  const [shouldRender, setShouldRender] = useState(isVisible)
-  const exitTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
+    const _uiConfig = useUIConfig();
+    const opacity = useSharedValue(isVisible ? 1 : 0);
+  const scale = useSharedValue(isVisible ? 1 : 0.95);
+  const translateY = useSharedValue(isVisible ? 0 : -8);
+  const [shouldRender, setShouldRender] = useState(isVisible);
+  const exitTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
-    if (isTruthy(isVisible)) {
-      setShouldRender(true)
-      opacity.value = withSpring(1, springConfigs.smooth)
-      scale.value = withSpring(1, springConfigs.smooth)
-      translateY.value = withSpring(0, springConfigs.smooth)
+    if (isVisible) {
+      setShouldRender(true);
+      opacity.value = withSpring(1, springConfigs.smooth);
+      scale.value = withSpring(1, springConfigs.smooth);
+      translateY.value = withSpring(0, springConfigs.smooth);
     } else {
-      opacity.value = withTiming(0, timingConfigs.fast)
-      scale.value = withTiming(0.95, timingConfigs.fast)
-      translateY.value = withTiming(-8, timingConfigs.fast)
+      opacity.value = withTiming(0, timingConfigs.fast);
+      scale.value = withTiming(0.95, timingConfigs.fast);
+      translateY.value = withTiming(-8, timingConfigs.fast);
 
-      if (isTruthy(exitTimeoutRef.current)) {
-        clearTimeout(exitTimeoutRef.current)
+      if (exitTimeoutRef.current) {
+        clearTimeout(exitTimeoutRef.current);
       }
 
       exitTimeoutRef.current = setTimeout(() => {
-        setShouldRender(false)
-        onExitComplete?.()
-      }, timingConfigs.fast.duration)
+        setShouldRender(false);
+        onExitComplete?.();
+      }, timingConfigs.fast.duration);
     }
 
     return () => {
-      if (isTruthy(exitTimeoutRef.current)) {
-        clearTimeout(exitTimeoutRef.current)
+      if (exitTimeoutRef.current) {
+        clearTimeout(exitTimeoutRef.current);
       }
-    }
-  }, [isVisible, opacity, scale, translateY, onExitComplete])
+    };
+  }, [isVisible, opacity, scale, translateY, onExitComplete]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [
-        { scale: scale.value },
-        { translateY: `${String(translateY.value ?? '')}px` }
-      ]
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: scale.value }, { translateY: `${translateY.value}px` }],
+    };
+  }) as AnimatedStyle;
 
   if (!shouldRender) {
-    return null
+    return null;
   }
 
   return (
-    <AnimatedView
-      style={animatedStyle}
-      className="w-full"
-    >
+    <AnimatedView style={animatedStyle} className="w-full">
       {children}
     </AnimatedView>
-  )
+  );
 }
 
-export function AnimatePresence({ children, mode = 'sync', initial = false, onExitComplete }: AnimatePresenceProps) {
-  const childrenArray = Children.toArray(children)
+export function AnimatePresence({
+  children,
+  mode = 'sync',
+  initial = false,
+  onExitComplete,
+}: AnimatePresenceProps) {
+  const childrenArray = Children.toArray(children);
   const [visibleKeys, setVisibleKeys] = useState<Set<string | number>>(() => {
-    const keys = new Set<string | number>()
+    const keys = new Set<string | number>();
     childrenArray.forEach((child, index) => {
-      const key = isValidElement(child) && child.key !== null ? child.key : index
-      if (isTruthy(initial)) {
-        keys.add(key)
+      const key = isValidElement(child) && child.key !== null ? child.key : index;
+      if (initial) {
+        keys.add(key);
       }
-    })
-    return keys
-  })
+    });
+    return keys;
+  });
 
   useEffect(() => {
-    const newVisibleKeys = new Set<string | number>()
+    const newVisibleKeys = new Set<string | number>();
     childrenArray.forEach((child, index) => {
-      const key = isValidElement(child) && child.key !== null ? child.key : index
-      newVisibleKeys.add(key)
-    })
-    setVisibleKeys(newVisibleKeys)
-  }, [childrenArray])
+      const key = isValidElement(child) && child.key !== null ? child.key : index;
+      newVisibleKeys.add(key);
+    });
+    setVisibleKeys(newVisibleKeys);
+  }, [childrenArray]);
 
   const handleExitComplete = (key: string | number) => {
     setVisibleKeys((prev) => {
-      const next = new Set(prev)
-      next.delete(key)
+      const next = new Set(prev);
+      next.delete(key);
       if (next.size === 0) {
-        onExitComplete?.()
+        onExitComplete?.();
       }
-      return next
-    })
-  }
+      return next;
+    });
+  };
 
   return (
     <>
       {childrenArray.map((child, index) => {
-        const key = isValidElement(child) && child.key !== null ? child.key : index
-        const isVisible = visibleKeys.has(key)
+        const key = isValidElement(child) && child.key !== null ? child.key : index;
+        const isVisible = visibleKeys.has(key);
 
         return (
           <PresenceChild
@@ -128,9 +128,8 @@ export function AnimatePresence({ children, mode = 'sync', initial = false, onEx
           >
             {child}
           </PresenceChild>
-        )
+        );
       })}
     </>
-  )
+  );
 }
-

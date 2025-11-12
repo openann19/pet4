@@ -83,7 +83,7 @@ describe('useStorage', () => {
     })
 
     await act(async () => {
-      await result.current[1]((prev) => prev + 1)
+      await result.current[1](prev => prev + 1)
     })
 
     expect(mockAsyncStorage.setItem).toHaveBeenCalledWith('test-key', JSON.stringify(6))
@@ -156,12 +156,11 @@ describe('useStorage', () => {
   it('updates when key changes', async () => {
     mockAsyncStorage.getItem.mockResolvedValue(null)
 
-    const { result, rerender } = renderHook<
-      [string, (value: string | ((prev: string) => string)) => Promise<void>, () => Promise<void>],
-      { key: string }
-    >(
+    const { result, rerender } = renderHook(
       ({ key }: { key: string }) => useStorage<string>(key, 'default'),
-      { initialProps: { key: 'key1' } }
+      {
+        initialProps: { key: 'key1' },
+      }
     )
 
     await waitFor(() => {
@@ -177,4 +176,3 @@ describe('useStorage', () => {
     })
   })
 })
-

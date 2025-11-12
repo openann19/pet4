@@ -13,6 +13,7 @@ Your current implementation is **web-focused** using Framer Motion, which works 
 ### ✅ **What You Have (Current Implementation)**
 
 #### 1. **Tech Stack - Web-Focused**
+
 - ✅ Framer Motion for animations (`useMotionValue`, `useTransform`)
 - ✅ Web-based haptics (`navigator.vibrate`)
 - ✅ `useSwipe` hook with basic drag handling
@@ -21,6 +22,7 @@ Your current implementation is **web-focused** using Framer Motion, which works 
 - ⚠️ React Native Gesture Handler installed but **not used**
 
 #### 2. **Gesture Handling**
+
 - ✅ Basic drag detection (`handleDragStart`, `handleDrag`, `handleDragEnd`)
 - ✅ Rotation interpolation (`useTransform` for rotation)
 - ✅ Opacity interpolation for LIKE/PASS badges
@@ -30,6 +32,7 @@ Your current implementation is **web-focused** using Framer Motion, which works 
 - ❌ **No elastic drag** - simple linear interpolation
 
 #### 3. **Card Architecture**
+
 - ❌ **No card pool** - renders single card at a time
 - ❌ **No card recycling** - mounts/unmounts cards
 - ❌ **No image prefetching** - loads images on-demand
@@ -37,24 +40,28 @@ Your current implementation is **web-focused** using Framer Motion, which works 
 - ❌ **No card stack** - just one card
 
 #### 4. **Performance**
+
 - ⚠️ Basic animation performance (Framer Motion on JS thread)
 - ❌ **No UI thread animations** - all animations run on JS thread
 - ❌ **No memory optimization** - no card recycling
 - ❌ **No image prefetching** - potential loading delays
 
 #### 5. **Haptics**
+
 - ✅ Web haptics implementation (`navigator.vibrate`)
 - ❌ **No expo-haptics** - web-only implementation
 - ❌ **No platform-specific haptics** - same for iOS/Android
 - ❌ **No Reduce Motion support** - haptics always enabled
 
 #### 6. **Accessibility & i18n**
+
 - ✅ Button-based actions (X / ♥ buttons)
 - ❌ **No RTL support** - thresholds don't mirror
 - ❌ **No screen reader announcements** - missing ARIA labels
 - ❌ **No accessible swipe hint** - visual only
 
 #### 7. **Data & State**
+
 - ✅ Swipe history tracking
 - ✅ Optimistic UI updates
 - ❌ **No offline queue** - no offline persistence
@@ -65,6 +72,7 @@ Your current implementation is **web-focused** using Framer Motion, which works 
 ### ❌ **What's Missing (Spec Requirements)**
 
 #### 1. **Native Gesture Support** 🔴 CRITICAL
+
 ```typescript
 // SPEC REQUIRES:
 import { PanGestureHandler } from 'react-native-gesture-handler'
@@ -73,12 +81,14 @@ import { PanGestureHandler } from 'react-native-gesture-handler'
 import { motion } from 'framer-motion' // Web-only
 ```
 
-**Impact**: 
+**Impact**:
+
 - Gestures run on JS thread (laggy on mobile)
 - No native gesture recognition
 - Poor performance on low-end devices
 
 #### 2. **React Native Reanimated Integration** 🔴 CRITICAL
+
 ```typescript
 // SPEC REQUIRES:
 import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
@@ -88,11 +98,13 @@ import { useMotionValue, useTransform } from 'framer-motion'
 ```
 
 **Impact**:
+
 - Animations run on JS thread (not 60fps)
 - No UI thread performance
 - Frame drops on mobile
 
 #### 3. **Card Pool Architecture** 🔴 CRITICAL
+
 ```typescript
 // SPEC REQUIRES:
 - Pool of 3-4 cards in memory
@@ -107,11 +119,13 @@ import { useMotionValue, useTransform } from 'framer-motion'
 ```
 
 **Impact**:
+
 - Memory leaks on long swipe sessions
 - Frame drops when advancing cards
 - Loading delays (no prefetch)
 
 #### 4. **Platform-Specific Haptics** 🟡 IMPORTANT
+
 ```typescript
 // SPEC REQUIRES:
 import * as Haptics from 'expo-haptics'
@@ -121,11 +135,13 @@ navigator.vibrate() // Web-only
 ```
 
 **Impact**:
+
 - Weak haptic feedback on mobile
 - No platform-specific patterns
 - No Reduce Motion support
 
 #### 5. **Physics & Timing** 🟡 IMPORTANT
+
 ```typescript
 // SPEC REQUIRES:
 - Spring config: damping 20-24, stiffness 300-360
@@ -139,6 +155,7 @@ navigator.vibrate() // Web-only
 ```
 
 #### 6. **Offline Queue** 🟢 NICE TO HAVE
+
 ```typescript
 // SPEC REQUIRES:
 - Queue swipes when offline
@@ -151,6 +168,7 @@ navigator.vibrate() // Web-only
 ```
 
 #### 7. **Accessibility & RTL** 🟡 IMPORTANT
+
 ```typescript
 // SPEC REQUIRES:
 - RTL threshold mirroring
@@ -167,30 +185,32 @@ navigator.vibrate() // Web-only
 
 ## Gap Analysis Matrix
 
-| Requirement | Spec | Current | Status | Priority |
-|------------|------|---------|--------|----------|
-| **Native Gestures** | PanGestureHandler | Framer Motion | ❌ Missing | 🔴 Critical |
-| **Reanimated v3** | UI thread animations | JS thread | ❌ Missing | 🔴 Critical |
-| **Card Pool** | 3-4 cards recycled | Single card | ❌ Missing | 🔴 Critical |
-| **Image Prefetch** | Next 2 cards | None | ❌ Missing | 🔴 Critical |
-| **expo-haptics** | Platform-specific | Web vibrate | ❌ Missing | 🟡 Important |
-| **Spring Physics** | Tuned configs | Basic | ⚠️ Partial | 🟡 Important |
-| **Offline Queue** | Persist & flush | None | ❌ Missing | 🟢 Nice-to-have |
-| **RTL Support** | Mirrored thresholds | None | ❌ Missing | 🟡 Important |
-| **Accessibility** | ARIA + SR | Basic | ⚠️ Partial | 🟡 Important |
-| **Web Fallback** | Framer Motion | ✅ Exists | ✅ Done | ✅ Complete |
+| Requirement         | Spec                 | Current       | Status     | Priority        |
+| ------------------- | -------------------- | ------------- | ---------- | --------------- |
+| **Native Gestures** | PanGestureHandler    | Framer Motion | ❌ Missing | 🔴 Critical     |
+| **Reanimated v3**   | UI thread animations | JS thread     | ❌ Missing | 🔴 Critical     |
+| **Card Pool**       | 3-4 cards recycled   | Single card   | ❌ Missing | 🔴 Critical     |
+| **Image Prefetch**  | Next 2 cards         | None          | ❌ Missing | 🔴 Critical     |
+| **expo-haptics**    | Platform-specific    | Web vibrate   | ❌ Missing | 🟡 Important    |
+| **Spring Physics**  | Tuned configs        | Basic         | ⚠️ Partial | 🟡 Important    |
+| **Offline Queue**   | Persist & flush      | None          | ❌ Missing | 🟢 Nice-to-have |
+| **RTL Support**     | Mirrored thresholds  | None          | ❌ Missing | 🟡 Important    |
+| **Accessibility**   | ARIA + SR            | Basic         | ⚠️ Partial | 🟡 Important    |
+| **Web Fallback**    | Framer Motion        | ✅ Exists     | ✅ Done    | ✅ Complete     |
 
 ---
 
 ## Performance Impact
 
 ### Current Implementation Issues:
+
 1. **Frame Drops**: Animations run on JS thread → 30-40fps on mobile
 2. **Memory Leaks**: No card recycling → memory grows with swipe count
 3. **Loading Delays**: No image prefetch → visible loading on card advance
 4. **Gesture Lag**: Web gestures → 50-100ms input latency
 
 ### Spec Requirements Would Fix:
+
 1. **60fps Smooth**: Reanimated on UI thread → consistent 60fps
 2. **Constant Memory**: Card recycling → stable memory usage
 3. **Instant Transitions**: Image prefetch → no loading delays
@@ -201,6 +221,7 @@ navigator.vibrate() // Web-only
 ## Migration Path
 
 ### Phase 1: Core Native Gestures (Critical) 🔴
+
 ```typescript
 // Replace useSwipe.ts with native implementation
 - Replace Framer Motion with PanGestureHandler
@@ -210,6 +231,7 @@ navigator.vibrate() // Web-only
 ```
 
 ### Phase 2: Card Stack Architecture (Critical) 🔴
+
 ```typescript
 // Create CardStack component
 - Implement card pool (3-4 cards)
@@ -219,6 +241,7 @@ navigator.vibrate() // Web-only
 ```
 
 ### Phase 3: Platform Integration (Important) 🟡
+
 ```typescript
 // Platform-specific enhancements
 - Replace haptics with expo-haptics
@@ -228,6 +251,7 @@ navigator.vibrate() // Web-only
 ```
 
 ### Phase 4: Offline & Polish (Nice-to-have) 🟢
+
 ```typescript
 // Advanced features
 - Offline queue system
@@ -243,18 +267,21 @@ navigator.vibrate() // Web-only
 ### **You Need to Build the Spec Implementation** ✅
 
 **Why?**
+
 1. Current implementation is **web-only** and won't perform on mobile
 2. Missing **critical performance optimizations** (card pool, prefetch)
 3. No **native gesture support** (PanGestureHandler)
 4. Animations run on **JS thread** (not 60fps)
 
 **Priority Actions:**
+
 1. 🔴 **CRITICAL**: Implement native PanGestureHandler + Reanimated
 2. 🔴 **CRITICAL**: Build card pool architecture
 3. 🟡 **IMPORTANT**: Add expo-haptics integration
 4. 🟡 **IMPORTANT**: Add RTL and accessibility support
 
 **Estimated Effort:**
+
 - Phase 1 (Core): 2-3 days
 - Phase 2 (Card Stack): 2-3 days
 - Phase 3 (Platform): 1-2 days
@@ -268,6 +295,7 @@ navigator.vibrate() // Web-only
 **Your current implementation is NOT better than the spec** - it's a **web-focused prototype** that needs significant mobile optimization to meet production requirements.
 
 The spec provides a **production-ready mobile swipe stack** with:
+
 - ✅ Native performance (60fps)
 - ✅ Memory efficiency (card recycling)
 - ✅ Tactile feedback (platform haptics)
@@ -275,6 +303,7 @@ The spec provides a **production-ready mobile swipe stack** with:
 - ✅ Offline resilience (queue system)
 
 **Next Steps:**
+
 1. Review this assessment
 2. Prioritize Phase 1 & 2 (Critical)
 3. Build native swipe stack component
@@ -285,4 +314,3 @@ The spec provides a **production-ready mobile swipe stack** with:
 
 **Generated**: 2024
 **Assessment Version**: 1.0.0
-

@@ -27,11 +27,13 @@ This guide covers local development, EAS builds, code signing, and deployment fo
 ### Platform-Specific Requirements
 
 #### iOS Development
+
 - macOS with Xcode 14+ installed
 - iOS Simulator (included with Xcode)
 - Apple Developer account ($99/year) for device testing and App Store distribution
 
 #### Android Development
+
 - Android Studio with Android SDK
 - Android Emulator or physical device
 - Java Development Kit (JDK) 17
@@ -41,11 +43,13 @@ This guide covers local development, EAS builds, code signing, and deployment fo
 ### Initial Setup
 
 1. **Install dependencies from monorepo root:**
+
    ```bash
    npm install
    ```
 
 2. **Build the shared package:**
+
    ```bash
    cd packages/shared
    npm run build
@@ -59,6 +63,7 @@ This guide covers local development, EAS builds, code signing, and deployment fo
 ### Running the App
 
 #### Start Development Server
+
 ```bash
 npm start
 # or
@@ -66,11 +71,13 @@ expo start
 ```
 
 This opens the Expo DevTools in your browser. From there you can:
+
 - Press `i` to open iOS Simulator
 - Press `a` to open Android Emulator
 - Scan the QR code with Expo Go app on your device
 
 #### Run on Specific Platforms
+
 ```bash
 npm run ios      # Launch iOS Simulator
 npm run android  # Launch Android Emulator
@@ -98,7 +105,8 @@ npm run web      # Open in web browser
 
 ### 2. Configure EAS Project
 
-1. Update `apps/mobile/app.config.ts`:
+1. Update `apps/native/app.json`:
+
    ```json
    "extra": {
      "eas": {
@@ -108,6 +116,7 @@ npm run web      # Open in web browser
    ```
 
 2. Login to EAS:
+
    ```bash
    cd apps/mobile
    eas login
@@ -130,6 +139,7 @@ Update these values in `apps/mobile/app.config.ts` to match your organization:
 ### Create Android Keystore
 
 1. **Generate a new keystore:**
+
    ```bash
    keytool -genkeypair -v -storetype PKCS12 \
      -keystore pet3-release.keystore \
@@ -172,6 +182,7 @@ eas build --platform ios --profile production
 ```
 
 EAS will:
+
 - Create certificates if needed
 - Generate provisioning profiles
 - Store them securely in EAS servers
@@ -200,17 +211,20 @@ EAS will:
 Configure these secrets in GitHub repository settings (Settings → Secrets → Actions):
 
 #### EAS Authentication
+
 - **`EXPO_TOKEN`**: Your Expo access token
   - Get from: https://expo.dev/accounts/[account]/settings/access-tokens
   - Create a new token with appropriate permissions
 
 #### Android Signing
+
 - **`ANDROID_KEYSTORE_BASE64`**: Base64-encoded keystore file
 - **`ANDROID_KEYSTORE_PASSWORD`**: Keystore password
 - **`ANDROID_KEY_ALIAS`**: Key alias name
 - **`ANDROID_KEY_PASSWORD`**: Key password
 
 #### iOS Signing (if not using EAS managed)
+
 - Managed automatically by EAS or configure manually via `eas credentials`
 
 ### GitHub Actions Workflows
@@ -218,26 +232,31 @@ Configure these secrets in GitHub repository settings (Settings → Secrets → 
 Two workflows are provided:
 
 #### 1. CI Workflow (`.github/workflows/ci.yml`)
+
 - Runs on every push/PR to main/develop
 - Type checks, lints, and tests all packages
 - Does NOT trigger EAS builds (to save build minutes)
 
 #### 2. EAS Build Workflow (`.github/workflows/eas-build.yml`)
+
 - Triggered manually via workflow_dispatch
-- Triggered automatically on version tags (v*.*.*)
+- Triggered automatically on version tags (v*.*.\*)
 - Builds Android AAB and iOS IPA
 - Uploads artifacts
 
 ### Triggering Builds
 
 #### Manual Trigger
+
 1. Go to GitHub Actions tab
 2. Select "EAS Build" workflow
 3. Click "Run workflow"
 4. Select platform and profile
 
 #### Automatic Trigger
+
 Create and push a version tag:
+
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
@@ -248,16 +267,19 @@ git push origin v1.0.0
 ### Android Deployment
 
 #### 1. Build AAB
+
 ```bash
 cd apps/mobile
 eas build --platform android --profile production
 ```
 
 #### 2. Download AAB
+
 - From EAS dashboard: https://expo.dev
 - Or use: `eas build:download`
 
 #### 3. Upload to Google Play Console
+
 1. Go to Google Play Console
 2. Select your app
 3. Navigate to Release → Production
@@ -268,17 +290,20 @@ eas build --platform android --profile production
 ### iOS Deployment
 
 #### 1. Build IPA
+
 ```bash
 cd apps/mobile
 eas build --platform ios --profile production
 ```
 
 #### 2. Submit to App Store
+
 ```bash
 eas submit --platform ios
 ```
 
 Or manually:
+
 1. Download IPA from EAS
 2. Upload via Transporter app or Xcode
 3. Complete App Store Connect listing
@@ -291,29 +316,33 @@ Or manually:
 The `@pet3/shared` package contains platform-agnostic utilities and types.
 
 #### Import in Native App
-```typescript
-import { getAppEnvironment, generateCorrelationId } from '@pet3/shared';
 
-const env = getAppEnvironment();
-const id = generateCorrelationId();
+```typescript
+import { getAppEnvironment, generateCorrelationId } from '@pet3/shared'
+
+const env = getAppEnvironment()
+const id = generateCorrelationId()
 ```
 
 #### Import in Web App
+
 ```typescript
-import { getAppEnvironment } from '@pet3/shared';
+import { getAppEnvironment } from '@pet3/shared'
 ```
 
 ### Adding New Shared Code
 
 1. **Add to shared package:**
+
    ```typescript
    // packages/shared/src/index.ts
    export function myNewUtil() {
-     return 'platform-agnostic code';
+     return 'platform-agnostic code'
    }
    ```
 
 2. **Build the package:**
+
    ```bash
    cd packages/shared
    npm run build
@@ -321,7 +350,7 @@ import { getAppEnvironment } from '@pet3/shared';
 
 3. **Use in apps:**
    ```typescript
-   import { myNewUtil } from '@pet3/shared';
+   import { myNewUtil } from '@pet3/shared'
    ```
 
 ### Migration Strategy
@@ -369,6 +398,7 @@ When moving code from web to shared:
 ### Styling Approach
 
 **NativeWind** (Tailwind for React Native):
+
 ```typescript
 import { View, Text } from 'react-native';
 
@@ -378,12 +408,13 @@ import { View, Text } from 'react-native';
 ```
 
 **StyleSheet** (Traditional):
+
 ```typescript
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'
 
 const styles = StyleSheet.create({
-  container: { padding: 16, backgroundColor: '#3b82f6' }
-});
+  container: { padding: 16, backgroundColor: '#3b82f6' },
+})
 ```
 
 ## Troubleshooting
@@ -391,31 +422,37 @@ const styles = StyleSheet.create({
 ### Build Failures
 
 #### "Module not found: @pet3/shared"
+
 - Ensure shared package is built: `cd packages/shared && npm run build`
 - Check Metro cache: `cd apps/mobile && expo start --clear`
 
 #### "Keystore not found"
+
 - Verify GitHub secrets are set correctly
 - Check `eas.json` credential configuration
 
 #### "Provisioning profile doesn't match"
+
 - Update bundle identifier in `app.json`
 - Run `eas credentials` to reset
 
 ### Development Issues
 
 #### Hot Reload Not Working
+
 ```bash
 expo start --clear
 ```
 
 #### TypeScript Errors
+
 ```bash
 cd apps/mobile
 npm run typecheck
 ```
 
 #### Metro Bundler Issues
+
 ```bash
 rm -rf node_modules
 npm install
@@ -425,7 +462,9 @@ expo start --clear
 ### EAS Build Issues
 
 #### "Project ID mismatch"
-Update `app.config.ts`:
+
+Update `app.json`:
+
 ```json
 "extra": {
   "eas": {
@@ -435,6 +474,7 @@ Update `app.config.ts`:
 ```
 
 #### "Build timeout"
+
 - Increase timeout in workflow file
 - Use `--local` flag for local builds
 - Check EAS status page
@@ -450,6 +490,7 @@ Update `app.config.ts`:
 ## Support
 
 For issues specific to:
+
 - **Expo/EAS**: Check [Expo Forums](https://forums.expo.dev/)
 - **Build issues**: Review [EAS Build logs](https://expo.dev)
 - **App-specific issues**: Open a GitHub issue in this repository

@@ -22,6 +22,9 @@ interface StorageEntry<T> {
  * Get item from localStorage with type safety and expiration check
  */
 export function getStorageItem<T>(key: string): T | null {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return null;
+  }
   try {
     const item = localStorage.getItem(key);
     if (!item) return null;
@@ -32,8 +35,13 @@ export function getStorageItem<T>(key: string): T | null {
     if (isTruthy(parsed.ttl)) {
       const now = Date.now();
       const isExpired = now - parsed.timestamp > parsed.ttl;
-      if (isTruthy(isExpired)) {
-        localStorage.removeItem(key);
+      if (isExpired) {
+        try {
+          localStorage.removeItem(key);
+        } catch (removeError) {
+          const err = removeError instanceof Error ? removeError : new Error(String(removeError));
+          logger.error(`Error removing expired item from localStorage`, err, { key });
+        }
         return null;
       }
     }
@@ -49,11 +57,10 @@ export function getStorageItem<T>(key: string): T | null {
 /**
  * Set item in localStorage with optional TTL
  */
-export function setStorageItem<T>(
-  key: string,
-  value: T,
-  options: StorageOptions = {}
-): boolean {
+export function setStorageItem<T>(key: string, value: T, options: StorageOptions = {}): boolean {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return false;
+  }
   try {
     const entry: StorageEntry<T> = {
       value,
@@ -73,6 +80,9 @@ export function setStorageItem<T>(
  * Remove item from localStorage
  */
 export function removeStorageItem(key: string): boolean {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+    return false;
+  }
   try {
     localStorage.removeItem(key);
     return true;

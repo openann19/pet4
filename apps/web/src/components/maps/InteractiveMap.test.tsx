@@ -11,9 +11,7 @@ vi.mock('react-leaflet', () => ({
   Marker: ({ position }: { position: [number, number] }) => (
     <div data-testid={`marker-${String(position[0] ?? '')}-${String(position[1] ?? '')}`} />
   ),
-  Popup: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="popup">{children}</div>
-  ),
+  Popup: ({ children }: { children: React.ReactNode }) => <div data-testid="popup">{children}</div>,
   useMap: () => ({
     setView: vi.fn(),
   }),
@@ -84,11 +82,8 @@ describe('InteractiveMap', () => {
   });
 
   it('applies custom height', () => {
-    const { container } = render(
-      <InteractiveMap center={defaultCenter} height="500px" />
-    );
+    const { container } = render(<InteractiveMap center={defaultCenter} height="500px" />);
     const mapDiv = container.querySelector('.relative');
     expect(mapDiv).toHaveStyle({ height: '500px' });
   });
 });
-

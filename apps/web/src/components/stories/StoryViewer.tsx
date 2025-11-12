@@ -1,20 +1,20 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { useFullscreen } from '@/hooks/use-fullscreen'
-import { useStoryAnalytics } from '@/hooks/use-story-analytics'
-import { useStoryGestures } from '@/hooks/use-story-gestures'
-import { haptics } from '@/lib/haptics'
-import type { Story } from '@/lib/stories-types'
-import { STORY_REACTION_EMOJIS } from '@/lib/stories-types'
-import { addStoryView, formatStoryTime } from '@/lib/stories-utils'
-import { usePrefersReducedMotion } from '@/utils/reduced-motion'
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { useFullscreen } from '@/hooks/use-fullscreen';
+import { useStoryAnalytics } from '@/hooks/use-story-analytics';
+import { useStoryGestures } from '@/hooks/use-story-gestures';
+import { haptics } from '@/lib/haptics';
+import type { Story } from '@/lib/stories-types';
+import { STORY_REACTION_EMOJIS } from '@/lib/stories-types';
+import { addStoryView, formatStoryTime } from '@/lib/stories-utils';
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import {
   ArrowsIn,
   ArrowsOut,
@@ -26,25 +26,26 @@ import {
   Play,
   SpeakerHigh,
   SpeakerSlash,
-  X
-} from '@phosphor-icons/react'
-import { AnimatePresence } from '@/effects/reanimated/animate-presence'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useSharedValue, useAnimatedStyle, interpolate, Extrapolation, useMotionVariants, useHoverLift, useBounceOnTap } from '@/effects/reanimated'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
-import SaveToHighlightDialog from './SaveToHighlightDialog'
-import { isTruthy, isDefined } from '@petspark/shared';
+  X,
+} from '@phosphor-icons/react';
+import { AnimatePresence } from '@/effects/reanimated/animate-presence';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useMotionVariants, useHoverLift, useBounceOnTap } from '@/effects/reanimated';
+import * as Reanimated from 'react-native-reanimated';
+import { interpolate, Extrapolation } from 'react-native-reanimated';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import SaveToHighlightDialog from './SaveToHighlightDialog';
 
 interface StoryViewerProps {
-  stories: Story[]
-  initialIndex?: number
-  currentUserId: string
-  currentUserName: string
-  currentUserAvatar?: string
-  onClose: () => void
-  onComplete?: () => void
-  onStoryUpdate?: (story: Story) => void
+  stories: Story[];
+  initialIndex?: number;
+  currentUserId: string;
+  currentUserName: string;
+  currentUserAvatar?: string;
+  onClose: () => void;
+  onComplete?: () => void;
+  onStoryUpdate?: (story: Story) => void;
 }
 
 export default function StoryViewer({
@@ -55,36 +56,36 @@ export default function StoryViewer({
   currentUserAvatar,
   onClose,
   onComplete,
-  onStoryUpdate
+  onStoryUpdate,
 }: StoryViewerProps) {
-  const [currentIndex, setCurrentIndex] = useState(initialIndex)
-  const [isPaused, setIsPaused] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
-  const [progress, setProgress] = useState(0)
-  const [replyText, setReplyText] = useState('')
-  const [showReactions, setShowReactions] = useState(false)
-  const [showSaveDialog, setShowSaveDialog] = useState(false)
-  
-  const startTimeRef = useRef<number>(Date.now())
-  const progressIntervalRef = useRef<number | null>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const mediaContainerRef = useRef<HTMLDivElement>(null)
-  const swipeProgress = useSharedValue(0)
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [replyText, setReplyText] = useState('');
+  const [showReactions, setShowReactions] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
-  const currentStory = stories[currentIndex]
-  const isOwn = currentStory?.userId === currentUserId
-  const prefersReducedMotion = usePrefersReducedMotion()
-  const { isFullscreen, toggleFullscreen } = useFullscreen()
+  const startTimeRef = useRef<number>(Date.now());
+  const progressIntervalRef = useRef<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaContainerRef = useRef<HTMLDivElement>(null);
+  const swipeProgress = Reanimated.useSharedValue(0);
+
+  const currentStory = stories[currentIndex];
+  const isOwn = currentStory?.userId === currentUserId;
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
 
   const { trackReaction, trackInteraction } = useStoryAnalytics({
     story: currentStory || null,
     currentUserId,
-    isActive: !isPaused
-  })
+    isActive: !isPaused,
+  });
 
   const handleNext = useCallback(() => {
-    const viewDuration = (Date.now() - startTimeRef.current) / 1000
-    const completedView = viewDuration >= (currentStory?.duration || 5) * 0.8
+    const viewDuration = (Date.now() - startTimeRef.current) / 1000;
+    const completedView = viewDuration >= (currentStory?.duration || 5) * 0.8;
 
     if (currentStory && !isOwn) {
       const updatedStory = addStoryView(
@@ -94,285 +95,316 @@ export default function StoryViewer({
         viewDuration,
         completedView,
         currentUserAvatar || undefined
-      )
-      onStoryUpdate?.(updatedStory)
+      );
+      onStoryUpdate?.(updatedStory);
     }
 
-    trackInteraction('skip')
+    trackInteraction('skip');
 
     if (currentIndex < stories.length - 1) {
-      setCurrentIndex(prev => prev + 1)
-      setProgress(0)
+      setCurrentIndex((prev) => prev + 1);
+      setProgress(0);
     } else {
-      onComplete?.()
-      onClose()
+      onComplete?.();
+      onClose();
     }
-  }, [currentStory, currentUserId, currentUserName, currentUserAvatar, isOwn, currentIndex, stories.length, onStoryUpdate, onComplete, onClose, trackInteraction])
+  }, [
+    currentStory,
+    currentUserId,
+    currentUserName,
+    currentUserAvatar,
+    isOwn,
+    currentIndex,
+    stories.length,
+    onStoryUpdate,
+    onComplete,
+    onClose,
+    trackInteraction,
+  ]);
 
   const handlePrevious = useCallback(() => {
     if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1)
-      setProgress(0)
+      setCurrentIndex((prev) => prev - 1);
+      setProgress(0);
     }
-  }, [currentIndex])
+  }, [currentIndex]);
 
   const handlePauseToggle = useCallback(() => {
-    haptics.trigger('selection')
-    setIsPaused(prev => !prev)
-  }, [])
+    haptics.trigger('selection');
+    setIsPaused((prev) => !prev);
+  }, []);
 
   const handleMuteToggle = useCallback(() => {
-    haptics.trigger('selection')
-    setIsMuted(prev => !prev)
-  }, [])
+    haptics.trigger('selection');
+    setIsMuted((prev) => !prev);
+  }, []);
 
-  const { gestureState, handlers: gestureHandlers, reset: resetGestures } = useStoryGestures({
+  const {
+    gestureState,
+    handlers: gestureHandlers,
+    reset: resetGestures,
+  } = useStoryGestures({
     onSwipeLeft: handleNext,
     onSwipeRight: handlePrevious,
     onTap: handlePauseToggle,
     onLongPress: () => {
       if (!isOwn) {
-        setShowReactions(true)
+        setShowReactions(true);
       }
     },
     onPinchZoom: (scale: number) => {
-      if (isTruthy(mediaContainerRef.current)) {
-        mediaContainerRef.current.style.transform = `scale(${String(scale ?? '')})`
+      if (mediaContainerRef.current) {
+        mediaContainerRef.current.style.transform = `scale(${scale})`;
       }
     },
     enablePinchZoom: currentStory?.type === 'photo',
-    swipeThreshold: 50
-  })
+    swipeThreshold: 50,
+  });
 
-  const swipeOpacityStyle = useAnimatedStyle(() => {
+  const swipeOpacityStyle = Reanimated.useAnimatedStyle(() => {
     const opacity = interpolate(
       swipeProgress.value,
       [-1, 0, 1],
       [0.5, 1, 0.5],
       Extrapolation.CLAMP
-    )
-    return { opacity }
-  })
+    );
+    return { opacity };
+  });
 
-  const swipeScaleStyle = useAnimatedStyle(() => {
+  const swipeScaleStyle = Reanimated.useAnimatedStyle(() => {
     const scale = interpolate(
       swipeProgress.value,
       [-1, 0, 1],
       [0.95, 1, 0.95],
       Extrapolation.CLAMP
-    )
-    return { transform: [{ scale }] }
-  })
+    );
+    return { transform: [{ scale }] };
+  });
 
   const startProgress = useCallback(() => {
-    if (isTruthy(progressIntervalRef.current)) {
-      clearInterval(progressIntervalRef.current)
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
     }
 
-    const duration = currentStory?.duration || 5
-    const interval = 50
-    
+    const duration = currentStory?.duration || 5;
+    const interval = 50;
+
     progressIntervalRef.current = window.setInterval(() => {
-      setProgress(prev => {
-        const newProgress = prev + (interval / (duration * 1000)) * 100
-        
+      setProgress((prev) => {
+        const newProgress = prev + (interval / (duration * 1000)) * 100;
+
         if (newProgress >= 100) {
-          handleNext()
-          return 0
+          handleNext();
+          return 0;
         }
-        
-        return newProgress
-      })
-    }, interval)
-  }, [currentStory, handleNext])
+
+        return newProgress;
+      });
+    }, interval);
+  }, [currentStory, handleNext]);
 
   useEffect(() => {
-    startTimeRef.current = Date.now()
-    setProgress(0)
-    resetGestures()
-    
-    if (isTruthy(mediaContainerRef.current)) {
-      mediaContainerRef.current.style.transform = 'scale(1)'
+    startTimeRef.current = Date.now();
+    setProgress(0);
+    resetGestures();
+
+    if (mediaContainerRef.current) {
+      mediaContainerRef.current.style.transform = 'scale(1)';
     }
-    
+
     if (!isPaused) {
-      startProgress()
+      startProgress();
     }
 
     return () => {
-      if (isTruthy(progressIntervalRef.current)) {
-        clearInterval(progressIntervalRef.current)
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
       }
-    }
-  }, [currentIndex, isPaused, resetGestures, startProgress])
+    };
+  }, [currentIndex, isPaused, resetGestures, startProgress]);
 
   useEffect(() => {
-    if (currentStory && currentStory.type === 'video' && videoRef.current) {
-      if (isTruthy(isPaused)) {
-        videoRef.current.pause()
-        trackInteraction('pause')
+    if (currentStory?.type === 'video' && videoRef.current) {
+      if (isPaused) {
+        videoRef.current.pause();
+        trackInteraction('pause');
       } else {
         videoRef.current.play().catch(() => {
           // Video play failed
-        })
+        });
       }
-      videoRef.current.muted = isMuted
+      videoRef.current.muted = isMuted;
     }
-  }, [isPaused, isMuted, currentStory, trackInteraction])
+  }, [isPaused, isMuted, currentStory, trackInteraction]);
 
   useEffect(() => {
-    startTimeRef.current = Date.now()
-    setProgress(0)
-    resetGestures()
-    
-    if (isTruthy(mediaContainerRef.current)) {
-      mediaContainerRef.current.style.transform = 'scale(1)'
+    startTimeRef.current = Date.now();
+    setProgress(0);
+    resetGestures();
+
+    if (mediaContainerRef.current) {
+      mediaContainerRef.current.style.transform = 'scale(1)';
     }
-    
+
     if (!isPaused) {
-      startProgress()
+      startProgress();
     }
 
     return () => {
-      if (isTruthy(progressIntervalRef.current)) {
-        clearInterval(progressIntervalRef.current)
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
       }
-    }
-  }, [currentIndex, isPaused, resetGestures, startProgress])
+    };
+  }, [currentIndex, isPaused, resetGestures, startProgress]);
 
   useEffect(() => {
-    if (currentStory && currentStory.type === 'video' && videoRef.current) {
-      if (isTruthy(isPaused)) {
-        videoRef.current.pause()
-        trackInteraction('pause')
+    if (currentStory?.type === 'video' && videoRef.current) {
+      if (isPaused) {
+        videoRef.current.pause();
+        trackInteraction('pause');
       } else {
         videoRef.current.play().catch(() => {
           // Video play failed
-        })
+        });
       }
-      videoRef.current.muted = isMuted
+      videoRef.current.muted = isMuted;
     }
-  }, [isPaused, isMuted, currentStory, trackInteraction])
+  }, [isPaused, isMuted, currentStory, trackInteraction]);
 
-  const handleReaction = useCallback((emoji: string) => {
-    haptics.trigger('success')
-    
-    if (currentStory && !isOwn) {
-      trackReaction(emoji)
-      const updatedStory = {
-        ...currentStory,
-        reactions: [
-          ...currentStory.reactions,
-          {
-            emoji,
-            userId: currentUserId,
-            userName: currentUserName,
-            ...(currentUserAvatar !== undefined ? { userAvatar: currentUserAvatar } : {}),
-            timestamp: new Date().toISOString()
-          }
-        ]
+  const handleReaction = useCallback(
+    (emoji: string) => {
+      haptics.trigger('success');
+
+      if (currentStory && !isOwn) {
+        trackReaction(emoji);
+        const updatedStory = {
+          ...currentStory,
+          reactions: [
+            ...currentStory.reactions,
+            {
+              emoji,
+              userId: currentUserId,
+              userName: currentUserName,
+              ...(currentUserAvatar !== undefined ? { userAvatar: currentUserAvatar } : {}),
+              timestamp: new Date().toISOString(),
+            },
+          ],
+        };
+        onStoryUpdate?.(updatedStory);
       }
-      onStoryUpdate?.(updatedStory)
-    }
 
-    toast.success(`Reacted with ${String(emoji ?? '')}`, {
-      duration: 1500,
-      position: 'top-center'
-    })
+      toast.success(`Reacted with ${emoji}`, {
+        duration: 1500,
+        position: 'top-center',
+      });
 
-    setShowReactions(false)
-  }, [currentStory, isOwn, currentUserId, currentUserName, currentUserAvatar, trackReaction, onStoryUpdate])
+      setShowReactions(false);
+    },
+    [
+      currentStory,
+      isOwn,
+      currentUserId,
+      currentUserName,
+      currentUserAvatar,
+      trackReaction,
+      onStoryUpdate,
+    ]
+  );
 
   const handleReply = useCallback(() => {
-    if (!replyText.trim()) return
+    if (!replyText.trim()) return;
 
-    haptics.trigger('light')
-    trackInteraction('reply')
-    
+    haptics.trigger('light');
+    trackInteraction('reply');
+
     toast.success('Reply sent!', {
       duration: 2000,
-      position: 'top-center'
-    })
+      position: 'top-center',
+    });
 
-    setReplyText('')
-  }, [replyText, trackInteraction])
+    setReplyText('');
+  }, [replyText, trackInteraction]);
 
   const handleSaveStory = useCallback(() => {
-    if (isTruthy(currentStory)) {
-      haptics.trigger('selection')
-      setShowSaveDialog(true)
+    if (currentStory) {
+      haptics.trigger('selection');
+      setShowSaveDialog(true);
     }
-  }, [currentStory])
+  }, [currentStory]);
 
   const handleShare = useCallback(() => {
-    if (isTruthy(currentStory)) {
-      trackInteraction('share')
-      if (isTruthy(navigator.share)) {
-        navigator.share({
-          title: `Story by ${String(currentStory.userName ?? '')}`,
-          text: currentStory.caption || '',
-          url: `${String(window.location.origin ?? '')}/stories/${String(currentStory.id ?? '')}`
-        }).catch(() => {
-          // Share cancelled
-        })
+    if (currentStory) {
+      trackInteraction('share');
+      if (navigator.share) {
+        navigator
+          .share({
+            title: `Story by ${currentStory.userName}`,
+            text: currentStory.caption || '',
+            url: `${window.location.origin}/stories/${currentStory.id}`,
+          })
+          .catch(() => {
+            // Share cancelled
+          });
       } else {
-        navigator.clipboard.writeText(`${String(window.location.origin ?? '')}/stories/${String(currentStory.id ?? '')}`)
-        toast.success('Link copied to clipboard')
+        navigator.clipboard.writeText(`${window.location.origin}/stories/${currentStory.id}`);
+        toast.success('Link copied to clipboard');
       }
     }
-  }, [currentStory, trackInteraction])
+  }, [currentStory, trackInteraction]);
 
-  const transitionConfig = prefersReducedMotion 
-    ? { duration: 0 } 
-    : { duration: 0.3, ease: [0.4, 0, 0.2, 1] as const }
+  const transitionConfig = prefersReducedMotion
+    ? { duration: 0 }
+    : { duration: 0.3, ease: [0.4, 0, 0.2, 1] as number[] };
 
   // Animation hooks for story viewer
   const viewerEntry = useMotionVariants({
     initial: { opacity: 0 },
     animate: { opacity: 1 },
-    transition: transitionConfig
-  })
-  
-  const reactionButtonHover = useHoverLift({ scale: 1.3, enabled: !prefersReducedMotion })
-  const reactionButtonTap = useBounceOnTap({ scale: 0.9, enabled: !prefersReducedMotion })
-  
+    transition: transitionConfig,
+  });
+
+  const reactionButtonHover = useHoverLift({ scale: 1.3 });
+  const reactionButtonTap = useBounceOnTap({ scale: 0.9 });
+
   const captionAnimation = useMotionVariants({
     initial: { opacity: 0, translateY: 20 },
     animate: { opacity: 1, translateY: 0 },
-    transition: transitionConfig
-  })
-  
+    transition: transitionConfig,
+  });
+
   const reactionsAnimation = useMotionVariants({
     initial: { opacity: 0, translateY: 20 },
     animate: { opacity: 1, translateY: 0 },
-    transition: transitionConfig
-  })
-  
+    transition: transitionConfig,
+  });
+
   const analyticsAnimation = useMotionVariants({
     initial: { opacity: 0, translateY: 20 },
     animate: { opacity: 1, translateY: 0 },
-    transition: transitionConfig
-  })
-  
+    transition: transitionConfig,
+  });
+
   const imageEntry = useMotionVariants({
     initial: { scale: prefersReducedMotion ? 1 : 1.1, opacity: 0 },
     animate: { scale: gestureState.pinchScale, opacity: 1 },
-    transition: transitionConfig
-  })
-  
-  const mediaContainerStyle = useAnimatedStyle(() => {
-    const opacity = gestureState.isSwiping ? 0.5 : 1
-    const scale = gestureState.isSwiping ? 0.95 : gestureState.pinchScale
+    transition: transitionConfig,
+  });
+
+  const mediaContainerStyle = Reanimated.useAnimatedStyle(() => {
+    const opacity = gestureState.isSwiping ? 0.5 : 1;
+    const scale = gestureState.isSwiping ? 0.95 : gestureState.pinchScale;
     return {
       opacity,
-      transform: [{ scale }]
-    }
-  })
+      transform: [{ scale }],
+    };
+  });
+
+  if (!currentStory) return null;
 
   return (
     <AnimatedView
       style={viewerEntry.animatedStyle}
-      className="fixed inset-0 z-[100] bg-black"
+      className="fixed inset-0 z-100 bg-black"
       role="dialog"
       aria-modal="true"
       aria-label="Story viewer"
@@ -380,7 +412,10 @@ export default function StoryViewer({
     >
       <div className="relative w-full h-full flex items-center justify-center">
         {/* Progress bars */}
-        <div className="absolute top-0 left-0 right-0 z-20 p-4 space-y-3" aria-label="Story progress">
+        <div
+          className="absolute top-0 left-0 right-0 z-20 p-4 space-y-3"
+          aria-label="Story progress"
+        >
           <div className="flex gap-1">
             {stories.map((_, idx) => (
               <div
@@ -395,8 +430,9 @@ export default function StoryViewer({
                 <AnimatedView
                   className="h-full bg-white"
                   style={{
-                    width: idx < currentIndex ? '100%' : idx === currentIndex ? `${String(progress ?? '')}%` : '0%',
-                    transition: prefersReducedMotion ? 'none' : 'width 0.1s linear'
+                    width:
+                      idx < currentIndex ? '100%' : idx === currentIndex ? `${progress}%` : '0%',
+                    transition: prefersReducedMotion ? 'none' : 'width 0.1s linear',
                   }}
                 />
               </div>
@@ -407,14 +443,14 @@ export default function StoryViewer({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="w-10 h-10 ring-2 ring-white">
-                <AvatarImage src={currentStory.userAvatar} alt={currentStory.userName} />                                                                       
-                <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-bold">                                                      
+                <AvatarImage src={currentStory.userAvatar} alt={currentStory.userName} />
+                <AvatarFallback className="bg-linear-to-br from-primary to-accent text-white font-bold">
                   {currentStory.userName[0]}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-white font-semibold text-sm">{currentStory.petName}</p>                                                                      
-                <p className="text-white/80 text-xs">{formatStoryTime(currentStory.createdAt)}</p>                                                              
+                <p className="text-white font-semibold text-sm">{currentStory.petName}</p>
+                <p className="text-white/80 text-xs">{formatStoryTime(currentStory.createdAt)}</p>
               </div>
             </div>
 
@@ -426,7 +462,7 @@ export default function StoryViewer({
                 className="text-white hover:bg-white/20"
                 aria-label={isPaused ? 'Play story' : 'Pause story'}
               >
-                {isPaused ? <Play size={20} weight="fill" /> : <Pause size={20} weight="fill" />}                                                               
+                {isPaused ? <Play size={20} weight="fill" /> : <Pause size={20} weight="fill" />}
               </Button>
 
               {currentStory.type === 'video' && (
@@ -437,7 +473,11 @@ export default function StoryViewer({
                   className="text-white hover:bg-white/20"
                   aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                 >
-                  {isMuted ? <SpeakerSlash size={20} weight="fill" /> : <SpeakerHigh size={20} weight="fill" />}                                                
+                  {isMuted ? (
+                    <SpeakerSlash size={20} weight="fill" />
+                  ) : (
+                    <SpeakerHigh size={20} weight="fill" />
+                  )}
                 </Button>
               )}
 
@@ -448,7 +488,11 @@ export default function StoryViewer({
                 className="text-white hover:bg-white/20"
                 aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
               >
-                {isFullscreen ? <ArrowsIn size={20} weight="fill" /> : <ArrowsOut size={20} weight="fill" />}
+                {isFullscreen ? (
+                  <ArrowsIn size={20} weight="fill" />
+                ) : (
+                  <ArrowsOut size={20} weight="fill" />
+                )}
               </Button>
 
               {isOwn && (
@@ -463,7 +507,7 @@ export default function StoryViewer({
                       <DotsThree size={24} weight="bold" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-lg">                                                               
+                  <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-lg">
                     <DropdownMenuItem onClick={handleSaveStory}>
                       <BookmarkSimple size={18} className="mr-2" />
                       Save to Highlight
@@ -502,10 +546,7 @@ export default function StoryViewer({
           style={[mediaContainerStyle, swipeOpacityStyle, swipeScaleStyle]}
         >
           {currentStory.type === 'photo' && (
-            <AnimatedView
-              key={currentStory.id}
-              style={imageEntry.animatedStyle}
-            >
+            <AnimatedView key={currentStory.id} style={imageEntry.animatedStyle}>
               <img
                 src={currentStory.mediaUrl}
                 alt={currentStory.caption || 'Story'}
@@ -562,8 +603,8 @@ export default function StoryViewer({
                         onMouseEnter={reactionButtonHover.handleEnter}
                         onMouseLeave={reactionButtonHover.handleLeave}
                         onClick={() => {
-                          reactionButtonTap.handlePress()
-                          handleReaction(emoji)
+                          reactionButtonTap.handlePress();
+                          handleReaction(emoji);
                         }}
                         aria-label={`React with ${String(emoji ?? '')}`}
                       >
@@ -582,7 +623,7 @@ export default function StoryViewer({
                   onChange={(e) => { setReplyText(e.target.value); }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      handleReply()
+                      handleReply();
                     }
                   }}
                   placeholder="Send a reply..."
@@ -597,7 +638,7 @@ export default function StoryViewer({
                   aria-label={showReactions ? 'Hide reactions' : 'Show reactions'}
                   aria-pressed={showReactions}
                 >
-                  <Heart size={20} weight={showReactions ? 'fill' : 'regular'} />                                                                               
+                  <Heart size={20} weight={showReactions ? 'fill' : 'regular'} />
                 </Button>
               </div>
 
@@ -626,11 +667,11 @@ export default function StoryViewer({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="text-center">
-                    <p className="text-white text-2xl font-bold">{currentStory.viewCount}</p>                                                                   
+                    <p className="text-white text-2xl font-bold">{currentStory.viewCount}</p>
                     <p className="text-white/60 text-xs">Views</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-white text-2xl font-bold">{currentStory.reactions.length}</p>                                                            
+                    <p className="text-white text-2xl font-bold">{currentStory.reactions.length}</p>
                     <p className="text-white/60 text-xs">Reactions</p>
                   </div>
                 </div>
@@ -654,10 +695,10 @@ export default function StoryViewer({
           onOpenChange={setShowSaveDialog}
           story={currentStory}
           onSaved={() => {
-            setShowSaveDialog(false)
+            setShowSaveDialog(false);
           }}
         />
       )}
     </AnimatedView>
-  )
+  );
 }

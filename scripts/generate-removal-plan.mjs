@@ -5,10 +5,9 @@
  * Removes files identified as unused, with safety checks
  */
 
-import { readFileSync, writeFileSync, unlinkSync, existsSync, statSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { execSync } from 'node:child_process'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

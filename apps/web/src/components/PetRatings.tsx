@@ -1,41 +1,40 @@
-import { useState } from 'react'
-import { motion } from '@petspark/motion'
-import { Star, ThumbsUp, User } from '@phosphor-icons/react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Separator } from '@/components/ui/separator'
-import type { Rating, PetTrustProfile } from '@/lib/types'
-import { cn } from '@/lib/utils'
-import { formatDistanceToNow } from 'date-fns'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useState } from 'react';
+import { Star, ThumbsUp, User } from '@phosphor-icons/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+import type { Rating, PetTrustProfile } from '@/lib/types';
+import { cn } from '@/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
 
 interface PetRatingsProps {
-  trustProfile: PetTrustProfile
-  ratings?: Rating[]
-  compact?: boolean
+  trustProfile: PetTrustProfile;
+  ratings?: Rating[];
+  compact?: boolean;
 }
 
 export function PetRatings({ trustProfile, ratings = [], compact = false }: PetRatingsProps) {
-  const [showAllReviews, setShowAllReviews] = useState(false)
-  
-  const displayedReviews = showAllReviews ? ratings : ratings.slice(0, 3)
-  const totalRatings = Object.values(trustProfile.ratingBreakdown).reduce((sum, count) => sum + count, 0)
+  const [showAllReviews, setShowAllReviews] = useState(false);
+
+  const displayedReviews = showAllReviews ? ratings : ratings.slice(0, 3);
+  const totalRatings = Object.values(trustProfile.ratingBreakdown).reduce(
+    (sum, count) => sum + count,
+    0
+  );
 
   const getRatingPercentage = (star: number) => {
-    if (totalRatings === 0) return 0
-    return Math.round((trustProfile.ratingBreakdown[star as 5 | 4 | 3 | 2 | 1] / totalRatings) * 100)
-  }
+    if (totalRatings === 0) return 0;
+    return Math.round(
+      (trustProfile.ratingBreakdown[star as 5 | 4 | 3 | 2 | 1] / totalRatings) * 100
+    );
+  };
 
   if (isTruthy(compact)) {
     return (
-      <MotionView
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-2"
-      >
+      <div className="flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
         <div className="flex items-center gap-1">
           <Star size={18} weight="fill" className="text-yellow-500" />
           <span className="text-lg font-bold text-foreground">
@@ -50,8 +49,8 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
             Highly Trusted
           </Badge>
         )}
-      </MotionView>
-    )
+      </div>
+    );
   }
 
   return (
@@ -60,9 +59,7 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
         <CardTitle className="flex items-center justify-between">
           <span className="text-lg font-bold">Ratings & Reviews</span>
           {trustProfile.trustScore >= 90 && (
-            <Badge className="bg-primary text-primary-foreground">
-              Highly Trusted
-            </Badge>
+            <Badge className="bg-primary text-primary-foreground">Highly Trusted</Badge>
           )}
         </CardTitle>
       </CardHeader>
@@ -87,7 +84,8 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
               ))}
             </div>
             <p className="text-sm text-muted-foreground">
-              Based on {trustProfile.totalReviews} {trustProfile.totalReviews === 1 ? 'review' : 'reviews'}
+              Based on {trustProfile.totalReviews}{' '}
+              {trustProfile.totalReviews === 1 ? 'review' : 'reviews'}
             </p>
           </div>
 
@@ -98,10 +96,7 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
                   <span className="text-sm font-medium text-foreground">{star}</span>
                   <Star size={14} weight="fill" className="text-yellow-500" />
                 </div>
-                <Progress
-                  value={getRatingPercentage(star)}
-                  className="h-2 flex-1"
-                />
+                <Progress value={getRatingPercentage(star)} className="h-2 flex-1" />
                 <span className="text-xs text-muted-foreground w-12 text-right">
                   {getRatingPercentage(star)}%
                 </span>
@@ -134,13 +129,10 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
             <Separator />
             <div className="space-y-4">
               <h3 className="font-semibold text-foreground">Recent Reviews</h3>
-              {displayedReviews.map((rating, index) => (
-                <MotionView
+              {displayedReviews.map((rating) => (
+                <div
                   key={rating.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="space-y-3 pb-4 border-b border-border/30 last:border-0 last:pb-0"
+                  className="space-y-3 pb-4 border-b border-border/30 last:border-0 last:pb-0 animate-in fade-in slide-in-from-bottom-4 duration-300"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 flex-1">
@@ -152,7 +144,9 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
                       </Avatar>
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-sm text-foreground">{rating.reviewerName}</p>
+                          <p className="font-medium text-sm text-foreground">
+                            {rating.reviewerName}
+                          </p>
                           <Badge variant="outline" className="text-xs">
                             {rating.category}
                           </Badge>
@@ -178,12 +172,12 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
                     </div>
                   </div>
                   {rating.comment && (
-                    <p className="text-sm text-muted-foreground leading-relaxed pl-[52px]">
+                    <p className="text-sm text-muted-foreground leading-relaxed pl-13">
                       {rating.comment}
                     </p>
                   )}
                   {rating.helpful > 0 && (
-                    <div className="flex items-center gap-2 pl-[52px]">
+                    <div className="flex items-center gap-2 pl-13">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -194,7 +188,7 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
                       </Button>
                     </div>
                   )}
-                </MotionView>
+                </div>
               ))}
               {ratings.length > 3 && !showAllReviews && (
                 <Button
@@ -219,7 +213,7 @@ export function PetRatings({ trustProfile, ratings = [], compact = false }: PetR
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export default PetRatings
+export default PetRatings;

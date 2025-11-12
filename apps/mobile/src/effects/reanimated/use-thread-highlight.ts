@@ -1,99 +1,139 @@
-'use strict'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withSequence,
+  withDelay,
+  type SharedValue,
+} from 'react-native-reanimated'
+import { useCallback, useEffect } from 'react'
+import { springConfigs, timingConfigs } from './transitions'
+import type { AnimatedStyle } from './animated-view'
 
-import { useThreadHighlight as useThreadHighlightBase } from '@petspark/motion'
-import type { UseThreadHighlightOptions, UseThreadHighlightReturn } from '@petspark/motion'
-import { Platform } from 'react-native'
-import { isTruthy, isDefined } from '@petspark/shared';
-
-interface MobileThreadHighlightOptions extends UseThreadHighlightOptions {
-  /**
-   * Use native shadow for better performance on mobile
-   * @default true
-   */
-  useNativeShadow?: boolean
-
-  /**
-   * Enable haptic feedback on highlight
-   * @default true
-   */
-  enableHaptic?: boolean
-
-  /**
-   * Optimize for thread context in chat
-   * @default false
-   */
+export interface UseThreadHighlightOptions {
   isThreadMessage?: boolean
+  highlightDuration?: number
+  previewDelay?: number
+  enabled?: boolean
 }
 
-/**
- * Mobile-specific thread highlight hook
- * Optimized for touch interactions and mobile performance
- */
+export interface UseThreadHighlightReturn {
+  scale: SharedValue<number>
+  highlightOpacity: SharedValue<number>
+  previewOpacity: SharedValue<number>
+  previewTranslateY: SharedValue<number>
+  animatedStyle: AnimatedStyle
+  previewStyle: AnimatedStyle
+  highlightStyle: AnimatedStyle
+  trigger: () => void
+  dismiss: () => void
+}
+
+const DEFAULT_IS_THREAD_MESSAGE = false
+const DEFAULT_HIGHLIGHT_DURATION = 2000
+const DEFAULT_PREVIEW_DELAY = 300
+const DEFAULT_ENABLED = true
+
 export function useThreadHighlight(
-  options: MobileThreadHighlightOptions = {}
+  options: UseThreadHighlightOptions = {}
 ): UseThreadHighlightReturn {
   const {
-    useNativeShadow = true,
-    enableHaptic = true,
-    isThreadMessage = false,
-    highlightColor = '#4F46E5',
-    glowRadius = 6, // Smaller on mobile for performance
-    enablePulse = false, // Disabled by default on mobile
-    autoDismissAfter = isThreadMessage ? 3000 : 0, // Auto-dismiss threads
-    ...rest
+    isThreadMessage = DEFAULT_IS_THREAD_MESSAGE,
+    highlightDuration = DEFAULT_HIGHLIGHT_DURATION,
+    previewDelay = DEFAULT_PREVIEW_DELAY,
+    enabled = DEFAULT_ENABLED,
   } = options
 
-  // Mobile-optimized configuration
-  const mobileConfig = {
-    highlightColor,
-    glowRadius,
-    highlightDuration: 200, // Faster on mobile
-    enablePulse,
-    autoDismissAfter,
-    springConfig: {
-      damping: 20, // More damped for touch
-      stiffness: 180,
-      mass: 1.2, // Slightly heavier feel
-    },
-    ...rest
-  }
+  const scale = useSharedValue(1)
+  const highlightOpacity = useSharedValue(0)
+  const previewOpacity = useSharedValue(0)
+  const previewTranslateY = useSharedValue(10)
 
-  const result = useThreadHighlightBase(mobileConfig)
-
-  // Override highlight method to add haptic feedback
-  const originalHighlight = result.highlight
-  const highlight = () => {
-    if (enableHaptic && Platform.OS !== 'web') {
-      // Add haptic feedback here when available
-      // import { HapticFeedback } from 'react-native-haptic-feedback'
-      // HapticFeedback.impact(HapticFeedback.ImpactFeedbackStyle.Light)
+  const trigger = useCallback(() => {
+    if (!enabled || !isThreadMessage) {
+      return
     }
-    originalHighlight()
-  }
 
-  // Optimize style for mobile native shadow
-  if (isTruthy(useNativeShadow)) {
-    const originalStyle = result.style
-    return {
-      ...result,
-      highlight,
-      style: {
-        ...originalStyle,
-        // Mobile-specific shadow optimization
-        elevation: 4, // Android
-        shadowColor: highlightColor,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: glowRadius,
+    scale.value = withSequence(
+      withSpring(1.05, {
+        damping: 15,
+        stiffness: 400,
+      }),
+      withSpring(1, springConfigs.bouncy)
+    )
+
+    highlightOpacity.value = withSequence(
+      withTiming(1, timingConfigs.fast),
+      withDelay(highlightDuration, withTiming(0, timingConfigs.smooth))
+    )
+
+    previewOpacity.value = withDelay(previewDelay, withSpring(1, springConfigs.smooth))
+    previewTranslateY.value = withDelay(previewDelay, withSpring(0, springConfigs.smooth))
+  }, [
+    enabled,
+    isThreadMessage,
+    highlightDuration,
+    previewDelay,
+    scale,
+    highlightOpacity,
+    previewOpacity,
+    previewTranslateY,
+  ])
+
+  const dismiss = useCallback(() => {
+    previewOpacity.value = withTiming(0, timingConfigs.fast)
+    previewTranslateY.value = withTiming(10, timingConfigs.fast)
+    highlightOpacity.value = withTiming(0, timingConfigs.fast)
+  }, [previewOpacity, previewTranslateY, highlightOpacity])
+
+  useEffect(() => {
+    if (enabled && isThreadMessage) {
+      trigger()
+
+      const timeout = setTimeout(
+        () => {
+          dismiss()
+        },
+        highlightDuration + previewDelay + 1000
+      )
+
+      return () => {
+        clearTimeout(timeout)
       }
     }
-  }
+    return
+  }, [enabled, isThreadMessage, trigger, dismiss, highlightDuration, previewDelay])
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    }
+  }) as AnimatedStyle
+
+  const highlightStyle = useAnimatedStyle(() => {
+    return {
+      opacity: highlightOpacity.value,
+      backgroundColor: `rgba(59, 130, 246, ${highlightOpacity.value * 0.2})`,
+    }
+  }) as AnimatedStyle
+
+  const previewStyle = useAnimatedStyle(() => {
+    return {
+      opacity: previewOpacity.value,
+      transform: [{ translateY: previewTranslateY.value }],
+    }
+  }) as AnimatedStyle
 
   return {
-    ...result,
-    highlight,
+    scale,
+    highlightOpacity,
+    previewOpacity,
+    previewTranslateY,
+    animatedStyle,
+    previewStyle,
+    highlightStyle,
+    trigger,
+    dismiss,
   }
 }
-
-// Re-export types for convenience
-export type { UseThreadHighlightOptions, UseThreadHighlightReturn }

@@ -5,6 +5,7 @@
 ### Completed Components
 
 #### Core Infrastructure ✅
+
 - ✅ Reduced motion detection (`useReducedMotion`, `useReducedMotionSV`)
 - ✅ Haptic manager with 250ms cooldown
 - ✅ Performance monitoring (frame budget, dropped frame counter)
@@ -12,12 +13,14 @@
 - ✅ Skia surface cache
 
 #### Skia Shaders ✅
+
 - ✅ Bloom shader (configurable intensity)
 - ✅ Blur shader (Gaussian, 8-16px radius, cached)
 - ✅ Chromatic aberration shader
 - ✅ Ribbon shader (for swipe-to-reply)
 
 #### P0 Effects ✅
+
 - ✅ Send warp (cubic bezier slide + glow trail + haptics)
 - ✅ Receive air-cushion (spring scale + drop shadow)
 - ✅ Typing liquid dots (phase-shifted sine + Skia blur/bloom)
@@ -29,29 +32,34 @@
 - ✅ Scroll FAB magnetic (hover oscillation + badge increment)
 
 #### Components ✅
+
 - ✅ MessageBubble (integrates send/receive/status/reactions)
 - ✅ ChatList (Layout Animations + scroll FAB + typing indicator)
 - ✅ MediaViewer (glass morph zoom + sticker physics)
 - ✅ ChatScreen integration
 
 #### Testing ✅
+
 - ✅ Unit tests for core utilities (reduced motion, haptics, performance, telemetry)
 
 ### Remaining Work
 
 #### Testing (In Progress)
+
 - ⏳ Component tests for effect hooks
 - ⏳ E2E tests (Detox)
 - ⏳ Performance validation
 - ⏳ Visual regression tests
 
 #### Documentation
+
 - ⏳ Storybook playground
 - ⏳ Comprehensive README updates
 
 ## Usage Examples
 
 ### Basic Message Bubble
+
 ```typescript
 import { MessageBubble } from '@mobile/components/chat'
 
@@ -64,6 +72,7 @@ import { MessageBubble } from '@mobile/components/chat'
 ```
 
 ### Chat List
+
 ```typescript
 import { ChatList } from '@mobile/components/chat'
 
@@ -77,12 +86,13 @@ import { ChatList } from '@mobile/components/chat'
 ```
 
 ### Using Effects Directly
+
 ```typescript
 import { useSendWarp } from '@mobile/effects/chat/bubbles/use-send-warp'
 
 const sendWarp = useSendWarp({
   enabled: true,
-  onStatusChange: (status) => {
+  onStatusChange: status => {
     logger.debug('Status:', status)
   },
 })
@@ -118,17 +128,20 @@ sendWarp.trigger()
 ## Motion & Haptics Spec
 
 ### Durations
+
 - Tap: 120–180 ms
 - Modal: 220–280 ms
 - Long transitions: 320–420 ms
 
 ### Springs
+
 - Stiffness: 250–320
 - Damping: 18–22
 - Mass: 1.0
 - Under-damped only on entry
 
 ### Easings
+
 - Send: (0.17, 0.84, 0.44, 1)
 - Zoom: (0.2, 0.8, 0.2, 1)
 
@@ -176,5 +189,3 @@ apps/mobile/src/effects/chat/
 7. ⏳ Performance validation on device matrix
 8. ⏳ Create Storybook playground
 9. ⏳ Visual regression tests
-
-

@@ -4,7 +4,7 @@
  */
 
 import { colors } from '@mobile/theme/colors'
-import React, { Component, type ErrorInfo, type ReactNode } from 'react'
+import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { createLogger } from '../utils/logger'
 import { isTruthy } from '@petspark/shared';
@@ -39,11 +39,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     logger.error('ErrorBoundary caught an error', error, errorInfo)
-    
+
     // Send to error monitoring service in production
     if (!__DEV__) {
-      this.reportError(error, errorInfo).catch((reportErr) => {
-        logger.debug('Failed to report error to monitoring service', reportErr instanceof Error ? reportErr : new Error(String(reportErr)))
+      this.reportError(error, errorInfo).catch(reportErr => {
+        logger.debug(
+          'Failed to report error to monitoring service',
+          reportErr instanceof Error ? reportErr : new Error(String(reportErr))
+        )
       })
     }
   }
@@ -53,8 +56,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       // Try to use Sentry if available
       // Dynamic import to avoid bundling Sentry if not available
       // Type assertion needed because @sentry/react-native may not be installed
-      const SentryModule = await import('@sentry/react-native' as string).catch(() => null) as { default?: { captureException?: (error: Error, context?: unknown) => void } } | null
-      if (isTruthy(SentryModule?.default?.captureException)) {
+      const SentryModule = (await import('@sentry/react-native' as string).catch(() => null)) as {
+        default?: { captureException?: (error: Error, context?: unknown) => void }
+      } | null
+      if (SentryModule?.default?.captureException) {
         SentryModule.default.captureException(error, {
           contexts: {
             react: {
@@ -70,7 +75,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
     try {
       // Fallback to custom error reporting endpoint
-      const errorEndpoint = (typeof process !== 'undefined' && process.env?.['EXPO_PUBLIC_ERROR_ENDPOINT']) || '/api/errors'
+      const errorEndpoint =
+        (typeof process !== 'undefined' && process.env?.['EXPO_PUBLIC_ERROR_ENDPOINT']) ||
+        '/api/errors'
       await fetch(errorEndpoint, {
         method: 'POST',
         headers: {
@@ -104,10 +111,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <View style={styles.container}>
           <Text style={styles.title}>Oops! Something went wrong</Text>
-          {this.state.error && (
-            <Text style={styles.errorText}>{this.state.error.message}</Text>
-          )}
-          <TouchableOpacity style={styles.button} onPress={this.handleReset}>
+          {this.state.error && <Text style={styles.errorText}>{this.state.error.message}</Text>}
+          <TouchableOpacity style={styles.button} onPress={this.handleReset} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)">
             <Text style={styles.buttonText}>Try Again</Text>
           </TouchableOpacity>
         </View>
@@ -146,9 +151,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   buttonText: {
-    color: '#fff',
+    color: 'var(--color-bg-overlay)',
     fontSize: 16,
     fontWeight: '600',
   },
 })
-

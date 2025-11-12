@@ -26,7 +26,8 @@ export interface MapMarker {
 }
 
 const DEFAULT_ICON = L.icon({
-  iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDNy41ODIgMiA0IDUuNTgyIDQgMTBDNCAxNi4wNzMgOS4wNzMgMjIgMTIgMjJDMjIgMjIgMjAgMTYgMjAgMTBDMjAgNS41ODIgMTYuNDE4IDIgMTIgMlpNMTIgMTNDMTMuNjU2OSAxMyAxNSAxMS42NTY5IDE1IDEwQzE1IDguMzQzMTUgMTMuNjU2OSA3IDEyIDdDMTAuMzQzMSA3IDkgOC4zNDMxNSA5IDEwQzkgMTEuNjU2OSAxMC4zNDMxIDEzIDEyIDEzWiIgZmlsbD0iIzAwNzc5NiIvPgo8L3N2Zz4K',
+  iconUrl:
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDNy41ODIgMiA0IDUuNTgyIDQgMTBDNCAxNi4wNzMgOS4wNzMgMjIgMTIgMjJDMjIgMjIgMjAgMTYgMjAgMTBDMjAgNS41ODIgMTYuNDE4IDIgMTIgMlpNMTIgMTNDMTMuNjU2OSAxMyAxNSAxMS42NTY5IDE1IDEwQzE1IDguMzQzMTUgMTMuNjU2OSA3IDEyIDdDMTAuMzQzMSA3IDkgOC4zNDMxNSA5IDEwQzkgMTEuNjU2OSAxMC4zNDMxIDEzIDEyIDEzWiIgZmlsbD0iIzAwNzc5NiIvPgo8L3N2Zz4K',
   iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
@@ -42,7 +43,7 @@ function MapController({
   onMapClick?: (location: Location) => void;
 }): null {
   const map = useMap();
-  
+
   useEffect(() => {
     map.setView([center.lat, center.lng], zoom);
   }, [map, center.lat, center.lng, zoom]);
@@ -76,7 +77,7 @@ export default function InteractiveMap({
 
   const clusteredMarkers = useMemo(() => {
     if (!clusterMarkers || markers.length === 0) return markers;
-    
+
     const clusters: MapMarker[] = [];
     const processed = new Set<string>();
     const clusterRadius = 0.01;
@@ -96,7 +97,7 @@ export default function InteractiveMap({
           lat: nearby.reduce((sum, m) => sum + m.location.lat, 0) / nearby.length,
           lng: nearby.reduce((sum, m) => sum + m.location.lng, 0) / nearby.length,
         };
-        
+
         clusters.push({
           id: `cluster-${String(marker.id ?? '')}`,
           location: clusterCenter,
@@ -108,7 +109,7 @@ export default function InteractiveMap({
             iconAnchor: [20, 20],
           }),
         });
-        
+
         nearby.forEach((m) => processed.add(m.id));
       } else {
         clusters.push(marker);
@@ -181,4 +182,3 @@ export default function InteractiveMap({
     </div>
   );
 }
-

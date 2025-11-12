@@ -1,10 +1,7 @@
 module.exports = function (api) {
   api.cache(true)
   return {
-    presets: [
-      ['babel-preset-expo', { jsxImportSource: 'nativewind' }],
-      'nativewind/babel'
-    ],
+    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
     plugins: [
       'react-native-reanimated/plugin',
       [
@@ -14,10 +11,10 @@ module.exports = function (api) {
           alias: {
             '@mobile': './src',
             '@pet/domain': '../web/src/core/domain',
-            '@petspark/shared': '../../packages/shared/src'
-          }
-        }
-      ]
-    ]
+            '@petspark/shared': '../../packages/shared/src',
+          },
+        },
+      ],
+    ],
   }
 }

@@ -1,4 +1,4 @@
-import { useSharedValue, useAnimatedStyle, withTiming, type SharedValue } from 'react-native-reanimated'
+import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import { useEffect, useRef } from 'react'
 import type { AnimatedStyle } from './animated-view'
 import { isTruthy, isDefined } from '@petspark/shared';
@@ -10,8 +10,6 @@ export interface UseExpandCollapseOptions {
 }
 
 export interface UseExpandCollapseReturn {
-  height: SharedValue<number>
-  opacity: SharedValue<number>
   heightStyle: AnimatedStyle
   opacityStyle: AnimatedStyle
 }
@@ -21,50 +19,36 @@ export interface UseExpandCollapseReturn {
  * Uses React Reanimated for smooth 60fps animations on UI thread
  * Note: Height animation requires maxHeight approach for 'auto' heights
  */
-export function useExpandCollapse(
-  options: UseExpandCollapseOptions
-): UseExpandCollapseReturn {
-  const {
-    isExpanded,
-    duration = 300,
-    enableOpacity = true
-  } = options
+export function useExpandCollapse(options: UseExpandCollapseOptions): UseExpandCollapseReturn {
+  const { isExpanded, duration = 300, enableOpacity = true } = options
 
   const height = useSharedValue(isExpanded ? 1 : 0)
   const opacity = useSharedValue(isExpanded ? 1 : 0)
   const maxHeightRef = useRef<number>(1000)
 
   useEffect(() => {
-    height.value = withTiming(
-      isExpanded ? 1 : 0,
-      { duration }
-    )
-    
-    if (isTruthy(enableOpacity)) {
-      opacity.value = withTiming(
-        isExpanded ? 1 : 0,
-        { duration }
-      )
+    height.value = withTiming(isExpanded ? 1 : 0, { duration })
+
+    if (enableOpacity) {
+      opacity.value = withTiming(isExpanded ? 1 : 0, { duration })
     }
   }, [isExpanded, duration, enableOpacity, height, opacity])
 
   const heightStyle = useAnimatedStyle(() => {
     return {
       maxHeight: height.value === 1 ? maxHeightRef.current : 0,
-      opacity: height.value
+      opacity: height.value,
     }
   }) as AnimatedStyle
 
   const opacityStyle = useAnimatedStyle(() => {
     return {
-      opacity: opacity.value
+      opacity: opacity.value,
     }
   }) as AnimatedStyle
 
   return {
-    height,
-    opacity,
     heightStyle,
-    opacityStyle
+    opacityStyle,
   }
 }

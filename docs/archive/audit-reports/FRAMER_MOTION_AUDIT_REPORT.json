@@ -209,9 +209,7 @@
         "apps/web/src/components/maps/LostFoundMap.tsx",
         "apps/web/src/components/maps/VenuePicker.tsx"
       ],
-      "lostFound": [
-        "apps/web/src/components/lost-found/LostAlertCard.tsx"
-      ],
+      "lostFound": ["apps/web/src/components/lost-found/LostAlertCard.tsx"],
       "views": [
         "apps/web/src/components/views/AdoptionMarketplaceView.tsx",
         "apps/web/src/components/views/AdoptionView.tsx",
@@ -222,12 +220,8 @@
         "apps/web/src/components/views/SavedPostsView.tsx",
         "apps/web/src/components/views/UserPostsView.tsx"
       ],
-      "notifications": [
-        "apps/web/src/components/notifications/NotificationCenter.tsx"
-      ],
-      "streaming": [
-        "apps/web/src/components/streaming/LiveStreamRoom.tsx"
-      ],
+      "notifications": ["apps/web/src/components/notifications/NotificationCenter.tsx"],
+      "streaming": ["apps/web/src/components/streaming/LiveStreamRoom.tsx"],
       "ui": [
         "apps/web/src/components/ui/PremiumButton.tsx",
         "apps/web/src/components/ui/slider.tsx"

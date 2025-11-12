@@ -1,0 +1,50 @@
+apps/mobile/src/App.tsx(1,31): error TS2307: Cannot find module '@mobile/components/ErrorBoundary' or its corresponding type declarations.
+apps/mobile/src/App.tsx(2,34): error TS2307: Cannot find module '@mobile/components/OfflineIndicator' or its corresponding type declarations.
+apps/mobile/src/App.tsx(3,30): error TS2307: Cannot find module '@mobile/navigation/AppNavigator' or its corresponding type declarations.
+apps/mobile/src/App.tsx(4,31): error TS2307: Cannot find module '@mobile/providers/QueryProvider' or its corresponding type declarations.
+apps/mobile/src/App.tsx(5,24): error TS2307: Cannot find module '@mobile/theme/colors' or its corresponding type declarations.
+apps/mobile/src/App.tsx(6,39): error TS2307: Cannot find module '@mobile/utils/background-uploads' or its corresponding type declarations.
+apps/mobile/src/App.tsx(7,30): error TS2307: Cannot find module '@mobile/utils/logger' or its corresponding type declarations.
+apps/mobile/src/App.tsx(16,35): error TS7006: Parameter 'error' implicitly has an 'any' type.
+apps/mobile/src/__tests__/components/BottomNavBar.test.tsx(1,43): error TS2307: Cannot find module '@mobile/components/BottomNavBar' or its corresponding type declarations.
+apps/mobile/src/__tests__/components/notifications/NotificationProvider.test.tsx(1,56): error TS2307: Cannot find module '@mobile/components/notifications' or its corresponding type declarations.
+apps/mobile/src/__tests__/hooks/use-micro-interactions.test.ts(1,38): error TS2307: Cannot find module '@mobile/hooks/use-micro-interactions' or its corresponding type declarations.
+apps/mobile/src/__tests__/hooks/use-notification-toast.test.ts(1,38): error TS2307: Cannot find module '@mobile/components/notifications' or its corresponding type declarations.
+apps/mobile/src/__tests__/hooks/use-notification-toast.test.ts(2,38): error TS2307: Cannot find module '@mobile/hooks/use-notification-toast' or its corresponding type declarations.
+apps/mobile/src/__tests__/hooks/use-press-animation.test.ts(1,35): error TS2307: Cannot find module '@mobile/hooks/use-press-animation' or its corresponding type declarations.
+apps/mobile/src/__tests__/navigation/RootShell.test.tsx(1,27): error TS2307: Cannot find module '@mobile/navigation/RootShell' or its corresponding type declarations.
+apps/mobile/src/__tests__/screens/AdoptScreen.test.tsx(1,29): error TS2307: Cannot find module '@mobile/screens/AdoptScreen' or its corresponding type declarations.
+apps/mobile/src/__tests__/screens/ChatScreen.test.tsx(1,28): error TS2307: Cannot find module '@mobile/screens/ChatScreen' or its corresponding type declarations.
+apps/mobile/src/__tests__/screens/FeedScreen.test.tsx(1,28): error TS2307: Cannot find module '@mobile/screens/FeedScreen' or its corresponding type declarations.
+apps/mobile/src/__tests__/screens/MatchesScreen.test.tsx(1,31): error TS2307: Cannot find module '@mobile/screens/MatchesScreen' or its corresponding type declarations.
+apps/mobile/src/components/BottomNavBar.tsx(2,10): error TS2305: Module '"react-native"' has no exported member 'Pressable'.
+apps/mobile/src/components/BottomNavBar.tsx(11,59): error TS2307: Cannot find module '@mobile/effects/reanimated' or its corresponding type declarations.
+apps/mobile/src/components/BottomNavBar.tsx(12,24): error TS2307: Cannot find module '@mobile/theme/colors' or its corresponding type declarations.
+apps/mobile/src/components/BottomNavBar.tsx(45,22): error TS2322: Type 'any[]' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'any[]'.
+apps/mobile/src/components/BottomNavBar.tsx(80,32): error TS2339: Property 'hairlineWidth' does not exist on type 'StyleSheet'.
+apps/mobile/src/components/BottomNavBar.tsx(246,37): error TS2322: Type '({ position: string; top: string; left: string; width: number; height: number; marginTop: number; marginLeft: number; borderRadius: number; backgroundColor: any; opacity: number; } | { opacity: number; transform: { ...; }[]; })[]' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type '({ position: string; top: string; left: string; width: number; height: number; marginTop: number; marginLeft: number; borderRadius: number; backgroundColor: any; opacity: number; } | { opacity: number; transform: { ...; }[]; })[]'.
+apps/mobile/src/components/BottomNavBar.tsx(251,13): error TS2322: Type 'any[]' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'any[]'.
+apps/mobile/src/components/BottomNavBar.tsx(263,24): error TS2322: Type 'any[]' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'any[]'.
+apps/mobile/src/components/BottomNavBar.tsx(267,26): error TS2322: Type '({ position: string; top: number; right: number; minWidth: number; height: number; paddingHorizontal: number; backgroundColor: any; borderRadius: number; alignItems: string; justifyContent: string; borderWidth: number; borderColor: any; } | { ...; })[]' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type '({ position: string; top: number; right: number; minWidth: number; height: number; paddingHorizontal: number; backgroundColor: any; borderRadius: number; alignItems: string; justifyContent: string; borderWidth: number; borderColor: any; } | { ...; })[]'.
+apps/mobile/src/components/BottomSheet.tsx(7,10): error TS2305: Module '"react-native"' has no exported member 'Modal'.
+apps/mobile/src/components/BottomSheet.tsx(7,29): error TS2305: Module '"react-native"' has no exported member 'TouchableOpacity'.
+apps/mobile/src/components/BottomSheet.tsx(16,35): error TS2307: Cannot find module '@mobile/effects/reanimated' or its corresponding type declarations.
+apps/mobile/src/components/BottomSheet.tsx(18,31): error TS2307: Cannot find module '@mobile/effects/reanimated/transitions' or its corresponding type declarations.
+apps/mobile/src/components/BottomSheet.tsx(58,12): error TS2345: Argument of type '(event: any) => void' is not assignable to parameter of type '() => void'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0.
+apps/mobile/src/components/BottomSheet.tsx(58,13): error TS7006: Parameter 'event' implicitly has an 'any' type.
+apps/mobile/src/components/BottomSheet.tsx(82,22): error TS2322: Type '({ opacity: any; } | { flex: number; backgroundColor: string; justifyContent: string; })[]' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type '({ opacity: any; } | { flex: number; backgroundColor: string; justifyContent: string; })[]'.
+apps/mobile/src/components/BottomSheet.tsx(83,45): error TS2339: Property 'absoluteFill' does not exist on type 'StyleSheet'.
+apps/mobile/src/components/BottomSheet.tsx(86,13): error TS2322: Type '({ transform: { translateY: number; }[]; opacity: any; } | { backgroundColor: "#13294B"; borderTopLeftRadius: number; borderTopRightRadius: number; padding: number; shadowColor: string; shadowOffset: { ...; }; shadowOpacity: number; shadowRadius: number; elevation: number; } | { ...; })[]' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type '({ transform: { translateY: number; }[]; opacity: any; } | { backgroundColor: "#13294B"; borderTopLeftRadius: number; borderTopRightRadius: number; padding: number; shadowColor: string; shadowOffset: { ...; }; shadowOpacity: number; shadowRadius: number; elevation: number; } | { ...; })[]'.
+apps/mobile/src/components/ErrorBoundary.tsx(6,24): error TS2307: Cannot find module '@mobile/theme/colors' or its corresponding type declarations.
+apps/mobile/src/components/ErrorBoundary.tsx(8,28): error TS2305: Module '"react-native"' has no exported member 'TouchableOpacity'.
+apps/mobile/src/components/FeatureCard.tsx(1,24): error TS2307: Cannot find module '@mobile/theme/colors' or its corresponding type declarations.
+apps/mobile/src/components/FeatureCard.tsx(27,29): error TS2339: Property 'hairlineWidth' does not exist on type 'StyleSheet'.
+apps/mobile/src/components/OfflineIndicator.tsx(20,24): error TS2339: Property 'duration' does not exist on type 'ComponentType<FadeInProps & Record<string, unknown> & { style?: Record<string, unknown>; children?: unknown; }>'.

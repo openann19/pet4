@@ -1,24 +1,24 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { cn } from '@/lib/utils'
-import * as ProgressPrimitive from '@radix-ui/react-progress'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useEffect } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { cn } from '@/lib/utils';
+import * as ProgressPrimitive from '@radix-ui/react-progress';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumProgressProps {
-  value?: number
-  max?: number
-  variant?: 'default' | 'gradient' | 'striped'
-  size?: 'sm' | 'md' | 'lg'
-  showValue?: boolean
-  label?: string
-  animated?: boolean
-  className?: string
-  'aria-label': string
+  value?: number;
+  max?: number;
+  variant?: 'default' | 'gradient' | 'striped';
+  size?: 'sm' | 'md' | 'lg';
+  showValue?: boolean;
+  label?: string;
+  animated?: boolean;
+  className?: string;
+  'aria-label': string;
 }
 
 export function PremiumProgress({
@@ -32,52 +32,51 @@ export function PremiumProgress({
   className,
   'aria-label': ariaLabel,
 }: PremiumProgressProps): React.JSX.Element {
-  const progressWidth = useSharedValue(0)
-  const shimmerX = useSharedValue(-100)
+    const _uiConfig = useUIConfig();
+    const progressWidth = useSharedValue(0);
+  const shimmerX = useSharedValue(-100);
 
-  const percentage = Math.min(Math.max((value / max) * 100, 0), 100)
+  const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   useEffect(() => {
-    if (isTruthy(animated)) {
-      progressWidth.value = withSpring(percentage, springConfigs.smooth)
+    if (animated) {
+      progressWidth.value = withSpring(percentage, springConfigs.smooth);
     } else {
-      progressWidth.value = withTiming(percentage, { duration: 300 })
+      progressWidth.value = withTiming(percentage, { duration: 300 });
     }
-  }, [percentage, animated, progressWidth])
+  }, [percentage, animated, progressWidth]);
 
   useEffect(() => {
     if (variant === 'striped') {
-      shimmerX.value = withTiming(200, { duration: 2000, repeat: Infinity })
+      shimmerX.value = withTiming(200, { duration: 2000, repeat: Infinity });
     }
-  }, [variant, shimmerX])
+  }, [variant, shimmerX]);
 
   const progressStyle = useAnimatedStyle(() => ({
-    width: `${String(progressWidth.value ?? '')}%`,
-  })) as AnimatedStyle
+    width: `${progressWidth.value}%`,
+  })) as AnimatedStyle;
 
   const shimmerStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: shimmerX.value }],
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const sizes = {
     sm: 'h-1',
     md: 'h-2',
     lg: 'h-3',
-  }
+  };
 
   const variants = {
     default: 'bg-primary',
     gradient: 'bg-linear-to-r from-primary via-primary/80 to-primary',
     striped: 'bg-primary',
-  }
+  };
 
   return (
     <div className={cn('w-full', className)}>
       {(label || showValue) && (
         <div className="flex items-center justify-between mb-2">
-          {label && (
-            <label className="text-sm font-medium text-foreground">{label}</label>
-          )}
+          {label && <label className="text-sm font-medium text-foreground">{label}</label>}
           {showValue && (
             <span className="text-sm text-muted-foreground">{Math.round(percentage)}%</span>
           )}
@@ -87,10 +86,7 @@ export function PremiumProgress({
       <ProgressPrimitive.Root
         value={value}
         max={max}
-        className={cn(
-          'relative w-full overflow-hidden rounded-full bg-muted',
-          sizes[size]
-        )}
+        className={cn('relative w-full overflow-hidden rounded-full bg-muted', sizes[size])}
         aria-label={ariaLabel}
       >
         <AnimatedView
@@ -113,5 +109,5 @@ export function PremiumProgress({
         </AnimatedView>
       </ProgressPrimitive.Root>
     </div>
-  )
+  );
 }

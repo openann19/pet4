@@ -1,113 +1,125 @@
 /**
  * Chat Moderation Panel
- * 
+ *
  * Admin panel for reviewing reported messages and taking moderation actions.
  */
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import type { MessageReport } from '@/lib/chat-types'
-import { createLogger } from '@/lib/logger'
-import type { User } from '@/lib/user-service'
-import { Check, Eye, Flag, X } from '@phosphor-icons/react'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
-import { isTruthy } from '@petspark/shared'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation'
-import { useStorage } from '@/hooks/useStorage'
-import { adminAPI } from '@/lib/api-services'
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { MessageReport } from '@/lib/chat-types';
+import { adminModerationApi } from '@/lib/api/admin';
+import { createLogger } from '@/lib/logger';
+import { Check, Eye, Flag, X } from '@phosphor-icons/react';
+import { MotionView } from '@petspark/motion';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('ChatModerationPanel')
+const logger = createLogger('ChatModerationPanel');
 
 export default function ChatModerationPanel() {
-  const [reports, setReports] = useState<MessageReport[]>([])
-  const [loading, setLoading] = useState(false)
-  const [selectedReport, setSelectedReport] = useState<MessageReport | null>(null)
-  const [action, setAction] = useState<'warning' | 'mute' | 'suspend' | 'no_action'>('no_action')
-  const [currentUser] = useStorage<User | null>('current-user', null)
+  const [reports, setReports] = useState<MessageReport[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<MessageReport | null>(null);
+  const [action, setAction] = useState<'warning' | 'mute' | 'suspend' | 'no_action'>('no_action');
+  const [actionInFlight, setActionInFlight] = useState(false);
 
   useEffect(() => {
-    void loadReports()
-  }, [])
+    void loadReports();
+  }, []);
 
   const loadReports = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await adminAPI.getChatReports()
-      const allReports = response.items ?? []
-      setReports(allReports.sort((a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      ))
+      const allReports = await adminModerationApi.listReports();
+      setReports(
+        allReports.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      );
     } catch (error) {
-      logger.error('Load reports error', error instanceof Error ? error : new Error(String(error)))
-      toast.error('Failed to load reports')
+      logger.error('Load reports error', error instanceof Error ? error : new Error(String(error)));
+      toast.error('Failed to load reports');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleReview = async () => {
-    if (!selectedReport || !currentUser) return
+    if (!selectedReport) return;
+
+    setActionInFlight(true);
 
     try {
-      const response = await adminAPI.reviewChatReport(selectedReport.id, {
-        action,
-        reviewerId: currentUser.id || 'admin',
-      })
+      let updatedReport: MessageReport;
 
-      const updatedReport = response.report
-      setReports(prev => prev.map(r => (r.id === updatedReport.id ? updatedReport : r)))
+      const note = action === 'no_action' ? undefined : `Action: ${action}`;
 
-      toast.success(`Action taken: ${String(action ?? '')}`)
-      setSelectedReport(null)
-      setAction('no_action')
-      void loadReports()
+      if (action === 'no_action') {
+        updatedReport = await adminModerationApi.dismissReport(selectedReport.id);
+      } else {
+        updatedReport = await adminModerationApi.resolveReport(selectedReport.id, note);
+      }
+
+      setReports((prev) => prev.map((r) => (r.id === selectedReport.id ? updatedReport : r)));
+
+      toast.success(`Action taken: ${action}`);
+      setSelectedReport(null);
+      setAction('no_action');
     } catch (error) {
-      logger.error('Review error', error instanceof Error ? error : new Error(String(error)))
-      toast.error('Failed to review report')
+      logger.error('Review error', error instanceof Error ? error : new Error(String(error)));
+      toast.error('Failed to review report');
+    } finally {
+      setActionInFlight(false);
     }
-  }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="destructive">Pending</Badge>
+        return <Badge variant="destructive">Pending</Badge>;
       case 'reviewed':
-        return <Badge variant="secondary">Reviewed</Badge>
+        return <Badge variant="secondary">Reviewed</Badge>;
       case 'resolved':
-        return <Badge variant="default">Resolved</Badge>
+        return <Badge variant="default">Resolved</Badge>;
       default:
-        return <Badge variant="outline">Dismissed</Badge>
+        return <Badge variant="outline">Dismissed</Badge>;
     }
-  }
+  };
 
   const getReasonBadge = (reason: string) => {
     switch (reason) {
       case 'spam':
-        return <Badge variant="destructive">Spam</Badge>
+        return <Badge variant="destructive">Spam</Badge>;
       case 'harassment':
-        return <Badge variant="destructive">Harassment</Badge>
+        return <Badge variant="destructive">Harassment</Badge>;
       case 'inappropriate':
-        return <Badge variant="destructive">Inappropriate</Badge>
+        return <Badge variant="destructive">Inappropriate</Badge>;
       default:
-        return <Badge variant="outline">Other</Badge>
+        return <Badge variant="outline">Other</Badge>;
     }
-  }
+  };
 
-  const pendingReports = reports.filter(r => r.status === 'pending')
-  const reviewedReports = reports.filter(r => r.status === 'reviewed' || r.status === 'resolved')
+  const pendingReports = reports.filter(
+    (r) => r && typeof r.status === 'string' && r.status === 'pending'
+  );
+  const reviewedReports = reports.filter(
+    (r) => r && typeof r.status === 'string' && (r.status === 'reviewed' || r.status === 'resolved')
+  );
 
   if (isTruthy(loading)) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-muted-foreground">Loading reports...</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -158,22 +170,16 @@ export default function ChatModerationPanel() {
                           {new Date(report.createdAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-sm font-medium mb-1">
-                        Reported by: {report.reportedBy}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Reason: {report.reason}
-                      </p>
-                      {report.description && (
-                        <p className="text-sm mt-2">{report.description}</p>
-                      )}
+                      <p className="text-sm font-medium mb-1">Reported by: {report.reportedBy}</p>
+                      <p className="text-sm text-muted-foreground">Reason: {report.reason}</p>
+                      {report.description && <p className="text-sm mt-2">{report.description}</p>}
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={(e) => {
-                        e.stopPropagation()
-                        setSelectedReport(report)
+                        e.stopPropagation();
+                        setSelectedReport(report);
                       }}
                     >
                       <Eye size={16} className="mr-2" />
@@ -200,12 +206,11 @@ export default function ChatModerationPanel() {
                       <div className="flex items-center gap-2 mb-2">
                         {getStatusBadge(report.status)}
                         {getReasonBadge(report.reason)}
-                        {report.action && (
-                          <Badge variant="outline">{report.action}</Badge>
-                        )}
+                        {report.action && <Badge variant="outline">{report.action}</Badge>}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Reviewed by: {report.reviewedBy} on {report.reviewedAt && new Date(report.reviewedAt).toLocaleDateString()}
+                        Reviewed by: {report.reviewedBy} on{' '}
+                        {report.reviewedAt && new Date(report.reviewedAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -217,95 +222,70 @@ export default function ChatModerationPanel() {
       </Tabs>
 
       {selectedReport && (
-        <ReportDetailModal 
-          report={selectedReport} 
-          action={action}
-          setAction={setAction}
-          onClose={() => { setSelectedReport(null); }}
-          onReview={() => { void handleReview() }}
-        />
+        <MotionView
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/95 backdrop-blur-sm"
+          onClick={() => setSelectedReport(null)}
+        >
+          <Card className="max-w-2xl w-full p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">Report Details</h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSelectedReport(null)}
+                aria-label="Close report details"
+              >
+                <X size={20} />
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium">Report Reason</Label>
+                <p className="text-sm">{selectedReport.reason}</p>
+              </div>
+
+              {selectedReport.description && (
+                <div>
+                  <Label className="text-sm font-medium">Description</Label>
+                  <p className="text-sm">{selectedReport.description}</p>
+                </div>
+              )}
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Action</Label>
+                <Select value={action} onValueChange={(v) => setAction(v as typeof action)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="no_action">No Action</SelectItem>
+                    <SelectItem value="warning">Warning</SelectItem>
+                    <SelectItem value="mute">Mute User</SelectItem>
+                    <SelectItem value="suspend">Suspend User</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedReport(null)}
+                  disabled={actionInFlight}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleReview} disabled={actionInFlight}>
+                  <Check size={16} className="mr-2" />
+                  {actionInFlight ? 'Processing…' : 'Take Action'}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </MotionView>
       )}
     </div>
-  )
+  );
 }
-
-// Report detail modal component
-function ReportDetailModal({ 
-  report, 
-  action,
-  setAction,
-  onClose,
-  onReview
-}: { 
-  report: MessageReport
-  action: 'warning' | 'mute' | 'suspend' | 'no_action'
-  setAction: (action: 'warning' | 'mute' | 'suspend' | 'no_action') => void
-  onClose: () => void
-  onReview: () => void
-}) {
-  const entry = useEntryAnimation({ initialY: 20, initialOpacity: 0 })
-  
-  return (
-    <AnimatedView
-      style={entry.animatedStyle}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/95 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <Card
-        className="max-w-2xl w-full p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold">Report Details</h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-          >
-            <X size={20} />
-          </Button>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <Label className="text-sm font-medium">Report Reason</Label>
-            <p className="text-sm">{report.reason}</p>
-          </div>
-
-          {report.description && (
-            <div>
-              <Label className="text-sm font-medium">Description</Label>
-              <p className="text-sm">{report.description}</p>
-            </div>
-          )}
-
-          <div>
-            <Label className="text-sm font-medium mb-2 block">Action</Label>
-            <Select value={action} onValueChange={(v) => { setAction(v as typeof action); }}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="no_action">No Action</SelectItem>
-                <SelectItem value="warning">Warning</SelectItem>
-                <SelectItem value="mute">Mute User</SelectItem>
-                <SelectItem value="suspend">Suspend User</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex gap-2 pt-4">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button onClick={onReview}>
-              <Check size={16} className="mr-2" />
-              Take Action
-            </Button>
-          </div>
-        </div>
-      </Card>
-    </AnimatedView>
-  )
-}
-

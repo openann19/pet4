@@ -1,6 +1,6 @@
 /**
  * Production-Grade API Client for Mobile App
- * 
+ *
  * Features:
  * - Authentication token injection
  * - Retry logic with exponential backoff + jitter
@@ -12,42 +12,51 @@
  * - Structured error handling
  * - Request deduplication
  * - TLS-only in production
- * 
+ *
  * Location: apps/mobile/src/utils/api-client.ts
  */
 
+import { Platform } from 'react-native'
+import Constants from 'expo-constants'
 import { createLogger } from './logger'
 import { cacheGet, cacheSet } from './offline-cache'
 import { getAuthToken } from './secure-storage'
 import { telemetry } from './telemetry'
-import { isTruthy, isDefined } from '@petspark/shared';
+import type {
+  MatchingApiResponse,
+  MatchingApiOptions,
+} from '../types/api'
 
 const logger = createLogger('api-client')
 
-// Get API base URL from environment or use default
-const getApiBaseUrl = (): string => {
-  const isDev = typeof __DEV__ !== 'undefined' && __DEV__
-  const envUrl = typeof process !== 'undefined' ? process.env?.['EXPO_PUBLIC_API_URL'] : undefined
+function resolveBaseUrl(): string {
+  const viaEnv = process.env['EXPO_PUBLIC_API_URL']
+  const viaExtra =
+    Constants.expoConfig?.extra && typeof Constants.expoConfig.extra === 'object'
+      ? (Constants.expoConfig.extra as Record<string, unknown>)['apiUrl']
+      : undefined
+  const apiUrl = typeof viaExtra === 'string' ? viaExtra : undefined
 
-  if (envUrl && envUrl.trim().length > 0) {
-    const normalizedUrl = envUrl.trim()
-    if (!isDev && normalizedUrl.startsWith('http://')) {
-      throw new Error('API URL must use HTTPS in production builds')
-    }
-    return normalizedUrl
+  const url = (viaEnv ?? apiUrl ?? '').trim()
+
+  const isHttp = (v: string): boolean => /^https?:\/\//i.test(v)
+  if (url && isHttp(url)) {
+    return url.replace(/\/+$/, '')
   }
 
-  if (isDev) {
-    logger.warn('EXPO_PUBLIC_API_URL not set, falling back to local development API')
-    return 'http://localhost:3000/api'
+  if (process.env['NODE_ENV'] === 'production') {
+    throw new Error(
+      '[API] Missing EXPO_PUBLIC_API_URL (or app.config.ts extra.apiUrl). ' +
+        'Set it for production builds: https://docs.expo.dev/workflow/configuration/'
+    )
   }
 
-  const fallback = 'https://api.petspark.app/api'
-  logger.warn('EXPO_PUBLIC_API_URL not set, using production fallback', { fallback })
-  return fallback
+  // Dev defaults for emulators
+  const host = Platform.OS === 'android' ? '10.0.2.2' : 'localhost'
+  return `http://${host}:3000/api`
 }
 
-const API_BASE_URL = getApiBaseUrl()
+const API_BASE_URL = resolveBaseUrl()
 
 // Circuit breaker state
 interface CircuitBreakerState {
@@ -127,7 +136,7 @@ class APIClient {
     state: 'closed',
   }
   private requestCache = new Map<string, RequestCacheEntry>()
-  private cacheCleanupInterval: NodeJS.Timeout | null = null
+  private cacheCleanupInterval: ReturnType<typeof setInterval> | null = null
 
   constructor(baseUrl: string = API_BASE_URL) {
     this.baseUrl = baseUrl
@@ -145,7 +154,7 @@ class APIClient {
           this.requestCache.delete(key)
         }
       }
-    }, 300000) as unknown as NodeJS.Timeout
+    }, 300000)
   }
 
   private classifyError(error: unknown, statusCode?: number): APIErrorType {
@@ -204,7 +213,7 @@ class APIClient {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms))
+    return new Promise(resolve => setTimeout(resolve, ms))
   }
 
   private calculateRetryDelay(attempt: number, config: RetryConfig): number {
@@ -246,11 +255,7 @@ class APIClient {
     }
   }
 
-  private async setCachedResponse<T>(
-    cacheKey: string,
-    data: T,
-    etag?: string
-  ): Promise<void> {
+  private async setCachedResponse<T>(cacheKey: string, data: T, etag?: string): Promise<void> {
     try {
       await cacheSet(cacheKey, {
         data,
@@ -267,10 +272,7 @@ class APIClient {
     return `api:${String(endpoint ?? '')}:${JSON.stringify(options.body ?? {})}`
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestOptions = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const {
       timeout = 30000,
       retries = DEFAULT_RETRY_CONFIG.maxRetries,
@@ -327,7 +329,9 @@ class APIClient {
         })
       } else if (Array.isArray(fetchOptions.headers)) {
         fetchOptions.headers.forEach(([key, value]) => {
-          headers[key] = String(value)
+          if (key !== undefined) {
+            headers[key] = String(value)
+          }
         })
       } else {
         Object.assign(headers, fetchOptions.headers)
@@ -355,7 +359,9 @@ class APIClient {
         timeout,
         retries,
         endpoint,
-        ...(isGet && !skipCache ? { cacheKey: cacheKey ?? this.getCacheKey(endpoint, options) } : {}),
+        ...(isGet && !skipCache
+          ? { cacheKey: cacheKey ?? this.getCacheKey(endpoint, options) }
+          : {}),
       }
     )
 
@@ -401,7 +407,8 @@ class APIClient {
 
         clearTimeout(timeoutId)
 
-        const responseEtag = response.headers.get('ETag') ?? undefined
+        const etagHeader = response.headers.get('ETag')
+        const responseEtag = etagHeader !== null ? etagHeader : undefined
         const duration = Date.now() - startTime
 
         // Track telemetry
@@ -438,12 +445,7 @@ class APIClient {
             // Ignore JSON parse errors
           }
 
-          const apiError = new APIError(
-            errorMessage,
-            errorType,
-            response.status,
-            config.endpoint
-          )
+          const apiError = new APIError(errorMessage, errorType, response.status, config.endpoint)
 
           // Don't retry on client errors (4xx) except 429
           if (response.status >= 400 && response.status < 500 && response.status !== 429) {
@@ -518,7 +520,7 @@ class APIClient {
     return this.request<T>(endpoint, { ...options, method: 'GET' })
   }
 
-  post<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {                                                                       
+  post<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
@@ -526,7 +528,7 @@ class APIClient {
     })
   }
 
-  patch<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {                                                                      
+  patch<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PATCH',
@@ -534,7 +536,7 @@ class APIClient {
     })
   }
 
-  put<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {                                                                        
+  put<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PUT',
@@ -577,57 +579,25 @@ class APIClient {
 
 export const apiClient = new APIClient()
 
-// API endpoint types
-export interface PetMedia {
-  url: string
-  type: string
-}
-
-export interface PetLocation {
-  geohash: string
-  roundedLat: number
-  roundedLng: number
-  city: string
-  country: string
-  timezone: string
-}
-
-export interface PetProfile {
-  id: string
-  ownerId: string
-  species: string
-  breedId: string
-  breedName: string
-  name: string
-  sex: string
-  neuterStatus: string
-  dateOfBirth: string
-  ageMonths: number
-  lifeStage: string
-  size: string
-  weightKg: number
-  intents: string[]
-  location: PetLocation
-  media: PetMedia[]
-}
-
-export interface MatchingApiResponse {
-  pets: PetProfile[]
-  nextCursor?: string
-  total: number
-}
-
-export interface MatchingApiOptions {
-  limit?: number
-  cursor?: string
-}
+// Re-export API types from types/api.ts for convenience
+export type {
+  PetMedia,
+  PetLocation,
+  PetApiResponse,
+  MatchingApiResponse,
+  MatchingApiOptions,
+} from '../types/api'
 
 // API endpoints
 export const matchingApi = {
-  async getAvailablePets(options?: MatchingApiOptions): Promise<MatchingApiResponse> {                                                                          
+  async getAvailablePets(options?: MatchingApiOptions): Promise<MatchingApiResponse> {
     const params = new URLSearchParams()
-    if (isTruthy(options?.limit)) params.append('limit', String(options.limit))
-    if (isTruthy(options?.cursor)) params.append('cursor', options.cursor)
+    if (options?.limit) {
+      params.append('limit', String(options.limit))
+    }
+    if (options?.cursor) {
+      params.append('cursor', options.cursor)
+    }
 
     const query = params.toString()
     const endpoint = `/matching/available${String(query ? `?${String(query ?? '')}` : '' ?? '')}`

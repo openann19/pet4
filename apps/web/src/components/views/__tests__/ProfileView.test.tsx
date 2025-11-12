@@ -1,28 +1,75 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import ProfileView from '../ProfileView'
-import type { Pet, Match, SwipeAction } from '@/lib/types'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import ProfileView from '@/components/views/ProfileView';
+import { useApp } from '@/contexts/AppContext';
+import { useStorage } from '@/hooks/use-storage';
 
-// Mock react-native-reanimated
-vi.mock('react-native-reanimated', () => ({
-  default: {
-    useSharedValue: vi.fn((initial: number) => ({ value: initial })),
-    useAnimatedStyle: vi.fn(() => ({})),
-    withSpring: vi.fn((v) => v),
-    withTiming: vi.fn((v) => v),
-  },
-  useSharedValue: vi.fn((initial: number) => ({ value: initial })),
-  useAnimatedStyle: vi.fn(() => ({})),
-  withSpring: vi.fn((v) => v),
-  withTiming: vi.fn((v) => v),
-}))
+vi.mock('@/contexts/AppContext', () => ({
+  useApp: vi.fn(),
+}));
 
-vi.mock('@/effects/reanimated/animated-view', () => ({
-  AnimatedView: ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => (
-    <div data-testid="animated-view" {...props}>{children}</div>
-  )
-}))
+vi.mock('@/hooks/use-storage', () => ({
+  useStorage: vi.fn(),
+}));
+
+vi.mock('@/components/CreatePetDialog', () => ({
+  default: ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => (
+    <div data-testid="create-pet-dialog">
+      {open && <button onClick={() => onOpenChange(false)}>Close</button>}
+    </div>
+  ),
+}));
+
+vi.mock('@/components/StatsCard', () => ({
+  default: ({
+    totalMatches,
+    totalSwipes,
+    successRate,
+  }: {
+    totalMatches: number;
+    totalSwipes: number;
+    successRate: number;
+  }) => (
+    <div data-testid="stats-card">
+      <span>Matches: {totalMatches}</span>
+      <span>Swipes: {totalSwipes}</span>
+      <span>Success: {successRate}%</span>
+    </div>
+  ),
+}));
+
+vi.mock('@/components/stories/HighlightsBar', () => ({
+  default: () => <div data-testid="highlights-bar">Highlights</div>,
+}));
+
+vi.mock('@/components/call/VideoQualitySettings', () => ({
+  default: () => <div data-testid="video-quality-settings">Video Settings</div>,
+}));
+
+vi.mock('@/components/ThemePresetSelector', () => ({
+  default: () => <div data-testid="theme-preset-selector">Theme Selector</div>,
+}));
+
+vi.mock('@/components/payments/SubscriptionStatusCard', () => ({
+  SubscriptionStatusCard: () => <div data-testid="subscription-status-card">Subscription</div>,
+}));
+
+vi.mock('@/components/health/PetHealthDashboard', () => ({
+  default: ({ onClose }: { onClose: () => void }) => (
+    <div data-testid="health-dashboard">
+      <button onClick={onClose}>Close</button>
+    </div>
+  ),
+}));
+
+vi.mock('@/components/verification/VerificationButton', () => ({
+  VerificationButton: () => <div data-testid="verification-button">Verify</div>,
+}));
+
+vi.mock('@/components/VisualAnalysisDemo', () => ({
+  default: () => <div data-testid="visual-analysis">Analysis</div>,
+}));
 
 vi.mock('@/effects/reanimated', () => ({
   useMotionVariants: vi.fn(() => ({ animatedStyle: {} })),
@@ -30,174 +77,137 @@ vi.mock('@/effects/reanimated', () => ({
   useHoverLift: vi.fn(() => ({ animatedStyle: {}, handleEnter: vi.fn(), handleLeave: vi.fn() })),
   useBounceOnTap: vi.fn(() => ({ animatedStyle: {}, handlePress: vi.fn() })),
   useGlowPulse: vi.fn(() => ({ animatedStyle: {} })),
-  useIconRotation: vi.fn(() => ({ animatedStyle: {} }))
-}))
-
-// Mock hooks
-vi.mock('@/hooks/useStorage', () => ({
-  useStorage: vi.fn((key: string, defaultValue: unknown) => {
-    const storage: Record<string, unknown> = {
-      'user-pets': [],
-      'matches': [],
-      'swipe-history': [],
-      'video-quality-preference': '4k'
-    }
-    const setValue = vi.fn()
-    return [storage[key] ?? defaultValue, setValue]
-  })
-}))
-
-// Mock dependencies
-vi.mock('@/contexts/AppContext', () => ({
-  useApp: vi.fn(() => ({
-    t: {
-      profile: {
-        title: 'Profile'
-      }
-    },
-    themePreset: 'default',
-    setThemePreset: vi.fn()
-  }))
-}))
-
-vi.mock('sonner', () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn()
-  }
-}))
-
-// Mock components
-vi.mock('@/components/CreatePetDialog', () => ({
-  default: ({ open, onClose }: { open: boolean; onClose: () => void }) =>
-    open ? (
-      <div data-testid="create-pet-dialog">
-        <button onClick={onClose}>Close</button>
-      </div>
-    ) : null
-}))
-
-vi.mock('@/components/StatsCard', () => ({
-  default: () => <div data-testid="stats-card">Stats</div>
-}))
-
-vi.mock('@/components/stories/HighlightsBar', () => ({
-  default: () => <div data-testid="highlights-bar">Highlights</div>
-}))
-
-vi.mock('@/components/call/VideoQualitySettings', () => ({
-  default: () => <div data-testid="video-quality-settings">Video Quality</div>
-}))
-
-vi.mock('@/components/ThemePresetSelector', () => ({
-  default: () => <div data-testid="theme-preset-selector">Theme</div>
-}))
-
-vi.mock('@/components/payments/SubscriptionStatusCard', () => ({
-  SubscriptionStatusCard: () => <div data-testid="subscription-status">Subscription</div>
-}))
-
-vi.mock('@/components/health/PetHealthDashboard', () => ({
-  default: () => <div data-testid="pet-health-dashboard">Health Dashboard</div>
-}))
-
-vi.mock('@/components/verification/VerificationButton', () => ({
-  VerificationButton: () => <div data-testid="verification-button">Verify</div>
-}))
-
-vi.mock('@/components/VisualAnalysisDemo', () => ({
-  default: () => <div data-testid="visual-analysis">Visual Analysis</div>
-}))
-
-const mockPet: Pet = {
-  id: 'pet1',
-  name: 'Fluffy',
-  species: 'dog',
-  breed: 'Golden Retriever',
-  age: 3,
-  size: 'large'
-}
+  useIconRotation: vi.fn(() => ({ style: {}, animatedStyle: {} })),
+}));
 
 describe('ProfileView', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+    vi.mocked(useApp).mockReturnValue({
+      t: {
+        profile: {
+          createProfile: 'Create Profile',
+          noPetsDesc: 'No pets description',
+          createProfileBtn: 'Create Profile',
+          myPets: 'My Pets',
+          subtitle: 'pet',
+          subtitlePlural: 'pets',
+          addPet: 'Add Pet',
+          yearsOld: 'years old',
+        },
+        petProfile: {
+          personality: 'Personality',
+          interests: 'Interests',
+        },
+      },
+      themePreset: 'default',
+      setThemePreset: vi.fn(),
+    } as never);
 
-  describe('Rendering', () => {
-    it('should render profile view', async () => {
-      const { useStorage } = await import('@/hooks/useStorage')
-      vi.mocked(useStorage).mockReturnValueOnce([[mockPet], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce([[], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce([[], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce(['4k', vi.fn()])
+    vi.mocked(useStorage).mockImplementation((key: string, defaultValue: unknown) => {
+      if (key === 'user-pets') return [[], vi.fn()];
+      if (key === 'matches') return [[], vi.fn()];
+      if (key === 'swipe-history') return [[], vi.fn()];
+      if (key === 'video-quality-preference') return ['4k', vi.fn()];
+      return [defaultValue, vi.fn()];
+    });
+  });
 
-      render(<ProfileView />)
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
 
-      await waitFor(() => {
-        expect(screen.getByTestId('animated-view')).toBeInTheDocument()
-      })
-    })
+  it('should render empty state when no pets', () => {
+    render(<ProfileView />);
 
-    it('should show empty state when no pets', async () => {
-      const { useStorage } = await import('@/hooks/useStorage')
-      vi.mocked(useStorage).mockReturnValueOnce([[], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce([[], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce([[], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce(['4k', vi.fn()])
+    // Use getAllByText since there are multiple "Create Profile" texts (title and button)
+    const createProfileTexts = screen.getAllByText('Create Profile');
+    expect(createProfileTexts.length).toBeGreaterThan(0);
+    expect(screen.getByText('No pets description')).toBeInTheDocument();
+  });
 
-      render(<ProfileView />)
+  it('should render pets when available', () => {
+    const mockPets = [
+      {
+        id: 'pet-1',
+        name: 'Fluffy',
+        breed: 'Golden Retriever',
+        age: 3,
+        gender: 'male',
+        photo: 'https://example.com/pet.jpg',
+        ownerId: 'user-1',
+      },
+    ];
 
-      await waitFor(() => {
-        expect(screen.getByTestId('animated-view')).toBeInTheDocument()
-      })
-    })
-  })
+    vi.mocked(useStorage).mockImplementation((key: string) => {
+      if (key === 'user-pets') return [mockPets, vi.fn()];
+      if (key === 'matches') return [[], vi.fn()];
+      if (key === 'swipe-history') return [[], vi.fn()];
+      if (key === 'video-quality-preference') return ['4k', vi.fn()];
+      return [[], vi.fn()];
+    });
 
-  describe('Pet Management', () => {
-    it('should open create pet dialog when create button is clicked', async () => {
-      const user = userEvent.setup()
-      const { useStorage } = await import('@/hooks/useStorage')
-      vi.mocked(useStorage).mockReturnValueOnce([[], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce([[], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce([[], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce(['4k', vi.fn()])
+    render(<ProfileView />);
 
-      render(<ProfileView />)
+    expect(screen.getByText('Fluffy')).toBeInTheDocument();
+    expect(screen.getByText('My Pets')).toBeInTheDocument();
+  });
 
-      await waitFor(() => {
-        expect(screen.getByTestId('animated-view')).toBeInTheDocument()
-      })
-    })
-  })
+  it('should open create pet dialog when button is clicked', async () => {
+    const user = userEvent.setup();
+    render(<ProfileView />);
 
-  describe('Stats Display', () => {
-    it('should display stats card', async () => {
-      const { useStorage } = await import('@/hooks/useStorage')
-      const mockMatches: Match[] = [{
-        id: 'match1',
-        petId: 'pet1',
-        matchedPetId: 'pet2',
-        matchedAt: new Date().toISOString(),
-        status: 'active'
-      }]
-      const mockSwipes: SwipeAction[] = [{
-        petId: 'pet1',
-        targetPetId: 'pet2',
-        action: 'like',
-        timestamp: new Date().toISOString()
-      }]
+    // Use getByRole to find the button specifically, not just text
+    const createButton = screen.getByRole('button', { name: /create profile/i });
+    await user.click(createButton);
 
-      vi.mocked(useStorage).mockReturnValueOnce([[mockPet], vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce([mockMatches, vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce([mockSwipes, vi.fn()])
-      vi.mocked(useStorage).mockReturnValueOnce(['4k', vi.fn()])
+    await waitFor(() => {
+      expect(screen.getByTestId('create-pet-dialog')).toBeInTheDocument();
+    });
+  });
 
-      render(<ProfileView />)
+  it('should show stats when swipes exist', () => {
+    const mockPets = [
+      {
+        id: 'pet-1',
+        name: 'Fluffy',
+        breed: 'Golden Retriever',
+        age: 3,
+        gender: 'male',
+        photo: 'https://example.com/pet.jpg',
+        ownerId: 'user-1',
+      },
+    ];
+    const mockMatches = [
+      {
+        id: 'match-1',
+        petId: 'pet-1',
+        matchedPetId: 'pet-2',
+        status: 'active' as const,
+        createdAt: new Date().toISOString(),
+      },
+    ];
+    const mockSwipes = [
+      {
+        id: 'swipe-1',
+        petId: 'pet-1',
+        targetPetId: 'pet-2',
+        action: 'like' as const,
+        timestamp: new Date().toISOString(),
+      },
+    ];
 
-      await waitFor(() => {
-        expect(screen.getByTestId('stats-card')).toBeInTheDocument()
-      })
-    })
-  })
-})
+    vi.mocked(useStorage).mockImplementation((key: string) => {
+      if (key === 'user-pets') return [mockPets, vi.fn()];
+      if (key === 'matches') return [mockMatches, vi.fn()];
+      if (key === 'swipe-history') return [mockSwipes, vi.fn()];
+      if (key === 'video-quality-preference') return ['4k', vi.fn()];
+      return [[], vi.fn()];
+    });
 
+    render(<ProfileView />);
+
+    expect(screen.getByTestId('stats-card')).toBeInTheDocument();
+  });
+});

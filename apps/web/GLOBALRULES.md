@@ -62,17 +62,17 @@ export function isValidLostAlertStatusTransition(
   next: LostAlertStatus
 ): boolean {
   // Pure logic, no side effects
-  if (current === next) return false
-  
+  if (current === next) return false;
+
   switch (current) {
     case 'active':
-      return next === 'found' || next === 'archived'
+      return next === 'found' || next === 'archived';
     case 'found':
-      return next === 'archived'
+      return next === 'archived';
     case 'archived':
-      return false
+      return false;
     default:
-      return false
+      return false;
   }
 }
 ```
@@ -84,60 +84,54 @@ export function isValidLostAlertStatusTransition(
 ### Standard Hook Structure
 
 ```typescript
-'use client'
+'use client';
 
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
-import { useEffect, useCallback } from 'react'
-import { springConfigs } from '@/effects/reanimated/transitions'
+import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { useEffect, useCallback } from 'react';
+import { springConfigs } from '@/effects/reanimated/transitions';
 
 export interface UseHookNameOptions {
-  enabled?: boolean
-  duration?: number
-  hapticFeedback?: boolean
+  enabled?: boolean;
+  duration?: number;
+  hapticFeedback?: boolean;
 }
 
 export interface UseHookNameReturn {
-  value: SharedValue<number>
-  animatedStyle: AnimatedStyle
-  trigger: () => void
-  reset: () => void
+  value: SharedValue<number>;
+  animatedStyle: AnimatedStyle;
+  trigger: () => void;
+  reset: () => void;
 }
 
-export function useHookName(
-  options: UseHookNameOptions = {}
-): UseHookNameReturn {
-  const {
-    enabled = true,
-    duration = 300,
-    hapticFeedback = true
-  } = options
+export function useHookName(options: UseHookNameOptions = {}): UseHookNameReturn {
+  const { enabled = true, duration = 300, hapticFeedback = true } = options;
 
-  const value = useSharedValue(0)
+  const value = useSharedValue(0);
 
   const trigger = useCallback(() => {
     if (hapticFeedback) {
-      haptics.impact('light')
+      haptics.impact('light');
     }
-    
-    value.value = withSpring(1, springConfigs.smooth)
-  }, [value, hapticFeedback])
+
+    value.value = withSpring(1, springConfigs.smooth);
+  }, [value, hapticFeedback]);
 
   const reset = useCallback(() => {
-    value.value = withSpring(0, springConfigs.smooth)
-  }, [value])
+    value.value = withSpring(0, springConfigs.smooth);
+  }, [value]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: value.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: value.value }],
+    };
+  }) as AnimatedStyle;
 
   return {
     value,
     animatedStyle,
     trigger,
-    reset
-  }
+    reset,
+  };
 }
 ```
 
@@ -156,68 +150,60 @@ export function useHookName(
 ### Animation Hook Template
 
 ```typescript
-'use client'
+'use client';
 
-import { 
-  useSharedValue, 
-  useAnimatedStyle, 
+import {
+  useSharedValue,
+  useAnimatedStyle,
   withSpring,
   withSequence,
   withRepeat,
   withTiming,
   interpolate,
   Extrapolation,
-  type SharedValue 
-} from 'react-native-reanimated'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+  type SharedValue,
+} from 'react-native-reanimated';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export function useGodTierAnimation(options = {}) {
-  const scale = useSharedValue(1)
-  const opacity = useSharedValue(0)
-  
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(0);
+
   // Spring animations - Natural, bouncy
   const springAnimation = useCallback(() => {
-    scale.value = withSpring(1.2, springConfigs.bouncy)
-  }, [scale])
-  
+    scale.value = withSpring(1.2, springConfigs.bouncy);
+  }, [scale]);
+
   // Sequence animations - Chain multiple effects
   const sequenceAnimation = useCallback(() => {
     scale.value = withSequence(
       withSpring(0.9, springConfigs.smooth),
       withSpring(1.1, springConfigs.bouncy),
       withSpring(1, springConfigs.smooth)
-    )
-  }, [scale])
-  
+    );
+  }, [scale]);
+
   // Repeat animations - Continuous effects
   const pulseAnimation = useCallback(() => {
     scale.value = withRepeat(
-      withSequence(
-        withSpring(1.2, springConfigs.bouncy),
-        withSpring(1, springConfigs.smooth)
-      ),
+      withSequence(withSpring(1.2, springConfigs.bouncy), withSpring(1, springConfigs.smooth)),
       -1,
       true
-    )
-  }, [scale])
-  
+    );
+  }, [scale]);
+
   // Interpolation - Smooth value mapping
   const animatedStyle = useAnimatedStyle(() => {
-    const opacityValue = interpolate(
-      scale.value,
-      [0, 1],
-      [0, 1],
-      Extrapolation.CLAMP
-    )
-    
+    const opacityValue = interpolate(scale.value, [0, 1], [0, 1], Extrapolation.CLAMP);
+
     return {
       transform: [{ scale: scale.value }],
-      opacity: opacityValue
-    }
-  }) as AnimatedStyle
-  
-  return { animatedStyle, springAnimation, sequenceAnimation, pulseAnimation }
+      opacity: opacityValue,
+    };
+  }) as AnimatedStyle;
+
+  return { animatedStyle, springAnimation, sequenceAnimation, pulseAnimation };
 }
 ```
 
@@ -225,15 +211,15 @@ export function useGodTierAnimation(options = {}) {
 
 ```typescript
 // Use these configs - don't create custom ones
-springConfigs.gentle    // { damping: 30, stiffness: 300, mass: 0.8 }
-springConfigs.smooth    // { damping: 25, stiffness: 400 }
-springConfigs.bouncy    // { damping: 15, stiffness: 500 }
-springConfigs.snappy    // { damping: 20, stiffness: 600 }
+springConfigs.gentle; // { damping: 30, stiffness: 300, mass: 0.8 }
+springConfigs.smooth; // { damping: 25, stiffness: 400 }
+springConfigs.bouncy; // { damping: 15, stiffness: 500 }
+springConfigs.snappy; // { damping: 20, stiffness: 600 }
 
-timingConfigs.fast      // { duration: 150, easing: Easing.ease }
-timingConfigs.smooth    // { duration: 300, easing: Easing.inOut(Easing.ease) }
-timingConfigs.slow      // { duration: 500, easing: Easing.inOut(Easing.ease) }
-timingConfigs.elastic   // { duration: 400, easing: Easing.elastic(1) }
+timingConfigs.fast; // { duration: 150, easing: Easing.ease }
+timingConfigs.smooth; // { duration: 300, easing: Easing.inOut(Easing.ease) }
+timingConfigs.slow; // { duration: 500, easing: Easing.inOut(Easing.ease) }
+timingConfigs.elastic; // { duration: 400, easing: Easing.elastic(1) }
 ```
 
 ### Animation Best Practices
@@ -273,16 +259,16 @@ export function ComponentName({
   onAction
 }: ComponentNameProps) {
   const [state, setState] = useState<string>('')
-  
+
   const animation = useNavButtonAnimation({
     isActive: enabled,
     enablePulse: true,
     enableRotation: true
   })
-  
+
   const handleClick = useCallback(() => {
     if (!enabled) return
-    
+
     try {
       animation.handlePress()
       onAction?.(state)
@@ -291,7 +277,7 @@ export function ComponentName({
       logger.error('Action failed', err, { state })
     }
   }, [enabled, state, onAction, animation])
-  
+
   return (
     <AnimatedView
       style={animation.buttonStyle}
@@ -325,7 +311,7 @@ export function ComponentName({
  * Location: src/core/domain/
  */
 
-export type LostAlertStatus = 'active' | 'found' | 'archived'
+export type LostAlertStatus = 'active' | 'found' | 'archived';
 
 /**
  * Validate status transition
@@ -335,22 +321,22 @@ export function isValidLostAlertStatusTransition(
   current: LostAlertStatus,
   next: LostAlertStatus
 ): boolean {
-  if (current === next) return false
-  
+  if (current === next) return false;
+
   const validTransitions: Record<LostAlertStatus, LostAlertStatus[]> = {
     active: ['found', 'archived'],
     found: ['archived'],
-    archived: []
-  }
-  
-  return validTransitions[current].includes(next)
+    archived: [],
+  };
+
+  return validTransitions[current].includes(next);
 }
 
 /**
  * Check if alert can receive sightings
  */
 export function canReceiveSightings(status: LostAlertStatus): boolean {
-  return status === 'active'
+  return status === 'active';
 }
 ```
 
@@ -368,41 +354,36 @@ export function canReceiveSightings(status: LostAlertStatus): boolean {
 ### Strict API Implementation
 
 ```typescript
-import type { OptionalWithUndef } from '@/types/optional-with-undef'
-import type { LostAlert } from '@/lib/lost-found-types'
-import { isValidLostAlertStatusTransition } from '@/core/domain/lost-found'
+import type { OptionalWithUndef } from '@/types/optional-with-undef';
+import type { LostAlert } from '@/lib/lost-found-types';
+import { isValidLostAlertStatusTransition } from '@/core/domain/lost-found';
 
-export interface UpdateLostAlertData extends OptionalWithUndef<
-  Omit<LostAlert, 'id' | 'createdAt' | 'updatedAt'>
-> {}
+export interface UpdateLostAlertData
+  extends OptionalWithUndef<Omit<LostAlert, 'id' | 'createdAt' | 'updatedAt'>> {}
 
 export class LostFoundAPI {
-  async updateAlertStatus(
-    id: string,
-    status: LostAlertStatus,
-    userId: string
-  ): Promise<LostAlert> {
-    const alert = await this.getAlertById(id)
-    
+  async updateAlertStatus(id: string, status: LostAlertStatus, userId: string): Promise<LostAlert> {
+    const alert = await this.getAlertById(id);
+
     if (!alert) {
-      throw new Error('Alert not found')
+      throw new Error('Alert not found');
     }
-    
+
     // Use domain logic for validation
     if (!isValidLostAlertStatusTransition(alert.status, status)) {
-      throw new Error(`Invalid status transition from ${alert.status} to ${status}`)
+      throw new Error(`Invalid status transition from ${alert.status} to ${status}`);
     }
-    
+
     // Only owner can update
     if (alert.ownerId !== userId) {
-      throw new Error('Unauthorized: Only alert owner can update status')
+      throw new Error('Unauthorized: Only alert owner can update status');
     }
-    
-    alert.status = status
-    alert.updatedAt = new Date().toISOString()
-    
-    await this.setAlerts(alerts)
-    return alert
+
+    alert.status = status;
+    alert.updatedAt = new Date().toISOString();
+
+    await this.setAlerts(alerts);
+    return alert;
   }
 }
 ```
@@ -425,31 +406,31 @@ export class LostFoundAPI {
 
 ```typescript
 // Navigation
-useNavButtonAnimation()      // Navigation button animations
-useHoverLift()                // Hover lift effect
-useParallaxTilt()             // Parallax tilt on mouse move
+useNavButtonAnimation(); // Navigation button animations
+useHoverLift(); // Hover lift effect
+useParallaxTilt(); // Parallax tilt on mouse move
 
 // Bubbles & Messages
-useBubbleEntry()              // Message bubble entry animation
-useBubbleGesture()           // Swipe gestures for bubbles
-useBubbleTilt()               // 3D tilt effect
-useSwipeReply()               // Swipe to reply gesture
+useBubbleEntry(); // Message bubble entry animation
+useBubbleGesture(); // Swipe gestures for bubbles
+useBubbleTilt(); // 3D tilt effect
+useSwipeReply(); // Swipe to reply gesture
 
 // Reactions & Interactions
-useReactionSparkles()         // Particle effects for reactions
-useReactionAnimation()        // Reaction emoji animation
-useBounceOnTap()              // Bounce on tap/click
+useReactionSparkles(); // Particle effects for reactions
+useReactionAnimation(); // Reaction emoji animation
+useBounceOnTap(); // Bounce on tap/click
 
 // Visual Effects
-useShimmer()                  // Shimmer loading effect
-useGlowPulse()                // Glowing pulse effect
-useMagneticEffect()           // Magnetic attraction effect
-useTypingShimmer()            // Typing indicator shimmer
+useShimmer(); // Shimmer loading effect
+useGlowPulse(); // Glowing pulse effect
+useMagneticEffect(); // Magnetic attraction effect
+useTypingShimmer(); // Typing indicator shimmer
 
 // Media
-useMediaBubble()              // Media bubble animations
-useTimestampReveal()          // Timestamp reveal animation
-useReceiptTransition()        // Delivery receipt transitions
+useMediaBubble(); // Media bubble animations
+useTimestampReveal(); // Timestamp reveal animation
+useReceiptTransition(); // Delivery receipt transitions
 ```
 
 ### Using Animation Hooks
@@ -465,7 +446,7 @@ function MyComponent() {
     enableRotation: true,
     hapticFeedback: true
   })
-  
+
   return (
     <AnimatedView
       style={animation.buttonStyle}
@@ -476,7 +457,7 @@ function MyComponent() {
       <AnimatedView style={animation.iconStyle}>
         <Icon />
       </AnimatedView>
-      
+
       {animation.isActive && (
         <AnimatedView style={animation.indicatorStyle}>
           <div />
@@ -539,12 +520,12 @@ src/
 ```typescript
 // ✅ CORRECT
 export function processData(data: string): number {
-  return parseInt(data, 10)
+  return parseInt(data, 10);
 }
 
 // ❌ WRONG
 export function processData(data: any): any {
-  return parseInt(data)
+  return parseInt(data);
 }
 ```
 
@@ -553,19 +534,19 @@ export function processData(data: any): any {
 ```typescript
 // ✅ CORRECT - Structured error handling
 try {
-  await api.update(data)
+  await api.update(data);
 } catch (error) {
-  const err = error instanceof Error ? error : new Error(String(error))
-  logger.error('Update failed', err, { 
+  const err = error instanceof Error ? error : new Error(String(error));
+  logger.error('Update failed', err, {
     dataId: data.id,
-    action: 'update'
-  })
-  throw err
+    action: 'update',
+  });
+  throw err;
 }
 
 // ❌ WRONG - Bare catch
 try {
-  await api.update(data)
+  await api.update(data);
 } catch (error) {
   // Error swallowed
 }
@@ -575,13 +556,13 @@ try {
 
 ```typescript
 // ✅ CORRECT - Structured logging
-const logger = createLogger('ComponentName')
-logger.info('Action completed', { userId, action })
-logger.error('Action failed', error, { context })
+const logger = createLogger('ComponentName');
+logger.info('Action completed', { userId, action });
+logger.error('Action failed', error, { context });
 
 // ❌ WRONG - Console logging
-console.log('Action completed')
-console.error(error)
+console.log('Action completed');
+console.error(error);
 ```
 
 ---
@@ -611,27 +592,27 @@ console.error(error)
 ### Hook Testing
 
 ```typescript
-import { renderHook, act } from '@testing-library/react'
-import { useNavButtonAnimation } from './use-nav-button-animation'
+import { renderHook, act } from '@testing-library/react';
+import { useNavButtonAnimation } from './use-nav-button-animation';
 
 describe('useNavButtonAnimation', () => {
   it('should initialize with default values', () => {
-    const { result } = renderHook(() => useNavButtonAnimation())
-    
-    expect(result.current.scale.value).toBe(1)
-    expect(result.current.iconScale.value).toBe(1)
-  })
-  
+    const { result } = renderHook(() => useNavButtonAnimation());
+
+    expect(result.current.scale.value).toBe(1);
+    expect(result.current.iconScale.value).toBe(1);
+  });
+
   it('should handle press animation', () => {
-    const { result } = renderHook(() => useNavButtonAnimation())
-    
+    const { result } = renderHook(() => useNavButtonAnimation());
+
     act(() => {
-      result.current.handlePress()
-    })
-    
+      result.current.handlePress();
+    });
+
     // Assert animation values
-  })
-})
+  });
+});
 ```
 
 ### Component Testing
@@ -645,14 +626,14 @@ describe('ComponentName', () => {
     render(<ComponentName />)
     expect(screen.getByRole('button')).toBeInTheDocument()
   })
-  
+
   it('should handle interactions', async () => {
     const onAction = vi.fn()
     render(<ComponentName onAction={onAction} />)
-    
+
     // Simulate interaction
     await userEvent.click(screen.getByRole('button'))
-    
+
     expect(onAction).toHaveBeenCalled()
   })
 })

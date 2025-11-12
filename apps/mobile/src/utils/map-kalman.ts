@@ -1,23 +1,23 @@
 /**
  * Map Screen with Kalman Smoothing
- * 
- * Example implementation showing how to use Kalman filter for smooth GPS updates.                                                                              
- * 
+ *
+ * Example implementation showing how to use Kalman filter for smooth GPS updates.
+ *
  * Location: apps/mobile/src/utils/map-kalman.ts
  */
 
-import { makeKalman } from '@petspark/shared';
-import { useRef } from 'react';
+import { makeKalman } from '@petspark/shared'
+import { useRef } from 'react'
 
 /**
  * Example hook for using Kalman filter in map region updates
- * 
+ *
  * This should be integrated into your existing MapScreen component.
- * 
+ *
  * @example
  * ```typescript
  * const smooth = useRef(makeKalman()).current
- * 
+ *
  * const onRegionChange = (region: Region) => {
  *   const smoothed = smooth(region.latitude, region.longitude)
  *   setRegion({ ...region, latitude: smoothed.lat, longitude: smoothed.lng })
@@ -61,4 +61,3 @@ export function useKalmanSmoothing() {
  * }, [])
  * ```
  */
-

@@ -3,49 +3,36 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio",
+    "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts",
-    "test": "vitest run"
+    "lint": "eslint . --ext .ts --max-warnings=0",
+    "lint:fix": "eslint . --ext .ts --max-warnings=0 --fix",
+    "test": "vitest",
+    "test:run": "vitest run --passWithNoTests",
+    "test:cov": "vitest run --coverage"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.700.0",
-    "@aws-sdk/s3-request-presigner": "^3.700.0",
-    "@prisma/client": "^5.19.0",
-    "argon2": "^0.31.2",
-    "cookie-parser": "^1.4.6",
+    "@petspark/shared": "workspace:*",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "express-rate-limit": "^7.4.0",
-    "helmet": "^7.1.0",
+    "express": "^4.21.1",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
-    "stripe": "^17.3.1",
-    "zod": "^3.25.76"
+    "pg": "^8.16.3",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/jsonwebtoken": "^9.0.6",
-    "@types/multer": "^1.4.12",
-    "@types/node": "^20.14.10",
-    "prisma": "^5.19.0",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.13.5",
+    "@types/pg": "^8.15.6",
+    "@vitest/coverage-v8": "^4.0.6",
     "tsx": "^4.20.6",
     "typescript": "~5.7.2",
-    "vitest": "^2.1.0"
-  },
-  "engines": {
-    "node": ">=18"
+    "vitest": "^4.0.6"
   }
 }
-

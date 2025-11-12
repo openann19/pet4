@@ -1,5 +1,4 @@
-export { PremiumInput, type PremiumInputProps } from './PremiumInput.native'
-export { PremiumSelect, type PremiumSelectProps, type PremiumSelectOption } from './PremiumSelect.native'
-export { PremiumToggle, type PremiumToggleProps } from './PremiumToggle.native'
-export { PremiumSlider, type PremiumSliderProps } from './PremiumSlider.native'
-
+export { PremiumInput, type PremiumInputProps } from './PremiumInput'
+export { PremiumSelect, type PremiumSelectProps, type PremiumSelectOption } from './PremiumSelect'
+export { PremiumToggle, type PremiumToggleProps } from './PremiumToggle'
+export { PremiumSlider, type PremiumSliderProps } from './PremiumSlider'

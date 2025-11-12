@@ -1,26 +1,26 @@
-import type { StoryTemplate } from './stories-types'
+import type { StoryTemplate } from './stories-types';
 
 export interface StoryFilter {
-  id: string
-  name: string
-  category: 'vintage' | 'modern' | 'artistic' | 'playful' | 'dramatic' | 'natural'
-  cssFilter: string
-  intensity: number
-  thumbnail?: string
+  id: string;
+  name: string;
+  category: 'vintage' | 'modern' | 'artistic' | 'playful' | 'dramatic' | 'natural';
+  cssFilter: string;
+  intensity: number;
+  thumbnail?: string;
 }
 
 export interface AdvancedTemplate extends StoryTemplate {
-  description: string
-  previewImage?: string
-  animationStyle?: 'fade' | 'slide' | 'zoom' | 'bounce' | 'rotate'
-  textPosition?: 'top' | 'center' | 'bottom'
+  description: string;
+  previewImage?: string;
+  animationStyle?: 'fade' | 'slide' | 'zoom' | 'bounce' | 'rotate';
+  textPosition?: 'top' | 'center' | 'bottom';
   textStyle?: {
-    fontFamily: string
-    fontSize: string
-    color: string
-    textShadow?: string
-    fontWeight?: string
-  }
+    fontFamily: string;
+    fontSize: string;
+    color: string;
+    textShadow?: string;
+    fontWeight?: string;
+  };
 }
 
 export const STORY_FILTERS: StoryFilter[] = [
@@ -29,107 +29,107 @@ export const STORY_FILTERS: StoryFilter[] = [
     name: 'Original',
     category: 'natural',
     cssFilter: 'none',
-    intensity: 1
+    intensity: 1,
   },
   {
     id: 'filter-warm',
     name: 'Warm Glow',
     category: 'natural',
     cssFilter: 'sepia(0.3) saturate(1.3) brightness(1.1)',
-    intensity: 0.7
+    intensity: 0.7,
   },
   {
     id: 'filter-cool',
     name: 'Cool Breeze',
     category: 'modern',
     cssFilter: 'hue-rotate(20deg) saturate(1.2) brightness(1.05)',
-    intensity: 0.6
+    intensity: 0.6,
   },
   {
     id: 'filter-vintage',
     name: 'Vintage',
     category: 'vintage',
     cssFilter: 'sepia(0.5) contrast(0.9) brightness(1.1)',
-    intensity: 0.8
+    intensity: 0.8,
   },
   {
     id: 'filter-noir',
     name: 'Noir',
     category: 'dramatic',
     cssFilter: 'grayscale(1) contrast(1.3) brightness(0.9)',
-    intensity: 1
+    intensity: 1,
   },
   {
     id: 'filter-vibrant',
     name: 'Vibrant',
     category: 'playful',
     cssFilter: 'saturate(1.8) contrast(1.1)',
-    intensity: 0.9
+    intensity: 0.9,
   },
   {
     id: 'filter-dreamy',
     name: 'Dreamy',
     category: 'artistic',
     cssFilter: 'brightness(1.1) saturate(0.8) contrast(0.9) blur(0.3px)',
-    intensity: 0.7
+    intensity: 0.7,
   },
   {
     id: 'filter-sunset',
     name: 'Golden Sunset',
     category: 'dramatic',
     cssFilter: 'sepia(0.4) saturate(1.4) hue-rotate(-10deg) brightness(1.1)',
-    intensity: 0.8
+    intensity: 0.8,
   },
   {
     id: 'filter-ocean',
     name: 'Ocean Blue',
     category: 'modern',
     cssFilter: 'hue-rotate(180deg) saturate(1.2) brightness(1.05)',
-    intensity: 0.7
+    intensity: 0.7,
   },
   {
     id: 'filter-forest',
     name: 'Forest Green',
     category: 'natural',
     cssFilter: 'hue-rotate(80deg) saturate(1.3) brightness(0.95)',
-    intensity: 0.75
+    intensity: 0.75,
   },
   {
     id: 'filter-pink',
     name: 'Pink Dreams',
     category: 'playful',
     cssFilter: 'hue-rotate(-30deg) saturate(1.5) brightness(1.15)',
-    intensity: 0.8
+    intensity: 0.8,
   },
   {
     id: 'filter-sharp',
     name: 'Ultra Sharp',
     category: 'modern',
     cssFilter: 'contrast(1.3) saturate(1.2) brightness(1.05)',
-    intensity: 0.9
+    intensity: 0.9,
   },
   {
     id: 'filter-soft',
     name: 'Soft Focus',
     category: 'artistic',
     cssFilter: 'brightness(1.15) contrast(0.85) saturate(0.9)',
-    intensity: 0.6
+    intensity: 0.6,
   },
   {
     id: 'filter-neon',
     name: 'Neon Nights',
     category: 'dramatic',
     cssFilter: 'saturate(2) contrast(1.4) brightness(0.9)',
-    intensity: 1
+    intensity: 1,
   },
   {
     id: 'filter-pastel',
     name: 'Pastel',
     category: 'playful',
     cssFilter: 'saturate(0.6) brightness(1.2) contrast(0.9)',
-    intensity: 0.7
-  }
-]
+    intensity: 0.7,
+  },
+];
 
 export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
   {
@@ -138,7 +138,7 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
     description: 'Clean and simple',
     category: 'Basic',
     layoutType: 'single',
-    backgroundColor: '#ffffff'
+    backgroundColor: '#ffffff',
   },
   {
     id: 'template-sunset',
@@ -154,8 +154,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontSize: '24px',
       color: '#ffffff',
       textShadow: '0 2px 8px rgba(0,0,0,0.5)',
-      fontWeight: '700'
-    }
+      fontWeight: '700',
+    },
   },
   {
     id: 'template-ocean',
@@ -171,8 +171,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontSize: '28px',
       color: '#ffffff',
       textShadow: '0 2px 10px rgba(0,0,0,0.6)',
-      fontWeight: '800'
-    }
+      fontWeight: '800',
+    },
   },
   {
     id: 'template-neon',
@@ -188,8 +188,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontSize: '32px',
       color: '#ffffff',
       textShadow: '0 0 20px rgba(183,33,255,0.8)',
-      fontWeight: '900'
-    }
+      fontWeight: '900',
+    },
   },
   {
     id: 'template-forest',
@@ -205,8 +205,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontSize: '26px',
       color: '#ffffff',
       textShadow: '0 2px 8px rgba(0,0,0,0.5)',
-      fontWeight: '700'
-    }
+      fontWeight: '700',
+    },
   },
   {
     id: 'template-collage-2',
@@ -215,7 +215,7 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
     category: 'Layout',
     layoutType: 'split',
     backgroundColor: '#000000',
-    animationStyle: 'slide'
+    animationStyle: 'slide',
   },
   {
     id: 'template-collage-3',
@@ -224,7 +224,7 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
     category: 'Layout',
     layoutType: 'collage',
     backgroundColor: '#ffffff',
-    animationStyle: 'fade'
+    animationStyle: 'fade',
   },
   {
     id: 'template-grid-4',
@@ -233,7 +233,7 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
     category: 'Layout',
     layoutType: 'grid',
     backgroundColor: '#f5f5f5',
-    animationStyle: 'zoom'
+    animationStyle: 'zoom',
   },
   {
     id: 'template-minimal',
@@ -247,8 +247,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontFamily: 'Inter',
       fontSize: '20px',
       color: '#000000',
-      fontWeight: '600'
-    }
+      fontWeight: '600',
+    },
   },
   {
     id: 'template-minimal-dark',
@@ -262,8 +262,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontFamily: 'Inter',
       fontSize: '20px',
       color: '#ffffff',
-      fontWeight: '600'
-    }
+      fontWeight: '600',
+    },
   },
   {
     id: 'template-playful',
@@ -279,8 +279,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontSize: '30px',
       color: '#ffffff',
       textShadow: '0 4px 12px rgba(0,0,0,0.4)',
-      fontWeight: '800'
-    }
+      fontWeight: '800',
+    },
   },
   {
     id: 'template-elegant',
@@ -295,8 +295,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontFamily: 'Inter',
       fontSize: '24px',
       color: '#5A3E3E',
-      fontWeight: '700'
-    }
+      fontWeight: '700',
+    },
   },
   {
     id: 'template-midnight',
@@ -312,8 +312,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontSize: '28px',
       color: '#ffffff',
       textShadow: '0 2px 10px rgba(0,0,0,0.7)',
-      fontWeight: '700'
-    }
+      fontWeight: '700',
+    },
   },
   {
     id: 'template-autumn',
@@ -329,8 +329,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontSize: '26px',
       color: '#ffffff',
       textShadow: '0 2px 8px rgba(0,0,0,0.5)',
-      fontWeight: '700'
-    }
+      fontWeight: '700',
+    },
   },
   {
     id: 'template-cherry',
@@ -345,8 +345,8 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontFamily: 'Inter',
       fontSize: '24px',
       color: '#8B4789',
-      fontWeight: '700'
-    }
+      fontWeight: '700',
+    },
   },
   {
     id: 'template-arctic',
@@ -361,17 +361,17 @@ export const ADVANCED_STORY_TEMPLATES: AdvancedTemplate[] = [
       fontFamily: 'Inter',
       fontSize: '26px',
       color: '#1D3557',
-      fontWeight: '700'
-    }
-  }
-]
+      fontWeight: '700',
+    },
+  },
+];
 
 export const TEMPLATE_CATEGORIES = [
   { id: 'all', name: 'All Templates', icon: '✨' },
   { id: 'Basic', name: 'Basic', icon: '⚪' },
   { id: 'Colorful', name: 'Colorful', icon: '🌈' },
-  { id: 'Layout', name: 'Layout', icon: '🎨' }
-]
+  { id: 'Layout', name: 'Layout', icon: '🎨' },
+];
 
 export const FILTER_CATEGORIES = [
   { id: 'all', name: 'All Filters', icon: '🎭' },
@@ -380,23 +380,26 @@ export const FILTER_CATEGORIES = [
   { id: 'modern', name: 'Modern', icon: '✨' },
   { id: 'artistic', name: 'Artistic', icon: '🎨' },
   { id: 'playful', name: 'Playful', icon: '🎪' },
-  { id: 'dramatic', name: 'Dramatic', icon: '🎬' }
-]
+  { id: 'dramatic', name: 'Dramatic', icon: '🎬' },
+];
 
-export function applyFilter(imageElement: HTMLImageElement | HTMLVideoElement, filter: StoryFilter): void {
-  imageElement.style.filter = filter.cssFilter
+export function applyFilter(
+  imageElement: HTMLImageElement | HTMLVideoElement,
+  filter: StoryFilter
+): void {
+  imageElement.style.filter = filter.cssFilter;
 }
 
 export function removeFilter(imageElement: HTMLImageElement | HTMLVideoElement): void {
-  imageElement.style.filter = 'none'
+  imageElement.style.filter = 'none';
 }
 
 export function getTemplatesByCategory(category: string): AdvancedTemplate[] {
-  if (category === 'all') return ADVANCED_STORY_TEMPLATES
-  return ADVANCED_STORY_TEMPLATES.filter(t => t.category === category)
+  if (category === 'all') return ADVANCED_STORY_TEMPLATES;
+  return ADVANCED_STORY_TEMPLATES.filter((t) => t.category === category);
 }
 
 export function getFiltersByCategory(category: string): StoryFilter[] {
-  if (category === 'all') return STORY_FILTERS
-  return STORY_FILTERS.filter(f => f.category === category)
+  if (category === 'all') return STORY_FILTERS;
+  return STORY_FILTERS.filter((f) => f.category === category);
 }

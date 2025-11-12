@@ -1,42 +1,43 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect } from 'react'
-import { X, Funnel, Check, Eraser } from '@phosphor-icons/react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Slider } from '@/components/ui/slider'
-import { Label } from '@/components/ui/label'
-import { Card } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import { useFilters } from '@/hooks/useFilters'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { useCallback, useEffect } from 'react';
+import { X, Funnel, Check, Eraser } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { useFilters } from '@/hooks/use-filters';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface FilterOption {
-  id: string
-  label: string
-  icon?: React.ReactNode
+  id: string;
+  label: string;
+  icon?: React.ReactNode;
 }
 
 interface FilterCategory {
-  id: string
-  label: string
-  type: 'multi-select' | 'single-select' | 'range' | 'toggle'
-  options?: FilterOption[]
-  min?: number
-  max?: number
-  step?: number
-  unit?: string
+  id: string;
+  label: string;
+  type: 'multi-select' | 'single-select' | 'range' | 'toggle';
+  options?: FilterOption[];
+  min?: number;
+  max?: number;
+  step?: number;
+  unit?: string;
 }
 
 interface AdvancedFilterPanelProps {
-  categories: FilterCategory[]
-  values: Record<string, unknown>
-  onChange: (values: Record<string, unknown>) => void
-  onClose?: () => void
-  showActiveCount?: boolean
+  categories: FilterCategory[];
+  values: Record<string, unknown>;
+  onChange: (values: Record<string, unknown>) => void;
+  onClose?: () => void;
+  showActiveCount?: boolean;
 }
 
 export function AdvancedFilterPanel({
@@ -46,6 +47,7 @@ export function AdvancedFilterPanel({
   onClose,
   showActiveCount = true,
 }: AdvancedFilterPanelProps) {
+  const _uiConfig = useUIConfig();
   const {
     values: localValues,
     activeFiltersCount,
@@ -59,14 +61,14 @@ export function AdvancedFilterPanel({
     categories,
     initialValues: values,
     onApply: (vals) => {
-      onChange(vals)
-      onClose?.()
+      onChange(vals);
+      onClose?.();
     },
-  })
+  });
 
   const handleApply = useCallback(() => {
-    applyFilters()
-  }, [applyFilters])
+    applyFilters();
+  }, [applyFilters]);
 
   return (
     <Card className="w-full max-w-md p-6 space-y-6">
@@ -81,7 +83,12 @@ export function AdvancedFilterPanel({
           )}
         </div>
         {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label="Close filter panel"
+          >
             <X size={20} />
           </Button>
         )}
@@ -95,7 +102,9 @@ export function AdvancedFilterPanel({
             {category.type === 'multi-select' && category.options && (
               <div className="flex flex-wrap gap-2">
                 {category.options.map((option) => {
-                  const isSelected = ((localValues[category.id] as string[]) ?? []).includes(option.id)
+                  const isSelected = ((localValues[category.id] as string[]) ?? []).includes(
+                    option.id
+                  );
                   return (
                     <FilterOptionButton
                       key={option.id}
@@ -104,7 +113,7 @@ export function AdvancedFilterPanel({
                       onClick={() => handleMultiSelect(category.id, option.id)}
                       showCheck={true}
                     />
-                  )
+                  );
                 })}
               </div>
             )}
@@ -112,7 +121,7 @@ export function AdvancedFilterPanel({
             {category.type === 'single-select' && category.options && (
               <div className="grid grid-cols-2 gap-2">
                 {category.options.map((option) => {
-                  const isSelected = localValues[category.id] === option.id
+                  const isSelected = localValues[category.id] === option.id;
                   return (
                     <FilterOptionButton
                       key={option.id}
@@ -122,7 +131,7 @@ export function AdvancedFilterPanel({
                       showCheck={false}
                       className="justify-center py-3 rounded-lg"
                     />
-                  )
+                  );
                 })}
               </div>
             )}
@@ -134,14 +143,19 @@ export function AdvancedFilterPanel({
                     {category.min} {category.unit}
                   </span>
                   <span className="font-semibold text-primary">
-                    {(localValues[category.id] as number | undefined) ?? category.min ?? 0} {category.unit}
+                    {(localValues[category.id] as number | undefined) ?? category.min ?? 0}{' '}
+                    {category.unit}
                   </span>
                   <span className="text-muted-foreground">
                     {category.max} {category.unit}
                   </span>
                 </div>
                 <Slider
-                  value={[(localValues[category.id] as number | undefined) ?? category.min ?? 0] as number[]}
+                  value={
+                    [
+                      (localValues[category.id] as number | undefined) ?? category.min ?? 0,
+                    ] as number[]
+                  }
                   onValueChange={(value) => handleRangeChange(category.id, value)}
                   min={category.min ?? 0}
                   max={category.max ?? 100}
@@ -183,26 +197,32 @@ export function AdvancedFilterPanel({
         </Button>
       </div>
     </Card>
-  )
+  );
 }
 
 interface FilterOptionButtonProps {
-  option: FilterOption
-  isSelected: boolean
-  onClick: () => void
-  showCheck: boolean
-  className?: string
+  option: FilterOption;
+  isSelected: boolean;
+  onClick: () => void;
+  showCheck: boolean;
+  className?: string;
 }
 
-function FilterOptionButton({ option, isSelected, onClick, showCheck, className }: FilterOptionButtonProps) {
-  const bounceAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false })
+function FilterOptionButton({
+  option,
+  isSelected,
+  onClick,
+  showCheck,
+  className,
+}: FilterOptionButtonProps) {
+  const bounceAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
 
   return (
     <AnimatedView style={bounceAnimation.animatedStyle}>
       <button
         onClick={() => {
-          bounceAnimation.handlePress()
-          onClick()
+          bounceAnimation.handlePress();
+          onClick();
         }}
         className={cn(
           'flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-200',
@@ -217,34 +237,34 @@ function FilterOptionButton({ option, isSelected, onClick, showCheck, className 
         {showCheck && isSelected && <Check size={16} weight="bold" />}
       </button>
     </AnimatedView>
-  )
+  );
 }
 
 interface ToggleSwitchProps {
-  label: string
-  checked: boolean
-  onChange: () => void
+  label: string;
+  checked: boolean;
+  onChange: () => void;
 }
 
 function ToggleSwitch({ label, checked, onChange }: ToggleSwitchProps) {
-  const translateX = useSharedValue(checked ? 20 : 0)
+  const translateX = useSharedValue(checked ? 20 : 0);
 
-  const toggleAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false })
+  const toggleAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
 
   useEffect(() => {
-    translateX.value = withTiming(checked ? 20 : 0, { duration: 200 })
-  }, [checked, translateX])
+    translateX.value = withTiming(checked ? 20 : 0, { duration: 200 });
+  }, [checked, translateX]);
 
   const handleClick = useCallback(() => {
-    toggleAnimation.handlePress()
-    onChange()
-  }, [onChange, toggleAnimation])
+    toggleAnimation.handlePress();
+    onChange();
+  }, [onChange, toggleAnimation]);
 
   const thumbStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: translateX.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ translateX: translateX.value }],
+    };
+  }) as AnimatedStyle;
 
   return (
     <AnimatedView style={toggleAnimation.animatedStyle}>
@@ -266,5 +286,5 @@ function ToggleSwitch({ label, checked, onChange }: ToggleSwitchProps) {
         </div>
       </button>
     </AnimatedView>
-  )
+  );
 }

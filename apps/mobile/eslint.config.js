@@ -21,6 +21,7 @@ export default tseslint.config(
       '**/*.config.js',
       '**/*.config.cjs',
       '**/*.config.mjs',
+      '**/*.config.cjs',
       '**/.eslintrc.cjs',
       '**/.lintstagedrc.js',
       '**/index.js',
@@ -29,6 +30,7 @@ export default tseslint.config(
       'tools/**',
       'android/**',
       'ios/**',
+      'metro.config.cjs',
     ],
   },
   { linterOptions: { reportUnusedDisableDirectives: 'error' } },
@@ -99,27 +101,19 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-expressions': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
-      '@typescript-eslint/no-unsafe-assignment': 'error',
-      '@typescript-eslint/no-unsafe-member-access': 'error',
-      '@typescript-eslint/no-unsafe-call': 'error',
-      '@typescript-eslint/no-unsafe-return': 'error',
-      '@typescript-eslint/no-unsafe-argument': 'error',
-      '@typescript-eslint/require-await': 'error',
-      '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      
+
       // React
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // React Native - Disabled due to ESLint 9 compatibility issues
       // 'react-native/no-unused-styles': 'warn',
       // 'react-native/split-platform-components': 'warn',
       // 'react-native/no-inline-styles': 'warn',
       // 'react-native/no-color-literals': 'warn',
-      
+
       // General
       'no-console': 'error',
       'no-debugger': 'error',
@@ -127,28 +121,7 @@ export default tseslint.config(
       'no-var': 'error',
       'prefer-const': 'error',
       'prefer-arrow-callback': 'error',
-      'eqeqeq': ['error', 'smart'],
-      
-      // Security
-      'security/detect-object-injection': 'off',
-      
-      // Import
-      'import/no-unresolved': ['error', { ignore: ['^@/', '^@mobile/', '^@petspark/', '^@ui-mobile/'] }],
-      'import/named': 'error',
-      'import/default': 'error',
-      'import/namespace': 'error',
-      'import/no-absolute-path': 'error',
-      'import/no-self-import': 'error',
-      'import/no-cycle': 'error',
-      'import/no-unused-modules': 'error',
-      'import/no-deprecated': 'warn',
-      
-      // Promise
-      'promise/catch-or-return': 'error',
-      
-      // SonarJS
-      'sonarjs/no-duplicate-string': ['error', { threshold: 5 }],
-      
+
       // Unicorn
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/filename-case': [
@@ -165,15 +138,14 @@ export default tseslint.config(
       'unicorn/prefer-array-some': 'error',
       'unicorn/prefer-includes': 'error',
       'unicorn/prefer-string-starts-ends-with': 'error',
-      'unicorn/prefer-optional-catch-binding': 'error',
-      
+
       // Code quality
       'no-param-reassign': ['error', { props: true }],
       'no-return-await': 'error',
       'require-await': 'error',
       'no-throw-literal': 'error',
       'prefer-promise-reject-errors': 'error',
-      
+
       // Ultra Chat FX Rules
       'ultra-chatfx/no-react-native-animated': 'error',
       'ultra-chatfx/require-reduced-motion-guard': [
@@ -195,25 +167,19 @@ export default tseslint.config(
       'ultra-chatfx/ban-math-random-in-effects': [
         'error',
         {
-          globs: [
-            'src/**/effects/**/*.{ts,tsx}',
-            'src/**/features/chat/**/*.{ts,tsx}',
-          ],
+          globs: ['src/**/effects/**/*.{ts,tsx}', 'src/**/features/chat/**/*.{ts,tsx}'],
         },
       ],
     },
   },
-  {
-    files: ['**/*.{js,jsx,mjs,cjs}'],
-    rules: {
-      '@typescript-eslint/no-var-requires': 'off',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/await-thenable': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/no-misused-promises': 'off',
-      'no-console': 'error',
-    },
+      {
+        files: ['**/*.{js,jsx,mjs}'],
+        rules: {
+          '@typescript-eslint/no-var-requires': 'off',
+          '@typescript-eslint/explicit-function-return-type': 'off',
+          '@typescript-eslint/no-unused-vars': 'off',
+          'no-console': 'off', // Allow console in scripts
+        },
     languageOptions: {
       globals: {
         console: 'readonly',

@@ -1,31 +1,31 @@
 /**
  * Notification Settings Component
- * 
+ *
  * Settings panel for notification preferences
  */
 
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { MoonStars, Sparkle, Bell, BellRinging } from '@phosphor-icons/react'
-import type { NotificationPreferences } from '../types'
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { MoonStars, Sparkle, Bell, BellRinging } from '@phosphor-icons/react';
+import type { NotificationPreferences } from '../types';
 
 export interface NotificationSettingsProps {
-  preferences: NotificationPreferences | null
-  onPreferencesChange: (preferences: NotificationPreferences) => void
+  preferences: NotificationPreferences | null;
+  onPreferencesChange: (preferences: NotificationPreferences) => void;
 }
 
 export function NotificationSettings({
   preferences,
-  onPreferencesChange
+  onPreferencesChange,
 }: NotificationSettingsProps): JSX.Element {
   const updatePreferences = (updates: Partial<NotificationPreferences>) => {
-    if (!preferences) return
-    
+    if (!preferences) return;
+
     onPreferencesChange({
       ...preferences,
-      ...updates
-    })
-  }
+      ...updates,
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -36,18 +36,26 @@ export function NotificationSettings({
         </Label>
         <Switch
           id="quiet-hours"
-          checked={preferences?.quietHours.enabled ?? false}
+          checked={preferences?.quietHours?.enabled ?? false}
           onCheckedChange={(enabled) => {
+            if (!preferences) return;
+            const currentQuietHours = preferences.quietHours;
             updatePreferences({
-              quietHours: {
-                ...preferences!.quietHours,
-                enabled
-              }
-            })
+              quietHours: currentQuietHours
+                ? {
+                    ...currentQuietHours,
+                    enabled,
+                  }
+                : {
+                    enabled,
+                    start: '22:00',
+                    end: '08:00',
+                  },
+            });
           }}
         />
       </div>
-      
+
       <div className="flex items-center justify-between">
         <Label htmlFor="group-similar" className="text-sm font-medium">
           <Sparkle size={16} className="inline mr-2" />
@@ -57,7 +65,7 @@ export function NotificationSettings({
           id="group-similar"
           checked={preferences?.groupSimilar ?? false}
           onCheckedChange={(groupSimilar) => {
-            updatePreferences({ groupSimilar })
+            updatePreferences({ groupSimilar });
           }}
         />
       </div>
@@ -71,7 +79,7 @@ export function NotificationSettings({
           id="show-previews"
           checked={preferences?.showPreviews ?? false}
           onCheckedChange={(showPreviews) => {
-            updatePreferences({ showPreviews })
+            updatePreferences({ showPreviews });
           }}
         />
       </div>
@@ -85,7 +93,7 @@ export function NotificationSettings({
           id="sound-enabled"
           checked={preferences?.soundEnabled ?? false}
           onCheckedChange={(soundEnabled) => {
-            updatePreferences({ soundEnabled })
+            updatePreferences({ soundEnabled });
           }}
         />
       </div>
@@ -99,10 +107,10 @@ export function NotificationSettings({
           id="push-enabled"
           checked={preferences?.pushEnabled ?? false}
           onCheckedChange={(pushEnabled) => {
-            updatePreferences({ pushEnabled })
+            updatePreferences({ pushEnabled });
           }}
         />
       </div>
     </div>
-  )
+  );
 }

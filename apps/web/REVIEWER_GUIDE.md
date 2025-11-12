@@ -1,4 +1,5 @@
 # PawfectMatch - App Review Guide
+
 ## Quick Reference for App Store & Play Store Reviewers
 
 **App Name**: PawfectMatch  
@@ -12,6 +13,7 @@
 ## Test Credentials
 
 ### Standard User Account
+
 ```
 Email: reviewer@pawfectmatch.app
 Password: ReviewPass2024!
@@ -25,12 +27,14 @@ Role: Standard User + Reviewer Access
 ## Quick Start (3 Minutes)
 
 ### Option 1: Browse Without Account
+
 1. Launch app
 2. Welcome screen appears
 3. Tap **"Explore first"** button
 4. You're now in Discovery view with demo pets
 
 ### Option 2: Full Account Experience
+
 1. Launch app
 2. Welcome screen appears
 3. Tap **"Get started"** button
@@ -42,9 +46,11 @@ Role: Standard User + Reviewer Access
 ## Core Features to Test
 
 ### 1. Discovery (Pet Matching)
+
 **Location**: Main tab "Discover" (sparkle icon)
 
 **How to Test**:
+
 - **Card Swipe**: Drag card left (pass) or right (like)
 - **Haptic Feedback**: Feel vibration on each swipe (if device supports)
 - **Buttons**: Or use ❌ and ❤️ buttons at bottom
@@ -57,9 +63,11 @@ Role: Standard User + Reviewer Access
 ---
 
 ### 2. Map View (Location Features)
+
 **Location**: Discovery → Tap "Map" button
 
 **How to Test**:
+
 - **Permission**: App requests location (select "While Using App")
 - **Markers**: Pet markers appear clustered on map
 - **Privacy**: Locations are approximate (snapped to grid), not exact addresses
@@ -74,9 +82,11 @@ Role: Standard User + Reviewer Access
 ---
 
 ### 3. Matches View
+
 **Location**: Second tab "Matches" (heart icon)
 
 **How to Test**:
+
 - See all matched pets
 - Tap match card to see compatibility breakdown
 - Chart shows personality, interests, size, age, location scores
@@ -88,9 +98,11 @@ Role: Standard User + Reviewer Access
 ---
 
 ### 4. Chat & Messaging
+
 **Location**: Third tab "Chat" (chat bubble icon)
 
 **How to Test**:
+
 - **Send Messages**: Type and send text messages
 - **Reactions**: Hover over message, tap emoji to react
 - **Stickers**: Tap sticker icon, select from 16 pet-themed stickers
@@ -104,9 +116,11 @@ Role: Standard User + Reviewer Access
 ---
 
 ### 5. Stories (24-Hour Content)
+
 **Location**: Discover tab → Horizontal story rings at top
 
 **How to Test**:
+
 - **View Story**: Tap any story ring with gradient border
 - **Progress Bars**: Multiple stories auto-advance every 5 seconds
 - **Reactions**: Tap emoji icon, select reaction
@@ -119,9 +133,11 @@ Role: Standard User + Reviewer Access
 ---
 
 ### 6. Profile & Settings
+
 **Location**: Fourth tab "Profile" (user icon)
 
 **How to Test**:
+
 - **Edit Profile**: Tap "Edit Profile" to modify pet details
 - **Stats**: View match count, success rate, profiles viewed
 - **Highlights**: Permanent story collections (below stats)
@@ -136,9 +152,11 @@ Role: Standard User + Reviewer Access
 ---
 
 ### 7. Admin Console (Moderation)
+
 **Location**: Shield icon in app header (top-right)
 
 **How to Test**:
+
 - **Dashboard**: System metrics, active users, pending reports
 - **Reports**: View user reports, filtering, resolution actions
 - **Users**: Search users, view profiles, moderation history
@@ -155,6 +173,7 @@ Role: Standard User + Reviewer Access
 ## Localization (EN + BG)
 
 ### How to Test
+
 1. Tap language icon (globe/letters icon, usually bottom-left)
 2. Select "Български" (Bulgarian)
 3. Entire UI switches to Bulgarian
@@ -168,18 +187,21 @@ Role: Standard User + Reviewer Access
 ## Permissions (Test All)
 
 ### 1. Camera
+
 **Trigger**: Profile → Edit → Add Photo → "Take Photo"  
 **Prompt**: "PawfectMatch needs camera access to let you take photos of your pet for their profile."  
 **Test**: Allow → Camera opens → Take photo → Photo appears  
 **Test**: Deny → Friendly message → "Upload from Library" still works
 
 ### 2. Photo Library
+
 **Trigger**: Profile → Edit → Add Photo → "Choose from Library"  
 **Prompt**: "PawfectMatch needs photo library access to let you choose photos..."  
 **Test**: Allow → Photo picker opens → Select photo → Photo appears  
 **Test**: Deny → Friendly message → Camera option still available
 
 ### 3. Location
+
 **Trigger**: Discovery → Tap "Map" button  
 **Prompt**: "PawfectMatch uses your approximate location to show you pets nearby. Your exact location is never shared."  
 **Test**: Allow → Map loads with nearby pets  
@@ -188,6 +210,7 @@ Role: Standard User + Reviewer Access
 **Important**: We only request "While Using App" (iOS) and "Coarse Location" (Android). We NEVER access background location or precise coordinates.
 
 ### 4. Notifications
+
 **Trigger**: After first match, or Settings → Notifications → Enable  
 **Prompt**: "Get notified when you have new matches and messages from other pet owners."  
 **Test**: Allow → Notifications enabled, test notification appears  
@@ -200,6 +223,7 @@ Role: Standard User + Reviewer Access
 ## Subscriptions & In-App Purchases
 
 ### How to Test (Sandbox/Test Mode)
+
 1. Tap "Upgrade to Premium" (crown icon or banner)
 2. See paywall with 3 plans: Free, Premium, Elite
 3. Select "Premium" → Tap "Start 7-Day Free Trial"
@@ -213,12 +237,14 @@ Role: Standard User + Reviewer Access
 7. Tap "Restore Purchases" → Subscription re-syncs
 
 ### Subscription Copy
+
 - **Trial**: "7-day free trial, then $9.99/month"
 - **Renewal**: "Renews monthly unless canceled 24 hours before period end"
 - **Cancel**: "Manage subscription in App Store/Play Store settings"
 - **Features**: Listed clearly with checkmarks
 
 ### One-Time Purchases
+
 - **Boosts (5-pack)**: $4.99 → Increases profile visibility for 24 hours
 - **Super Likes (10-pack)**: $2.99 → Priority message to standout pet
 
@@ -229,6 +255,7 @@ Role: Standard User + Reviewer Access
 ## Offline Mode
 
 ### How to Test
+
 1. Enable Airplane Mode on device
 2. Open app → Yellow banner appears: "You're offline. Some features are limited."
 3. **Works offline**:
@@ -251,6 +278,7 @@ Role: Standard User + Reviewer Access
 ## Push Notifications & Deep Links
 
 ### Test Push Notifications (If Configured)
+
 1. Send test notification:
    - **Type**: "New Match"
    - **Title**: "You matched with Buddy! 🎉"
@@ -260,6 +288,7 @@ Role: Standard User + Reviewer Access
 4. **Test 3 - App Foreground**: Notification appears in-app → Tap → Match detail opens
 
 ### Test Deep Links
+
 1. Open Safari (iOS) or Chrome (Android)
 2. Navigate to: `https://pawfectmatch.app/matches?pet=demo123`
 3. Tap "Open in PawfectMatch" (if installed)
@@ -272,6 +301,7 @@ Role: Standard User + Reviewer Access
 ## Dark Mode
 
 ### How to Test
+
 1. **Method 1**: Tap moon/sun icon in app header (top-right)
 2. **Method 2**: System Settings → Display → Dark Mode
 3. Verify:
@@ -287,6 +317,7 @@ Role: Standard User + Reviewer Access
 ## Accessibility
 
 ### Screen Reader (VoiceOver/TalkBack)
+
 1. Enable VoiceOver (iOS: Settings → Accessibility) or TalkBack (Android)
 2. Navigate through app with swipe gestures
 3. Verify:
@@ -296,6 +327,7 @@ Role: Standard User + Reviewer Access
    - Announcements for dynamic content (new messages, matches)
 
 ### Reduce Motion
+
 1. Enable Reduce Motion (iOS: Settings → Accessibility → Motion)
 2. Navigate app
 3. Verify:
@@ -310,6 +342,7 @@ Role: Standard User + Reviewer Access
 ## Security & Privacy
 
 ### Privacy-First Features
+
 - **Coarse location only**: No precise GPS coordinates ever accessed
 - **Privacy snapping**: All locations jittered to 500m-1km grid
 - **No tracking**: No IDFA, no cross-app tracking, no ATT prompt
@@ -318,6 +351,7 @@ Role: Standard User + Reviewer Access
 - **Account deletion**: Settings → Account → Delete Account (30-day grace period)
 
 ### Data Safety / Privacy Labels
+
 - **Collected**: Email, photos, messages, approximate location, usage data
 - **NOT Collected**: Precise location, device IDs, browsing history, financial info
 - **Purpose**: Matching algorithm, messaging, service improvement
@@ -330,6 +364,7 @@ Role: Standard User + Reviewer Access
 ## Performance
 
 ### Cold Start
+
 1. Force quit app
 2. Launch app
 3. Time until UI is interactive
@@ -337,6 +372,7 @@ Role: Standard User + Reviewer Access
 **Expected**: < 3 seconds (target: 2-2.5s)
 
 ### Scrolling
+
 1. Open Chat with long conversation (500+ messages)
 2. Scroll rapidly up and down
 3. Observe frame rate
@@ -344,6 +380,7 @@ Role: Standard User + Reviewer Access
 **Expected**: Smooth 60fps, no stuttering, virtualized list
 
 ### Memory
+
 1. Use app for 5 minutes: swipe 50 pets, open/close sheets, chat
 2. Monitor memory (Instruments/Android Profiler)
 
@@ -354,18 +391,22 @@ Role: Standard User + Reviewer Access
 ## Demo Content (Pre-Seeded)
 
 ### Pets
+
 - 20+ pet profiles (dogs, cats, various breeds, ages, personalities)
 - Photos, bios, compatibility scores
 
 ### Matches
+
 - 5+ pre-existing matches for testing chat/features
 - Includes pets like "Buddy" (Golden Retriever), "Whiskers" (Tabby Cat), "Max" (Husky)
 
 ### Conversations
+
 - Sample messages in each match
 - Reactions, stickers, voice notes (simulated)
 
 ### Stories
+
 - 3-5 active stories with < 24hr age
 - 2 highlights on demo profile ("Best Moments", "Adventures")
 
@@ -374,18 +415,23 @@ Role: Standard User + Reviewer Access
 ## Common Issues & Troubleshooting
 
 ### Issue: "No pets found"
+
 **Solution**: Pull down to refresh Discovery view, or switch to Map view.
 
 ### Issue: Camera not working
+
 **Solution**: Check Settings → PawfectMatch → Camera permission is enabled.
 
 ### Issue: Messages not sending
+
 **Solution**: Check network connection. Messages queue offline and send on reconnect.
 
 ### Issue: Subscription not restoring
+
 **Solution**: Tap "Restore Purchases" on paywall. Wait 5-10 seconds for sync.
 
 ### Issue: Admin console not appearing
+
 **Solution**: Shield icon is in top-right of header. Tap to open. (Requires reviewer account.)
 
 ---
@@ -407,14 +453,17 @@ If you have admin access, you can toggle features via Admin Console → Settings
 ## Contact & Support
 
 ### For Review Questions
+
 **Email**: support@pawfectmatch.app  
 **Response Time**: 24-48 hours
 
 ### For Critical Issues During Review
+
 **Email**: urgent@pawfectmatch.app  
 **Response Time**: 2-4 hours (business hours)
 
 ### Documentation
+
 - **Full PRD**: See `PRD.md` in project root
 - **Architecture**: See `SYSTEM_ARCHITECTURE.md`
 - **Store Submission**: See `STORE_SUBMISSION.md`
@@ -425,6 +474,7 @@ If you have admin access, you can toggle features via Admin Console → Settings
 ## Review Checklist (For Reviewers)
 
 ### Functionality ✅
+
 - [ ] App launches without crashes
 - [ ] Core features work (discover, match, chat, profile)
 - [ ] Permissions requested appropriately (just-in-time)
@@ -434,12 +484,14 @@ If you have admin access, you can toggle features via Admin Console → Settings
 - [ ] Deep links open correct screens
 
 ### Content ✅
+
 - [ ] No objectionable content (age-appropriate for 4+)
 - [ ] User-generated content has moderation (admin console)
 - [ ] Reporting mechanism available
 - [ ] Privacy policy and terms of service linked
 
 ### Privacy ✅
+
 - [ ] Only coarse location requested (not precise)
 - [ ] Permissions have clear usage strings
 - [ ] No tracking (no ATT prompt on iOS)
@@ -447,6 +499,7 @@ If you have admin access, you can toggle features via Admin Console → Settings
 - [ ] Data practices match privacy labels
 
 ### Design ✅
+
 - [ ] UI is polished and intuitive
 - [ ] No broken layouts on various screen sizes
 - [ ] Dark mode works correctly
@@ -454,12 +507,14 @@ If you have admin access, you can toggle features via Admin Console → Settings
 - [ ] Text is readable (contrast passes WCAG AA)
 
 ### Localization ✅
+
 - [ ] App supports EN + BG fully
 - [ ] No untranslated strings visible
 - [ ] Language switch works correctly
 - [ ] Store metadata matches app language
 
 ### Performance ✅
+
 - [ ] Cold start < 3 seconds
 - [ ] No ANRs or frozen UI
 - [ ] Scrolling is smooth (60fps)
@@ -470,6 +525,7 @@ If you have admin access, you can toggle features via Admin Console → Settings
 ## Approval Recommendation
 
 If all items above pass, app is ready for:
+
 - ✅ **App Store approval** (iOS)
 - ✅ **Google Play approval** (Android)
 

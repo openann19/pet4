@@ -30,7 +30,7 @@ export const calculateMidpoint = (locations: Location[]): Location => {
   if (locations.length === 0) {
     throw new Error('Cannot calculate midpoint of empty array');
   }
-  
+
   const sum = locations.reduce(
     (acc, loc) => ({
       lat: acc.lat + loc.lat,
@@ -38,7 +38,7 @@ export const calculateMidpoint = (locations: Location[]): Location => {
     }),
     { lat: 0, lng: 0 }
   );
-  
+
   return {
     lat: sum.lat / locations.length,
     lng: sum.lng / locations.length,
@@ -48,12 +48,10 @@ export const calculateMidpoint = (locations: Location[]): Location => {
 export const formatDistance = (km: number, units: 'metric' | 'imperial' = 'metric'): string => {
   if (units === 'imperial') {
     const miles = km * 0.621371;
-    return miles < 1
-      ? `${String(Math.round(miles * 5280) ?? '')} ft`
-      : `${String(miles.toFixed(1) ?? '')} mi`;
+    return miles < 1 ? `${Math.round(miles * 5280)} ft` : `${miles.toFixed(1)} mi`;
   }
-  
-  return km < 1 ? `${String(Math.round(km * 1000) ?? '')} m` : `${String(km.toFixed(1) ?? '')} km`;
+
+  return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
 };
 
 export const isLocationWithinRadius = (
@@ -70,7 +68,7 @@ export const getCurrentLocation = (): Promise<Location> => {
       reject(new Error('Geolocation not supported'));
       return;
     }
-    
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         resolve({
@@ -97,7 +95,7 @@ export const watchLocation = (
   if (!navigator.geolocation) {
     throw new Error('Geolocation not supported');
   }
-  
+
   return navigator.geolocation.watchPosition(
     (position) => {
       callback({

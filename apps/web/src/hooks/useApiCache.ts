@@ -85,11 +85,13 @@ export function useApiCache<T>(
     const cachedData = queryCache.get<T>(key);
     if (isTruthy(cachedData)) {
       setData(cachedData);
-      if (isTruthy(refetchOnMount)) {
-        fetchData(false);
+      if (refetchOnMount) {
+        // Fire-and-forget: refetch in background with error handling inside
+        void fetchData(false);
       }
     } else {
-      fetchData(true);
+      // Fire-and-forget: fetch data asynchronously with error handling inside
+      void fetchData(true);
     }
   }, [key, enabled, refetchOnMount, fetchData]);
 
@@ -98,7 +100,8 @@ export function useApiCache<T>(
     if (!refetchInterval || !enabled || !key) return;
 
     const interval = setInterval(() => {
-      fetchData(false);
+      // Fire-and-forget: refetch at interval with error handling inside
+      void fetchData(false);
     }, refetchInterval);
 
     return () => { clearInterval(interval); };
@@ -128,9 +131,6 @@ export function useApiCache<T>(
 }
 
 // Helper hook for generating cache keys
-export function useCacheKey(
-  endpoint: string,
-  params?: Record<string, unknown>
-): string {
+export function useCacheKey(endpoint: string, params?: Record<string, unknown>): string {
   return generateCacheKey(endpoint, params);
 }

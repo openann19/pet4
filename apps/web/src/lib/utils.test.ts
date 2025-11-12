@@ -88,7 +88,7 @@ describe('utils', () => {
 
     it('should contain timestamp component', () => {
       const ulid = generateULID();
-      
+
       // ULID should contain timestamp in base36
       const timestampStr = ulid.substring(0, 8);
       expect(timestampStr).toMatch(/^[0-9A-Z]+$/);

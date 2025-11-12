@@ -1,27 +1,37 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { AdoptionDetailDialog } from '../AdoptionDetailDialog'
-import type { AdoptionProfile } from '@/lib/adoption-types'
-import { useApp } from '@/contexts/AppContext'
-import { haptics } from '@/lib/haptics'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { AdoptionDetailDialog } from '@/components/adoption/AdoptionDetailDialog';
+import type { AdoptionProfile } from '@/lib/adoption-types';
+import { useApp } from '@/contexts/AppContext';
+import { haptics } from '@/lib/haptics';
 
 vi.mock('@/contexts/AppContext', () => ({
   useApp: vi.fn(),
-}))
+}));
 vi.mock('@/lib/haptics', () => ({
   haptics: {
-    trigger: vi.fn(),
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
   },
-}))
-vi.mock('../AdoptionApplicationDialog', () => ({
+  triggerHaptic: vi.fn(() => undefined),
+}));
+vi.mock('@/components/adoption/AdoptionApplicationDialog', () => ({
   AdoptionApplicationDialog: ({ open }: { open: boolean }) =>
     open ? <div data-testid="application-dialog">Application Dialog</div> : null,
-}))
+}));
 
-const mockUseApp = vi.mocked(useApp)
-const mockHaptics = vi.mocked(haptics)
+const mockUseApp = vi.mocked(useApp);
+const mockHaptics = vi.mocked(haptics);
 
 describe('AdoptionDetailDialog', () => {
   const mockProfile: AdoptionProfile = {
@@ -47,18 +57,15 @@ describe('AdoptionDetailDialog', () => {
     adoptionFee: 200,
     postedDate: new Date().toISOString(),
     personality: ['friendly', 'energetic'],
-    photos: [
-      'https://example.com/buddy.jpg',
-      'https://example.com/buddy2.jpg',
-    ],
+    photos: ['https://example.com/buddy.jpg', 'https://example.com/buddy2.jpg'],
     contactEmail: 'shelter@example.com',
     contactPhone: '123-456-7890',
-  }
+  };
 
-  const mockOnOpenChange = vi.fn()
+  const mockOnOpenChange = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.clearAllMocks();
     mockUseApp.mockReturnValue({
       t: {
         adoption: {
@@ -66,141 +73,110 @@ describe('AdoptionDetailDialog', () => {
           viewDetails: 'View Details',
         },
       },
-    } as never)
-  })
+    } as never);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
 
   it('renders nothing when profile is null', () => {
     const { container } = render(
-      <AdoptionDetailDialog
-        profile={null}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={null} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    expect(container.firstChild).toBeNull()
-  })
+    expect(container.firstChild).toBeNull();
+  });
 
   it('renders dialog when profile is provided', () => {
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    expect(screen.getByText('Buddy')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Buddy')).toBeInTheDocument();
+  });
 
   it('displays pet name', () => {
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    expect(screen.getByText('Buddy')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Buddy')).toBeInTheDocument();
+  });
 
   it('displays pet breed', () => {
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    expect(screen.getByText(/golden retriever/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/golden retriever/i)).toBeInTheDocument();
+  });
 
   it('displays pet description', () => {
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    expect(screen.getByText(/friendly dog/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/friendly dog/i)).toBeInTheDocument();
+  });
 
   it('navigates to next photo', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    const nextButton = screen.getByRole('button', { name: /next/i })
-    await user.click(nextButton)
+    const nextButton = screen.getByRole('button', { name: /next/i });
+    await user.click(nextButton);
 
-    expect(mockHaptics.trigger).toHaveBeenCalledWith('selection')
-  })
+    expect(mockHaptics.trigger).toHaveBeenCalledWith('selection');
+  });
 
   it('navigates to previous photo', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    const prevButton = screen.getByRole('button', { name: /previous/i })
-    if (isTruthy(prevButton)) {
-      await user.click(prevButton)
+    const prevButton = screen.getByRole('button', { name: /previous/i });
+    if (prevButton) {
+      await user.click(prevButton);
     }
 
-    expect(mockHaptics.trigger).toHaveBeenCalledWith('selection')
-  })
+    expect(mockHaptics.trigger).toHaveBeenCalledWith('selection');
+  });
 
   it('opens application dialog when apply is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    const applyButton = screen.getByRole('button', { name: /apply/i })
-    await user.click(applyButton)
+    const applyButton = screen.getByRole('button', { name: /apply/i });
+    await user.click(applyButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('application-dialog')).toBeInTheDocument()
-    })
+      expect(screen.getByTestId('application-dialog')).toBeInTheDocument();
+    });
 
-    expect(mockHaptics.trigger).toHaveBeenCalledWith('success')
-  })
+    expect(mockHaptics.trigger).toHaveBeenCalledWith('success');
+  });
 
   it('displays photo indicators when multiple photos', () => {
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    const indicators = screen.getAllByRole('button')
-    expect(indicators.length).toBeGreaterThan(0)
-  })
+    const indicators = screen.getAllByRole('button');
+    expect(indicators.length).toBeGreaterThan(0);
+  });
 
   it('uses single photo when photos array is empty', () => {
     const profileWithSinglePhoto = {
       ...mockProfile,
       photos: [],
-    }
+    };
 
     render(
       <AdoptionDetailDialog
@@ -208,64 +184,47 @@ describe('AdoptionDetailDialog', () => {
         open={true}
         onOpenChange={mockOnOpenChange}
       />
-    )
+    );
 
-    expect(screen.getByText('Buddy')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Buddy')).toBeInTheDocument();
+  });
 
   it('displays contact information', () => {
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    expect(screen.getByText(/shelter@example.com/i)).toBeInTheDocument()
-    expect(screen.getByText(/123-456-7890/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/shelter@example.com/i)).toBeInTheDocument();
+    expect(screen.getByText(/123-456-7890/i)).toBeInTheDocument();
+  });
 
   it('displays adoption fee', () => {
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    expect(screen.getByText(/\$200/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/\$200/i)).toBeInTheDocument();
+  });
 
   it('displays pet details', () => {
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    expect(screen.getByText(/3 years/i)).toBeInTheDocument()
-    expect(screen.getByText(/male/i)).toBeInTheDocument()
-    expect(screen.getByText(/large/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/3 years/i)).toBeInTheDocument();
+    expect(screen.getByText(/male/i)).toBeInTheDocument();
+    expect(screen.getByText(/large/i)).toBeInTheDocument();
+  });
 
   it('handles closing dialog', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     render(
-      <AdoptionDetailDialog
-        profile={mockProfile}
-        open={true}
-        onOpenChange={mockOnOpenChange}
-      />
-    )
+      <AdoptionDetailDialog profile={mockProfile} open={true} onOpenChange={mockOnOpenChange} />
+    );
 
-    const closeButton = screen.getByRole('button', { name: /close/i })
-    await user.click(closeButton)
+    const closeButton = screen.getByRole('button', { name: /close/i });
+    await user.click(closeButton);
 
-    expect(mockOnOpenChange).toHaveBeenCalledWith(false)
-  })
-})
-
+    expect(mockOnOpenChange).toHaveBeenCalledWith(false);
+  });
+});

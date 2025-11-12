@@ -1,17 +1,12 @@
 /**
  * MessageBubble Component
- * 
+ *
  * Premium chat message bubble component integrating:
  * - Send/receive effects
  * - Status ticks
  * - Reactions
  * - Layout animations for list insert/remove
- * 
- * Now using ultra-streamlined all-in-chat-effects:
- * - SwipeToReply for gesture-based replies
- * - ShimmerOverlay for loading states
- * - DeliveryTicks for message status
- * 
+ *
  * Location: apps/mobile/src/components/chat/MessageBubble.tsx
  */
 
@@ -58,21 +53,103 @@ export function MessageBubble({
   onLongPress,
 }: MessageBubbleProps): React.ReactElement {
   const isOwn = message.senderId === currentUserId
-  const isLoading = message.status === 'sending'
-  
-  // Measure bubble dimensions for ShimmerOverlay
-  const [bubbleWidth, setBubbleWidth] = useState(0)
-  
-  const handleLayout = React.useCallback((event: { nativeEvent: { layout: { width: number } } }) => {
-    const { width } = event.nativeEvent.layout
-    if (width > 0) {
-      setBubbleWidth(width)
-    }
-  }, [])
 
-  const handleReply = (): void => {
-    logger.debug('Reply triggered', { messageId: message.id })
-    // Trigger reply action (could be passed as prop)
+  // Measure bubble dimensions dynamically
+  const [bubbleWidth, setBubbleWidth] = useState(propBubbleWidth ?? 200)
+  const [bubbleHeight, setBubbleHeight] = useState(propBubbleHeight ?? 60)
+
+  const handleLayout = React.useCallback(
+    (event: { nativeEvent: { layout: { width: number; height: number } } }) => {
+      const { width, height } = event.nativeEvent.layout
+      if (width > 0 && height > 0) {
+        setBubbleWidth(width)
+        setBubbleHeight(height)
+      }
+    },
+    []
+  )
+
+  // Send effect (for own messages)
+  const sendWarp = useSendWarp({
+    enabled: !!(isOwn && message.isNew),
+    onStatusChange: status => {
+      logger.debug('Message status changed', { messageId: message.id, status })
+    },
+  })
+
+  // Receive effect (for incoming messages)
+  const receiveAir = useReceiveAirCushion({
+    enabled: !!(!isOwn && message.isNew),
+    isNew: message.isNew ?? false,
+    isMention: message.isMention ?? false,
+  })
+
+  // Swipe-to-reply gesture
+  const swipeReply = useSwipeReplyElastic({
+    enabled: true,
+    bubbleWidth,
+    bubbleHeight,
+    onThresholdCross: () => {
+      logger.debug('Swipe threshold crossed', { messageId: message.id })
+    },
+    onReply: () => {
+      logger.debug('Swipe reply triggered', { messageId: message.id })
+    },
+  })
+
+  // Status ticks
+  const statusTicks = useStatusTicks({
+    enabled: isOwn,
+    status: message.status,
+    previousStatus: message.previousStatus ?? message.status,
+    isOwnMessage: isOwn,
+  })
+
+  // Reaction burst
+  const reactionBurst = useReactionBurst({
+    enabled: true,
+    onLongPressConfirm: () => {
+      onReact?.(message.id)
+    },
+  })
+
+  // Track ribbon visibility for conditional rendering
+  const [showRibbon, setShowRibbon] = useState(false)
+  useAnimatedReaction(
+    () => swipeReply.ribbonAlpha.value,
+    value => {
+      setShowRibbon(value > 0)
+    }
+  )
+
+  // Trigger send effect when message is sent
+  React.useEffect(() => {
+    if (isOwn && message.isNew && message.status === 'sending') {
+      // Set bloom center to bubble center
+      sendWarp.bloomCenterX.value = bubbleWidth / 2
+      sendWarp.bloomCenterY.value = bubbleHeight / 2
+      // Ensure bloom radius respects <= 24px constraint for low-end devices
+      sendWarp.bloomRadius.value = Math.min(18, 24)
+      sendWarp.trigger()
+    }
+  }, [isOwn, message.isNew, message.status, sendWarp, bubbleWidth, bubbleHeight])
+
+  // Update ribbon coordinates when bubble size changes
+  React.useEffect(() => {
+    // Update ribbon glow to respect <= 24px constraint
+    swipeReply.ribbonGlow.value = Math.min(18, 24)
+  }, [swipeReply, bubbleWidth, bubbleHeight])
+
+  // Trigger status change when status updates
+  React.useEffect(() => {
+    if (isOwn && message.status === 'sent') {
+      sendWarp.triggerStatusChange('sent')
+    }
+  }, [isOwn, message.status, sendWarp])
+
+  const handleLongPress = (): void => {
+    reactionBurst.trigger()
+    onLongPress?.(message.id)
   }
 
   const handleLongPress = (): void => {
@@ -102,8 +179,19 @@ export function MessageBubble({
             {message.content}
           </Text>
 
-          {/* DeliveryTicks for message status (own messages only) */}
-          {isOwn && <DeliveryTicks state={message.status} />}
+          {/* Status ticks (for own messages) */}
+          {isOwn && (
+            <View style={styles.statusContainer}>
+              <Animated.View style={[styles.tick, tick1Style]}>
+                <Text style={[styles.tickText, { color: statusTicks.color.value }]}>✓</Text>
+              </Animated.View>
+              {message.status !== 'sending' && (
+                <Animated.View style={[styles.tick, tick2Style]}>
+                  <Text style={[styles.tickText, { color: statusTicks.color.value }]}>✓</Text>
+                </Animated.View>
+              )}
+            </View>
+          )}
         </TouchableOpacity>
       </Animated.View>
     </SwipeToReply>
@@ -128,7 +216,7 @@ const styles = StyleSheet.create({
     minWidth: 60,
   },
   ownBubble: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: 'var(--color-accent-secondary-9)',
   },
   otherBubble: {
     backgroundColor: '#E5E7EB',
@@ -138,10 +226,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   ownText: {
-    color: '#FFFFFF',
+    color: 'var(--color-bg-overlay)',
   },
   otherText: {
     color: '#111827',
   },
 })
-

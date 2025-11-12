@@ -33,7 +33,7 @@ export class QueryCache {
    */
   get<T>(key: string): T | null {
     const entry = this.cache.get(key) as CacheEntry<T> | undefined;
-    
+
     if (!entry) {
       return null;
     }
@@ -114,7 +114,7 @@ export class QueryCache {
   stats(): {
     size: number;
     maxSize: number;
-    entries: Array<{ key: string; age: number; ttl: number }>;
+    entries: { key: string; age: number; ttl: number }[];
   } {
     const now = Date.now();
     const entries = Array.from(this.cache.entries()).map(([key, entry]) => ({
@@ -138,10 +138,7 @@ export const queryCache = new QueryCache({
 });
 
 // Utility function for cache key generation
-export function generateCacheKey(
-  endpoint: string,
-  params?: Record<string, unknown>
-): string {
+export function generateCacheKey(endpoint: string, params?: Record<string, unknown>): string {
   if (!params) {
     return endpoint;
   }

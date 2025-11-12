@@ -1,31 +1,39 @@
 /**
  * Empty State Component
- * 
+ *
  * Displays when there are no notifications
  */
 
-import { useEffect } from 'react'
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring, withDelay, withRepeat, withSequence } from 'react-native-reanimated'
-import { Bell } from '@phosphor-icons/react'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import type { NotificationFilter } from '../types'
+import { useEffect } from 'react';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  withDelay,
+  withRepeat,
+  withSequence,
+} from 'react-native-reanimated';
+import { Bell } from '@phosphor-icons/react';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { NotificationFilter } from '../types';
 
 export interface EmptyStateProps {
-  filter: NotificationFilter
+  filter: NotificationFilter;
 }
 
 export function EmptyState({ filter }: EmptyStateProps): JSX.Element {
-  const emptyOpacity = useSharedValue(0)
-  const emptyScale = useSharedValue(0.9)
-  const bellRotate = useSharedValue(0)
-  const bellScale = useSharedValue(1)
+  const emptyOpacity = useSharedValue(0);
+  const emptyScale = useSharedValue(0.9);
+  const bellRotate = useSharedValue(0);
+  const bellScale = useSharedValue(1);
 
   useEffect(() => {
-    emptyOpacity.value = withTiming(1, timingConfigs.smooth)
-    emptyScale.value = withSpring(1, springConfigs.smooth)
-    
+    emptyOpacity.value = withTiming(1, timingConfigs.smooth);
+    emptyScale.value = withSpring(1, springConfigs.smooth);
+
     bellRotate.value = withDelay(
       2000,
       withRepeat(
@@ -37,35 +45,32 @@ export function EmptyState({ filter }: EmptyStateProps): JSX.Element {
         -1,
         true
       )
-    )
+    );
 
     bellScale.value = withDelay(
       2000,
       withRepeat(
-        withSequence(
-          withSpring(1.1, springConfigs.bouncy),
-          withSpring(1, springConfigs.smooth)
-        ),
+        withSequence(withSpring(1.1, springConfigs.bouncy), withSpring(1, springConfigs.smooth)),
         -1,
         true
       )
-    )
-  }, [emptyOpacity, emptyScale, bellRotate, bellScale])
+    );
+  }, [emptyOpacity, emptyScale, bellRotate, bellScale]);
 
   const containerStyle = useAnimatedStyle(() => ({
     opacity: emptyOpacity.value,
-    transform: [{ scale: emptyScale.value }]
-  })) as AnimatedStyle
+    transform: [{ scale: emptyScale.value }],
+  })) as AnimatedStyle;
 
   const bellStyle = useAnimatedStyle(() => ({
-    transform: [
-      { rotate: `${String(bellRotate.value ?? '')}deg` },
-      { scale: bellScale.value }
-    ]
-  })) as AnimatedStyle
+    transform: [{ rotate: `${bellRotate.value}deg` }, { scale: bellScale.value }],
+  })) as AnimatedStyle;
 
   return (
-    <AnimatedView style={containerStyle} className="flex flex-col items-center justify-center py-12 px-4">
+    <AnimatedView
+      style={containerStyle}
+      className="flex flex-col items-center justify-center py-12 px-4"
+    >
       <AnimatedView style={bellStyle} className="mb-4">
         <Bell size={48} className="text-muted-foreground" />
       </AnimatedView>
@@ -80,5 +85,5 @@ export function EmptyState({ filter }: EmptyStateProps): JSX.Element {
         {filter === 'all' && "We'll notify you when something important happens"}
       </p>
     </AnimatedView>
-  )
+  );
 }

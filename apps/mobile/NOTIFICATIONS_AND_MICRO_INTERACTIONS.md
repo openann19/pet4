@@ -5,6 +5,7 @@ Comprehensive notification system with animations, haptic feedback, and micro-in
 ## Overview
 
 This system provides:
+
 - **Toast Notifications**: Animated, accessible notifications with haptic feedback
 - **Micro-Interactions**: Consistent press animations with haptics
 - **Press Animations**: Reusable press interaction patterns
@@ -31,6 +32,7 @@ export default function App() {
 ### NotificationToast
 
 Animated toast component with:
+
 - Spring animations (entrance/exit)
 - Haptic feedback based on type
 - Auto-dismiss with configurable duration
@@ -66,7 +68,7 @@ import { useMicroInteractions } from '@mobile/hooks/use-micro-interactions'
 import { AnimatedView } from '@mobile/effects/reanimated/animated-view'
 
 function MyButton() {
-  const { animatedStyle, handlePress, handlePressIn, handlePressOut } = 
+  const { animatedStyle, handlePress, handlePressIn, handlePressOut } =
     useMicroInteractions({
       hapticFeedback: true,
       hapticType: 'light',
@@ -129,19 +131,15 @@ showSuccess('Operation completed!', 'Your changes have been saved successfully.'
 ```typescript
 const { showError } = useNotificationToast()
 
-showError(
-  'Connection failed',
-  'Unable to connect to the server.',
-  {
-    duration: 5000,
-    action: {
-      label: 'Retry',
-      onPress: () => {
-        // Retry logic
-      },
+showError('Connection failed', 'Unable to connect to the server.', {
+  duration: 5000,
+  action: {
+    label: 'Retry',
+    onPress: () => {
+      // Retry logic
     },
-  }
-)
+  },
+})
 ```
 
 ### Button with Micro-Interactions
@@ -212,6 +210,7 @@ pnpm test NotificationProvider
 ## Integration
 
 The system integrates with:
+
 - Existing haptic manager in `effects/chat/core/haptic-manager.ts`
 - Push notifications system
 - Theme system (colors)
@@ -224,4 +223,3 @@ The system integrates with:
 - `src/hooks/use-micro-interactions.ts` - Micro-interactions hook
 - `src/hooks/use-press-animation.ts` - Press animation hook
 - `src/__tests__/` - Comprehensive tests
-

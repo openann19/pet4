@@ -13,6 +13,7 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Definition**: System user account
 
 **Fields**:
+
 ```typescript
 {
   id: string                    // ULID
@@ -33,17 +34,20 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Ownership**: User owns their account
 
 **Status Values**:
+
 - `active`: Normal user
 - `suspended`: Temporarily suspended
 - `banned`: Permanently banned
 
 **Operations**:
+
 - **Create**: `POST /api/users` (signup)
 - **Read**: `GET /api/users/:id`
 - **Update**: `PATCH /api/users/:id` (own or admin)
 - **Delete**: `DELETE /api/users/:id` (admin only)
 
 **Error Semantics**:
+
 - `409`: Email already exists (signup)
 - `403`: Insufficient permissions
 - `404`: User not found
@@ -55,6 +59,7 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Definition**: Pet profile
 
 **Fields**:
+
 ```typescript
 {
   id: string                    // ULID
@@ -79,17 +84,20 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Ownership**: User owns their pets
 
 **Status Values**:
+
 - `active`: Visible in discovery
 - `hidden`: Hidden from discovery
 - `banned`: Banned by moderation
 
 **Operations**:
+
 - **Create**: `POST /api/pets` (authenticated)
 - **Read**: `GET /api/pets/:id`
 - **Update**: `PATCH /api/pets/:id` (owner or admin)
 - **Delete**: `DELETE /api/pets/:id` (owner or admin)
 
 **Error Semantics**:
+
 - `403`: Not pet owner
 - `404`: Pet not found
 - `400`: Invalid pet data
@@ -101,33 +109,37 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Definition**: Mutual match between two pets
 
 **Fields**:
+
 ```typescript
 {
-  id: string                    // ULID
-  petAId: string
-  petBId: string
-  compatibilityScore: number   // 0-100
-  compatibilityBreakdown: CompatibilityBreakdown
-  status: 'active' | 'archived'
-  chatRoomId: string           // Auto-provisioned
-  createdAt: string             // ISO 8601
-  lastInteractionAt: string    // ISO 8601
+  id: string; // ULID
+  petAId: string;
+  petBId: string;
+  compatibilityScore: number; // 0-100
+  compatibilityBreakdown: CompatibilityBreakdown;
+  status: 'active' | 'archived';
+  chatRoomId: string; // Auto-provisioned
+  createdAt: string; // ISO 8601
+  lastInteractionAt: string; // ISO 8601
 }
 ```
 
 **Ownership**: Both pet owners
 
 **Status Values**:
+
 - `active`: Ongoing match
 - `archived`: Archived by user
 
 **Operations**:
+
 - **Create**: Automatic on mutual like
 - **Read**: `GET /api/matches/:id` (participant or admin)
 - **Update**: `PATCH /api/matches/:id` (participant only)
 - **Delete**: `DELETE /api/matches/:id` (participant only)
 
 **Error Semantics**:
+
 - `403`: Not match participant
 - `404`: Match not found
 - `409`: Match already exists (duplicate like)
@@ -139,6 +151,7 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Definition**: Chat message
 
 **Fields**:
+
 ```typescript
 {
   id: string                    // ULID
@@ -157,18 +170,21 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Ownership**: Message sender
 
 **Status Values**:
+
 - `sending`: Client-side, not yet sent
 - `sent`: Sent to server
 - `delivered`: Delivered to recipient
 - `read`: Read by recipient
 
 **Operations**:
+
 - **Create**: `POST /api/messages` (match participant)
 - **Read**: `GET /api/messages?chatRoomId=:id` (participant or admin)
 - **Update**: `PATCH /api/messages/:id` (sender only, reactions)
 - **Delete**: `DELETE /api/messages/:id` (sender or admin)
 
 **Error Semantics**:
+
 - `403`: Not chat room participant
 - `404`: Message not found
 - `400`: Invalid message content
@@ -180,6 +196,7 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Definition**: Ephemeral story (24h)
 
 **Fields**:
+
 ```typescript
 {
   id: string                    // ULID
@@ -197,17 +214,20 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Ownership**: Pet owner
 
 **Status Values**:
+
 - `active`: Currently visible
 - `expired`: Expired (>24h)
 - `removed`: Removed by user/moderation
 
 **Operations**:
+
 - **Create**: `POST /api/stories` (pet owner)
 - **Read**: `GET /api/stories/:id`
 - **Update**: `PATCH /api/stories/:id` (owner only)
 - **Delete**: `DELETE /api/stories/:id` (owner or admin)
 
 **Error Semantics**:
+
 - `403`: Not story owner
 - `404`: Story not found
 - `400`: Invalid media format
@@ -219,6 +239,7 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Definition**: Content moderation report
 
 **Fields**:
+
 ```typescript
 {
   id: string                    // ULID
@@ -238,18 +259,21 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Ownership**: Reporter and moderators
 
 **Status Values**:
+
 - `pending`: Awaiting review
 - `investigating`: Under review
 - `resolved`: Action taken
 - `dismissed`: No action needed
 
 **Operations**:
+
 - **Create**: `POST /api/reports` (authenticated)
 - **Read**: `GET /api/reports/:id` (reporter or moderator)
 - **Update**: `PATCH /api/reports/:id` (moderator only)
 - **Delete**: `DELETE /api/reports/:id` (admin only)
 
 **Error Semantics**:
+
 - `409`: Duplicate report (same entity, same reporter)
 - `403`: Not reporter or moderator
 - `404`: Report not found
@@ -261,32 +285,36 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Definition**: Pet review/rating
 
 **Fields**:
+
 ```typescript
 {
-  id: string                    // ULID
-  reviewerId: string           // User ID
-  reviewedPetId: string
-  rating: number                // 1-5
-  comment: string
-  createdAt: string             // ISO 8601
-  updatedAt: string             // ISO 8601
-  status: 'active' | 'hidden'
+  id: string; // ULID
+  reviewerId: string; // User ID
+  reviewedPetId: string;
+  rating: number; // 1-5
+  comment: string;
+  createdAt: string; // ISO 8601
+  updatedAt: string; // ISO 8601
+  status: 'active' | 'hidden';
 }
 ```
 
 **Ownership**: Reviewer
 
 **Status Values**:
+
 - `active`: Visible
 - `hidden`: Hidden by moderation
 
 **Operations**:
+
 - **Create**: `POST /api/reviews` (authenticated, match only)
 - **Read**: `GET /api/reviews?petId=:id`
 - **Update**: `PATCH /api/reviews/:id` (reviewer only)
 - **Delete**: `DELETE /api/reviews/:id` (reviewer or admin)
 
 **Error Semantics**:
+
 - `409`: Duplicate review (same reviewer, same pet)
 - `403`: Not reviewer
 - `404`: Review not found
@@ -298,6 +326,7 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Definition**: Pet verification submission
 
 **Fields**:
+
 ```typescript
 {
   id: string                    // ULID
@@ -314,17 +343,20 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Ownership**: Pet owner
 
 **Status Values**:
+
 - `pending`: Awaiting review
 - `approved`: Verification granted
 - `rejected`: Verification denied
 
 **Operations**:
+
 - **Create**: `POST /api/verifications` (pet owner)
 - **Read**: `GET /api/verifications/:id` (owner or moderator)
 - **Update**: `PATCH /api/verifications/:id` (moderator only)
 - **Delete**: `DELETE /api/verifications/:id` (admin only)
 
 **Error Semantics**:
+
 - `403`: Not pet owner
 - `404`: Verification not found
 - `400`: Invalid verification data
@@ -336,6 +368,7 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Definition**: In-app notification
 
 **Fields**:
+
 ```typescript
 {
   id: string                    // ULID
@@ -355,12 +388,14 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 **Status Values**: N/A (uses `read` boolean)
 
 **Operations**:
+
 - **Create**: `POST /api/notifications` (system only)
 - **Read**: `GET /api/notifications` (own notifications)
 - **Update**: `PATCH /api/notifications/:id` (mark as read)
 - **Delete**: `DELETE /api/notifications/:id` (recipient only)
 
 **Error Semantics**:
+
 - `403`: Not notification recipient
 - `404`: Notification not found
 - `400`: Invalid notification data
@@ -370,63 +405,71 @@ This document defines all entity contracts used across Web, Mobile, and Admin Co
 ## Type Definitions
 
 ### UserRole
+
 ```typescript
-type UserRole = 'user' | 'moderator' | 'admin'
+type UserRole = 'user' | 'moderator' | 'admin';
 ```
 
 ### Location
+
 ```typescript
 interface Location {
-  latitude: number
-  longitude: number
-  city: string
-  country: string
+  latitude: number;
+  longitude: number;
+  city: string;
+  country: string;
 }
 ```
 
 ### Photo
+
 ```typescript
 interface Photo {
-  id: string
-  url: string                    // CDN URL
-  thumbnailUrl: string           // CDN URL
-  order: number
-  uploadedAt: string             // ISO 8601
+  id: string;
+  url: string; // CDN URL
+  thumbnailUrl: string; // CDN URL
+  order: number;
+  uploadedAt: string; // ISO 8601
 }
 ```
 
 ### Reaction
+
 ```typescript
 interface Reaction {
-  userId: string
-  emoji: string
-  addedAt: string                // ISO 8601
+  userId: string;
+  emoji: string;
+  addedAt: string; // ISO 8601
 }
 ```
 
 ### StoryView
+
 ```typescript
 interface StoryView {
-  userId: string
-  viewedAt: string               // ISO 8601
+  userId: string;
+  viewedAt: string; // ISO 8601
 }
 ```
 
 ### ReportReason
+
 ```typescript
-type ReportReason = 'spam' | 'inappropriate' | 'fake' | 'harassment' | 'other'
+type ReportReason = 'spam' | 'inappropriate' | 'fake' | 'harassment' | 'other';
 ```
 
 ### ReportResolution
+
 ```typescript
 interface ReportResolution {
-  action: 'warn' | 'suspend' | 'ban' | 'remove_content' | 'no_action'
-  notes: string
-  resolvedBy: string             // Moderator ID
+  action: 'warn' | 'suspend' | 'ban' | 'remove_content' | 'no_action';
+  notes: string;
+  resolvedBy: string; // Moderator ID
 }
 ```
 
 ### NotificationType
+
 ```typescript
 type NotificationType =
   | 'match_created'
@@ -436,18 +479,19 @@ type NotificationType =
   | 'verification_approved'
   | 'verification_rejected'
   | 'content_removed'
-  | 'account_warning'
+  | 'account_warning';
 ```
 
 ### CompatibilityBreakdown
+
 ```typescript
 interface CompatibilityBreakdown {
-  personality: number            // 0-100
-  interests: number               // 0-100
-  size: number                     // 0-100
-  age: number                      // 0-100
-  location: number                 // 0-100
-  overall: number                  // 0-100
+  personality: number; // 0-100
+  interests: number; // 0-100
+  size: number; // 0-100
+  age: number; // 0-100
+  location: number; // 0-100
+  overall: number; // 0-100
 }
 ```
 
@@ -456,28 +500,33 @@ interface CompatibilityBreakdown {
 ## Common Patterns
 
 ### Timestamps
+
 - All timestamps use ISO 8601 format: `YYYY-MM-DDTHH:mm:ss.sssZ`
 - `createdAt`: Set on creation
 - `updatedAt`: Updated on every modification
 - `lastSeenAt`: Updated on user activity
 
 ### IDs
+
 - All IDs use ULID format (26 characters)
 - Globally unique
 - Sortable by creation time
 
 ### Status Fields
+
 - Entities with status use string union types
 - Status transitions are validated server-side
 - Invalid transitions return `400 Bad Request`
 
 ### Ownership
+
 - Users own their accounts and pets
 - Match participants own matches
 - Message senders own messages
 - Reports belong to reporter and moderators
 
 ### Error Codes
+
 - `400`: Bad Request (invalid data)
 - `401`: Unauthorized (not authenticated)
 - `403`: Forbidden (insufficient permissions)
@@ -498,12 +547,15 @@ All API endpoints follow REST conventions:
 - **Delete**: `DELETE /api/{resource}/:id`
 
 ### Pagination
+
 List endpoints support cursor-based pagination:
+
 ```
 GET /api/{resource}?cursor={cursor}&limit={limit}
 ```
 
 Response includes:
+
 ```typescript
 {
   items: Entity[]
@@ -513,19 +565,23 @@ Response includes:
 ```
 
 ### Filtering
+
 List endpoints support filtering:
+
 ```
 GET /api/{resource}?status=active&ownerId={id}
 ```
 
 ### Error Response
+
 All errors follow this format:
+
 ```typescript
 {
-  code: string
-  message: string
-  correlationId: string
-  timestamp: string
+  code: string;
+  message: string;
+  correlationId: string;
+  timestamp: string;
 }
 ```
 
@@ -539,4 +595,3 @@ All errors follow this format:
 - All IDs are ULIDs
 - Status transitions are validated
 - Ownership is enforced server-side
-

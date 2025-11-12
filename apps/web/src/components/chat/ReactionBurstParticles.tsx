@@ -3,11 +3,11 @@
  * - Ring emission with subtle jitter
  * - Deterministic phases via seeded RNG
  * - Reduced motion → fast micro-pop (≤120ms)
- * 
+ *
  * Location: apps/web/src/components/chat/ReactionBurstParticles.tsx
  */
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -16,21 +16,21 @@ import Animated, {
   runOnJS,
   withDelay,
   Easing,
-} from 'react-native-reanimated'
-import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
-import { createSeededRNG } from '@/effects/chat/core/seeded-rng'
-import { isTruthy, isDefined } from '@petspark/shared';
+} from 'react-native-reanimated';
+import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
+import { createSeededRNG } from '@/effects/chat/core/seeded-rng';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ReactionBurstParticlesProps {
-  enabled?: boolean
-  onComplete?: () => void
-  className?: string
-  count?: number
-  radius?: number
-  seed?: number | string
-  color?: string
-  size?: number
-  staggerMs?: number
+  enabled?: boolean;
+  onComplete?: () => void;
+  className?: string;
+  count?: number;
+  radius?: number;
+  seed?: number | string;
+  color?: string;
+  size?: number;
+  staggerMs?: number;
 }
 
 export function ReactionBurstParticles({
@@ -40,64 +40,65 @@ export function ReactionBurstParticles({
   count = 18,
   radius = 48,
   seed = 'reaction-burst',
-  color = '#3B82F6',
+  color = 'var(--color-accent-secondary-9)',
   size = 6,
   staggerMs = 8,
 }: ReactionBurstParticlesProps) {
-  const reduced = useReducedMotion()
-  const dur = getReducedMotionDuration(600, reduced)
+    const _uiConfig = useUIConfig();
+    const reduced = useReducedMotion();
+  const dur = getReducedMotionDuration(600, reduced);
 
   const { particles, finishedCount } = useMemo(() => {
-    const rng = createSeededRNG(seed)
+    const rng = createSeededRNG(seed);
     const arr = Array.from({ length: count }, (_, i) => {
-      const angle = (i / count) * Math.PI * 2
-      const jitter = rng.range(-Math.PI / 24, Math.PI / 24)
-      const theta = angle + jitter
-      const sx = useSharedValue(0)
-      const scale = useSharedValue(0.7)
-      const opacity = useSharedValue(0)
-      const tx = Math.cos(theta) * radius * rng.range(0.9, 1.05)
-      const ty = Math.sin(theta) * radius * rng.range(0.9, 1.05)
-      return { sx, scale, opacity, tx, ty, delay: i * staggerMs }
-    })
-    const finishedCount = useSharedValue(0)
-    return { particles: arr, finishedCount }
-  }, [count, radius, seed, staggerMs])
+      const angle = (i / count) * Math.PI * 2;
+      const jitter = rng.range(-Math.PI / 24, Math.PI / 24);
+      const theta = angle + jitter;
+      const sx = useSharedValue(0);
+      const scale = useSharedValue(0.7);
+      const opacity = useSharedValue(0);
+      const tx = Math.cos(theta) * radius * rng.range(0.9, 1.05);
+      const ty = Math.sin(theta) * radius * rng.range(0.9, 1.05);
+      return { sx, scale, opacity, tx, ty, delay: i * staggerMs };
+    });
+    const finishedCount = useSharedValue(0);
+    return { particles: arr, finishedCount };
+  }, [count, radius, seed, staggerMs]);
 
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled) return;
 
     particles.forEach((p) => {
-      if (isTruthy(reduced)) {
-        p.opacity.value = withTiming(0, { duration: 0 })
-        p.scale.value = withTiming(1, { duration: 0 })
+      if (reduced) {
+        p.opacity.value = withTiming(0, { duration: 0 });
+        p.scale.value = withTiming(1, { duration: 0 });
         p.sx.value = withTiming(1, { duration: getReducedMotionDuration(120, true) }, () => {
-          finishedCount.value += 1
+          finishedCount.value += 1;
           if (finishedCount.value === particles.length && onComplete) {
-            runOnJS(onComplete)()
+            runOnJS(onComplete)();
           }
-        })
-        return
+        });
+        return;
       }
 
       p.opacity.value = withDelay(
         p.delay,
         withTiming(1, { duration: Math.max(80, dur * 0.25), easing: Easing.out(Easing.cubic) })
-      )
-      p.scale.value = withDelay(p.delay, withSpring(1, { stiffness: 220, damping: 22 }))
+      );
+      p.scale.value = withDelay(p.delay, withSpring(1, { stiffness: 220, damping: 22 }));
       p.sx.value = withDelay(
         p.delay,
         withTiming(1, { duration: dur, easing: Easing.out(Easing.cubic) }, () => {
           p.opacity.value = withTiming(0, { duration: Math.max(100, dur * 0.35) }, () => {
-            finishedCount.value += 1
+            finishedCount.value += 1;
             if (finishedCount.value === particles.length && onComplete) {
-              runOnJS(onComplete)()
+              runOnJS(onComplete)();
             }
-          })
+          });
         })
-      )
-    })
-  }, [enabled, dur, particles, onComplete, reduced, finishedCount])
+      );
+    });
+  }, [enabled, dur, particles, onComplete, reduced, finishedCount]);
 
   return (
     <div className={`absolute inset-0 pointer-events-none ${className ?? ''}`}>
@@ -116,12 +117,11 @@ export function ReactionBurstParticles({
           height: size,
           borderRadius: size / 2,
           backgroundColor: color,
-          boxShadow: `0 0 ${String(size * 0.7 ?? '')}px ${String(color ?? '')}55`,
-        }))
+          boxShadow: `0 0 ${size * 0.7}px ${color}55`,
+        }));
 
-        return <Animated.View key={idx} style={style} />
+        return <Animated.View key={idx} style={style} />;
       })}
     </div>
-  )
+  );
 }
-

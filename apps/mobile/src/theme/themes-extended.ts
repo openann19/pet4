@@ -242,4 +242,3 @@ export const additionalThemes: Record<string, Omit<Theme, 'id'>> = {
     },
   },
 }
-

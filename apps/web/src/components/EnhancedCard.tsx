@@ -1,4 +1,4 @@
-import { Card } from '@/components/ui/card'
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { MotionView } from '@petspark/motion';
 import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -7,19 +7,19 @@ import type { ReactNode } from 'react';
 import { isTruthy, isDefined } from '@petspark/shared';
 
 interface EnhancedCardProps {
-  children: ReactNode
-  className?: string
-  variant?: 'default' | 'glass' | 'elevated' | 'gradient'
-  hover?: boolean
-  glow?: boolean
+  children: ReactNode;
+  className?: string;
+  variant?: 'default' | 'glass' | 'elevated' | 'gradient';
+  hover?: boolean;
+  glow?: boolean;
 }
 
-export default function EnhancedCard({ 
-  children, 
-  className, 
+export default function EnhancedCard({
+  children,
+  className,
   variant = 'default',
   hover = true,
-  glow = false 
+  glow = false,
 }: EnhancedCardProps) {
   const opacity = useSharedValue(0);
   const y = useSharedValue(20);
@@ -46,17 +46,15 @@ export default function EnhancedCard({
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
-    transform: [
-      { translateY: y.value + hoverY.value }
-    ]
+    transform: [{ translateY: y.value + hoverY.value }],
   }));
 
   const variantStyles = {
     default: 'bg-card',
     glass: 'glass-effect',
     elevated: 'card-elevated bg-card',
-    gradient: 'gradient-card'
-  }
+    gradient: 'gradient-card',
+  };
 
   return (
     <MotionView
@@ -64,7 +62,7 @@ export default function EnhancedCard({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Card 
+      <Card
         className={cn(
           'relative overflow-hidden transition-all duration-300',
           variantStyles[variant],
@@ -75,10 +73,8 @@ export default function EnhancedCard({
         {variant === 'gradient' && (
           <div className="absolute inset-0 bg-linear-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
         )}
-        <div className="relative z-10">
-          {children}
-        </div>
+        <div className="relative z-10">{children}</div>
       </Card>
     </MotionView>
-  )
+  );
 }

@@ -10,7 +10,6 @@ import {
 } from 'react-native-reanimated'
 import { useCallback, useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 export interface UseTypingShimmerOptions {
   duration?: number
@@ -117,7 +116,7 @@ export function useTypingShimmer(options: UseTypingShimmerOptions = {}): UseTypi
     )
 
     stop()
-  }, [contentOpacity, contentScale, placeholderOpacity, placeholderScale, stop])
+  }, [placeholderOpacity, placeholderScale, contentOpacity, contentScale, stop])
 
   useEffect(() => {
     if (enabled && !isComplete) {
@@ -126,25 +125,31 @@ export function useTypingShimmer(options: UseTypingShimmerOptions = {}): UseTypi
       stop()
     }
 
-    if (isTruthy(isComplete)) {
+    if (isComplete) {
       reveal()
     }
-  }, [enabled, isComplete, reveal, start, stop])
+  }, [enabled, isComplete, start, stop, reveal])
 
-  const shimmerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: shimmerTranslateX.value }],
-    opacity: shimmerOpacity.value,
-  })) as AnimatedStyle
+  const shimmerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: shimmerTranslateX.value }],
+      opacity: shimmerOpacity.value,
+    }
+  }) as AnimatedStyle
 
-  const placeholderStyle = useAnimatedStyle(() => ({
-    opacity: placeholderOpacity.value,
-    transform: [{ scale: placeholderScale.value }],
-  })) as AnimatedStyle
+  const placeholderStyle = useAnimatedStyle(() => {
+    return {
+      opacity: placeholderOpacity.value,
+      transform: [{ scale: placeholderScale.value }],
+    }
+  }) as AnimatedStyle
 
-  const contentStyle = useAnimatedStyle(() => ({
-    opacity: contentOpacity.value,
-    transform: [{ scale: contentScale.value }],
-  })) as AnimatedStyle
+  const contentStyle = useAnimatedStyle(() => {
+    return {
+      opacity: contentOpacity.value,
+      transform: [{ scale: contentScale.value }],
+    }
+  }) as AnimatedStyle
 
   return {
     shimmerTranslateX,

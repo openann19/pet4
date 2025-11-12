@@ -6,12 +6,12 @@
 
 ## Executive Summary
 
-| Status | Count | Percentage |
-|--------|-------|------------|
-| ✅ Migrated | 0 | 0% |
-| 🔄 Partial Migration | 8 | 7.6% |
-| ❌ Needs Migration | 92 | 87.6% |
-| 📱 Native Files | 5 | 4.8% |
+| Status               | Count | Percentage |
+| -------------------- | ----- | ---------- |
+| ✅ Migrated          | 0     | 0%         |
+| 🔄 Partial Migration | 8     | 7.6%       |
+| ❌ Needs Migration   | 92    | 87.6%      |
+| 📱 Native Files      | 5     | 4.8%       |
 
 **Note**: Files marked as "Migrated" in previous reports (DiscoverView, StoryViewer, AdvancedChatWindow) still contain MotionView imports but have been converted to use React Reanimated. They are counted as "Partial" until all MotionView references are removed.
 
@@ -57,6 +57,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/admin/VerificationReviewDashboard.tsx`
 
 **Migration Notes**:
+
 - Admin panels typically use simple fade/slide animations
 - Focus on modal transitions and table row animations
 - Use `AnimatedView` with `withSpring` for smooth transitions
@@ -76,6 +77,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/adoption/MyApplicationsView.tsx`
 
 **Migration Notes**:
+
 - Wizard components need step transition animations
 - Card components need hover/tap animations
 - Use `useHoverLift` and `useBounceOnTap` hooks from `@/effects/reanimated`
@@ -95,6 +97,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/AuthScreen.tsx`
 
 **Migration Notes**:
+
 - Form animations typically use fade/slide transitions
 - Modal entry/exit animations
 - Button hover/tap feedback
@@ -115,6 +118,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/chat/window/VirtualMessageList.tsx`
 
 **Migration Notes**:
+
 - Message list animations are critical for UX
 - Use Layout Animations for message insertions
 - Input bar needs smooth expand/collapse animations
@@ -134,6 +138,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/community/ReportDialog.tsx`
 
 **Migration Notes**:
+
 - Comments sheet needs slide-up animation
 - Post composer needs expand/collapse animations
 - Ranking skeleton needs shimmer effect (use `useShimmer` hook)
@@ -157,6 +162,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/enhanced/UltraButton.tsx`
 
 **Migration Notes**:
+
 - These are premium UI components with complex animations
 - Carousel needs smooth swipe gestures
 - Buttons need hover/tap animations (use `useHoverLift`, `useBounceOnTap`)
@@ -182,6 +188,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/stories/StoryTemplateSelector.tsx`
 
 **Migration Notes**:
+
 - Stories have complex swipe gestures and transitions
 - Story rings need circular progress animations
 - Filter selector needs slide animations
@@ -203,6 +210,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/VerificationBadge.tsx`
 
 **Migration Notes**:
+
 - Document upload cards need drag-and-drop animations
 - Verification buttons need loading states
 - Dialog needs modal animations
@@ -221,6 +229,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/playdate/PlaydateScheduler.tsx`
 
 **Migration Notes**:
+
 - Map components need marker animations
 - Location picker needs search animations
 - Scheduler needs calendar animations
@@ -239,6 +248,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/maps/VenuePicker.tsx`
 
 **Migration Notes**:
+
 - Map markers need bounce animations
 - Location sharing needs real-time position updates
 - Venue picker needs search animations
@@ -254,6 +264,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/lost-found/LostAlertCard.tsx`
 
 **Migration Notes**:
+
 - Card needs hover/tap animations
 - Use `useHoverLift` hook
 
@@ -268,6 +279,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/streaming/LiveStreamRoom.tsx`
 
 **Migration Notes**:
+
 - Complex real-time animations
 - Viewer count animations
 - Chat overlay animations
@@ -291,6 +303,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/views/UserPostsView.tsx`
 
 **Migration Notes**:
+
 - Views typically have list animations
 - Use Layout Animations for list insertions/deletions
 - Filter animations
@@ -308,6 +321,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/notifications/NotificationCenter.tsx`
 
 **Migration Notes**:
+
 - Notification list animations
 - Badge animations
 - Use `AnimatedView` with `withSpring` for smooth transitions
@@ -325,6 +339,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/web-only/Slider.tsx`
 
 **Migration Notes**:
+
 - Buttons need hover/tap animations
 - Sliders need thumb animations
 - Use `useHoverLift` and `useBounceOnTap` hooks
@@ -364,6 +379,7 @@ These files have both Framer Motion and React Reanimated imports, indicating the
 - [ ] `apps/web/src/components/WelcomeScreen.tsx`
 
 **High Priority Files**:
+
 - `CreatePetDialog.tsx` - Core pet creation flow
 - `MatchCelebration.tsx` - Match celebration animation
 - `PetDetailDialog.tsx` - Pet detail modal
@@ -383,6 +399,7 @@ These are React Native-specific files that need separate migration:
 - [ ] `apps/mobile/src/components/enhanced/buttons/ToggleButton.native.tsx`
 
 **Migration Notes**:
+
 - Native files should use React Native Reanimated directly
 - Check for platform-specific animation requirements
 - Ensure parity with web implementations
@@ -409,6 +426,7 @@ For each file, complete the following:
 ## Migration Priority Order
 
 ### Phase 1: Core Features (High Priority)
+
 1. Chat components (ChatWindowNew, ChatRoomsList, ChatInputBar)
 2. CreatePetDialog.tsx
 3. MatchCelebration.tsx
@@ -416,18 +434,21 @@ For each file, complete the following:
 5. Enhanced components (EnhancedPetDetailView, EnhancedCarousel)
 
 ### Phase 2: User-Facing Features (High-Medium Priority)
+
 6. Stories features (all 9 files)
 7. Views (all 8 files)
 8. Adoption features (all 5 files)
 9. Authentication (all 4 files)
 
 ### Phase 3: Supporting Features (Medium Priority)
+
 10. Community features (4 files)
 11. Verification features (4 files)
 12. Admin panel (11 files)
 13. Maps & Playdate (6 files)
 
 ### Phase 4: Polish & Cleanup (Low-Medium Priority)
+
 14. Other components (33 files)
 15. Native files (5 files)
 16. Partial migration cleanup (8 files)
@@ -439,6 +460,7 @@ For each file, complete the following:
 ### 1. Animation Patterns
 
 **Fade In/Out**:
+
 ```typescript
 // Before (Framer Motion)
 <MotionView initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
@@ -451,6 +473,7 @@ const style = useAnimatedStyle(() => ({ opacity: opacity.value }))
 ```
 
 **Slide Animations**:
+
 ```typescript
 // Before
 <MotionView initial={{ x: -100 }} animate={{ x: 0 }} />
@@ -463,6 +486,7 @@ const style = useAnimatedStyle(() => ({ transform: [{ translateX: translateX.val
 ```
 
 **Scale Animations**:
+
 ```typescript
 // Before
 <MotionView whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} />
@@ -470,7 +494,7 @@ const style = useAnimatedStyle(() => ({ transform: [{ translateX: translateX.val
 // After
 const scale = useSharedValue(1)
 const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }))
-<AnimatedView 
+<AnimatedView
   style={style}
   onMouseEnter={() => scale.value = withSpring(1.1)}
   onMouseLeave={() => scale.value = withSpring(1)}
@@ -481,6 +505,7 @@ const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }))
 ### 2. Presence Animations
 
 **Before (AnimatePresence)**:
+
 ```typescript
 <AnimatePresence>
   {isOpen && <MotionView initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />}
@@ -488,6 +513,7 @@ const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }))
 ```
 
 **After (Custom Hook)**:
+
 ```typescript
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence'
 
@@ -498,6 +524,7 @@ const { style, isVisible } = useAnimatePresence(isOpen)
 ### 3. Gesture Animations
 
 **Swipe Gestures**:
+
 ```typescript
 import { useSwipeGesture } from '@/effects/reanimated/use-swipe-gesture'
 
@@ -508,6 +535,7 @@ const { gestureHandler, translateX } = useSwipeGesture({
 ```
 
 **Hover/Tap**:
+
 ```typescript
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
@@ -549,15 +577,19 @@ For each migrated file:
 ## Progress Tracking
 
 ### Completed (0 files)
+
 - None yet
 
 ### In Progress (8 files)
+
 - See "Partial Migration" section above
 
 ### Blocked (0 files)
+
 - None
 
 ### Next Up (Priority Order)
+
 1. `apps/web/src/components/ChatWindowNew.tsx`
 2. `apps/web/src/components/CreatePetDialog.tsx`
 3. `apps/web/src/components/MatchCelebration.tsx`

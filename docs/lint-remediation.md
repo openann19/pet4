@@ -9,17 +9,17 @@ pnpm lint --report-unused-disable-directives > ../../logs/web-lint-baseline.log 
 
 The run produced 1,058 errors and 65 warnings across the web workspace. The table below aggregates the violations by rule family.
 
-| Category | Violations | Representative Rules | Notes |
-| --- | ---: | --- | --- |
-| Unsafe Types | 434 | `@typescript-eslint/no-unsafe-assignment`, `no-unsafe-member-access`, `no-explicit-any` | Generated data/services still rely on `any` payloads; map/analytics modules are especially high-noise. |
-| Async Discipline | 356 | `@typescript-eslint/no-floating-promises`, `require-await`, `await-thenable` | Promise chains ignore rejection handling; many async helpers do not await internal work. |
-| React Strictness | 166 | `@typescript-eslint/no-misused-promises`, `no-unsafe-argument` | Hook callbacks and event handlers pass raw promises/any-typed results. |
-| React Hooks | 65 | `react-hooks/exhaustive-deps` | Map quota monitors, particle FX, and optimization hooks have missing or extraneous deps. |
-| Design Consistency | 51 | `sonarjs/no-duplicate-string` | Literal duplication across templates, notifications, and theme presets. |
-| Unused & Redundant | 38 | `@typescript-eslint/no-unused-vars`, `unicorn/prefer-optional-catch-binding` | Logging/error handlers capture unused bindings. |
-| Legacy Spark Usage | 13 | `no-restricted-syntax` | `community-seed-data.ts` still calls `spark.kv.*`. |
-| Error Handling | 8 | `@typescript-eslint/prefer-promise-reject-errors`, `promise/catch-or-return` | Fetch pipelines reject with non-Error types or forget to return promises. |
-| Uncategorized | 163 | e.g., `@typescript-eslint/unbound-method`, `no-restricted-globals`, `react-hooks/rules-of-hooks` | Miscellaneous quality gates not yet grouped; require follow-up triage. |
+| Category           | Violations | Representative Rules                                                                             | Notes                                                                                                  |
+| ------------------ | ---------: | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| Unsafe Types       |        434 | `@typescript-eslint/no-unsafe-assignment`, `no-unsafe-member-access`, `no-explicit-any`          | Generated data/services still rely on `any` payloads; map/analytics modules are especially high-noise. |
+| Async Discipline   |        356 | `@typescript-eslint/no-floating-promises`, `require-await`, `await-thenable`                     | Promise chains ignore rejection handling; many async helpers do not await internal work.               |
+| React Strictness   |        166 | `@typescript-eslint/no-misused-promises`, `no-unsafe-argument`                                   | Hook callbacks and event handlers pass raw promises/any-typed results.                                 |
+| React Hooks        |         65 | `react-hooks/exhaustive-deps`                                                                    | Map quota monitors, particle FX, and optimization hooks have missing or extraneous deps.               |
+| Design Consistency |         51 | `sonarjs/no-duplicate-string`                                                                    | Literal duplication across templates, notifications, and theme presets.                                |
+| Unused & Redundant |         38 | `@typescript-eslint/no-unused-vars`, `unicorn/prefer-optional-catch-binding`                     | Logging/error handlers capture unused bindings.                                                        |
+| Legacy Spark Usage |         13 | `no-restricted-syntax`                                                                           | `community-seed-data.ts` still calls `spark.kv.*`.                                                     |
+| Error Handling     |          8 | `@typescript-eslint/prefer-promise-reject-errors`, `promise/catch-or-return`                     | Fetch pipelines reject with non-Error types or forget to return promises.                              |
+| Uncategorized      |        163 | e.g., `@typescript-eslint/unbound-method`, `no-restricted-globals`, `react-hooks/rules-of-hooks` | Miscellaneous quality gates not yet grouped; require follow-up triage.                                 |
 
 ## Highest-Volume Rules
 

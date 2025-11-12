@@ -1,9 +1,9 @@
 /**
  * Effects Playground Screen
- * 
+ *
  * Interactive demo for all three Skia effects with timing controls.
  * Allows real-time tweaking of animation parameters.
- * 
+ *
  * Location: apps/mobile/src/screens/EffectsPlaygroundScreen.tsx
  */
 
@@ -72,12 +72,12 @@ export function EffectsPlaygroundScreen(): React.ReactElement {
     sendWarp.opacity.value = 1
     sendWarp.glowOpacity.value = 0
     sendWarp.bloomIntensity.value = 0
-    
+
     mediaZoom.scale.value = 1
     mediaZoom.opacity.value = 0
     mediaZoom.aberrationRadius.value = 0
     mediaZoom.aberrationIntensity.value = 0
-    
+
     swipeReply.translateX.value = 0
     swipeReply.ribbonProgress.value = 0
     swipeReply.ribbonAlpha.value = 0
@@ -85,10 +85,7 @@ export function EffectsPlaygroundScreen(): React.ReactElement {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <SectionHeader
           title="Effects Playground"
           description="Interactive demos for Skia effects with timing controls."
@@ -121,7 +118,7 @@ export function EffectsPlaygroundScreen(): React.ReactElement {
                 color={[0.3, 0.75, 1]}
               />
             </View>
-            <TouchableOpacity style={styles.button} onPress={handleSendWarp}>
+            <TouchableOpacity style={styles.button} onPress={handleSendWarp} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)">
               <Text style={styles.buttonText}>Trigger Send</Text>
             </TouchableOpacity>
           </View>
@@ -142,10 +139,10 @@ export function EffectsPlaygroundScreen(): React.ReactElement {
               />
             </View>
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.button} onPress={handleMediaZoom}>
+              <TouchableOpacity style={styles.button} onPress={handleMediaZoom} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)">
                 <Text style={styles.buttonText}>Open</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={handleMediaClose}>
+              <TouchableOpacity style={styles.button} onPress={handleMediaClose} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)">
                 <Text style={styles.buttonText}>Close</Text>
               </TouchableOpacity>
             </View>
@@ -183,7 +180,7 @@ export function EffectsPlaygroundScreen(): React.ReactElement {
         </FeatureCard>
 
         {/* Reset Button */}
-        <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
+        <TouchableOpacity style={styles.resetButton} onPress={handleReset} className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)">
           <Text style={styles.resetButtonText}>Reset All</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -254,4 +251,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 })
-

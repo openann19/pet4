@@ -110,4 +110,3 @@ describe('useUserStore', () => {
     expect(state.user?.matches).toHaveLength(0)
   })
 })
-

@@ -1,6 +1,6 @@
 import type { MapConfig } from './types';
 
-const ENV = import.meta.env['MODE'] || 'development';
+const ENV = import.meta.env.MODE || 'development';
 
 export const BASE_CONFIGS: Record<string, Partial<MapConfig>> = {
   development: {

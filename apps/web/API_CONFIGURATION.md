@@ -28,23 +28,26 @@ All external API configurations are managed centrally through the Admin Console'
 Configure the map provider for location-based features.
 
 **Providers:**
+
 - **OpenStreetMap** (Free, no API key required)
 - **Google Maps** (Requires API key)
 - **Mapbox** (Requires API key)
 
 **Settings:**
+
 - Provider selection
 - API Key (if applicable)
 - Rate Limit (requests per minute)
 
 **Usage in Code:**
-```typescript
-import { getMapsConfig } from '@/lib/api-config'
 
-const mapsConfig = await getMapsConfig()
+```typescript
+import { getMapsConfig } from '@/lib/api-config';
+
+const mapsConfig = await getMapsConfig();
 if (mapsConfig?.enabled) {
-  const apiKey = mapsConfig.apiKey
-  const provider = mapsConfig.provider
+  const apiKey = mapsConfig.apiKey;
+  const provider = mapsConfig.provider;
   // Initialize map with configuration
 }
 ```
@@ -54,11 +57,13 @@ if (mapsConfig?.enabled) {
 Configure AI provider for matching algorithms and pet analysis.
 
 **Providers:**
+
 - **Spark AI** (Included, no API key required)
 - **OpenAI** (Requires API key)
 - **Anthropic** (Requires API key)
 
 **Settings:**
+
 - Provider selection
 - API Key (if applicable)
 - Model selection (GPT-4o, GPT-4o Mini, Claude 3.5 Sonnet)
@@ -66,18 +71,19 @@ Configure AI provider for matching algorithms and pet analysis.
 - Temperature (0.0 - 2.0)
 
 **Usage in Code:**
-```typescript
-import { getAIConfig } from '@/lib/api-config'
 
-const aiConfig = await getAIConfig()
+```typescript
+import { getAIConfig } from '@/lib/api-config';
+
+const aiConfig = await getAIConfig();
 if (aiConfig?.enabled) {
   if (aiConfig.provider === 'spark') {
     // Use built-in Spark AI
-    const prompt = window.spark.llmPrompt`Generate pet description for ${petData}`
-    const result = await window.spark.llm(prompt, aiConfig.model)
+    const prompt = window.spark.llmPrompt`Generate pet description for ${petData}`;
+    const result = await window.spark.llm(prompt, aiConfig.model);
   } else {
     // Use external provider with API key
-    const apiKey = aiConfig.apiKey
+    const apiKey = aiConfig.apiKey;
     // Make API call to external provider
   }
 }
@@ -88,29 +94,32 @@ if (aiConfig?.enabled) {
 Configure identity verification service for user validation.
 
 **Providers:**
+
 - **Manual Review** (No API key required)
 - **Stripe Identity** (Requires API key)
 - **Onfido** (Requires API key)
 - **Jumio** (Requires API key)
 
 **Settings:**
+
 - Provider selection
 - API Key (if applicable)
 - Auto-approve successful verifications
 - Require identity documents
 
 **Usage in Code:**
-```typescript
-import { getKYCConfig } from '@/lib/api-config'
 
-const kycConfig = await getKYCConfig()
+```typescript
+import { getKYCConfig } from '@/lib/api-config';
+
+const kycConfig = await getKYCConfig();
 if (kycConfig?.enabled) {
   if (kycConfig.provider === 'manual') {
     // Queue for manual review
   } else {
     // Integrate with external KYC provider
-    const apiKey = kycConfig.apiKey
-    const autoApprove = kycConfig.autoApprove
+    const apiKey = kycConfig.apiKey;
+    const autoApprove = kycConfig.autoApprove;
   }
 }
 ```
@@ -120,28 +129,31 @@ if (kycConfig?.enabled) {
 Configure automated content moderation for uploaded photos.
 
 **Providers:**
+
 - **Spark Moderation** (Included, no API key required)
 - **OpenAI Vision** (Requires API key)
 - **Google Cloud Vision** (Requires API key)
 - **AWS Rekognition** (Requires API key)
 
 **Settings:**
+
 - Provider selection
 - API Key (if applicable)
 - Confidence Threshold (0.0 - 1.0)
 - Auto-reject violations
 
 **Usage in Code:**
-```typescript
-import { getPhotoModerationConfig } from '@/lib/api-config'
 
-const moderationConfig = await getPhotoModerationConfig()
+```typescript
+import { getPhotoModerationConfig } from '@/lib/api-config';
+
+const moderationConfig = await getPhotoModerationConfig();
 if (moderationConfig?.enabled) {
-  const threshold = moderationConfig.confidenceThreshold
-  const autoReject = moderationConfig.autoReject
-  
+  const threshold = moderationConfig.confidenceThreshold;
+  const autoReject = moderationConfig.autoReject;
+
   // Analyze photo
-  const result = await analyzePhoto(photoUrl, moderationConfig)
+  const result = await analyzePhoto(photoUrl, moderationConfig);
   if (result.confidence > threshold && result.inappropriate) {
     if (autoReject) {
       // Automatically reject
@@ -157,33 +169,36 @@ if (moderationConfig?.enabled) {
 Configure SMS provider for notifications and verification codes.
 
 **Providers:**
+
 - **Disabled** (No SMS features)
 - **Twilio** (Requires API key and auth token)
 - **Vonage** (Nexmo) (Requires API key and secret)
 - **AWS SNS** (Requires API key and secret)
 
 **Settings:**
+
 - Provider selection
 - API Key / Account SID
 - API Secret / Auth Token
 - From Number
 
 **Usage in Code:**
-```typescript
-import { getSMSConfig } from '@/lib/api-config'
 
-const smsConfig = await getSMSConfig()
+```typescript
+import { getSMSConfig } from '@/lib/api-config';
+
+const smsConfig = await getSMSConfig();
 if (smsConfig?.enabled && smsConfig.provider !== 'disabled') {
-  const apiKey = smsConfig.apiKey
-  const apiSecret = smsConfig.apiSecret
-  const fromNumber = smsConfig.fromNumber
-  
+  const apiKey = smsConfig.apiKey;
+  const apiSecret = smsConfig.apiSecret;
+  const fromNumber = smsConfig.fromNumber;
+
   // Send SMS
   await sendSMS({
     to: userPhoneNumber,
     from: fromNumber,
-    message: 'Your verification code is: 123456'
-  })
+    message: 'Your verification code is: 123456',
+  });
 }
 ```
 
@@ -192,34 +207,37 @@ if (smsConfig?.enabled && smsConfig.provider !== 'disabled') {
 Configure email provider for notifications and alerts.
 
 **Providers:**
+
 - **Disabled** (No email features)
 - **SendGrid** (Requires API key)
 - **Mailgun** (Requires API key)
 - **AWS SES** (Requires API key)
 
 **Settings:**
+
 - Provider selection
 - API Key
 - From Email
 - From Name
 
 **Usage in Code:**
-```typescript
-import { getEmailConfig } from '@/lib/api-config'
 
-const emailConfig = await getEmailConfig()
+```typescript
+import { getEmailConfig } from '@/lib/api-config';
+
+const emailConfig = await getEmailConfig();
 if (emailConfig?.enabled && emailConfig.provider !== 'disabled') {
-  const apiKey = emailConfig.apiKey
-  const fromEmail = emailConfig.fromEmail
-  const fromName = emailConfig.fromName
-  
+  const apiKey = emailConfig.apiKey;
+  const fromEmail = emailConfig.fromEmail;
+  const fromName = emailConfig.fromName;
+
   // Send email
   await sendEmail({
     to: userEmail,
     from: { email: fromEmail, name: fromName },
     subject: 'Welcome to PawfectMatch!',
-    html: emailTemplate
-  })
+    html: emailTemplate,
+  });
 }
 ```
 
@@ -228,11 +246,13 @@ if (emailConfig?.enabled && emailConfig.provider !== 'disabled') {
 Configure file and image storage provider.
 
 **Providers:**
+
 - **Local Storage** (No API key required)
 - **AWS S3** (Requires access key and secret)
 - **Cloudflare R2** (Requires access key and secret)
 
 **Settings:**
+
 - Provider selection
 - Access Key ID
 - Secret Access Key
@@ -240,22 +260,23 @@ Configure file and image storage provider.
 - Region
 
 **Usage in Code:**
-```typescript
-import { getStorageConfig } from '@/lib/api-config'
 
-const storageConfig = await getStorageConfig()
+```typescript
+import { getStorageConfig } from '@/lib/api-config';
+
+const storageConfig = await getStorageConfig();
 if (storageConfig?.enabled) {
   if (storageConfig.provider === 'local') {
     // Store locally
   } else {
     // Store in cloud
-    const accessKey = storageConfig.apiKey
-    const secretKey = storageConfig.apiSecret
-    const bucket = storageConfig.bucket
-    const region = storageConfig.region
-    
+    const accessKey = storageConfig.apiKey;
+    const secretKey = storageConfig.apiSecret;
+    const bucket = storageConfig.bucket;
+    const region = storageConfig.region;
+
     // Upload to S3/R2
-    await uploadToCloud(file, { accessKey, secretKey, bucket, region })
+    await uploadToCloud(file, { accessKey, secretKey, bucket, region });
   }
 }
 ```
@@ -265,28 +286,31 @@ if (storageConfig?.enabled) {
 Configure user analytics and tracking.
 
 **Providers:**
+
 - **Disabled** (No analytics)
 - **Google Analytics** (Requires Measurement ID)
 - **Mixpanel** (Requires API key)
 - **Amplitude** (Requires API key)
 
 **Settings:**
+
 - Provider selection
 - API Key / Measurement ID
 
 **Usage in Code:**
-```typescript
-import { getAnalyticsConfig } from '@/lib/api-config'
 
-const analyticsConfig = await getAnalyticsConfig()
+```typescript
+import { getAnalyticsConfig } from '@/lib/api-config';
+
+const analyticsConfig = await getAnalyticsConfig();
 if (analyticsConfig?.enabled && analyticsConfig.provider !== 'disabled') {
-  const apiKey = analyticsConfig.apiKey
-  
+  const apiKey = analyticsConfig.apiKey;
+
   // Track event
   trackEvent('user_matched', {
     petId: petId,
-    timestamp: Date.now()
-  })
+    timestamp: Date.now(),
+  });
 }
 ```
 
@@ -302,6 +326,7 @@ if (analyticsConfig?.enabled && analyticsConfig.provider !== 'disabled') {
 ## Testing Configuration
 
 Each service configuration includes a "Test Connection" button that:
+
 - Validates API credentials
 - Checks connectivity to the service
 - Verifies permissions
@@ -313,28 +338,29 @@ The `api-config.ts` library provides convenient helper functions:
 
 ```typescript
 // Get full configuration
-const config = await getAPIConfig()
+const config = await getAPIConfig();
 
 // Get specific service config
-const mapsConfig = await getMapsConfig()
-const aiConfig = await getAIConfig()
-const kycConfig = await getKYCConfig()
-const moderationConfig = await getPhotoModerationConfig()
-const smsConfig = await getSMSConfig()
-const emailConfig = await getEmailConfig()
-const storageConfig = await getStorageConfig()
-const analyticsConfig = await getAnalyticsConfig()
+const mapsConfig = await getMapsConfig();
+const aiConfig = await getAIConfig();
+const kycConfig = await getKYCConfig();
+const moderationConfig = await getPhotoModerationConfig();
+const smsConfig = await getSMSConfig();
+const emailConfig = await getEmailConfig();
+const storageConfig = await getStorageConfig();
+const analyticsConfig = await getAnalyticsConfig();
 
 // Check if service is enabled
-const isEnabled = isServiceEnabled('ai', config)
+const isEnabled = isServiceEnabled('ai', config);
 
 // Get API key for service
-const apiKey = getAPIKey('maps', config)
+const apiKey = getAPIKey('maps', config);
 ```
 
 ## Default Configuration
 
 On first load, services are configured with safe defaults:
+
 - **Maps**: OpenStreetMap (free, no key required)
 - **AI**: Spark AI (included, no key required)
 - **KYC**: Manual review
@@ -347,6 +373,7 @@ On first load, services are configured with safe defaults:
 ## Resetting Configuration
 
 Each service has a "Reset" button that restores default settings. Use this if:
+
 - You want to start fresh with a service
 - Configuration becomes corrupted
 - You need to quickly disable a service
@@ -354,18 +381,21 @@ Each service has a "Reset" button that restores default settings. Use this if:
 ## Troubleshooting
 
 ### Service Not Working
+
 1. Check that the service is enabled in API Configuration
 2. Verify API key is correct (use "Test Connection")
 3. Check rate limits haven't been exceeded
 4. Verify required permissions are granted
 
 ### Test Connection Fails
+
 1. Verify API key is correct and active
 2. Check network connectivity
 3. Ensure API key has required permissions
 4. Verify the provider service is operational
 
 ### Changes Not Applying
+
 1. Configuration changes are saved automatically
 2. Some changes may require app reload
 3. Check browser console for errors
@@ -374,6 +404,7 @@ Each service has a "Reset" button that restores default settings. Use this if:
 ## Support
 
 For issues with:
+
 - **Spark AI**: Included in platform, no additional support needed
 - **Third-party services**: Contact respective provider's support
 - **Configuration issues**: Check this documentation or contact platform admin

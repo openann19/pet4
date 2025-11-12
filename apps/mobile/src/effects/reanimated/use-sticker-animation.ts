@@ -6,7 +6,7 @@ import {
   withRepeat,
   withSequence,
   withTiming,
-  Easing
+  Easing,
 } from 'react-native-reanimated'
 import { springConfigs } from './transitions'
 
@@ -44,7 +44,7 @@ export function useStickerAnimation(
     animation,
     enabled = DEFAULT_ENABLED,
     duration = DEFAULT_DURATION,
-    intensity = DEFAULT_INTENSITY
+    intensity = DEFAULT_INTENSITY,
   } = options
 
   const scale = useSharedValue(1)
@@ -85,7 +85,7 @@ export function useStickerAnimation(
         rotation.value = withRepeat(
           withTiming(360, {
             duration: duration / 2,
-            easing: Easing.linear
+            easing: Easing.linear,
           }),
           -1,
           false
@@ -96,7 +96,10 @@ export function useStickerAnimation(
       case 'pulse': {
         scale.value = withRepeat(
           withSequence(
-            withTiming(1.15 * intensity, { duration: duration / 2, easing: Easing.inOut(Easing.ease) }),
+            withTiming(1.15 * intensity, {
+              duration: duration / 2,
+              easing: Easing.inOut(Easing.ease),
+            }),
             withTiming(1, { duration: duration / 2, easing: Easing.inOut(Easing.ease) })
           ),
           -1,
@@ -125,11 +128,11 @@ export function useStickerAnimation(
           withSequence(
             withTiming(-8 * intensity, {
               duration: duration / 2,
-              easing: Easing.inOut(Easing.ease)
+              easing: Easing.inOut(Easing.ease),
             }),
             withTiming(0, {
               duration: duration / 2,
-              easing: Easing.inOut(Easing.ease)
+              easing: Easing.inOut(Easing.ease),
             })
           ),
           -1,
@@ -165,14 +168,14 @@ export function useStickerAnimation(
         rotation.value = withSequence(
           withTiming(180, {
             duration: duration / 2,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           }),
           withTiming(360, {
             duration: duration / 2,
-            easing: Easing.inOut(Easing.ease)
+            easing: Easing.inOut(Easing.ease),
           }),
           withTiming(0, {
-            duration: 0
+            duration: 0,
           })
         )
         break
@@ -189,16 +192,15 @@ export function useStickerAnimation(
         { scale: scale.value },
         { rotate: `${String(rotation.value ?? '')}deg` },
         { translateX: translateX.value },
-        { translateY: translateY.value }
+        { translateY: translateY.value },
       ],
-      opacity: opacity.value
+      opacity: opacity.value,
     }
   })
 
   return {
     animatedStyle,
     trigger,
-    reset
+    reset,
   }
 }
-

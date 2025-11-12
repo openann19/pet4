@@ -1,48 +1,47 @@
 /**
  * Enhanced Notification Service
- * 
+ *
  * Handles in-app and push notifications with quiet hours, idempotency, and deduplication
  */
 
-import { pushNotifications as pushNotificationManager } from './push-notifications'
-import { createLogger } from './logger'
-import { generateULID } from './utils'
-import { APIClient } from './api-client'
-import { ENDPOINTS } from './endpoints'
-import type { Notification, User, Match } from './contracts'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { pushNotifications as pushNotificationManager } from './push-notifications';
+import { createLogger } from './logger';
+import { generateULID } from './utils';
+import { APIClient } from './api-client';
+import { ENDPOINTS } from './endpoints';
+import type { Notification, User, Match } from './contracts';
 
-const logger = createLogger('EnhancedNotifications')
+const logger = createLogger('EnhancedNotifications');
 
 export class EnhancedNotificationService {
-  private seenNotificationIds: Set<string> = new Set()
-  private readonly DEDUPE_WINDOW_MS = 5 * 60 * 1000
+  private seenNotificationIds = new Set<string>();
+  private readonly DEDUPE_WINDOW_MS = 5 * 60 * 1000;
 
   /**
    * Check if notification should be sent based on quiet hours
    */
   private isWithinQuietHours(user: User, now: Date = new Date()): boolean {
     if (!user.preferences.quietHours) {
-      return false
+      return false;
     }
 
-    const { start, end } = user.preferences.quietHours
-    const currentTime = now.getHours() * 60 + now.getMinutes()
-    const startTime = this.parseTime(start)
-    const endTime = this.parseTime(end)
+    const { start, end } = user.preferences.quietHours;
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const startTime = this.parseTime(start);
+    const endTime = this.parseTime(end);
 
     if (startTime <= endTime) {
-      return currentTime >= startTime && currentTime < endTime
+      return currentTime >= startTime && currentTime < endTime;
     } else {
-      return currentTime >= startTime || currentTime < endTime
+      return currentTime >= startTime || currentTime < endTime;
     }
   }
 
   private parseTime(time: string): number {
-    const parts = time.split(':')
-    const hours = parts[0] ? Number.parseInt(parts[0], 10) : 0
-    const minutes = parts[1] ? Number.parseInt(parts[1], 10) : 0
-    return hours * 60 + minutes
+    const parts = time.split(':');
+    const hours = parts[0] ? Number.parseInt(parts[0], 10) : 0;
+    const minutes = parts[1] ? Number.parseInt(parts[1], 10) : 0;
+    return hours * 60 + minutes;
   }
 
   /**
@@ -50,83 +49,93 @@ export class EnhancedNotificationService {
    */
   private isDuplicate(notificationId: string): boolean {
     if (this.seenNotificationIds.has(notificationId)) {
-      return true
+      return true;
     }
 
-    this.seenNotificationIds.add(notificationId)
-    
-    setTimeout(() => {
-      this.seenNotificationIds.delete(notificationId)
-    }, this.DEDUPE_WINDOW_MS)
+    this.seenNotificationIds.add(notificationId);
 
-    return false
+    setTimeout(() => {
+      this.seenNotificationIds.delete(notificationId);
+    }, this.DEDUPE_WINDOW_MS);
+
+    return false;
   }
 
   /**
    * Send match created notification
    */
   async notifyMatchCreated(match: Match, userA: User, userB: User): Promise<void> {
-    const correlationId = generateULID()
-    
+    const correlationId = generateULID();
+
     try {
-      const notificationId = `match-${String(match.id ?? '')}-${String(userA.id ?? '')}`
-      
+      const notificationId = `match-${match.id}-${userA.id}`;
+
       if (this.isDuplicate(notificationId)) {
-        logger.debug('Duplicate notification suppressed', { notificationId, correlationId })
-        return
+        logger.debug('Duplicate notification suppressed', { notificationId, correlationId });
+        return;
       }
 
-      const shouldNotifyA = userA.preferences.notifications.matches && 
-                           !this.isWithinQuietHours(userA)
-      const shouldNotifyB = userB.preferences.notifications.matches && 
-                           !this.isWithinQuietHours(userB)
+      const shouldNotifyA =
+        userA.preferences.notifications.matches && !this.isWithinQuietHours(userA);
+      const shouldNotifyB =
+        userB.preferences.notifications.matches && !this.isWithinQuietHours(userB);
 
-      if (isTruthy(shouldNotifyA)) {
-        await this.sendNotification({
-          id: notificationId,
-          userId: userA.id,
-          type: 'match_created',
-          title: 'New Match!',
-          body: `You matched with ${String(userB.displayName ?? '')}`,
-          data: {
-            matchId: match.id,
-            petBId: match.petBId,
-            chatRoomId: match.chatRoomId
+      if (shouldNotifyA) {
+        await this.sendNotification(
+          {
+            id: notificationId,
+            userId: userA.id,
+            type: 'match_created',
+            title: 'New Match!',
+            body: `You matched with ${userB.displayName}`,
+            data: {
+              matchId: match.id,
+              petBId: match.petBId,
+              chatRoomId: match.chatRoomId,
+            },
+            read: false,
+            createdAt: new Date().toISOString(),
           },
-          read: false,
-          createdAt: new Date().toISOString()
-        }, userA)
+          userA
+        );
       }
 
-      const notificationIdB = `match-${String(match.id ?? '')}-${String(userB.id ?? '')}`
+      const notificationIdB = `match-${match.id}-${userB.id}`;
       if (!this.isDuplicate(notificationIdB) && shouldNotifyB) {
-        await this.sendNotification({
-          id: notificationIdB,
-          userId: userB.id,
-          type: 'match_created',
-          title: 'New Match!',
-          body: `You matched with ${String(userA.displayName ?? '')}`,
-          data: {
-            matchId: match.id,
-            petAId: match.petAId,
-            chatRoomId: match.chatRoomId
+        await this.sendNotification(
+          {
+            id: notificationIdB,
+            userId: userB.id,
+            type: 'match_created',
+            title: 'New Match!',
+            body: `You matched with ${userA.displayName}`,
+            data: {
+              matchId: match.id,
+              petAId: match.petAId,
+              chatRoomId: match.chatRoomId,
+            },
+            read: false,
+            createdAt: new Date().toISOString(),
           },
-          read: false,
-          createdAt: new Date().toISOString()
-        }, userB)
+          userB
+        );
       }
 
       logger.info('Match notification sent', {
         matchId: match.id,
         userA: userA.id,
         userB: userB.id,
-        correlationId
-      })
+        correlationId,
+      });
     } catch (error) {
-      logger.error('Failed to send match notification', error instanceof Error ? error : new Error(String(error)), {
-        matchId: match.id,
-        correlationId
-      })
+      logger.error(
+        'Failed to send match notification',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          matchId: match.id,
+          correlationId,
+        }
+      );
     }
   }
 
@@ -134,57 +143,64 @@ export class EnhancedNotificationService {
    * Send like received notification
    */
   async notifyLikeReceived(fromPetId: string, toPetId: string, toUserId: string): Promise<void> {
-    const correlationId = generateULID()
-    
+    const correlationId = generateULID();
+
     try {
-      const notificationId = `like-${String(fromPetId ?? '')}-${String(toPetId ?? '')}`
-      
+      const notificationId = `like-${fromPetId}-${toPetId}`;
+
       if (this.isDuplicate(notificationId)) {
-        logger.debug('Duplicate notification suppressed', { notificationId, correlationId })
-        return
+        logger.debug('Duplicate notification suppressed', { notificationId, correlationId });
+        return;
       }
 
       // Get user from API
-      const response = await APIClient.get<User>(`${String(ENDPOINTS.USERS.PROFILE ?? '')}?userId=${String(toUserId ?? '')}`)
-      const user = response.data
+      const response = await APIClient.get<User>(`${ENDPOINTS.USERS.PROFILE}?userId=${toUserId}`);
+      const user = response.data;
 
-      if (!user || !user.preferences.notifications.likes) {
-        return
+      if (!user?.preferences.notifications.likes) {
+        return;
       }
 
       if (this.isWithinQuietHours(user)) {
         logger.debug('Notification suppressed due to quiet hours', {
           userId: toUserId,
-          correlationId
-        })
-        return
+          correlationId,
+        });
+        return;
       }
 
-      await this.sendNotification({
-        id: notificationId,
-        userId: toUserId,
-        type: 'like_received',
-        title: 'Someone likes your pet!',
-        body: 'Check out who swiped right on your pet',
-        data: {
-          fromPetId,
-          toPetId
+      await this.sendNotification(
+        {
+          id: notificationId,
+          userId: toUserId,
+          type: 'like_received',
+          title: 'Someone likes your pet!',
+          body: 'Check out who swiped right on your pet',
+          data: {
+            fromPetId,
+            toPetId,
+          },
+          read: false,
+          createdAt: new Date().toISOString(),
         },
-        read: false,
-        createdAt: new Date().toISOString()
-      }, user)
+        user
+      );
 
       logger.info('Like notification sent', {
         fromPetId,
         toPetId,
-        correlationId
-      })
+        correlationId,
+      });
     } catch (error) {
-      logger.error('Failed to send like notification', error instanceof Error ? error : new Error(String(error)), {
-        fromPetId,
-        toPetId,
-        correlationId
-      })
+      logger.error(
+        'Failed to send like notification',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          fromPetId,
+          toPetId,
+          correlationId,
+        }
+      );
     }
   }
 
@@ -197,53 +213,62 @@ export class EnhancedNotificationService {
     recipientId: string,
     messagePreview: string
   ): Promise<void> {
-    const correlationId = generateULID()
-    
-    try {
-      const notificationId = `message-${String(chatRoomId ?? '')}-${String(senderId ?? '')}-${String(Date.now() ?? '')}`
-      
-      // Get recipient from API
-      const response = await APIClient.get<User>(`${String(ENDPOINTS.USERS.PROFILE ?? '')}?userId=${String(recipientId ?? '')}`)
-      const recipient = response.data
+    const correlationId = generateULID();
 
-      if (!recipient || !recipient.preferences.notifications.messages) {
-        return
+    try {
+      const notificationId = `message-${chatRoomId}-${senderId}-${Date.now()}`;
+
+      // Get recipient from API
+      const response = await APIClient.get<User>(
+        `${ENDPOINTS.USERS.PROFILE}?userId=${recipientId}`
+      );
+      const recipient = response.data;
+
+      if (!recipient?.preferences.notifications.messages) {
+        return;
       }
 
       if (this.isWithinQuietHours(recipient)) {
         logger.debug('Notification suppressed due to quiet hours', {
           userId: recipientId,
-          correlationId
-        })
-        return
+          correlationId,
+        });
+        return;
       }
 
-      await this.sendNotification({
-        id: notificationId,
-        userId: recipientId,
-        type: 'new_message',
-        title: 'New Message',
-        body: messagePreview.slice(0, 100),
-        data: {
-          chatRoomId,
-          senderId
+      await this.sendNotification(
+        {
+          id: notificationId,
+          userId: recipientId,
+          type: 'new_message',
+          title: 'New Message',
+          body: messagePreview.slice(0, 100),
+          data: {
+            chatRoomId,
+            senderId,
+          },
+          read: false,
+          createdAt: new Date().toISOString(),
         },
-        read: false,
-        createdAt: new Date().toISOString()
-      }, recipient)
+        recipient
+      );
 
       logger.info('Message notification sent', {
         chatRoomId,
         senderId,
         recipientId,
-        correlationId
-      })
+        correlationId,
+      });
     } catch (error) {
-      logger.error('Failed to send message notification', error instanceof Error ? error : new Error(String(error)), {
-        chatRoomId,
-        senderId,
-        correlationId
-      })
+      logger.error(
+        'Failed to send message notification',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          chatRoomId,
+          senderId,
+          correlationId,
+        }
+      );
     }
   }
 
@@ -251,8 +276,8 @@ export class EnhancedNotificationService {
    * Internal: Send notification (in-app + push)
    */
   private async sendNotification(notification: Notification, user: User): Promise<void> {
-    const correlationId = generateULID()
-    
+    const correlationId = generateULID();
+
     try {
       // Store notification via API
       await APIClient.post(ENDPOINTS.NOTIFICATIONS.LIST, {
@@ -263,8 +288,8 @@ export class EnhancedNotificationService {
         body: notification.body,
         data: notification.data,
         read: notification.read,
-        createdAt: notification.createdAt
-      })
+        createdAt: notification.createdAt,
+      });
 
       if (isTruthy(user.preferences.notifications.push)) {
         const notificationData = {
@@ -276,26 +301,30 @@ export class EnhancedNotificationService {
           data: {
             ...notification.data,
             notificationId: notification.id,
-            deepLink: this.getDeepLink(notification.type, notification.data)
+            deepLink: this.getDeepLink(notification.type, notification.data),
           },
-          requireInteraction: false
-        }
-        
-        await pushNotificationManager.showNotification(notificationData)
+          requireInteraction: false,
+        };
+
+        await pushNotificationManager.showNotification(notificationData);
       }
 
       logger.debug('Notification sent', {
         notificationId: notification.id,
         userId: user.id,
         type: notification.type,
-        correlationId
-      })
+        correlationId,
+      });
     } catch (error) {
-      logger.error('Failed to send notification', error instanceof Error ? error : new Error(String(error)), {
-        notificationId: notification.id,
-        correlationId
-      })
-      throw error
+      logger.error(
+        'Failed to send notification',
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          notificationId: notification.id,
+          correlationId,
+        }
+      );
+      throw error;
     }
   }
 
@@ -305,13 +334,13 @@ export class EnhancedNotificationService {
   private getDeepLink(type: Notification['type'], data: Record<string, unknown>): string {
     switch (type) {
       case 'match_created':
-        return `/matches/${String(data['matchId'] as string ?? '')}`
+        return `/matches/${data['matchId'] as string}`;
       case 'new_message':
-        return `/chat/${String(data['chatRoomId'] as string ?? '')}`
+        return `/chat/${data['chatRoomId'] as string}`;
       case 'like_received':
-        return '/discover'
+        return '/discover';
       default:
-        return '/'
+        return '/';
     }
   }
 
@@ -320,12 +349,13 @@ export class EnhancedNotificationService {
    */
   async createDigest(userId: string, notifications: Notification[]): Promise<Notification | null> {
     if (notifications.length === 0) {
-      return null
+      return null;
     }
 
-    const summary = notifications.length === 1 && notifications[0]
-      ? notifications[0].body || 'New notification'
-      : `You have ${String(notifications.length ?? '')} new notifications`
+    const summary =
+      notifications.length === 1 && notifications[0]
+        ? notifications[0].body || 'New notification'
+        : `You have ${notifications.length} new notifications`;
 
     return {
       id: `digest-${String(userId ?? '')}-${String(Date.now() ?? '')}`,
@@ -335,13 +365,12 @@ export class EnhancedNotificationService {
       body: summary,
       data: {
         count: notifications.length,
-        notificationIds: notifications.map(n => n.id)
+        notificationIds: notifications.map((n) => n.id),
       },
       read: false,
-      createdAt: new Date().toISOString()
-    }
+      createdAt: new Date().toISOString(),
+    };
   }
 }
 
-export const enhancedNotificationService = new EnhancedNotificationService()
-
+export const enhancedNotificationService = new EnhancedNotificationService();

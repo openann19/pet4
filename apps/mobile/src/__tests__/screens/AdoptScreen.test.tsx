@@ -22,4 +22,3 @@ describe('AdoptScreen', () => {
     expect(getByText('Listings and filters coming next.')).toBeTruthy()
   })
 })
-

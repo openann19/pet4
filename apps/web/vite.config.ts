@@ -52,6 +52,301 @@ const transformJSXInJSPlugin = (): PluginOption => ({
   },
 });
 
+// Plugin to stub react-native-gesture-handler for web (not available in web environment)
+const stubGestureHandlerPlugin = (): PluginOption => ({
+  name: 'stub-react-native-gesture-handler',
+  enforce: 'pre',
+  resolveId(id) {
+    // Stub react-native-gesture-handler for web builds
+    if (id === 'react-native-gesture-handler' || id.includes('react-native-gesture-handler')) {
+      return '\0react-native-gesture-handler-stub';
+    }
+    return null;
+  },
+  load(id) {
+    // Return a stub module for react-native-gesture-handler
+    if (id === '\0react-native-gesture-handler-stub') {
+      return `
+        // Stub for react-native-gesture-handler (not available in web environment)
+        export const Gesture = {
+          Tap: () => ({
+            onUpdate: () => {},
+            onEnd: () => {},
+          }),
+          Pan: () => ({
+            onUpdate: () => {},
+            onEnd: () => {},
+          }),
+        };
+        export const GestureDetector = ({ children, gesture }) => children;
+        export default {
+          Gesture,
+          GestureDetector,
+        };
+      `;
+    }
+    return null;
+  },
+});
+
+// Plugin to stub expo-haptics for web (not available in web environment)
+const stubExpoHapticsPlugin = (): PluginOption => ({
+  name: 'stub-expo-haptics',
+  enforce: 'pre',
+  resolveId(id) {
+    // Stub expo-haptics for web builds
+    if (id === 'expo-haptics' || id.includes('expo-haptics')) {
+      return '\0expo-haptics-stub';
+    }
+    return null;
+  },
+  load(id) {
+    // Return a stub module for expo-haptics
+    if (id === '\0expo-haptics-stub') {
+      return `
+        // Stub for expo-haptics (not available in web environment)
+        export const ImpactFeedbackStyle = {
+          Light: 0,
+          Medium: 1,
+          Heavy: 2,
+        };
+
+        export const NotificationFeedbackType = {
+          Success: 0,
+          Warning: 1,
+          Error: 2,
+        };
+
+        export async function impactAsync(style = 1) {
+          // No-op in web environment
+          return Promise.resolve();
+        }
+
+        export async function notificationAsync(type = 0) {
+          // No-op in web environment
+          return Promise.resolve();
+        }
+
+        export async function selectionAsync() {
+          // No-op in web environment
+          return Promise.resolve();
+        }
+
+        export default {
+          ImpactFeedbackStyle,
+          NotificationFeedbackType,
+          impactAsync,
+          notificationAsync,
+          selectionAsync,
+        };
+      `;
+    }
+    return null;
+  },
+});
+
+// Plugin to stub expo-file-system for web (not available in web environment)
+const stubExpoFileSystemPlugin = (): PluginOption => ({
+  name: 'stub-expo-file-system',
+  enforce: 'pre',
+  resolveId(id) {
+    // Stub expo-file-system for web builds
+    if (id === 'expo-file-system' || id.includes('expo-file-system')) {
+      return '\0expo-file-system-stub';
+    }
+    return null;
+  },
+  load(id) {
+    // Return a stub module for expo-file-system
+    if (id === '\0expo-file-system-stub') {
+      return `
+        // Stub for expo-file-system (web environment uses File API)
+        export const documentDirectory = null;
+        export const cacheDirectory = null;
+        export const bundleDirectory = null;
+        export const temporaryDirectory = null;
+
+        export const FileSystem = {
+          documentDirectory: null,
+          cacheDirectory: null,
+          bundleDirectory: null,
+          temporaryDirectory: null,
+        };
+
+        export async function getInfoAsync(fileUri, options) {
+          // Stub: file operations not available in web environment
+          return {
+            exists: false,
+            isDirectory: false,
+            uri: fileUri,
+          };
+        }
+
+        export async function readAsStringAsync(fileUri, options) {
+          // Stub: file operations not available in web environment
+          return '';
+        }
+
+        export async function writeAsStringAsync(fileUri, contents, options) {
+          // Stub: file operations not available in web environment
+          return Promise.resolve();
+        }
+
+        export async function deleteAsync(fileUri, options) {
+          // Stub: file operations not available in web environment
+          return Promise.resolve();
+        }
+
+        export async function moveAsync(options) {
+          // Stub: file operations not available in web environment
+          return Promise.resolve();
+        }
+
+        export async function copyAsync(options) {
+          // Stub: file operations not available in web environment
+          return Promise.resolve();
+        }
+
+        export async function makeDirectoryAsync(fileUri, options) {
+          // Stub: file operations not available in web environment
+          return Promise.resolve();
+        }
+
+        export async function readDirectoryAsync(fileUri) {
+          // Stub: file operations not available in web environment
+          return [];
+        }
+
+        export async function downloadAsync(uri, fileUri, options) {
+          // Stub: file operations not available in web environment
+          return {
+            uri: fileUri,
+            status: 200,
+            headers: {},
+            mimeType: null,
+          };
+        }
+
+        export async function uploadAsync(url, fileUri, options) {
+          // Stub: file operations not available in web environment
+          return {
+            body: '',
+            status: 200,
+            headers: {},
+          };
+        }
+
+        // Default export with all functions attached for compatibility
+        const defaultExport = {
+          documentDirectory: null,
+          cacheDirectory: null,
+          bundleDirectory: null,
+          temporaryDirectory: null,
+          FileSystem: {
+            documentDirectory: null,
+            cacheDirectory: null,
+            bundleDirectory: null,
+            temporaryDirectory: null,
+          },
+          getInfoAsync,
+          readAsStringAsync,
+          writeAsStringAsync,
+          deleteAsync,
+          moveAsync,
+          copyAsync,
+          makeDirectoryAsync,
+          readDirectoryAsync,
+          downloadAsync,
+          uploadAsync,
+        };
+
+        export default defaultExport;
+      `;
+    }
+    return null;
+  },
+});
+
+// Plugin to stub @shopify/react-native-skia for web (not available in web environment)
+const stubReactNativeSkiaPlugin = (): PluginOption => ({
+  name: 'stub-react-native-skia',
+  enforce: 'pre',
+  resolveId(id) {
+    // Stub @shopify/react-native-skia for web builds
+    if (id === '@shopify/react-native-skia' || id.includes('@shopify/react-native-skia')) {
+      return '\0react-native-skia-stub';
+    }
+    return null;
+  },
+  load(id) {
+    // Return a stub module for @shopify/react-native-skia
+    if (id === '\0react-native-skia-stub') {
+      return `
+        // Stub for @shopify/react-native-skia (web environment uses Canvas API)
+        export const Skia = {
+          // Stub Skia API
+        };
+
+        export const Canvas = () => null;
+        export const Group = () => null;
+        export const Rect = () => null;
+        export const Circle = () => null;
+        export const Path = () => null;
+        export const Image = () => null;
+        export const Text = () => null;
+        export const LinearGradient = () => null;
+        export const RadialGradient = () => null;
+        export const Blur = () => null;
+        export const ColorMatrix = () => null;
+        export const ImageShader = () => null;
+        export const useImage = () => ({ width: 0, height: 0 });
+        export const useFont = () => null;
+        export const useValue = () => ({ value: 0 });
+        export const useComputedValue = () => ({ value: 0 });
+        export const useSharedValueEffect = () => {};
+        export const useCanvasRef = () => ({ current: null });
+        export const useTouchHandler = () => {};
+        export const vec = () => ({ x: 0, y: 0 });
+        export const rrect = () => ({ rect: { x: 0, y: 0, width: 0, height: 0 }, rx: 0, ry: 0 });
+        export const BlendMode = {};
+        export const PaintStyle = {};
+        export const StrokeCap = {};
+        export const StrokeJoin = {};
+
+        export default {
+          Skia,
+          Canvas,
+          Group,
+          Rect,
+          Circle,
+          Path,
+          Image,
+          Text,
+          LinearGradient,
+          RadialGradient,
+          Blur,
+          ColorMatrix,
+          ImageShader,
+          useImage,
+          useFont,
+          useValue,
+          useComputedValue,
+          useSharedValueEffect,
+          useCanvasRef,
+          useTouchHandler,
+          vec,
+          rrect,
+          BlendMode,
+          PaintStyle,
+          StrokeCap,
+          StrokeJoin,
+        };
+      `;
+    }
+    return null;
+  },
+});
+
 // Plugin to handle JSX in .js files during import analysis
 const handleJSXImportAnalysisPlugin = (): PluginOption => ({
   name: 'handle-jsx-import-analysis',
@@ -78,17 +373,25 @@ const resolveReactNativePlugin = (): PluginOption => {
     name: 'resolve-react-native-workspace',
     enforce: 'pre',
     resolveId(id, importer) {
-      // Handle react-native imports from workspace packages  
+      // Handle react-native imports from workspace packages
       // During build, the path might be different - check for both packages/ and motion/
-      if (id === 'react-native' && importer && (importer.includes('packages/') || importer.includes('/motion/'))) {
+      if (
+        id === 'react-native' &&
+        importer &&
+        (importer.includes('packages/') || importer.includes('/motion/'))
+      ) {
         // Return a virtual module ID that we'll handle in load()
-        return '\0react-native-web-workspace'
+        return '\0react-native-web-workspace';
       }
       // Also handle if somehow it's already transformed to react-native-web
-      if (id === 'react-native-web' && importer && (importer.includes('packages/') || importer.includes('/motion/'))) {
-        return '\0react-native-web-workspace'
+      if (
+        id === 'react-native-web' &&
+        importer &&
+        (importer.includes('packages/') || importer.includes('/motion/'))
+      ) {
+        return '\0react-native-web-workspace';
       }
-      return null
+      return null;
     },
     load(id) {
       // Provide stubbed react-native-web content for workspace packages
@@ -117,18 +420,17 @@ const resolveReactNativePlugin = (): PluginOption => {
             prompt: function() {},
           };
           export default {};
-        `
+        `;
       }
-      return null
+      return null;
     },
-  }
-}
-
+  };
+};
 
 // Plugin to resolve @petspark/shared workspace package
 const resolveWorkspacePackagePlugin = (): PluginOption => {
   const sharedPackagePath = path.resolve(projectRoot, '../../packages/shared/src');
-  
+
   return {
     name: 'resolve-workspace-package',
     enforce: 'pre',
@@ -144,11 +446,11 @@ const resolveWorkspacePackagePlugin = (): PluginOption => {
       }
       // Handle relative imports from within the shared package
       // When importer is from shared package, resolve relative imports to .ts files
-      if (importer && importer.includes('packages/shared/src')) {
+      if (importer?.includes('packages/shared/src')) {
         if (id.startsWith('./') || id.startsWith('../')) {
           const importerDir = path.dirname(importer);
           const resolved = path.resolve(importerDir, id);
-          
+
           // If it ends with .js, try resolving to .ts (TypeScript ES module pattern)
           if (id.endsWith('.js')) {
             const withTs = resolved.replace(/\.js$/, '.ts');
@@ -156,7 +458,7 @@ const resolveWorkspacePackagePlugin = (): PluginOption => {
               return withTs;
             }
           }
-          
+
           // If no extension, try .ts first
           if (!path.extname(resolved)) {
             const withTs = `${String(resolved ?? '')}.ts`;
@@ -169,7 +471,7 @@ const resolveWorkspacePackagePlugin = (): PluginOption => {
               return indexTs;
             }
           }
-          
+
           // Fallback to original resolution
           return resolved;
         }
@@ -179,9 +481,12 @@ const resolveWorkspacePackagePlugin = (): PluginOption => {
   };
 };
 
-
 export default defineConfig(async (): Promise<UserConfig> => {
   const plugins: PluginOption[] = [
+    stubGestureHandlerPlugin(),
+    stubExpoHapticsPlugin(),
+    stubExpoFileSystemPlugin(),
+    stubReactNativeSkiaPlugin(),
     resolveReactNativePlugin(),
     resolveWorkspacePackagePlugin(),
     react({}),
@@ -190,15 +495,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
     tailwindcss(),
     securityHeadersPlugin(),
     nodePolyfills({
-      include: [
-        'util',
-        'assert',
-        'process',
-        'stream',
-        'events',
-        'buffer',
-        'crypto',
-      ],
+      include: ['util', 'assert', 'process', 'stream', 'events', 'buffer', 'crypto'],
       globals: {
         Buffer: true,
         global: true,
@@ -231,10 +528,23 @@ export default defineConfig(async (): Promise<UserConfig> => {
       alias: {
         '@': path.resolve(projectRoot, './src'),
         'react-native': 'react-native-web',
-        'react-native-reanimated': path.resolve(projectRoot, './src/lib/reanimated-web-polyfill.ts'),
+        'react-native-reanimated': path.resolve(
+          projectRoot,
+          './src/lib/reanimated-web-polyfill.ts'
+        ),
       },
       conditions: ['import', 'module', 'browser', 'default'],
-      extensions: ['.web.js', '.web.jsx', '.web.ts', '.web.tsx', '.jsx', '.js', '.tsx', '.ts', '.json'],                                                        
+      extensions: [
+        '.web.js',
+        '.web.jsx',
+        '.web.ts',
+        '.web.tsx',
+        '.jsx',
+        '.js',
+        '.tsx',
+        '.ts',
+        '.json',
+      ],
       dedupe: ['react', 'react-dom'],
     },
     esbuild: {
@@ -247,6 +557,8 @@ export default defineConfig(async (): Promise<UserConfig> => {
       jsx: 'automatic',
     },
     server: {
+      host: '0.0.0.0',
+      port: 5173,
       hmr: {
         overlay: true,
       },
@@ -259,19 +571,28 @@ export default defineConfig(async (): Promise<UserConfig> => {
       },
     },
     optimizeDeps: {
-      exclude: ['react-native', 'react-native-reanimated', 'react-native-gesture-handler', 'nsfwjs'],
-      include: [
-        'react-native-web',
-        'react',
-        'react-dom',
-        '@petspark/shared',
+      exclude: [
+        'react-native',
+        'react-native-reanimated',
+        'react-native-gesture-handler',
+        'nsfwjs',
       ],
+      include: ['react-native-web', 'react', 'react-dom', '@petspark/shared'],
       esbuildOptions: {
         loader: {
           '.js': 'jsx',
           '.ts': 'ts',
         },
-        resolveExtensions: ['.web.js', '.web.ts', '.web.tsx', '.js', '.jsx', '.json', '.ts', '.tsx'],
+        resolveExtensions: [
+          '.web.js',
+          '.web.ts',
+          '.web.tsx',
+          '.js',
+          '.jsx',
+          '.json',
+          '.ts',
+          '.tsx',
+        ],
         define: {
           'process.env.NODE_ENV': '"development"',
         },
@@ -317,78 +638,89 @@ export default defineConfig(async (): Promise<UserConfig> => {
         output: {
           // Ensure proper format
           format: 'es',
-          chunkSizeWarningLimit: 500,
           manualChunks: (id): string | undefined => {
             // Split large libraries into separate chunks
             if (id.includes('node_modules')) {
               // React core - combine react and react-dom
-              if (id.includes('react') && !id.includes('react-dom') && !id.includes('react-router')) {
-                return 'react-vendor'
+              if (
+                id.includes('react') &&
+                !id.includes('react-dom') &&
+                !id.includes('react-router')
+              ) {
+                return 'react-vendor';
               }
               if (id.includes('react-dom')) {
-                return 'react-vendor'
+                return 'react-vendor';
               }
               if (id.includes('react-router')) {
-                return 'react-vendor'
+                return 'react-vendor';
               }
               // Reanimated vendor - separate chunk for animation library
               if (id.includes('react-native-reanimated')) {
-                return 'reanimated-vendor'
+                return 'reanimated-vendor';
               }
               // UI libraries
               if (id.includes('@radix-ui')) {
-                return 'ui-vendor'
+                return 'ui-vendor';
               }
               // Icons
               if (id.includes('@phosphor-icons') || id.includes('lucide-react')) {
-                return 'icons-vendor'
+                return 'icons-vendor';
               }
               // Query library
               if (id.includes('@tanstack/react-query')) {
-                return 'query-vendor'
+                return 'query-vendor';
               }
               // Utils - combine common utilities
-              if (id.includes('clsx') || id.includes('tailwind-merge') || id.includes('class-variance-authority') || id.includes('zod') || id.includes('date-fns')) {
-                return 'utils-vendor'
+              if (
+                id.includes('clsx') ||
+                id.includes('tailwind-merge') ||
+                id.includes('class-variance-authority') ||
+                id.includes('zod') ||
+                id.includes('date-fns')
+              ) {
+                return 'utils-vendor';
               }
               // Map library - separate chunk for lazy loading
               if (id.includes('maplibre-gl') || id.includes('leaflet')) {
-                return 'map-vendor'
+                return 'map-vendor';
               }
               // ML/TensorFlow - separate chunk for lazy loading
               if (id.includes('@tensorflow/tfjs') || id.includes('@tensorflow-models')) {
-                return 'ml-vendor'
+                return 'ml-vendor';
               }
               // Three.js - separate chunk for 3D features
               if (id.includes('three')) {
-                return 'three-vendor'
+                return 'three-vendor';
               }
               // Other vendor code
-              return 'vendor'
+              return 'vendor';
             }
             // Split app code by feature
             if (id.includes('/components/views/')) {
-              const viewMatch = id.match(/\/components\/views\/([^/]+)/)
-              if (isTruthy(viewMatch)) {
-                return `view-${String(viewMatch[1] ?? '')}`
+              const viewMatchRegex = /\/components\/views\/([^/]+)/;
+              const viewMatch = viewMatchRegex.exec(id);
+              const viewName = viewMatch?.[1];
+              if (viewName) {
+                return `view-${viewName}`;
               }
             }
             if (id.includes('/components/chat/')) {
-              return 'feature-chat'
+              return 'feature-chat';
             }
             if (id.includes('/components/stories/')) {
-              return 'feature-stories'
+              return 'feature-stories';
             }
             if (id.includes('/components/community/')) {
-              return 'feature-community'
+              return 'feature-community';
             }
             if (id.includes('/components/adoption/')) {
-              return 'feature-adoption'
+              return 'feature-adoption';
             }
             if (id.includes('/components/admin/')) {
-              return 'feature-admin'
+              return 'feature-admin';
             }
-            return undefined
+            return undefined;
           },
         },
       },

@@ -29,9 +29,7 @@ interface UsePressAnimationReturn {
  * Hook for press animations with haptic feedback
  * Provides consistent press interactions across the app
  */
-export function usePressAnimation(
-  options: UsePressAnimationOptions = {}
-): UsePressAnimationReturn {
+export function usePressAnimation(options: UsePressAnimationOptions = {}): UsePressAnimationReturn {
   const {
     scaleAmount = 0.95,
     hapticFeedback = true,
@@ -76,4 +74,3 @@ export function usePressAnimation(
     handlePressOut,
   }
 }
-

@@ -1,71 +1,49 @@
-import { Request, Response, NextFunction } from 'express';
-import { ZodError } from 'zod';
-import logger from '../utils/logger.js';
-
-export interface APIError extends Error {
-  status?: number;
-  code?: string;
-  details?: Record<string, unknown>;
-}
-
 /**
- * Global error handler middleware
- * Must be the last middleware in the chain
+ * Error Handler Middleware
+ *
+ * Centralized error handling for Express routes.
  */
+
+import type { Request, Response, NextFunction } from 'express';
+import { APIError } from '../utils/errors';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('ErrorHandler');
+
 export function errorHandler(
-  err: Error | APIError | ZodError,
+  err: Error | APIError,
   req: Request,
   res: Response,
-  next: NextFunction,
+  _next: NextFunction
 ): void {
-  // Zod validation errors
-  if (err instanceof ZodError) {
-    res.status(400).json({
-      error: 'Validation Error',
-      message: 'Invalid request data',
-      details: err.errors.map((e) => ({
-        path: e.path.join('.'),
-        message: e.message,
-      })),
+  if (err instanceof APIError) {
+    logger.error('API Error', err, {
+      path: req.path,
+      method: req.method,
+      statusCode: err.statusCode,
+      code: err.code,
+      context: err.context,
+    });
+
+    res.status(err.statusCode).json({
+      error: {
+        message: err.message,
+        code: err.code,
+        ...(err.context && { context: err.context }),
+      },
     });
     return;
   }
 
-  // Custom API errors
-  const apiError = err as APIError;
-  const status = apiError.status || 500;
-  const message = apiError.message || 'Internal Server Error';
-
-  // Log error
-  logger.error('Request error', {
-    status,
-    message,
-    stack: err.stack,
+  logger.error('Unhandled Error', err, {
     path: req.path,
     method: req.method,
   });
 
-  // Send error response
-  res.status(status).json({
-    error: status >= 500 ? 'Internal Server Error' : message,
-    message: status >= 500 && process.env.NODE_ENV === 'production' 
-      ? 'An unexpected error occurred' 
-      : message,
-    ...(apiError.code && { code: apiError.code }),
-    ...(apiError.details && { details: apiError.details }),
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+  res.status(500).json({
+    error: {
+      message: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    },
   });
 }
-
-/**
- * Async error wrapper
- * Wraps async route handlers to catch errors
- */
-export function asyncHandler(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<void>,
-) {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
-}
-

@@ -1,33 +1,33 @@
-'use client'
+'use client';
 
-import { useCallback, useRef, useEffect } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { haptics } from '@/lib/haptics'
-import { cn } from '@/lib/utils'
-import * as TabsPrimitive from '@radix-ui/react-tabs'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useCallback, useRef, useEffect } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { haptics } from '@/lib/haptics';
+import { cn } from '@/lib/utils';
+import * as TabsPrimitive from '@radix-ui/react-tabs';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumTab {
-  value: string
-  label: string
-  icon?: React.ReactNode
-  badge?: number | string
-  disabled?: boolean
+  value: string;
+  label: string;
+  icon?: React.ReactNode;
+  badge?: number | string;
+  disabled?: boolean;
 }
 
 export interface PremiumTabsProps {
-  tabs: PremiumTab[]
-  value?: string
-  onValueChange?: (value: string) => void
-  defaultValue?: string
-  variant?: 'default' | 'pills' | 'underline'
-  size?: 'sm' | 'md' | 'lg'
-  scrollable?: boolean
-  className?: string
-  children?: React.ReactNode
+  tabs: PremiumTab[];
+  value?: string;
+  onValueChange?: (value: string) => void;
+  defaultValue?: string;
+  variant?: 'default' | 'pills' | 'underline';
+  size?: 'sm' | 'md' | 'lg';
+  scrollable?: boolean;
+  className?: string;
+  children?: React.ReactNode;
 }
 
 export function PremiumTabs({
@@ -41,62 +41,66 @@ export function PremiumTabs({
   className,
   children,
 }: PremiumTabsProps): React.JSX.Element {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const indicatorPosition = useSharedValue(0)
-  const indicatorWidth = useSharedValue(0)
-  const activeTab = value || defaultValue || tabs[0]?.value
+    const _uiConfig = useUIConfig();
+    const containerRef = useRef<HTMLDivElement>(null);
+  const indicatorPosition = useSharedValue(0);
+  const indicatorWidth = useSharedValue(0);
+  const activeTab = value || defaultValue || tabs[0]?.value;
 
   const updateIndicator = useCallback(() => {
-    if (!containerRef.current || tabs.length === 0) return
+    if (!containerRef.current || tabs.length === 0) return;
 
-    const container = containerRef.current
-    const buttons = container.querySelectorAll('button[data-tab-trigger]')
-    const activeIndex = tabs.findIndex((tab) => tab.value === activeTab)
+    const container = containerRef.current;
+    const buttons = container.querySelectorAll('button[data-tab-trigger]');
+    const activeIndex = tabs.findIndex((tab) => tab.value === activeTab);
 
     if (activeIndex >= 0 && buttons[activeIndex]) {
-      const activeButton = buttons[activeIndex] as HTMLElement
-      const containerRect = container.getBoundingClientRect()
-      const buttonRect = activeButton.getBoundingClientRect()
+      const activeButton = buttons[activeIndex] as HTMLElement;
+      const containerRect = container.getBoundingClientRect();
+      const buttonRect = activeButton.getBoundingClientRect();
 
-      indicatorPosition.value = withSpring(buttonRect.left - containerRect.left, springConfigs.smooth)
-      indicatorWidth.value = withSpring(buttonRect.width, springConfigs.smooth)
+      indicatorPosition.value = withSpring(
+        buttonRect.left - containerRect.left,
+        springConfigs.smooth
+      );
+      indicatorWidth.value = withSpring(buttonRect.width, springConfigs.smooth);
     }
-  }, [tabs, activeTab, indicatorPosition, indicatorWidth])
+  }, [tabs, activeTab, indicatorPosition, indicatorWidth]);
 
   useEffect(() => {
-    updateIndicator()
-    const resizeObserver = new ResizeObserver(updateIndicator)
-    if (isTruthy(containerRef.current)) {
-      resizeObserver.observe(containerRef.current)
+    updateIndicator();
+    const resizeObserver = new ResizeObserver(updateIndicator);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
     }
-    return () => { resizeObserver.disconnect(); }
-  }, [updateIndicator])
+    return () => resizeObserver.disconnect();
+  }, [updateIndicator]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: indicatorPosition.value }],
     width: indicatorWidth.value,
-  })) as AnimatedStyle
+  })) as AnimatedStyle;
 
   const handleValueChange = useCallback(
     (newValue: string) => {
-      onValueChange?.(newValue)
-      haptics.selection()
-      setTimeout(updateIndicator, 0)
+      onValueChange?.(newValue);
+      haptics.selection();
+      setTimeout(updateIndicator, 0);
     },
     [onValueChange, updateIndicator]
-  )
+  );
 
   const variants = {
     default: 'bg-muted',
     pills: 'bg-transparent gap-2',
     underline: 'bg-transparent border-b border-border',
-  }
+  };
 
   const sizes = {
     sm: 'h-8 text-sm px-3',
     md: 'h-10 text-base px-4',
     lg: 'h-12 text-lg px-5',
-  }
+  };
 
   return (
     <TabsPrimitive.Root
@@ -125,7 +129,7 @@ export function PremiumTabs({
             </AnimatedView>
           )}
           {tabs.map((tab) => {
-            const isActive = tab.value === activeTab
+            const isActive = tab.value === activeTab;
             return (
               <TabsPrimitive.Trigger
                 key={tab.value}
@@ -166,18 +170,20 @@ export function PremiumTabs({
                   <span
                     className={cn(
                       'ml-1 px-1.5 py-0.5 text-xs font-bold rounded-full',
-                      isActive ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-muted-foreground/20 text-muted-foreground'
+                      isActive
+                        ? 'bg-primary-foreground/20 text-primary-foreground'
+                        : 'bg-muted-foreground/20 text-muted-foreground'
                     )}
                   >
                     {tab.badge}
                   </span>
                 )}
               </TabsPrimitive.Trigger>
-            )
+            );
           })}
         </TabsPrimitive.List>
       </div>
       {children}
     </TabsPrimitive.Root>
-  )
+  );
 }

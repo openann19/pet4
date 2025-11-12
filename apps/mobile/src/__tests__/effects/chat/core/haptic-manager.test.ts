@@ -1,6 +1,6 @@
 /**
  * Unit Tests for Haptic Manager
- * 
+ *
  * Location: apps/mobile/src/__tests__/effects/chat/core/haptic-manager.test.ts
  */
 
@@ -53,7 +53,9 @@ describe('Haptic Manager', () => {
 
     it('should trigger success haptic', () => {
       triggerHaptic('success')
-      expect(Haptics.notificationAsync).toHaveBeenCalledWith(Haptics.NotificationFeedbackType.Success)
+      expect(Haptics.notificationAsync).toHaveBeenCalledWith(
+        Haptics.NotificationFeedbackType.Success
+      )
     })
 
     it('should trigger selection haptic', () => {

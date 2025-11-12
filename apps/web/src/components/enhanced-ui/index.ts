@@ -1,2 +1,2 @@
-export { AnimatedButton } from './AnimatedButton'
-export { AnimatedCard } from './AnimatedCard'
+export { AnimatedButton } from './AnimatedButton';
+export { AnimatedCard } from './AnimatedCard';

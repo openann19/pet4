@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { adoptionMarketplaceService } from './adoption-marketplace-service'
-import { adoptionApi } from '@/api/adoption-api'
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { adoptionMarketplaceService } from './adoption-marketplace-service';
+import { adoptionApi } from '@/api/adoption-api';
 
 vi.mock('@/api/adoption-api', async () => {
-  const actual = await vi.importActual<typeof import('@/api/adoption-api')>('@/api/adoption-api')
+  const actual = await vi.importActual<typeof import('@/api/adoption-api')>('@/api/adoption-api');
   return {
     ...actual,
     adoptionApi: {
@@ -12,15 +12,15 @@ vi.mock('@/api/adoption-api', async () => {
       updateProfileStatus: vi.fn(),
       getProfileById: vi.fn(),
       deleteAdoptionProfile: vi.fn(),
-      getApplicationsByProfile: vi.fn()
-    }
-  }
-})
+      getApplicationsByProfile: vi.fn(),
+    },
+  };
+});
 
 describe('AdoptionMarketplaceService', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   describe('createListing', () => {
     it('should create a listing successfully', async () => {
@@ -34,10 +34,10 @@ describe('AdoptionMarketplaceService', () => {
         age: 2,
         gender: 'male',
         size: 'large',
-        createdAt: new Date().toISOString()
-      }
+        createdAt: new Date().toISOString(),
+      };
 
-      vi.mocked(adoptionApi.createAdoptionProfile).mockResolvedValue(mockListing as never)
+      vi.mocked(adoptionApi.createAdoptionProfile).mockResolvedValue(mockListing as never);
 
       const listingData = {
         petId: 'pet-1',
@@ -59,17 +59,17 @@ describe('AdoptionMarketplaceService', () => {
         specialNeeds: false,
         fee: { amount: 100, currency: 'BGN' },
         temperament: ['friendly', 'playful'],
-        petPhotos: ['photo1.jpg']
-      }
+        petPhotos: ['photo1.jpg'],
+      };
 
-      const result = await adoptionMarketplaceService.createListing(listingData)
+      const result = await adoptionMarketplaceService.createListing(listingData);
 
-      expect(result).toBeDefined()
-      expect(adoptionApi.createAdoptionProfile).toHaveBeenCalledTimes(1)
-    })
+      expect(result).toBeDefined();
+      expect(adoptionApi.createAdoptionProfile).toHaveBeenCalledTimes(1);
+    });
 
     it('should handle errors during listing creation', async () => {
-      vi.mocked(adoptionApi.createAdoptionProfile).mockRejectedValue(new Error('API Error'))
+      vi.mocked(adoptionApi.createAdoptionProfile).mockRejectedValue(new Error('API Error'));
 
       const listingData = {
         petId: 'pet-1',
@@ -91,21 +91,23 @@ describe('AdoptionMarketplaceService', () => {
         specialNeeds: false,
         fee: { amount: 100, currency: 'BGN' },
         temperament: [],
-        petPhotos: []
-      }
+        petPhotos: [],
+      };
 
-      await expect(adoptionMarketplaceService.createListing(listingData)).rejects.toThrow()
-    })
-  })
+      await expect(adoptionMarketplaceService.createListing(listingData)).rejects.toThrow();
+    });
+  });
 
   describe('updateListingStatus', () => {
     it('should update listing status successfully', async () => {
-      vi.mocked(adoptionApi.updateProfileStatus).mockResolvedValue(undefined)
+      vi.mocked(adoptionApi.updateProfileStatus).mockResolvedValue(undefined);
 
-      await expect(adoptionMarketplaceService.updateListingStatus('1', 'active')).resolves.not.toThrow()
-      expect(adoptionApi.updateProfileStatus).toHaveBeenCalledWith('1', 'available')
-    })
-  })
+      await expect(
+        adoptionMarketplaceService.updateListingStatus('1', 'active')
+      ).resolves.not.toThrow();
+      expect(adoptionApi.updateProfileStatus).toHaveBeenCalledWith('1', 'available');
+    });
+  });
 
   describe('getListingById', () => {
     it('should retrieve a listing by ID', async () => {
@@ -130,51 +132,51 @@ describe('AdoptionMarketplaceService', () => {
         goodWithPets: true,
         energyLevel: 'high' as const,
         personality: [],
-        postedDate: new Date().toISOString()
-      }
+        postedDate: new Date().toISOString(),
+      };
 
-      vi.mocked(adoptionApi.getProfileById).mockResolvedValue(mockListing as never)
+      vi.mocked(adoptionApi.getProfileById).mockResolvedValue(mockListing as never);
 
-      const result = await adoptionMarketplaceService.getListingById('1')
+      const result = await adoptionMarketplaceService.getListingById('1');
 
-      expect(result).toBeDefined()
-      expect(result?.id).toBe('1')
-      expect(adoptionApi.getProfileById).toHaveBeenCalledWith('1')
-    })
+      expect(result).toBeDefined();
+      expect(result?.id).toBe('1');
+      expect(adoptionApi.getProfileById).toHaveBeenCalledWith('1');
+    });
 
     it('should return undefined for non-existent listing', async () => {
-      vi.mocked(adoptionApi.getProfileById).mockResolvedValue(undefined as never)
+      vi.mocked(adoptionApi.getProfileById).mockResolvedValue(undefined as never);
 
-      const result = await adoptionMarketplaceService.getListingById('non-existent')
+      const result = await adoptionMarketplaceService.getListingById('non-existent');
 
-      expect(result).toBeUndefined()
-    })
-  })
+      expect(result).toBeUndefined();
+    });
+  });
 
   describe('getListingApplications', () => {
     it('should retrieve listing applications', async () => {
       const mockApplications = [
         { id: 'app-1', listingId: '1', applicantId: 'user-1', status: 'pending' as const },
-        { id: 'app-2', listingId: '1', applicantId: 'user-2', status: 'pending' as const }
-      ]
+        { id: 'app-2', listingId: '1', applicantId: 'user-2', status: 'pending' as const },
+      ];
 
-      vi.mocked(adoptionApi.getApplicationsByProfile).mockResolvedValue(mockApplications as never)
+      vi.mocked(adoptionApi.getApplicationsByProfile).mockResolvedValue(mockApplications as never);
 
-      const result = await adoptionMarketplaceService.getListingApplications('1')
+      const result = await adoptionMarketplaceService.getListingApplications('1');
 
-      expect(result).toBeDefined()
-      expect(Array.isArray(result)).toBe(true)
-      expect(adoptionApi.getApplicationsByProfile).toHaveBeenCalledWith('1')
-    })
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
+      expect(adoptionApi.getApplicationsByProfile).toHaveBeenCalledWith('1');
+    });
 
     it('should handle empty applications', async () => {
-      vi.mocked(adoptionApi.getApplicationsByProfile).mockResolvedValue([] as never)
+      vi.mocked(adoptionApi.getApplicationsByProfile).mockResolvedValue([] as never);
 
-      const result = await adoptionMarketplaceService.getListingApplications('1')
+      const result = await adoptionMarketplaceService.getListingApplications('1');
 
-      expect(result).toEqual([])
-    })
-  })
+      expect(result).toEqual([]);
+    });
+  });
 
   describe('data transformation', () => {
     it('should map size correctly', async () => {
@@ -186,10 +188,10 @@ describe('AdoptionMarketplaceService', () => {
         breed: 'Chihuahua',
         age: 1,
         gender: 'female',
-        size: 'small'
-      }
+        size: 'small',
+      };
 
-      vi.mocked(adoptionApi.createAdoptionProfile).mockResolvedValue(mockListing as never)
+      vi.mocked(adoptionApi.createAdoptionProfile).mockResolvedValue(mockListing as never);
 
       const listingData = {
         petId: 'pet-1',
@@ -211,14 +213,13 @@ describe('AdoptionMarketplaceService', () => {
         specialNeeds: false,
         fee: { amount: 50, currency: 'BGN' },
         temperament: [],
-        petPhotos: []
-      }
+        petPhotos: [],
+      };
 
-      await adoptionMarketplaceService.createListing(listingData)
+      await adoptionMarketplaceService.createListing(listingData);
 
-      const callArgs = vi.mocked(adoptionApi.createAdoptionProfile).mock.calls[0]?.[0]
-      expect(callArgs?.size).toBe('small')
-    })
-  })
-})
-
+      const callArgs = vi.mocked(adoptionApi.createAdoptionProfile).mock.calls[0]?.[0];
+      expect(callArgs?.size).toBe('small');
+    });
+  });
+});

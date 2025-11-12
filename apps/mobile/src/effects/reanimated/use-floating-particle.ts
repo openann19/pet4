@@ -1,67 +1,131 @@
-import { useFloatingParticle as useFloatingParticleBase } from '@petspark/motion'
-import type { UseFloatingParticleOptions, UseFloatingParticleReturn } from '@petspark/motion'
-import { Dimensions } from 'react-native'
-import { useMemo } from 'react'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated'
+import { useEffect } from 'react'
+import { timingConfigs } from './transitions'
+import type { AnimatedStyle } from './animated-view'
 
-interface MobileFloatingParticleOptions extends Omit<UseFloatingParticleOptions, 'initialOffset' | 'amplitude'> {
-  /**
-   * Whether to use screen dimensions for relative calculations
-   * @default true
-   */
-  screenRelative?: boolean
-  
-  /**
-   * Initial position (in pixels for screenRelative=false, or 0-1 range for screenRelative=true)
-   */
+export interface UseFloatingParticleOptions {
   initialX?: number
   initialY?: number
-  
-  /**
-   * Container dimensions (defaults to screen dimensions if not provided)
-   */
   width?: number
   height?: number
+  duration?: number
+  delay?: number
+  opacity?: number
+}
+
+export interface UseFloatingParticleReturn {
+  x: ReturnType<typeof useSharedValue<number>>
+  y: ReturnType<typeof useSharedValue<number>>
+  opacity: ReturnType<typeof useSharedValue<number>>
+  scale: ReturnType<typeof useSharedValue<number>>
+  style: AnimatedStyle
 }
 
 /**
- * Mobile-specific floating particle hook
- * Adapts the base hook with mobile-specific defaults and behaviors
+ * Simple seeded random number generator
  */
-export function useFloatingParticle(
-  options: MobileFloatingParticleOptions = {}
-): UseFloatingParticleReturn {
-  // Get screen dimensions for relative calculations
-  const { width: screenWidth, height: screenHeight } = useMemo(() => 
-    Dimensions.get('window'),
-    []
-  )
-
-  const {
-    screenRelative = true,
-    initialX = 0.5,
-    initialY = 0.5,
-    width = screenWidth,
-    height = screenHeight,
-    ...rest
-  } = options
-
-  // Convert options to shared hook format
-  const adaptedOptions = {
-    initialOffset: {
-      x: screenRelative ? initialX : initialX / width,
-      y: screenRelative ? initialY : initialY / height
-    },
-    amplitude: screenRelative 
-      ? { x: width * 0.15, y: height * 0.15 } // 15% of container
-      : { x: 50, y: 50 }, // Fixed size
-    floatDuration: 1500, // Slightly faster on mobile
-    fadeOut: true,
-    enableScale: true,
-    ...rest
+function makeRng(seed: number): () => number {
+  let state = seed
+  return () => {
+    state = (state * 9301 + 49297) % 233280
+    return state / 233280
   }
-
-  return useFloatingParticleBase(adaptedOptions)
 }
 
-// Re-export types for backwards compatibility
-export type { UseFloatingParticleOptions, UseFloatingParticleReturn }
+export function useFloatingParticle(
+  options: UseFloatingParticleOptions = {}
+): UseFloatingParticleReturn {
+  const {
+    initialX = 0,
+    initialY = 0,
+    width = 1920,
+    height = 1080,
+    duration = 15,
+    opacity = 0.6,
+  } = options
+
+  const x = useSharedValue(initialX)
+  const y = useSharedValue(initialY)
+  const opacityValue = useSharedValue(0)
+  const scale = useSharedValue(0.5)
+
+  useEffect(() => {
+    const seed = Date.now() + initialX + initialY
+    const rng = makeRng(seed)
+    const randomX1 = rng() * width
+    const randomX2 = rng() * width
+    const randomX3 = rng() * width
+    const randomY1 = rng() * height
+    const randomY2 = rng() * height
+    const randomY3 = rng() * height
+
+    const animDuration = duration * 1000
+
+    x.value = withRepeat(
+      withSequence(
+        withTiming(randomX1, timingConfigs.smooth),
+        withTiming(randomX2, timingConfigs.smooth),
+        withTiming(randomX3, timingConfigs.smooth),
+        withTiming(randomX1, timingConfigs.smooth)
+      ),
+      -1,
+      false
+    )
+
+    y.value = withRepeat(
+      withSequence(
+        withTiming(randomY1, timingConfigs.smooth),
+        withTiming(randomY2, timingConfigs.smooth),
+        withTiming(randomY3, timingConfigs.smooth),
+        withTiming(randomY1, timingConfigs.smooth)
+      ),
+      -1,
+      false
+    )
+
+    opacityValue.value = withRepeat(
+      withSequence(
+        withTiming(0, { duration: 0 }),
+        withTiming(opacity, { duration: animDuration * 0.2 }),
+        withTiming(opacity * 0.5, { duration: animDuration * 0.2 }),
+        withTiming(opacity, { duration: animDuration * 0.2 }),
+        withTiming(0, { duration: animDuration * 0.4 })
+      ),
+      -1,
+      false
+    )
+
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(0.5, { duration: animDuration * 0.2 }),
+        withTiming(1, { duration: animDuration * 0.2 }),
+        withTiming(0.8, { duration: animDuration * 0.2 }),
+        withTiming(1, { duration: animDuration * 0.2 }),
+        withTiming(0.5, { duration: animDuration * 0.2 })
+      ),
+      -1,
+      false
+    )
+  }, [width, height, duration, opacity, initialX, initialY, x, y, opacityValue, scale])
+
+  const style = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: x.value }, { translateY: y.value }, { scale: scale.value }],
+      opacity: opacityValue.value,
+    }
+  }) as AnimatedStyle
+
+  return {
+    x,
+    y,
+    opacity: opacityValue,
+    scale,
+    style,
+  }
+}

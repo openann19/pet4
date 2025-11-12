@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { motion } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { MapPin, NavigationArrow, X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
+import { createLogger } from '@/lib/logger';
 import type { Location } from '@/lib/maps/types';
+
+const logger = createLogger('LocationSharing');
 import { getCurrentLocation, snapToGrid } from '@/lib/maps/utils';
 import MapLibreMap from '@/components/maps/MapLibreMap';
 import { openInMaps } from '@/lib/maps/deep-links';
@@ -88,10 +91,11 @@ export function LocationBubble({
               <SheetTitle className="text-xl font-bold">
                 {(t.map as { location?: string })?.location || 'Location'}
               </SheetTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => { setShowFullMap(false); }}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setShowFullMap(false)}
+                aria-label="Close map"
               >
                 <X size={20} />
               </Button>
@@ -123,10 +127,7 @@ export function LocationBubble({
                 {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
               </p>
             </div>
-            <Button
-              className="w-full"
-              onClick={handleOpenInMaps}
-            >
+            <Button className="w-full" onClick={handleOpenInMaps}>
               <NavigationArrow size={18} className="mr-2" />
               {t.map?.openInMaps || 'Open in Maps'}
             </Button>
@@ -156,14 +157,23 @@ export function LocationPicker({
   useEffect(() => {
     getCurrentLocation()
       .then((location) => {
-        if (isTruthy(sharingPrecise)) {
-          setSelectedLocation(location);
-        } else {
-          const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
-          setSelectedLocation(coarse);
+        try {
+          if (sharingPrecise) {
+            setSelectedLocation(location);
+          } else {
+            const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
+            setSelectedLocation(coarse);
+          }
+        } catch (error) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error('LocationPicker snapToGrid error', err);
+          setSelectedLocation(currentLocation || { lat: 40.7128, lng: -74.006 });
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('LocationPicker getCurrentLocation error', err);
+        // Fallback to current location or default location
         setSelectedLocation(currentLocation || { lat: 40.7128, lng: -74.006 });
       });
   }, [sharingPrecise, mapSettings.PRIVACY_GRID_METERS, currentLocation]);
@@ -189,9 +199,7 @@ export function LocationPicker({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold">
-          {t.map?.shareLocation || 'Share location'}
-        </p>
+        <p className="text-sm font-semibold">{t.map?.shareLocation || 'Share location'}</p>
         <Badge
           variant={sharingPrecise ? 'default' : 'secondary'}
           className="cursor-pointer"
@@ -235,4 +243,3 @@ export function LocationPicker({
     </div>
   );
 }
-

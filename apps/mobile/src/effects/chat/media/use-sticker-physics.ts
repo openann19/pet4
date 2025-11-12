@@ -1,23 +1,23 @@
 /**
  * Sticker Physics Effect Hook
- * 
+ *
  * Creates a premium sticker toss animation with:
  * - Gravity + floor bounce (coef 0.3)
  * - Duration 400-600ms
  * - Capped to 120 Hz
  * - Cache sticker texture, decode off-UI thread
- * 
+ *
  * Location: apps/mobile/src/effects/chat/media/use-sticker-physics.ts
  */
 
 import { useCallback, useRef } from 'react'
 import {
-    Easing,
-    type SharedValue,
-    useAnimatedStyle,
-    useSharedValue,
-    withSequence,
-    withTiming
+  Easing,
+  type SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated'
 import { createLogger } from '../../../utils/logger'
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion'
@@ -58,9 +58,7 @@ export interface UseStickerPhysicsReturn {
 
 const DEFAULT_ENABLED = true
 
-export function useStickerPhysics(
-  options: UseStickerPhysicsOptions = {}
-): UseStickerPhysicsReturn {
+export function useStickerPhysics(options: UseStickerPhysicsOptions = {}): UseStickerPhysicsReturn {
   const {
     enabled = DEFAULT_ENABLED,
     initialVelocity = { x: 200, y: -300 },
@@ -82,8 +80,7 @@ export function useStickerPhysics(
     }
 
     const duration =
-      STICKER_DURATION_MIN +
-      randomRange(0, STICKER_DURATION_MAX - STICKER_DURATION_MIN)
+      STICKER_DURATION_MIN + randomRange(0, STICKER_DURATION_MAX - STICKER_DURATION_MIN)
 
     const isReducedMotion = reducedMotion.value
     const finalDuration = isReducedMotion
@@ -194,4 +191,3 @@ export function useStickerPhysics(
     trigger,
   }
 }
-

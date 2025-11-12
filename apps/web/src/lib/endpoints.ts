@@ -8,7 +8,7 @@ export const ENDPOINTS = {
     ME: '/auth/me',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
-    VERIFY_EMAIL: '/auth/verify-email'
+    VERIFY_EMAIL: '/auth/verify-email',
   },
 
   // User Management
@@ -20,7 +20,7 @@ export const ENDPOINTS = {
     NOTIFICATIONS: '/users/notifications',
     SETTINGS: '/users/settings',
     LOCATION: '/users/location',
-    LOCATION_NEARBY: '/users/location/nearby'
+    LOCATION_NEARBY: '/users/location/nearby',
   },
 
   // Adoption
@@ -32,7 +32,7 @@ export const ENDPOINTS = {
     DELETE_LISTING: (id: string) => `/adoption/listings/${String(id ?? '')}`,
     APPLY: '/adoption/applications',
     APPLICATIONS: '/adoption/applications',
-    UPDATE_APPLICATION: (id: string) => `/adoption/applications/${String(id ?? '')}`
+    UPDATE_APPLICATION: (id: string) => `/adoption/applications/${id}`,
   },
 
   // Matching
@@ -41,7 +41,7 @@ export const ENDPOINTS = {
     DISCOVER: '/matching/discover',
     SWIPE: '/matching/swipe',
     MATCHES: '/matching/matches',
-    SCORE: '/matching/score'
+    SCORE: '/matching/score',
   },
 
   // Payments
@@ -55,24 +55,24 @@ export const ENDPOINTS = {
     UPDATE_ENTITLEMENTS: '/payments/entitlements',
     SUBSCRIPTION: '/payments/subscription',
     CREATE_SUBSCRIPTION: '/payments/subscription',
-    UPDATE_SUBSCRIPTION: (id: string) => `/payments/subscription/${String(id ?? '')}`,
-    CONSUMABLES: '/payments/consumables'
+    UPDATE_SUBSCRIPTION: (id: string) => `/payments/subscription/${id}`,
+    CONSUMABLES: '/payments/consumables',
   },
 
   // File Uploads
   UPLOADS: {
     SIGN_URL: '/uploads/sign-url',
     COMPLETE: '/uploads/complete',
-    DELETE: (key: string) => `/uploads/${String(key ?? '')}`
+    DELETE: (key: string) => `/uploads/${key}`,
   },
 
   // Chat & Messaging
   CHAT: {
     CONVERSATIONS: '/chat/conversations',
-    CONVERSATION: (id: string) => `/chat/conversations/${String(id ?? '')}`,
-    MESSAGES: (conversationId: string) => `/chat/conversations/${String(conversationId ?? '')}/messages`,
-    SEND_MESSAGE: (conversationId: string) => `/chat/conversations/${String(conversationId ?? '')}/messages`,
-    MARK_READ: (conversationId: string) => `/chat/conversations/${String(conversationId ?? '')}/read`
+    CONVERSATION: (id: string) => `/chat/conversations/${id}`,
+    MESSAGES: (conversationId: string) => `/chat/conversations/${conversationId}/messages`,
+    SEND_MESSAGE: (conversationId: string) => `/chat/conversations/${conversationId}/messages`,
+    MARK_READ: (conversationId: string) => `/chat/conversations/${conversationId}/read`,
   },
 
   // Notifications
@@ -82,7 +82,7 @@ export const ENDPOINTS = {
     MARK_ALL_READ: '/notifications/read-all',
     SETTINGS: '/notifications/settings',
     GEOFENCE: '/notifications/geofence',
-    USER_LOCATIONS: '/notifications/user-locations'
+    USER_LOCATIONS: '/notifications/user-locations',
   },
 
   // Community
@@ -90,9 +90,10 @@ export const ENDPOINTS = {
     POSTS: '/community/posts',
     POST: (id: string) => `/community/posts/${String(id ?? '')}`,
     CREATE_POST: '/community/posts',
-    LIKE_POST: (id: string) => `/community/posts/${String(id ?? '')}/like`,
-    COMMENT: (postId: string) => `/community/posts/${String(postId ?? '')}/comments`,
-    LIKE_COMMENT: (postId: string, commentId: string) => `/community/posts/${String(postId ?? '')}/comments/${String(commentId ?? '')}/like`
+    LIKE_POST: (id: string) => `/community/posts/${id}/like`,
+    COMMENT: (postId: string) => `/community/posts/${postId}/comments`,
+    LIKE_COMMENT: (postId: string, commentId: string) =>
+      `/community/posts/${postId}/comments/${commentId}/like`,
   },
 
   // Admin
@@ -107,11 +108,11 @@ export const ENDPOINTS = {
     CONFIG_BROADCAST: '/admin/config/broadcast',
     CONFIG_HISTORY: '/admin/config/history',
     SUPPORT_TICKETS: '/admin/support/tickets',
-    SUPPORT_TICKET: (id: string) => `/admin/support/tickets/${String(id ?? '')}`,
-    SUPPORT_TICKET_MESSAGES: (id: string) => `/admin/support/tickets/${String(id ?? '')}/messages`,
-    SUPPORT_TICKET_STATUS: (id: string) => `/admin/support/tickets/${String(id ?? '')}/status`,
-    SUPPORT_TICKET_ASSIGN: (id: string) => `/admin/support/tickets/${String(id ?? '')}/assign`,
-    SUPPORT_STATS: '/admin/support/stats'
+    SUPPORT_TICKET: (id: string) => `/admin/support/tickets/${id}`,
+    SUPPORT_TICKET_MESSAGES: (id: string) => `/admin/support/tickets/${id}/messages`,
+    SUPPORT_TICKET_STATUS: (id: string) => `/admin/support/tickets/${id}/status`,
+    SUPPORT_TICKET_ASSIGN: (id: string) => `/admin/support/tickets/${id}/assign`,
+    SUPPORT_STATS: '/admin/support/stats',
   },
 
   // KYC
@@ -119,21 +120,30 @@ export const ENDPOINTS = {
     STATUS: '/kyc/status',
     START_VERIFICATION: '/kyc/start',
     SUBMIT_DOCUMENTS: '/kyc/documents',
-    GET_VERIFICATION: (id: string) => `/kyc/verifications/${String(id ?? '')}`
+    GET_VERIFICATION: (id: string) => `/kyc/verifications/${id}`,
+  },
+
+  // GDPR
+  GDPR: {
+    EXPORT: '/api/gdpr/export',
+    DELETE: '/api/gdpr/delete',
+    CONSENT: '/api/gdpr/consent',
+    CONSENT_STATUS: (userId: string) => `/api/gdpr/consent?userId=${userId}`,
+    UPDATE_CONSENT: '/api/gdpr/consent',
   },
 
   // Blocking
   BLOCKING: {
     BLOCK: '/blocking/block',
     BLOCK_USER: '/blocking/block-user',
-    UNBLOCK: (blockerPetId: string, blockedPetId: string) => 
-      `/blocking/unblock/${String(blockerPetId ?? '')}/${String(blockedPetId ?? '')}`,
+    UNBLOCK: (blockerPetId: string, blockedPetId: string) =>
+      `/blocking/unblock/${blockerPetId}/${blockedPetId}`,
     UNBLOCK_USER: (blockerUserId: string, blockedUserId: string) =>
       `/blocking/unblock-user/${String(blockerUserId ?? '')}/${String(blockedUserId ?? '')}`,
     STATUS: (blockerPetId: string, blockedPetId: string) =>
-      `/blocking/status/${String(blockerPetId ?? '')}/${String(blockedPetId ?? '')}`,
-    BLOCKED_PETS: (petId: string) => `/blocking/pets/${String(petId ?? '')}/blocked`,
-    BLOCKED_USERS: (userId: string) => `/blocking/users/${String(userId ?? '')}/blocked`
+      `/blocking/status/${blockerPetId}/${blockedPetId}`,
+    BLOCKED_PETS: (petId: string) => `/blocking/pets/${petId}/blocked`,
+    BLOCKED_USERS: (userId: string) => `/blocking/users/${userId}/blocked`,
   },
 
   // Lost & Found
@@ -144,7 +154,7 @@ export const ENDPOINTS = {
     UPDATE_STATUS: (id: string) => `/alerts/lost/${String(id ?? '')}/status`,
     INCREMENT_VIEW: (id: string) => `/alerts/lost/${String(id ?? '')}/increment-view`,
     CREATE_SIGHTING: '/alerts/sightings',
-    GET_SIGHTINGS: '/alerts/sightings'
+    GET_SIGHTINGS: '/alerts/sightings',
   },
 
   // Live Streaming
@@ -152,20 +162,20 @@ export const ENDPOINTS = {
     CREATE_ROOM: '/live/createRoom',
     END_ROOM: '/live/endRoom',
     QUERY_ACTIVE: '/live/active',
-    GET_STREAM: (id: string) => `/live/${String(id ?? '')}`,
-    JOIN_STREAM: (id: string) => `/live/${String(id ?? '')}/join`,
-    LEAVE_STREAM: (id: string) => `/live/${String(id ?? '')}/leave`,
-    SEND_REACTION: (id: string) => `/live/${String(id ?? '')}/react`,
-    SEND_CHAT: (id: string) => `/live/${String(id ?? '')}/chat`,
-    GET_CHAT: (id: string) => `/live/${String(id ?? '')}/chat`,
-    REPORT_STREAM: (id: string) => `/live/${String(id ?? '')}/report`
+    GET_STREAM: (id: string) => `/live/${id}`,
+    JOIN_STREAM: (id: string) => `/live/${id}/join`,
+    LEAVE_STREAM: (id: string) => `/live/${id}/leave`,
+    SEND_REACTION: (id: string) => `/live/${id}/react`,
+    SEND_CHAT: (id: string) => `/live/${id}/chat`,
+    GET_CHAT: (id: string) => `/live/${id}/chat`,
+    REPORT_STREAM: (id: string) => `/live/${id}/report`,
   },
 
   // Sync & Offline
   SYNC: {
     QUEUE: '/sync/queue',
     LAST_SYNC_TIME: '/sync/last-sync-time',
-    SYNC_ACTION: '/sync/actions'
+    SYNC_ACTION: '/sync/actions',
   },
 
   // Photos & Moderation
@@ -177,69 +187,63 @@ export const ENDPOINTS = {
     BY_STATUS: '/photos',
     BY_OWNER: '/photos',
     PUBLIC: '/photos/public',
-    RELEASE_HELD: '/photos/release-held'
+    RELEASE_HELD: '/photos/release-held',
   },
 
   // Moderation
   MODERATION: {
     POLICY: '/admin/moderation/policy',
     TASKS: '/admin/moderation/tasks',
-    TASK: (id: string) => `/admin/moderation/tasks/${String(id ?? '')}`,
-    TAKE_TASK: (id: string) => `/admin/moderation/tasks/${String(id ?? '')}/take`,
-    METRICS: '/admin/moderation/metrics'
+    TASK: (id: string) => `/admin/moderation/tasks/${id}`,
+    TAKE_TASK: (id: string) => `/admin/moderation/tasks/${id}/take`,
+    METRICS: '/admin/moderation/metrics',
   },
 
   // User Quotas
   QUOTAS: {
-    GET: (userId: string) => `/users/${String(userId ?? '')}/quota`,
-    INCREMENT: (userId: string) => `/users/${String(userId ?? '')}/quota/increment`
+    GET: (userId: string) => `/users/${userId}/quota`,
+    INCREMENT: (userId: string) => `/users/${userId}/quota/increment`,
   },
 
   // Audit Logs
   AUDIT: {
     LOGS: '/admin/audit-logs',
-    CREATE: '/admin/audit-logs'
+    CREATE: '/admin/audit-logs',
   },
 
   // Events
   EVENTS: {
-    CREATE: '/events'
+    CREATE: '/events',
   },
 
   // Image Uploads
   IMAGES: {
-    UPLOAD: '/uploads/images'
+    UPLOAD: '/uploads/images',
   },
+} as const;
 
-  // Health & Version
-  HEALTH: {
-    LIVENESS: '/healthz',
-    READINESS: '/readyz',
-    VERSION: '/api/version'
-  }
-} as const
+export function buildUrl(endpoint: string, params?: Record<string, unknown>): string {
+  if (!params) return endpoint;
 
-export function buildUrl(
-  endpoint: string,
-  params?: Record<string, unknown>
-): string {
-  if (!params) return endpoint
-
-  const url = new URL(endpoint, 'http://dummy-base')
+  const url = new URL(endpoint, 'http://dummy-base');
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       if (Array.isArray(value)) {
-        value.forEach(v => { url.searchParams.append(key, String(v)); })
+        value.forEach((v) => url.searchParams.append(key, String(v)));
       } else if (typeof value === 'object') {
         // For complex objects, stringify them
-        url.searchParams.append(key, JSON.stringify(value))
-      } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        url.searchParams.append(key, JSON.stringify(value));
+      } else if (
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+      ) {
         // For primitives, convert to string safely
-        url.searchParams.append(key, String(value))
+        url.searchParams.append(key, String(value));
       }
       // Skip other types (functions, symbols, etc.)
     }
-  })
+  });
 
-  return `${String(url.pathname ?? '')}${String(url.search ?? '')}`
+  return `${url.pathname}${url.search}`;
 }

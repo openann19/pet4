@@ -7,13 +7,13 @@ import { danger, fail, markdown } from 'danger'
 
 const changed = danger.git.modified_files.concat(danger.git.created_files)
 const touchedChat =
-  changed.some((f) => /(effects|features\/chat|chat)/.test(f)) ||
-  changed.some((f) => f.includes('effects/') || f.includes('chat/'))
+  changed.some(f => /(effects|features\/chat|chat)/.test(f)) ||
+  changed.some(f => f.includes('effects/') || f.includes('chat/'))
 
 if (touchedChat) {
   const body = danger.github?.pr?.body || ''
   const needs = ['perf report', 'reduced motion', '120hz', 'haptics']
-  const misses = needs.filter((k) => !new RegExp(k, 'i').test(body))
+  const misses = needs.filter(k => !new RegExp(k, 'i').test(body))
 
   if (misses.length > 0) {
     fail(
@@ -42,4 +42,3 @@ if (touchedChat) {
 - [ ] Web/Mobile parity checked
   `)
 }
-

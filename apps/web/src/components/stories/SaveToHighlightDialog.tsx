@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { useStorage } from '@/hooks/useStorage'
-import { motion } from '@petspark/motion'
-import { Plus, Check, BookmarkSimple } from '@phosphor-icons/react'
+import { useState } from 'react';
+import { useStorage } from '@/hooks/use-storage';
+import { motion, MotionView } from '@petspark/motion';
+import { Plus, Check, BookmarkSimple } from '@phosphor-icons/react';
 import {
   Dialog,
   DialogContent,
@@ -9,121 +9,121 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import type { Story, StoryHighlight } from '@/lib/stories-types'
-import type { Pet } from '@/lib/types'
-import { createStoryHighlight } from '@/lib/stories-utils'
-import { haptics } from '@/lib/haptics'
-import { toast } from 'sonner'
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import type { Story, StoryHighlight } from '@/lib/stories-types';
+import type { Pet } from '@/lib/types';
+import { createStoryHighlight } from '@/lib/stories-utils';
+import { haptics } from '@/lib/haptics';
+import { toast } from 'sonner';
 
 interface SaveToHighlightDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  story: Story
-  onSaved?: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  story: Story;
+  onSaved?: () => void;
 }
 
 export default function SaveToHighlightDialog({
   open,
   onOpenChange,
   story,
-  onSaved
+  onSaved,
 }: SaveToHighlightDialogProps) {
-  const [highlights, setHighlights] = useStorage<StoryHighlight[]>('story-highlights', [])
-  const [userPets] = useStorage<Pet[]>('user-pets', [])
-  
-  const [showNewHighlight, setShowNewHighlight] = useState(false)
-  const [newHighlightTitle, setNewHighlightTitle] = useState('')
-  const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null)
+  const [highlights, setHighlights] = useStorage<StoryHighlight[]>('story-highlights', []);
+  const [userPets] = useStorage<Pet[]>('user-pets', []);
 
-  const userHighlights = (highlights || []).filter(h => h.userId === story.userId)
+  const [showNewHighlight, setShowNewHighlight] = useState(false);
+  const [newHighlightTitle, setNewHighlightTitle] = useState('');
+  const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
+
+  const userHighlights = (highlights || []).filter((h) => h.userId === story.userId);
   const storyAlreadyInHighlight = (highlightId: string) => {
-    const highlight = userHighlights.find(h => h.id === highlightId)
-    return highlight?.stories.some(s => s.id === story.id) || false
-  }
+    const highlight = userHighlights.find((h) => h.id === highlightId);
+    return highlight?.stories.some((s) => s.id === story.id) || false;
+  };
 
   const handleSelectHighlight = (highlightId: string) => {
     if (storyAlreadyInHighlight(highlightId)) {
-      toast.error('Story already in this highlight')
-      return
+      toast.error('Story already in this highlight');
+      return;
     }
-    haptics.trigger('selection')
-    setSelectedHighlightId(highlightId)
-  }
+    haptics.trigger('selection');
+    setSelectedHighlightId(highlightId);
+  };
 
   const handleSaveToExisting = () => {
-    if (!selectedHighlightId) return
+    if (!selectedHighlightId) return;
 
-    haptics.trigger('success')
-    
+    haptics.trigger('success');
+
     setHighlights((current) =>
       (current || []).map((h) =>
         h.id === selectedHighlightId
           ? {
               ...h,
               stories: [...h.stories, story],
-              updatedAt: new Date().toISOString()
+              updatedAt: new Date().toISOString(),
             }
           : h
       )
-    )
+    );
 
     toast.success('Story saved to highlight!', {
       duration: 2000,
-      description: 'You can view it anytime in your highlights'
-    })
+      description: 'You can view it anytime in your highlights',
+    });
 
-    onSaved?.()
-    onOpenChange(false)
-    resetState()
-  }
+    onSaved?.();
+    onOpenChange(false);
+    resetState();
+  };
 
   const handleCreateNew = () => {
     if (!newHighlightTitle.trim()) {
-      toast.error('Please enter a highlight title')
-      return
+      toast.error('Please enter a highlight title');
+      return;
     }
 
-    haptics.trigger('success')
+    haptics.trigger('success');
 
-    const firstPet = userPets?.[0]
+    const firstPet = userPets?.[0];
     const newHighlight = createStoryHighlight(
       story.userId,
       firstPet?.id || story.petId,
       newHighlightTitle,
       story.thumbnailUrl || story.mediaUrl,
       [story]
-    )
+    );
 
-    setHighlights((current) => [...(current || []), newHighlight])
+    setHighlights((current) => [...(current || []), newHighlight]);
 
     toast.success('Highlight created!', {
       duration: 2000,
-      description: `"${String(newHighlightTitle ?? '')}" has been created with this story`
-    })
+      description: `"${newHighlightTitle}" has been created with this story`,
+    });
 
-    onSaved?.()
-    onOpenChange(false)
-    resetState()
-  }
+    onSaved?.();
+    onOpenChange(false);
+    resetState();
+  };
 
   const resetState = () => {
-    setShowNewHighlight(false)
-    setNewHighlightTitle('')
-    setSelectedHighlightId(null)
-  }
+    setShowNewHighlight(false);
+    setNewHighlightTitle('');
+    setSelectedHighlightId(null);
+  };
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      resetState()
+      resetState();
     }
-    onOpenChange(open)
-  }
+    onOpenChange(open);
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -133,9 +133,7 @@ export default function SaveToHighlightDialog({
             <BookmarkSimple size={24} weight="fill" className="text-primary" />
             Save to Highlight
           </DialogTitle>
-          <DialogDescription>
-            Save this story to a permanent highlight collection
-          </DialogDescription>
+          <DialogDescription>Save this story to a permanent highlight collection</DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-hidden">
@@ -169,34 +167,33 @@ export default function SaveToHighlightDialog({
               </div>
             </MotionView>
           ) : (
-            <ScrollArea className="h-[400px] pr-4">
+            <ScrollArea className="h-100 pr-4">
               <div className="space-y-3 py-4">
                 {userHighlights.length === 0 ? (
                   <div className="text-center py-12">
                     <BookmarkSimple size={48} className="mx-auto text-muted-foreground mb-3" />
-                    <p className="text-muted-foreground mb-2">
-                      No highlights yet
-                    </p>
+                    <p className="text-muted-foreground mb-2">No highlights yet</p>
                     <p className="text-sm text-muted-foreground">
                       Create your first highlight to save this story
                     </p>
                   </div>
                 ) : (
                   userHighlights.map((highlight) => {
-                    const alreadyInHighlight = storyAlreadyInHighlight(highlight.id)
-                    const isSelected = selectedHighlightId === highlight.id
+                    const alreadyInHighlight = storyAlreadyInHighlight(highlight.id);
+                    const isSelected = selectedHighlightId === highlight.id;
 
                     return (
-                      <MotionView as="button"
+                      <MotionView
+                        as="button"
                         key={highlight.id}
                         onClick={() => !alreadyInHighlight && handleSelectHighlight(highlight.id)}
                         disabled={alreadyInHighlight}
                         className={`w-full p-4 rounded-2xl flex items-center gap-4 transition-all ${
-                          String(alreadyInHighlight
-                                                        ? 'opacity-50 cursor-not-allowed bg-muted'
-                                                        : isSelected
-                                                        ? 'bg-primary/20 border-2 border-primary'
-                                                        : 'glass-effect hover:bg-white/20 dark:hover:bg-white/5' ?? '')
+                          alreadyInHighlight
+                            ? 'opacity-50 cursor-not-allowed bg-muted'
+                            : isSelected
+                              ? 'bg-primary/20 border-2 border-primary'
+                              : 'glass-effect hover:bg-white/20 dark:hover:bg-white/5'
                         }`}
                         whileHover={!alreadyInHighlight ? { scale: 1.02 } : {}}
                         whileTap={!alreadyInHighlight ? { scale: 0.98 } : {}}
@@ -211,12 +208,11 @@ export default function SaveToHighlightDialog({
                         <div className="flex-1 text-left min-w-0">
                           <p className="font-semibold truncate">{highlight.title}</p>
                           <p className="text-sm text-muted-foreground">
-                            {highlight.stories?.length ?? 0} {highlight.stories?.length === 1 ? 'story' : 'stories'}
+                            {highlight.stories?.length ?? 0}{' '}
+                            {highlight.stories?.length === 1 ? 'story' : 'stories'}
                           </p>
                           {alreadyInHighlight && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Already added
-                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">Already added</p>
                           )}
                         </div>
 
@@ -232,7 +228,7 @@ export default function SaveToHighlightDialog({
                           </div>
                         )}
                       </MotionView>
-                    )
+                    );
                   })
                 )}
               </div>
@@ -243,10 +239,7 @@ export default function SaveToHighlightDialog({
         <DialogFooter className="border-t pt-4">
           {showNewHighlight ? (
             <>
-              <Button
-                variant="outline"
-                onClick={() => { setShowNewHighlight(false); }}
-              >
+              <Button variant="outline" onClick={() => setShowNewHighlight(false)}>
                 Back
               </Button>
               <Button
@@ -281,5 +274,5 @@ export default function SaveToHighlightDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

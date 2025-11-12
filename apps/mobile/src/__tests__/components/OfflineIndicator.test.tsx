@@ -37,4 +37,3 @@ describe('OfflineIndicator', () => {
     expect(getByText(/You're offline/i)).toBeTruthy()
   })
 })
-

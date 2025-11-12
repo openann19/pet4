@@ -1,576 +1,178 @@
-/**
- * use-user-data Tests - 100% Coverage
- * 
- * Tests all user data hooks including:
- * - useUserPets
- * - useMatches
- * - useSwipeHistory
- * - usePlaydates
- * - useSwipeStats
- * - useSwipeMutation
- * - useCreatePlaydateMutation
- * - useActiveMatchesCount
- */
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useUserPets, useUserMatches, useUserSwipes, useUserPlaydates } from '../use-user-data';
+import { APIClient } from '@/lib/api-client';
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  useUserPets,
-  useMatches,
-  useSwipeHistory,
-  usePlaydates,
-  useSwipeStats,
-  useSwipeMutation,
-  useCreatePlaydateMutation,
-  useActiveMatchesCount,
-  type Pet,
-  type Match,
-  type SwipeAction,
-  type Playdate,
-} from '../use-user-data'
+vi.mock('@/lib/api-client', () => ({
+  APIClient: {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+  },
+}));
 
-// Mock logger
 vi.mock('@/lib/logger', () => ({
   createLogger: () => ({
-    debug: vi.fn(),
-    error: vi.fn(),
-    info: vi.fn(),
     warn: vi.fn(),
+    info: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
   }),
-}))
+}));
 
-const createWrapper = () => {
+function createWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: {
-        retry: false,
-        gcTime: 0,
-      },
+      queries: { retry: false, gcTime: 0 },
+      mutations: { retry: false },
     },
-  })
+  });
 
   return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  )
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
 }
 
-describe('use-user-data hooks', () => {
+describe('useUserPets', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  describe('useUserPets', () => {
-    it('should fetch user pets', async () => {
-      const { result } = renderHook(() => useUserPets(), {
-        wrapper: createWrapper(),
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(result.current.data).toEqual([])
-      expect(result.current.isLoading).toBe(false)
-    })
-
-    it('should have correct staleTime', async () => {
-      const { result } = renderHook(() => useUserPets(), {
-        wrapper: createWrapper(),
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      // Stale time should be 5 minutes (300000ms)
-      expect(result.current.dataUpdatedAt).toBeDefined()
-    })
-  })
-
-  describe('useMatches', () => {
-    it('should fetch matches', async () => {
-      const { result } = renderHook(() => useMatches(), {
-        wrapper: createWrapper(),
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(result.current.data).toEqual([])
-      expect(result.current.isLoading).toBe(false)
-    })
-
-    it('should have correct staleTime (2 minutes)', async () => {
-      const { result } = renderHook(() => useMatches(), {
-        wrapper: createWrapper(),
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(result.current.data).toBeDefined()
-    })
-  })
-
-  describe('useSwipeHistory', () => {
-    it('should fetch swipe history', async () => {
-      const { result } = renderHook(() => useSwipeHistory(), {
-        wrapper: createWrapper(),
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(result.current.data).toEqual([])
-      expect(result.current.isLoading).toBe(false)
-    })
-
-    it('should have correct staleTime (10 minutes)', async () => {
-      const { result } = renderHook(() => useSwipeHistory(), {
-        wrapper: createWrapper(),
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(result.current.data).toBeDefined()
-    })
-  })
-
-  describe('usePlaydates', () => {
-    it('should fetch playdates', async () => {
-      const { result } = renderHook(() => usePlaydates(), {
-        wrapper: createWrapper(),
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(result.current.data).toEqual([])
-      expect(result.current.isLoading).toBe(false)
-    })
-  })
-
-  describe('useSwipeStats', () => {
-    it('should compute stats from empty swipe history', async () => {
-      const { result } = renderHook(() => useSwipeStats(), {
-        wrapper: createWrapper(),
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(result.current.data).toEqual({
-        totalSwipes: 0,
-        likes: 0,
-        passes: 0,
-        successRate: 0,
-      })
-    })
-
-    it('should compute stats from swipe history with likes', async () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      // Pre-populate swipe history
-      queryClient.setQueryData<SwipeAction[]>([
-        'swipes',
-        'history',
-      ], [
-        { id: '1', petId: 'p1', targetPetId: 'p2', action: 'like', timestamp: '2024-01-01' },
-        { id: '2', petId: 'p1', targetPetId: 'p3', action: 'like', timestamp: '2024-01-02' },
-        { id: '3', petId: 'p1', targetPetId: 'p4', action: 'pass', timestamp: '2024-01-03' },
-      ])
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useSwipeStats(), {
-        wrapper,
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(result.current.data).toEqual({
-        totalSwipes: 3,
-        likes: 2,
-        passes: 1,
-        successRate: 67, // Math.round((2/3) * 100)
-      })
-    })
-
-    it('should compute stats with only passes', async () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      queryClient.setQueryData<SwipeAction[]>([
-        'swipes',
-        'history',
-      ], [
-        { id: '1', petId: 'p1', targetPetId: 'p2', action: 'pass', timestamp: '2024-01-01' },
-        { id: '2', petId: 'p1', targetPetId: 'p3', action: 'pass', timestamp: '2024-01-02' },
-      ])
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useSwipeStats(), {
-        wrapper,
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(result.current.data).toEqual({
-        totalSwipes: 2,
-        likes: 0,
-        passes: 2,
-        successRate: 0,
-      })
-    })
-
-    it('should be disabled when swipe history is not available', () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useSwipeStats(), {
-        wrapper,
-      })
-
-      // Query should be disabled when data is not available
-      expect(result.current.isFetching).toBe(false)
-    })
-  })
-
-  describe('useSwipeMutation', () => {
-    it('should perform swipe mutation', async () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useSwipeMutation(), {
-        wrapper,
-      })
-
-      await waitFor(() => {
-        expect(result.current.isIdle).toBe(true)
-      })
-
-      const swipePromise = result.current.mutateAsync({
-        petId: 'p1',
-        targetPetId: 'p2',
-        action: 'like',
-      })
-
-      await waitFor(() => {
-        expect(result.current.isPending).toBe(false)
-      })
-
-      const swipe = await swipePromise
-
-      expect(swipe).toMatchObject({
-        petId: 'p1',
-        targetPetId: 'p2',
-        action: 'like',
-        id: expect.any(String),
-        timestamp: expect.any(String),
-      })
-
-      // Check optimistic update
-      const history = queryClient.getQueryData<SwipeAction[]>([
-        'swipes',
-        'history',
-      ])
-      expect(history).toContainEqual(swipe)
-    })
-
-    it('should handle mutation error', async () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useSwipeMutation(), {
-        wrapper,
-      })
-
-      // Simulate error by using invalid data
-      await expect(
-        result.current.mutateAsync({
-          petId: '',
-          targetPetId: '',
-          action: 'like',
-        })
-      ).resolves.toBeDefined() // Currently doesn't validate, but mutation completes
-    })
-
-    it('should invalidate related queries on success', async () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      const invalidateQueriesSpy = vi.spyOn(queryClient, 'invalidateQueries')
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useSwipeMutation(), {
-        wrapper,
-      })
-
-      await result.current.mutateAsync({
-        petId: 'p1',
-        targetPetId: 'p2',
-        action: 'like',
-      })
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true)
-      })
-
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-        queryKey: ['swipes', 'stats'],
-      })
-      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-        queryKey: ['matches', 'list'],
-      })
-    })
-  })
-
-  describe('useCreatePlaydateMutation', () => {
-    it('should create playdate mutation', async () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useCreatePlaydateMutation(), {
-        wrapper,
-      })
-
-      const playdateData: Omit<Playdate, 'id'> = {
-        title: 'Dog Park Meetup',
+    vi.clearAllMocks();
+  });
+
+  it('should fetch user pets', async () => {
+    const mockPets = [
+      { id: '1', name: 'Fluffy', breed: 'Golden Retriever', age: 3, photos: [] },
+      { id: '2', name: 'Buddy', breed: 'Labrador', age: 2, photos: [] },
+    ];
+
+    vi.mocked(APIClient.get).mockResolvedValue({
+      data: { pets: mockPets },
+      status: 200,
+    } as never);
+
+    const { result } = renderHook(() => useUserPets('user-1'), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.data).toEqual(mockPets);
+    expect(APIClient.get).toHaveBeenCalledWith('/users/user-1/pets');
+  });
+
+  it('should handle error', async () => {
+    vi.mocked(APIClient.get).mockRejectedValue(new Error('Failed to fetch'));
+
+    const { result } = renderHook(() => useUserPets('user-1'), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+
+    expect(result.current.error).toBeDefined();
+  });
+});
+
+describe('useUserMatches', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should fetch user matches', async () => {
+    const mockMatches = [
+      {
+        id: '1',
+        petId: 'pet-1',
+        matchedPetId: 'pet-2',
+        status: 'active' as const,
+        createdAt: new Date().toISOString(),
+      },
+    ];
+
+    vi.mocked(APIClient.get).mockResolvedValue({
+      data: { matches: mockMatches },
+      status: 200,
+    } as never);
+
+    const { result } = renderHook(() => useUserMatches('user-1'), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.data).toEqual(mockMatches);
+  });
+});
+
+describe('useUserSwipes', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should fetch user swipes', async () => {
+    const mockSwipes = [
+      {
+        id: '1',
+        petId: 'pet-1',
+        targetPetId: 'pet-2',
+        action: 'like' as const,
+        timestamp: new Date().toISOString(),
+      },
+    ];
+
+    vi.mocked(APIClient.get).mockResolvedValue({
+      data: { swipes: mockSwipes },
+      status: 200,
+    } as never);
+
+    const { result } = renderHook(() => useUserSwipes('user-1'), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.data).toEqual(mockSwipes);
+  });
+});
+
+describe('useUserPlaydates', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should fetch user playdates', async () => {
+    const mockPlaydates = [
+      {
+        id: '1',
+        title: 'Park Playdate',
         location: 'Central Park',
-        date: '2024-12-25',
-        participants: ['user1', 'user2'],
-      }
+        date: new Date().toISOString(),
+        participants: ['user-1', 'user-2'],
+      },
+    ];
 
-      const playdatePromise = result.current.mutateAsync(playdateData)
+    vi.mocked(APIClient.get).mockResolvedValue({
+      data: { playdates: mockPlaydates },
+      status: 200,
+    } as never);
 
-      await waitFor(() => {
-        expect(result.current.isPending).toBe(false)
-      })
+    const { result } = renderHook(() => useUserPlaydates('user-1'), {
+      wrapper: createWrapper(),
+    });
 
-      const playdate = await playdatePromise
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
 
-      expect(playdate).toMatchObject({
-        ...playdateData,
-        id: expect.any(String),
-      })
-
-      // Check optimistic update
-      const playdates = queryClient.getQueryData<Playdate[]>([
-        'playdates',
-        'list',
-      ])
-      expect(playdates).toContainEqual(playdate)
-    })
-
-    it('should handle mutation error', async () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useCreatePlaydateMutation(), {
-        wrapper,
-      })
-
-      const playdateData: Omit<Playdate, 'id'> = {
-        title: 'Test',
-        location: 'Test',
-        date: '2024-12-25',
-        participants: [],
-      }
-
-      await expect(result.current.mutateAsync(playdateData)).resolves.toBeDefined()
-    })
-  })
-
-  describe('useActiveMatchesCount', () => {
-    it('should return 0 when no matches', () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      queryClient.setQueryData<Match[]>(['matches', 'list'], [])
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useActiveMatchesCount(), {
-        wrapper,
-      })
-
-      expect(result.current).toBe(0)
-    })
-
-    it('should count active matches', () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      queryClient.setQueryData<Match[]>(['matches', 'list'], [
-        { id: '1', petId: 'p1', matchedPetId: 'p2', status: 'active', createdAt: '2024-01-01' },
-        { id: '2', petId: 'p1', matchedPetId: 'p3', status: 'active', createdAt: '2024-01-02' },
-        { id: '3', petId: 'p1', matchedPetId: 'p4', status: 'passed', createdAt: '2024-01-03' },
-        { id: '4', petId: 'p1', matchedPetId: 'p5', status: 'matched', createdAt: '2024-01-04' },
-      ])
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useActiveMatchesCount(), {
-        wrapper,
-      })
-
-      expect(result.current).toBe(2)
-    })
-
-    it('should return 0 when all matches are not active', () => {
-      const queryClient = new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: false,
-            gcTime: 0,
-          },
-        },
-      })
-
-      queryClient.setQueryData<Match[]>(['matches', 'list'], [
-        { id: '1', petId: 'p1', matchedPetId: 'p2', status: 'passed', createdAt: '2024-01-01' },
-        { id: '2', petId: 'p1', matchedPetId: 'p3', status: 'matched', createdAt: '2024-01-02' },
-      ])
-
-      const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      )
-
-      const { result } = renderHook(() => useActiveMatchesCount(), {
-        wrapper,
-      })
-
-      expect(result.current).toBe(0)
-    })
-  })
-})
-
+    expect(result.current.data).toEqual(mockPlaydates);
+  });
+});

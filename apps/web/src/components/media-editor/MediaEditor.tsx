@@ -1,108 +1,90 @@
-'use client'
+'use client';
 
-import { editMedia } from '@/core/services/media/edit-media'
-import type { FilterName, ImageOperation, MediaInput } from '@/core/types/media-types'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { createLogger } from '@/lib/logger'
-import React, { useCallback, useMemo, useState } from 'react'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue
-} from 'react-native-reanimated'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { editMedia } from '@/core/services/media/edit-media';
+import type { FilterName, ImageOperation, MediaInput } from '@/core/types/media-types';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { createLogger } from '@/lib/logger';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 
-const logger = createLogger('MediaEditor')
+const logger = createLogger('MediaEditor');
 
-const FILTERS: FilterName[] = [
-  'none',
-  'mono',
-  'sepia',
-  'vivid',
-  'cool',
-  'warm',
-  'cinematic',
-]
+const FILTERS: FilterName[] = ['none', 'mono', 'sepia', 'vivid', 'cool', 'warm', 'cinematic'];
 
 export interface MediaEditorProps {
-  source: MediaInput & { type: 'image' }
-  onDone: (uri: string) => void
-  onCancel?: () => void
+  source: MediaInput & { type: 'image' };
+  onDone: (uri: string) => void;
+  onCancel?: () => void;
 }
 
-const isWeb = typeof window !== 'undefined'
+const isWeb = typeof window !== 'undefined';
 
-export function MediaEditor({
-  source,
-  onDone,
-  onCancel,
-}: MediaEditorProps): React.ReactElement {
-  const scale = useSharedValue(1)
-  const tx = useSharedValue(0)
-  const ty = useSharedValue(0)
-  const [filter, setFilter] = useState<FilterName>('none')
-  const [isProcessing, setIsProcessing] = useState(false)
+export function MediaEditor({ source, onDone, onCancel }: MediaEditorProps): React.ReactElement {
+  const scale = useSharedValue(1);
+  const tx = useSharedValue(0);
+  const ty = useSharedValue(0);
+  const [filter, setFilter] = useState<FilterName>('none');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const panZoom = useMemo(() => {
     return Gesture.Simultaneous(
       Gesture.Pan().onChange((e) => {
-        tx.value += e.changeX
-        ty.value += e.changeY
+        tx.value += e.changeX;
+        ty.value += e.changeY;
       }),
       Gesture.Pinch().onChange((e) => {
-        scale.value *= e.scaleChange
+        scale.value *= e.scaleChange;
       })
-    )
-  }, [scale, tx, ty])
+    );
+  }, [scale, tx, ty]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: tx.value },
-      { translateY: ty.value },
-      { scale: scale.value },
-    ],
-  }))
+    transform: [{ translateX: tx.value }, { translateY: ty.value }, { scale: scale.value }],
+  }));
 
   const handleExport = useCallback(async (): Promise<void> => {
-    if (isTruthy(isProcessing)) {
-      return
+    if (isProcessing) {
+      return;
     }
 
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
       const ops: ImageOperation[] = [
         { type: 'filter', name: filter, intensity: 1 },
         { type: 'adjust', contrast: 0.1 },
-      ]
+      ];
 
       const mediaInput: MediaInput = {
         type: 'image',
         uri: source.uri,
-      }
+      };
       if (source.width !== undefined) {
-        mediaInput.width = source.width
+        mediaInput.width = source.width;
       }
       if (source.height !== undefined) {
-        mediaInput.height = source.height
+        mediaInput.height = source.height;
       }
-      const result = await editMedia(mediaInput, ops)
+      const result = await editMedia(mediaInput, ops);
 
-      onDone(result.uri)
+      onDone(result.uri);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Export failed', err, { sourceUri: source.uri })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Export failed', err, { sourceUri: source.uri });
+      throw err;
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }, [filter, source, onDone, isProcessing])
+  }, [filter, source, onDone, isProcessing]);
 
   const handleCancel = useCallback((): void => {
-    onCancel?.()
-  }, [onCancel])
+    onCancel?.();
+  }, [onCancel]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#000' }}>
+    <div
+      style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--color-fg)' }}
+    >
       <GestureDetector gesture={panZoom}>
         <AnimatedView style={animatedStyle}>
           {isWeb ? (
@@ -120,7 +102,7 @@ export function MediaEditor({
               style={{
                 width: '100%',
                 height: '100%',
-                backgroundColor: '#000',
+                backgroundColor: 'var(--color-fg)',
               }}
             />
           )}
@@ -139,20 +121,11 @@ export function MediaEditor({
         }}
       >
         {FILTERS.map((f) => (
-          <ToolChip
-            key={f}
-            active={f === filter}
-            onPress={() => { setFilter(f); }}
-            label={f}
-          />
+          <ToolChip key={f} active={f === filter} onPress={() => setFilter(f)} label={f} />
         ))}
         <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'row', gap: 8 }}>
           {onCancel !== undefined && (
-            <ToolButton
-              onPress={handleCancel}
-              label="Cancel"
-              variant="secondary"
-            />
+            <ToolButton onPress={handleCancel} label="Cancel" variant="secondary" />
           )}
           <ToolButton
             onPress={handleExport}
@@ -163,13 +136,13 @@ export function MediaEditor({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 interface ToolChipProps {
-  active: boolean
-  onPress: () => void
-  label: string
+  active: boolean;
+  onPress: () => void;
+  label: string;
 }
 
 function ToolChip({ active, onPress, label }: ToolChipProps): React.ReactElement {
@@ -186,7 +159,7 @@ function ToolChip({ active, onPress, label }: ToolChipProps): React.ReactElement
     >
       <Animated.Text
         style={{
-          color: active ? '#fff' : '#aaa',
+          color: active ? 'var(--color-bg-overlay)' : '#aaa',
           fontSize: 12,
           fontWeight: active ? '600' : '400',
         }}
@@ -194,14 +167,14 @@ function ToolChip({ active, onPress, label }: ToolChipProps): React.ReactElement
         {label}
       </Animated.Text>
     </AnimatedView>
-  )
+  );
 }
 
 interface ToolButtonProps {
-  onPress: () => void
-  label: string
-  variant?: 'primary' | 'secondary'
-  disabled?: boolean
+  onPress: () => void;
+  label: string;
+  variant?: 'primary' | 'secondary';
+  disabled?: boolean;
 }
 
 function ToolButton({
@@ -210,22 +183,18 @@ function ToolButton({
   variant = 'primary',
   disabled = false,
 }: ToolButtonProps): React.ReactElement {
-  const backgroundColor = disabled
-    ? '#666'
-    : variant === 'primary'
-      ? '#0af'
-      : '#444'
-  const textColor = variant === 'primary' && !disabled ? '#000' : '#fff'
+  const backgroundColor = disabled ? '#666' : variant === 'primary' ? '#0af' : '#444';
+  const textColor = variant === 'primary' && !disabled ? 'var(--color-fg)' : 'var(--color-bg-overlay)';
 
-  const handleClick = disabled ? undefined : onPress
+  const handleClick = disabled ? undefined : onPress;
   const styleProps: {
-    paddingHorizontal: number
-    paddingVertical: number
-    borderRadius: number
-    backgroundColor: string
-    cursor: string
-    opacity: number
-    onClick?: () => void
+    paddingHorizontal: number;
+    paddingVertical: number;
+    borderRadius: number;
+    backgroundColor: string;
+    cursor: string;
+    opacity: number;
+    onClick?: () => void;
   } = {
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -233,9 +202,9 @@ function ToolButton({
     backgroundColor,
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
-  }
+  };
   if (handleClick !== undefined) {
-    styleProps.onClick = handleClick
+    styleProps.onClick = handleClick;
   }
 
   return (
@@ -253,6 +222,5 @@ function ToolButton({
         {label}
       </Animated.Text>
     </AnimatedView>
-  )
+  );
 }
-

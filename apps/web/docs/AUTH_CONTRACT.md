@@ -7,6 +7,7 @@ Single authentication flow for Web, Mobile, and Admin Console using JWT access t
 ## Token Structure
 
 ### Access Token
+
 - **Type**: JWT (JSON Web Token)
 - **Lifetime**: 15 minutes (900 seconds)
 - **Claims**:
@@ -18,6 +19,7 @@ Single authentication flow for Web, Mobile, and Admin Console using JWT access t
   - `iss`: Issuer (from `AUTH_ISSUER` config)
 
 ### Refresh Token
+
 - **Type**: Opaque string (stored server-side)
 - **Lifetime**: 7 days
 - **Storage**:
@@ -28,6 +30,7 @@ Single authentication flow for Web, Mobile, and Admin Console using JWT access t
 ## Authentication Flow
 
 ### 1. Login
+
 ```
 POST /api/auth/login
 Body: { email: string, password: string }
@@ -35,6 +38,7 @@ Response: { user: User, tokens: AuthTokens }
 ```
 
 ### 2. Signup
+
 ```
 POST /api/auth/signup
 Body: { email: string, password: string, displayName: string }
@@ -42,6 +46,7 @@ Response: { user: User, tokens: AuthTokens }
 ```
 
 ### 3. Refresh Token
+
 ```
 POST /api/auth/refresh
 Headers: { Cookie: refreshToken=... }
@@ -49,6 +54,7 @@ Response: { tokens: AuthTokens }
 ```
 
 ### 4. Logout
+
 ```
 POST /api/auth/logout
 Headers: { Authorization: Bearer <accessToken> }
@@ -58,27 +64,28 @@ Response: 204 No Content
 ## Error Handling
 
 ### Shared Error Response Format
+
 ```typescript
 {
-  code: string
-  message: string
-  correlationId: string
-  timestamp: string
+  code: string;
+  message: string;
+  correlationId: string;
+  timestamp: string;
 }
 ```
 
 ### Error Codes
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `AUTH_001` | 401 | Invalid credentials |
-| `AUTH_002` | 401 | Token expired |
-| `AUTH_003` | 401 | Invalid token |
-| `AUTH_004` | 401 | Token missing |
-| `AUTH_005` | 403 | Insufficient permissions |
-| `AUTH_006` | 401 | Refresh token expired |
-| `AUTH_007` | 401 | Not authenticated |
-| `AUTH_008` | 409 | Email already exists |
+| Code       | HTTP Status | Description              |
+| ---------- | ----------- | ------------------------ |
+| `AUTH_001` | 401         | Invalid credentials      |
+| `AUTH_002` | 401         | Token expired            |
+| `AUTH_003` | 401         | Invalid token            |
+| `AUTH_004` | 401         | Token missing            |
+| `AUTH_005` | 403         | Insufficient permissions |
+| `AUTH_006` | 401         | Refresh token expired    |
+| `AUTH_007` | 401         | Not authenticated        |
+| `AUTH_008` | 409         | Email already exists     |
 
 ### Refresh Flow
 
@@ -91,16 +98,16 @@ Response: 204 No Content
 
 ```typescript
 try {
-  const response = await api.get('/protected')
-  return response
+  const response = await api.get('/protected');
+  return response;
 } catch (error) {
   if (error.code === 'AUTH_002' || error.code === 'AUTH_003') {
-    const refreshed = await authService.handleUnauthorized()
+    const refreshed = await authService.handleUnauthorized();
     if (refreshed) {
-      return await api.get('/protected') // Retry
+      return await api.get('/protected'); // Retry
     }
   }
-  throw error
+  throw error;
 }
 ```
 
@@ -129,16 +136,19 @@ if (authService.hasPermission('moderate', 'content')) {
 ## Security
 
 ### Web (httpOnly Cookies)
+
 - Access token: Memory only (never stored)
 - Refresh token: httpOnly cookie + CSRF token
 - CSRF protection: Token in header `X-CSRF-Token`
 
 ### Mobile (Secure Storage)
+
 - Access token: Secure storage (Keychain/Keystore)
 - Refresh token: Secure storage
 - Token refresh: Automatic before expiration
 
 ### Session Management
+
 - Single session per device
 - Multiple devices supported
 - Revoked sessions logged out immediately via WebSocket
@@ -146,6 +156,7 @@ if (authService.hasPermission('moderate', 'content')) {
 ## API Client Integration
 
 All API clients automatically:
+
 1. Include `Authorization: Bearer <token>` header
 2. Include `X-Correlation-ID` header
 3. Handle 401 responses with refresh
@@ -154,38 +165,43 @@ All API clients automatically:
 ## Examples
 
 ### Web Login
+
 ```typescript
 const { user, tokens } = await authService.login({
   email: 'user@example.com',
-  password: 'password'
-})
+  password: 'password',
+});
 // Tokens automatically stored in httpOnly cookies
 ```
 
 ### Mobile Login
+
 ```typescript
 const { user, tokens } = await authService.login({
   email: 'user@example.com',
-  password: 'password'
-})
+  password: 'password',
+});
 // Tokens stored in secure storage
-await secureStorage.set('accessToken', tokens.accessToken)
-await secureStorage.set('refreshToken', tokens.refreshToken)
+await secureStorage.set('accessToken', tokens.accessToken);
+await secureStorage.set('refreshToken', tokens.refreshToken);
 ```
 
 ### API Request
+
 ```typescript
 // Automatic token injection and refresh handling
-const pets = await api.get<Pet[]>('/pets')
+const pets = await api.get<Pet[]>('/pets');
 ```
 
 ## Testing
 
 ### Test Tokens
+
 - Dev environment: Accept any token format
 - Staging/Prod: Validate JWT signature
 
 ### Test Users
+
 - `admin@demo.com` / `admin123` - Admin role
 - `moderator@demo.com` / `mod123` - Moderator role
 - `user@demo.com` / `user123` - User role
@@ -196,4 +212,3 @@ const pets = await api.get<Pet[]>('/pets')
 - Refresh tokens are stateful (server-side) for revocation
 - All tokens include correlation IDs for audit trails
 - Session revocation propagates via WebSocket to all devices
-

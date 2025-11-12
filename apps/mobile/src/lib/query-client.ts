@@ -41,7 +41,7 @@ export const queryClient = new QueryClient({
 })
 
 // Setup persistence
-persistQueryClient({
+void persistQueryClient({
   queryClient,
   persister: queryPersister,
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
@@ -73,13 +73,24 @@ export const queryKeys = {
     messages: (chatRoomId: string) => ['chat', 'messages', chatRoomId] as const,
   },
   community: {
-    posts: (category?: string) => category ? ['community', 'posts', category] : ['community', 'posts'] as const,
+    posts: (category?: string) =>
+      category ? ['community', 'posts', category] : (['community', 'posts'] as const),
     post: (postId: string) => ['community', 'post', postId] as const,
   },
   adoption: {
     applications: () => ['adoption', 'applications'] as const,
     petApplications: (petId: string) => ['adoption', 'pet-applications', petId] as const,
     process: (applicationId: string) => ['adoption', 'process', applicationId] as const,
+  },
+  stories: {
+    highlights: (userId: string) => ['stories', 'highlights', userId] as const,
+    list: ['stories', 'list'] as const,
+    detail: (storyId: string) => ['stories', 'detail', storyId] as const,
+  },
+  payments: {
+    subscription: (userId: string) => ['payments', 'subscription', userId] as const,
+    methods: (userId: string) => ['payments', 'methods', userId] as const,
+    billingIssues: (userId: string) => ['payments', 'billing-issues', userId] as const,
   },
 } as const
 
@@ -89,6 +100,18 @@ export const mutationKeys = {
   like: ['like'] as const,
   dislike: ['dislike'] as const,
   playdate: ['playdate'] as const,
+  stories: {
+    createHighlight: ['stories', 'createHighlight'] as const,
+    updateHighlight: ['stories', 'updateHighlight'] as const,
+    addStoryToHighlight: ['stories', 'addStoryToHighlight'] as const,
+    deleteHighlight: ['stories', 'deleteHighlight'] as const,
+  },
+  payments: {
+    createSubscription: ['payments', 'createSubscription'] as const,
+    cancelSubscription: ['payments', 'cancelSubscription'] as const,
+    updatePaymentMethod: ['payments', 'updatePaymentMethod'] as const,
+    restorePurchases: ['payments', 'restorePurchases'] as const,
+  },
 } as const
 
 logger.info('Query client initialized with offline persistence')

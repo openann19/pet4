@@ -4,21 +4,22 @@
 // import { useParticleBurstOnEvent } from './bubble-wrapper-god-tier/effects/useParticleBurstOnEvent'
 
 // Example usage in message rendering:
-/*
+/\*
 {messages.map((message, index) => {
-  const isCurrentUser = message.senderId === currentUserId
-  const isAIMessage = message.senderId === 'ai' || message.senderId === 'bot'
-  
-  return (
-    <div key={message.id} className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
-      {!isCurrentUser && (
-        <PresenceGlow isActive={true}>
-          <Avatar>
-            <AvatarImage src={message.senderAvatar} />
-          </Avatar>
-        </PresenceGlow>
-      )}
-      
+const isCurrentUser = message.senderId === currentUserId
+const isAIMessage = message.senderId === 'ai' || message.senderId === 'bot'
+
+return (
+
+<div key={message.id} className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+{!isCurrentUser && (
+<PresenceGlow isActive={true}>
+<Avatar>
+<AvatarImage src={message.senderAvatar} />
+</Avatar>
+</PresenceGlow>
+)}
+
       <BubbleWrapperGodTier
         isAIMessage={isAIMessage}
         messageText={message.content}
@@ -36,24 +37,24 @@
         </div>
       </BubbleWrapperGodTier>
     </div>
-  )
+
+)
 })}
-*/
+\*/
 
 // For send events, add particle burst:
-/*
+/\*
 const particleBurst = useParticleBurstOnEvent({ enabled: true })
 
 const handleSendMessage = async (content: string) => {
-  // ... existing send logic ...
-  
-  // Trigger send particle effect
-  if (sendButtonRef.current) {
-    const rect = sendButtonRef.current.getBoundingClientRect()
-    const centerX = rect.left + rect.width / 2
-    const centerY = rect.top + rect.height / 2
-    particleBurst.triggerBurst('send', centerX, centerY)
-  }
-}
-*/
+// ... existing send logic ...
 
+// Trigger send particle effect
+if (sendButtonRef.current) {
+const rect = sendButtonRef.current.getBoundingClientRect()
+const centerX = rect.left + rect.width / 2
+const centerY = rect.top + rect.height / 2
+particleBurst.triggerBurst('send', centerX, centerY)
+}
+}
+\*/

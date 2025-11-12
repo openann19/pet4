@@ -1,6 +1,12 @@
 'use client'
 
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring, withDelay } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  withDelay,
+} from 'react-native-reanimated'
 import { useEffect } from 'react'
 import { springConfigs } from '@/effects/reanimated/transitions'
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
@@ -19,10 +25,7 @@ export interface UseStaggeredContainerReturn {
 export function useStaggeredContainer(
   options: UseStaggeredContainerOptions = {}
 ): UseStaggeredContainerReturn {
-  const {
-    delay = 0.2,
-    staggerDelay = 0.1
-  } = options
+  const { delay = 0.2, staggerDelay = 0.1 } = options
 
   const opacity = useSharedValue(0)
   const x = useSharedValue(20)
@@ -36,14 +39,13 @@ export function useStaggeredContainer(
   const containerStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [{ translateX: x.value }]
+      transform: [{ translateX: x.value }],
     }
   }) as AnimatedStyle
 
   return {
     opacity,
     x,
-    containerStyle
+    containerStyle,
   }
 }
-

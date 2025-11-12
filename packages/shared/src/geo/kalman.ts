@@ -1,9 +1,9 @@
 /**
  * Kalman Filter for GPS Smoothing
- * 
+ *
  * Provides smooth position updates by filtering noisy GPS coordinates.
  * Useful for map markers and location tracking.
- * 
+ *
  * Location: packages/shared/src/geo/kalman.ts
  */
 
@@ -18,10 +18,10 @@ export interface KalmanConfig {
 
 /**
  * Create a Kalman filter instance for smoothing GPS coordinates
- * 
+ *
  * @param config - Filter configuration
  * @returns Filter function that takes lat/lng and returns smoothed coordinates
- * 
+ *
  * @example
  * ```typescript
  * const smooth = makeKalman({ q: 0.00003, r: 0.0005 })
@@ -30,7 +30,7 @@ export interface KalmanConfig {
  */
 export function makeKalman(config: KalmanConfig = {}): KalmanFilter {
   const { q = 0.00003, r = 0.0005 } = config
-  
+
   let x = 0 // Latitude estimate
   let y = 0 // Longitude estimate
   let p = 1 // Error covariance
@@ -57,4 +57,3 @@ export function makeKalman(config: KalmanConfig = {}): KalmanFilter {
     return { lat: x, lng: y }
   }
 }
-

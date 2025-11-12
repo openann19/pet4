@@ -13,7 +13,7 @@ describe('createApiClient', () => {
 
   it('should create a client with default config', () => {
     const client = createApiClient({
-      baseUrl: 'https://api.example.com'
+      baseUrl: 'https://api.example.com',
     })
 
     expect(client).toBeDefined()
@@ -25,27 +25,28 @@ describe('createApiClient', () => {
 
   it('should handle GET requests', async () => {
     const mockResponse = { data: 'test' }
-    global.fetch = vi.fn().mockResolvedValue({
+    const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
       statusText: 'OK',
       headers: new Headers({ 'content-type': 'application/json' }),
-      json: async () => mockResponse
+      json: async () => mockResponse,
     })
+    vi.stubGlobal('fetch', mockFetch)
 
     const client = createApiClient({
-      baseUrl: 'https://api.example.com'
+      baseUrl: 'https://api.example.com',
     })
 
     const result = await client.get('/test')
 
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledWith(
       'https://api.example.com/test',
       expect.objectContaining({
         method: 'GET',
         headers: expect.objectContaining({
-          'Content-Type': 'application/json'
-        })
+          'Content-Type': 'application/json',
+        }),
       })
     )
 
@@ -55,26 +56,27 @@ describe('createApiClient', () => {
 
   it('should handle POST requests with body', async () => {
     const mockResponse = { id: '123' }
-    global.fetch = vi.fn().mockResolvedValue({
+    const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
       status: 201,
       statusText: 'Created',
       headers: new Headers({ 'content-type': 'application/json' }),
-      json: async () => mockResponse
+      json: async () => mockResponse,
     })
+    vi.stubGlobal('fetch', mockFetch)
 
     const client = createApiClient({
-      baseUrl: 'https://api.example.com'
+      baseUrl: 'https://api.example.com',
     })
 
     const body = { name: 'test' }
     const result = await client.post('/test', body)
 
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledWith(
       'https://api.example.com/test',
       expect.objectContaining({
         method: 'POST',
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       })
     )
 
@@ -82,46 +84,48 @@ describe('createApiClient', () => {
   })
 
   it('should add Authorization header when apiKey is provided', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
       statusText: 'OK',
       headers: new Headers({ 'content-type': 'application/json' }),
-      json: async () => ({})
+      json: async () => ({}),
     })
+    vi.stubGlobal('fetch', mockFetch)
 
     const client = createApiClient({
       baseUrl: 'https://api.example.com',
-      apiKey: 'test-key'
+      apiKey: 'test-key',
     })
 
     await client.get('/test')
 
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
         headers: expect.objectContaining({
-          'Authorization': 'Bearer test-key'
-        })
+          Authorization: 'Bearer test-key',
+        }),
       })
     )
   })
 
   it('should throw ApiError on non-ok responses', async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    const mockFetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 404,
       statusText: 'Not Found',
       headers: new Headers({ 'content-type': 'application/json' }),
-      json: async () => ({ error: 'Not found' })
+      json: async () => ({ error: 'Not found' }),
     })
+    vi.stubGlobal('fetch', mockFetch)
 
     const client = createApiClient({
-      baseUrl: 'https://api.example.com'
+      baseUrl: 'https://api.example.com',
     })
 
     await expect(client.get('/test')).rejects.toThrow(ApiError)
-    
+
     try {
       await client.get('/test')
     } catch (error) {
@@ -134,22 +138,29 @@ describe('createApiClient', () => {
   })
 
   it('should handle timeout', async () => {
-    global.fetch = vi.fn().mockImplementation(() => 
-      new Promise((resolve) => setTimeout(() => { resolve({
-        ok: true,
-        status: 200,
-        statusText: 'OK',
-        headers: new Headers(),
-        json: async () => ({})
-      }); }, 100))
+    const mockFetch = vi.fn().mockImplementation(
+      () =>
+        new Promise(resolve =>
+          setTimeout(
+            () =>
+              resolve({
+                ok: true,
+                status: 200,
+                statusText: 'OK',
+                headers: new Headers(),
+                json: async () => ({}),
+              }),
+            100
+          )
+        )
     )
+    vi.stubGlobal('fetch', mockFetch)
 
     const client = createApiClient({
       baseUrl: 'https://api.example.com',
-      timeout: 10
+      timeout: 10,
     })
 
     await expect(client.get('/test')).rejects.toThrow(ApiError)
   })
 })
-

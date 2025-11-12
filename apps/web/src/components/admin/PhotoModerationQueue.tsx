@@ -1,128 +1,130 @@
 /**
  * Photo Moderation Queue Admin Component
- * 
+ *
  * Admin interface for managing photo moderation queue with full audit trail.
  */
 
-'use client'
+'use client';
 
-import { photoModerationAPI } from '@/api/photo-moderation-api'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
-import type {
-    PhotoModerationAuditLog,
-    PhotoModerationRecord,
-    PhotoModerationStatus
-} from '@/core/domain/photo-moderation'
-import { useLanguage } from '@/hooks/useLanguage'
-import { useTranslation } from '@/lib/i18n'
-import { createLogger } from '@/lib/logger'
-import { userService } from '@/lib/user-service'
+import { photoModerationAPI } from '@/api/photo-moderation-api';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
-    CheckCircle,
-    Clock,
-    Eye,
-    Shield, Warning,
-    XCircle
-} from '@phosphor-icons/react'
-import { formatDistanceToNow } from 'date-fns'
-import { useCallback, useEffect, useState } from 'react'
-import { toast } from 'sonner'
-import { isTruthy, isDefined } from '@petspark/shared';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+import type {
+  PhotoModerationAuditLog,
+  PhotoModerationRecord,
+  PhotoModerationStatus,
+} from '@/core/domain/photo-moderation';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useTranslation } from '@/lib/i18n';
+import { createLogger } from '@/lib/logger';
+import { userService } from '@/lib/user-service';
+import { CheckCircle, Clock, Eye, Shield, Warning, XCircle } from '@phosphor-icons/react';
+import { formatDistanceToNow } from 'date-fns';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-const logger = createLogger('PhotoModerationQueueAdmin')
+const logger = createLogger('PhotoModerationQueueAdmin');
 
 export function PhotoModerationQueueAdmin() {
-  const { language } = useLanguage()
-  const t = useTranslation(language)
+  const { language } = useLanguage();
+  const t = useTranslation(language);
 
-  const [selectedTab, setSelectedTab] = useState<PhotoModerationStatus>('pending')
-  const [records, setRecords] = useState<PhotoModerationRecord[]>([])
-  const [selectedRecord, setSelectedRecord] = useState<PhotoModerationRecord | null>(null)
-  const [auditLogs, setAuditLogs] = useState<PhotoModerationAuditLog[]>([])
-  const [loading, setLoading] = useState(false)
-  const [decisionReason, setDecisionReason] = useState<string>('')
+  const [selectedTab, setSelectedTab] = useState<PhotoModerationStatus>('pending');
+  const [records, setRecords] = useState<PhotoModerationRecord[]>([]);
+  const [selectedRecord, setSelectedRecord] = useState<PhotoModerationRecord | null>(null);
+  const [auditLogs, setAuditLogs] = useState<PhotoModerationAuditLog[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [decisionReason, setDecisionReason] = useState<string>('');
   const [stats, setStats] = useState({
     pending: 0,
     scanning: 0,
     heldForKYC: 0,
     quarantined: 0,
-    total: 0
-  })
+    total: 0,
+  });
 
   const loadRecords = useCallback(async () => {
     try {
-      setLoading(true)
-      let loadedRecords: PhotoModerationRecord[] = []
+      setLoading(true);
+      let loadedRecords: PhotoModerationRecord[] = [];
 
       switch (selectedTab) {
         case 'pending':
-          loadedRecords = await photoModerationAPI.getPendingPhotos(50)
-          break
+          loadedRecords = await photoModerationAPI.getPendingPhotos(50);
+          break;
         case 'quarantined':
-          loadedRecords = await photoModerationAPI.getQuarantinedPhotos(50)
-          break
+          loadedRecords = await photoModerationAPI.getQuarantinedPhotos(50);
+          break;
         case 'held_for_kyc':
-          loadedRecords = await photoModerationAPI.getPendingPhotos(50)
-          break
+          loadedRecords = await photoModerationAPI.getPendingPhotos(50);
+          break;
         default:
-          loadedRecords = []
+          loadedRecords = [];
       }
 
-      setRecords(loadedRecords)
+      setRecords(loadedRecords);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load records', err)
-      toast.error('Failed to load moderation queue')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load records', err);
+      toast.error('Failed to load moderation queue');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [selectedTab])
+  }, [selectedTab]);
 
   const loadStats = useCallback(async () => {
     try {
-      const queueStats = await photoModerationAPI.getQueueStats()
-      setStats(queueStats)
+      const queueStats = await photoModerationAPI.getQueueStats();
+      setStats(queueStats);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load stats', err)
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load stats', err);
     }
-  }, [])
+  }, []);
 
   const loadAuditLogs = useCallback(async (photoId: string) => {
     try {
-      const logs = await photoModerationAPI.getAuditLogs(photoId)
-      setAuditLogs(logs)
+      const logs = await photoModerationAPI.getAuditLogs(photoId);
+      setAuditLogs(logs);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load audit logs', err)
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load audit logs', err);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    loadRecords()
-    loadStats()
-  }, [loadRecords, loadStats])
+    void loadRecords();
+    void loadStats();
+  }, [loadRecords, loadStats]);
 
   useEffect(() => {
-    if (isTruthy(selectedRecord)) {
-      loadAuditLogs(selectedRecord.photoId)
+    if (selectedRecord) {
+      void loadAuditLogs(selectedRecord.photoId).catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to load audit logs in useEffect', err);
+      });
     }
-  }, [selectedRecord, loadAuditLogs])
+  }, [selectedRecord, loadAuditLogs]);
 
   const handleApprove = async () => {
-    if (!selectedRecord) return
+    if (!selectedRecord) return;
 
     try {
-      setLoading(true)
-      const user = await userService.user()
+      setLoading(true);
+      const user = await userService.user();
       if (!user) {
-        throw new Error('Moderator context unavailable')
+        throw new Error('Moderator context unavailable');
       }
 
       await photoModerationAPI.updateStatus({
@@ -130,34 +132,34 @@ export function PhotoModerationQueueAdmin() {
         action: 'approve',
         performedBy: user.id,
         status: 'approved',
-        reason: decisionReason
-      })
+        reason: decisionReason,
+      });
 
-      toast.success(t.photoModeration.photoApproved)
-      await loadRecords()
-      await loadStats()
-      setSelectedRecord(null)
-      setDecisionReason('')
+      toast.success(t.photoModeration.photoApproved);
+      await loadRecords();
+      await loadStats();
+      setSelectedRecord(null);
+      setDecisionReason('');
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to approve photo', err)
-      toast.error('Failed to approve photo')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to approve photo', err);
+      toast.error('Failed to approve photo');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleReject = async () => {
     if (!selectedRecord || !decisionReason.trim()) {
-      toast.error('Please provide a rejection reason')
-      return
+      toast.error('Please provide a rejection reason');
+      return;
     }
 
     try {
-      setLoading(true)
-      const user = await userService.user()
+      setLoading(true);
+      const user = await userService.user();
       if (!user) {
-        throw new Error('Moderator context unavailable')
+        throw new Error('Moderator context unavailable');
       }
 
       await photoModerationAPI.updateStatus({
@@ -166,31 +168,31 @@ export function PhotoModerationQueueAdmin() {
         performedBy: user.id,
         status: 'rejected',
         rejectionReason: decisionReason,
-        reason: decisionReason
-      })
+        reason: decisionReason,
+      });
 
-      toast.success(t.photoModeration.photoRejected)
-      await loadRecords()
-      await loadStats()
-      setSelectedRecord(null)
-      setDecisionReason('')
+      toast.success(t.photoModeration.photoRejected);
+      await loadRecords();
+      await loadStats();
+      setSelectedRecord(null);
+      setDecisionReason('');
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to reject photo', err)
-      toast.error('Failed to reject photo')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to reject photo', err);
+      toast.error('Failed to reject photo');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleQuarantine = async () => {
-    if (!selectedRecord) return
+    if (!selectedRecord) return;
 
     try {
-      setLoading(true)
-      const user = await userService.user()
+      setLoading(true);
+      const user = await userService.user();
       if (!user) {
-        throw new Error('Moderator context unavailable')
+        throw new Error('Moderator context unavailable');
       }
 
       await photoModerationAPI.updateStatus({
@@ -198,31 +200,31 @@ export function PhotoModerationQueueAdmin() {
         action: 'quarantine',
         performedBy: user.id,
         status: 'quarantined',
-        reason: decisionReason || 'Quarantined by moderator'
-      })
+        reason: decisionReason || 'Quarantined by moderator',
+      });
 
-      toast.success(t.photoModeration.photoQuarantined)
-      await loadRecords()
-      await loadStats()
-      setSelectedRecord(null)
-      setDecisionReason('')
+      toast.success(t.photoModeration.photoQuarantined);
+      await loadRecords();
+      await loadStats();
+      setSelectedRecord(null);
+      setDecisionReason('');
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to quarantine photo', err)
-      toast.error('Failed to quarantine photo')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to quarantine photo', err);
+      toast.error('Failed to quarantine photo');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleReleaseFromQuarantine = async () => {
-    if (!selectedRecord) return
+    if (!selectedRecord) return;
 
     try {
-      setLoading(true)
-      const user = await userService.user()
+      setLoading(true);
+      const user = await userService.user();
       if (!user) {
-        throw new Error('Moderator context unavailable')
+        throw new Error('Moderator context unavailable');
       }
 
       await photoModerationAPI.updateStatus({
@@ -230,41 +232,71 @@ export function PhotoModerationQueueAdmin() {
         action: 'release_from_quarantine',
         performedBy: user.id,
         status: 'approved',
-        reason: decisionReason || 'Released from quarantine'
-      })
+        reason: decisionReason || 'Released from quarantine',
+      });
 
-      toast.success('Photo released from quarantine')
-      await loadRecords()
-      await loadStats()
-      setSelectedRecord(null)
-      setDecisionReason('')
+      toast.success('Photo released from quarantine');
+      await loadRecords();
+      await loadStats();
+      setSelectedRecord(null);
+      setDecisionReason('');
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to release from quarantine', err)
-      toast.error('Failed to release from quarantine')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to release from quarantine', err);
+      toast.error('Failed to release from quarantine');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getStatusBadge = (status: PhotoModerationStatus) => {
     switch (status) {
       case 'approved':
-        return <Badge variant="default" className="bg-green-500"><CheckCircle className="w-3 h-3 mr-1" />{t.photoModeration.approved}</Badge>
+        return (
+          <Badge variant="default" className="bg-green-500">
+            <CheckCircle className="w-3 h-3 mr-1" />
+            {t.photoModeration.approved}
+          </Badge>
+        );
       case 'rejected':
-        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />{t.photoModeration.rejected}</Badge>
+        return (
+          <Badge variant="destructive">
+            <XCircle className="w-3 h-3 mr-1" />
+            {t.photoModeration.rejected}
+          </Badge>
+        );
       case 'pending':
-        return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />{t.photoModeration.pending}</Badge>
+        return (
+          <Badge variant="secondary">
+            <Clock className="w-3 h-3 mr-1" />
+            {t.photoModeration.pending}
+          </Badge>
+        );
       case 'scanning':
-        return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />{t.photoModeration.scanning}</Badge>
+        return (
+          <Badge variant="secondary">
+            <Clock className="w-3 h-3 mr-1" />
+            {t.photoModeration.scanning}
+          </Badge>
+        );
       case 'held_for_kyc':
-        return <Badge variant="outline"><Shield className="w-3 h-3 mr-1" />{t.photoModeration.heldForKYC}</Badge>
+        return (
+          <Badge variant="outline">
+            <Shield className="w-3 h-3 mr-1" />
+            {t.photoModeration.heldForKYC}
+          </Badge>
+        );
       case 'quarantined':
-        return <Badge variant="destructive"><Warning className="w-3 h-3 mr-1" />{t.photoModeration.quarantined}</Badge>
+        return (
+          <Badge variant="destructive">
+            <Warning className="w-3 h-3 mr-1" />
+            {t.photoModeration.quarantined}
+          </Badge>
+        );
       default:
-        return <Badge>{status}</Badge>
+        return <Badge>{status}</Badge>;
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -276,7 +308,9 @@ export function PhotoModerationQueueAdmin() {
             <div className="text-2xl font-bold">{stats.pending}</div>
           </Card>
           <Card className="p-4">
-            <div className="text-sm text-muted-foreground">{t.photoModeration.totalQuarantined}</div>
+            <div className="text-sm text-muted-foreground">
+              {t.photoModeration.totalQuarantined}
+            </div>
             <div className="text-2xl font-bold">{stats.quarantined}</div>
           </Card>
           <Card className="p-4">
@@ -286,15 +320,24 @@ export function PhotoModerationQueueAdmin() {
         </div>
       </div>
 
-      <Tabs value={selectedTab} onValueChange={(value) => { setSelectedTab(value as PhotoModerationStatus); }}>
+      <Tabs
+        value={selectedTab}
+        onValueChange={(value) => setSelectedTab(value as PhotoModerationStatus)}
+      >
         <TabsList>
-          <TabsTrigger value="pending">{t.photoModeration.pending} ({stats.pending})</TabsTrigger>
-          <TabsTrigger value="quarantined">{t.photoModeration.quarantined} ({stats.quarantined})</TabsTrigger>
-          <TabsTrigger value="held_for_kyc">{t.photoModeration.heldForKYC} ({stats.heldForKYC})</TabsTrigger>
+          <TabsTrigger value="pending">
+            {t.photoModeration.pending} ({stats.pending})
+          </TabsTrigger>
+          <TabsTrigger value="quarantined">
+            {t.photoModeration.quarantined} ({stats.quarantined})
+          </TabsTrigger>
+          <TabsTrigger value="held_for_kyc">
+            {t.photoModeration.heldForKYC} ({stats.heldForKYC})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value={selectedTab} className="mt-6">
-          <ScrollArea className="h-[600px]">
+          <ScrollArea className="h-150">
             {loading && records.length === 0 ? (
               <div className="text-center py-12">Loading...</div>
             ) : records.length === 0 ? (
@@ -315,7 +358,9 @@ export function PhotoModerationQueueAdmin() {
                         <div className="flex items-center gap-2 mb-2">
                           {getStatusBadge(record.status)}
                           <span className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(record.metadata.uploadedAt), { addSuffix: true })}
+                            {formatDistanceToNow(new Date(record.metadata.uploadedAt), {
+                              addSuffix: true,
+                            })}
                           </span>
                         </div>
                         <div className="text-sm">
@@ -339,55 +384,69 @@ export function PhotoModerationQueueAdmin() {
         </TabsContent>
       </Tabs>
 
-      <Dialog open={selectedRecord !== null} onOpenChange={(open) => !open && setSelectedRecord(null)}>
+      <Dialog
+        open={selectedRecord !== null}
+        onOpenChange={(open) => !open && setSelectedRecord(null)}
+      >
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           {selectedRecord && (
             <>
               <DialogHeader>
                 <DialogTitle>Photo Moderation Details</DialogTitle>
-                <DialogDescription>
-                  Photo ID: {selectedRecord.photoId}
-                </DialogDescription>
+                <DialogDescription>Photo ID: {selectedRecord.photoId}</DialogDescription>
               </DialogHeader>
 
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm font-medium mb-1">{t.photoModeration.moderationStatus}</div>
+                    <div className="text-sm font-medium mb-1">
+                      {t.photoModeration.moderationStatus}
+                    </div>
                     {getStatusBadge(selectedRecord.status)}
                   </div>
                   <div>
                     <div className="text-sm font-medium mb-1">{t.photoModeration.uploadDate}</div>
-                    <div className="text-sm">{new Date(selectedRecord.metadata.uploadedAt).toLocaleString()}</div>
+                    <div className="text-sm">
+                      {new Date(selectedRecord.metadata.uploadedAt).toLocaleString()}
+                    </div>
                   </div>
                   {selectedRecord.scanResult && (
                     <>
                       <div>
-                        <div className="text-sm font-medium mb-1">{t.photoModeration.nsfwScore}</div>
-                        <div className="text-sm">{(selectedRecord.scanResult.nsfwScore * 100).toFixed(1)}%</div>
+                        <div className="text-sm font-medium mb-1">
+                          {t.photoModeration.nsfwScore}
+                        </div>
+                        <div className="text-sm">
+                          {(selectedRecord.scanResult.nsfwScore * 100).toFixed(1)}%
+                        </div>
                       </div>
                       <div>
-                        <div className="text-sm font-medium mb-1">{t.photoModeration.requiresReview}</div>
-                        <div className="text-sm">{selectedRecord.scanResult.requiresManualReview ? 'Yes' : 'No'}</div>
+                        <div className="text-sm font-medium mb-1">
+                          {t.photoModeration.requiresReview}
+                        </div>
+                        <div className="text-sm">
+                          {selectedRecord.scanResult.requiresManualReview ? 'Yes' : 'No'}
+                        </div>
                       </div>
                     </>
                   )}
                 </div>
 
-                {selectedRecord.scanResult && selectedRecord.scanResult.detectedIssues.length > 0 && (
-                  <div>
-                    <div className="text-sm font-medium mb-2">Detected Issues</div>
-                    <ul className="list-disc list-inside text-sm space-y-1">
-                      {selectedRecord.scanResult.detectedIssues.map((issue, idx) => (
-                        <li key={idx}>{issue}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {selectedRecord.scanResult &&
+                  selectedRecord.scanResult.detectedIssues.length > 0 && (
+                    <div>
+                      <div className="text-sm font-medium mb-2">Detected Issues</div>
+                      <ul className="list-disc list-inside text-sm space-y-1">
+                        {selectedRecord.scanResult.detectedIssues.map((issue, idx) => (
+                          <li key={idx}>{issue}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                 <div>
                   <div className="text-sm font-medium mb-2">{t.photoModeration.auditLog}</div>
-                  <ScrollArea className="h-[200px] border rounded p-4">
+                  <ScrollArea className="h-50 border rounded p-4">
                     {auditLogs.length === 0 ? (
                       <div className="text-sm text-muted-foreground">No audit logs</div>
                     ) : (
@@ -421,26 +480,66 @@ export function PhotoModerationQueueAdmin() {
                 <div className="flex gap-2">
                   {selectedRecord.status === 'pending' || selectedRecord.status === 'scanning' ? (
                     <>
-                      <Button onClick={handleApprove} variant="default">
+                      <Button
+                        onClick={() => {
+                          void handleApprove().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to approve from button', err);
+                          });
+                        }}
+                        variant="default"
+                      >
                         <CheckCircle className="w-4 h-4 mr-2" />
                         {t.photoModeration.approvePhoto}
                       </Button>
-                      <Button onClick={handleReject} variant="destructive">
+                      <Button
+                        onClick={() => {
+                          void handleReject().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to reject from button', err);
+                          });
+                        }}
+                        variant="destructive"
+                      >
                         <XCircle className="w-4 h-4 mr-2" />
                         {t.photoModeration.rejectPhoto}
                       </Button>
-                      <Button onClick={handleQuarantine} variant="outline">
+                      <Button
+                        onClick={() => {
+                          void handleQuarantine().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to quarantine from button', err);
+                          });
+                        }}
+                        variant="outline"
+                      >
                         <Warning className="w-4 h-4 mr-2" />
                         {t.photoModeration.quarantinePhoto}
                       </Button>
                     </>
                   ) : selectedRecord.status === 'quarantined' ? (
                     <>
-                      <Button onClick={handleApprove} variant="default">
+                      <Button
+                        onClick={() => {
+                          void handleApprove().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to approve from button', err);
+                          });
+                        }}
+                        variant="default"
+                      >
                         <CheckCircle className="w-4 h-4 mr-2" />
                         {t.photoModeration.approvePhoto}
                       </Button>
-                      <Button onClick={handleReleaseFromQuarantine} variant="outline">
+                      <Button
+                        onClick={() => {
+                          void handleReleaseFromQuarantine().catch((error) => {
+                            const err = error instanceof Error ? error : new Error(String(error));
+                            logger.error('Failed to release from quarantine from button', err);
+                          });
+                        }}
+                        variant="outline"
+                      >
                         <Eye className="w-4 h-4 mr-2" />
                         {t.photoModeration.releaseFromQuarantine}
                       </Button>
@@ -453,6 +552,5 @@ export function PhotoModerationQueueAdmin() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
-

@@ -1,34 +1,30 @@
-'use client'
+'use client';
 
-import { useEffect, useRef, useCallback } from 'react'
-import type { ReactNode } from 'react'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useEffect, useRef, useCallback } from 'react';
+import type { ReactNode } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface AnnounceNewMessageProps {
-  lastText: string | null
-  senderName?: string | null
+  lastText: string | null;
+  senderName?: string | null | undefined;
 }
 
 /**
  * Announces new messages with assertive priority for screen readers
  * Uses aria-live="assertive" to interrupt current announcements
  */
-export function AnnounceNewMessage({
-  lastText,
-  senderName,
-}: AnnounceNewMessageProps): JSX.Element {
-  const announcementRef = useRef<HTMLDivElement>(null)
+export function AnnounceNewMessage({ lastText, senderName }: AnnounceNewMessageProps): JSX.Element {
+  const _uiConfig = useUIConfig();
+  const announcementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (lastText && announcementRef.current) {
-      const announcement = senderName
-        ? `${String(senderName ?? '')}: ${String(lastText ?? '')}`
-        : `New message: ${String(lastText ?? '')}`
-      announcementRef.current.textContent = announcement
-    } else if (isTruthy(announcementRef.current)) {
-      announcementRef.current.textContent = ''
+      const announcement = senderName ? `${senderName}: ${lastText}` : `New message: ${lastText}`;
+      announcementRef.current.textContent = announcement;
+    } else if (announcementRef.current) {
+      announcementRef.current.textContent = '';
     }
-  }, [lastText, senderName])
+  }, [lastText, senderName]);
 
   return (
     <div
@@ -39,12 +35,12 @@ export function AnnounceNewMessage({
       role="status"
       aria-label="New message announcement"
     />
-  )
+  );
 }
 
 export interface AnnounceTypingProps {
-  userName: string | null
-  multipleUsers?: boolean
+  userName: string | null;
+  multipleUsers?: boolean;
 }
 
 /**
@@ -55,18 +51,18 @@ export function AnnounceTyping({
   userName,
   multipleUsers = false,
 }: AnnounceTypingProps): JSX.Element {
-  const announcementRef = useRef<HTMLDivElement>(null)
+  const announcementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (userName && announcementRef.current) {
       const announcement = multipleUsers
         ? 'Multiple people are typing...'
-        : `${String(userName ?? '')} is typing...`
-      announcementRef.current.textContent = announcement
-    } else if (isTruthy(announcementRef.current)) {
-      announcementRef.current.textContent = ''
+        : `${userName} is typing...`;
+      announcementRef.current.textContent = announcement;
+    } else if (announcementRef.current) {
+      announcementRef.current.textContent = '';
     }
-  }, [userName, multipleUsers])
+  }, [userName, multipleUsers]);
 
   return (
     <div
@@ -77,12 +73,12 @@ export function AnnounceTyping({
       role="status"
       aria-label="Typing indicator announcement"
     />
-  )
+  );
 }
 
 export interface SkipToComposerProps {
-  inputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement>
-  label?: string
+  inputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
+  label?: string;
 }
 
 /**
@@ -95,21 +91,21 @@ export function SkipToComposer({
 }: SkipToComposerProps): JSX.Element {
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>): void => {
-      e.preventDefault()
-      inputRef.current?.focus()
+      e.preventDefault();
+      inputRef.current?.focus();
     },
     [inputRef]
-  )
+  );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLAnchorElement>): void => {
       if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        inputRef.current?.focus()
+        e.preventDefault();
+        inputRef.current?.focus();
       }
     },
     [inputRef]
-  )
+  );
 
   return (
     <a
@@ -121,103 +117,89 @@ export function SkipToComposer({
     >
       {label}
     </a>
-  )
+  );
 }
 
 export interface LiveRegionsProps {
-  children?: ReactNode
-  className?: string
+  children?: ReactNode;
+  className?: string;
 }
 
 /**
  * Container component for live regions with keyboard navigation support
  * Handles escape key to close popovers and manages tab order
  */
-export function LiveRegions({
-  children,
-  className,
-}: LiveRegionsProps): JSX.Element {
-  const containerRef = useRef<HTMLDivElement>(null)
+export function LiveRegions({ children, className }: LiveRegionsProps): JSX.Element {
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') {
-        const activeElement = document.activeElement as HTMLElement
+        const activeElement = document.activeElement as HTMLElement;
         if (!activeElement) {
-          return
+          return;
         }
 
-        const popover = activeElement.closest('[role="dialog"], [data-state="open"]')
-        if (isTruthy(popover)) {
+        const popover = activeElement.closest('[role="dialog"], [data-state="open"]');
+        if (popover) {
           const closeButton = popover.querySelector(
             '[aria-label*="close" i], [aria-label*="Close" i], button[aria-label*="close" i]'
-          ) as HTMLElement
-          if (isTruthy(closeButton)) {
-            closeButton.click()
-            e.preventDefault()
-            e.stopPropagation()
-          } else {
-            const escapeHandler = (popover as HTMLElement).onkeydown
-            if (isTruthy(escapeHandler)) {
-              escapeHandler(e as unknown as React.KeyboardEvent<HTMLElement>)
-            }
+          ) as HTMLElement | null;
+          if (closeButton) {
+            closeButton.click();
+            e.preventDefault();
+            e.stopPropagation();
           }
         }
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleEscape)
+    document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener('keydown', handleEscape)
-    }
-  }, [])
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, []);
 
   useEffect(() => {
-    const container = containerRef.current
+    const container = containerRef.current;
     if (!container) {
-      return
+      return;
     }
 
     const focusableElements = container.querySelectorAll<HTMLElement>(
       'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    )
+    );
 
-    const firstElement = focusableElements[0]
-    const lastElement = focusableElements[focusableElements.length - 1]
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
 
     const handleTabKey = (e: KeyboardEvent): void => {
       if (e.key !== 'Tab') {
-        return
+        return;
       }
 
       if (isTruthy(e.shiftKey)) {
         if (document.activeElement === firstElement) {
-          e.preventDefault()
-          lastElement?.focus()
+          e.preventDefault();
+          lastElement?.focus();
         }
       } else {
         if (document.activeElement === lastElement) {
-          e.preventDefault()
-          firstElement?.focus()
+          e.preventDefault();
+          firstElement?.focus();
         }
       }
-    }
+    };
 
-    container.addEventListener('keydown', handleTabKey)
+    container.addEventListener('keydown', handleTabKey);
     return () => {
-      container.removeEventListener('keydown', handleTabKey)
-    }
-  }, [])
+      container.removeEventListener('keydown', handleTabKey);
+    };
+  }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className={className}
-      role="region"
-      aria-label="Chat live regions"
-    >
+    <div ref={containerRef} className={className} role="region" aria-label="Chat live regions">
       {children}
     </div>
-  )
+  );
 }
-

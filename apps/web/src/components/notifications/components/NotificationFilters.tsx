@@ -1,26 +1,26 @@
 /**
  * Notification Filters Component
- * 
+ *
  * Filter and view controls for notifications
  */
 
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
-import { SlidersHorizontal, List, SquaresFour } from '@phosphor-icons/react'
-import { cn } from '@/lib/utils'
-import type { NotificationFilter, NotificationView } from '../types'
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { SlidersHorizontal, List, SquaresFour } from '@phosphor-icons/react';
+import { cn } from '@/lib/utils';
+import type { NotificationFilter, NotificationView } from '../types';
 
 export interface NotificationFiltersProps {
-  filter: NotificationFilter
-  view: NotificationView
-  categories: Array<{ value: string; label: string; count: number }>
-  selectedCategory: string
-  unreadCount: number
-  onFilterChange: (filter: NotificationFilter) => void
-  onViewChange: (view: NotificationView) => void
-  onCategoryChange: (category: string) => void
-  onShowSettings: () => void
+  filter: NotificationFilter;
+  view: NotificationView;
+  categories: { value: string; label: string; count: number }[];
+  selectedCategory: string;
+  unreadCount: number;
+  onFilterChange: (filter: NotificationFilter) => void;
+  onViewChange: (view: NotificationView) => void;
+  onCategoryChange: (category: string) => void;
+  onShowSettings: () => void;
 }
 
 export function NotificationFilters({
@@ -32,7 +32,7 @@ export function NotificationFilters({
   onFilterChange,
   onViewChange,
   onCategoryChange,
-  onShowSettings
+  onShowSettings,
 }: NotificationFiltersProps): JSX.Element {
   return (
     <div className="space-y-4">
@@ -42,7 +42,7 @@ export function NotificationFilters({
             <TabsTrigger value="all">
               All
               {unreadCount > 0 && (
-                <Badge variant="destructive" className="ml-2 h-5 min-w-[20px] px-1.5 text-xs">
+                <Badge variant="destructive" className="ml-2 h-5 min-w-5 px-1.5 text-xs">
                   {unreadCount}
                 </Badge>
               )}
@@ -61,11 +61,7 @@ export function NotificationFilters({
           >
             {view === 'grouped' ? <SquaresFour size={20} /> : <List size={20} />}
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onShowSettings}
-          >
+          <Button variant="ghost" size="icon" onClick={onShowSettings} aria-label="Sliders Horizontal">
             <SlidersHorizontal size={20} />
           </Button>
         </div>
@@ -81,7 +77,7 @@ export function NotificationFilters({
           >
             {category.label}
             {category.count > 0 && (
-              <Badge variant="secondary" className="ml-2 h-5 min-w-[20px] px-1.5 text-xs">
+              <Badge variant="secondary" className="ml-2 h-5 min-w-5 px-1.5 text-xs">
                 {category.count}
               </Badge>
             )}
@@ -89,5 +85,5 @@ export function NotificationFilters({
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -24,50 +24,55 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
   jsEngine: 'hermes',
   runtimeVersion: {
-    policy: 'sdkVersion'
+    policy: 'sdkVersion',
   },
   updates: {
     enabled: true,
     checkAutomatically: 'ON_LOAD',
-    fallbackToCacheTimeout: 0
+    fallbackToCacheTimeout: 0,
   },
   assetBundlePatterns: ['**/*'],
   splash: {
     image: './assets/icon.png',
     resizeMode: 'contain',
-    backgroundColor: '#ffffff'
+    backgroundColor: '#ffffff',
   },
   plugins: ['react-native-mmkv-expo'],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: iosBundleIdentifier,
+    bundleIdentifier: 'com.petspark.mobile',
     infoPlist: {
       NSCameraUsageDescription: 'We use the camera so you can verify your identity and pets.',
-      NSPhotoLibraryAddUsageDescription: 'Allow PetSpark to save photos that are used for verification.',
+      NSPhotoLibraryAddUsageDescription:
+        'Allow PetSpark to save photos that are used for verification.',
       NSPhotoLibraryUsageDescription: 'Allow PetSpark to access your photos to share pet profiles.',
-      NSLocationWhenInUseUsageDescription: 'PetSpark uses your location to help you find pets nearby and connect with local pet owners.',
-      NSLocationAlwaysAndWhenInUseUsageDescription: 'PetSpark uses your location to help you find pets nearby and connect with local pet owners.',
-      NSMicrophoneUsageDescription: 'PetSpark uses the microphone for video calls and voice messages.',
-      NSUserTrackingUsageDescription: 'PetSpark uses tracking to provide personalized content and improve your experience.'
+      NSLocationWhenInUseUsageDescription:
+        'PetSpark uses your location to help you find pets nearby and connect with local pet owners.',
+      NSLocationAlwaysAndWhenInUseUsageDescription:
+        'PetSpark uses your location to help you find pets nearby and connect with local pet owners.',
+      NSMicrophoneUsageDescription:
+        'PetSpark uses the microphone for video calls and voice messages.',
+      NSUserTrackingUsageDescription:
+        'PetSpark uses tracking to provide personalized content and improve your experience.',
     },
     privacyManifests: {
       NSPrivacyAccessedAPITypes: [
         {
           NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
-          NSPrivacyAccessedAPITypeReasons: ['CA92.1']
+          NSPrivacyAccessedAPITypeReasons: ['CA92.1'],
         },
         {
           NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
-          NSPrivacyAccessedAPITypeReasons: ['C617.1']
-        }
-      ]
-    }
+          NSPrivacyAccessedAPITypeReasons: ['C617.1'],
+        },
+      ],
+    },
   },
   android: {
-    package: androidPackageName,
+    package: 'com.petspark.mobile',
     adaptiveIcon: {
       foregroundImage: './assets/icon.png',
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
     },
     permissions: [
       'android.permission.INTERNET',
@@ -77,15 +82,21 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'android.permission.ACCESS_COARSE_LOCATION',
       'android.permission.RECORD_AUDIO',
       'android.permission.READ_EXTERNAL_STORAGE',
-      'android.permission.WRITE_EXTERNAL_STORAGE'
+      'android.permission.WRITE_EXTERNAL_STORAGE',
     ],
     blockedPermissions: [],
     softwareKeyboardLayoutMode: 'pan',
-    intentFilters: []
+    intentFilters: [],
   },
   extra: {
+    apiUrl: process.env['EXPO_PUBLIC_API_URL'], // used by api-client
     eas: {
-      projectId: easProjectId
-    }
-  }
+      // Configuration: Replace with actual EAS Project ID from expo.dev
+      // This should be set in environment variables for production
+      // Get from: eas project:info or expo.dev dashboard
+      // Store in CI secrets vault, never commit to git
+      projectId:
+        process.env['EXPO_PUBLIC_EAS_PROJECT_ID'] ?? '00000000-0000-0000-0000-000000000000',
+    },
+  },
 })

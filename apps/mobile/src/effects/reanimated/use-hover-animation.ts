@@ -1,5 +1,11 @@
 import { useCallback } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, type SharedValue } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  type SharedValue,
+} from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { springConfigs, timingConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
@@ -24,7 +30,7 @@ export function useHoverAnimation(options: UseHoverAnimationOptions = {}): UseHo
     scale: hoverScale = 1.02,
     duration = timingConfigs.fast.duration ?? 150,
     enabled = true,
-    hapticFeedback = false
+    hapticFeedback = false,
   } = options
 
   const scale = useSharedValue(1)
@@ -47,7 +53,7 @@ export function useHoverAnimation(options: UseHoverAnimationOptions = {}): UseHo
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }]
+      transform: [{ scale: scale.value }],
     }
   }) as AnimatedStyle
 
@@ -55,6 +61,6 @@ export function useHoverAnimation(options: UseHoverAnimationOptions = {}): UseHo
     scale,
     animatedStyle,
     handlePressIn,
-    handlePressOut
+    handlePressOut,
   }
 }

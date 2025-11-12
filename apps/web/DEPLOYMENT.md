@@ -19,6 +19,7 @@ The app will be available at `http://localhost:5173`
 The application automatically creates demo users on first load:
 
 **Demo Accounts:**
+
 - **User**: `user@demo.com` / `demo123`
 - **Moderator**: `moderator@demo.com` / `demo123`
 - **Admin**: `admin@demo.com` / `demo123`
@@ -38,9 +39,9 @@ The application automatically detects the environment based on hostname:
 To manually override, use the config service:
 
 ```typescript
-import { config } from '@/lib/config'
+import { config } from '@/lib/config';
 
-config.setEnv('staging')
+config.setEnv('staging');
 ```
 
 ### Environment Variables
@@ -48,18 +49,21 @@ config.setEnv('staging')
 Create `.env` files for each environment:
 
 **.env.development**
+
 ```
 VITE_COMMIT_SHA=local
 VITE_BUILD_VERSION=1.0.0-dev
 ```
 
 **.env.staging**
+
 ```
 VITE_COMMIT_SHA=${CI_COMMIT_SHA}
 VITE_BUILD_VERSION=1.0.0-rc
 ```
 
 **.env.production**
+
 ```
 VITE_COMMIT_SHA=${CI_COMMIT_SHA}
 VITE_BUILD_VERSION=1.0.0
@@ -84,6 +88,7 @@ npm run preview
 ### Build Optimization
 
 The production build:
+
 - Minifies all JavaScript/CSS
 - Tree-shakes unused code
 - Optimizes images
@@ -103,6 +108,7 @@ vercel --prod
 ```
 
 **Configuration:**
+
 - Build command: `npm run build`
 - Output directory: `dist`
 - Install command: `npm install`
@@ -125,6 +131,7 @@ CMD ["nginx", "-g", "daemon off;"]
 ```
 
 Build and run:
+
 ```bash
 docker build -t pawfectmatch .
 docker run -p 8080:80 pawfectmatch
@@ -144,24 +151,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-          
+
       - name: Install dependencies
         run: npm ci
-        
+
       - name: Run tests
         run: npm test
-        
+
       - name: Build
         run: npm run build
         env:
           VITE_COMMIT_SHA: ${{ github.sha }}
           VITE_BUILD_VERSION: ${{ github.ref_name }}
-          
+
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v20
         with:
@@ -178,6 +185,7 @@ jobs:
 The application exposes simulated health endpoints for monitoring:
 
 **Liveness Check** (`/healthz`)
+
 ```json
 {
   "status": "healthy",
@@ -188,6 +196,7 @@ The application exposes simulated health endpoints for monitoring:
 ```
 
 **Readiness Check** (`/readyz`)
+
 ```json
 {
   "status": "healthy",
@@ -201,25 +210,27 @@ The application exposes simulated health endpoints for monitoring:
 ### Monitoring Integration
 
 **Sentry (Error Tracking)**
+
 ```typescript
 // Add to main.tsx
-import * as Sentry from "@sentry/react"
+import * as Sentry from '@sentry/react';
 
 Sentry.init({
   dsn: config.current.SENTRY_DSN,
   environment: config.current.ENV,
-  release: config.current.BUILD_VERSION
-})
+  release: config.current.BUILD_VERSION,
+});
 ```
 
 **Analytics (Google Analytics, Mixpanel, etc.)**
+
 ```typescript
 // Track events
 analytics.track('match_created', {
   userId: user.id,
   petId: pet.id,
-  compatibility: match.compatibilityScore
-})
+  compatibility: match.compatibilityScore,
+});
 ```
 
 ## Security Considerations
@@ -251,7 +262,7 @@ analytics.track('match_created', {
 React components are automatically code-split by route:
 
 ```typescript
-const AdminConsole = lazy(() => import('./components/admin/AdminConsole'))
+const AdminConsole = lazy(() => import('./components/admin/AdminConsole'));
 ```
 
 ### Image Optimization
@@ -290,7 +301,7 @@ NODE_OPTIONS=--max-old-space-size=4096 npm run dev
 ```bash
 # Clear all stored data
 # Open browser console:
-await spark.kv.keys().then(keys => 
+await spark.kv.keys().then(keys =>
   Promise.all(keys.map(k => spark.kv.delete(k)))
 )
 ```
@@ -311,6 +322,7 @@ See [SYSTEM_ARCHITECTURE.md](./SYSTEM_ARCHITECTURE.md) section "Production Deplo
 ## Support
 
 For issues or questions:
+
 - Check [SYSTEM_ARCHITECTURE.md](./SYSTEM_ARCHITECTURE.md) for technical details
 - Review [PRD.md](./PRD.md) for feature documentation
 - Open an issue on GitHub

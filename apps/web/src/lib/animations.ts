@@ -1,1 +1,1 @@
-export * from '@/effects/animations'
+export * from '@/effects/animations';

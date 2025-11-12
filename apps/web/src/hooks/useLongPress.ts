@@ -24,11 +24,7 @@ export function useLongPress<T extends HTMLElement = HTMLDivElement>(
   handlers: LongPressHandlers = {},
   options: LongPressOptions = {}
 ): RefObject<T | null> {
-  const {
-    delay = 500,
-    moveThreshold = 10,
-    enabled = true,
-  } = options;
+  const { delay = 500, moveThreshold = 10, enabled = true } = options;
 
   const ref = useRef<T | null>(null);
   const timerRef = useRef<number>();
@@ -41,8 +37,8 @@ export function useLongPress<T extends HTMLElement = HTMLDivElement>(
       clearTimeout(timerRef.current);
       timerRef.current = undefined;
     }
-    
-    if (isTruthy(isLongPressing.current)) {
+
+    if (isLongPressing.current) {
       handlers.onLongPressEnd?.();
       isLongPressing.current = false;
     } else if (timerRef.current !== undefined) {

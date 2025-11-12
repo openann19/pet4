@@ -30,7 +30,7 @@ export default function DiscoverView() {
   const data = useDiscoverData({ ... })
   const swipe = useDiscoverSwipe({ ... })
   const filters = useDiscoverFilters({ ... })
-  
+
   return (
     <div>
       <DiscoverFilters {...filters} />

@@ -1,18 +1,37 @@
-import { useState, useEffect, useRef } from 'react'
-import { Check, Sparkle, CheckCircle } from '@phosphor-icons/react'
-import { motion } from '@petspark/motion'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogPortal, DialogOverlay } from '@/components/ui/dialog'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { PET_PROFILE_TEMPLATES, type PetType, type PetProfileTemplate } from '@/lib/pet-profile-templates'
-import { cn } from '@/lib/utils'
+import { useState, useEffect, useRef } from 'react';
+import { Check, Sparkle, CheckCircle } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogPortal,
+  DialogOverlay,
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  PET_PROFILE_TEMPLATES,
+  type PetType,
+  type PetProfileTemplate,
+} from '@/lib/pet-profile-templates';
+import { cn } from '@/lib/utils';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+  withRepeat,
+  withSequence,
+} from 'react-native-reanimated';
 
 interface PetProfileTemplatesDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSelectTemplate?: (template: PetProfileTemplate) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSelectTemplate?: (template: PetProfileTemplate) => void;
 }
 
 const PET_TYPE_LABELS: Record<PetType, { label: string; emoji: string }> = {
@@ -21,67 +40,102 @@ const PET_TYPE_LABELS: Record<PetType, { label: string; emoji: string }> = {
   bird: { label: 'Birds', emoji: '🦜' },
   rabbit: { label: 'Rabbits', emoji: '🐰' },
   fish: { label: 'Fish', emoji: '🐠' },
-  other: { label: 'Other', emoji: '🐾' }
-}
+  other: { label: 'Other', emoji: '🐾' },
+};
 
-const TOTAL_STEPS = 6
-const CURRENT_STEP = 1
+const TOTAL_STEPS = 6;
+const CURRENT_STEP = 1;
 
-export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelectTemplate }: PetProfileTemplatesDialogProps) {
-  const [selectedTemplate, setSelectedTemplate] = useState<PetProfileTemplate | null>(null)
-  const [activeTab, setActiveTab] = useState<PetType>('dog')
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
-  const confirmButtonRef = useRef<HTMLButtonElement>(null)
+export default function PetProfileTemplatesDialog({
+  open,
+  onOpenChange,
+  onSelectTemplate,
+}: PetProfileTemplatesDialogProps) {
+  const [selectedTemplate, setSelectedTemplate] = useState<PetProfileTemplate | null>(null);
+  const [activeTab, setActiveTab] = useState<PetType>('dog');
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Progress bar animation
+  const progressWidth = useSharedValue(0);
+  const progressStyle = useAnimatedStyle(() => ({
+    width: `${progressWidth.value}%`,
+  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+
+  // Sparkle rotation
+  const sparkleRotate = useSharedValue(0);
+  const sparkleScale = useSharedValue(1);
+  const sparkleStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${sparkleRotate.value}deg` }, { scale: sparkleScale.value }],
+  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+
+  useEffect(() => {
+    progressWidth.value = withTiming((CURRENT_STEP / TOTAL_STEPS) * 100, { duration: 600 });
+
+    sparkleRotate.value = withRepeat(
+      withSequence(
+        withTiming(10, { duration: 300 }),
+        withTiming(-10, { duration: 300 }),
+        withTiming(0, { duration: 300 })
+      ),
+      -1,
+      false
+    );
+    sparkleScale.value = withRepeat(
+      withSequence(withTiming(1.1, { duration: 300 }), withTiming(1, { duration: 300 })),
+      -1,
+      false
+    );
+  }, [progressWidth, sparkleRotate, sparkleScale]);
 
   useEffect(() => {
     if (!open) {
-      setSelectedTemplate(null)
+      setSelectedTemplate(null);
     }
-  }, [open])
+  }, [open]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!open) return
-      
+      if (!open) return;
+
       if (e.key === 'Escape') {
-        e.preventDefault()
-        onOpenChange(false)
+        e.preventDefault();
+        onOpenChange(false);
       }
 
       if (e.key === 'Enter' && selectedTemplate) {
-        e.preventDefault()
-        handleConfirmSelection()
+        e.preventDefault();
+        handleConfirmSelection();
       }
-    }
+    };
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => { window.removeEventListener('keydown', handleKeyDown); }
-  }, [open, selectedTemplate, onOpenChange])
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, selectedTemplate, onOpenChange]);
 
   const handleSelectTemplate = (template: PetProfileTemplate) => {
-    setSelectedTemplate(template)
-  }
+    setSelectedTemplate(template);
+  };
 
   const handleConfirmSelection = () => {
     if (selectedTemplate && onSelectTemplate) {
-      onSelectTemplate(selectedTemplate)
-      onOpenChange(false)
+      onSelectTemplate(selectedTemplate);
+      onOpenChange(false);
     }
-  }
+  };
 
   const renderTemplateCard = (template: PetProfileTemplate) => {
-    const isSelected = selectedTemplate?.id === template.id
-    
+    const isSelected = selectedTemplate?.id === template.id;
+
     return (
-      <MotionView as="button"
+      <button
         key={template.id}
         type="button"
-        onClick={() => { handleSelectTemplate(template); }}
-        whileHover={{ scale: 1.015, y: -2 }}
-        whileTap={{ scale: 0.99 }}
+        onClick={() => handleSelectTemplate(template)}
         className={cn(
-          "relative p-5 rounded-xl text-left transition-all duration-300 group",
-          "min-h-[160px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          'relative p-5 rounded-xl text-left transition-all duration-300 group',
+          'min-h-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          'hover:scale-[1.015] active:scale-[0.99]',
           isSelected
             ? 'bg-gradient-to-br from-primary/15 via-primary/10 to-accent/10 shadow-xl border-2 border-transparent'
             : 'bg-card border-2 border-border/60 hover:border-primary/40 hover:shadow-lg hover:bg-card/95'
@@ -91,15 +145,9 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
         style={{ minHeight: '44px' }}
       >
         {isSelected && (
-          <MotionView
-            layoutId="selected-ring"
-            className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary via-accent to-primary opacity-40 blur-sm"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 0.4, scale: 1 }}
-            transition={{ duration: 0.3 }}
-          />
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary via-accent to-primary opacity-40 blur-sm animate-in fade-in zoom-in duration-300" />
         )}
-        
+
         <div className="relative z-10 flex items-start gap-4">
           <span className="text-4xl shrink-0 select-none" role="img" aria-label={template.type}>
             {template.emoji}
@@ -110,27 +158,23 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
                 {template.name}
               </h4>
               {isSelected && (
-                <MotionView
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  className="bg-primary text-primary-foreground rounded-full p-1.5 shrink-0 shadow-lg"
-                >
+                <div className="bg-primary text-primary-foreground rounded-full p-1.5 shrink-0 shadow-lg animate-in zoom-in duration-300">
                   <Check size={16} weight="bold" />
-                </MotionView>
+                </div>
               )}
             </div>
             <p className="text-sm text-foreground/70 mb-3 line-clamp-2 leading-relaxed">
               {template.description}
             </p>
-            
+
             <div className="space-y-2.5 text-xs">
               <div>
                 <span className="text-foreground/60 font-medium text-xs">Personality:</span>
                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                   {template.defaults.personality.slice(0, 3).map((trait) => (
-                    <Badge 
-                      key={trait} 
-                      variant="secondary" 
+                    <Badge
+                      key={trait}
+                      variant="secondary"
                       className="text-xs px-2 py-0.5 bg-muted/60 text-foreground/80 hover:bg-muted/80 transition-colors border border-border/40"
                       style={{ minHeight: '24px' }}
                     >
@@ -138,8 +182,8 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
                     </Badge>
                   ))}
                   {template.defaults.personality.length > 3 && (
-                    <Badge 
-                      variant="secondary" 
+                    <Badge
+                      variant="secondary"
                       className="text-xs px-2 py-0.5 bg-muted/60 text-foreground/80"
                       style={{ minHeight: '24px' }}
                     >
@@ -152,9 +196,9 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
                 <span className="text-foreground/60 font-medium text-xs">Interests:</span>
                 <div className="flex flex-wrap gap-1.5 mt-1.5">
                   {template.defaults.interests.slice(0, 3).map((interest) => (
-                    <Badge 
-                      key={interest} 
-                      variant="outline" 
+                    <Badge
+                      key={interest}
+                      variant="outline"
                       className="text-xs px-2 py-0.5 border-border/50 text-foreground/70 bg-background/40 hover:bg-background/60 transition-colors"
                       style={{ minHeight: '24px' }}
                     >
@@ -162,8 +206,8 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
                     </Badge>
                   ))}
                   {template.defaults.interests.length > 3 && (
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className="text-xs px-2 py-0.5 border-border/50 text-foreground/70"
                       style={{ minHeight: '24px' }}
                     >
@@ -177,41 +221,32 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
         </div>
 
         {isSelected && (
-          <MotionView
-            className="absolute bottom-2 right-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/20 backdrop-blur-sm"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-          >
+          <div className="absolute bottom-2 right-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/20 backdrop-blur-sm animate-in zoom-in duration-300">
             <CheckCircle size={14} weight="fill" className="text-primary" />
             <span className="text-xs font-medium text-primary">Selected</span>
-          </MotionView>
+          </div>
         )}
-      </MotionView>
-    )
-  }
+      </button>
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
         <DialogOverlay className="bg-black/60 backdrop-blur-md" />
-        <DialogContent 
+        <DialogContent
           className="max-w-5xl max-h-[90vh] p-0 gap-0 border-border/50 shadow-2xl"
           onOpenAutoFocus={(e) => {
-            e.preventDefault()
-            closeButtonRef.current?.focus()
+            e.preventDefault();
+            closeButtonRef.current?.focus();
           }}
         >
           <DialogHeader className="px-8 pt-8 pb-5 border-b border-border/40">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <MotionView
-                  initial={{ rotate: 0, scale: 1 }}
-                  animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                >
+                <AnimatedView style={sparkleStyle}>
                   <Sparkle size={28} weight="fill" className="text-primary" />
-                </MotionView>
+                </AnimatedView>
                 <div>
                   <DialogTitle className="text-2xl font-bold text-foreground">
                     Pet Profile Templates
@@ -226,28 +261,31 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
                   </div>
                 </div>
               </div>
-              
+
               <div className="h-2 w-32 bg-muted/50 rounded-full overflow-hidden">
-                <MotionView
+                <AnimatedView
+                  style={progressStyle}
                   className="h-full bg-gradient-to-r from-primary to-accent"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${String((CURRENT_STEP / TOTAL_STEPS) * 100 ?? '')}%` }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
                 />
               </div>
             </div>
             <DialogDescription className="text-sm text-foreground/60 mt-3">
-              Browse pre-made templates to quickly set up your pet's profile with common traits and characteristics
+              Browse pre-made templates to quickly set up your pet's profile with common traits and
+              characteristics
             </DialogDescription>
           </DialogHeader>
-          
-          <Tabs value={activeTab} onValueChange={(value) => { setActiveTab(value as PetType); }} className="flex-1 flex flex-col">
+
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as PetType)}
+            className="flex-1 flex flex-col"
+          >
             <div className="px-8 pt-5 pb-3">
               <TabsList className="grid grid-cols-6 w-full h-12 bg-muted/40">
                 {(Object.keys(PET_TYPE_LABELS) as PetType[]).map((type) => (
-                  <TabsTrigger 
-                    key={type} 
-                    value={type} 
+                  <TabsTrigger
+                    key={type}
+                    value={type}
                     className="text-sm font-medium data-[state=active]:bg-background data-[state=active]:text-foreground transition-all"
                     style={{ minHeight: '44px' }}
                   >
@@ -263,9 +301,9 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
                 {(Object.keys(PET_TYPE_LABELS) as PetType[]).map((type) => (
                   <TabsContent key={type} value={type} className="mt-0">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                      {PET_PROFILE_TEMPLATES
-                        .filter((template) => template.type === type)
-                        .map((template) => renderTemplateCard(template))}
+                      {PET_PROFILE_TEMPLATES.filter((template) => template.type === type).map(
+                        (template) => renderTemplateCard(template)
+                      )}
                     </div>
                     {PET_PROFILE_TEMPLATES.filter((t) => t.type === type).length === 0 && (
                       <div className="text-center py-16 text-muted-foreground">
@@ -292,20 +330,20 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
               )}
             </div>
             <div className="flex items-center gap-3">
-              <Button 
+              <Button
                 ref={closeButtonRef}
-                variant="outline" 
-                onClick={() => { onOpenChange(false); }}
-                className="min-w-[100px]"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="min-w-25"
                 style={{ minHeight: '44px' }}
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 ref={confirmButtonRef}
                 onClick={handleConfirmSelection}
                 disabled={!selectedTemplate}
-                className="min-w-[140px] bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="min-w-35 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ minHeight: '44px' }}
               >
                 <Check size={18} weight="bold" className="mr-2" />
@@ -316,5 +354,5 @@ export default function PetProfileTemplatesDialog({ open, onOpenChange, onSelect
         </DialogContent>
       </DialogPortal>
     </Dialog>
-  )
+  );
 }

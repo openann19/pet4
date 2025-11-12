@@ -1,10 +1,10 @@
-export type Language = 'en' | 'bg'
+export type Language = 'en' | 'bg';
 
 export const translations = {
   en: {
     app: {
       title: 'PawfectMatch',
-      tagline: 'AI-Powered Pet Companion Matching'
+      tagline: 'AI-Powered Pet Companion Matching',
     },
     nav: {
       discover: 'Discover',
@@ -14,12 +14,12 @@ export const translations = {
       community: 'Community',
       adoption: 'Adopt',
       'lost-found': 'Lost & Found',
-      profile: 'Profile'
+      profile: 'Profile',
     },
     discover: {
       title: 'Discover Perfect Matches',
       subtitle: 'Find compatible companions for',
-      createProfile: 'Create Your Pet\'s Profile',
+      createProfile: "Create Your Pet's Profile",
       createProfileDesc: 'Start matching by creating a profile for your pet in the Profile section',
       noMore: 'No More Pets to Discover',
       noMoreDesc: 'Check back later for more potential matches!',
@@ -33,10 +33,10 @@ export const translations = {
       pass: 'Pass',
       match: 'Match',
       about: 'ABOUT',
-      whyMatch: 'WHY YOU\'LL MATCH',
+      whyMatch: "WHY YOU'LL MATCH",
       personality: 'PERSONALITY',
       swipeHintPass: 'Pass',
-      swipeHintLike: 'Like'
+      swipeHintLike: 'Like',
     },
     matches: {
       title: 'Your Matches',
@@ -48,7 +48,7 @@ export const translations = {
       viewProfile: 'View Profile',
       compatibility: 'Compatibility',
       whyMatched: 'WHY YOU MATCHED',
-      compatibilityWith: 'Compatibility with'
+      compatibilityWith: 'Compatibility with',
     },
     chat: {
       title: 'Messages',
@@ -76,7 +76,7 @@ export const translations = {
       delivered: 'Delivered',
       read: 'Read',
       failed: 'Failed',
-      retry: 'Retry'
+      retry: 'Retry',
     },
     profile: {
       title: 'Your Profile',
@@ -85,8 +85,9 @@ export const translations = {
       myPets: 'Your Pets',
       addPet: 'Add Pet',
       noPets: 'No pets yet',
-      noPetsDesc: 'Get started by creating a profile for your pet. Share their personality, interests, and what they\'re looking for in a companion!',
-      createProfile: 'Create Your Pet\'s Profile',
+      noPetsDesc:
+        "Get started by creating a profile for your pet. Share their personality, interests, and what they're looking for in a companion!",
+      createProfile: "Create Your Pet's Profile",
       createProfileBtn: 'Create Pet Profile',
       stats: 'Your Stats',
       totalMatches: 'Total Matches',
@@ -95,7 +96,7 @@ export const translations = {
       settings: 'Settings',
       darkMode: 'Dark Mode',
       language: 'Language',
-      yearsOld: 'years old'
+      yearsOld: 'years old',
     },
     petProfile: {
       name: 'Name',
@@ -113,7 +114,7 @@ export const translations = {
       gender: 'Gender',
       male: 'Male',
       female: 'Female',
-      bio: 'Bio'
+      bio: 'Bio',
     },
     filters: {
       title: 'Discovery Filters',
@@ -129,7 +130,7 @@ export const translations = {
       apply: 'Apply Filters',
       reset: 'Reset',
       yearsOld: 'years old',
-      km: 'km'
+      km: 'km',
     },
     createPet: {
       title: 'Create Pet Profile',
@@ -163,7 +164,7 @@ export const translations = {
       cancel: 'Cancel',
       fillRequired: 'Please fill in all required fields',
       profileCreated: 'Pet profile created successfully!',
-      profileUpdated: 'Pet profile updated successfully!'
+      profileUpdated: 'Pet profile updated successfully!',
     },
     welcome: {
       title: 'Welcome to PawfectMatch',
@@ -179,7 +180,7 @@ export const translations = {
       and: 'and',
       privacy: 'Privacy',
       offlineMessage: "You're offline. Reconnect to continue or explore later.",
-      deepLinkMessage: "We'll take you to your link after sign-in."
+      deepLinkMessage: "We'll take you to your link after sign-in.",
     },
     auth: {
       signInTitle: 'Welcome Back',
@@ -229,7 +230,7 @@ export const translations = {
       countryPlaceholder: 'e.g., United States',
       ageTooYoung: 'You must be at least 18 years old to use this app',
       verificationError: 'Verification failed. Please try again.',
-      verify: 'Verify'
+      verify: 'Verify',
     },
     common: {
       loading: 'Loading...',
@@ -258,7 +259,7 @@ export const translations = {
       areNowConnected: 'are now connected!',
       posting: 'Posting...',
       post: 'Post',
-      submitting: 'Submitting...'
+      submitting: 'Submitting...',
     },
     traits: {
       Playful: 'Playful',
@@ -272,7 +273,7 @@ export const translations = {
       Protective: 'Protective',
       Loyal: 'Loyal',
       Friendly: 'Friendly',
-      Quiet: 'Quiet'
+      Quiet: 'Quiet',
     },
     interests: {
       Fetch: 'Fetch',
@@ -286,7 +287,7 @@ export const translations = {
       Beach: 'Beach',
       'Car Rides': 'Car Rides',
       Napping: 'Napping',
-      Exploring: 'Exploring'
+      Exploring: 'Exploring',
     },
     lookingFor: {
       Playdate: 'Playdate',
@@ -294,11 +295,12 @@ export const translations = {
       'Best Friend': 'Best Friend',
       'Training Partner': 'Training Partner',
       'Cuddle Companion': 'Cuddle Companion',
-      'Adventure Buddy': 'Adventure Buddy'
+      'Adventure Buddy': 'Adventure Buddy',
     },
     map: {
       interactiveMap: 'Interactive Map',
-      mapDescription: 'Discover pet-friendly places, plan playdates, and find matches near you with our privacy-first location features.',
+      mapDescription:
+        'Discover pet-friendly places, plan playdates, and find matches near you with our privacy-first location features.',
       searchPlaceholder: 'Search places...',
       locationEnabled: 'Location enabled',
       locationDenied: 'Location access denied. Using default location.',
@@ -358,7 +360,7 @@ export const translations = {
       tryDifferentSearch: 'Try a different search or category',
       loading: 'Loading map...',
       errorLoadingMap: 'Error loading map',
-      retryLocation: 'Retry'
+      retryLocation: 'Retry',
     },
     community: {
       title: 'Community',
@@ -470,7 +472,7 @@ export const translations = {
       tapToZoom: 'Tap to zoom',
       tapToZoomOut: 'Tap to zoom out',
       downloadError: 'Download error',
-      downloaded: 'Downloaded'
+      downloaded: 'Downloaded',
     },
     adoption: {
       title: 'Adoption',
@@ -501,7 +503,8 @@ export const translations = {
       noProfiles: 'No pets available for adoption',
       noProfilesDesc: 'Check back soon for pets looking for their forever homes.',
       endOfList: "You've seen all available pets! 🐾",
-      applicationDesc: 'Fill out this application to express your interest in adopting. The shelter will review and contact you.',
+      applicationDesc:
+        'Fill out this application to express your interest in adopting. The shelter will review and contact you.',
       contactInfo: 'Contact Information',
       fullName: 'Full Name',
       email: 'Email',
@@ -553,7 +556,7 @@ export const translations = {
       applySuccess: 'Application submitted successfully!',
       applySuccessDesc: 'The owner will review your application and contact you.',
       noFee: 'No fee',
-      fee: 'Fee'
+      fee: 'Fee',
     },
     lostFound: {
       title: 'Lost & Found',
@@ -626,11 +629,12 @@ export const translations = {
       sightingDate: 'Date of Sighting',
       sightingTime: 'Time of Sighting',
       sightingDescription: 'Description',
-      sightingDescriptionPlaceholder: 'Describe what you saw, the pet\'s condition, any distinctive features...',
+      sightingDescriptionPlaceholder:
+        "Describe what you saw, the pet's condition, any distinctive features...",
       yourContactInfo: 'Your Contact Information',
       sightingPhotos: 'Photos (Optional)',
       sightingPhotosDesc: 'Upload photos of the sighting',
-      sightingPhotosHint: 'Up to 3 photos, max 5MB each'
+      sightingPhotosHint: 'Up to 3 photos, max 5MB each',
     },
     live: {
       title: 'Go Live',
@@ -709,7 +713,7 @@ export const translations = {
       grooming: 'Grooming',
       petCare: 'Pet Care',
       qa: 'Q&A',
-      other: 'Other'
+      other: 'Other',
     },
     photoModeration: {
       title: 'Photo Moderation',
@@ -756,13 +760,13 @@ export const translations = {
       assignBatch: 'Assign Batch',
       processBatch: 'Process Batch',
       batchAssigned: 'Batch assigned successfully',
-      batchProcessed: 'Batch processed successfully'
-    }
+      batchProcessed: 'Batch processed successfully',
+    },
   },
   bg: {
     app: {
       title: 'PawfectMatch',
-      tagline: 'AI Подбор на Домашни Любимци'
+      tagline: 'AI Подбор на Домашни Любимци',
     },
     nav: {
       discover: 'Откриване',
@@ -772,16 +776,18 @@ export const translations = {
       community: 'Общност',
       adoption: 'Осиновяване',
       'lost-found': 'Изгубени',
-      profile: 'Профил'
+      profile: 'Профил',
     },
     discover: {
       title: 'Откриване на Перфектни Съвпадения',
       subtitle: 'Намерете съвместими спътници за',
       createProfile: 'Създайте Профил на Вашия Любимец',
-      createProfileDesc: 'Започнете съвпадения, като създадете профил за вашия любимец в секцията Профил',
+      createProfileDesc:
+        'Започнете съвпадения, като създадете профил за вашия любимец в секцията Профил',
       noMore: 'Няма Повече Любимци за Откриване',
       noMoreDesc: 'Проверете по-късно за повече потенциални съвпадения!',
-      noMoreDescAdjust: 'Опитайте да коригирате филтрите си, за да видите повече потенциални съвпадения!',
+      noMoreDescAdjust:
+        'Опитайте да коригирате филтрите си, за да видите повече потенциални съвпадения!',
       filters: 'Филтри',
       analyzePhoto: 'AI Анализ на Снимка',
       compatibility: 'Съвместимост',
@@ -794,19 +800,20 @@ export const translations = {
       whyMatch: 'ЗАЩО ЩЕ СЕ ХАРЕСАТЕ',
       personality: 'ЛИЧНОСТ',
       swipeHintPass: 'Прескочи',
-      swipeHintLike: 'Харесай'
+      swipeHintLike: 'Харесай',
     },
     matches: {
       title: 'Вашите Съвпадения',
       subtitle: 'перфектен спътник',
       subtitlePlural: 'перфектни спътници намерени',
       noMatches: 'Все Още Няма Съвпадения',
-      noMatchesDesc: 'Започнете да преглеждате в секцията Откриване, за да намерите перфектни спътници!',
+      noMatchesDesc:
+        'Започнете да преглеждате в секцията Откриване, за да намерите перфектни спътници!',
       startChat: 'Започнете Чат',
       viewProfile: 'Вижте Профил',
       compatibility: 'Съвместимост',
       whyMatched: 'ЗАЩО СЕ ХАРЕСАХТЕ',
-      compatibilityWith: 'Съвместимост с'
+      compatibilityWith: 'Съвместимост с',
     },
     chat: {
       title: 'Съобщения',
@@ -834,7 +841,7 @@ export const translations = {
       delivered: 'Доставено',
       read: 'Прочетено',
       failed: 'Неуспешно',
-      retry: 'Повтори'
+      retry: 'Повтори',
     },
     profile: {
       title: 'Вашият Профил',
@@ -843,7 +850,8 @@ export const translations = {
       myPets: 'Вашите Любимци',
       addPet: 'Добави Любимец',
       noPets: 'Все още няма любимци',
-      noPetsDesc: 'Започнете, като създадете профил за вашия любимец. Споделете личността, интересите и какво търсят в спътник!',
+      noPetsDesc:
+        'Започнете, като създадете профил за вашия любимец. Споделете личността, интересите и какво търсят в спътник!',
       createProfile: 'Създайте Профил на Вашия Любимец',
       createProfileBtn: 'Създай Профил на Любимец',
       stats: 'Вашата Статистика',
@@ -853,7 +861,7 @@ export const translations = {
       settings: 'Настройки',
       darkMode: 'Тъмен Режим',
       language: 'Език',
-      yearsOld: 'години'
+      yearsOld: 'години',
     },
     petProfile: {
       name: 'Име',
@@ -871,7 +879,7 @@ export const translations = {
       gender: 'Пол',
       male: 'Мъжки',
       female: 'Женски',
-      bio: 'Биография'
+      bio: 'Биография',
     },
     filters: {
       title: 'Филтри за Откриване',
@@ -887,7 +895,7 @@ export const translations = {
       apply: 'Приложи Филтри',
       reset: 'Нулирай',
       yearsOld: 'години',
-      km: 'км'
+      km: 'км',
     },
     createPet: {
       title: 'Създай Профил на Любимец',
@@ -921,7 +929,7 @@ export const translations = {
       cancel: 'Откажи',
       fillRequired: 'Моля, попълнете всички задължителни полета',
       profileCreated: 'Профилът на любимец е създаден успешно!',
-      profileUpdated: 'Профилът на любимец е актуализиран успешно!'
+      profileUpdated: 'Профилът на любимец е актуализиран успешно!',
     },
     welcome: {
       title: 'Добре дошли в PawfectMatch',
@@ -937,14 +945,15 @@ export const translations = {
       and: 'и',
       privacy: 'Политика за поверителност',
       offlineMessage: 'Нямате връзка. Свържете се, за да продължите, или разгледайте по-късно.',
-      deepLinkMessage: 'Ще ви отведем към вашата връзка след влизане.'
+      deepLinkMessage: 'Ще ви отведем към вашата връзка след влизане.',
     },
     auth: {
       signInTitle: 'Добре дошли отново',
       signInSubtitle: 'Влезте, за да продължите в PawfectMatch',
       signIn: 'Вход',
       signUpTitle: 'Създайте Акаунт',
-      signUpSubtitle: 'Присъединете се към PawfectMatch, за да намерите перфектния спътник на вашия любимец',
+      signUpSubtitle:
+        'Присъединете се към PawfectMatch, за да намерите перфектния спътник на вашия любимец',
       signUp: 'Регистрация',
       createAccount: 'Създайте Акаунт',
       email: 'Имейл',
@@ -987,7 +996,7 @@ export const translations = {
       countryPlaceholder: 'напр., България',
       ageTooYoung: 'Трябва да сте на най-малко 18 години, за да използвате това приложение',
       verificationError: 'Проверката неуспешна. Моля, опитайте отново.',
-      verify: 'Потвърди'
+      verify: 'Потвърди',
     },
     common: {
       loading: 'Зареждане...',
@@ -1016,7 +1025,7 @@ export const translations = {
       areNowConnected: 'вече са свързани!',
       posting: 'Публикуване...',
       post: 'Публикувай',
-      submitting: 'Изпращане...'
+      submitting: 'Изпращане...',
     },
     traits: {
       Playful: 'Игрив',
@@ -1030,7 +1039,7 @@ export const translations = {
       Protective: 'Защитнически настроен',
       Loyal: 'Верен',
       Friendly: 'Приятелски настроен',
-      Quiet: 'Тих'
+      Quiet: 'Тих',
     },
     interests: {
       Fetch: 'Търсене',
@@ -1044,7 +1053,7 @@ export const translations = {
       Beach: 'Плаж',
       'Car Rides': 'Разходки с Кола',
       Napping: 'Дрямка',
-      Exploring: 'Изследване'
+      Exploring: 'Изследване',
     },
     lookingFor: {
       Playdate: 'Среща за Игра',
@@ -1052,14 +1061,16 @@ export const translations = {
       'Best Friend': 'Най-добър Приятел',
       'Training Partner': 'Партньор за Тренировка',
       'Cuddle Companion': 'Спътник за Прегръдки',
-      'Adventure Buddy': 'Приятел за Приключения'
+      'Adventure Buddy': 'Приятел за Приключения',
     },
     map: {
       interactiveMap: 'Интерактивна Карта',
-      mapDescription: 'Откривайте места, приятелски настроени към домашни любимци, планирайте срещи за игра и намерете съвпадения в близост до вас с нашите функции за местоположение с приоритет на поверителността.',
+      mapDescription:
+        'Откривайте места, приятелски настроени към домашни любимци, планирайте срещи за игра и намерете съвпадения в близост до вас с нашите функции за местоположение с приоритет на поверителността.',
       searchPlaceholder: 'Търсене на места...',
       locationEnabled: 'Местоположението е активирано',
-      locationDenied: 'Достъпът до местоположение е отказан. Използване на местоположение по подразбиране.',
+      locationDenied:
+        'Достъпът до местоположение е отказан. Използване на местоположение по подразбиране.',
       approximateLocation: 'Използване на приблизително местоположение',
       enablePrecisePrompt: 'Активирайте точно местоположение за срещи на живо и точна навигация',
       enable: 'Активирай',
@@ -1116,7 +1127,7 @@ export const translations = {
       tryDifferentSearch: 'Опитайте различно търсене или категория',
       loading: 'Зареждане на карта...',
       errorLoadingMap: 'Грешка при зареждане на картата',
-      retryLocation: 'Опитай отново'
+      retryLocation: 'Опитай отново',
     },
     community: {
       title: 'Общност',
@@ -1228,7 +1239,7 @@ export const translations = {
       tapToZoom: 'Докоснете за увеличаване',
       tapToZoomOut: 'Докоснете за намаляване',
       downloadError: 'Грешка при изтегляне',
-      downloaded: 'Изтеглено'
+      downloaded: 'Изтеглено',
     },
     adoption: {
       title: 'Осиновяване',
@@ -1259,7 +1270,8 @@ export const translations = {
       noProfiles: 'Няма налични любимци за осиновяване',
       noProfilesDesc: 'Проверете скоро за любимци, търсещи своя вечен дом.',
       endOfList: 'Видяхте всички налични любимци! 🐾',
-      applicationDesc: 'Попълнете тази заявка, за да изразите интерес към осиновяване. Приютът ще прегледа и ще се свърже с вас.',
+      applicationDesc:
+        'Попълнете тази заявка, за да изразите интерес към осиновяване. Приютът ще прегледа и ще се свърже с вас.',
       contactInfo: 'Информация за Контакт',
       fullName: 'Пълно Име',
       email: 'Имейл',
@@ -1311,7 +1323,7 @@ export const translations = {
       applySuccess: 'Заявката е изпратена успешно!',
       applySuccessDesc: 'Собственикът ще прегледа заявката ви и ще се свърже с вас.',
       noFee: 'Без такса',
-      fee: 'Такса'
+      fee: 'Такса',
     },
     lostFound: {
       title: 'Изгубени и Намерени',
@@ -1378,11 +1390,12 @@ export const translations = {
       sightingDate: 'Дата на Забелязване',
       sightingTime: 'Час на Забелязване',
       sightingDescription: 'Описание',
-      sightingDescriptionPlaceholder: 'Опишете какво видяхте, състоянието на любимеца, всякакви отличителни белези...',
+      sightingDescriptionPlaceholder:
+        'Опишете какво видяхте, състоянието на любимеца, всякакви отличителни белези...',
       yourContactInfo: 'Вашата Контактна Информация',
       sightingPhotos: 'Снимки (По Избор)',
       sightingPhotosDesc: 'Качете снимки на забелязването',
-      sightingPhotosHint: 'До 3 снимки, максимум 5MB всяка'
+      sightingPhotosHint: 'До 3 снимки, максимум 5MB всяка',
     },
     live: {
       title: 'На Живо',
@@ -1444,7 +1457,8 @@ export const translations = {
       streamTipsLighting: 'Изберете добре осветена среда',
       streamTipsAudio: 'Тествайте аудиото си преди да започнете на живо',
       streamTipsInteract: 'Общувайте със зрителите си в реално време',
-      streamTipsGuidelines: 'Поддържайте съдържанието подходящо за семейство и следвайте правилата на общността',
+      streamTipsGuidelines:
+        'Поддържайте съдържанието подходящо за семейство и следвайте правилата на общността',
       streamTitlePlaceholder: 'напр., Обучение на моя Златен Ретривър!',
       streamDescriptionPlaceholder: 'Кажете на зрителите какво очакват...',
       tags: 'Етикети (По Избор)',
@@ -1461,7 +1475,7 @@ export const translations = {
       grooming: 'Груминг',
       petCare: 'Грижа за Домашни Любимци',
       qa: 'Въпроси и Отговори',
-      other: 'Друго'
+      other: 'Друго',
     },
     photoModeration: {
       title: 'Модерация на Снимки',
@@ -1508,11 +1522,11 @@ export const translations = {
       assignBatch: 'Назначи Пакет',
       processBatch: 'Обработи Пакет',
       batchAssigned: 'Пакетът е назначен успешно',
-      batchProcessed: 'Пакетът е обработен успешно'
-    }
-  }
-} as const
+      batchProcessed: 'Пакетът е обработен успешно',
+    },
+  },
+} as const;
 
 export function useTranslation(lang: Language) {
-  return translations[lang]
+  return translations[lang];
 }

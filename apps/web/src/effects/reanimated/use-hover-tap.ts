@@ -1,29 +1,34 @@
-'use client'
+'use client';
 
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { useCallback } from 'react'
-import { useAnimatedStyle, useSharedValue, withSpring, type SharedValue } from 'react-native-reanimated'
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useCallback } from 'react';
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  type SharedValue,
+} from 'react-native-reanimated';
 
 export interface UseHoverTapOptions {
-  hoverScale?: number
-  tapScale?: number
-  damping?: number
-  stiffness?: number
-  onPress?: () => void
+  hoverScale?: number;
+  tapScale?: number;
+  damping?: number;
+  stiffness?: number;
+  onPress?: () => void;
 }
 
 export interface UseHoverTapReturn {
-  scale: SharedValue<number>
-  animatedStyle: AnimatedStyle
-  handleMouseEnter: () => void
-  handleMouseLeave: () => void
-  handlePress: () => void
+  scale: SharedValue<number>;
+  animatedStyle: AnimatedStyle;
+  handleMouseEnter: () => void;
+  handleMouseLeave: () => void;
+  handlePress: () => void;
 }
 
-const DEFAULT_HOVER_SCALE = 1.1
-const DEFAULT_TAP_SCALE = 0.95
-const DEFAULT_DAMPING = 15
-const DEFAULT_STIFFNESS = 400
+const DEFAULT_HOVER_SCALE = 1.1;
+const DEFAULT_TAP_SCALE = 0.95;
+const DEFAULT_DAMPING = 15;
+const DEFAULT_STIFFNESS = 400;
 
 /**
  * Hook for hover and tap interactions on buttons/icons
@@ -35,38 +40,37 @@ export function useHoverTap(options: UseHoverTapOptions = {}): UseHoverTapReturn
     tapScale = DEFAULT_TAP_SCALE,
     damping = DEFAULT_DAMPING,
     stiffness = DEFAULT_STIFFNESS,
-    onPress
-  } = options
+    onPress,
+  } = options;
 
-  const scale = useSharedValue(1)
+  const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }]
-    }
-  }) as AnimatedStyle
+      transform: [{ scale: scale.value }],
+    };
+  }) as AnimatedStyle;
 
   const handleMouseEnter = useCallback(() => {
-    scale.value = withSpring(hoverScale, { damping, stiffness })
-  }, [scale, hoverScale, damping, stiffness])
+    scale.value = withSpring(hoverScale, { damping, stiffness });
+  }, [scale, hoverScale, damping, stiffness]);
 
   const handleMouseLeave = useCallback(() => {
-    scale.value = withSpring(1, { damping, stiffness })
-  }, [scale, damping, stiffness])
+    scale.value = withSpring(1, { damping, stiffness });
+  }, [scale, damping, stiffness]);
 
   const handlePress = useCallback(() => {
     scale.value = withSpring(tapScale, { damping, stiffness }, () => {
-      scale.value = withSpring(1, { damping, stiffness })
-    })
-    onPress?.()
-  }, [scale, tapScale, damping, stiffness, onPress])
+      scale.value = withSpring(1, { damping, stiffness });
+    });
+    onPress?.();
+  }, [scale, tapScale, damping, stiffness, onPress]);
 
   return {
     scale,
     animatedStyle,
     handleMouseEnter,
     handleMouseLeave,
-    handlePress
-  }
+    handlePress,
+  };
 }
-

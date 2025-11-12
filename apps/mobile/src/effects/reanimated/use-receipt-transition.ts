@@ -5,48 +5,34 @@ import {
   withSequence,
   withTiming,
   withDelay,
-  interpolate,
-  Extrapolation,
   type SharedValue,
 } from 'react-native-reanimated'
 import { useCallback, useEffect } from 'react'
-import type { MessageStatus } from '@/lib/chat-types'
+import type { MessageStatus } from '@mobile/lib/chat-types'
 import { springConfigs, timingConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
 
-export type { MessageStatus }
-
 export interface UseReceiptTransitionOptions {
-  readonly status: MessageStatus
-  readonly previousStatus?: MessageStatus
-  readonly pulseDuration?: number
+  status: MessageStatus
+  previousStatus?: MessageStatus
+  pulseDuration?: number
 }
 
 export interface UseReceiptTransitionReturn {
-  readonly opacity: SharedValue<number>
-  readonly scale: SharedValue<number>
-  readonly colorIntensity: SharedValue<number>
-  readonly iconRotation: SharedValue<number>
-  readonly animatedStyle: AnimatedStyle
-  readonly animateStatusChange: (newStatus: MessageStatus) => void
+  opacity: SharedValue<number>
+  scale: SharedValue<number>
+  colorIntensity: SharedValue<number>
+  iconRotation: SharedValue<number>
+  animatedStyle: AnimatedStyle
+  animateStatusChange: (newStatus: MessageStatus) => void
 }
 
 const DEFAULT_PULSE_DURATION = 600
 
-const STATUS_COLORS = {
-  sending: 'rgba(156, 163, 175, 1)',
-  sent: 'rgba(156, 163, 175, 1)',
-  delivered: 'rgba(96, 165, 250, 1)',
-  read: 'rgba(59, 130, 246, 1)',
-  failed: 'rgba(239, 68, 68, 1)',
-} as const
-
-export function useReceiptTransition(options: UseReceiptTransitionOptions): UseReceiptTransitionReturn {
-  const {
-    status,
-    previousStatus,
-    pulseDuration = DEFAULT_PULSE_DURATION,
-  } = options
+export function useReceiptTransition(
+  options: UseReceiptTransitionOptions
+): UseReceiptTransitionReturn {
+  const { status, previousStatus, pulseDuration = DEFAULT_PULSE_DURATION } = options
 
   const opacity = useSharedValue(1)
   const scale = useSharedValue(1)
@@ -86,62 +72,29 @@ export function useReceiptTransition(options: UseReceiptTransitionOptions): UseR
         colorIntensity.value = withTiming(0, timingConfigs.fast)
       }
     },
-    [colorIntensity, iconRotation, opacity, previousStatus, pulseDuration, scale]
+    [opacity, scale, colorIntensity, iconRotation, previousStatus, pulseDuration]
   )
 
   useEffect(() => {
     if (previousStatus && previousStatus !== status) {
       animateStatusChange(status)
-    } else if (status === 'read' || status === 'delivered') {
-      colorIntensity.value = withTiming(1, timingConfigs.smooth)
     } else {
-      colorIntensity.value = withTiming(0, timingConfigs.fast)
+      if (status === 'read' || status === 'delivered') {
+        colorIntensity.value = withTiming(1, timingConfigs.smooth)
+      } else {
+        colorIntensity.value = withTiming(0, timingConfigs.fast)
+      }
     }
-  }, [animateStatusChange, colorIntensity, previousStatus, status])
+  }, [status, previousStatus, colorIntensity, animateStatusChange])
 
   const animatedStyle = useAnimatedStyle(() => {
-    const baseColor = STATUS_COLORS.sent
-    const targetColor = STATUS_COLORS[status] ?? STATUS_COLORS.sending
-
-    const r = interpolate(
-      colorIntensity.value,
-      [0, 1],
-      [
-        parseInt(/rgba?\((\d+)/.exec(baseColor)?.[1] ?? '156', 10),
-        parseInt(/rgba?\((\d+)/.exec(targetColor)?.[1] ?? '156', 10),
-      ],
-      Extrapolation.CLAMP
-    )
-
-    const g = interpolate(
-      colorIntensity.value,
-      [0, 1],
-      [
-        parseInt(/rgba?\(\d+, (\d+)/.exec(baseColor)?.[1] ?? '163', 10),
-        parseInt(/rgba?\(\d+, (\d+)/.exec(targetColor)?.[1] ?? '163', 10),
-      ],
-      Extrapolation.CLAMP
-    )
-
-    const b = interpolate(
-      colorIntensity.value,
-      [0, 1],
-      [
-        parseInt(/rgba?\(\d+, \d+, (\d+)/.exec(baseColor)?.[1] ?? '175', 10),
-        parseInt(/rgba?\(\d+, \d+, (\d+)/.exec(targetColor)?.[1] ?? '175', 10),
-      ],
-      Extrapolation.CLAMP
-    )
-
     return {
       opacity: opacity.value,
-      transform: [
-        { scale: scale.value },
-        { rotate: `${String(iconRotation.value ?? '')}deg` },
-      ],
-      color: `rgb(${String(Math.round(r) ?? '')}, ${String(Math.round(g) ?? '')}, ${String(Math.round(b) ?? '')})`,
-    } satisfies AnimatedStyle
-  })
+      transform: [{ scale: scale.value }, { rotate: `${iconRotation.value}deg` }],
+      // For React Native, we need to return color as a separate style property
+      // This will be applied to the Text component
+    }
+  }) as AnimatedStyle
 
   return {
     opacity,

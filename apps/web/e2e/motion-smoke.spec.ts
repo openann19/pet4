@@ -1,6 +1,6 @@
 /**
  * Playwright smoke test for AdvancedChatWindow performance
- * 
+ *
  * Measures dropped frames during 5 seconds of chat activity with 30 concurrent message entries.
  * Asserts RAF dropped frames < 3%.
  */
@@ -16,33 +16,41 @@ test.describe('AdvancedChatWindow Performance', () => {
     // Wait for chat window to load (adjust selector as needed)
     await page.waitForSelector('textarea, input[type="text"]', { timeout: 5000 });
 
-    // Start performance monitoring
-    const frameTimes: number[] = [];
-    let lastFrameTime = performance.now();
-    let frameCount = 0;
-    let droppedFrames = 0;
-
-    // Monitor frame times for 5 seconds
-    const monitorDuration = 5000; // 5 seconds
-    const startTime = Date.now();
+    // Performance monitoring is done via page.evaluate()
 
     // Set up RAF monitoring
     await page.evaluate(() => {
-      (window as any).__frameTimes = [];
-      (window as any).__lastFrameTime = performance.now();
-      (window as any).__frameCount = 0;
-      (window as any).__droppedFrames = 0;
+      type WindowWithMetrics = typeof window & {
+        __frameTimes?: number[];
+        __lastFrameTime?: number;
+        __frameCount?: number;
+        __droppedFrames?: number;
+      };
+      (window as WindowWithMetrics).__frameTimes = [];
+      (window as WindowWithMetrics).__lastFrameTime = performance.now();
+      (window as WindowWithMetrics).__frameCount = 0;
+      (window as WindowWithMetrics).__droppedFrames = 0;
 
       function measureFrame() {
         const now = performance.now();
-        const delta = now - (window as any).__lastFrameTime;
-        (window as any).__lastFrameTime = now;
-        (window as any).__frameTimes.push(delta);
-        (window as any).__frameCount++;
+        type WindowWithMetrics = typeof window & {
+          __frameTimes?: number[];
+          __lastFrameTime?: number;
+          __frameCount?: number;
+          __droppedFrames?: number;
+        };
+        const win = window as WindowWithMetrics;
+        const delta = now - (win.__lastFrameTime ?? 0);
+        win.__lastFrameTime = now;
+        if (win.__frameTimes) {
+          win.__frameTimes.push(delta);
+        }
+        win.__frameCount = (win.__frameCount ?? 0) + 1;
 
         // Check for dropped frames (frame time > 20ms at 60fps, or > 16.67ms ideally)
         if (delta > 20) {
-          (window as any).__droppedFrames++;
+          const win = window as WindowWithMetrics;
+          win.__droppedFrames = (win.__droppedFrames ?? 0) + 1;
         }
 
         requestAnimationFrame(measureFrame);
@@ -53,7 +61,8 @@ test.describe('AdvancedChatWindow Performance', () => {
 
     // Simulate 30 concurrent message entries
     const inputSelector = 'textarea, input[type="text"]';
-    const sendButtonSelector = 'button[type="submit"], button:has-text("Send"), [aria-label*="Send"]';
+    const sendButtonSelector =
+      'button[type="submit"], button:has-text("Send"), [aria-label*="Send"]';
 
     for (let i = 0; i < 30; i++) {
       const input = page.locator(inputSelector).first();
@@ -74,24 +83,30 @@ test.describe('AdvancedChatWindow Performance', () => {
 
     // Get performance metrics
     const metrics = await page.evaluate(() => {
-      const frameTimes = (window as any).__frameTimes || [];
-      const frameCount = (window as any).__frameCount || 0;
-      const droppedFrames = (window as any).__droppedFrames || 0;
+      type WindowWithMetrics = typeof window & {
+        __frameTimes?: number[];
+        __frameCount?: number;
+        __droppedFrames?: number;
+      };
+      const win = window as WindowWithMetrics;
+      const frameTimes = win.__frameTimes || [];
+      const frameCount = win.__frameCount || 0;
+      const droppedFrames = win.__droppedFrames || 0;
 
       return {
         frameCount,
         droppedFrames,
-        averageFrameTime: frameTimes.length > 0
-          ? frameTimes.reduce((a: number, b: number) => a + b, 0) / frameTimes.length
-          : 0,
+        averageFrameTime:
+          frameTimes.length > 0
+            ? frameTimes.reduce((a: number, b: number) => a + b, 0) / frameTimes.length
+            : 0,
         maxFrameTime: frameTimes.length > 0 ? Math.max(...frameTimes) : 0,
       };
     });
 
     // Calculate dropped frame percentage
-    const droppedFramePercentage = metrics.frameCount > 0
-      ? (metrics.droppedFrames / metrics.frameCount) * 100
-      : 0;
+    const droppedFramePercentage =
+      metrics.frameCount > 0 ? (metrics.droppedFrames / metrics.frameCount) * 100 : 0;
 
     // Assertions
     expect(metrics.frameCount).toBeGreaterThan(0);
@@ -117,7 +132,9 @@ test.describe('AdvancedChatWindow Performance', () => {
 
     // Check that animations are instant (≤120ms)
     const animationDuration = await page.evaluate(() => {
-      const animatedElements = document.querySelectorAll('[style*="transition"], [style*="animation"]');
+      const animatedElements = document.querySelectorAll(
+        '[style*="transition"], [style*="animation"]'
+      );
       let maxDuration = 0;
 
       animatedElements.forEach((el) => {

@@ -45,19 +45,21 @@ export function usePushNotifications(): UsePushNotificationsReturn {
 
   useEffect(() => {
     // Listen for notifications received while app is foregrounded
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((_notification: Notifications.Notification) => {
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      (_notification: Notifications.Notification) => {
         // Trigger haptic feedback
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-      })
+      }
+    )
 
     // Listen for user tapping on notification
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((_response: Notifications.NotificationResponse) => {
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      (_response: Notifications.NotificationResponse) => {
         // Handle notification tap
         // Navigate to appropriate screen based on notification data
         // This would be handled by your navigation system
-      })
+      }
+    )
 
     return () => {
       if (isTruthy(notificationListener.current)) {
@@ -77,8 +79,7 @@ export function usePushNotifications(): UsePushNotificationsReturn {
         return null
       }
 
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync()
+      const { status: existingStatus } = await Notifications.getPermissionsAsync()
       let finalStatus = existingStatus
 
       if (existingStatus !== 'granted') {

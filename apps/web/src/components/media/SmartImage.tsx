@@ -1,29 +1,28 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { springConfigs } from '@/effects/reanimated/transitions'
-import { usePrefersReducedMotion } from '@/utils/reduced-motion'
-import { useFeatureFlags } from '@/config/feature-flags'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
-import { cn } from '@/lib/utils'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useState, useEffect, useRef } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { springConfigs } from '@/effects/reanimated/transitions';
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
+import { useFeatureFlags } from '@/config/feature-flags';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { cn } from '@/lib/utils';
 
 export interface SmartImageProps {
-  src: string
-  lqip?: string // Low Quality Image Placeholder
-  alt: string
-  className?: string
-  width?: number
-  height?: number
-  onLoad?: () => void
-  onClick?: () => void
+  src: string;
+  lqip?: string; // Low Quality Image Placeholder
+  alt: string;
+  className?: string;
+  width?: number;
+  height?: number;
+  onLoad?: () => void;
+  onClick?: () => void;
 }
 
 /**
  * SmartImage Component
- * 
+ *
  * Progressive image loading with LQIP, shimmer effect, and parallax reveal
  * Reduced motion → instant swap
  */
@@ -35,55 +34,66 @@ export function SmartImage({
   width,
   height,
   onLoad,
-  onClick
+  onClick,
 }: SmartImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [showSharp, setShowSharp] = useState(false)
-  const reducedMotion = usePrefersReducedMotion()
-  const { enableSmartImage } = useFeatureFlags()
-  const imgRef = useRef<HTMLImageElement>(null)
-  
-  const shimmerOpacity = useSharedValue(0.6)
-  const imageOpacity = useSharedValue(0)
-  const parallaxOffset = useSharedValue(0)
-  
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [showSharp, setShowSharp] = useState(false);
+  const reducedMotion = usePrefersReducedMotion();
+  const { enableSmartImage } = useFeatureFlags();
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  const shimmerOpacity = useSharedValue(0.6);
+  const imageOpacity = useSharedValue(0);
+  const parallaxOffset = useSharedValue(0);
+
   useEffect(() => {
     if (!enableSmartImage) {
-      return
+      return;
     }
-    
-    if (isTruthy(reducedMotion)) {
+
+    if (reducedMotion) {
       // Instant swap for reduced motion
-      imageOpacity.value = 1
-      return
+      imageOpacity.value = 1;
+      return;
     }
-    
+
     // Shimmer animation
-    shimmerOpacity.value = withTiming(0.6, { duration: 600 })
-    
+    shimmerOpacity.value = withTiming(0.6, { duration: 600 });
+
     if (isLoaded && showSharp) {
-      imageOpacity.value = withSpring(1, springConfigs.smooth)
-      parallaxOffset.value = withSpring(0, springConfigs.smooth)
+      imageOpacity.value = withSpring(1, springConfigs.smooth);
+      parallaxOffset.value = withSpring(0, springConfigs.smooth);
     }
-  }, [isLoaded, showSharp, reducedMotion, enableSmartImage, imageOpacity, shimmerOpacity, parallaxOffset])
-  
+  }, [
+    isLoaded,
+    showSharp,
+    reducedMotion,
+    enableSmartImage,
+    imageOpacity,
+    shimmerOpacity,
+    parallaxOffset,
+  ]);
+
   const handleLoad = () => {
-    setIsLoaded(true)
-    setTimeout(() => {
-      setShowSharp(true)
-      onLoad?.()
-    }, reducedMotion ? 0 : 30)
-  }
-  
+    setIsLoaded(true);
+    setTimeout(
+      () => {
+        setShowSharp(true);
+        onLoad?.();
+      },
+      reducedMotion ? 0 : 30
+    );
+  };
+
   const shimmerStyle = useAnimatedStyle(() => ({
     opacity: shimmerOpacity.value,
-  })) as AnimatedStyle
-  
+  })) as AnimatedStyle;
+
   const imageStyle = useAnimatedStyle(() => ({
     opacity: imageOpacity.value,
     transform: [{ translateY: parallaxOffset.value }],
-  })) as AnimatedStyle
-  
+  })) as AnimatedStyle;
+
   if (!enableSmartImage) {
     return (
       <img
@@ -94,9 +104,9 @@ export function SmartImage({
         height={height}
         onLoad={onLoad}
       />
-    )
+    );
   }
-  
+
   return (
     <div className={cn('relative overflow-hidden', className)} style={{ width, height }}>
       {/* LQIP placeholder */}
@@ -108,7 +118,7 @@ export function SmartImage({
           aria-hidden="true"
         />
       )}
-      
+
       {/* Shimmer effect */}
       {!isLoaded && (
         <AnimatedView
@@ -119,7 +129,7 @@ export function SmartImage({
           <div />
         </AnimatedView>
       )}
-      
+
       {/* Sharp image */}
       <img
         ref={imgRef}
@@ -139,6 +149,5 @@ export function SmartImage({
         decoding="async"
       />
     </div>
-  )
+  );
 }
-

@@ -1,154 +1,250 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import type { FileSystemUploadOptions } from 'expo-file-system'
+/**
+ * Upload Queue Module
+ *
+ * Production-grade upload queue with retry logic, telemetry, and error handling
+ * Location: apps/mobile/src/lib/upload-queue.ts
+ */
+
+import { storage } from './storage'
 import { createLogger } from '../utils/logger'
-import { apiClient } from '../utils/api-client'
-import { getAuthToken } from '../utils/secure-storage'
-import { isTruthy } from '@petspark/shared';
+import { telemetry } from '../utils/telemetry'
 
 const logger = createLogger('upload-queue')
 
-const QUEUE_STORAGE_KEY = 'petspark:upload-queue'
-
-type HttpMethod = 'POST' | 'PUT' | 'PATCH'
-
-export interface UploadTask {
+export type UploadJob = {
   id: string
   uri: string
   endpoint: string
-  method?: HttpMethod
-  fieldName?: string
   headers?: Record<string, string>
-  metadata?: Record<string, string>
+  tries: number
+  nextAt: number // epoch ms
+  error?: string // Last error message
+  createdAt: number // Job creation timestamp
 }
 
-async function readQueue(): Promise<UploadTask[]> {
-  try {
-    const raw = await AsyncStorage.getItem(QUEUE_STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw) as UploadTask[]
-    if (Array.isArray(parsed)) {
-      return parsed.filter(task => isTruthy(task?.id) && isTruthy(task?.uri) && isTruthy(task?.endpoint))
-    }
-    return []
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to read upload queue', err)
-    return []
-  }
+export type UploadResult = {
+  success: boolean
+  jobId: string
+  error?: string
+  tries: number
 }
 
-async function writeQueue(tasks: UploadTask[]): Promise<void> {
-  try {
-    await AsyncStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(tasks))
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
-    logger.error('Failed to persist upload queue', err)
-  }
+const KEY = 'upload-queue/v1'
+const MAX_RETRIES = 6
+const MAX_BACKOFF_MS = 60_000 // 60 seconds
+
+function now(): number {
+  return Date.now()
 }
 
-export async function enqueueUpload(task: Omit<UploadTask, 'id'> & { id?: string }): Promise<UploadTask> {
-  const queue = await readQueue()
-  const resolvedTask: UploadTask = {
-    id: task.id ?? generateId(),
-    uri: task.uri,
-    endpoint: task.endpoint,
-    method: task.method ?? 'POST',
-    fieldName: task.fieldName ?? 'file',
-    headers: task.headers ?? {},
-    metadata: task.metadata ?? {},
-  }
-
-  queue.push(resolvedTask)
-  await writeQueue(queue)
-  logger.debug('Upload task enqueued', { id: resolvedTask.id, endpoint: resolvedTask.endpoint })
-  return resolvedTask
+function load(): UploadJob[] {
+  return storage.get<UploadJob[]>(KEY) ?? []
 }
 
-function generateId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID()
-  }
-
-  return Math.random().toString(36).slice(2)
+function save(jobs: UploadJob[]): void {
+  storage.set(KEY, jobs)
 }
 
-function resolveEndpoint(endpoint: string): string {
-  if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
-    return endpoint
+/**
+ * Enqueue an upload job
+ */
+export function enqueue(job: Omit<UploadJob, 'tries' | 'nextAt' | 'createdAt'>): void {
+  const jobs = load()
+  const newJob: UploadJob = {
+    ...job,
+    tries: 0,
+    nextAt: now(),
+    createdAt: now(),
   }
+  jobs.push(newJob)
+  save(jobs)
 
-  const base = apiClient.getBaseUrl().replace(/\/$/, '')
-  const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
-  return `${base}${normalizedEndpoint}`
+  logger.info('Upload job enqueued', {
+    jobId: newJob.id,
+    endpoint: newJob.endpoint,
+  })
+
+  telemetry.track({
+    name: 'upload_enqueued',
+    payload: {
+      jobId: newJob.id,
+      endpoint: newJob.endpoint,
+    },
+  })
 }
 
-async function performUpload(task: UploadTask): Promise<void> {
-  const FileSystem = await import('expo-file-system')
-  const uploadUrl = resolveEndpoint(task.endpoint)
-  const headers: Record<string, string> = { ...(task.headers ?? {}) }
-
-  const token = await getAuthToken().catch(() => null)
-  if (token && !headers.Authorization) {
-    headers.Authorization = `Bearer ${token}`
-  }
-
-  const options: FileSystemUploadOptions = {
-    httpMethod: task.method ?? 'POST',
-    uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-    fieldName: task.fieldName ?? 'file',
-    headers,
-  }
-
-  if (task.metadata && Object.keys(task.metadata).length > 0) {
-    options.parameters = task.metadata
-  }
-
-  const result = await FileSystem.uploadAsync(uploadUrl, task.uri, options)
-
-  if (result.status < 200 || result.status >= 300) {
-    const error = new Error(`Upload failed with status ${String(result.status ?? '')}`)
-    ;(error as Error & { body?: string }).body = result.body
-    throw error
-  }
-
-  logger.info('Upload completed', { id: task.id, endpoint: task.endpoint, status: result.status })
-}
-
+/**
+ * Flush pending uploads with retry logic and telemetry
+ */
 export async function flushPendingUploads(): Promise<boolean> {
-  const queue = await readQueue()
-  if (queue.length === 0) {
-    return true
-  }
+  const jobs = load()
+  const remaining: UploadJob[] = []
+  const results: UploadResult[] = []
 
-  let processedAny = false
-  let remaining: UploadTask[] = []
+  for (const job of jobs) {
+    if (job.nextAt > now()) {
+      remaining.push(job)
+      continue
+    }
 
-  for (let index = 0; index < queue.length; index += 1) {
-    const task = queue[index]
+    // Skip if max retries exceeded
+    if (job.tries >= MAX_RETRIES) {
+      logger.warn('Upload job exceeded max retries', {
+        jobId: job.id,
+        tries: job.tries,
+        endpoint: job.endpoint,
+      })
+
+      telemetry.trackError(
+        new Error(`Upload failed after ${job.tries} tries: ${job.error || 'Unknown error'}`),
+        {
+          payload: {
+            jobId: job.id,
+            endpoint: job.endpoint,
+            tries: job.tries,
+          },
+        }
+      )
+
+      results.push({
+        success: false,
+        jobId: job.id,
+        error: job.error || 'Max retries exceeded',
+        tries: job.tries,
+      })
+      continue
+    }
+
     try {
-      await performUpload(task)
-      processedAny = true
+      const body = new FormData()
+      // Expo/React Native: File from URI
+      body.append('file', {
+        uri: job.uri,
+        name: 'upload',
+        type: 'application/octet-stream',
+      })
+
+      const startTime = Date.now()
+      const res = await fetch(job.endpoint, {
+        method: 'POST',
+        ...(job.headers && { headers: job.headers }),
+        body,
+      })
+
+      const duration = Date.now() - startTime
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+      }
+
+      // Success: drop job
+      logger.info('Upload job completed', {
+        jobId: job.id,
+        endpoint: job.endpoint,
+        tries: job.tries,
+        duration,
+      })
+
+      telemetry.trackPerformance({
+        name: 'upload_success',
+        duration,
+        metadata: {
+          jobId: job.id,
+          endpoint: job.endpoint,
+          tries: job.tries,
+        },
+      })
+
+      results.push({
+        success: true,
+        jobId: job.id,
+        tries: job.tries,
+      })
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
-      logger.warn('Failed to process upload task, preserving in queue', err)
-      remaining = queue.slice(index)
-      break
+      const tries = job.tries + 1
+      const backoffMs = Math.min(MAX_BACKOFF_MS, 2 ** Math.min(tries, MAX_RETRIES) * 1000)
+
+      logger.warn('Upload job failed, will retry', {
+        jobId: job.id,
+        endpoint: job.endpoint,
+        tries,
+        error: err.message,
+        nextRetry: new Date(now() + backoffMs).toISOString(),
+      })
+
+      telemetry.trackError(err, {
+        payload: {
+          jobId: job.id,
+          endpoint: job.endpoint,
+          tries,
+          nextRetry: now() + backoffMs,
+        },
+      })
+
+      remaining.push({
+        ...job,
+        tries,
+        nextAt: now() + backoffMs,
+        error: err.message,
+      })
+
+      results.push({
+        success: false,
+        jobId: job.id,
+        error: err.message,
+        tries,
+      })
     }
   }
 
-  if (remaining.length > 0) {
-    await writeQueue(remaining)
-  } else {
-    await AsyncStorage.removeItem(QUEUE_STORAGE_KEY)
+  save(remaining)
+
+  // Log summary
+  const successCount = results.filter(r => r.success).length
+  const failureCount = results.filter(r => !r.success).length
+  const pendingCount = remaining.length
+
+  if (successCount > 0 || failureCount > 0) {
+    logger.info('Upload flush completed', {
+      successCount,
+      failureCount,
+      pendingCount,
+    })
   }
 
-  return processedAny
+  return remaining.length === 0
 }
 
-export async function getPendingUploads(): Promise<UploadTask[]> {
-  return readQueue()
+/**
+ * Get upload queue status
+ */
+export function getUploadQueueStatus(): {
+  pending: number
+  jobs: UploadJob[]
+} {
+  const jobs = load()
+  const nowTime = now()
+  const pending = jobs.filter(job => job.nextAt <= nowTime)
+
+  return {
+    pending: pending.length,
+    jobs,
+  }
 }
 
-export async function clearUploads(): Promise<void> {
-  await AsyncStorage.removeItem(QUEUE_STORAGE_KEY)
+/**
+ * Clear failed uploads (jobs that exceeded max retries)
+ */
+export function clearFailedUploads(): number {
+  const jobs = load()
+  const active = jobs.filter(job => job.tries < MAX_RETRIES)
+  const cleared = jobs.length - active.length
+
+  if (cleared > 0) {
+    save(active)
+    logger.info('Cleared failed uploads', { count: cleared })
+  }
+
+  return cleared
 }

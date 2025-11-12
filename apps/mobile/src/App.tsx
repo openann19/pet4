@@ -1,23 +1,37 @@
-import { ErrorBoundary } from '@mobile/components/ErrorBoundary'
-import { OfflineIndicator } from '@mobile/components/OfflineIndicator'
-import { AppNavigator } from '@mobile/navigation/AppNavigator'
-import { QueryProvider } from '@mobile/providers/QueryProvider'
-import { colors } from '@mobile/theme/colors'
-import { initBackgroundUploads } from '@mobile/utils/background-uploads'
-import { createLogger } from '@mobile/utils/logger'
-import { errorTracking } from '@mobile/utils/error-tracking'
-import { AgeVerification, isAgeVerified } from '@mobile/components/compliance/AgeVerification'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { OfflineIndicator } from './components/OfflineIndicator'
+import { AppNavigator } from './navigation/AppNavigator'
+import { QueryProvider } from './providers/QueryProvider'
+import { colors } from './theme/colors'
+import { initBackgroundUploads } from './utils/background-uploads'
+import { createLogger } from './utils/logger'
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 const logger = createLogger('App')
 
+// Global error handler for production
+if (__DEV__ === false) {
+  const ErrorUtils = require('react-native').ErrorUtils
+  const origHandler = ErrorUtils?.getGlobalHandler?.()
+
+  ErrorUtils?.setGlobalHandler?.((error: Error, isFatal?: boolean) => {
+    logger.error('RNGlobalError', error, {
+      isFatal,
+      message: error?.message,
+      stack: error?.stack,
+    })
+
+    origHandler?.(error, isFatal)
+  })
+}
+
 export default function App(): React.JSX.Element {
   const [ageVerified, setAgeVerified] = useState<boolean | null>(null)
 
   useEffect(() => {
-    initBackgroundUploads().catch((error) => {
+    initBackgroundUploads().catch((error: unknown) => {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to initialize background uploads', err)
     })

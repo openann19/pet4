@@ -13,7 +13,7 @@ import Animated, {
   useSharedValue,
   withRepeat,
   withSequence,
-  withSpring
+  withSpring,
 } from 'react-native-reanimated'
 import { isTruthy } from '@petspark/shared';
 
@@ -77,10 +77,7 @@ export function MatchCelebration({
 
   const containerStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: scale.value },
-        { rotate: `${String(rotation.value ?? '')}deg` },
-      ],
+      transform: [{ scale: scale.value }, { rotate: `${rotation.value}deg` }],
       opacity: scale.value,
     }
   })
@@ -97,11 +94,7 @@ export function MatchCelebration({
 
   return (
     <Modal visible={visible} transparent animationType="none">
-      <Animated.View
-        entering={FadeIn}
-        exiting={FadeOut}
-        style={styles.backdrop}
-      >
+      <Animated.View entering={FadeIn} exiting={FadeOut} style={styles.backdrop}>
         <Animated.View style={[styles.container, containerStyle]}>
           <Animated.View style={[styles.pulse, pulseStyle]} />
           <Text style={styles.title}>🎉 It's a Match! 🎉</Text>
@@ -122,12 +115,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: 'var(--color-bg-overlay)',
     borderRadius: 24,
     padding: 32,
     alignItems: 'center',
     width: SCREEN_WIDTH - 80,
-    shadowColor: '#000',
+    shadowColor: 'var(--color-fg)',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
@@ -154,4 +147,3 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
 })
-

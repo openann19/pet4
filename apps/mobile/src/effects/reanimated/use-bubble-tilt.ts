@@ -1,69 +1,126 @@
-/**
- * Mobile Adapter: useBubbleTilt
- * Optimized bubble tilt animations for mobile platform
- */
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  interpolate,
+  Extrapolation,
+  type SharedValue,
+} from 'react-native-reanimated'
+import { useCallback } from 'react'
+import type { AnimatedStyle } from './animated-view'
 
-import { useBubbleTilt as useSharedBubbleTilt, type UseBubbleTiltOptions } from '@petspark/motion'
-import { useAnimatedStyle, type SharedValue } from 'react-native-reanimated'
-import { Gesture } from 'react-native-gesture-handler'
-import { useRef } from 'react'
-
-export type { UseBubbleTiltOptions }
+export interface UseBubbleTiltOptions {
+  maxTilt?: number
+  damping?: number
+  stiffness?: number
+  enabled?: boolean
+  perspective?: number
+}
 
 export interface UseBubbleTiltReturn {
   rotateX: SharedValue<number>
   rotateY: SharedValue<number>
   shadowDepth: SharedValue<number>
-  animatedStyle: ReturnType<typeof useAnimatedStyle>
+  animatedStyle: AnimatedStyle
   handleMove: (x: number, y: number, width: number, height: number) => void
   handleLeave: () => void
-  // Mobile-specific gesture handler factory
-  createGesture: (width: number, height: number) => ReturnType<typeof Gesture.Pan>
 }
 
-export function useBubbleTilt(
-  options: UseBubbleTiltOptions = {}
-): UseBubbleTiltReturn {
-  const shared = useSharedBubbleTilt(options)
-  const containerDimensions = useRef<{ width: number; height: number }>({ width: 200, height: 200 })
+const DEFAULT_MAX_TILT = 8
+const DEFAULT_DAMPING = 15
+const DEFAULT_STIFFNESS = 150
+const DEFAULT_PERSPECTIVE = 1000
 
-  // Convert shared style to mobile-compatible style
+export function useBubbleTilt(options: UseBubbleTiltOptions = {}): UseBubbleTiltReturn {
+  const {
+    maxTilt = DEFAULT_MAX_TILT,
+    damping = DEFAULT_DAMPING,
+    stiffness = DEFAULT_STIFFNESS,
+    enabled = true,
+    perspective = DEFAULT_PERSPECTIVE,
+  } = options
+
+  const rotateX = useSharedValue(0)
+  const rotateY = useSharedValue(0)
+  const shadowDepth = useSharedValue(0)
+
+  const handleMove = useCallback(
+    (x: number, y: number, width: number, height: number) => {
+      if (!enabled) {
+        return
+      }
+
+      const centerX = width / 2
+      const centerY = height / 2
+
+      const deltaX = x - centerX
+      const deltaY = y - centerY
+
+      const tiltX = interpolate(
+        deltaY,
+        [-height / 2, height / 2],
+        [maxTilt, -maxTilt],
+        Extrapolation.CLAMP
+      )
+
+      const tiltY = interpolate(
+        deltaX,
+        [-width / 2, width / 2],
+        [-maxTilt, maxTilt],
+        Extrapolation.CLAMP
+      )
+
+      rotateX.value = withSpring(tiltX, { damping, stiffness })
+      rotateY.value = withSpring(tiltY, { damping, stiffness })
+
+      const tiltMagnitude = Math.sqrt(tiltX * tiltX + tiltY * tiltY)
+      shadowDepth.value = withSpring(
+        interpolate(tiltMagnitude, [0, maxTilt], [0, 1], Extrapolation.CLAMP),
+        { damping, stiffness }
+      )
+    },
+    [enabled, maxTilt, damping, stiffness, rotateX, rotateY, shadowDepth]
+  )
+
+  const handleLeave = useCallback(() => {
+    if (!enabled) {
+      return
+    }
+    rotateX.value = withSpring(0, { damping, stiffness })
+    rotateY.value = withSpring(0, { damping, stiffness })
+    shadowDepth.value = withSpring(0, { damping, stiffness })
+  }, [enabled, damping, stiffness, rotateX, rotateY, shadowDepth])
+
   const animatedStyle = useAnimatedStyle(() => {
-    const sharedStyle = shared.animatedStyle.value as any
+    if (!enabled) {
+      return {
+        transform: [{ perspective }, { rotateX: '0deg' }, { rotateY: '0deg' }],
+      }
+    }
+
+    const shadowBlur = interpolate(shadowDepth.value, [0, 1], [4, 16], Extrapolation.CLAMP)
+    const shadowOpacity = interpolate(shadowDepth.value, [0, 1], [0.2, 0.4], Extrapolation.CLAMP)
 
     return {
-      transform: sharedStyle.transform,
-      shadowColor: 'rgba(0, 0, 0, 0.3)',
-      shadowOffset: {
-        width: 0,
-        height: sharedStyle.shadowDepth * 4,
-      },
-      shadowOpacity: sharedStyle.shadowOpacity,
-      shadowRadius: sharedStyle.shadowBlur,
-      elevation: sharedStyle.shadowBlur / 2, // Android elevation
+      transform: [
+        { perspective },
+        { rotateX: `${rotateX.value}deg` },
+        { rotateY: `${rotateY.value}deg` },
+      ],
+      shadowColor: 'rgba(0, 0, 0, 1)',
+      shadowOffset: { width: 0, height: shadowDepth.value * 4 },
+      shadowOpacity: shadowOpacity,
+      shadowRadius: shadowBlur,
+      elevation: shadowBlur,
     }
-  })
-
-  // Create pan gesture handler factory for mobile
-  const createGesture = (width: number, height: number) => {
-    containerDimensions.current = { width, height }
-    return Gesture.Pan()
-      .onUpdate((e) => {
-        shared.handleMove(e.x, e.y, width, height)
-      })
-      .onEnd(() => {
-        shared.handleLeave()
-      })
-  }
+  }) as AnimatedStyle
 
   return {
-    rotateX: shared.rotateX,
-    rotateY: shared.rotateY,
-    shadowDepth: shared.shadowDepth,
+    rotateX,
+    rotateY,
+    shadowDepth,
     animatedStyle,
-    handleMove: shared.handleMove,
-    handleLeave: shared.handleLeave,
-    createGesture,
+    handleMove,
+    handleLeave,
   }
 }
-

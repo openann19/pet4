@@ -35,12 +35,14 @@ class TelemetryService {
 
   constructor() {
     // Generate anonymous user ID (persisted across sessions)
-    this.getOrCreateAnonId().then((id) => {
-      this.userAnonId = id
-    }).catch(() => {
-      // Fallback on error
-      this.userAnonId = `anon_${String(Date.now() ?? '')}_${String(Math.random().toString(36).substring(2, 11) ?? '')}`
-    })
+    this.getOrCreateAnonId()
+      .then(id => {
+        this.userAnonId = id
+      })
+      .catch(() => {
+        // Fallback on error
+        this.userAnonId = `anon_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+      })
     this.buildId = this.getBuildId()
   }
 
@@ -70,8 +72,11 @@ class TelemetryService {
       logger.debug('Telemetry event', telemetryEvent)
     } else {
       // In production, send to analytics service
-      this.sendToAnalytics(telemetryEvent).catch((err) => {
-        logger.error('Failed to send telemetry event', err instanceof Error ? err : new Error(String(err)))
+      this.sendToAnalytics(telemetryEvent).catch(err => {
+        logger.error(
+          'Failed to send telemetry event',
+          err instanceof Error ? err : new Error(String(err))
+        )
       })
     }
 
@@ -84,7 +89,9 @@ class TelemetryService {
   private async sendToAnalytics(event: TelemetryEvent): Promise<void> {
     try {
       // Send to analytics service endpoint
-      const analyticsEndpoint = (typeof process !== 'undefined' && process.env?.['EXPO_PUBLIC_ANALYTICS_ENDPOINT']) || '/api/analytics/events'
+      const analyticsEndpoint =
+        (typeof process !== 'undefined' && process.env?.['EXPO_PUBLIC_ANALYTICS_ENDPOINT']) ||
+        '/api/analytics/events'
       await fetch(analyticsEndpoint, {
         method: 'POST',
         headers: {
@@ -174,11 +181,7 @@ class TelemetryService {
   /**
    * Track user action
    */
-  trackAction(
-    actionName: string,
-    screen?: string,
-    params?: Record<string, unknown>
-  ): void {
+  trackAction(actionName: string, screen?: string, params?: Record<string, unknown>): void {
     const payload: Record<string, unknown> = {
       action: actionName,
       ...(params !== undefined ? { ...params } : {}),
@@ -249,4 +252,3 @@ export function useScreenTracking(screenName: string): void {
     telemetry.trackScreenView(screenName)
   }, [screenName])
 }
-

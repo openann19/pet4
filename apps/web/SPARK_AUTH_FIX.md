@@ -3,11 +3,13 @@
 ## Problem
 
 The application was experiencing 401 Unauthorized errors when trying to access Spark backend APIs:
+
 - `/_spark/kv/*` - Key-value storage operations
 - `/_spark/user` - User authentication
 - `/_spark/llm` - LLM service
 
 These errors occurred because:
+
 1. The app requires GitHub Spark authentication
 2. In local development without Spark authentication, all API calls fail with 401 errors
 3. The app was not gracefully handling these authentication failures
@@ -15,6 +17,7 @@ These errors occurred because:
 ## Solution
 
 Created a Spark API patch that:
+
 1. Intercepts all Spark API calls (`window.spark.kv`, `window.spark.user`, `window.spark.llm`)
 2. Catches 401 authentication errors
 3. Falls back to `localStorage` for development
@@ -25,11 +28,13 @@ Created a Spark API patch that:
 ### 1. `src/lib/spark-patch.ts`
 
 This file patches the Spark APIs to:
+
 - **KV Storage**: Falls back to localStorage when Spark KV fails with 401 errors
 - **User API**: Returns a guest user object when Spark user API fails with 401 errors
 - **LLM API**: Provides a clear error message when LLM service is unavailable
 
 The patch:
+
 - Automatically detects authentication errors (401 status codes)
 - Saves successful Spark reads to localStorage for fallback
 - Always saves to localStorage as a backup
@@ -44,12 +49,13 @@ An alternative utility module (not currently used) that provides wrapper functio
 The patch is automatically loaded in `src/main.tsx`:
 
 ```typescript
-import "@github/spark/spark"
+import '@github/spark/spark';
 // Patch Spark APIs to handle auth errors gracefully
-import './lib/spark-patch'
+import './lib/spark-patch';
 ```
 
 The patch initializes automatically when:
+
 1. The module is imported
 2. The DOM is ready
 3. Spark APIs become available
@@ -59,11 +65,13 @@ The patch initializes automatically when:
 ### KV Storage Fallback
 
 When `window.spark.kv.get()` fails with 401:
+
 1. Catches the error
 2. Checks localStorage for the key (with `spark-fallback:` prefix)
 3. Returns the cached value or `undefined`
 
 When `window.spark.kv.set()` fails with 401:
+
 1. Saves to localStorage anyway
 2. Logs a warning
 3. Continues without error
@@ -71,6 +79,7 @@ When `window.spark.kv.set()` fails with 401:
 ### User API Fallback
 
 When `window.spark.user()` fails with 401:
+
 1. Returns a guest user object with:
    - `id`: `'guest-' + timestamp`
    - `login`: `null`
@@ -81,12 +90,14 @@ When `window.spark.user()` fails with 401:
 ### LLM API Fallback
 
 When `window.spark.llm()` fails with 401:
+
 1. Throws a user-friendly error message
 2. Allows the app to handle the error gracefully
 
 ## Development Mode
 
 In development mode (`import.meta.env.DEV` or `localhost`), the patch:
+
 - Shows console warnings when falling back to localStorage
 - Displays a helpful message if Spark is not available after 5 seconds
 - Continues to work with localStorage fallback
@@ -94,6 +105,7 @@ In development mode (`import.meta.env.DEV` or `localhost`), the patch:
 ## Production
 
 In production:
+
 - The patch still works but shows fewer warnings
 - If Spark authentication is properly configured, it will use Spark APIs
 - Falls back to localStorage only on authentication errors
@@ -103,6 +115,7 @@ In production:
 To test the fix:
 
 1. **Start the dev server**:
+
    ```bash
    npm run dev
    ```
@@ -162,4 +175,3 @@ LLM requires Spark authentication. The patch will provide a clear error message,
 - `BACKEND_INTEGRATION.md` - Backend architecture documentation
 - `ENV.example` - Environment configuration
 - `REAL_IMPLEMENTATION_SUMMARY.md` - Implementation details
-

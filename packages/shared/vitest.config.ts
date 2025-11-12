@@ -11,15 +11,9 @@ export default defineConfig({
         statements: 95,
         branches: 95,
         functions: 95,
-        lines: 95
+        lines: 95,
       },
-      exclude: [
-        '**/*.test.ts',
-        '**/*.test.tsx',
-        '**/dist/**',
-        '**/node_modules/**'
-      ]
-    }
-  }
+      exclude: ['**/*.test.ts', '**/*.test.tsx', '**/dist/**', '**/node_modules/**'],
+    },
+  },
 })
-

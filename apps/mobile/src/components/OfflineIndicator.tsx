@@ -22,9 +22,7 @@ export function OfflineIndicator(): React.JSX.Element | null {
       exiting={FadeOut.duration(300)}
       style={styles.container}
     >
-      <Text style={styles.text}>
-        📡 You're offline. Changes will sync when connected.
-      </Text>
+      <Text style={styles.text}>📡 You're offline. Changes will sync when connected.</Text>
     </Animated.View>
   )
 }
@@ -38,10 +36,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    color: '#fff',
+    color: 'var(--color-bg-overlay)',
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
   },
 })
-

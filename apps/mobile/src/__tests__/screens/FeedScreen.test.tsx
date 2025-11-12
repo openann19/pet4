@@ -44,4 +44,3 @@ describe('FeedScreen', () => {
     expect(getByText('Test Pet')).toBeTruthy()
   })
 })
-

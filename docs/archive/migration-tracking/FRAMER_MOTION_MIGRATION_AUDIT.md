@@ -15,42 +15,42 @@
 
 ### Statistics
 
-| Metric | Count | Percentage |
-|--------|-------|------------|
-| Total TSX files in project | 395 | 100% |
-| Files with motion usage | 115 | 29% |
-| Files already migrated | ~20 | 17% |
-| Files needing migration | 95 | 83% |
+| Metric                     | Count | Percentage |
+| -------------------------- | ----- | ---------- |
+| Total TSX files in project | 395   | 100%       |
+| Files with motion usage    | 115   | 29%        |
+| Files already migrated     | ~20   | 17%        |
+| Files needing migration    | 95    | 83%        |
 
 ### Breakdown by Priority
 
-| Priority | Count | Est. Hours | Description |
-|----------|-------|------------|-------------|
-| **P0 (Critical)** | 19 | ~85h | Core user-facing components, critical path |
-| **P1 (High)** | 41 | ~123h | Important features, admin panels, enhanced components |
-| **P2 (Low)** | 55 | ~165h | Nice-to-have features, utilities, low-traffic pages |
-| **Total** | **115** | **~373h** | Complete migration estimate |
+| Priority          | Count   | Est. Hours | Description                                           |
+| ----------------- | ------- | ---------- | ----------------------------------------------------- |
+| **P0 (Critical)** | 19      | ~85h       | Core user-facing components, critical path            |
+| **P1 (High)**     | 41      | ~123h      | Important features, admin panels, enhanced components |
+| **P2 (Low)**      | 55      | ~165h      | Nice-to-have features, utilities, low-traffic pages   |
+| **Total**         | **115** | **~373h**  | Complete migration estimate                           |
 
 ### Breakdown by Category
 
-| Category | Count | P0 | P1 | P2 | Est. Hours |
-|----------|-------|----|----|----|------------|
-| Core Components | 8 | 5 | 3 | 0 | 27h |
-| Views | 10 | 5 | 3 | 2 | 31h |
-| Enhanced Components | 17 | 7 | 5 | 5 | 53h |
-| Admin Panels | 11 | 0 | 11 | 0 | 33h |
-| Stories | 10 | 0 | 6 | 4 | 29h |
-| Adoption | 5 | 0 | 5 | 0 | 16h |
-| Community | 6 | 0 | 2 | 4 | 16h |
-| Auth | 5 | 0 | 4 | 1 | 13h |
-| Verification | 4 | 0 | 0 | 4 | 10h |
-| Maps | 3 | 0 | 0 | 3 | 9h |
-| Playdate | 3 | 0 | 0 | 3 | 8h |
-| Chat Components | 5 | 0 | 0 | 5 | 15h |
-| Other Components | 25 | 1 | 2 | 22 | 74h |
-| Lost & Found | 1 | 0 | 0 | 1 | 3h |
-| Notifications | 1 | 1 | 0 | 0 | 3h |
-| Streaming | 1 | 0 | 0 | 1 | 3h |
+| Category            | Count | P0  | P1  | P2  | Est. Hours |
+| ------------------- | ----- | --- | --- | --- | ---------- |
+| Core Components     | 8     | 5   | 3   | 0   | 27h        |
+| Views               | 10    | 5   | 3   | 2   | 31h        |
+| Enhanced Components | 17    | 7   | 5   | 5   | 53h        |
+| Admin Panels        | 11    | 0   | 11  | 0   | 33h        |
+| Stories             | 10    | 0   | 6   | 4   | 29h        |
+| Adoption            | 5     | 0   | 5   | 0   | 16h        |
+| Community           | 6     | 0   | 2   | 4   | 16h        |
+| Auth                | 5     | 0   | 4   | 1   | 13h        |
+| Verification        | 4     | 0   | 0   | 4   | 10h        |
+| Maps                | 3     | 0   | 0   | 3   | 9h         |
+| Playdate            | 3     | 0   | 0   | 3   | 8h         |
+| Chat Components     | 5     | 0   | 0   | 5   | 15h        |
+| Other Components    | 25    | 1   | 2   | 22  | 74h        |
+| Lost & Found        | 1     | 0   | 0   | 1   | 3h         |
+| Notifications       | 1     | 1   | 0   | 0   | 3h         |
+| Streaming           | 1     | 0   | 0   | 1   | 3h         |
 
 ## Migration Phases
 
@@ -59,6 +59,7 @@
 **Focus**: Core user-facing components that are critical to the user experience.
 
 **Files**:
+
 - Core Components (5): CreatePetDialog, AuthScreen, ChatWindowNew, PetDetailDialog, MatchCelebration
 - Views (5): MatchesView, AdoptionView, AdoptionMarketplaceView, LostFoundView, MapView
 - Enhanced Components (7): EnhancedPetDetailView, EnhancedCarousel, EnhancedCard, EnhancedButton, UltraButton, PremiumCard, SmartSearch, NotificationCenter
@@ -72,6 +73,7 @@
 **Focus**: Important features, admin panels, and enhanced components.
 
 **Categories**:
+
 - Core Components (3): WelcomeScreen, LoadingState, WelcomeModal
 - Views (3): NotificationsView, SavedPostsView, UserPostsView
 - Enhanced Components (5): DetailedPetAnalytics, AnimatedBadge, SmartToast, TrustBadges, ProgressiveImage
@@ -88,6 +90,7 @@
 **Focus**: Nice-to-have features, utilities, and low-traffic pages.
 
 **Categories**:
+
 - Views (2): DiscoverView (native), DiscoverView
 - Enhanced Components (5): AdvancedCard, etc.
 - Stories (4): SaveToHighlightDialog, StoryFilterSelector, StoryTemplateSelector, StoryViewer
@@ -107,10 +110,11 @@
 ### Common Replacements
 
 1. **MotionView → AnimatedView**
+
    ```typescript
    // Before
    <MotionView initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-   
+
    // After
    const opacity = useSharedValue(0)
    useEffect(() => { opacity.value = withSpring(1) }, [])
@@ -118,38 +122,42 @@
    ```
 
 2. **MotionText → AnimatedText**
+
    ```typescript
    // Before
    <MotionText animate={{ opacity: 1 }}>
-   
+
    // After
    <AnimatedText style={animatedStyle}>
    ```
 
 3. **Presence → Conditional Rendering**
+
    ```typescript
    // Before
    <Presence visible={isVisible}>
-   
+
    // After
    {isVisible && <AnimatedView style={animatedStyle}>}
    ```
 
 4. **usePressBounce → useBounceOnTap**
+
    ```typescript
    // Before
    import { usePressBounce } from '@petspark/motion'
-   
+
    // After
    import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
    ```
 
 5. **Haptic → haptics.trigger**
+
    ```typescript
    // Before
    import { haptic } from '@petspark/motion'
    haptic('light')
-   
+
    // After
    import { haptics } from '@/effects/chat/core/haptic-manager'
    haptics.trigger('light')
@@ -207,4 +215,3 @@ All migrations must pass:
 - `FRAMER_MOTION_MIGRATION_DETAILED.md` - Complete file list with priorities
 - `scripts/categorize-motion-files.mjs` - Regenerate detailed report
 - `FRAMER_MOTION_MIGRATION_PROGRESS.md` - Previous migration status
-

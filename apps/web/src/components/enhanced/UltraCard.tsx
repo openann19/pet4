@@ -13,6 +13,7 @@ import {
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
 import { type HTMLAttributes, type ReactNode } from 'react';
+import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface UltraCardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -38,12 +39,13 @@ export function UltraCard({
   className,
   ...props
 }: UltraCardProps) {
-  const reveal = useUltraCardReveal({
-    index,
-    enabled: enableReveal,
-    delay: 0,
-    rotationIntensity: 12,
-  });
+    const _uiConfig = useUIConfig();
+    const reveal = useUltraCardReveal({
+        index,
+        enabled: enableReveal,
+        delay: 0,
+        rotationIntensity: 12,
+      });
 
   const magnetic = useMagneticHover({
     strength: 0.2,
@@ -70,12 +72,12 @@ export function UltraCard({
   });
 
   const handleTiltMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!enableTilt) return
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    tilt.handleMove(x, y, rect.width, rect.height)
-  }
+    if (!enableTilt) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    tilt.handleMove(x, y, rect.width, rect.height);
+  };
 
   const combinedStyle = {
     ...reveal.animatedStyle,
@@ -96,7 +98,9 @@ export function UltraCard({
           onMouseLeave={enableTilt ? tilt.handleLeave : undefined}
           className="relative"
         >
-          <AnimatedView style={enableHoverLift ? hoverLift.animatedStyle : (enableTilt ? tilt.animatedStyle : {})}>
+          <AnimatedView
+            style={enableHoverLift ? hoverLift.animatedStyle : enableTilt ? tilt.animatedStyle : {}}
+          >
             <div
               className={cn(
                 'bg-card border border-border rounded-xl shadow-lg transition-shadow duration-300',

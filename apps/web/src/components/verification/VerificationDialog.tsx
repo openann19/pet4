@@ -1,25 +1,25 @@
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Progress } from '@/components/ui/progress'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { useStorage } from '@/hooks/useStorage'
-import { cn } from '@/lib/utils'
-import { VerificationService } from '@/lib/verification-service'
+} from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useStorage } from '@/hooks/use-storage';
+import { cn } from '@/lib/utils';
+import { VerificationService } from '@/lib/verification-service';
 import {
   DOCUMENT_TYPE_DESCRIPTIONS,
   DOCUMENT_TYPE_LABELS,
   VERIFICATION_REQUIREMENTS,
   type DocumentType,
   type VerificationLevel,
-  type VerificationRequest
-} from '@/lib/verification-types'
+  type VerificationRequest,
+} from '@/lib/verification-types';
 import {
   Certificate,
   CheckCircle,
@@ -29,203 +29,214 @@ import {
   Star,
   TrendUp,
   UploadSimple,
-  XCircle
-} from '@phosphor-icons/react'
-import { motion } from '@petspark/motion'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { DocumentUploadCard } from './DocumentUploadCard'
-import { VerificationLevelSelector } from './VerificationLevelSelector'
-import { isTruthy, isDefined } from '@petspark/shared';
+  XCircle,
+} from '@phosphor-icons/react';
+import { motion, MotionView } from '@petspark/motion';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { DocumentUploadCard } from './DocumentUploadCard';
+import { VerificationLevelSelector } from './VerificationLevelSelector';
 
 interface VerificationDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  petId: string
-  userId: string
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  petId: string;
+  userId: string;
 }
 
-export function VerificationDialog({
-  open,
-  onOpenChange,
-  petId,
-  userId
-}: VerificationDialogProps) {
-  const [verificationRequests, setVerificationRequests] = useStorage<Record<string, VerificationRequest>>('verification-requests', {})
-  const [currentRequest, setCurrentRequest] = useState<VerificationRequest | null>(null)
-  const [selectedLevel, setSelectedLevel] = useState<VerificationLevel>('basic')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSimulatingReview, setIsSimulatingReview] = useState(false)
+export function VerificationDialog({ open, onOpenChange, petId, userId }: VerificationDialogProps) {
+  const [verificationRequests, setVerificationRequests] = useStorage<
+    Record<string, VerificationRequest>
+  >('verification-requests', {});
+  const [currentRequest, setCurrentRequest] = useState<VerificationRequest | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<VerificationLevel>('basic');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSimulatingReview, setIsSimulatingReview] = useState(false);
 
-  const existingRequest = verificationRequests?.[petId]
-  const activeRequest = currentRequest || existingRequest
+  const existingRequest = verificationRequests?.[petId];
+  const activeRequest = currentRequest ?? existingRequest;
 
-  const requirements = VERIFICATION_REQUIREMENTS[selectedLevel]
-  const completionPercentage = activeRequest 
-    ? VerificationService.calculateCompletionPercentage(activeRequest, requirements.requiredDocuments)
-    : 0
+  const requirements = VERIFICATION_REQUIREMENTS[selectedLevel];
+  const completionPercentage = activeRequest
+    ? VerificationService.calculateCompletionPercentage(
+        activeRequest,
+        requirements.requiredDocuments
+      )
+    : 0;
 
-  const handleStartVerification = async () => {
-    const request = await VerificationService.createVerificationRequest(
-      petId,
-      userId,
-      selectedLevel
-    )
-    setCurrentRequest(request)
+  const handleStartVerification = () => {
+    const request = VerificationService.createVerificationRequest(petId, userId, selectedLevel);
+    setCurrentRequest(request);
     toast.success('Verification process started!', {
-      description: `Selected ${String(selectedLevel ?? '')} verification level`
-    })
-  }
+      description: `Selected ${selectedLevel} verification level`,
+    });
+  };
 
   const handleDocumentUpload = async (file: File, documentType: DocumentType) => {
-    if (!activeRequest) return
+    if (!activeRequest) return;
 
     if (!VerificationService.validateFileSize(file)) {
       toast.error('File too large', {
-        description: 'Maximum file size is 10MB'
-      })
-      return
+        description: 'Maximum file size is 10MB',
+      });
+      return;
     }
 
     if (!VerificationService.validateFileType(file)) {
       toast.error('Invalid file type', {
-        description: 'Only JPG, PNG, WEBP, and PDF files are allowed'
-      })
-      return
+        description: 'Only JPG, PNG, WEBP, and PDF files are allowed',
+      });
+      return;
     }
 
     try {
-      const document = await VerificationService.uploadDocument(file, documentType, activeRequest.id)
+      const document = await VerificationService.uploadDocument(
+        file,
+        documentType,
+        activeRequest.id
+      );
       const updatedRequest = {
         ...activeRequest,
-        documents: [...activeRequest.documents, document]
-      }
+        documents: [...activeRequest.documents, document],
+      };
 
-      setCurrentRequest(updatedRequest)
-      setVerificationRequests(prev => ({
+      setCurrentRequest(updatedRequest);
+      setVerificationRequests((prev) => ({
         ...prev,
-        [petId]: updatedRequest
-      }))
+        [petId]: updatedRequest,
+      }));
 
       toast.success('Document uploaded!', {
-        description: `${String(DOCUMENT_TYPE_LABELS[documentType] ?? '')} has been uploaded successfully`
-      })
+        description: `${DOCUMENT_TYPE_LABELS[documentType]} has been uploaded successfully`,
+      });
     } catch {
       toast.error('Upload failed', {
-        description: 'Failed to upload document. Please try again.'
-      })
+        description: 'Failed to upload document. Please try again.',
+      });
     }
-  }
+  };
 
   const handleDeleteDocument = async (documentId: string) => {
-    if (!activeRequest) return
+    if (!activeRequest) return;
 
-    const doc = activeRequest.documents.find(d => d.id === documentId)
-    if (!doc) return
+    const doc = activeRequest.documents.find((d) => d.id === documentId);
+    if (!doc) return;
 
-    await VerificationService.deleteDocument(doc)
+    await VerificationService.deleteDocument(doc);
 
     const updatedRequest = {
       ...activeRequest,
-      documents: activeRequest.documents.filter(d => d.id !== documentId)
-    }
+      documents: activeRequest.documents.filter((d) => d.id !== documentId),
+    };
 
-    setCurrentRequest(updatedRequest)
-    setVerificationRequests(prev => ({
+    setCurrentRequest(updatedRequest);
+    setVerificationRequests((prev) => ({
       ...prev,
-      [petId]: updatedRequest
-    }))
+      [petId]: updatedRequest,
+    }));
 
-    toast.success('Document removed')
-  }
+    toast.success('Document removed');
+  };
 
-  const handleSubmitForReview = async () => {
-    if (!activeRequest) return
+  const handleSubmitForReview = () => {
+    if (!activeRequest) return;
 
     if (completionPercentage < 100) {
       toast.error('Incomplete submission', {
-        description: 'Please upload all required documents before submitting'
-      })
-      return
+        description: 'Please upload all required documents before submitting',
+      });
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      const submittedRequest = await VerificationService.submitForReview(activeRequest)
-      
-      setCurrentRequest(submittedRequest)
-      setVerificationRequests(prev => ({
+      const submittedRequest = VerificationService.submitForReview(activeRequest);
+
+      setCurrentRequest(submittedRequest);
+      setVerificationRequests((prev) => ({
         ...prev,
-        [petId]: submittedRequest
-      }))
+        [petId]: submittedRequest,
+      }));
 
       toast.success('Submitted for review!', {
-        description: `Your verification request has been submitted. Expected review time: ${String(requirements.estimatedReviewTime ?? '')}`
-      })
+        description: `Your verification request has been submitted. Expected review time: ${requirements.estimatedReviewTime}`,
+      });
     } catch {
       toast.error('Submission failed', {
-        description: 'Failed to submit verification request. Please try again.'
-      })
+        description: 'Failed to submit verification request. Please try again.',
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const handleSimulateReview = async (approve: boolean) => {
-    if (!activeRequest || activeRequest.status !== 'pending') return
+  const handleSimulateReview = (approve: boolean) => {
+    if (activeRequest?.status !== 'pending') return;
 
-    setIsSimulatingReview(true)
+    setIsSimulatingReview(true);
 
     try {
-      const reviewedRequest = await VerificationService.processReview(activeRequest, approve)
-      
-      setCurrentRequest(reviewedRequest)
-      setVerificationRequests(prev => ({
+      const reviewedRequest = VerificationService.processReview(activeRequest, approve);
+
+      setCurrentRequest(reviewedRequest);
+      setVerificationRequests((prev) => ({
         ...prev,
-        [petId]: reviewedRequest
-      }))
+        [petId]: reviewedRequest,
+      }));
 
       if (isTruthy(approve)) {
         toast.success('Verification approved! 🎉', {
-          description: `Your pet has been verified with a trust score of ${String(reviewedRequest.trustScore ?? '')}/100`
-        })
+          description: `Your pet has been verified with a trust score of ${reviewedRequest.trustScore}/100`,
+        });
       } else {
         toast.error('Verification requires attention', {
-          description: reviewedRequest.reviewNotes || 'Please review and resubmit documents'
-        })
+          description: reviewedRequest.reviewNotes ?? 'Please review and resubmit documents',
+        });
       }
     } finally {
-      setIsSimulatingReview(false)
+      setIsSimulatingReview(false);
     }
-  }
+  };
 
   const handleClose = () => {
-    setCurrentRequest(null)
-    onOpenChange(false)
-  }
+    setCurrentRequest(null);
+    onOpenChange(false);
+  };
 
   const renderStatusBadge = () => {
-    if (!activeRequest) return null
+    if (!activeRequest) return null;
 
     const statusConfig = {
       unverified: { icon: Info, label: 'Not Started', color: 'bg-muted text-muted-foreground' },
-      pending: { icon: Clock, label: 'Under Review', color: 'bg-secondary text-secondary-foreground' },
-      verified: { icon: CheckCircle, label: 'Verified', color: 'bg-primary text-primary-foreground' },
-      rejected: { icon: XCircle, label: 'Needs Attention', color: 'bg-destructive text-destructive-foreground' },
-      expired: { icon: Clock, label: 'Expired', color: 'bg-muted text-muted-foreground' }
-    }
+      pending: {
+        icon: Clock,
+        label: 'Under Review',
+        color: 'bg-secondary text-secondary-foreground',
+      },
+      verified: {
+        icon: CheckCircle,
+        label: 'Verified',
+        color: 'bg-primary text-primary-foreground',
+      },
+      rejected: {
+        icon: XCircle,
+        label: 'Needs Attention',
+        color: 'bg-destructive text-destructive-foreground',
+      },
+      expired: { icon: Clock, label: 'Expired', color: 'bg-muted text-muted-foreground' },
+    };
 
-    const config = statusConfig[activeRequest.status]
-    const Icon = config.icon
+    const config = statusConfig[activeRequest.status];
+    const Icon = config.icon;
 
     return (
       <Badge className={cn('gap-1.5', config.color)}>
         <Icon size={14} weight="bold" />
         {config.label}
       </Badge>
-    )
-  }
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -268,7 +279,9 @@ export function VerificationDialog({
                 <div className="mt-6 p-4 rounded-xl bg-muted/50 border border-border">
                   <h4 className="font-semibold mb-3 flex items-center gap-2">
                     <Star size={18} weight="fill" className="text-accent" />
-                    Benefits of {selectedLevel.charAt(0).toUpperCase() + selectedLevel.slice(1)} Verification
+                    Benefits of {selectedLevel.charAt(0).toUpperCase() +
+                      selectedLevel.slice(1)}{' '}
+                    Verification
                   </h4>
                   <ul className="space-y-2">
                     {requirements.benefits.map((benefit, index) => (
@@ -279,18 +292,18 @@ export function VerificationDialog({
                         transition={{ delay: index * 0.05 }}
                         className="flex items-start gap-2 text-sm text-muted-foreground"
                       >
-                        <CheckCircle size={16} weight="fill" className="text-primary mt-0.5 shrink-0" />
+                        <CheckCircle
+                          size={16}
+                          weight="fill"
+                          className="text-primary mt-0.5 shrink-0"
+                        />
                         <span>{benefit}</span>
                       </motion.li>
                     ))}
                   </ul>
                 </div>
 
-                <Button
-                  onClick={handleStartVerification}
-                  className="w-full mt-6"
-                  size="lg"
-                >
+                <Button onClick={handleStartVerification} className="w-full mt-6" size="lg">
                   <Certificate size={20} weight="bold" className="mr-2" />
                   Start Verification Process
                 </Button>
@@ -298,22 +311,19 @@ export function VerificationDialog({
             )}
 
             {activeRequest && (
-              <MotionView
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="space-y-6"
-              >
+              <MotionView initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                 <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-medium text-foreground/80">Verification Progress</span>
+                    <span className="text-sm font-medium text-foreground/80">
+                      Verification Progress
+                    </span>
                     <span className="text-sm font-bold text-primary">{completionPercentage}%</span>
                   </div>
                   <Progress value={completionPercentage} className="h-2" />
                   <p className="text-xs text-muted-foreground mt-2">
                     {completionPercentage === 100
                       ? 'All required documents uploaded!'
-                      : `${String(requirements.requiredDocuments.length - Math.ceil((completionPercentage / 100) * requirements.requiredDocuments.length) ?? '')} required document(s) remaining`
-                    }
+                      : `${requirements.requiredDocuments.length - Math.ceil((completionPercentage / 100) * requirements.requiredDocuments.length)} required document(s) remaining`}
                   </p>
                 </div>
 
@@ -349,11 +359,16 @@ export function VerificationDialog({
                     className="p-4 rounded-xl bg-destructive/10 border border-destructive/30"
                   >
                     <div className="flex items-start gap-3">
-                      <XCircle size={24} weight="fill" className="text-destructive shrink-0 mt-0.5" />
+                      <XCircle
+                        size={24}
+                        weight="fill"
+                        className="text-destructive shrink-0 mt-0.5"
+                      />
                       <div>
                         <h4 className="font-semibold mb-1">Verification Requires Attention</h4>
                         <p className="text-sm text-muted-foreground">
-                          {activeRequest.reviewNotes || 'Some documents need to be reviewed and resubmitted.'}
+                          {activeRequest.reviewNotes ??
+                            'Some documents need to be reviewed and resubmitted.'}
                         </p>
                       </div>
                     </div>
@@ -363,7 +378,10 @@ export function VerificationDialog({
                 <div className="space-y-3">
                   <h4 className="font-semibold">Required Documents</h4>
                   {requirements.requiredDocuments.map((docType) => {
-                    const existingDoc = VerificationService.getDocumentByType(activeRequest, docType)
+                    const existingDoc = VerificationService.getDocumentByType(
+                      activeRequest,
+                      docType
+                    );
                     return (
                       <DocumentUploadCard
                         key={docType}
@@ -371,11 +389,17 @@ export function VerificationDialog({
                         label={DOCUMENT_TYPE_LABELS[docType]}
                         description={DOCUMENT_TYPE_DESCRIPTIONS[docType]}
                         {...(existingDoc && { existingDocument: existingDoc })}
-                        onUpload={(file) => handleDocumentUpload(file, docType)}
-                        onDelete={handleDeleteDocument}
-                        disabled={activeRequest.status === 'verified' || activeRequest.status === 'pending'}
+                        onUpload={(file) => {
+                          void handleDocumentUpload(file, docType);
+                        }}
+                        onDelete={(documentId) => {
+                          void handleDeleteDocument(documentId);
+                        }}
+                        disabled={
+                          activeRequest.status === 'verified' || activeRequest.status === 'pending'
+                        }
                       />
-                    )
+                    );
                   })}
                 </div>
 
@@ -383,7 +407,10 @@ export function VerificationDialog({
                   <div className="space-y-3">
                     <h4 className="font-semibold text-muted-foreground">Optional Documents</h4>
                     {requirements.optionalDocuments.map((docType) => {
-                      const existingDoc = VerificationService.getDocumentByType(activeRequest, docType)
+                      const existingDoc = VerificationService.getDocumentByType(
+                        activeRequest,
+                        docType
+                      );
                       return (
                         <DocumentUploadCard
                           key={docType}
@@ -391,12 +418,19 @@ export function VerificationDialog({
                           label={DOCUMENT_TYPE_LABELS[docType]}
                           description={DOCUMENT_TYPE_DESCRIPTIONS[docType]}
                           {...(existingDoc && { existingDocument: existingDoc })}
-                          onUpload={(file) => handleDocumentUpload(file, docType)}
-                          onDelete={handleDeleteDocument}
+                          onUpload={(file) => {
+                            void handleDocumentUpload(file, docType);
+                          }}
+                          onDelete={(documentId) => {
+                            void handleDeleteDocument(documentId);
+                          }}
                           optional
-                          disabled={activeRequest.status === 'verified' || activeRequest.status === 'pending'}
+                          disabled={
+                            activeRequest.status === 'verified' ||
+                            activeRequest.status === 'pending'
+                          }
                         />
-                      )
+                      );
                     })}
                   </div>
                 )}
@@ -450,5 +484,5 @@ export function VerificationDialog({
         </ScrollArea>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

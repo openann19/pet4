@@ -1,9 +1,9 @@
 /**
  * Skia Surface Cache for Chat Effects
- * 
+ *
  * Caches offscreen surfaces for reuse across frames.
  * Pre-rasterizes heavy layers and reuses textures to improve performance.
- * 
+ *
  * Location: apps/mobile/src/effects/chat/core/surface-cache.ts
  */
 
@@ -32,7 +32,7 @@ class SurfaceCache {
   private cache: Map<string, CachedSurface> = new Map()
   private maxCacheSize: number = 10 // Maximum number of cached surfaces
   private maxAgeMs: number = 60000 // 60 seconds max age
-  private cleanupInterval: number | null = null
+  private cleanupInterval: ReturnType<typeof setInterval> | null = null
 
   constructor() {
     // Start cleanup interval (clean up every 10 seconds)
@@ -41,7 +41,7 @@ class SurfaceCache {
 
   /**
    * Get or create a cached surface
-   * 
+   *
    * @param key - Unique key for the surface
    * @param width - Surface width
    * @param height - Surface height
@@ -149,7 +149,7 @@ class SurfaceCache {
     // Clean up every 10 seconds
     this.cleanupInterval = setInterval(() => {
       this.cleanupOldSurfaces()
-    }, 10000) as unknown as number
+    }, 10000)
   }
 
   /**
@@ -232,4 +232,3 @@ export function getSurfaceCache(): SurfaceCache {
 export function useSurfaceCache(): SurfaceCache {
   return getSurfaceCache()
 }
-

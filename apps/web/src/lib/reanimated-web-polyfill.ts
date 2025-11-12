@@ -4,8 +4,7 @@
  */
 
 import type { CSSProperties } from 'react';
-import { useCallback, useMemo, useRef } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 // Type definitions
 export interface SharedValue<T = number> {
@@ -67,12 +66,12 @@ export const Easing = {
   },
   out: (easing: (t: number) => number) => (t: number) => 1 - easing(1 - t),
   in: (easing: (t: number) => number) => easing,
-  elastic: (amplitude: number = 1) => {
+  elastic: (amplitude = 1) => {
     return (t: number) => {
       if (t === 0 || t === 1) return t;
       const p = 0.3;
       const s = p / 4;
-      const result = Math.pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / p) * amplitude + 1;
+      const result = Math.pow(2, -10 * t) * Math.sin(((t - s) * (2 * Math.PI)) / p) * amplitude + 1;
       return Math.max(0, Math.min(1, result));
     };
   },
@@ -83,20 +82,36 @@ export function useSharedValue<T>(initialValue: T): SharedValue<T> {
   const ref = useRef<SharedValue<T>>({
     value: initialValue,
   });
-  
+
   return ref.current;
 }
 
 // Animation functions
-export function withSpring(toValue: number, _config?: WithSpringConfig): number {
+export function withSpring(
+  toValue: number,
+  _config?: WithSpringConfig,
+  _callback?: (finished?: boolean) => void
+): number {
   // In web polyfill, we return the target value
   // The actual animation is handled by CSS transitions
+  // Callback is executed immediately in web polyfill
+  if (_callback) {
+    setTimeout(() => _callback(true), 0);
+  }
   return toValue;
 }
 
-export function withTiming(toValue: number, _config?: WithTimingConfig): number {                                                                               
+export function withTiming(
+  toValue: number,
+  _config?: WithTimingConfig,
+  _callback?: (finished?: boolean) => void
+): number {
   // In web polyfill, we return the target value
   // The actual animation is handled by CSS transitions
+  // Callback is executed immediately in web polyfill
+  if (_callback) {
+    setTimeout(() => _callback(true), 0);
+  }
   return toValue;
 }
 
@@ -104,18 +119,18 @@ export function withDecay(config: WithDecayConfig): number {
   // In web polyfill, we return the current value with decay applied
   // The actual animation is handled by CSS transitions
   const { velocity = 0, deceleration = 0.998, clamp } = config;
-  
+
   // Calculate final position based on velocity and deceleration
   // Simplified decay: v = v0 * (deceleration ^ t)
   // For web, we'll use a simple approximation
   let finalValue = velocity * (1 - deceleration);
-  
+
   // Apply clamp if provided
   if (isTruthy(clamp)) {
     const [min, max] = clamp;
     finalValue = Math.max(min, Math.min(max, finalValue));
   }
-  
+
   return finalValue;
 }
 
@@ -141,16 +156,16 @@ export function interpolate(
   outputRange: number[],
   extrapolate?: 'clamp' | 'extend' | 'identity' | Extrapolation
 ): number {
-  const extrapolateType = typeof extrapolate === 'string' ? extrapolate : extrapolate ?? 'clamp';
-  
+  const extrapolateType = typeof extrapolate === 'string' ? extrapolate : (extrapolate ?? 'clamp');
+
   if (inputRange.length !== outputRange.length) {
     throw new Error('inputRange and outputRange must have the same length');
   }
-  
+
   if (inputRange.length === 0 || outputRange.length === 0) {
     return 0;
   }
-  
+
   // Find the right interval
   let i = 0;
   for (; i < inputRange.length - 1; i++) {
@@ -159,16 +174,16 @@ export function interpolate(
       break;
     }
   }
-  
+
   const inputMin = inputRange[i];
   const inputMax = inputRange[i + 1];
   const outputMin = outputRange[i];
   const outputMax = outputRange[i + 1];
-  
+
   if (inputMin === undefined || outputMin === undefined) {
     return 0;
   }
-  
+
   if (value < inputMin) {
     if (extrapolateType === 'clamp') {
       return outputMin;
@@ -176,7 +191,7 @@ export function interpolate(
       return value;
     }
   }
-  
+
   if (inputMax !== undefined && value > inputMax) {
     if (extrapolateType === 'clamp' && outputMax !== undefined) {
       return outputMax;
@@ -184,7 +199,7 @@ export function interpolate(
       return value;
     }
   }
-  
+
   const effectiveInputMax = inputMax ?? inputMin;
   const effectiveOutputMax = outputMax ?? outputMin;
   const progress = (value - inputMin) / (effectiveInputMax - inputMin);
@@ -203,7 +218,7 @@ export function interpolateColor(
     return color;
   }
   const firstColor = outputRange[0];
-  return firstColor !== undefined ? firstColor : '#000';
+  return firstColor ?? '#000';
 }
 
 // Animated style hook
@@ -213,10 +228,10 @@ export function useAnimatedStyle<T extends CSSProperties>(
 ): AnimatedStyle<T> {
   return useMemo(() => {
     const style = updater();
-    
+
     // Convert transform array to CSS transform string
     if (style.transform && Array.isArray(style.transform)) {
-      const transforms = style.transform as Array<Record<string, number | string>>;
+      const transforms = style.transform as Record<string, number | string>[];
       const transformString = transforms
         .map((t) => {
           const key = Object.keys(t)[0];
@@ -224,25 +239,30 @@ export function useAnimatedStyle<T extends CSSProperties>(
             return '';
           }
           const value = t[key];
-          
+
           if (key === 'translateX' || key === 'translateY') {
             return `${String(key ?? '')}(${String(value ?? '')}px)`;
           } else if (key === 'scale' || key === 'scaleX' || key === 'scaleY') {
-            return `${String(key ?? '')}(${String(value ?? '')})`;
-          } else if (key === 'rotate' || key === 'rotateX' || key === 'rotateY' || key === 'rotateZ') {
-            return `${String(key ?? '')}(${String(value ?? '')}deg)`;
+            return `${key}(${value})`;
+          } else if (
+            key === 'rotate' ||
+            key === 'rotateX' ||
+            key === 'rotateY' ||
+            key === 'rotateZ'
+          ) {
+            return `${key}(${value}deg)`;
           }
           return `${String(key ?? '')}(${String(value ?? '')})`;
         })
         .join(' ');
-      
+
       return {
         ...style,
         transform: transformString,
         transition: 'all 300ms ease-in-out',
       } as T;
     }
-    
+
     return {
       ...style,
       transition: 'all 300ms ease-in-out',
@@ -251,24 +271,17 @@ export function useAnimatedStyle<T extends CSSProperties>(
 }
 
 // Animated props hook
-export function useAnimatedProps<T>(
-  updater: () => T,
-  dependencies?: unknown[]
-): T {
+export function useAnimatedProps<T>(updater: () => T, dependencies?: unknown[]): T {
   return useMemo(() => updater(), dependencies ?? []);
 }
 
 // Gesture handlers (no-op for web)
-export function useAnimatedGestureHandler<T = unknown>(
-  handlers: T
-): T {
+export function useAnimatedGestureHandler<T = unknown>(handlers: T): T {
   return handlers;
 }
 
 // Scroll handlers (no-op for web)
-export function useAnimatedScrollHandler<T = unknown>(
-  handler: T
-): T {
+export function useAnimatedScrollHandler<T = unknown>(handler: T): T {
   return handler;
 }
 
@@ -291,12 +304,31 @@ export function useWorkletCallback<T extends (...args: unknown[]) => unknown>(
 }
 
 // Derived value
-export function useDerivedValue<T>(
-  updater: () => T,
-  dependencies?: unknown[]
-): SharedValue<T> {
+export function useDerivedValue<T>(updater: () => T, dependencies?: unknown[]): SharedValue<T> {
   const value = useMemo(() => updater(), dependencies ?? []);
   return useSharedValue(value);
+}
+
+// Animated reaction (triggers a callback when a value changes)
+export function useAnimatedReaction<T>(
+  prepare: () => T,
+  react: (prepareResult: T, previousPrepareResult: T | null) => void,
+  prepareDeps?: unknown[]
+): void {
+  const previousValueRef = useRef<T | null>(null);
+
+  useEffect(() => {
+    const currentValue = prepare();
+    if (previousValueRef.current !== currentValue) {
+      react(currentValue, previousValueRef.current);
+      previousValueRef.current = currentValue;
+    }
+  }, [prepare, react, ...(prepareDeps ?? [])]);
+}
+
+// Animated ref (returns a ref that can be used with animated components)
+export function useAnimatedRef<T = unknown>(): { current: T | null } {
+  return useRef<T>(null);
 }
 
 // Animation cancellation
@@ -308,7 +340,6 @@ export function cancelAnimation(_sharedValue: SharedValue<unknown>): void {
 export function useClock(): SharedValue {
   return useSharedValue(Date.now());
 }
-
 
 // Default export for Animated namespace
 const Animated = {

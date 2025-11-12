@@ -1,34 +1,54 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { AdoptionCard } from '../AdoptionCard'
-import type { AdoptionProfile } from '@/lib/adoption-types'
-import { useApp } from '@/contexts/AppContext'
-import { haptics } from '@/lib/haptics'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { AdoptionCard } from '@/components/adoption/AdoptionCard';
+import type { AdoptionProfile } from '@/lib/adoption-types';
+import { useApp } from '@/contexts/AppContext';
+import { haptics } from '@/lib/haptics';
 
 vi.mock('@/contexts/AppContext', () => ({
   useApp: vi.fn(),
-}))
+}));
 vi.mock('@/lib/haptics', () => ({
   haptics: {
-    trigger: vi.fn(),
+    impact: vi.fn(() => undefined),
+    trigger: vi.fn(() => undefined),
+    light: vi.fn(() => undefined),
+    medium: vi.fn(() => undefined),
+    heavy: vi.fn(() => undefined),
+    selection: vi.fn(() => undefined),
+    success: vi.fn(() => undefined),
+    warning: vi.fn(() => undefined),
+    error: vi.fn(() => undefined),
+    notification: vi.fn(() => undefined),
+    isHapticSupported: vi.fn(() => false),
   },
-}))
+  triggerHaptic: vi.fn(() => undefined),
+}));
 vi.mock('@/effects/reanimated/animated-view', () => ({
-  AnimatedView: ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => (
+  AnimatedView: ({ children, ...props }: { children: React.ReactNode;[key: string]: unknown }) => (
     <div data-testid="animated-view" {...props}>
       {children}
     </div>
   ),
-}))
+  useAnimatedStyleValue: vi.fn((style: unknown) => {
+    if (typeof style === 'function') {
+      try {
+        return style();
+      } catch {
+        return {};
+      }
+    }
+    return style || {};
+  }),
+}));
 vi.mock('@/effects/reanimated/use-hover-lift', () => ({
   useHoverLift: vi.fn(() => ({
     animatedStyle: {},
     handleEnter: vi.fn(),
     handleLeave: vi.fn(),
   })),
-}))
+}));
 vi.mock('@/effects/reanimated/use-hover-tap', () => ({
   useHoverTap: vi.fn(() => ({
     animatedStyle: {},
@@ -36,10 +56,10 @@ vi.mock('@/effects/reanimated/use-hover-tap', () => ({
     handleMouseLeave: vi.fn(),
     handlePress: vi.fn(),
   })),
-}))
+}));
 
-const mockUseApp = vi.mocked(useApp)
-const mockHaptics = vi.mocked(haptics)
+const mockUseApp = vi.mocked(useApp);
+const mockHaptics = vi.mocked(haptics);
 
 describe('AdoptionCard', () => {
   const mockProfile: AdoptionProfile = {
@@ -68,13 +88,13 @@ describe('AdoptionCard', () => {
     photos: ['https://example.com/buddy.jpg'],
     contactEmail: 'shelter@example.com',
     contactPhone: '123-456-7890',
-  }
+  };
 
-  const mockOnSelect = vi.fn()
-  const mockOnFavorite = vi.fn()
+  const mockOnSelect = vi.fn();
+  const mockOnFavorite = vi.fn();
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.clearAllMocks();
     mockUseApp.mockReturnValue({
       t: {
         adoption: {
@@ -84,80 +104,69 @@ describe('AdoptionCard', () => {
           onHold: 'On Hold',
         },
       },
-    } as never)
-  })
+    } as never);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
 
   it('renders adoption card with profile information', () => {
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    expect(screen.getByText('Buddy')).toBeInTheDocument()
-    expect(screen.getByAltText('Buddy')).toBeInTheDocument()
-    expect(screen.getByText(/golden retriever/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText('Buddy')).toBeInTheDocument();
+    expect(screen.getByAltText('Buddy')).toBeInTheDocument();
+    expect(screen.getByText(/golden retriever/i)).toBeInTheDocument();
+  });
 
   it('displays status badge correctly', () => {
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    expect(screen.getByText('Available')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Available')).toBeInTheDocument();
+  });
 
   it('calls onSelect when card is clicked', async () => {
-    const user = userEvent.setup()
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    const user = userEvent.setup();
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    const card = screen.getByAltText('Buddy').closest('div')
-    if (isTruthy(card)) {
-      await user.click(card)
+    const card = screen.getByAltText('Buddy').closest('div');
+    if (card) {
+      await user.click(card);
     }
 
-    expect(mockOnSelect).toHaveBeenCalledWith(mockProfile)
-    expect(mockHaptics.trigger).toHaveBeenCalledWith('selection')
-  })
+    expect(mockOnSelect).toHaveBeenCalledWith(mockProfile);
+    expect(mockHaptics.trigger).toHaveBeenCalledWith('selection');
+  });
 
   it('displays favorite button when onFavorite is provided', () => {
     render(
-      <AdoptionCard
-        profile={mockProfile}
-        onSelect={mockOnSelect}
-        onFavorite={mockOnFavorite}
-      />
-    )
+      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} onFavorite={mockOnFavorite} />
+    );
 
-    const favoriteButton = screen.getByRole('button', { name: /favorite/i })
-    expect(favoriteButton).toBeInTheDocument()
-  })
+    const favoriteButton = screen.getByRole('button', { name: /favorite/i });
+    expect(favoriteButton).toBeInTheDocument();
+  });
 
   it('does not display favorite button when onFavorite is not provided', () => {
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    const favoriteButtons = screen.queryAllByRole('button', { name: /favorite/i })
-    expect(favoriteButtons.length).toBe(0)
-  })
+    const favoriteButtons = screen.queryAllByRole('button', { name: /favorite/i });
+    expect(favoriteButtons.length).toBe(0);
+  });
 
   it('calls onFavorite when favorite button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     render(
-      <AdoptionCard
-        profile={mockProfile}
-        onSelect={mockOnSelect}
-        onFavorite={mockOnFavorite}
-      />
-    )
+      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} onFavorite={mockOnFavorite} />
+    );
 
-    const favoriteButton = screen.getByRole('button', { name: /favorite/i })
-    await user.click(favoriteButton)
+    const favoriteButton = screen.getByRole('button', { name: /favorite/i });
+    await user.click(favoriteButton);
 
-    expect(mockOnFavorite).toHaveBeenCalledWith('1')
-    expect(mockHaptics.trigger).toHaveBeenCalledWith('light')
-  })
+    expect(mockOnFavorite).toHaveBeenCalledWith('1');
+    expect(mockHaptics.trigger).toHaveBeenCalledWith('light');
+  });
 
   it('displays filled heart icon when favorited', () => {
     render(
@@ -167,112 +176,87 @@ describe('AdoptionCard', () => {
         onFavorite={mockOnFavorite}
         isFavorited={true}
       />
-    )
+    );
 
-    const heartIcon = screen.getByRole('button', { name: /favorite/i }).querySelector('svg')
-    expect(heartIcon).toBeInTheDocument()
-  })
+    const heartIcon = screen.getByRole('button', { name: /favorite/i }).querySelector('svg');
+    expect(heartIcon).toBeInTheDocument();
+  });
 
   it('displays different status colors for different statuses', () => {
     const { rerender } = render(
-      <AdoptionCard
-        profile={{ ...mockProfile, status: 'pending' }}
-        onSelect={mockOnSelect}
-      />
-    )
+      <AdoptionCard profile={{ ...mockProfile, status: 'pending' }} onSelect={mockOnSelect} />
+    );
 
-    expect(screen.getByText('Pending')).toBeInTheDocument()
+    expect(screen.getByText('Pending')).toBeInTheDocument();
 
     rerender(
-      <AdoptionCard
-        profile={{ ...mockProfile, status: 'adopted' }}
-        onSelect={mockOnSelect}
-      />
-    )
+      <AdoptionCard profile={{ ...mockProfile, status: 'adopted' }} onSelect={mockOnSelect} />
+    );
 
-    expect(screen.getByText('Adopted')).toBeInTheDocument()
+    expect(screen.getByText('Adopted')).toBeInTheDocument();
 
     rerender(
-      <AdoptionCard
-        profile={{ ...mockProfile, status: 'on-hold' }}
-        onSelect={mockOnSelect}
-      />
-    )
+      <AdoptionCard profile={{ ...mockProfile, status: 'on-hold' }} onSelect={mockOnSelect} />
+    );
 
-    expect(screen.getByText('On Hold')).toBeInTheDocument()
-  })
+    expect(screen.getByText('On Hold')).toBeInTheDocument();
+  });
 
   it('displays pet location', () => {
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    expect(screen.getByText(/new york/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/new york/i)).toBeInTheDocument();
+  });
 
   it('displays shelter name', () => {
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    expect(screen.getByText(/happy paws/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/happy paws/i)).toBeInTheDocument();
+  });
 
   it('displays adoption fee', () => {
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    expect(screen.getByText(/\$200/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/\$200/i)).toBeInTheDocument();
+  });
 
   it('displays pet details correctly', () => {
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    expect(screen.getByText(/3 years/i)).toBeInTheDocument()
-    expect(screen.getByText(/male/i)).toBeInTheDocument()
-    expect(screen.getByText(/large/i)).toBeInTheDocument()
-  })
+    expect(screen.getByText(/3 years/i)).toBeInTheDocument();
+    expect(screen.getByText(/male/i)).toBeInTheDocument();
+    expect(screen.getByText(/large/i)).toBeInTheDocument();
+  });
 
   it('handles missing translation gracefully', () => {
     mockUseApp.mockReturnValue({
       t: {},
-    } as never)
+    } as never);
 
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    expect(screen.getByText('Available')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Available')).toBeInTheDocument();
+  });
 
   it('prevents event propagation when favorite button is clicked', async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     render(
-      <AdoptionCard
-        profile={mockProfile}
-        onSelect={mockOnSelect}
-        onFavorite={mockOnFavorite}
-      />
-    )
+      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} onFavorite={mockOnFavorite} />
+    );
 
-    const favoriteButton = screen.getByRole('button', { name: /favorite/i })
-    await user.click(favoriteButton)
+    const favoriteButton = screen.getByRole('button', { name: /favorite/i });
+    await user.click(favoriteButton);
 
-    expect(mockOnFavorite).toHaveBeenCalled()
-    expect(mockOnSelect).not.toHaveBeenCalled()
-  })
+    expect(mockOnFavorite).toHaveBeenCalled();
+    expect(mockOnSelect).not.toHaveBeenCalled();
+  });
 
   it('displays pet photo with correct alt text', () => {
-    render(
-      <AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={mockProfile} onSelect={mockOnSelect} />);
 
-    const image = screen.getByAltText('Buddy')
-    expect(image).toHaveAttribute('src', 'https://example.com/buddy.jpg')
-  })
+    const image = screen.getByAltText('Buddy');
+    expect(image).toHaveAttribute('src', 'https://example.com/buddy.jpg');
+  });
 
   it('handles profile with minimal required fields', () => {
     const minimalProfile: AdoptionProfile = {
@@ -299,13 +283,11 @@ describe('AdoptionCard', () => {
       postedDate: new Date().toISOString(),
       personality: [],
       photos: [],
-    }
+      contactEmail: 'cathaven@example.com',
+    };
 
-    render(
-      <AdoptionCard profile={minimalProfile} onSelect={mockOnSelect} />
-    )
+    render(<AdoptionCard profile={minimalProfile} onSelect={mockOnSelect} />);
 
-    expect(screen.getByText('Luna')).toBeInTheDocument()
-  })
-})
-
+    expect(screen.getByText('Luna')).toBeInTheDocument();
+  });
+});

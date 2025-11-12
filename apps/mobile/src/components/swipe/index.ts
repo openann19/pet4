@@ -6,4 +6,3 @@
 export { MatchCelebration } from './MatchCelebration'
 export { SwipeCard } from './SwipeCard'
 export { SwipeCardStack } from './SwipeCardStack'
-

@@ -1,0 +1,81 @@
+name: Spec CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  spec-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.18.3
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache spec artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            .appspec.merged.json
+            .appspec.lock
+            .appspec.outputs.json
+          key: spec-${{ github.sha }}
+          restore-keys: |
+            spec-
+
+      - name: Validate spec packs
+        run: pnpm --filter @petspark/spec-core typecheck
+
+      - name: Run spec tests
+        run: pnpm --filter @petspark/spec-testing test:run
+
+      - name: Generate spec reports
+        run: |
+          if [ -f .appspec.merged.json ]; then
+            pnpm --filter @petspark/spec-observability exec node -e "
+              const { generateSpecReport, generateAiPrompts } = require('@petspark/spec-observability');
+              generateSpecReport('.appspec.merged.json', 'SPEC_REPORT.md');
+              generateAiPrompts('.appspec.merged.json', 'AI_PROMPTS.md');
+            "
+          fi
+
+      - name: Check bundle size against budgets
+        run: |
+          if [ -f .appspec.outputs.json ]; then
+            node -e "
+              const fs = require('fs');
+              const outputs = JSON.parse(fs.readFileSync('.appspec.outputs.json', 'utf-8'));
+              const budgets = outputs.configuration?.budgets;
+              if (budgets?.bundleSize) {
+                console.log('Bundle size budget:', budgets.bundleSize);
+              }
+            "
+          fi
+
+      - name: Comment PR with spec report
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('SPEC_REPORT.md')) {
+              const report = fs.readFileSync('SPEC_REPORT.md', 'utf-8');
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: report
+              });
+            }

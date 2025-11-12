@@ -70,9 +70,7 @@ export function UltraAnimationShowcase() {
       <div className="max-w-7xl mx-auto space-y-12">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-5xl font-bold text-white mb-2">
-            Ultra Enhanced Animations
-          </h1>
+          <h1 className="text-5xl font-bold text-white mb-2">Ultra Enhanced Animations</h1>
           <p className="text-xl text-gray-300">
             Experience buttery smooth, ultra-responsive animations
           </p>
@@ -85,9 +83,7 @@ export function UltraAnimationShowcase() {
             {[card1, card2, card3].map((card, i) => (
               <AnimatedView key={i} style={card.animatedStyle}>
                 <div className="bg-gradient-to-br from-purple-600 to-blue-600 p-8 rounded-2xl shadow-2xl">
-                  <h3 className="text-2xl font-bold text-white mb-4">
-                    Card {i + 1}
-                  </h3>
+                  <h3 className="text-2xl font-bold text-white mb-4">Card {i + 1}</h3>
                   <p className="text-gray-200">
                     Ultra smooth 3D reveal with perspective transforms
                   </p>
@@ -109,9 +105,7 @@ export function UltraAnimationShowcase() {
           >
             <AnimatedView style={magnetic.animatedStyle}>
               <div className="bg-gradient-to-r from-pink-500 to-purple-600 px-12 py-8 rounded-2xl shadow-2xl cursor-pointer">
-                <p className="text-2xl font-bold text-white">
-                  Hover over me!
-                </p>
+                <p className="text-2xl font-bold text-white">Hover over me!</p>
               </div>
             </AnimatedView>
           </div>
@@ -124,9 +118,7 @@ export function UltraAnimationShowcase() {
             onClick={ripple.addRipple}
             className="relative overflow-hidden bg-gradient-to-r from-cyan-500 to-blue-600 px-12 py-8 rounded-2xl shadow-2xl cursor-pointer inline-block"
           >
-            <p className="text-2xl font-bold text-white relative z-10">
-              Click for ripples!
-            </p>
+            <p className="text-2xl font-bold text-white relative z-10">Click for ripples!</p>
             {ripple.ripples.map((r) => (
               <AnimatedView
                 key={r.id}
@@ -173,18 +165,12 @@ export function UltraAnimationShowcase() {
         <section className="space-y-6">
           <h2 className="text-3xl font-bold text-white">3D Flip Card</h2>
           <div className="relative w-64 h-40" onClick={flipCard.flip}>
-            <AnimatedView
-              style={flipCard.frontAnimatedStyle}
-              className="absolute inset-0"
-            >
+            <AnimatedView style={flipCard.frontAnimatedStyle} className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl flex items-center justify-center cursor-pointer">
                 <p className="text-2xl font-bold text-white">Front</p>
               </div>
             </AnimatedView>
-            <AnimatedView
-              style={flipCard.backAnimatedStyle}
-              className="absolute inset-0"
-            >
+            <AnimatedView style={flipCard.backAnimatedStyle} className="absolute inset-0">
               <div className="w-full h-full bg-gradient-to-br from-pink-500 to-orange-600 rounded-2xl shadow-2xl flex items-center justify-center cursor-pointer">
                 <p className="text-2xl font-bold text-white">Back</p>
               </div>

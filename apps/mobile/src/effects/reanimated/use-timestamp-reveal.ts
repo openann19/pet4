@@ -8,7 +8,6 @@ import {
 import { useCallback, useRef } from 'react'
 import { springConfigs, timingConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 export interface UseTimestampRevealOptions {
   autoHideDelay?: number
@@ -26,24 +25,23 @@ export interface UseTimestampRevealReturn {
 const DEFAULT_AUTO_HIDE_DELAY = 3000
 const DEFAULT_ENABLED = true
 
-export function useTimestampReveal(options: UseTimestampRevealOptions = {}): UseTimestampRevealReturn {
-  const {
-    autoHideDelay = DEFAULT_AUTO_HIDE_DELAY,
-    enabled = DEFAULT_ENABLED,
-  } = options
+export function useTimestampReveal(
+  options: UseTimestampRevealOptions = {}
+): UseTimestampRevealReturn {
+  const { autoHideDelay = DEFAULT_AUTO_HIDE_DELAY, enabled = DEFAULT_ENABLED } = options
 
   const opacity = useSharedValue(0)
   const translateY = useSharedValue(10)
-  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const show = useCallback(() => {
     if (!enabled) {
       return
     }
 
-    if (isTruthy(hideTimeoutRef.current)) {
+    if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current)
-      hideTimeoutRef.current = undefined
+      hideTimeoutRef.current = null
     }
 
     opacity.value = withSpring(1, springConfigs.smooth)
@@ -53,22 +51,24 @@ export function useTimestampReveal(options: UseTimestampRevealOptions = {}): Use
       opacity.value = withTiming(0, timingConfigs.fast)
       translateY.value = withTiming(10, timingConfigs.fast)
     }, autoHideDelay)
-  }, [autoHideDelay, enabled, opacity, translateY])
+  }, [enabled, autoHideDelay, opacity, translateY])
 
   const hide = useCallback(() => {
-    if (isTruthy(hideTimeoutRef.current)) {
+    if (hideTimeoutRef.current) {
       clearTimeout(hideTimeoutRef.current)
-      hideTimeoutRef.current = undefined
+      hideTimeoutRef.current = null
     }
 
     opacity.value = withTiming(0, timingConfigs.fast)
     translateY.value = withTiming(10, timingConfigs.fast)
   }, [opacity, translateY])
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
-  })) as AnimatedStyle
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [{ translateY: translateY.value }],
+    }
+  }) as AnimatedStyle
 
   return {
     opacity,

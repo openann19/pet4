@@ -3,16 +3,15 @@
  * Button with magnetic hover, elastic scale, and ripple effects
  */
 
-import { type ReactNode, type ButtonHTMLAttributes } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useMagneticHover } from '@/effects/reanimated/use-magnetic-hover';
-import { useShimmer } from '@/effects/reanimated/use-shimmer';
+import { type ReactNode, type ButtonHTMLAttributes, useCallback } from 'react';
+import { MotionView } from '@petspark/motion';
+import { useMagnetic, usePressBounce, useShimmer } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { isTruthy } from '@petspark/shared';
-import { useSharedValue, useAnimatedStyle, withSpring, useCallback } from 'react-native-reanimated';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-import { springConfigs } from '@/effects/reanimated/transitions';
+import { createLogger } from '@/lib/logger';
+import { useUIConfig } from "@/hooks/use-ui-config";
+
+const logger = createLogger('UltraButton');
 
 export interface UltraButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -56,10 +55,8 @@ export function UltraButton({
   onClick,
   ...props
 }: UltraButtonProps) {
-  const magnetic = useMagneticHover({
-    strength: 40,
-    enabled: enableMagnetic
-  });
+    const _uiConfig = useUIConfig();
+    const magnetic = useMagnetic(40);
 
   const elastic = usePressBounce(0.96);
 
@@ -68,11 +65,19 @@ export function UltraButton({
     enabled: enableGlow
   });
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (isTruthy(onClick)) {
-      onClick(e);
-    }
-  };
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (props.disabled) return;
+
+      try {
+        onClick?.(e);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('UltraButton onClick error', err);
+      }
+    },
+    [onClick, props.disabled]
+  );
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (enableMagnetic && magnetic.handleMouseMove) {

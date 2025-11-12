@@ -1,25 +1,25 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { renderHook, act, waitFor } from '@testing-library/react'
-import { useTypingManager } from '../use-typing-manager'
-import type { RealtimeClient } from '@/lib/realtime'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { useTypingManager } from '../use-typing-manager';
+import type { RealtimeClient } from '@/lib/realtime';
 
-vi.mock('@/lib/realtime', () => ({}))
+vi.mock('@/lib/realtime', () => ({}));
 
 describe('useTypingManager', () => {
   const mockRealtimeClient: RealtimeClient = {
     emit: vi.fn().mockResolvedValue(undefined),
     on: vi.fn(),
     off: vi.fn(),
-  } as never
+  } as never;
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.useFakeTimers()
-  })
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+  });
 
   afterEach(() => {
-    vi.useRealTimers()
-  })
+    vi.useRealTimers();
+  });
 
   it('returns initial state', () => {
     const { result } = renderHook(() =>
@@ -28,11 +28,11 @@ describe('useTypingManager', () => {
         currentUserId: 'user1',
         currentUserName: 'User 1',
       })
-    )
+    );
 
-    expect(result.current.typingUsers).toEqual([])
-    expect(result.current.isTyping).toBe(false)
-  })
+    expect(result.current.typingUsers).toEqual([]);
+    expect(result.current.isTyping).toBe(false);
+  });
 
   it('starts typing when startTyping is called', () => {
     const { result } = renderHook(() =>
@@ -42,14 +42,14 @@ describe('useTypingManager', () => {
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
     act(() => {
-      result.current.startTyping()
-    })
+      result.current.startTyping();
+    });
 
-    expect(result.current.isTyping).toBe(true)
-  })
+    expect(result.current.isTyping).toBe(true);
+  });
 
   it('emits typing_start event', async () => {
     const { result } = renderHook(() =>
@@ -59,20 +59,20 @@ describe('useTypingManager', () => {
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
     act(() => {
-      result.current.startTyping()
-    })
+      result.current.startTyping();
+    });
 
     await waitFor(() => {
       expect(mockRealtimeClient.emit).toHaveBeenCalledWith('typing_start', {
         roomId: 'room1',
         userId: 'user1',
         userName: 'User 1',
-      })
-    })
-  })
+      });
+    });
+  });
 
   it('stops typing when stopTyping is called', () => {
     const { result } = renderHook(() =>
@@ -82,18 +82,18 @@ describe('useTypingManager', () => {
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
     act(() => {
-      result.current.startTyping()
-    })
+      result.current.startTyping();
+    });
 
     act(() => {
-      result.current.stopTyping()
-    })
+      result.current.stopTyping();
+    });
 
-    expect(result.current.isTyping).toBe(false)
-  })
+    expect(result.current.isTyping).toBe(false);
+  });
 
   it('emits typing_stop event', async () => {
     const { result } = renderHook(() =>
@@ -103,23 +103,23 @@ describe('useTypingManager', () => {
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
     act(() => {
-      result.current.startTyping()
-    })
+      result.current.startTyping();
+    });
 
     act(() => {
-      result.current.stopTyping()
-    })
+      result.current.stopTyping();
+    });
 
     await waitFor(() => {
       expect(mockRealtimeClient.emit).toHaveBeenCalledWith('typing_stop', {
         roomId: 'room1',
         userId: 'user1',
-      })
-    })
-  })
+      });
+    });
+  });
 
   it('handles input change', () => {
     const { result } = renderHook(() =>
@@ -129,14 +129,14 @@ describe('useTypingManager', () => {
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
     act(() => {
-      result.current.handleInputChange('Hello')
-    })
+      result.current.handleInputChange('Hello');
+    });
 
-    expect(result.current.isTyping).toBe(true)
-  })
+    expect(result.current.isTyping).toBe(true);
+  });
 
   it('stops typing after timeout on input change', async () => {
     const { result } = renderHook(() =>
@@ -147,20 +147,20 @@ describe('useTypingManager', () => {
         realtimeClient: mockRealtimeClient,
         typingTimeout: 1000,
       })
-    )
+    );
 
     act(() => {
-      result.current.handleInputChange('Hello')
-    })
+      result.current.handleInputChange('Hello');
+    });
 
     act(() => {
-      vi.advanceTimersByTime(1000)
-    })
+      vi.advanceTimersByTime(1000);
+    });
 
     await waitFor(() => {
-      expect(result.current.isTyping).toBe(false)
-    })
-  })
+      expect(result.current.isTyping).toBe(false);
+    });
+  });
 
   it('handles message send', () => {
     const { result } = renderHook(() =>
@@ -170,18 +170,18 @@ describe('useTypingManager', () => {
         currentUserName: 'User 1',
         realtimeClient: mockRealtimeClient,
       })
-    )
+    );
 
     act(() => {
-      result.current.startTyping()
-    })
+      result.current.startTyping();
+    });
 
     act(() => {
-      result.current.handleMessageSend()
-    })
+      result.current.handleMessageSend();
+    });
 
-    expect(result.current.isTyping).toBe(false)
-  })
+    expect(result.current.isTyping).toBe(false);
+  });
 
   it('debounces typing events', async () => {
     const { result } = renderHook(() =>
@@ -192,28 +192,28 @@ describe('useTypingManager', () => {
         realtimeClient: mockRealtimeClient,
         debounceDelay: 500,
       })
-    )
+    );
 
     act(() => {
-      result.current.handleInputChange('H')
-    })
+      result.current.handleInputChange('H');
+    });
 
     act(() => {
-      result.current.handleInputChange('He')
-    })
+      result.current.handleInputChange('He');
+    });
 
     act(() => {
-      result.current.handleInputChange('Hel')
-    })
+      result.current.handleInputChange('Hel');
+    });
 
     act(() => {
-      vi.advanceTimersByTime(500)
-    })
+      vi.advanceTimersByTime(500);
+    });
 
     await waitFor(() => {
-      expect(mockRealtimeClient.emit).toHaveBeenCalled()
-    })
-  })
+      expect(mockRealtimeClient.emit).toHaveBeenCalled();
+    });
+  });
 
   it('works without realtime client', () => {
     const { result } = renderHook(() =>
@@ -222,19 +222,19 @@ describe('useTypingManager', () => {
         currentUserId: 'user1',
         currentUserName: 'User 1',
       })
-    )
+    );
 
     act(() => {
-      result.current.startTyping()
-    })
+      result.current.startTyping();
+    });
 
-    expect(result.current.isTyping).toBe(true)
-  })
+    expect(result.current.isTyping).toBe(true);
+  });
 
   it('handles realtime client errors gracefully', async () => {
     const errorClient: RealtimeClient = {
       emit: vi.fn().mockRejectedValue(new Error('Network error')),
-    } as never
+    } as never;
 
     const { result } = renderHook(() =>
       useTypingManager({
@@ -243,15 +243,14 @@ describe('useTypingManager', () => {
         currentUserName: 'User 1',
         realtimeClient: errorClient,
       })
-    )
+    );
 
     act(() => {
-      result.current.startTyping()
-    })
+      result.current.startTyping();
+    });
 
     await waitFor(() => {
-      expect(errorClient.emit).toHaveBeenCalled()
-    })
-  })
-})
-
+      expect(errorClient.emit).toHaveBeenCalled();
+    });
+  });
+});

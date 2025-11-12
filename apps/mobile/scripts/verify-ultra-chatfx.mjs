@@ -7,7 +7,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, '..');
 const SRC = join(ROOT, 'src');
-const OVERRIDE = process.env.ULTRA_CHATFX_GLOBS; // optional CSV globs
 const okExt = new Set(['.ts', '.tsx', '.js', '.jsx']);
 
 const mustHave = [
@@ -111,7 +110,7 @@ for (const f of files) {
     const hasAccessibilityInfo = /AccessibilityInfo/.test(src);
     const hasReducedMotionHook = /useReducedMotion/i.test(src);
     const hasReducedMotionUtil = /getReducedMotionDuration|useReducedMotionSV|reducedMotion/.test(src);
-    
+
     if (!hasAccessibilityInfo && !hasReducedMotionHook && !hasReducedMotionImport && !hasReducedMotionUtil) {
       die(
         `${relPath}: Animation detected without Reduced Motion guard (AccessibilityInfo or useReducedMotion*).`,
@@ -132,7 +131,7 @@ for (const f of files) {
     // Only require Skia if the file exports effect hooks or components
     const exportsEffects = /export\s+(function|const|class)\s+\w*(FX|Effect|Animation|Hook)/i.test(src) ||
                           /export\s*\{[^}]*\w*(FX|use.*Effect|use.*Animation)/i.test(src);
-    
+
     if (exportsEffects && !/from ['"]@shopify\/react-native-skia['"]/.test(src)) {
       die(`${relPath}: Effects module without Skia import.`);
     }
@@ -158,4 +157,3 @@ if (ERROR) {
 } else {
   process.stdout.write('✅ ULTRA chat FX verification passed.\n');
 }
-

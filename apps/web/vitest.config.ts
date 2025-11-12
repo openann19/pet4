@@ -128,7 +128,17 @@ export default defineConfig({
     // Preserve symlinks to help resolve packages correctly
     preserveSymlinks: false,
     conditions: ['import', 'module', 'browser', 'default'],
-    extensions: ['.web.js', '.web.jsx', '.web.ts', '.web.tsx', '.jsx', '.js', '.tsx', '.ts', '.json'],
+    extensions: [
+      '.web.js',
+      '.web.jsx',
+      '.web.ts',
+      '.web.tsx',
+      '.jsx',
+      '.js',
+      '.tsx',
+      '.ts',
+      '.json',
+    ],
     dedupe: ['react', 'react-dom'],
   },
   optimizeDeps: {
@@ -148,7 +158,14 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
-    include: ['src/**/*.{test,spec}.{ts,tsx}', 'src/**/__tests__/**/*.{ts,tsx}'],                                                                               
+    include: ['src/**/*.{test,spec}.{ts,tsx}', 'src/**/__tests__/**/*.{ts,tsx}'],
+    testTimeout: 10000,
+    hookTimeout: 10000,
+    server: {
+      deps: {
+        inline: ['@petspark/motion', 'react-native-reanimated']
+      }
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],

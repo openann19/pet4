@@ -69,4 +69,3 @@ describe('SwipeCard', () => {
     expect(result).toBeTruthy()
   })
 })
-

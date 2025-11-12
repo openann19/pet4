@@ -1,75 +1,82 @@
-import { useState, useEffect } from 'react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { MapPin, Eye, XCircle, Warning } from '@phosphor-icons/react'
-import { toast } from 'sonner'
-import { lostFoundService } from '@/lib/lost-found-service'
-import { lostFoundAPI } from '@/api/lost-found-api'
-import type { LostAlert } from '@/lib/lost-found-types'
-import { logger } from '@/lib/logger'
+import { useCallback, useEffect, useState } from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { MapPin, Eye, XCircle, Warning } from '@phosphor-icons/react';
+import { toast } from 'sonner';
+import { lostFoundService } from '@/lib/lost-found-service';
+import { lostFoundAPI } from '@/api/lost-found-api';
+import type { LostAlert } from '@/lib/lost-found-types';
+import { logger } from '@/lib/logger';
 
 export function LostFoundManagement() {
-  const [alerts, setAlerts] = useState<LostAlert[]>([])
-  const [selectedAlert, setSelectedAlert] = useState<LostAlert | null>(null)
+  const [alerts, setAlerts] = useState<LostAlert[]>([]);
+  const [selectedAlert, setSelectedAlert] = useState<LostAlert | null>(null);
 
-  useEffect(() => {
-    loadAlerts()
-  }, [])
-
-  const loadAlerts = async () => {
+  const loadAlerts = useCallback(async () => {
     try {
       // Get all alerts (admin endpoint)
-      const result = await lostFoundAPI.queryAlerts({ limit: 1000 })
-      setAlerts(result.alerts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+      const result = await lostFoundAPI.queryAlerts({ limit: 1000 });
+      setAlerts(
+        result.alerts.sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+      );
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to load alerts', err, { action: 'loadAlerts' })
-      toast.error('Failed to load alerts')
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load alerts', err, { action: 'loadAlerts' });
+      toast.error('Failed to load alerts');
     }
-  }
+  }, []);
 
-  const handleArchiveAlert = async (alertId: string) => {
-    try {
-      await lostFoundService.updateAlertStatus(alertId, 'archived')
-      toast.success('Alert archived')
-      await loadAlerts()
-      setSelectedAlert(null)
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to archive alert', err, { action: 'archiveAlert', alertId })
-      toast.error('Failed to archive alert')
-    }
-  }
+  useEffect(() => {
+    void loadAlerts();
+  }, [loadAlerts]);
+
+  const handleArchiveAlert = useCallback(
+    async (alertId: string) => {
+      try {
+        await lostFoundService.updateAlertStatus(alertId, 'archived');
+        toast.success('Alert archived');
+        await loadAlerts();
+        setSelectedAlert(null);
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        logger.error('Failed to archive alert', err, { action: 'archiveAlert', alertId });
+        toast.error('Failed to archive alert');
+      }
+    },
+    [loadAlerts]
+  );
 
   const getStatusColor = (status: LostAlert['status']) => {
     switch (status) {
       case 'active':
-        return 'bg-green-500'
+        return 'bg-green-500';
       case 'found':
-        return 'bg-blue-500'
+        return 'bg-blue-500';
       case 'archived':
-        return 'bg-gray-500'
+        return 'bg-gray-500';
       default:
-        return 'bg-gray-500'
+        return 'bg-gray-500';
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold">Lost & Found Management</h2>
-        <p className="text-muted-foreground mt-1">
-          Monitor and manage lost pet alerts
-        </p>
+        <p className="text-muted-foreground mt-1">Monitor and manage lost pet alerts</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-3xl font-bold">{alerts.filter(a => a.status === 'active').length}</div>
+              <div className="text-3xl font-bold">
+                {alerts.filter((a) => a.status === 'active').length}
+              </div>
               <div className="text-sm text-muted-foreground mt-1">Active Alerts</div>
             </div>
           </CardContent>
@@ -77,7 +84,9 @@ export function LostFoundManagement() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">{alerts.filter(a => a.status === 'found').length}</div>
+              <div className="text-3xl font-bold text-green-600">
+                {alerts.filter((a) => a.status === 'found').length}
+              </div>
               <div className="text-sm text-muted-foreground mt-1">Found</div>
             </div>
           </CardContent>
@@ -85,7 +94,9 @@ export function LostFoundManagement() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-3xl font-bold">{alerts.reduce((sum, a) => sum + a.viewsCount, 0)}</div>
+              <div className="text-3xl font-bold">
+                {alerts.reduce((sum, a) => sum + a.viewsCount, 0)}
+              </div>
               <div className="text-sm text-muted-foreground mt-1">Total Views</div>
             </div>
           </CardContent>
@@ -99,9 +110,9 @@ export function LostFoundManagement() {
             <CardDescription>Click to view details</CardDescription>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[600px]">
+            <ScrollArea className="h-150">
               <div className="space-y-3">
-                {alerts.map(alert => (
+                {alerts.map((alert) => (
                   <button
                     key={alert.id}
                     onClick={() => { setSelectedAlert(alert); }}
@@ -154,11 +165,19 @@ export function LostFoundManagement() {
                 <p className="text-muted-foreground">Select an alert to view details</p>
               </div>
             ) : (
-              <ScrollArea className="h-[600px] pr-4">
+              <ScrollArea className="h-150 pr-4">
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <h3 className="text-2xl font-bold">{selectedAlert.petSummary.name}</h3>
-                    <Badge variant={selectedAlert.status === 'active' ? 'default' : selectedAlert.status === 'found' ? 'secondary' : 'outline'}>
+                    <Badge
+                      variant={
+                        selectedAlert.status === 'active'
+                          ? 'default'
+                          : selectedAlert.status === 'found'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                    >
                       {selectedAlert.status}
                     </Badge>
                   </div>
@@ -191,7 +210,9 @@ export function LostFoundManagement() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Size</p>
-                      <p className="font-medium capitalize">{selectedAlert.petSummary.size || 'Unknown'}</p>
+                      <p className="font-medium capitalize">
+                        {selectedAlert.petSummary.size || 'Unknown'}
+                      </p>
                     </div>
                   </div>
 
@@ -200,7 +221,9 @@ export function LostFoundManagement() {
                       <p className="text-sm text-muted-foreground mb-2">Distinctive Features</p>
                       <div className="flex flex-wrap gap-2">
                         {selectedAlert.petSummary.distinctiveFeatures.map((feature, index) => (
-                          <Badge key={index} variant="outline">{feature}</Badge>
+                          <Badge key={index} variant="outline">
+                            {feature}
+                          </Badge>
                         ))}
                       </div>
                     </div>
@@ -221,7 +244,9 @@ export function LostFoundManagement() {
                     <div className="space-y-2">
                       <div>
                         <p className="text-sm text-muted-foreground">When</p>
-                        <p className="font-medium">{new Date(selectedAlert.lastSeen.whenISO).toLocaleString()}</p>
+                        <p className="font-medium">
+                          {new Date(selectedAlert.lastSeen.whenISO).toLocaleString()}
+                        </p>
                       </div>
                       {selectedAlert.lastSeen.description && (
                         <div>
@@ -237,13 +262,16 @@ export function LostFoundManagement() {
                       )}
                       <div>
                         <p className="text-sm text-muted-foreground">Search Radius</p>
-                        <p className="font-medium">{(selectedAlert.lastSeen.radiusM / 1000).toFixed(1)} km</p>
+                        <p className="font-medium">
+                          {(selectedAlert.lastSeen.radiusM / 1000).toFixed(1)} km
+                        </p>
                       </div>
                       {selectedAlert.lastSeen.lat && selectedAlert.lastSeen.lon && (
                         <div>
                           <p className="text-sm text-muted-foreground">Coordinates</p>
                           <p className="font-mono text-xs">
-                            {selectedAlert.lastSeen.lat.toFixed(6)}, {selectedAlert.lastSeen.lon.toFixed(6)}
+                            {selectedAlert.lastSeen.lat.toFixed(6)},{' '}
+                            {selectedAlert.lastSeen.lon.toFixed(6)}
                           </p>
                         </div>
                       )}
@@ -293,5 +321,5 @@ export function LostFoundManagement() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

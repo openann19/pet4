@@ -1,11 +1,11 @@
 /**
  * Community API Service
- * 
+ *
  * Handles community posts, comments, reactions, follows, and feeds through backend API.
  */
 
-import { APIClient } from '@/lib/api-client'
-import { ENDPOINTS } from '@/lib/endpoints'
+import { APIClient } from '@/lib/api-client';
+import { ENDPOINTS } from '@/lib/endpoints';
 import type {
   CommunityPost,
   Comment,
@@ -19,42 +19,41 @@ import type {
   CommunityNotification,
   ReportReason,
   PostKind,
-  PostVisibility
-} from '@/lib/community-types'
-import { createLogger } from '@/lib/logger'
-import { isTruthy } from '@petspark/shared';
+  PostVisibility,
+} from '@/lib/community-types';
+import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('CommunityApi')
+const logger = createLogger('CommunityApi');
 
-export interface GetFeedRequest extends FeedOptions {}
+export type GetFeedRequest = FeedOptions;
 
 export interface CreatePostRequest {
-  kind: PostKind
-  petIds?: string[]
-  text?: string
-  media?: string[]
+  kind: PostKind;
+  petIds?: string[];
+  text?: string;
+  media?: string[];
   location?: {
-    city?: string
-    country?: string
-    lat?: number
-    lon?: number
-    lng?: number
-    privacyRadiusM?: number
-    placeId?: string
-    placeName?: string
-  }
-  tags?: string[]
-  visibility: PostVisibility
+    city?: string;
+    country?: string;
+    lat?: number;
+    lon?: number;
+    lng?: number;
+    privacyRadiusM?: number;
+    placeId?: string;
+    placeName?: string;
+  };
+  tags?: string[];
+  visibility: PostVisibility;
 }
 
 export interface AddCommentRequest {
-  text: string
-  parentId?: string
+  text: string;
+  parentId?: string;
 }
 
 export interface ReportContentRequest {
-  reasons: ReportReason[]
-  description?: string
+  reasons: ReportReason[];
+  description?: string;
 }
 
 class CommunityApiImpl {
@@ -63,22 +62,22 @@ class CommunityApiImpl {
    */
   async getFeed(options: FeedOptions): Promise<FeedResponse> {
     try {
-      const params = new URLSearchParams()
-      if (isTruthy(options.mode)) params.append('mode', options.mode)
-      if (isTruthy(options.lat)) params.append('lat', String(options.lat))
-      if (isTruthy(options.lng)) params.append('lng', String(options.lng))
-      if (isTruthy(options.cursor)) params.append('cursor', options.cursor)
-      if (isTruthy(options.limit)) params.append('limit', String(options.limit))
+      const params = new URLSearchParams();
+      params.append('mode', options.mode);
+      if (options.lat !== undefined) params.append('lat', String(options.lat));
+      if (options.lng !== undefined) params.append('lng', String(options.lng));
+      if (options.cursor !== undefined) params.append('cursor', options.cursor);
+      if (options.limit !== undefined) params.append('limit', String(options.limit));
 
-      const query = params.toString()
+      const query = params.toString();
       const response = await APIClient.get<FeedResponse>(
-        `${String(ENDPOINTS.COMMUNITY.POSTS ?? '')}${query ? `?${query}` : ''}`
-      )
-      return response.data
+        `${ENDPOINTS.COMMUNITY.POSTS}${query ? `?${query}` : ''}`
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get feed', err, { options })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get feed', err, { options });
+      throw err;
     }
   }
 
@@ -90,12 +89,12 @@ class CommunityApiImpl {
       const response = await APIClient.post<CommunityPost>(
         ENDPOINTS.COMMUNITY.CREATE_POST,
         request
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to create post', err)
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to create post', err);
+      throw err;
     }
   }
 
@@ -104,18 +103,16 @@ class CommunityApiImpl {
    */
   async getPost(postId: string): Promise<CommunityPost | null> {
     try {
-      const response = await APIClient.get<CommunityPost>(
-        ENDPOINTS.COMMUNITY.POST(postId)
-      )
-      return response.data
+      const response = await APIClient.get<CommunityPost>(ENDPOINTS.COMMUNITY.POST(postId));
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+      const err = error instanceof Error ? error : new Error(String(error));
       // Return null if not found (404)
       if (err instanceof Error && 'status' in err && (err as { status: number }).status === 404) {
-        return null
+        return null;
       }
-      logger.error('Failed to get post', err, { postId })
-      throw err
+      logger.error('Failed to get post', err, { postId });
+      throw err;
     }
   }
 
@@ -124,11 +121,11 @@ class CommunityApiImpl {
    */
   async deletePost(postId: string): Promise<void> {
     try {
-      await APIClient.delete(ENDPOINTS.COMMUNITY.POST(postId))
+      await APIClient.delete(ENDPOINTS.COMMUNITY.POST(postId));
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to delete post', err, { postId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to delete post', err, { postId });
+      throw err;
     }
   }
 
@@ -137,15 +134,12 @@ class CommunityApiImpl {
    */
   async likePost(postId: string): Promise<Reaction> {
     try {
-      const response = await APIClient.post<Reaction>(
-        ENDPOINTS.COMMUNITY.LIKE_POST(postId),
-        {}
-      )
-      return response.data
+      const response = await APIClient.post<Reaction>(ENDPOINTS.COMMUNITY.LIKE_POST(postId), {});
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to like post', err, { postId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to like post', err, { postId });
+      throw err;
     }
   }
 
@@ -154,11 +148,11 @@ class CommunityApiImpl {
    */
   async unlikePost(postId: string): Promise<void> {
     try {
-      await APIClient.delete(String(ENDPOINTS.COMMUNITY.LIKE_POST(postId) ?? ''))
+      await APIClient.delete(`${ENDPOINTS.COMMUNITY.LIKE_POST(postId)}`);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to unlike post', err, { postId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to unlike post', err, { postId });
+      throw err;
     }
   }
 
@@ -168,13 +162,13 @@ class CommunityApiImpl {
   async getPostLikes(postId: string): Promise<Reaction[]> {
     try {
       const response = await APIClient.get<Reaction[]>(
-        `${String(ENDPOINTS.COMMUNITY.POST(postId) ?? '')}/reactions`
-      )
-      return response.data
+        `${ENDPOINTS.COMMUNITY.POST(postId)}/reactions`
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get post likes', err, { postId })
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get post likes', err, { postId });
+      return [];
     }
   }
 
@@ -184,13 +178,13 @@ class CommunityApiImpl {
   async isPostLiked(postId: string): Promise<boolean> {
     try {
       const response = await APIClient.get<{ liked: boolean }>(
-        `${String(ENDPOINTS.COMMUNITY.POST(postId) ?? '')}/liked`
-      )
-      return response.data.liked
+        `${ENDPOINTS.COMMUNITY.POST(postId)}/liked`
+      );
+      return response.data.liked;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to check if post is liked', err, { postId })
-      return false
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to check if post is liked', err, { postId });
+      return false;
     }
   }
 
@@ -199,15 +193,15 @@ class CommunityApiImpl {
    */
   async getComments(postId: string, cursor?: string): Promise<Comment[]> {
     try {
-      const query = cursor ? `?cursor=${String(cursor ?? '')}` : ''
+      const query = cursor ? `?cursor=${cursor}` : '';
       const response = await APIClient.get<Comment[]>(
-        `${String(ENDPOINTS.COMMUNITY.COMMENT(postId) ?? '')}${String(query ?? '')}`
-      )
-      return response.data
+        `${ENDPOINTS.COMMUNITY.COMMENT(postId)}${query}`
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get comments', err, { postId, cursor })
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get comments', err, { postId, cursor });
+      return [];
     }
   }
 
@@ -216,15 +210,12 @@ class CommunityApiImpl {
    */
   async addComment(postId: string, request: AddCommentRequest): Promise<Comment> {
     try {
-      const response = await APIClient.post<Comment>(
-        ENDPOINTS.COMMUNITY.COMMENT(postId),
-        request
-      )
-      return response.data
+      const response = await APIClient.post<Comment>(ENDPOINTS.COMMUNITY.COMMENT(postId), request);
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to add comment', err, { postId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to add comment', err, { postId });
+      throw err;
     }
   }
 
@@ -236,12 +227,12 @@ class CommunityApiImpl {
       const response = await APIClient.post<SavedPost>(
         `${String(ENDPOINTS.COMMUNITY.POST(postId) ?? '')}/save`,
         {}
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to save post', err, { postId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save post', err, { postId });
+      throw err;
     }
   }
 
@@ -250,11 +241,11 @@ class CommunityApiImpl {
    */
   async unsavePost(postId: string): Promise<void> {
     try {
-      await APIClient.delete(`${String(ENDPOINTS.COMMUNITY.POST(postId) ?? '')}/save`)
+      await APIClient.delete(`${ENDPOINTS.COMMUNITY.POST(postId)}/save`);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to unsave post', err, { postId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to unsave post', err, { postId });
+      throw err;
     }
   }
 
@@ -264,13 +255,13 @@ class CommunityApiImpl {
   async getSavedPosts(): Promise<CommunityPost[]> {
     try {
       const response = await APIClient.get<CommunityPost[]>(
-        `${String(ENDPOINTS.COMMUNITY.POSTS ?? '')}?saved=true`
-      )
-      return response.data
+        `${ENDPOINTS.COMMUNITY.POSTS}?saved=true`
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get saved posts', err)
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get saved posts', err);
+      return [];
     }
   }
 
@@ -280,13 +271,13 @@ class CommunityApiImpl {
   async isPostSaved(postId: string): Promise<boolean> {
     try {
       const response = await APIClient.get<{ saved: boolean }>(
-        `${String(ENDPOINTS.COMMUNITY.POST(postId) ?? '')}/saved`
-      )
-      return response.data.saved
+        `${ENDPOINTS.COMMUNITY.POST(postId)}/saved`
+      );
+      return response.data.saved;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to check if post is saved', err, { postId })
-      return false
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to check if post is saved', err, { postId });
+      return false;
     }
   }
 
@@ -295,15 +286,15 @@ class CommunityApiImpl {
    */
   async followUser(targetId: string, targetName: string): Promise<Follow> {
     try {
-      const response = await APIClient.post<Follow>(
-        `/api/v1/community/follow`,
-        { targetId, targetName }
-      )
-      return response.data
+      const response = await APIClient.post<Follow>(`/api/v1/community/follow`, {
+        targetId,
+        targetName,
+      });
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to follow user', err, { targetId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to follow user', err, { targetId });
+      throw err;
     }
   }
 
@@ -312,11 +303,11 @@ class CommunityApiImpl {
    */
   async unfollowUser(targetId: string): Promise<void> {
     try {
-      await APIClient.delete(`/api/v1/community/follow/${String(targetId ?? '')}`)
+      await APIClient.delete(`/api/v1/community/follow/${targetId}`);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to unfollow user', err, { targetId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to unfollow user', err, { targetId });
+      throw err;
     }
   }
 
@@ -326,13 +317,13 @@ class CommunityApiImpl {
   async isFollowing(targetId: string, type: 'user' | 'tag' | 'breed' = 'user'): Promise<boolean> {
     try {
       const response = await APIClient.get<{ following: boolean }>(
-        `/api/v1/community/follow/${String(targetId ?? '')}?type=${String(type ?? '')}`
-      )
-      return response.data.following
+        `/api/v1/community/follow/${targetId}?type=${type}`
+      );
+      return response.data.following;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to check following status', err, { targetId, type })
-      return false
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to check following status', err, { targetId, type });
+      return false;
     }
   }
 
@@ -342,13 +333,13 @@ class CommunityApiImpl {
   async getTrendingTags(period: 'day' | 'week' | 'month' = 'day'): Promise<string[]> {
     try {
       const response = await APIClient.get<string[]>(
-        `/api/v1/community/trending/tags?period=${String(period ?? '')}`
-      )
-      return response.data
+        `/api/v1/community/trending/tags?period=${period}`
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get trending tags', err, { period })
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get trending tags', err, { period });
+      return [];
     }
   }
 
@@ -361,19 +352,16 @@ class CommunityApiImpl {
     request: ReportContentRequest
   ): Promise<Report> {
     try {
-      const response = await APIClient.post<Report>(
-        `/api/v1/community/report`,
-        {
-          targetType,
-          targetId,
-          ...request,
-        }
-      )
-      return response.data
+      const response = await APIClient.post<Report>(`/api/v1/community/report`, {
+        targetType,
+        targetId,
+        ...request,
+      });
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to report content', err, { targetType, targetId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to report content', err, { targetType, targetId });
+      throw err;
     }
   }
 
@@ -382,15 +370,12 @@ class CommunityApiImpl {
    */
   async saveDraft(draft: Partial<PostDraft>): Promise<PostDraft> {
     try {
-      const response = await APIClient.post<PostDraft>(
-        `/api/v1/community/drafts`,
-        draft
-      )
-      return response.data
+      const response = await APIClient.post<PostDraft>(`/api/v1/community/drafts`, draft);
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to save draft', err)
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to save draft', err);
+      throw err;
     }
   }
 
@@ -399,14 +384,12 @@ class CommunityApiImpl {
    */
   async getDrafts(): Promise<PostDraft[]> {
     try {
-      const response = await APIClient.get<PostDraft[]>(
-        `/api/v1/community/drafts`
-      )
-      return response.data
+      const response = await APIClient.get<PostDraft[]>(`/api/v1/community/drafts`);
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get drafts', err)
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get drafts', err);
+      return [];
     }
   }
 
@@ -415,11 +398,11 @@ class CommunityApiImpl {
    */
   async deleteDraft(draftId: string): Promise<void> {
     try {
-      await APIClient.delete(`/api/v1/community/drafts/${String(draftId ?? '')}`)
+      await APIClient.delete(`/api/v1/community/drafts/${draftId}`);
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to delete draft', err, { draftId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to delete draft', err, { draftId });
+      throw err;
     }
   }
 
@@ -430,12 +413,12 @@ class CommunityApiImpl {
     try {
       const response = await APIClient.get<CommunityNotification[]>(
         `/api/v1/community/notifications`
-      )
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to get notifications', err)
-      return []
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get notifications', err);
+      return [];
     }
   }
 
@@ -444,17 +427,13 @@ class CommunityApiImpl {
    */
   async markNotificationRead(notificationId: string): Promise<void> {
     try {
-      await APIClient.post(
-        `/api/v1/community/notifications/${String(notificationId ?? '')}/read`,
-        {}
-      )
+      await APIClient.post(`/api/v1/community/notifications/${notificationId}/read`, {});
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
-      logger.error('Failed to mark notification as read', err, { notificationId })
-      throw err
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to mark notification as read', err, { notificationId });
+      throw err;
     }
   }
 }
 
-export const communityApi = new CommunityApiImpl()
-
+export const communityApi = new CommunityApiImpl();

@@ -34,13 +34,10 @@ export function PullableContainer({
   style,
   contentContainerStyle,
 }: PullableContainerProps): React.JSX.Element {
-  const {
-    isRefreshing,
-    gesture,
-    animatedStyle,
-    translateY,
-    progress,
-  } = usePullToRefresh(onRefresh, refreshOptions)
+  const { isRefreshing, gesture, animatedStyle, translateY, progress } = usePullToRefresh(
+    onRefresh,
+    refreshOptions
+  )
 
   return (
     <GestureDetector gesture={gesture}>
@@ -50,12 +47,12 @@ export function PullableContainer({
             refreshing={isRefreshing}
             translateY={translateY}
             {...(progress !== undefined ? { progress } : {})}
-            {...(refreshOptions?.threshold !== undefined ? { threshold: refreshOptions.threshold } : {})}
+            {...(refreshOptions?.threshold !== undefined
+              ? { threshold: refreshOptions.threshold }
+              : {})}
           />
         )}
-        <Animated.View style={[styles.content, contentContainerStyle]}>
-          {children}
-        </Animated.View>
+        <Animated.View style={[styles.content, contentContainerStyle]}>{children}</Animated.View>
       </Animated.View>
     </GestureDetector>
   )
@@ -69,4 +66,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 })
-

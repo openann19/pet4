@@ -1,6 +1,4 @@
-import { isTruthy, isDefined } from '@petspark/shared';
-
-export type ThemePreset = 
+export type ThemePreset =
   | 'default-light'
   | 'default-dark'
   | 'ocean'
@@ -18,76 +16,76 @@ export type ThemePreset =
   | 'arctic-frost'
   | 'tropical-paradise'
   | 'volcanic-ember'
-  | 'cosmic-purple'
+  | 'cosmic-purple';
 
 export interface ThemeColors {
-  background: string
-  foreground: string
-  card: string
-  cardForeground: string
-  popover: string
-  popoverForeground: string
-  primary: string
-  primaryForeground: string
-  secondary: string
-  secondaryForeground: string
-  muted: string
-  mutedForeground: string
-  accent: string
-  accentForeground: string
-  destructive: string
-  destructiveForeground: string
-  border: string
-  input: string
-  ring: string
-  lavender?: string
+  background: string;
+  foreground: string;
+  card: string;
+  cardForeground: string;
+  popover: string;
+  popoverForeground: string;
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  muted: string;
+  mutedForeground: string;
+  accent: string;
+  accentForeground: string;
+  destructive: string;
+  destructiveForeground: string;
+  border: string;
+  input: string;
+  ring: string;
+  lavender?: string;
 }
 
 export interface ThemePresetConfig {
-  id: ThemePreset
-  name: string
-  description: string
-  mode: 'light' | 'dark'
-  colors: ThemeColors
+  id: ThemePreset;
+  name: string;
+  description: string;
+  mode: 'light' | 'dark';
+  colors: ThemeColors;
   preview: {
-    primary: string
-    secondary: string
-    accent: string
-  }
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
 }
 
 export const themePresets: ThemePresetConfig[] = [
   {
     id: 'default-light',
     name: 'Light',
-    description: 'Clean and bright default theme with warm accents',
+    description: 'Clean and bright default theme with warm coral accents',
     mode: 'light',
     colors: {
-      background: 'oklch(0.985 0.006 90)',
-      foreground: 'oklch(0.22 0.018 250)',
+      background: 'oklch(0.98 0.01 90)',
+      foreground: 'oklch(0.20 0 0)',
       card: 'oklch(1 0 0)',
-      cardForeground: 'oklch(0.22 0.018 250)',
+      cardForeground: 'oklch(0.20 0 0)',
       popover: 'oklch(1 0 0)',
-      popoverForeground: 'oklch(0.22 0.018 250)',
-      primary: 'oklch(0.72 0.18 30)',
-      primaryForeground: 'oklch(0.99 0.002 90)',
-      secondary: 'oklch(0.68 0.14 215)',
-      secondaryForeground: 'oklch(0.99 0.002 90)',
+      popoverForeground: 'oklch(0.20 0 0)',
+      primary: 'oklch(0.65 0.15 25)',
+      primaryForeground: 'oklch(1 0 0)',
+      secondary: 'oklch(0.92 0.05 75)',
+      secondaryForeground: 'oklch(0.20 0 0)',
       muted: 'oklch(0.95 0.008 90)',
-      mutedForeground: 'oklch(0.48 0.015 250)',
-      accent: 'oklch(0.70 0.20 50)',
-      accentForeground: 'oklch(0.18 0.018 250)',
-      destructive: 'oklch(0.58 0.26 28)',
-      destructiveForeground: 'oklch(0.99 0.002 90)',
-      border: 'oklch(0.90 0.012 90)',
-      input: 'oklch(0.90 0.012 90)',
-      ring: 'oklch(0.72 0.18 30)',
+      mutedForeground: 'oklch(0.45 0 0)',
+      accent: 'oklch(0.88 0.08 80)',
+      accentForeground: 'oklch(0.20 0 0)',
+      destructive: 'oklch(0.65 0.15 25)',
+      destructiveForeground: 'oklch(1 0 0)',
+      border: 'oklch(0.90 0 0)',
+      input: 'oklch(0.90 0 0)',
+      ring: 'oklch(0.65 0.15 25)',
       lavender: 'oklch(0.72 0.12 295)',
     },
     preview: {
-      primary: '#E89D5C',
-      secondary: '#6B9BD6',
-      accent: '#F0B05A',
+      primary: '#FF715B',
+      secondary: '#FFE4B2',
+      accent: '#FFD580',
     },
   },
   {
@@ -651,53 +649,68 @@ export const themePresets: ThemePresetConfig[] = [
       accent: '#9850E8',
     },
   },
-]
+];
 
 export function getThemePreset(id: ThemePreset): ThemePresetConfig | undefined {
-  return themePresets.find(preset => preset.id === id)
+  return themePresets.find((preset) => preset.id === id);
 }
 
 export function applyThemePreset(preset: ThemePresetConfig) {
-  const root = document.documentElement
-  const colors = preset.colors
+  const root = document.documentElement;
+  const colors = preset.colors;
 
-  root.style.setProperty('--background', colors.background)
-  root.style.setProperty('--foreground', colors.foreground)
-  root.style.setProperty('--card', colors.card)
-  root.style.setProperty('--card-foreground', colors.cardForeground)
-  root.style.setProperty('--popover', colors.popover)
-  root.style.setProperty('--popover-foreground', colors.popoverForeground)
-  root.style.setProperty('--primary', colors.primary)
-  root.style.setProperty('--primary-foreground', colors.primaryForeground)
-  root.style.setProperty('--secondary', colors.secondary)
-  root.style.setProperty('--secondary-foreground', colors.secondaryForeground)
-  root.style.setProperty('--muted', colors.muted)
-  root.style.setProperty('--muted-foreground', colors.mutedForeground)
-  root.style.setProperty('--accent', colors.accent)
-  root.style.setProperty('--accent-foreground', colors.accentForeground)
-  root.style.setProperty('--destructive', colors.destructive)
-  root.style.setProperty('--destructive-foreground', colors.destructiveForeground)                                                                              
-  root.style.setProperty('--border', colors.border)
-  root.style.setProperty('--input', colors.input)
-  root.style.setProperty('--ring', colors.ring)
-  
-  if (isTruthy(colors.lavender)) {
-    root.style.setProperty('--lavender', colors.lavender)
+  root.style.setProperty('--background', colors.background);
+  root.style.setProperty('--foreground', colors.foreground);
+  root.style.setProperty('--card', colors.card);
+  root.style.setProperty('--card-foreground', colors.cardForeground);
+  root.style.setProperty('--popover', colors.popover);
+  root.style.setProperty('--popover-foreground', colors.popoverForeground);
+  root.style.setProperty('--primary', colors.primary);
+  root.style.setProperty('--primary-foreground', colors.primaryForeground);
+  root.style.setProperty('--secondary', colors.secondary);
+  root.style.setProperty('--secondary-foreground', colors.secondaryForeground);
+  root.style.setProperty('--muted', colors.muted);
+  root.style.setProperty('--muted-foreground', colors.mutedForeground);
+  root.style.setProperty('--accent', colors.accent);
+  root.style.setProperty('--accent-foreground', colors.accentForeground);
+  root.style.setProperty('--destructive', colors.destructive);
+  root.style.setProperty('--destructive-foreground', colors.destructiveForeground);
+  root.style.setProperty('--border', colors.border);
+  root.style.setProperty('--input', colors.input);
+  root.style.setProperty('--ring', colors.ring);
+
+  if (colors.lavender) {
+    root.style.setProperty('--lavender', colors.lavender);
   }
 
   if (preset.mode === 'dark') {
-    root.classList.add('dark')
+    root.classList.add('dark');
   } else {
-    root.classList.remove('dark')
+    root.classList.remove('dark');
+  }
+
+  // Inject design tokens for the preset mode
+  // This ensures design token CSS variables are available alongside theme-preset variables
+  if (typeof window !== 'undefined') {
+    try {
+      // Dynamic import to avoid circular dependencies
+      void import('./design-tokens').then(({ injectTokenCSSVariables }) => {
+        injectTokenCSSVariables(preset.mode);
+      });
+    } catch {
+      // Silently fail if design tokens can't be imported
+    }
   }
 
   // Apply button tokens for this theme (dynamic import for code splitting)
   if (typeof window !== 'undefined') {
     // Use dynamic import to avoid blocking initial render
-    void import('@/core/tokens/button-tokens-theme-system').then(({ applyButtonTokensForTheme }) => {
-      applyButtonTokensForTheme(preset.id)
-    }).catch(() => {
-      // Silently fail if module not loaded yet
-    })
+    void import('@/core/tokens/button-tokens-theme-system')
+      .then(({ applyButtonTokensForTheme }) => {
+        applyButtonTokensForTheme(preset.id);
+      })
+      .catch(() => {
+        // Silently fail if module not loaded yet
+      });
   }
 }
