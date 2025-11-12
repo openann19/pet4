@@ -794,6 +794,89 @@ vi.mock('@/contexts/UIContext', async () => {
   // Use actual implementation - tests should wrap with UIProvider when needed
   return actual;
 });
+
+// Mock query client
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
+
+  // Create a mock query result that has all the expected properties
+  const createMockQueryResult = (overrides = {}) => ({
+    data: undefined,
+    error: null,
+    isLoading: false,
+    isFetching: false,
+    isSuccess: false,
+    isError: false,
+    isPending: false,
+    status: 'pending' as const,
+    fetchStatus: 'idle' as const,
+    refetch: vi.fn(() => Promise.resolve({ data: undefined })),
+    ...overrides,
+  });
+
+  // Create a mock mutation result that has all the expected properties
+  const createMockMutationResult = (overrides = {}) => ({
+    data: undefined,
+    error: null,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+    isPending: false,
+    status: 'idle' as const,
+    mutate: vi.fn(),
+    mutateAsync: vi.fn(() => Promise.resolve()),
+    reset: vi.fn(),
+    ...overrides,
+  });
+
+  return {
+    ...actual,
+    useQuery: vi.fn(() => createMockQueryResult()),
+    useMutation: vi.fn(() => createMockMutationResult()),
+    useQueryClient: vi.fn(() => ({
+      invalidateQueries: vi.fn(),
+      setQueryData: vi.fn(),
+      getQueryData: vi.fn(),
+      removeQueries: vi.fn(),
+    })),
+    QueryClient: class MockQueryClient {
+      invalidateQueries = vi.fn();
+      setQueryData = vi.fn();
+      getQueryData = vi.fn();
+      removeQueries = vi.fn();
+      clear = vi.fn();
+      mount = vi.fn();
+      unmount = vi.fn();
+      isFetching = vi.fn(() => 0);
+      isMutating = vi.fn(() => 0);
+      getQueryCache = vi.fn(() => ({
+        find: vi.fn(),
+        findAll: vi.fn(),
+        notify: vi.fn(),
+        onFocus: vi.fn(),
+        onOnline: vi.fn(),
+      }));
+      getMutationCache = vi.fn(() => ({
+        find: vi.fn(),
+        findAll: vi.fn(),
+        notify: vi.fn(),
+      }));
+      constructor(_options?: unknown) {
+        // Mock constructor
+      }
+    },
+    QueryClientProvider: ({ children }: { children: React.ReactNode }) => children,
+  };
+});
+
+// Mock @petspark/motion
+vi.mock('@petspark/motion', () => {
+  // Import mocked Reanimated functions
+  const createMockSharedValue = (initial: number) => {
+    let currentValue = initial;
+    return {
+      get value() {
+        return currentValue;
       },
       set value(newValue: number) {
         currentValue = newValue;
