@@ -322,7 +322,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                   <h4 className="font-semibold text-lg">{selectedPlaydate.title}</h4>
                   <p className="text-sm text-muted-foreground">{selectedPlaydate.location.name}</p>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() = aria-label="X"> setSelectedPlaydate(null)}>
+                <Button variant="ghost" size="icon" onClick={() => setSelectedPlaydate(null)} aria-label="Close playdate details">
                   <X size={20} />
                 </Button>
               </div>
