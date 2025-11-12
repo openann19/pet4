@@ -204,7 +204,11 @@ export function GoLiveDialog({ open, onClose, onGoLive }: GoLiveDialogProps) {
                 {tags.map((tag, index) => (
                   <Badge key={index} variant="secondary" className="gap-1">
                     {tag}
-                    <button onClick={() = className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button"> removeTag(index)}>
+                    <button 
+                      onClick={() => removeTag(index)}
+                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring"
+                      aria-label="Remove tag"
+                    >
                       <X size={12} />
                     </button>
                   </Badge>

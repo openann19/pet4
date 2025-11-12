@@ -18,7 +18,7 @@ import {
   ShieldCheck,
   Bell,
   User,
-  Menu,
+  List,
   X,
 } from '@phosphor-icons/react';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
@@ -254,7 +254,7 @@ export default function TopNavBar({
             {isMobileMenuOpen ? (
               <X size={24} weight="bold" />
             ) : (
-              <Menu size={24} weight="bold" />
+              <List size={24} weight="bold" />
             )}
           </button>
         </div>

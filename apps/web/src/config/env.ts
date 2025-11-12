@@ -29,8 +29,8 @@ const wssUrl = z
 
 const schema = z
   .object({
-    VITE_API_URL: httpsUrl,
-    VITE_WS_URL: wssUrl.optional(),
+    VITE_API_URL: isProd ? httpsUrl : httpsUrl.default('http://localhost:3000'),
+    VITE_WS_URL: isProd ? wssUrl.optional() : wssUrl.optional().default('ws://localhost:3001'),
     VITE_API_TIMEOUT: z.coerce.number().positive().default(30000),
     VITE_USE_MOCKS: z.enum(['true', 'false']).default('false'),
     VITE_ENABLE_MAPS: z.coerce.boolean().default(false),
@@ -62,7 +62,14 @@ type Env = z.infer<typeof schema>;
 
 export type Environment = Env;
 
-export const env = schema.parse(import.meta.env);
+// Use parsed result if successful, otherwise use defaults in development
+export const env = parsed.success ? parsed.data : schema.parse({
+  VITE_API_URL: 'http://localhost:3000',
+  VITE_WS_URL: 'ws://localhost:3001',
+  VITE_API_TIMEOUT: '30000',
+  VITE_USE_MOCKS: 'false',
+  VITE_ENABLE_MAPS: 'false',
+});
 export const ENV = env;
 
 export const flags = {

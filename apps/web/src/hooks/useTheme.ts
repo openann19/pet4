@@ -36,37 +36,43 @@ export function useTheme(): {
   }, [theme, themePreset]);
 
   const setTheme = async (newTheme: Theme | ((current: Theme) => Theme)): Promise<void> => {
-    await setThemeState((current) => {
-      const resolvedTheme =
-        typeof newTheme === 'function' ? newTheme(current || 'light') : newTheme;
-
-      void setThemePresetState(resolvedTheme === 'dark' ? 'default-dark' : 'default-light');
-      return resolvedTheme;
-    });
+    const resolvedTheme =
+      typeof newTheme === 'function' ? newTheme(theme || 'light') : newTheme;
+    
+    // Update both theme and preset together to avoid circular updates
+    await Promise.all([
+      setThemeState(resolvedTheme),
+      setThemePresetState(resolvedTheme === 'dark' ? 'default-dark' : 'default-light'),
+    ]);
   };
 
   const toggleTheme = async (): Promise<void> => {
-    await setThemeState((current) => {
-      const newTheme = (current || 'light') === 'dark' ? 'light' : 'dark';
-      void setThemePresetState(newTheme === 'dark' ? 'default-dark' : 'default-light');
-      return newTheme;
-    });
+    const newTheme = (theme || 'light') === 'dark' ? 'light' : 'dark';
+    
+    // Update both theme and preset together to avoid circular updates
+    await Promise.all([
+      setThemeState(newTheme),
+      setThemePresetState(newTheme === 'dark' ? 'default-dark' : 'default-light'),
+    ]);
   };
 
   const setThemePreset = async (
     preset: ThemePreset | ((current: ThemePreset) => ThemePreset)
   ): Promise<void> => {
-    await setThemePresetState((current) => {
-      const resolvedPreset =
-        typeof preset === 'function' ? preset(current || 'default-light') : preset;
+    const resolvedPreset =
+      typeof preset === 'function' ? preset(themePreset || 'default-light') : preset;
 
-      const presetConfig = getThemePreset(resolvedPreset);
-      if (presetConfig) {
-        void setThemeState(presetConfig.mode);
-      }
-
-      return resolvedPreset;
-    });
+    const presetConfig = getThemePreset(resolvedPreset);
+    
+    // Update both preset and theme together to avoid circular updates
+    if (presetConfig) {
+      await Promise.all([
+        setThemePresetState(resolvedPreset),
+        setThemeState(presetConfig.mode),
+      ]);
+    } else {
+      await setThemePresetState(resolvedPreset);
+    }
   };
 
   return {

@@ -98,7 +98,7 @@ export default function APIConfigView() {
     await handleBroadcast();
   }, [handleBroadcast]);
 
-  if (_loading) {
+  if (loading) {
     return (
       <div className="flex-1 flex flex-col">
         <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -141,7 +141,7 @@ export default function APIConfigView() {
                     // Error already handled in hook
                   });
                 }}
-                disabled={broadcasting || _saving}
+                disabled={broadcasting || saving}
                 variant="default"
                 size="default"
                 className="w-full sm:w-auto gap-2"

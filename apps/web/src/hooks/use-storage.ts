@@ -100,8 +100,8 @@ export function useStorage<T>(
         // For critical keys like is-authenticated, this ensures state consistency
         await storage.set(key, computedValue!);
 
-        // Update state after successful persistence
-        setValueState(computedValue!);
+        // NOTE: Do NOT call setValueState again here - it was already set above
+        // Calling it twice causes infinite loops in components with useEffect dependencies
       } catch (error) {
         logger.error(
           `Failed to set value for key ${key}`,

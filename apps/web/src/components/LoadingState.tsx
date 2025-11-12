@@ -209,37 +209,8 @@ export default function LoadingState() {
         false
       );
     }, 540);
-  }, [
-    mainScale,
-    outerScale,
-    outerOpacity,
-    outerRotate,
-    middleScale,
-    middleOpacity,
-    middleRotate,
-    centerRotate,
-    iconRotate,
-    heart1Y,
-    heart1Opacity,
-    heart1Scale,
-    heart2Y,
-    heart2Opacity,
-    heart2Scale,
-    heart3Y,
-    heart3Opacity,
-    heart3Scale,
-    textOpacity,
-    textY,
-    dotsOpacity,
-    dot1Scale,
-    dot1Opacity,
-    dot2Scale,
-    dot2Opacity,
-    dot3Scale,
-    dot3Opacity,
-    dot4Scale,
-    dot4Opacity,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount - animations are managed by reanimated
 
   // Animated styles
   const mainStyle = useAnimatedStyle(() => ({

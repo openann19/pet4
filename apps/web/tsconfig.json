@@ -30,6 +30,9 @@
       ],
       "@petspark/shared": [
         "../../packages/shared/src/index.ts"
+      ],
+      "@petspark/spec-core": [
+        "../../packages/spec-core/src/index.ts"
       ]
     },
     "resolveJsonModule": true

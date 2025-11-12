@@ -1,10 +1,7 @@
 'use client';
 
 import { getVideoThumbnails } from '@/core/services/media/video/thumbnails';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 
 export interface VideoTrimmerProps {
   uri: string;
@@ -19,8 +16,9 @@ export function VideoTrimmer({
 }: VideoTrimmerProps): React.ReactElement {
   const [thumbs, setThumbs] = useState<string[]>([]);
   const [width, setWidth] = useState(0);
-  const start = useSharedValue(0); // px from left
-  const end = useSharedValue(0); // px from left
+  const [start, setStart] = useState(0); // px from left
+  const [end, setEnd] = useState(0); // px from left
+  const timelineRef = useRef<HTMLDivElement>(null);
   const handleW = 16;
 
   useEffect(() => {
@@ -47,130 +45,93 @@ export function VideoTrimmer({
   }, [width, durationSec]);
 
   const update = useCallback(() => {
-    const startSec = pxToSec(start.value);
-    const endSec = pxToSec(end.value);
+    const startSec = pxToSec(start);
+    const endSec = pxToSec(end);
     onChange(Math.min(startSec, endSec), Math.max(startSec, endSec));
   }, [pxToSec, onChange, start, end]);
 
-  const onLayout = useCallback(
-    (e: React.UIEvent<HTMLDivElement>) => {
-      const w = e.currentTarget.offsetWidth;
+  useEffect(() => {
+    if (timelineRef.current) {
+      const w = timelineRef.current.offsetWidth;
       setWidth(w);
-      end.value = w;
-    },
-    [end]
-  );
+      setEnd(w);
+    }
+  }, []);
 
-  const panStart = Gesture.Pan()
-    .onChange((g) => {
-      const newValue = Math.max(0, Math.min(start.value + g.changeX, end.value - handleW));
-      start.value = newValue;
-    })
-    .onEnd(() => {
-      runOnJS(update)();
-    });
-
-  const panEnd = Gesture.Pan()
-    .onChange((g) => {
-      const newValue = Math.min(width, Math.max(end.value + g.changeX, start.value + handleW));
-      end.value = newValue;
-    })
-    .onEnd(() => {
-      runOnJS(update)();
-    });
-
-  const asStart = useAnimatedStyle(() => ({
-    transform: [{ translateX: start.value }],
-  }));
-
-  const asEnd = useAnimatedStyle(() => ({
-    transform: [{ translateX: end.value - handleW }],
-  }));
-
-  const asMask = useAnimatedStyle(() => {
-    const maskWidth = Math.max(handleW, end.value - start.value);
-    return {
-      left: start.value,
-      width: maskWidth,
-    };
-  });
+  const maskWidth = Math.max(handleW, end - start);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Trim</Text>
-      <View style={styles.timeline} onLayout={onLayout}>
-        <View style={styles.thumbsRow}>
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ color: 'var(--color-bg-overlay)', fontWeight: '700', fontSize: 14, marginBottom: 8 }}>
+        Trim
+      </div>
+      <div
+        ref={timelineRef}
+        style={{
+          position: 'relative',
+          height: 72,
+          borderRadius: 10,
+          overflow: 'hidden',
+          border: '1px solid #666',
+          backgroundColor: '#222',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'row', width: '100%', height: '100%' }}>
           {thumbs.length > 0 ? (
             thumbs.map((thumb, i) => (
-              <Image key={i} source={{ uri: thumb }} style={styles.thumb} resizeMode="cover" />
+              <img
+                key={i}
+                src={thumb}
+                alt={`Thumbnail ${i + 1}`}
+                style={{ flex: 1, height: '100%', objectFit: 'cover' }}
+              />
             ))
           ) : (
-            <View style={styles.placeholder} />
+            <div style={{ flex: 1, height: '100%', backgroundColor: '#333' }} />
           )}
-        </View>
+        </div>
 
-        <Animated.View style={[styles.mask, asMask]} />
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: start,
+            width: maskWidth,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            pointerEvents: 'none',
+          }}
+        />
 
-        <GestureDetector gesture={panStart}>
-          <Animated.View style={[styles.handle, asStart]} />
-        </GestureDetector>
-        <GestureDetector gesture={panEnd}>
-          <Animated.View style={[styles.handle, asEnd]} />
-        </GestureDetector>
-      </View>
-    </View>
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            width: handleW,
+            height: '100%',
+            backgroundColor: '#444',
+            borderRight: '1px solid #666',
+            borderLeft: '1px solid #666',
+            zIndex: 10,
+            transform: `translateX(${start}px)`,
+            cursor: 'ew-resize',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            width: handleW,
+            height: '100%',
+            backgroundColor: '#444',
+            borderRight: '1px solid #666',
+            borderLeft: '1px solid #666',
+            zIndex: 10,
+            transform: `translateX(${end - handleW}px)`,
+            cursor: 'ew-resize',
+          }}
+        />
+      </div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-  },
-  title: {
-    color: 'var(--color-bg-overlay)',
-    fontWeight: '700',
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  timeline: {
-    position: 'relative',
-    height: 72,
-    borderRadius: 10,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#666',
-    backgroundColor: '#222',
-  },
-  thumbsRow: {
-    flexDirection: 'row',
-    width: '100%',
-    height: '100%',
-  },
-  thumb: {
-    flex: 1,
-    height: '100%',
-  },
-  placeholder: {
-    flex: 1,
-    height: '100%',
-    backgroundColor: '#333',
-  },
-  handle: {
-    position: 'absolute',
-    top: 0,
-    width: 16,
-    height: '100%',
-    backgroundColor: '#444',
-    borderRightWidth: 1,
-    borderLeftWidth: 1,
-    borderColor: '#666',
-    zIndex: 10,
-  },
-  mask: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    pointerEvents: 'none',
-  },
-});

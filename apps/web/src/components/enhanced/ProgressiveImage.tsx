@@ -134,7 +134,7 @@ export function ProgressiveImage({
   useEffect(() => {
     if (priority) {
       loadImage();
-      return;
+      return undefined;
     }
 
     const observer = new IntersectionObserver(

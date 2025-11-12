@@ -229,7 +229,7 @@ export default function VenuePicker({
                     )}
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() = aria-label="X"> setSelectedVenue(null)}>
+                <Button variant="ghost" size="icon" onClick={() => setSelectedVenue(null)} aria-label="Close venue details">
                   <X size={20} />
                 </Button>
               </div>

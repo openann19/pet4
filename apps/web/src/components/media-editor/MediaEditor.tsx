@@ -2,11 +2,8 @@
 
 import { editMedia } from '@/core/services/media/edit-media';
 import type { FilterName, ImageOperation, MediaInput } from '@/core/types/media-types';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { createLogger } from '@/lib/logger';
-import React, { useCallback, useMemo, useState } from 'react';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import React, { useCallback, useState } from 'react';
 
 const logger = createLogger('MediaEditor');
 
@@ -18,30 +15,10 @@ export interface MediaEditorProps {
   onCancel?: () => void;
 }
 
-const isWeb = typeof window !== 'undefined';
-
 export function MediaEditor({ source, onDone, onCancel }: MediaEditorProps): React.ReactElement {
-  const scale = useSharedValue(1);
-  const tx = useSharedValue(0);
-  const ty = useSharedValue(0);
   const [filter, setFilter] = useState<FilterName>('none');
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const panZoom = useMemo(() => {
-    return Gesture.Simultaneous(
-      Gesture.Pan().onChange((e) => {
-        tx.value += e.changeX;
-        ty.value += e.changeY;
-      }),
-      Gesture.Pinch().onChange((e) => {
-        scale.value *= e.scaleChange;
-      })
-    );
-  }, [scale, tx, ty]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: tx.value }, { translateY: ty.value }, { scale: scale.value }],
-  }));
+  const [transform, setTransform] = useState({ scale: 1, x: 0, y: 0 });
 
   const handleExport = useCallback(async (): Promise<void> => {
     if (isProcessing) {
@@ -85,29 +62,29 @@ export function MediaEditor({ source, onDone, onCancel }: MediaEditorProps): Rea
     <div
       style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'var(--color-fg)' }}
     >
-      <GestureDetector gesture={panZoom}>
-        <AnimatedView style={animatedStyle}>
-          {isWeb ? (
-            <img
-              src={source.uri}
-              alt="Media preview"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'var(--color-fg)',
-              }}
-            />
-          )}
-        </AnimatedView>
-      </GestureDetector>
+      <div
+        style={{
+          flex: 1,
+          overflow: 'hidden',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <img
+          src={source.uri}
+          alt="Media preview"
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+            transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
+            transition: 'transform 0.1s ease-out',
+          }}
+          draggable={false}
+        />
+      </div>
 
       <div
         style={{
@@ -147,26 +124,21 @@ interface ToolChipProps {
 
 function ToolChip({ active, onPress, label }: ToolChipProps): React.ReactElement {
   return (
-    <AnimatedView
+    <button
       onClick={onPress}
       style={{
-        paddingHorizontal: 10,
-        paddingVertical: 6,
+        padding: '6px 10px',
         borderRadius: 999,
         backgroundColor: active ? '#08f' : '#222',
         cursor: 'pointer',
+        border: 'none',
+        color: active ? 'var(--color-bg-overlay)' : '#aaa',
+        fontSize: 12,
+        fontWeight: active ? '600' : '400',
       }}
     >
-      <Animated.Text
-        style={{
-          color: active ? 'var(--color-bg-overlay)' : '#aaa',
-          fontSize: 12,
-          fontWeight: active ? '600' : '400',
-        }}
-      >
-        {label}
-      </Animated.Text>
-    </AnimatedView>
+      {label}
+    </button>
   );
 }
 
@@ -186,41 +158,23 @@ function ToolButton({
   const backgroundColor = disabled ? '#666' : variant === 'primary' ? '#0af' : '#444';
   const textColor = variant === 'primary' && !disabled ? 'var(--color-fg)' : 'var(--color-bg-overlay)';
 
-  const handleClick = disabled ? undefined : onPress;
-  const styleProps: {
-    paddingHorizontal: number;
-    paddingVertical: number;
-    borderRadius: number;
-    backgroundColor: string;
-    cursor: string;
-    opacity: number;
-    onClick?: () => void;
-  } = {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 12,
-    backgroundColor,
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.5 : 1,
-  };
-  if (handleClick !== undefined) {
-    styleProps.onClick = handleClick;
-  }
-
   return (
-    <AnimatedView
-      {...(handleClick !== undefined ? { onClick: handleClick } : {})}
-      style={styleProps}
+    <button
+      onClick={disabled ? undefined : onPress}
+      disabled={disabled}
+      style={{
+        padding: '8px 14px',
+        borderRadius: 12,
+        backgroundColor,
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.5 : 1,
+        border: 'none',
+        color: textColor,
+        fontWeight: '600',
+        fontSize: 14,
+      }}
     >
-      <Animated.Text
-        style={{
-          color: textColor,
-          fontWeight: '600',
-          fontSize: 14,
-        }}
-      >
-        {label}
-      </Animated.Text>
-    </AnimatedView>
+      {label}
+    </button>
   );
 }

@@ -5,7 +5,7 @@ import type { ComponentProps } from 'react';
 import * as SliderPrimitive from '@radix-ui/react-slider';
 import { MotionView } from '@petspark/motion';
 
-import { cn } from '../utils';
+import { cn } from '@/lib/utils';
 
 function Slider({
   className,
