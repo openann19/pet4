@@ -4,56 +4,54 @@
 
 The PetSpark web application has been migrated from React Native Reanimated compatibility layer to native Framer Motion animations. This document explains the migration and how to use animations going forward.
 
+> **📋 For comprehensive migration details, file-by-file guidance, and roadmap:**  
+> See [apps/web/FIX_SUMMARY.md](apps/web/FIX_SUMMARY.md) for complete technical details and migration guidance.
+
 ## What Changed
 
 ### Before (React Native Reanimated Compatibility)
+
 ```tsx
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion'
 
 function Component() {
-  const opacity = useSharedValue(0);
-  
+  const opacity = useSharedValue(0)
+
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value
-  }));
-  
-  return <Animated.View style={animatedStyle}>Content</Animated.View>;
+    opacity: opacity.value,
+  }))
+
+  return <Animated.View style={animatedStyle}>Content</Animated.View>
 }
 ```
 
 ### After (Framer Motion - Preferred)
+
 ```tsx
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'
 
 function Component() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
       Content
     </motion.div>
-  );
+  )
 }
 ```
 
 ### Alternative (Using Motion Package Compatibility Layer)
+
 ```tsx
-import { useMotionValue, animate } from '@petspark/motion';
+import { useMotionValue, animate } from '@petspark/motion'
 
 function Component() {
-  const opacity = useMotionValue(0);
-  
+  const opacity = useMotionValue(0)
+
   useEffect(() => {
-    animate(opacity, 1, { duration: 0.3 });
-  }, [opacity]);
-  
-  return (
-    <motion.div style={{ opacity }}>
-      Content
-    </motion.div>
-  );
+    animate(opacity, 1, { duration: 0.3 })
+  }, [opacity])
+
+  return <motion.div style={{ opacity }}>Content</motion.div>
 }
 ```
 
@@ -62,6 +60,7 @@ function Component() {
 ### 1. Animated.View → motion.div
 
 **Before:**
+
 ```tsx
 <Animated.View style={animatedStyle}>
   <Text>Hello</Text>
@@ -69,6 +68,7 @@ function Component() {
 ```
 
 **After:**
+
 ```tsx
 <motion.div
   initial={{ opacity: 0, y: 20 }}
@@ -82,78 +82,86 @@ function Component() {
 ### 2. useSharedValue → useMotionValue
 
 **Before:**
+
 ```tsx
-const scale = useSharedValue(1);
-scale.value = withSpring(1.2);
+const scale = useSharedValue(1)
+scale.value = withSpring(1.2)
 ```
 
 **After:**
+
 ```tsx
-const scale = useMotionValue(1);
-animate(scale, 1.2, { type: 'spring', stiffness: 200, damping: 20 });
+const scale = useMotionValue(1)
+animate(scale, 1.2, { type: 'spring', stiffness: 200, damping: 20 })
 ```
 
 ### 3. useAnimatedStyle → Direct Style Binding
 
 **Before:**
+
 ```tsx
 const animatedStyle = useAnimatedStyle(() => ({
   transform: [{ scale: scale.value }],
-  opacity: opacity.value
-}));
+  opacity: opacity.value,
+}))
 
-return <Animated.View style={animatedStyle} />;
+return <Animated.View style={animatedStyle} />
 ```
 
 **After:**
+
 ```tsx
 return (
   <motion.div
     style={{
       scale,
-      opacity
+      opacity,
     }}
   />
-);
+)
 ```
 
 ### 4. withSpring/withTiming → Spring/Tween Transitions
 
 **Before:**
+
 ```tsx
-opacity.value = withSpring(1, { damping: 20, stiffness: 200 });
-opacity.value = withTiming(1, { duration: 300 });
+opacity.value = withSpring(1, { damping: 20, stiffness: 200 })
+opacity.value = withTiming(1, { duration: 300 })
 ```
 
 **After:**
+
 ```tsx
 // Spring
 animate(opacity, 1, {
   type: 'spring',
   damping: 20,
-  stiffness: 200
-});
+  stiffness: 200,
+})
 
 // Timing
 animate(opacity, 1, {
-  duration: 0.3 // in seconds, not milliseconds
-});
+  duration: 0.3, // in seconds, not milliseconds
+})
 ```
 
 ### 5. Complex Animations with useTransform
 
 **Before:**
+
 ```tsx
-const scrollY = useSharedValue(0);
+const scrollY = useSharedValue(0)
 const opacity = useDerivedValue(() => {
-  return interpolate(scrollY.value, [0, 100], [1, 0]);
-});
+  return interpolate(scrollY.value, [0, 100], [1, 0])
+})
 ```
 
 **After:**
+
 ```tsx
-const scrollY = useMotionValue(0);
-const opacity = useTransform(scrollY, [0, 100], [1, 0]);
+const scrollY = useMotionValue(0)
+const opacity = useTransform(scrollY, [0, 100], [1, 0])
 ```
 
 ## Component Patterns
@@ -173,15 +181,11 @@ const opacity = useTransform(scrollY, [0, 100], [1, 0]);
 ### Exit Animations (with AnimatePresence)
 
 ```tsx
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion'
 
-<AnimatePresence>
+;<AnimatePresence>
   {show && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       Content
     </motion.div>
   )}
@@ -191,11 +195,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 ### Gesture Animations
 
 ```tsx
-<motion.div
-  whileHover={{ scale: 1.05 }}
-  whileTap={{ scale: 0.95 }}
-  transition={{ duration: 0.2 }}
->
+<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.2 }}>
   Click me
 </motion.div>
 ```
@@ -208,17 +208,17 @@ const container = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
+      staggerChildren: 0.1,
+    },
+  },
+}
 
 const item = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-};
+  show: { opacity: 1, y: 0 },
+}
 
-<motion.ul variants={container} initial="hidden" animate="show">
+;<motion.ul variants={container} initial="hidden" animate="show">
   {items.map(item => (
     <motion.li key={item.id} variants={item}>
       {item.text}
@@ -234,25 +234,25 @@ The `@petspark/motion` package provides both Framer Motion APIs and compatibilit
 ### Direct Framer Motion (Recommended)
 
 ```tsx
-import { motion, animate, useMotionValue, useTransform } from '@petspark/motion';
+import { motion, animate, useMotionValue, useTransform } from '@petspark/motion'
 ```
 
 ### Reanimated-Compatible APIs (For Gradual Migration)
 
 ```tsx
 import {
-  useSharedValue,      // Maps to useMotionValue
-  useAnimatedStyle,    // Returns CSS styles
-  withSpring,          // Returns animation config
-  withTiming,          // Returns animation config
-  animate,             // Direct animation function
-} from '@petspark/motion';
+  useSharedValue, // Maps to useMotionValue
+  useAnimatedStyle, // Returns CSS styles
+  withSpring, // Returns animation config
+  withTiming, // Returns animation config
+  animate, // Direct animation function
+} from '@petspark/motion'
 ```
 
 ### Custom Components
 
 ```tsx
-import { MotionView, MotionText, MotionScrollView } from '@petspark/motion';
+import { MotionView, MotionText, MotionScrollView } from '@petspark/motion'
 ```
 
 ## Benefits of Framer Motion
@@ -273,22 +273,22 @@ import { MotionView, MotionText, MotionScrollView } from '@petspark/motion';
 5. **Consider Reduced Motion** - Use `useReducedMotion` hook for accessibility
 
 ```tsx
-import { useReducedMotion } from '@petspark/motion';
+import { useReducedMotion } from '@petspark/motion'
 
 function Component() {
-  const prefersReducedMotion = useReducedMotion();
-  
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{
-        duration: prefersReducedMotion ? 0 : 0.3
+        duration: prefersReducedMotion ? 0 : 0.3,
       }}
     >
       Content
     </motion.div>
-  );
+  )
 }
 ```
 
@@ -304,28 +304,31 @@ function Component() {
 ### Issue: Animations not working
 
 **Solution:** Ensure you're importing from the correct package:
+
 ```tsx
 // ✅ Correct
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'
 // or
-import { motion } from '@petspark/motion';
+import { motion } from '@petspark/motion'
 
 // ❌ Incorrect
-import { motion } from 'react-native-reanimated';
+import { motion } from 'react-native-reanimated'
 ```
 
 ### Issue: Type errors with motion values
 
 **Solution:** Use `MotionValue` type from framer-motion:
-```tsx
-import type { MotionValue } from 'framer-motion';
 
-const myValue: MotionValue<number> = useMotionValue(0);
+```tsx
+import type { MotionValue } from 'framer-motion'
+
+const myValue: MotionValue<number> = useMotionValue(0)
 ```
 
 ### Issue: Animations feel too fast/slow
 
 **Solution:** Remember Framer Motion uses seconds, not milliseconds:
+
 ```tsx
 // 300ms in Reanimated
 withTiming(value, { duration: 300 })
@@ -337,7 +340,7 @@ animate(value, target, { duration: 0.3 })
 ## Migration Checklist
 
 - [x] Replace `Animated.View` with `motion.div`
-- [x] Replace `Animated.Text` with `motion.span` 
+- [x] Replace `Animated.Text` with `motion.span`
 - [x] Update `useSharedValue` to `useMotionValue`
 - [x] Convert `withSpring`/`withTiming` to `animate()` calls
 - [x] Update duration values (ms → seconds)

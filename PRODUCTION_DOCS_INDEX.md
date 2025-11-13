@@ -26,10 +26,12 @@
 
 ### Web Application Documentation
 
-| Document                                                                         | Purpose                  | Status                          |
-| -------------------------------------------------------------------------------- | ------------------------ | ------------------------------- |
-| [apps/web/RUNBOOK_admin.md](./apps/web/RUNBOOK_admin.md)                         | Web operations runbook   | ✅ Complete (needs contacts)    |
-| [apps/web/docs/PRODUCTION_READINESS.md](./apps/web/docs/PRODUCTION_READINESS.md) | Web production checklist | ⚠️ Updated with accurate status |
+| Document                                                                         | Purpose                       | Status                          |
+| -------------------------------------------------------------------------------- | ----------------------------- | ------------------------------- |
+| [apps/web/RUNBOOK_admin.md](./apps/web/RUNBOOK_admin.md)                         | Web operations runbook        | ✅ Complete (needs contacts)    |
+| [apps/web/docs/PRODUCTION_READINESS.md](./apps/web/docs/PRODUCTION_READINESS.md) | Web production checklist      | ⚠️ Updated with accurate status |
+| [apps/web/FIX_SUMMARY.md](./apps/web/FIX_SUMMARY.md)                             | Animation migration guide     | ✅ Complete                     |
+| [FRAMER_MOTION_MIGRATION.md](./FRAMER_MOTION_MIGRATION.md)                       | Framer Motion quick reference | ✅ Complete                     |
 
 ### Mobile Application Documentation
 
