@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Animated } from '@petspark/motion';
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -188,7 +188,12 @@ export default function PerformanceMonitoring() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {getSystemMetrics().map((metric) => (
-          <Animated.View key={metric.label}>
+          <motion.div
+            key={metric.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
             <Card className="p-6">
               <div className="flex items-center justify-between mb-2">
                 <div className={getStatusColor(metric.status)}>{metric.icon}</div>
@@ -207,7 +212,7 @@ export default function PerformanceMonitoring() {
                 )}
               </div>
             </Card>
-          </Animated.View>
+          </motion.div>
         ))}
       </div>
 

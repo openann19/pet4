@@ -3,10 +3,9 @@
 import { editMedia } from '@/core/services/media/edit-media';
 import { useUploadPicker } from '@/core/services/media/picker';
 import type { ImageOperation, MediaInput, VideoOperation } from '@/core/types/media-types';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { createLogger } from '@/lib/logger';
 import React, { useCallback, useState } from 'react';
-import Animated, { useSharedValue, withTiming } from '@petspark/motion';
+import { motion, useMotionValue, animate } from 'framer-motion';
 import { DropZoneWeb } from './drop-zone-web';
 import { MediaEditor } from './MediaEditor';
 import { VideoTrimmer } from './video-trimmer';
@@ -29,7 +28,7 @@ export function UploadAndEditScreen({
   const [startSec, setStartSec] = useState(0);
   const [endSec, setEndSec] = useState<number | undefined>(undefined);
   const [busy, setBusy] = useState(false);
-  const aBusy = useSharedValue(0);
+  const aBusy = useMotionValue(0);
 
   const doPick = useCallback(async () => {
     const m = await pickAny();
@@ -49,7 +48,7 @@ export function UploadAndEditScreen({
     }
 
     setBusy(true);
-    aBusy.value = withTiming(1, { duration: 160 });
+    animate(aBusy, 1, { duration: 0.16 });
 
     try {
       if (media.type === 'image') {
@@ -82,7 +81,7 @@ export function UploadAndEditScreen({
       throw err;
     } finally {
       setBusy(false);
-      aBusy.value = withTiming(0, { duration: 160 });
+      animate(aBusy, 0, { duration: 0.16 });
     }
   }, [media, busy, startSec, endSec, onDone, aBusy]);
 
@@ -219,18 +218,20 @@ function Button({
   const handleClick = disabled ? undefined : onPress;
 
   return (
-    <AnimatedView
-      {...(handleClick ? { onClick: handleClick } : {})}
+    <motion.button
+      onClick={handleClick}
       style={{
         ...styles['btn'],
         ...(variant === 'secondary' ? styles['btnSecondary'] : styles['btnPrimary']),
         ...(disabled ? styles['btnDisabled'] : {}),
       }}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled }}
+      role="button"
+      aria-label={label}
+      aria-disabled={disabled}
+      whileHover={!disabled ? { scale: 1.05 } : undefined}
+      whileTap={!disabled ? { scale: 0.95 } : undefined}
     >
-      <Animated.Text
+      <motion.span
         style={{
           color: textColor,
           fontWeight: '600',
@@ -238,8 +239,8 @@ function Button({
         }}
       >
         {label}
-      </Animated.Text>
-    </AnimatedView>
+      </motion.span>
+    </motion.button>
   );
 }
 

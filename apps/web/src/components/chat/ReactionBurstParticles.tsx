@@ -1,5 +1,5 @@
 /**
- * Reaction Burst Particles — Web (Reanimated v3, UI-thread)
+ * Reaction Burst Particles — Web (Framer Motion)
  * - Ring emission with subtle jitter
  * - Deterministic phases via seeded RNG
  * - Reduced motion → fast micro-pop (≤120ms)
@@ -7,19 +7,89 @@
  * Location: apps/web/src/components/chat/ReactionBurstParticles.tsx
  */
 
-import { useEffect, useMemo } from 'react';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-  runOnJS,
-  withDelay,
-  Easing,
-} from '@petspark/motion';
+import { useEffect, useMemo, useRef } from 'react';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng';
 import { useUIConfig } from "@/hooks/use-ui-config";
+
+interface ParticleProps {
+  tx: number;
+  ty: number;
+  delay: number;
+  size: number;
+  color: string;
+  reduced: boolean;
+  dur: number;
+  onFinish: () => void;
+  enabled: boolean;
+}
+
+function Particle({ tx, ty, delay, size, color, reduced, dur, onFinish, enabled }: ParticleProps) {
+  const sx = useMotionValue(0);
+  const scale = useMotionValue(0.7);
+  const opacity = useMotionValue(0);
+  const x = useTransform(sx, (v) => v * tx);
+  const y = useTransform(sx, (v) => v * ty);
+  
+  useEffect(() => {
+    if (!enabled) return;
+    
+    if (reduced) {
+      animate(opacity, 0, { duration: 0 });
+      animate(scale, 1, { duration: 0 });
+      animate(sx, 1, { 
+        duration: getReducedMotionDuration(120, true) / 1000 
+      }).then(() => {
+        onFinish();
+      });
+      return;
+    }
+    
+    const timeoutId = setTimeout(() => {
+      animate(opacity, 1, { 
+        duration: Math.max(80, dur * 0.25) / 1000,
+        ease: [0.33, 1, 0.68, 1]
+      });
+      animate(scale, 1, { 
+        type: 'spring',
+        stiffness: 220,
+        damping: 22
+      });
+      animate(sx, 1, { 
+        duration: dur / 1000,
+        ease: [0.33, 1, 0.68, 1]
+      }).then(() => {
+        animate(opacity, 0, { 
+          duration: Math.max(100, dur * 0.35) / 1000 
+        }).then(() => {
+          onFinish();
+        });
+      });
+    }, delay);
+    
+    return () => clearTimeout(timeoutId);
+  }, [enabled, reduced, dur, delay, onFinish, sx, scale, opacity, tx, ty]);
+  
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        x,
+        y,
+        scale,
+        opacity,
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: color,
+        boxShadow: `0 0 ${size * 0.7}px ${color}55`,
+      }}
+    />
+  );
+}
 
 export interface ReactionBurstParticlesProps {
   enabled?: boolean;
@@ -48,80 +118,45 @@ export function ReactionBurstParticles({
     const reduced = useReducedMotion();
   const dur = getReducedMotionDuration(600, reduced);
 
-  const { particles, finishedCount } = useMemo(() => {
+  // Generate particle positions using deterministic RNG
+  const particleData = useMemo(() => {
     const rng = createSeededRNG(seed);
-    const arr = Array.from({ length: count }, (_, i) => {
+    return Array.from({ length: count }, (_, i) => {
       const angle = (i / count) * Math.PI * 2;
       const jitter = rng.range(-Math.PI / 24, Math.PI / 24);
       const theta = angle + jitter;
-      const sx = useSharedValue(0);
-      const scale = useSharedValue(0.7);
-      const opacity = useSharedValue(0);
       const tx = Math.cos(theta) * radius * rng.range(0.9, 1.05);
       const ty = Math.sin(theta) * radius * rng.range(0.9, 1.05);
-      return { sx, scale, opacity, tx, ty, delay: i * staggerMs };
+      return { tx, ty, delay: i * staggerMs };
     });
-    const finishedCount = useSharedValue(0);
-    return { particles: arr, finishedCount };
   }, [count, radius, seed, staggerMs]);
-
-  useEffect(() => {
-    if (!enabled) return;
-
-    particles.forEach((p) => {
-      if (reduced) {
-        p.opacity.value = withTiming(0, { duration: 0 });
-        p.scale.value = withTiming(1, { duration: 0 });
-        p.sx.value = withTiming(1, { duration: getReducedMotionDuration(120, true) }, () => {
-          finishedCount.value += 1;
-          if (finishedCount.value === particles.length && onComplete) {
-            runOnJS(onComplete)();
-          }
-        });
-        return;
-      }
-
-      p.opacity.value = withDelay(
-        p.delay,
-        withTiming(1, { duration: Math.max(80, dur * 0.25), easing: Easing.out(Easing.cubic) })
-      );
-      p.scale.value = withDelay(p.delay, withSpring(1, { stiffness: 220, damping: 22 }));
-      p.sx.value = withDelay(
-        p.delay,
-        withTiming(1, { duration: dur, easing: Easing.out(Easing.cubic) }, () => {
-          p.opacity.value = withTiming(0, { duration: Math.max(100, dur * 0.35) }, () => {
-            finishedCount.value += 1;
-            if (finishedCount.value === particles.length && onComplete) {
-              runOnJS(onComplete)();
-            }
-          });
-        })
-      );
-    });
-  }, [enabled, dur, particles, onComplete, reduced, finishedCount]);
+  
+  const finishedCount = useRef(0);
+  
+  const handleParticleFinish = () => {
+    finishedCount.current += 1;
+    if (finishedCount.current === particleData.length && onComplete) {
+      onComplete();
+      finishedCount.current = 0;
+    }
+  };
 
   return (
     <div className={`absolute inset-0 pointer-events-none ${className ?? ''}`}>
-      {particles.map((p, idx) => {
-        const style = useAnimatedStyle(() => ({
-          position: 'absolute',
-          left: '50%',
-          top: '50%',
-          transform: [
-            { translateX: p.sx.value * p.tx },
-            { translateY: p.sx.value * p.ty },
-            { scale: p.scale.value },
-          ],
-          opacity: p.opacity.value,
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          backgroundColor: color,
-          boxShadow: `0 0 ${size * 0.7}px ${color}55`,
-        }));
-
-        return <Animated.View key={idx} style={style} />;
-      })}
+      {particleData.map((p, idx) => (
+        <Particle 
+          key={idx}
+          tx={p.tx}
+          ty={p.ty}
+          delay={p.delay}
+          size={size}
+          color={color}
+          reduced={reduced}
+          dur={dur}
+          onFinish={handleParticleFinish}
+          enabled={enabled}
+        />
+      ))}
     </div>
   );
 }
