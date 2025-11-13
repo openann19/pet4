@@ -84,7 +84,7 @@ const STATUS_COLORS: Record<PresenceStatus, { primary: string; secondary: string
  *   size: 48
  * })
  *
- * <Animated.View style={[styles.ring, animatedStyle]} />
+ * <motion.div style={{ ...styles.ring, ...animatedStyle }} />
  * ```
  */
 

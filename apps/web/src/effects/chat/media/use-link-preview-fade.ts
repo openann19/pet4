@@ -72,12 +72,12 @@ const SHIMMER_DURATION = 1200; // ms
  *   isLoaded: false
  * })
  *
- * <Animated.View style={skeletonAnimatedStyle}>
- *   <Animated.View style={shimmerAnimatedStyle} />
- * </Animated.View>
- * <Animated.View style={contentAnimatedStyle}>
+ * <motion.div style={skeletonAnimatedStyle}>
+ *   <motion.div style={shimmerAnimatedStyle} />
+ * </motion.div>
+ * <motion.div style={contentAnimatedStyle}>
  *   {content}
- * </Animated.View>
+ * </motion.div>
  * ```
  */
 
