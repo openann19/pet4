@@ -16,7 +16,7 @@ import {
   withRepeat,
   withTiming,
   withSpring,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { toast } from 'sonner';
 
 const logger = createLogger('PetPhotoAnalyzer');

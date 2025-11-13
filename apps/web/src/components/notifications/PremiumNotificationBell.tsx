@@ -14,7 +14,7 @@ import {
   withSequence,
   interpolate,
   Extrapolation,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';

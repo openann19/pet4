@@ -1,6 +1,6 @@
 'use client';
 
-import { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle } from '@petspark/motion';
 import { useMemo } from 'react';
 
 export interface UseBubbleMoodThemeOptions {

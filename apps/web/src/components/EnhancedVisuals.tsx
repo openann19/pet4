@@ -5,7 +5,7 @@ import {
   withTiming,
   withRepeat,
   withSequence,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import React from 'react';
 import type { ReactNode } from 'react';
 import { createLogger } from '@/lib/logger';

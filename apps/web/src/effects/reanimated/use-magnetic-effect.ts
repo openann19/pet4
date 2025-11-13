@@ -1,12 +1,8 @@
 'use client';
 
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  type SharedValue,
-} from 'react-native-reanimated';
+import { useMotionValue, animate, type MotionValue } from 'framer-motion';
 import { useCallback } from 'react';
+import type { Variants } from 'framer-motion';
 
 export interface UseMagneticEffectOptions {
   strength?: number;
@@ -16,9 +12,9 @@ export interface UseMagneticEffectOptions {
 }
 
 export interface UseMagneticEffectReturn {
-  translateX: SharedValue<number>;
-  translateY: SharedValue<number>;
-  animatedStyle: ReturnType<typeof useAnimatedStyle>;
+  translateX: MotionValue<number>;
+  translateY: MotionValue<number>;
+  variants: Variants;
   handleMove: (x: number, y: number) => void;
   handleLeave: () => void;
 }
@@ -35,19 +31,20 @@ export function useMagneticEffect(options: UseMagneticEffectOptions = {}): UseMa
     enabled = true,
   } = options;
 
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
+  const translateX = useMotionValue(0);
+  const translateY = useMotionValue(0);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    if (!enabled) {
-      return {
-        transform: [{ translateX: 0 }, { translateY: 0 }],
-      };
-    }
-    return {
-      transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
-    };
-  });
+  const variants = {
+    rest: {
+      x: 0,
+      y: 0,
+      transition: {
+        type: 'spring' as const,
+        damping,
+        stiffness,
+      },
+    },
+  } satisfies Variants;
 
   const handleMove = useCallback(
     (x: number, y: number) => {
@@ -65,8 +62,16 @@ export function useMagneticEffect(options: UseMagneticEffectOptions = {}): UseMa
         const magneticX = normalizedX * strength;
         const magneticY = normalizedY * strength;
 
-        translateX.value = withSpring(magneticX, { damping, stiffness });
-        translateY.value = withSpring(magneticY, { damping, stiffness });
+        animate(translateX, magneticX, {
+          type: 'spring',
+          damping,
+          stiffness,
+        });
+        animate(translateY, magneticY, {
+          type: 'spring',
+          damping,
+          stiffness,
+        });
       }
     },
     [enabled, strength, damping, stiffness, translateX, translateY]
@@ -74,14 +79,22 @@ export function useMagneticEffect(options: UseMagneticEffectOptions = {}): UseMa
 
   const handleLeave = useCallback(() => {
     if (!enabled) return;
-    translateX.value = withSpring(0, { damping, stiffness });
-    translateY.value = withSpring(0, { damping, stiffness });
+    animate(translateX, 0, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
+    animate(translateY, 0, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
   }, [enabled, damping, stiffness, translateX, translateY]);
 
   return {
     translateX,
     translateY,
-    animatedStyle,
+    variants,
     handleMove,
     handleLeave,
   };

@@ -8,7 +8,7 @@ import {
   useAnimatedStyle,
   withDecay,
   cancelAnimation,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback, useState, useRef } from 'react';
 import { isTruthy, isDefined } from '@petspark/shared';
 

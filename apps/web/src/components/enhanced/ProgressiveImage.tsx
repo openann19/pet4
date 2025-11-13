@@ -1,7 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { AnimatePresence } from '@/effects/reanimated/animate-presence';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, useMotionValue, AnimatePresence, animate, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { supportsWebP, supportsAVIF } from '@/lib/image-loader';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -43,7 +41,7 @@ export function ProgressiveImage({
 }: ProgressiveImageProps) {
     const _uiConfig = useUIConfig();
     const [isLoaded, setIsLoaded] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState(placeholderSrc || src);
+  const [currentSrc, setCurrentSrc] = useState(placeholderSrc ?? src);
   const [error, setError] = useState(false);
   const [bestFormat, setBestFormat] = useState<'webp' | 'avif' | 'original'>('original');
   const imgRef = useRef<HTMLImageElement>(null);
@@ -158,31 +156,59 @@ export function ProgressiveImage({
     };
   }, [src, priority, loadImage]);
 
-  const placeholderOpacity = useSharedValue(1);
-  const imageOpacity = useSharedValue(0);
+  const placeholderOpacity = useMotionValue(1);
+  const imageOpacity = useMotionValue(0);
 
   useEffect(() => {
     if (isLoaded) {
-      placeholderOpacity.value = withTiming(0, { duration: 300 });
-      imageOpacity.value = withTiming(1, { duration: 300 });
+      animate(placeholderOpacity, 0, {
+        duration: 0.3,
+        ease: 'easeInOut',
+      });
+      animate(imageOpacity, 1, {
+        duration: 0.3,
+        ease: 'easeInOut',
+      });
     }
   }, [isLoaded, placeholderOpacity, imageOpacity]);
 
-  const placeholderStyle = useAnimatedStyle(() => ({
-    opacity: placeholderOpacity.value,
-  }));
+  const placeholderVariants: Variants = {
+    visible: {
+      opacity: 1,
+    },
+    hidden: {
+      opacity: 0,
+      transition: {
+        duration: 0.3,
+        ease: 'easeInOut',
+      },
+    },
+  };
 
-  const imageStyle = useAnimatedStyle(() => ({
-    opacity: imageOpacity.value,
-  }));
+  const imageVariants: Variants = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.3,
+        ease: 'easeInOut',
+      },
+    },
+  };
 
   return (
     <div className={cn('relative overflow-hidden', containerClassName)} style={{ aspectRatio }}>
       <AnimatePresence>
         {!isLoaded && placeholderSrc && (
-          <AnimatedView
+          <motion.div
             key="placeholder"
-            style={placeholderStyle}
+            variants={placeholderVariants}
+            initial="visible"
+            animate={isLoaded ? "hidden" : "visible"}
+            exit="hidden"
+            style={{ opacity: placeholderOpacity }}
             className={cn('absolute inset-0 w-full h-full', className)}
           >
             <img
@@ -192,11 +218,17 @@ export function ProgressiveImage({
               className={cn('w-full h-full object-cover', className)}
               style={{ filter: `blur(${String(blurAmount ?? '')}px)` }}
             />
-          </AnimatedView>
+          </motion.div>
         )}
       </AnimatePresence>
 
-      <AnimatedView style={imageStyle} className={cn('w-full h-full', className)}>
+      <motion.div
+        variants={imageVariants}
+        initial="hidden"
+        animate={isLoaded ? "visible" : "hidden"}
+        style={{ opacity: imageOpacity }}
+        className={cn('w-full h-full', className)}
+      >
         <img
           src={currentSrc}
           alt={alt}
@@ -207,7 +239,7 @@ export function ProgressiveImage({
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
         />
-      </AnimatedView>
+      </motion.div>
 
       {!isLoaded && !placeholderSrc && <div className="absolute inset-0 bg-muted animate-pulse" />}
 

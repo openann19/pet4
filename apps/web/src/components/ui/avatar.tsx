@@ -10,6 +10,7 @@ function Avatar({ className, ...props }: ComponentProps<typeof AvatarPrimitive.R
     <AvatarPrimitive.Root
       data-slot="avatar"
       className={cn('relative flex size-8 shrink-0 overflow-hidden rounded-full', className)}
+      role="img"
       {...props}
     />
   );
@@ -20,6 +21,7 @@ function AvatarImage({ className, ...props }: ComponentProps<typeof AvatarPrimit
     <AvatarPrimitive.Image
       data-slot="avatar-image"
       className={cn('aspect-square size-full', className)}
+      alt={props.alt || 'Avatar image'}
       {...props}
     />
   );
@@ -30,6 +32,7 @@ function AvatarFallback({ className, ...props }: ComponentProps<typeof AvatarPri
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn('bg-muted flex size-full items-center justify-center rounded-full', className)}
+      aria-label={props['aria-label'] || 'Avatar fallback'}
       {...props}
     />
   );

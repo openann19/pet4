@@ -9,7 +9,7 @@ import {
   withRepeat,
   withSequence,
   withDelay,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';

@@ -56,13 +56,14 @@ import {
   withRepeat,
   withSequence,
   withDelay,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { toast } from 'sonner';
+import { safeArrayAccess, exists, isNonEmptyArray } from '@/lib/runtime-safety';
 
 const logger = createLogger('DiscoverView');
 
@@ -145,7 +146,7 @@ export default function DiscoverView() {
     initialOpen: false,
   });
 
-  const userPet = Array.isArray(userPets) && userPets.length > 0 ? userPets[0] : undefined;
+  const userPet = safeArrayAccess(userPets, 0);
 
   const { stories, addStory, updateStory } = useStories({
     ...(userPet?.id && { currentPetId: userPet.id }),
@@ -681,11 +682,11 @@ export default function DiscoverView() {
 
   return (
     <PageTransitionWrapper key="discover-view" direction="up">
-      <div className="max-w-2xl mx-auto px-2 sm:px-4">
+      <main aria-label="Discover pets" className="max-w-2xl mx-auto px-2 sm:px-4">
         <div className="mb-4 sm:mb-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div className="flex-1 min-w-0">
-              <h2 className="text-xl sm:text-2xl font-bold mb-1">{t.discover.title}</h2>
+              <h1 className="text-xl sm:text-2xl font-bold mb-1">{t.discover.title}</h1>
               <p className="text-sm text-muted-foreground hidden sm:block">
                 {t.discover.subtitle} {userPet.name}
               </p>
@@ -1129,7 +1130,7 @@ export default function DiscoverView() {
             </DialogContent>
           </Dialog>
         )}
-      </div>
+      </main>
     </PageTransitionWrapper>
   );
 }

@@ -26,7 +26,7 @@ import {
   withTiming,
   withRepeat,
   withSequence,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 
 interface PetProfileTemplatesDialogProps {
   open: boolean;

@@ -1,13 +1,12 @@
 'use client';
 
-import { useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import React, { useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumChipProps {
@@ -38,15 +37,17 @@ export function PremiumChip({
   const opacity = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ scale: scale.get() }],
+    opacity: opacity.get(),
+  }));
 
   const handleClose = useCallback(() => {
     if (disabled || !onClose) return;
 
-    scale.value = withSpring(0.8, springConfigs.smooth);
-    opacity.value = withTiming(0, { duration: 200 });
+    const scaleTransition = withSpring(0.8, springConfigs.smooth);
+    animate(scale, scaleTransition.target, scaleTransition.transition);
+    const opacityTransition = withTiming(0, { duration: 200 });
+    animate(opacity, opacityTransition.target, opacityTransition.transition);
     haptics.impact('light');
 
     setTimeout(() => {

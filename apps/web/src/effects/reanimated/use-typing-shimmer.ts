@@ -9,7 +9,7 @@ import {
   withDelay,
   Easing,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect, useCallback } from 'react';
 
 export interface UseTypingShimmerOptions {

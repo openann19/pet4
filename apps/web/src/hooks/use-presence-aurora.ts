@@ -6,7 +6,7 @@
  */
 
 import { useMemo } from 'react';
-import { useSharedValue, withTiming, withRepeat } from 'react-native-reanimated';
+import { useSharedValue, withTiming, withRepeat } from '@petspark/motion';
 
 export interface UsePresenceAuroraOptions {
   status: 'online' | 'away' | 'busy' | 'offline';

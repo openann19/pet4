@@ -1,14 +1,9 @@
 'use client';
 
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useMotionValue, animate, type MotionValue } from 'framer-motion';
 import { haptics } from '@/lib/haptics';
 import { useCallback } from 'react';
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  type SharedValue,
-} from 'react-native-reanimated';
+import type { Variants } from 'framer-motion';
 
 export interface UseBounceOnTapOptions {
   scale?: number;
@@ -20,8 +15,8 @@ export interface UseBounceOnTapOptions {
 }
 
 export interface UseBounceOnTapReturn {
-  scale: SharedValue<number>;
-  animatedStyle: AnimatedStyle;
+  scale: MotionValue<number>;
+  variants: Variants;
   handlePress: () => void;
 }
 
@@ -38,39 +33,50 @@ export function useBounceOnTap(options: UseBounceOnTapOptions = {}): UseBounceOn
     hapticFeedback = true,
   } = options;
 
-  const scale = useSharedValue(1);
+  const scale = useMotionValue(1);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  }) as AnimatedStyle;
+  const variants: Variants = {
+    rest: {
+      scale: 1,
+      transition: {
+        type: 'spring',
+        damping,
+        stiffness,
+      },
+    },
+    tap: {
+      scale: scaleValue,
+      transition: {
+        type: 'spring',
+        damping,
+        stiffness,
+      },
+    },
+  };
 
   const handlePress = useCallback(() => {
     if (hapticFeedback) {
       haptics.impact('light');
     }
 
-    scale.value = withSpring(
-      scaleValue,
-      {
+    animate(scale, scaleValue, {
+      type: 'spring',
+      damping,
+      stiffness,
+    }).then(() => {
+      animate(scale, 1, {
+        type: 'spring',
         damping,
         stiffness,
-      },
-      () => {
-        scale.value = withSpring(1, {
-          damping,
-          stiffness,
-        });
-      }
-    );
+      });
+    });
 
     onPress?.();
   }, [scale, scaleValue, damping, stiffness, onPress, hapticFeedback]);
 
   return {
     scale,
-    animatedStyle,
+    variants,
     handlePress,
   };
 }

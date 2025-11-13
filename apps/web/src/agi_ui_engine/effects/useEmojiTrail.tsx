@@ -7,7 +7,7 @@ import {
   withTiming,
   withSequence,
   Easing,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from '@/hooks/use-ui-config';
 

@@ -20,7 +20,7 @@ import {
   withTiming,
   withDelay,
   type SharedValue,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 import { useReducedMotionSV } from '@/effects/chat/core/reduced-motion'
 import { useUIConfig } from '@/hooks/use-ui-config'
 

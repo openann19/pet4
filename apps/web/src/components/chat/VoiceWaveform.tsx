@@ -9,7 +9,7 @@
 import { useEffect } from 'react';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useVoiceWaveform } from '@/effects/chat/media/use-voice-waveform';
-import { useAnimatedStyle } from 'react-native-reanimated';
+import { useAnimatedStyle } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface VoiceWaveformProps {

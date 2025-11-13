@@ -18,7 +18,7 @@ import {
   useSharedValue,
   withSequence,
   withTiming,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { createLogger } from '@/lib/logger';
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion';
 import { randomRange } from '../core/seeded-rng';

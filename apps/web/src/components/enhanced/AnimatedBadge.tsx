@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import React, { useEffect } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, animate } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { Presence } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import type { ReactNode } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -26,18 +25,22 @@ export function AnimatedBadge({ children, show = true, className }: AnimatedBadg
 
   useEffect(() => {
     if (show) {
-      scale.value = withSpring(1, springConfigs.bouncy);
-      opacity.value = withSpring(1, springConfigs.smooth);
+      const scaleTransition = withSpring(1, springConfigs.bouncy);
+      animate(scale, scaleTransition.target, scaleTransition.transition);
+      const opacityTransition = withSpring(1, springConfigs.smooth);
+      animate(opacity, opacityTransition.target, opacityTransition.transition);
     } else {
-      scale.value = withSpring(0, springConfigs.smooth);
-      opacity.value = withSpring(0, springConfigs.smooth);
+      const scaleTransition = withSpring(0, springConfigs.smooth);
+      animate(scale, scaleTransition.target, scaleTransition.transition);
+      const opacityTransition = withSpring(0, springConfigs.smooth);
+      animate(opacity, opacityTransition.target, opacityTransition.transition);
     }
   }, [show, scale, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ scale: scale.get() }],
+    opacity: opacity.get(),
+  }));
 
   return (
     <Presence visible={show}>

@@ -1,13 +1,13 @@
 'use client';
 
-import { useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import React, { useCallback, useEffect } from 'react';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { getAriaButtonAttributes } from '@/lib/accessibility';
 
 export interface PremiumToggleProps {
   checked?: boolean;
@@ -34,49 +34,94 @@ export function PremiumToggle({
   className,
   'aria-label': ariaLabel,
 }: PremiumToggleProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const thumbPosition = useSharedValue(checked ? 1 : 0);
-  const glowOpacity = useSharedValue(checked ? 1 : 0);
+  const _uiConfig = useUIConfig();
+  const thumbPosition = useMotionValue(checked ? 1 : 0);
+  const glowOpacity = useMotionValue(checked ? 1 : 0);
 
-  const thumbStyle = useAnimatedStyle(() => {
+  useEffect(() => {
     const config = SIZE_CONFIG[size];
     const maxTranslate = config.width - config.thumb - 4;
-    return {
-      transform: [{ translateX: thumbPosition.value * maxTranslate }],
-    };
-  }) as AnimatedStyle;
+    animate(thumbPosition, checked ? 1 : 0, {
+      type: 'spring',
+      damping: springConfigs.bouncy.damping,
+      stiffness: springConfigs.bouncy.stiffness,
+    });
+    animate(glowOpacity, checked ? 1 : 0, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
+  }, [checked, thumbPosition, glowOpacity, size]);
 
-  const trackStyle = useAnimatedStyle(() => ({
-    backgroundColor: checked ? 'var(--primary)' : 'var(--muted)',
-  })) as AnimatedStyle;
+  const config = SIZE_CONFIG[size];
+  const maxTranslate = config.width - config.thumb - 4;
 
-  const glowStyle = useAnimatedStyle(() => ({
-    opacity: glowOpacity.value,
-    boxShadow: `0 0 ${glowOpacity.value * 12}px rgba(59, 130, 246, ${glowOpacity.value * 0.6})`,
-  })) as AnimatedStyle;
+  const thumbVariants: Variants = {
+    off: {
+      x: 0,
+    },
+    on: {
+      x: maxTranslate,
+      transition: {
+        type: 'spring',
+        damping: springConfigs.bouncy.damping,
+        stiffness: springConfigs.bouncy.stiffness,
+      },
+    },
+  };
+
+  const trackVariants: Variants = {
+    off: {
+      backgroundColor: 'var(--muted)',
+    },
+    on: {
+      backgroundColor: 'var(--primary)',
+      transition: {
+        duration: 0.3,
+      },
+    },
+  };
+
+  const glowVariants: Variants = {
+    off: {
+      opacity: 0,
+      boxShadow: '0 0 0px rgba(59, 130, 246, 0)',
+    },
+    on: {
+      opacity: 1,
+      boxShadow: '0 0 12px rgba(59, 130, 246, 0.6)',
+      transition: {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      },
+    },
+  };
 
   const handleToggle = useCallback(() => {
     if (disabled) return;
 
     const newChecked = !checked;
     onCheckedChange?.(newChecked);
-
-    thumbPosition.value = withSpring(newChecked ? 1 : 0, springConfigs.bouncy);
-    glowOpacity.value = withSpring(newChecked ? 1 : 0, springConfigs.smooth);
-
     haptics.impact('light');
-  }, [checked, disabled, onCheckedChange, thumbPosition, glowOpacity]);
+  }, [checked, disabled, onCheckedChange]);
 
-  const config = SIZE_CONFIG[size];
+  const toggleAriaAttrs = getAriaButtonAttributes({
+    label: ariaLabel,
+    pressed: checked,
+    disabled,
+  });
 
   return (
-    <div className={cn('flex items-center gap-3', className)}>
+    <div className={cn(
+      'flex items-center',
+      getSpacingClassesFromConfig({ gap: 'md' }),
+      className
+    )}>
       <button
         type="button"
         onClick={handleToggle}
         disabled={disabled}
-        aria-label={ariaLabel}
-        aria-checked={checked}
         role="switch"
         className={cn(
           'relative rounded-full transition-all duration-300',
@@ -88,13 +133,26 @@ export function PremiumToggle({
           width: config.width,
           height: config.height,
         }}
+        {...toggleAriaAttrs}
+        aria-checked={checked}
       >
-        <AnimatedView style={[trackStyle, glowStyle]} className="absolute inset-0 rounded-full" />
-        <AnimatedView
-          style={[thumbStyle, {
+        <motion.div
+          variants={trackVariants}
+          animate={checked ? 'on' : 'off'}
+          className="absolute inset-0 rounded-full"
+        />
+        <motion.div
+          variants={glowVariants}
+          animate={checked ? 'on' : 'off'}
+          className="absolute inset-0 rounded-full"
+        />
+        <motion.div
+          variants={thumbVariants}
+          animate={checked ? 'on' : 'off'}
+          style={{
             width: config.thumb,
             height: config.thumb,
-          }]}
+          }}
           className={cn(
             'absolute top-0.5 rounded-full bg-white shadow-lg',
             'transition-all duration-300'
@@ -104,8 +162,10 @@ export function PremiumToggle({
       {label && (
         <label
           onClick={handleToggle}
+          htmlFor={undefined}
           className={cn(
-            'text-sm font-medium cursor-pointer',
+            getTypographyClasses('caption'),
+            'cursor-pointer',
             disabled && 'cursor-not-allowed opacity-50'
           )}
         >

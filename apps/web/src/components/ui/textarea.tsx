@@ -1,13 +1,16 @@
 import type { ComponentProps } from "react"
 
 import { cn } from "@/lib/utils"
+import { getTypographyClasses, getSpacingClassesFromConfig } from "@/lib/typography"
 
 function Textarea({ className, ...props }: ComponentProps<"textarea">) {
   return (
     <textarea
       data-slot="textarea"
       className={cn(
-        "flex field-sizing-content min-h-16 w-full rounded-lg border border-gray-300 bg-background px-3 py-2 text-base text-foreground shadow-sm transition-all duration-200 outline-none",
+        "flex field-sizing-content min-h-16 w-full rounded-lg border border-gray-300 bg-background text-foreground shadow-sm transition-all duration-200 outline-none",
+        getTypographyClasses('body'),
+        getSpacingClassesFromConfig({ paddingX: 'md', paddingY: 'sm' }),
         "placeholder:text-muted-foreground placeholder:transition-opacity",
         "selection:bg-primary selection:text-primary-foreground",
         "focus:border-blue-500 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:placeholder:opacity-50 focus:shadow-md",

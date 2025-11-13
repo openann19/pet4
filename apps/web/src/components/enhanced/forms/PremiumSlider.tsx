@@ -1,14 +1,14 @@
 'use client';
 
-import { useCallback, useState } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import React, { useCallback, useState, useId } from 'react';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import * as SliderPrimitive from '@radix-ui/react-slider';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { getAriaFormFieldAttributes } from '@/lib/accessibility';
 
 export interface PremiumSliderProps {
   value?: number[];
@@ -41,18 +41,29 @@ export function PremiumSlider({
   className,
   'aria-label': ariaLabel,
 }: PremiumSliderProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const [isDragging, setIsDragging] = useState(false);
-  const tooltipOpacity = useSharedValue(0);
-  const tooltipScale = useSharedValue(0.8);
+  const _uiConfig = useUIConfig();
+  const [isDragging, setIsDragging] = useState(false);
+  const tooltipOpacity = useMotionValue(0);
+  const tooltipScale = useMotionValue(0.8);
 
   const currentValue = value[0] ?? min;
   const percentage = ((currentValue - min) / (max - min)) * 100;
 
-  const tooltipStyle = useAnimatedStyle(() => ({
-    opacity: tooltipOpacity.value,
-    transform: [{ scale: tooltipScale.value }],
-  })) as AnimatedStyle;
+  const tooltipVariants: Variants = {
+    hidden: {
+      opacity: 0,
+      scale: 0.8,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      },
+    },
+  };
 
   const handleValueChange = useCallback(
     (newValue: number[]) => {
@@ -65,14 +76,28 @@ export function PremiumSlider({
 
   const handleDragStart = useCallback(() => {
     setIsDragging(true);
-    tooltipOpacity.value = withSpring(1, springConfigs.smooth);
-    tooltipScale.value = withSpring(1, springConfigs.smooth);
+    animate(tooltipOpacity, 1, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
+    animate(tooltipScale, 1, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
   }, [tooltipOpacity, tooltipScale]);
 
   const handleDragEnd = useCallback(() => {
     setIsDragging(false);
-    tooltipOpacity.value = withTiming(0, { duration: 200 });
-    tooltipScale.value = withTiming(0.8, { duration: 200 });
+    animate(tooltipOpacity, 0, {
+      duration: 0.2,
+      ease: 'easeInOut',
+    });
+    animate(tooltipScale, 0.8, {
+      duration: 0.2,
+      ease: 'easeInOut',
+    });
   }, [tooltipOpacity, tooltipScale]);
 
   const sizes = {
@@ -87,17 +112,43 @@ export function PremiumSlider({
     lg: 'w-5 h-5',
   };
 
+  const generatedId = useId();
+  const sliderId = `${generatedId}-slider`;
+  const labelId = label ? `${sliderId}-label` : undefined;
+
   return (
     <div className={cn('w-full', className)}>
-      {(label || showValue) && (
-        <div className="flex items-center justify-between mb-2">
-          {label && <label className="text-sm font-medium text-foreground">{label}</label>}
-          {showValue && <span className="text-sm text-muted-foreground">{currentValue}</span>}
+      {(label ?? showValue) && (
+        <div className={cn(
+          'flex items-center justify-between',
+          getSpacingClassesFromConfig({ marginY: 'sm' })
+        )}>
+          {label && (
+            <label
+              id={labelId}
+              htmlFor={sliderId}
+              className={cn(
+                'text-foreground',
+                getTypographyClasses('caption')
+              )}
+            >
+              {label}
+            </label>
+          )}
+          {showValue && (
+            <span className={cn(
+              'text-muted-foreground',
+              getTypographyClasses('caption')
+            )}>
+              {currentValue}
+            </span>
+          )}
         </div>
       )}
 
       <div className="relative">
         <SliderPrimitive.Root
+          id={sliderId}
           value={value}
           onValueChange={handleValueChange}
           min={min}
@@ -105,7 +156,14 @@ export function PremiumSlider({
           step={step}
           disabled={disabled}
           className="relative flex w-full touch-none select-none items-center"
-          aria-label={ariaLabel}
+          {...getAriaFormFieldAttributes({
+            label: ariaLabel,
+            labelledBy: labelId,
+            disabled,
+          })}
+          aria-valuemin={min}
+          aria-valuemax={max}
+          aria-valuenow={currentValue}
           onPointerDown={handleDragStart}
           onPointerUp={handleDragEnd}
         >
@@ -147,12 +205,24 @@ export function PremiumSlider({
               )}
             >
               {isDragging && (
-                <AnimatedView
-                  style={tooltipStyle}
-                  className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-foreground text-background text-xs rounded shadow-lg whitespace-nowrap"
+                <motion.div
+                  variants={tooltipVariants}
+                  animate="visible"
+                  initial="hidden"
+                  style={{
+                    opacity: tooltipOpacity,
+                    scale: tooltipScale,
+                  }}
+                  className={cn(
+                    'absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background rounded shadow-lg whitespace-nowrap',
+                    getTypographyClasses('caption'),
+                    getSpacingClassesFromConfig({ paddingX: 'sm', paddingY: 'xs' })
+                  )}
+                  role="tooltip"
+                  aria-hidden="true"
                 >
-                  <div>{val}</div>
-                </AnimatedView>
+                  {val}
+                </motion.div>
               )}
             </SliderPrimitive.Thumb>
           ))}

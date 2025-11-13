@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useSharedValue, withTiming, useAnimatedStyle, Easing } from 'react-native-reanimated';
+import { useSharedValue, withTiming, useAnimatedStyle, Easing } from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from '@/hooks/use-ui-config';
 

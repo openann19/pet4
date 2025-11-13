@@ -1,15 +1,14 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { springConfigs } from '@/effects/reanimated/transitions';
-import { haptics } from '@/lib/haptics';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useMotionValue, animate, MotionView } from '@petspark/motion';
+import { useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { X, CheckCircle, AlertTriangle, Info, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { getToastAriaAttributes, generateId } from '@/lib/accessibility';
 
 export type PremiumToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -59,81 +58,95 @@ export function PremiumToast({
   action,
   duration = 5000,
   onDismiss,
-  position = 'top',
+  position: _position = 'top',
   showProgress = true,
 }: PremiumToastProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const Icon = icons[type];
-  const opacity = useSharedValue(0);
-  const translateY = useSharedValue(position === 'top' ? -20 : 20);
-  const translateX = useSharedValue(0);
-  const scale = useSharedValue(0.95);
-  const progressWidth = useSharedValue(100);
+  const _uiConfig = useUIConfig();
+  const Icon = icons[type];
+  const progressWidth = useMotionValue(100);
+  const progressWidthPercent = useTransform(progressWidth, (value) => `${value}%`);
   const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    opacity.value = withSpring(1, springConfigs.smooth);
-    translateY.value = withSpring(0, springConfigs.smooth);
-    scale.value = withSpring(1, springConfigs.smooth);
-  }, [opacity, translateY, scale]);
+  const titleId = useMemo(() => generateId('toast-title'), []);
+  const descriptionId = useMemo(() => generateId('toast-description'), []);
+  const ariaAttributes = useMemo(() => getToastAriaAttributes(type), [type]);
+  
+  const spacingClasses = useMemo(
+    () => getSpacingClassesFromConfig({ gap: 'md', padding: 'lg' }),
+    []
+  );
+
+  const handleDismiss = useCallback(() => {
+    setTimeout(() => onDismiss(id), 200);
+  }, [id, onDismiss]);
 
   useEffect(() => {
     if (!showProgress || isPaused || duration === 0) return;
 
-    progressWidth.value = withTiming(0, { duration });
+    animate(progressWidth, 0, {
+      duration: duration / 1000,
+      ease: 'linear',
+    });
 
     const timer = setTimeout(() => {
       handleDismiss();
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration, isPaused, showProgress, progressWidth]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [
-      { translateY: translateY.value },
-      { translateX: translateX.value },
-      { scale: scale.value },
-    ],
-  })) as AnimatedStyle;
-
-  const progressStyle = useAnimatedStyle(() => ({
-    width: `${progressWidth.value}%`,
-  })) as AnimatedStyle;
-
-  const handleDismiss = useCallback(() => {
-    opacity.value = withTiming(0, { duration: 200 });
-    translateX.value = withTiming(300, { duration: 200 });
-    scale.value = withTiming(0.9, { duration: 200 });
-    setTimeout(() => onDismiss(id), 200);
-  }, [id, onDismiss, opacity, translateX, scale]);
+  }, [duration, isPaused, showProgress, progressWidth, handleDismiss]);
 
   return (
-    <AnimatedView
-      style={animatedStyle}
+    <MotionView
+      style={{}}
       onMouseEnter={() => { setIsPaused(true); }}
       onMouseLeave={() => { setIsPaused(false); }}
       className={cn(
-        'relative flex items-start gap-3 p-4 rounded-xl border backdrop-blur-xl shadow-xl min-w-80 max-w-md',
+        'relative flex items-start rounded-xl border backdrop-blur-xl shadow-xl min-w-80 max-w-md',
         'transition-all duration-200',
+        spacingClasses,
         colors[type]
       )}
+      {...ariaAttributes}
+      aria-labelledby={titleId}
+      aria-describedby={description ? descriptionId : undefined}
     >
       {showProgress && (
-        <AnimatedView
-          style={progressStyle}
+        <MotionView
+          style={{ width: progressWidthPercent }}
           className="absolute top-0 left-0 h-1 bg-current opacity-30 rounded-t-xl"
+          aria-hidden="true"
         >
           <div />
-        </AnimatedView>
+        </MotionView>
       )}
 
-      <Icon className={cn('shrink-0 mt-0.5', iconColors[type])} size={20} />
+      <Icon 
+        className={cn('shrink-0 mt-0.5', iconColors[type])} 
+        size={20}
+        aria-hidden="true"
+      />
 
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-sm mb-1">{title}</div>
-        {description && <div className="text-xs opacity-90 leading-relaxed">{description}</div>}
+        <div 
+          id={titleId}
+          className={cn(
+            getTypographyClasses('subtitle'),
+            getSpacingClassesFromConfig({ marginY: 'xs' })
+          )}
+        >
+          {title}
+        </div>
+        {description && (
+          <div 
+            id={descriptionId}
+            className={cn(
+              getTypographyClasses('caption'),
+              'opacity-90'
+            )}
+          >
+            {description}
+          </div>
+        )}
         {action && (
           <Button
             variant="ghost"
@@ -142,7 +155,11 @@ export function PremiumToast({
               action.onClick();
               handleDismiss();
             }}
-            className="mt-2 h-7 text-xs font-medium hover:bg-background/50"
+            className={cn(
+              getSpacingClassesFromConfig({ marginY: 'sm' }),
+              'h-7 hover:bg-background/50'
+            )}
+            aria-label={action.label}
           >
             {action.label}
           </Button>
@@ -151,11 +168,14 @@ export function PremiumToast({
 
       <button
         onClick={handleDismiss}
-        className="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
-        aria-label="Dismiss notification"
+        className={cn(
+          'shrink-0 opacity-50 hover:opacity-100 transition-opacity',
+          getSpacingClassesFromConfig({ padding: 'xs' })
+        )}
+        aria-label={`Dismiss ${type} notification: ${title}`}
       >
-        <X size={16} />
+        <X size={16} aria-hidden="true" />
       </button>
-    </AnimatedView>
+    </MotionView>
   );
 }

@@ -7,7 +7,7 @@ import {
   withTiming,
   Easing,
   interpolate,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect } from 'react';
 
 export interface UseGlowPulseOptions {

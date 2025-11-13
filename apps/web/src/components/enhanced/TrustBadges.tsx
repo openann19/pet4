@@ -1,5 +1,5 @@
-import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useSharedValue, withTiming, useAnimatedStyle, animate } from '@petspark/motion';
 import { MotionView } from '@petspark/motion';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -91,14 +91,15 @@ function BadgeAnimated({ index, animated, sizeConfig, config, Icon }: BadgeAnima
 
   useEffect(() => {
     if (animated) {
-      scale.value = withTiming(1, { duration: 300 });
+      const scaleTransition = withTiming(1, { duration: 300 });
+      animate(scale, scaleTransition.target, scaleTransition.transition);
     }
   }, [animated, scale]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: staggered.opacity.value,
-      transform: [{ translateY: staggered.y.value }, { scale: scale.value }],
+      opacity: staggered.opacity.get(),
+      transform: [{ translateY: staggered.y.get() }, { scale: scale.get() }],
     };
   });
 
@@ -166,7 +167,8 @@ export function TrustScore({ score, size = 'md', showLabel = false }: TrustScore
 
   useEffect(() => {
     const targetDash = (score / 100) * circumference;
-    strokeDasharray.value = withTiming(targetDash, { duration: 1000 });
+    const dashTransition = withTiming(targetDash, { duration: 1000 });
+    animate(strokeDasharray, dashTransition.target, dashTransition.transition);
   }, [score, circumference, strokeDasharray]);
 
   const getScoreColor = (scoreValue: number) => {
@@ -191,7 +193,7 @@ export function TrustScore({ score, size = 'md', showLabel = false }: TrustScore
 
   const circleAnimatedStyle = useAnimatedStyle(() => {
     return {
-      strokeDasharray: `${strokeDasharray.value} ${circumference}`,
+      strokeDasharray: `${strokeDasharray.get()} ${circumference}`,
     };
   });
 

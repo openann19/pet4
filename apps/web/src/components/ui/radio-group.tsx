@@ -5,12 +5,18 @@ import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 import { Circle } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { getSpacingClassesFromConfig } from '@/lib/typography';
 
 function RadioGroup({ className, ...props }: ComponentProps<typeof RadioGroupPrimitive.Root>) {
   return (
     <RadioGroupPrimitive.Root
       data-slot="radio-group"
-      className={cn('grid gap-3', className)}
+      role="radiogroup"
+      className={cn(
+        'grid',
+        getSpacingClassesFromConfig({ gap: 'md' }),
+        className
+      )}
       {...props}
     />
   );
@@ -29,8 +35,9 @@ function RadioGroupItem({ className, ...props }: ComponentProps<typeof RadioGrou
       <RadioGroupPrimitive.Indicator
         data-slot="radio-group-indicator"
         className="relative flex items-center justify-center"
+        aria-hidden="true"
       >
-        <Circle className="fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" />
+        <Circle className="fill-primary absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2" aria-hidden="true" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   );

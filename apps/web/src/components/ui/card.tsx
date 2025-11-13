@@ -1,13 +1,15 @@
 import type { ComponentProps } from 'react';
 
 import { cn } from '@/lib/utils';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
 
 function Card({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="card"
       className={cn(
-        'bg-white text-card-foreground flex flex-col gap-6 rounded-3xl border border-border/60 transition-colors duration-200',
+        'bg-white text-card-foreground flex flex-col rounded-3xl border border-border/60 transition-colors duration-200',
+        getSpacingClassesFromConfig({ gap: 'xl' }),
         className
       )}
       {...props}
@@ -20,7 +22,8 @@ function CardHeader({ className, ...props }: ComponentProps<'div'>) {
     <div
       data-slot="card-header"
       className={cn(
-        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-12 sm:px-12 md:px-12 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
+        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
+        getSpacingClassesFromConfig({ gap: 'sm', paddingX: '2xl' }),
         className
       )}
       {...props}
@@ -32,7 +35,10 @@ function CardTitle({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-title"
-      className={cn('leading-none font-semibold', className)}
+      className={cn(
+        getTypographyClasses('subtitle'),
+        className
+      )}
       {...props}
     />
   );
@@ -42,7 +48,11 @@ function CardDescription({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-description"
-      className={cn('text-muted-foreground text-sm', className)}
+      className={cn(
+        'text-muted-foreground',
+        getTypographyClasses('caption'),
+        className
+      )}
       {...props}
     />
   );
@@ -59,14 +69,27 @@ function CardAction({ className, ...props }: ComponentProps<'div'>) {
 }
 
 function CardContent({ className, ...props }: ComponentProps<'div'>) {
-  return <div data-slot="card-content" className={cn('px-8 sm:px-12', className)} {...props} />;
+  return (
+    <div
+      data-slot="card-content"
+      className={cn(
+        getSpacingClassesFromConfig({ paddingX: 'xl' }),
+        className
+      )}
+      {...props}
+    />
+  );
 }
 
 function CardFooter({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-footer"
-      className={cn('flex items-center px-8 sm:px-12 [.border-t]:pt-6', className)}
+      className={cn(
+        'flex items-center [.border-t]:pt-6',
+        getSpacingClassesFromConfig({ paddingX: 'xl' }),
+        className
+      )}
       {...props}
     />
   );

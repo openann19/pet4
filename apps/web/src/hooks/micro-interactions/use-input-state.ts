@@ -21,7 +21,7 @@ import {
   withTiming,
   withSequence,
   type SharedValue,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 import { createLogger } from '@/lib/logger'
 import { triggerHaptic } from '@/effects/chat/core/haptic-manager'
 import { useReducedMotionSV } from '@/effects/chat/core/reduced-motion'

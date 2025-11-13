@@ -1,13 +1,9 @@
 'use client';
 
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
+import { useMotionValue, animate, type MotionValue } from 'framer-motion';
 import { useEffect } from 'react';
+import type { Variants } from 'framer-motion';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseShimmerOptions {
   duration?: number;
@@ -17,7 +13,9 @@ export interface UseShimmerOptions {
 }
 
 export interface UseShimmerReturn {
-  animatedStyle: ReturnType<typeof useAnimatedStyle>;
+  variants: Variants;
+  translateX: MotionValue<number>;
+  opacity: MotionValue<number>;
   start: () => void;
   stop: () => void;
 }
@@ -34,38 +32,27 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
     enabled = true,
   } = options;
 
-  const translateX = useSharedValue(-shimmerWidth);
-  const opacity = useSharedValue(0.3);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: translateX.value }],
-      opacity: opacity.value,
-    };
-  });
+  const translateX = useMotionValue(-shimmerWidth);
+  const opacity = useMotionValue(0.3);
 
   const start = () => {
-    translateX.value = withRepeat(
-      withTiming(shimmerWidth, {
-        duration,
-        easing: Easing.linear,
-      }),
-      -1,
-      false
-    );
-    opacity.value = withRepeat(
-      withTiming(0.3, {
-        duration: duration / 2,
-        easing: Easing.inOut(Easing.ease),
-      }),
-      -1,
-      true
-    );
+    animate(translateX, shimmerWidth, {
+      duration: duration / 1000,
+      ease: 'linear',
+      repeat: Infinity,
+      repeatType: 'loop',
+    });
+    animate(opacity, 0.3, {
+      duration: (duration / 2) / 1000,
+      ease: 'easeInOut',
+      repeat: Infinity,
+      repeatType: 'reverse',
+    });
   };
 
   const stop = () => {
-    translateX.value = -shimmerWidth;
-    opacity.value = 0.3;
+    translateX.set(-shimmerWidth);
+    opacity.set(0.3);
   };
 
   useEffect(() => {
@@ -81,10 +68,33 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
       stop();
       return undefined;
     }
-  }, [enabled, delay]);
+  }, [enabled, delay, translateX, opacity]);
+
+  const variants: Variants = {
+    shimmer: {
+      x: [-shimmerWidth, shimmerWidth],
+      opacity: [0.3, 0.3],
+      transition: {
+        x: {
+          duration: duration / 1000,
+          ease: 'linear',
+          repeat: Infinity,
+          repeatType: 'loop',
+        },
+        opacity: {
+          duration: (duration / 2) / 1000,
+          ease: 'easeInOut',
+          repeat: Infinity,
+          repeatType: 'reverse',
+        },
+      },
+    },
+  };
 
   return {
-    animatedStyle,
+    variants,
+    translateX,
+    opacity,
     start,
     stop,
   };

@@ -3,9 +3,14 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '@/lib/utils';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
 
 const badgeVariants = cva(
-  'inline-flex items-center justify-center rounded-[var(--radius-sm)] border px-2 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-(--coral-primary) focus-visible:ring-[var(--coral-primary)]/50 focus-visible:ring-[3px] aria-invalid:ring-[var(--error)]/20 dark:aria-invalid:ring-[var(--error)]/40 aria-invalid:border-(--error) transition-[color,box-shadow] overflow-hidden',
+  cn(
+    'inline-flex items-center justify-center rounded-[var(--radius-sm)] border w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-(--coral-primary) focus-visible:ring-[var(--coral-primary)]/50 focus-visible:ring-[3px] aria-invalid:ring-[var(--error)]/20 dark:aria-invalid:ring-[var(--error)]/40 aria-invalid:border-(--error) transition-[color,box-shadow] overflow-hidden',
+    getTypographyClasses('badge'),
+    getSpacingClassesFromConfig({ paddingX: 'sm', paddingY: 'xs', gap: 'xs' })
+  ),
   {
     variants: {
       variant: {

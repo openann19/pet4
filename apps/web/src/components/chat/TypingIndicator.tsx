@@ -8,7 +8,7 @@ import {
   withSequence,
   withTiming,
   withDelay,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import type { TypingUser } from '@/lib/chat-types';
 import { AnimatedView } from '@/effects/reanimated/animated-view';

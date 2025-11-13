@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { useSharedValue, type SharedValue } from 'react-native-reanimated';
+import { useSharedValue, type SharedValue } from '@petspark/motion';
 
 // Type definitions for optional React Native AccessibilityInfo
 interface AccessibilityInfoType {

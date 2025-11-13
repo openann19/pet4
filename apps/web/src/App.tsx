@@ -23,6 +23,9 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Toaster } from '@/components/ui/sonner'
 import { NavButton } from '@/components/navigation/NavButton'
 import { isTruthy } from '@petspark/shared';
+import type { View } from '@/lib/routes';
+import { getDefaultView, isValidView } from '@/lib/routes';
+import { useNavigation } from '@/hooks/use-navigation';
 
 // Route components - lazy loaded
 const DiscoverView = lazy(() => import(/* webpackPrefetch: true */ '@/components/views/DiscoverView'))
@@ -55,7 +58,8 @@ type AppState = 'welcome' | 'auth' | 'main'
 function App() {
   const NAV_BUTTON_BASE_CLASSES = 'flex flex-col items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px] sm:min-w-[70px]'
   
-  const [currentView, setCurrentView] = useState<View>('discover')
+  const [currentView, setCurrentView] = useState<View>(getDefaultView())
+  const navigation = useNavigation(setCurrentView)
   const [appState, setAppState] = useState<AppState>('welcome')
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup')
   const { t, theme, toggleTheme, language, toggleLanguage } = useApp()
@@ -434,7 +438,7 @@ function App() {
             style={pageTransition.style}
           >
             {currentView === 'discover' && <DiscoverView />}
-            {currentView === 'matches' && <MatchesView onNavigateToChat={() => { setCurrentView('chat'); }} />}
+            {currentView === 'matches' && <MatchesView onNavigateToChat={() => { navigation.navigateToView('chat'); }} />}
             {currentView === 'chat' && <ChatView />}
             {currentView === 'community' && <CommunityView />}
             {currentView === 'adoption' && <AdoptionView />}

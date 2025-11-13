@@ -8,7 +8,7 @@ import { useEffect, useRef, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Translate as TranslateIcon } from '@phosphor-icons/react';
-import { useAnimatedStyle } from 'react-native-reanimated';
+import { useAnimatedStyle } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';

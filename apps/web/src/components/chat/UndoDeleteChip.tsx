@@ -5,7 +5,7 @@ import {
   useAnimatedStyle,
   withSpring,
   withTiming,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback, useEffect, useState } from 'react';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';

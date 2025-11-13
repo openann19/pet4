@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useCallback, type ReactNode } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import React, { useState, useCallback, type ReactNode } from 'react';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
@@ -15,7 +14,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface SplitButtonAction {
@@ -47,10 +45,10 @@ export function SplitButton({
   disabled = false,
   className,
 }: SplitButtonProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const [isOpen, setIsOpen] = useState(false);
-  const dividerOpacity = useSharedValue(1);
-  const menuScale = useSharedValue(0.95);
+  const _uiConfig = useUIConfig();
+  const [isOpen, setIsOpen] = useState(false);
+  const dividerOpacity = useMotionValue(1);
+  const menuScale = useMotionValue(0.95);
 
   const hoverLift = useHoverLift({
     scale: 1.02,
@@ -59,13 +57,32 @@ export function SplitButton({
     stiffness: 400,
   });
 
-  const dividerStyle = useAnimatedStyle(() => ({
-    opacity: dividerOpacity.value,
-  })) as AnimatedStyle;
+  const dividerVariants: Variants = {
+    visible: {
+      opacity: 1,
+    },
+    hidden: {
+      opacity: 0.3,
+      transition: {
+        duration: 0.2,
+        ease: 'easeInOut',
+      },
+    },
+  };
 
-  const menuStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: menuScale.value }],
-  })) as AnimatedStyle;
+  const menuVariants: Variants = {
+    closed: {
+      scale: 0.95,
+    },
+    open: {
+      scale: 1,
+      transition: {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      },
+    },
+  };
 
   const handleMainClick = useCallback(() => {
     if (disabled) return;
@@ -77,12 +94,26 @@ export function SplitButton({
     (open: boolean) => {
       setIsOpen(open);
       if (open) {
-        dividerOpacity.value = withTiming(0.3, { duration: 200 });
-        menuScale.value = withSpring(1, springConfigs.smooth);
+        animate(dividerOpacity, 0.3, {
+          duration: 0.2,
+          ease: 'easeInOut',
+        });
+        animate(menuScale, 1, {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
+        });
         haptics.selection();
       } else {
-        dividerOpacity.value = withSpring(1, springConfigs.smooth);
-        menuScale.value = withTiming(0.95, { duration: 150 });
+        animate(dividerOpacity, 1, {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
+        });
+        animate(menuScale, 0.95, {
+          duration: 0.15,
+          ease: 'easeInOut',
+        });
       }
     },
     [dividerOpacity, menuScale]
@@ -100,7 +131,13 @@ export function SplitButton({
       onMouseEnter={hoverLift.handleEnter}
       onMouseLeave={hoverLift.handleLeave}
     >
-      <AnimatedView style={hoverLift.animatedStyle}>
+      <motion.div
+        variants={hoverLift.variants}
+        initial="rest"
+        animate="rest"
+        whileHover="hover"
+        style={{ scale: hoverLift.scale, y: hoverLift.translateY }}
+      >
         <PremiumButton
           variant={variant}
           size={size}
@@ -112,11 +149,15 @@ export function SplitButton({
           {mainAction.icon && <span className="mr-2">{mainAction.icon}</span>}
           {mainAction.label}
         </PremiumButton>
-      </AnimatedView>
+      </motion.div>
 
-      <AnimatedView style={dividerStyle}>
+      <motion.div
+        variants={dividerVariants}
+        animate={isOpen ? 'hidden' : 'visible'}
+        style={{ opacity: dividerOpacity }}
+      >
         <div className="w-px bg-border/50" />
-      </AnimatedView>
+      </motion.div>
 
       <DropdownMenu open={isOpen} onOpenChange={handleMenuOpenChange}>
         <DropdownMenuTrigger asChild>
@@ -146,7 +187,11 @@ export function SplitButton({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-50">
-          <AnimatedView style={menuStyle}>
+          <motion.div
+            variants={menuVariants}
+            animate={isOpen ? 'open' : 'closed'}
+            style={{ scale: menuScale }}
+          >
             {secondaryActions.map((action, index) => (
               <DropdownMenuItem
                 key={index}
@@ -158,7 +203,7 @@ export function SplitButton({
                 {action.label}
               </DropdownMenuItem>
             ))}
-          </AnimatedView>
+          </motion.div>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

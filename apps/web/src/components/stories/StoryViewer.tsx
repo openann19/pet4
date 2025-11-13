@@ -31,8 +31,8 @@ import {
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useMotionVariants, useHoverLift, useBounceOnTap } from '@/effects/reanimated';
-import * as Reanimated from 'react-native-reanimated';
-import { interpolate, Extrapolation } from 'react-native-reanimated';
+import * as Reanimated from '@petspark/motion';
+import { interpolate, Extrapolation } from '@petspark/motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import SaveToHighlightDialog from './SaveToHighlightDialog';

@@ -10,7 +10,7 @@ import {
   interpolate,
   Extrapolation,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect, useCallback } from 'react';
 import type { MessageStatus } from '@/lib/chat-types';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';

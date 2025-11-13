@@ -6,7 +6,7 @@
  */
 
 import { useMemo } from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming, withRepeat } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withTiming, withRepeat } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AnimatedView } from '@/effects/reanimated/animated-view';

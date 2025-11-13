@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   useSharedValue,
   withTiming,
   useAnimatedStyle,
   withSequence,
   withDelay,
-} from 'react-native-reanimated';
+  animate,
+} from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 /**
  * Seeded Random Number Generator
@@ -49,37 +49,37 @@ function ParticleAnimated({ particle }: { particle: Particle }) {
     const delayMs = particle.delay * 1000;
     const durationMs = particle.duration * 1000;
 
-    opacity.value = withDelay(
-      delayMs,
-      withSequence(
-        withTiming(1, { duration: durationMs * 0.2 }),
-        withTiming(1, { duration: durationMs * 0.6 }),
-        withTiming(0, { duration: durationMs * 0.2 })
-      )
+    const opacitySequence = withSequence(
+      withTiming(1, { duration: durationMs * 0.2 }),
+      withTiming(1, { duration: durationMs * 0.6 }),
+      withTiming(0, { duration: durationMs * 0.2 })
     );
+    const opacityDelay = withDelay(delayMs, opacitySequence);
+    animate(opacity, opacityDelay.target, opacityDelay.transition);
 
-    scale.value = withDelay(
-      delayMs,
-      withSequence(
-        withTiming(1, { duration: durationMs * 0.2 }),
-        withTiming(1, { duration: durationMs * 0.6 }),
-        withTiming(0, { duration: durationMs * 0.2 })
-      )
+    const scaleSequence = withSequence(
+      withTiming(1, { duration: durationMs * 0.2 }),
+      withTiming(1, { duration: durationMs * 0.6 }),
+      withTiming(0, { duration: durationMs * 0.2 })
     );
+    const scaleDelay = withDelay(delayMs, scaleSequence);
+    animate(scale, scaleDelay.target, scaleDelay.transition);
 
-    translateX.value = withDelay(delayMs, withTiming(particle.x, { duration: durationMs }));
+    const translateXDelay = withDelay(delayMs, withTiming(particle.x, { duration: durationMs }));
+    animate(translateX, translateXDelay.target, translateXDelay.transition);
 
-    translateY.value = withDelay(delayMs, withTiming(particle.y, { duration: durationMs }));
+    const translateYDelay = withDelay(delayMs, withTiming(particle.y, { duration: durationMs }));
+    animate(translateY, translateYDelay.target, translateYDelay.transition);
   }, [particle, opacity, scale, translateX, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    opacity: opacity.get(),
     transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
+      { translateX: translateX.get() },
+      { translateY: translateY.get() },
+      { scale: scale.get() },
     ],
-  })) as AnimatedStyle;
+  }));
 
   const styleValue = useAnimatedStyleValue(animatedStyle);
 

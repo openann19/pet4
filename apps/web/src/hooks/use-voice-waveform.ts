@@ -8,7 +8,7 @@ import {
   withSequence,
   withDelay,
   Easing,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 

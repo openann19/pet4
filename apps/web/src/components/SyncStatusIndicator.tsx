@@ -9,7 +9,7 @@ import {
   withRepeat,
   withSequence,
   withTiming,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { logger } from '@/lib/logger';
 

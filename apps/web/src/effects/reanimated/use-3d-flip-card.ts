@@ -3,7 +3,7 @@
  * Realistic card flip with perspective and backface visibility
  */
 
-import { useSharedValue, useAnimatedStyle, withSpring, interpolate } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withSpring, interpolate } from '@petspark/motion';
 import { useCallback, useState } from 'react';
 
 export interface Use3DFlipCardOptions {

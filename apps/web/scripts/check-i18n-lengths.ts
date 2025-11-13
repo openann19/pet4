@@ -144,21 +144,10 @@ async function main(): Promise<void> {
       // Import the translations object dynamically
       const i18nModule: unknown = await import(i18nPath);
 
-      // Type guard for translations module
-      interface TranslationsModule {
-        translations?: {
-          en?: Record<string, unknown>;
-          bg?: Record<string, unknown>;
-        };
-      }
-
-      function isTranslationsModule(module: unknown): module is TranslationsModule {
-        return typeof module === 'object' && module !== null && 'translations' in module;
-      }
-
-      if (isTranslationsModule(i18nModule) && i18nModule.translations) {
-        enTranslations = i18nModule.translations.en ?? {};
-        bgTranslations = i18nModule.translations.bg ?? {};
+      const translations = safelyExtractTranslations(i18nModule);
+      if (translations) {
+        enTranslations = translations.en ?? {};
+        bgTranslations = translations.bg ?? {};
       } else {
         // Fallback: try to read and parse as JSON (if exported)
         const content = readFileSync(i18nPath, 'utf-8');
@@ -171,6 +160,10 @@ async function main(): Promise<void> {
           scriptLogger.warn(
             '⚠️  For accurate results, export translations as JSON or use tsx to run this script.'
           );
+          const enJson = JSON.parse(enMatch[1]);
+          const bgJson = JSON.parse(bgMatch[1]);
+          enTranslations = enJson;
+          bgTranslations = bgJson;
         }
       }
     } catch {

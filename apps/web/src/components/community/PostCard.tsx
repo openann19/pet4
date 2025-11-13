@@ -7,7 +7,7 @@ import {
   withSpring,
   withTiming,
   withSequence,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { communityAPI } from '@/api/community-api';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';

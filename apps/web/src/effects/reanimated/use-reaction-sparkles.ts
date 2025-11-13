@@ -9,7 +9,7 @@ import {
   withTiming,
   withDelay,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback, useState, useEffect } from 'react';
 import { haptics } from '@/lib/haptics';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';

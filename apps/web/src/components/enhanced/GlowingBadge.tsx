@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -8,14 +8,14 @@ import {
   withRepeat,
   withSequence,
   interpolate,
-  Extrapolation,
-} from 'react-native-reanimated';
+  animate,
+} from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useGlowPulse } from '@/effects/reanimated';
 import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('GlowingBadge');
 
@@ -68,8 +68,10 @@ export function GlowingBadge({
 
   useEffect(() => {
     try {
-      scale.value = withTiming(1, { duration: 300 });
-      opacity.value = withTiming(1, { duration: 300 });
+      const scaleTransition = withTiming(1, { duration: 300 });
+      animate(scale, scaleTransition.target, scaleTransition.transition);
+      const opacityTransition = withTiming(1, { duration: 300 });
+      animate(opacity, opacityTransition.target, opacityTransition.transition);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to initialize badge animation', err, { variant });
@@ -79,33 +81,38 @@ export function GlowingBadge({
   useEffect(() => {
     if (isTruthy(pulse)) {
       try {
-        pulseOpacity.value = withRepeat(
-          withSequence(withTiming(1, { duration: 1000 }), withTiming(0.5, { duration: 1000 })),
-          -1,
-          true
+        const sequence = withSequence(
+          withTiming(1, { duration: 1000 }),
+          withTiming(0.5, { duration: 1000 })
         );
+        const repeatTransition = withRepeat(sequence, -1, true);
+        animate(pulseOpacity, repeatTransition.target, repeatTransition.transition);
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to initialize pulse animation', err, { variant });
       }
     } else {
-      pulseOpacity.value = withTiming(1, { duration: 200 });
+      const opacityTransition = withTiming(1, { duration: 200 });
+      animate(pulseOpacity, opacityTransition.target, opacityTransition.transition);
     }
   }, [pulse, pulseOpacity, variant]);
 
   const badgeStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }],
-      opacity: opacity.value,
+      transform: [{ scale: scale.get() }],
+      opacity: opacity.get(),
     };
-  }) as AnimatedStyle;
+  });
 
   const pulseStyle = useAnimatedStyle(() => {
-    const opacityValue = interpolate(pulseOpacity.value, [0.5, 1], [0.5, 1], Extrapolation.CLAMP);
+    const opacityValue = interpolate(pulseOpacity.get(), [0.5, 1], [0.5, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
     return {
       opacity: opacityValue,
     };
-  }) as AnimatedStyle;
+  });
 
   const variantStyles = useMemo<string>(() => VARIANT_STYLES[variant], [variant]);
 

@@ -1,18 +1,19 @@
 'use client';
 
-import type { ComponentProps } from 'react';
+import React, { type ComponentProps } from 'react';
 import { useEffect, useCallback } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withTiming, withSpring, animate } from '@petspark/motion';
 
 import { cn } from '@/lib/utils';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { Motion } from '@/core/tokens/motion';
 import { haptics } from '@/lib/haptics';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { getAriaButtonAttributes } from '@/lib/accessibility';
 
 export interface DialogProps extends ComponentProps<typeof DialogPrimitive.Root> {
   hapticFeedback?: boolean;
@@ -80,25 +81,34 @@ function DialogContent({
   hapticFeedback = true,
   ...props
 }: DialogContentProps): React.JSX.Element {
-  const reducedMotion = useReducedMotion();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.95);
   const y = useSharedValue(20);
 
   useEffect(() => {
-    opacity.value = withTiming(1, {
-      duration: reducedMotion ? Motion.durations.fast : Motion.components.modal.open.duration,
+    if (prefersReducedMotion) {
+      opacity.value = 1;
+      scale.value = 1;
+      y.value = 0;
+      return;
+    }
+    const opacityTransition = withTiming(1, {
+      duration: Motion.components.modal.open.duration,
     });
-    scale.value = withSpring(1, springConfigs.smooth);
-    y.value = withSpring(0, springConfigs.smooth);
-  }, [opacity, scale, y, reducedMotion]);
+    animate(opacity, opacityTransition.target, opacityTransition.transition);
+    const scaleTransition = withSpring(1, springConfigs.smooth);
+    animate(scale, scaleTransition.target, scaleTransition.transition);
+    const yTransition = withSpring(0, springConfigs.smooth);
+    animate(y, yTransition.target, yTransition.transition);
+  }, [opacity, scale, y, prefersReducedMotion]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      opacity: opacity.value,
-      transform: [{ scale: scale.value }, { translateY: y.value }],
+      opacity: opacity.get(),
+      transform: [{ scale: scale.get() }, { translateY: y.get() }],
     };
-  }) as AnimatedStyle;
+  });
 
   const handleClose = useCallback((): void => {
     if (hapticFeedback) {
@@ -111,15 +121,18 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
+        role="dialog"
+        aria-modal="true"
         className={cn(
           'fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)]',
-          'translate-x-[-50%] translate-y-[-50%] gap-4',
-          'rounded-2xl border border-(--color-neutral-6) bg-(--color-bg-overlay) p-6 shadow-lg',
+          'translate-x-[-50%] translate-y-[-50%]',
+          'rounded-2xl border border-(--color-neutral-6) bg-(--color-bg-overlay) shadow-lg',
           'focus:outline-none',
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
           'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
           'sm:max-w-lg',
+          getSpacingClassesFromConfig({ gap: 'lg', padding: 'xl' }),
           className
         )}
         {...props}
@@ -129,19 +142,22 @@ function DialogContent({
         </AnimatedView>
         {showCloseButton && (
           <DialogPrimitive.Close
-            className={cn(
-              'absolute top-4 right-4 rounded-xs opacity-70',
-              'ring-offset-background transition-opacity',
-              'hover:opacity-100 focus:ring-2 focus:ring-(--color-focus-ring) focus:ring-offset-2',
-              'focus:outline-none disabled:pointer-events-none',
-              'text-(--color-fg-secondary) hover:text-(--color-fg)',
-              '[&_svg]:pointer-events-none [&_svg]:shrink-0',
-              "[&_svg:not([class*='size-'])]:size-4"
-            )}
+        className={cn(
+          'absolute rounded-xs opacity-70 min-w-[44px] min-h-[44px]',
+          'ring-offset-background',
+          prefersReducedMotion ? '' : 'transition-opacity duration-200',
+          'hover:opacity-100 focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--background)',
+          'focus-visible:outline-none disabled:pointer-events-none',
+          'text-(--text-muted) hover:text-(--text-primary)',
+          '[&_svg]:pointer-events-none [&_svg]:shrink-0',
+          "[&_svg:not([class*='size-'])]:size-4",
+          getSpacingClassesFromConfig({ marginY: 'lg', marginX: 'lg' }),
+          getSpacingClassesFromConfig({ padding: 'xs' })
+        )}
             onClick={handleClose}
-            aria-label="Close dialog"
+            {...getAriaButtonAttributes({ label: 'Close dialog' })}
           >
-            <X />
+            <X aria-hidden="true" />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}
@@ -154,7 +170,11 @@ function DialogHeader({ className, ...props }: ComponentProps<'div'>): React.JSX
   return (
     <div
       data-slot="dialog-header"
-      className={cn('flex flex-col gap-2 text-center sm:text-left', className)}
+      className={cn(
+        'flex flex-col text-center sm:text-left',
+        getSpacingClassesFromConfig({ gap: 'sm' }),
+        className
+      )}
       {...props}
     />
   );
@@ -164,7 +184,11 @@ function DialogFooter({ className, ...props }: ComponentProps<'div'>): React.JSX
   return (
     <div
       data-slot="dialog-footer"
-      className={cn('flex flex-col-reverse gap-2 sm:flex-row sm:justify-end', className)}
+      className={cn(
+        'flex flex-col-reverse sm:flex-row sm:justify-end',
+        getSpacingClassesFromConfig({ gap: 'sm' }),
+        className
+      )}
       {...props}
     />
   );
@@ -177,7 +201,10 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn('text-lg font-semibold leading-none tracking-tight', className)}
+      className={cn(
+        getTypographyClasses('h3'),
+        className
+      )}
       {...props}
     />
   );
@@ -190,7 +217,11 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn('text-sm text-muted-foreground', className)}
+      className={cn(
+        'text-(--text-muted)',
+        getTypographyClasses('caption'),
+        className
+      )}
       {...props}
     />
   );

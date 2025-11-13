@@ -3,13 +3,17 @@
  * Button with magnetic hover, elastic scale, and ripple effects
  */
 
-import { type ReactNode, type ButtonHTMLAttributes, useCallback } from 'react';
-import { MotionView } from '@petspark/motion';
-import { useMagnetic, usePressBounce, useShimmer } from '@petspark/motion';
+import React, { type ReactNode, type ButtonHTMLAttributes, useCallback } from 'react';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
+import { useMagneticEffect } from '@/effects/reanimated/use-magnetic-effect';
+import { useShimmer } from '@/effects/reanimated/use-shimmer';
+import { springConfigs } from '@/effects/reanimated/transitions';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
+import { AnimatedView } from '@/effects/reanimated/animated-view';
 
 const logger = createLogger('UltraButton');
 
@@ -24,22 +28,45 @@ export interface UltraButtonProps extends ButtonHTMLAttributes<HTMLButtonElement
   size?: 'default' | 'sm' | 'lg' | 'icon';
 }
 
-function usePressBounce(scaleOnPress = 0.96) {
-  const scale = useSharedValue(1)
+function usePressBounce(scaleOnPress = 0.96, enabled = true) {
+  const scale = useMotionValue(1)
 
   const onPressIn = useCallback(() => {
-    scale.value = withSpring(scaleOnPress, springConfigs.smooth)
-  }, [scale, scaleOnPress])
+    if (!enabled) return;
+    animate(scale, scaleOnPress, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    })
+  }, [scale, scaleOnPress, enabled])
 
   const onPressOut = useCallback(() => {
-    scale.value = withSpring(1, springConfigs.smooth)
-  }, [scale])
+    if (!enabled) return;
+    animate(scale, 1, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    })
+  }, [scale, enabled])
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }]
-  })) as AnimatedStyle
+  const variants: Variants = enabled ? {
+    rest: {
+      scale: 1,
+    },
+    pressed: {
+      scale: scaleOnPress,
+      transition: {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      },
+    },
+  } : {
+    rest: { scale: 1 },
+    pressed: { scale: 1, transition: { duration: 0 } },
+  }
 
-  return { onPressIn, onPressOut, animatedStyle }
+  return { onPressIn, onPressOut, scale, variants }
 }
 
 export function UltraButton({
@@ -55,14 +82,19 @@ export function UltraButton({
   onClick,
   ...props
 }: UltraButtonProps) {
-    const _uiConfig = useUIConfig();
-    const magnetic = useMagnetic(40);
+  const _uiConfig = useUIConfig();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const magnetic = useMagneticEffect({
+    strength: 0.4,
+    maxDistance: 40,
+    enabled: enableMagnetic && !prefersReducedMotion,
+  });
 
-  const elastic = usePressBounce(0.96);
+  const elastic = usePressBounce(0.96, enableElastic && !prefersReducedMotion);
 
   const shimmer = useShimmer({
     duration: 240,
-    enabled: enableGlow
+    enabled: enableGlow && !prefersReducedMotion
   });
 
   const handleClick = useCallback(
@@ -80,22 +112,38 @@ export function UltraButton({
   );
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (enableMagnetic && magnetic.handleMouseMove) {
+    if (enableMagnetic && magnetic.handleMove) {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
-      magnetic.handleMouseMove(x, y);
+      magnetic.handleMove(x, y);
     }
   }, [enableMagnetic, magnetic]);
 
   return (
     <div
       onPointerMove={enableMagnetic ? handlePointerMove : undefined}
-      onPointerLeave={enableMagnetic ? magnetic.handleMouseLeave : undefined}
+      onPointerLeave={enableMagnetic ? magnetic.handleLeave : undefined}
       className="inline-block relative"
     >
-      <AnimatedView style={magnetic.animatedStyle}>
-        <AnimatedView style={elastic.animatedStyle}>
+      <motion.div
+        variants={magnetic.variants}
+        initial="rest"
+        animate="rest"
+        style={{
+          x: magnetic.translateX,
+          y: magnetic.translateY,
+        }}
+      >
+        <motion.div
+          variants={elastic.variants}
+          initial="rest"
+          animate="rest"
+          onMouseDown={elastic.onPressIn}
+          onMouseUp={elastic.onPressOut}
+          onMouseLeave={elastic.onPressOut}
+          style={{ scale: elastic.scale }}
+        >
           <Button
             variant={variant}
             size={size}
@@ -104,17 +152,23 @@ export function UltraButton({
             {...props}
           >
             {enableGlow && (
-              <AnimatedView style={shimmer.animatedStyle}>
+              <motion.div
+                variants={shimmer.variants}
+                animate="shimmer"
+                style={shimmer.variants ? undefined : { x: shimmer.translateX }}
+                className="absolute inset-0 pointer-events-none"
+                aria-hidden="true"
+              >
                 <div
-                  className="absolute inset-0 pointer-events-none"
+                  className="w-full h-full"
                   style={{ backgroundColor: glowColor }}
                 />
-              </AnimatedView>
+              </motion.div>
             )}
             <span className="relative z-10">{children}</span>
           </Button>
-        </AnimatedView>
-      </AnimatedView>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

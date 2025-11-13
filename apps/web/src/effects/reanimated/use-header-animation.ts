@@ -7,7 +7,7 @@ import {
   withRepeat,
   withSequence,
   withDelay,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect } from 'react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 

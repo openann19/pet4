@@ -8,7 +8,7 @@ import {
   withDelay,
   Easing,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback, useState, useEffect } from 'react';
 import { makeRng } from '@petspark/shared';
 

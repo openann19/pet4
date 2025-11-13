@@ -1,159 +1,215 @@
-import { isTruthy, isDefined } from '@petspark/shared';
+export type AriaLiveRegion = 'polite' | 'assertive' | 'off';
+export type AriaRelevant = 'additions' | 'removals' | 'text' | 'all' | 'additions text';
+export type AriaCurrent = 'page' | 'step' | 'location' | 'date' | 'time' | boolean;
 
-export const FOCUSABLE_ELEMENTS = [
-  'a[href]',
-  'button:not([disabled])',
-  'textarea:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',');
+export interface AriaAttributes {
+  'aria-label'?: string;
+  'aria-labelledby'?: string;
+  'aria-describedby'?: string;
+  'aria-live'?: AriaLiveRegion;
+  'aria-atomic'?: boolean;
+  'aria-relevant'?: AriaRelevant;
+  'aria-busy'?: boolean;
+  'aria-expanded'?: boolean;
+  'aria-pressed'?: boolean | 'mixed';
+  'aria-current'?: AriaCurrent;
+  'aria-invalid'?: boolean | 'grammar' | 'spelling';
+  'aria-required'?: boolean;
+  'aria-disabled'?: boolean;
+  'aria-hidden'?: boolean;
+  'aria-modal'?: boolean;
+  'aria-controls'?: string;
+  'aria-haspopup'?: boolean | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+  role?: string;
+}
 
-export function trapFocus(element: HTMLElement) {
-  const focusableElements = element.querySelectorAll<HTMLElement>(FOCUSABLE_ELEMENTS);
-  const firstFocusable = focusableElements[0];
-  const lastFocusable = focusableElements[focusableElements.length - 1];
+export interface AriaLabelOptions {
+  label?: string;
+  labelledBy?: string;
+  describedBy?: string;
+}
 
-  function handleTabKey(e: KeyboardEvent) {
-    if (e.key !== 'Tab') return;
-
-    if (isTruthy(e.shiftKey)) {
-      if (document.activeElement === firstFocusable) {
-        lastFocusable?.focus();
-        e.preventDefault();
-      }
-    } else {
-      if (document.activeElement === lastFocusable) {
-        firstFocusable?.focus();
-        e.preventDefault();
-      }
-    }
+export function getAriaLabelAttributes(options: AriaLabelOptions): Partial<AriaAttributes> {
+  const attrs: Partial<AriaAttributes> = {};
+  
+  if (options.label) {
+    attrs['aria-label'] = options.label;
   }
+  
+  if (options.labelledBy) {
+    attrs['aria-labelledby'] = options.labelledBy;
+  }
+  
+  if (options.describedBy) {
+    attrs['aria-describedby'] = options.describedBy;
+  }
+  
+  return attrs;
+}
 
-  element.addEventListener('keydown', handleTabKey);
+export interface AriaLiveRegionOptions {
+  live?: AriaLiveRegion;
+  atomic?: boolean;
+  relevant?: AriaRelevant;
+  busy?: boolean;
+}
 
-  return () => {
-    element.removeEventListener('keydown', handleTabKey);
+export function getAriaLiveRegionAttributes(options: AriaLiveRegionOptions = {}): Partial<AriaAttributes> {
+  const attrs: Partial<AriaAttributes> = {};
+  
+  if (options.live !== undefined) {
+    attrs['aria-live'] = options.live;
+  }
+  
+  if (options.atomic !== undefined) {
+    attrs['aria-atomic'] = options.atomic;
+  }
+  
+  if (options.relevant !== undefined) {
+    attrs['aria-relevant'] = options.relevant;
+  }
+  
+  if (options.busy !== undefined) {
+    attrs['aria-busy'] = options.busy;
+  }
+  
+  return attrs;
+}
+
+export interface AriaButtonOptions extends AriaLabelOptions {
+  pressed?: boolean | 'mixed';
+  expanded?: boolean;
+  disabled?: boolean;
+  controls?: string;
+  hasPopup?: boolean | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog';
+}
+
+export function getAriaButtonAttributes(options: AriaButtonOptions): Partial<AriaAttributes> {
+  const attrs = getAriaLabelAttributes(options);
+  
+  if (options.pressed !== undefined) {
+    attrs['aria-pressed'] = options.pressed;
+  }
+  
+  if (options.expanded !== undefined) {
+    attrs['aria-expanded'] = options.expanded;
+  }
+  
+  if (options.disabled !== undefined) {
+    attrs['aria-disabled'] = options.disabled;
+  }
+  
+  if (options.controls) {
+    attrs['aria-controls'] = options.controls;
+  }
+  
+  if (options.hasPopup !== undefined) {
+    attrs['aria-haspopup'] = options.hasPopup;
+  }
+  
+  return attrs;
+}
+
+export interface AriaFormFieldOptions extends AriaLabelOptions {
+  invalid?: boolean | 'grammar' | 'spelling';
+  required?: boolean;
+  disabled?: boolean;
+}
+
+export function getAriaFormFieldAttributes(options: AriaFormFieldOptions): Partial<AriaAttributes> {
+  const attrs = getAriaLabelAttributes(options);
+  
+  if (options.invalid !== undefined) {
+    attrs['aria-invalid'] = options.invalid;
+  }
+  
+  if (options.required !== undefined) {
+    attrs['aria-required'] = options.required;
+  }
+  
+  if (options.disabled !== undefined) {
+    attrs['aria-disabled'] = options.disabled;
+  }
+  
+  return attrs;
+}
+
+export interface AriaNavigationOptions extends AriaLabelOptions {
+  current?: AriaCurrent;
+}
+
+export function getAriaNavigationAttributes(options: AriaNavigationOptions): Partial<AriaAttributes> {
+  const attrs = getAriaLabelAttributes(options);
+  
+  if (options.current !== undefined) {
+    attrs['aria-current'] = options.current;
+  }
+  
+  return attrs;
+}
+
+export interface AriaAlertOptions extends AriaLabelOptions {
+  live?: AriaLiveRegion;
+  atomic?: boolean;
+  role?: 'alert' | 'alertdialog' | 'status';
+}
+
+export function getAriaAlertAttributes(options: AriaAlertOptions = {}): Partial<AriaAttributes> {
+  const attrs: Partial<AriaAttributes> = {};
+  
+  if (options.role) {
+    attrs.role = options.role;
+  } else if (options.live !== undefined || options.atomic !== undefined) {
+    attrs.role = 'alert';
+  }
+  
+  if (options.label) {
+    attrs['aria-label'] = options.label;
+  }
+  
+  if (options.labelledBy) {
+    attrs['aria-labelledby'] = options.labelledBy;
+  }
+  
+  if (options.describedBy) {
+    attrs['aria-describedby'] = options.describedBy;
+  }
+  
+  if (options.live !== undefined) {
+    attrs['aria-live'] = options.live;
+  } else if (options.role === 'alert' || options.role === 'alertdialog') {
+    attrs['aria-live'] = 'assertive';
+  } else if (options.role === 'status') {
+    attrs['aria-live'] = 'polite';
+  }
+  
+  if (options.atomic !== undefined) {
+    attrs['aria-atomic'] = options.atomic;
+  } else if (options.role === 'alert' || options.role === 'alertdialog') {
+    attrs['aria-atomic'] = true;
+  }
+  
+  return attrs;
+}
+
+export function generateId(prefix: string): string {
+  return `${prefix}-${Math.random().toString(36).substring(2, 9)}`;
+}
+
+export function getToastAriaAttributes(type: 'success' | 'error' | 'warning' | 'info'): Partial<AriaAttributes> {
+  const role = type === 'error' ? 'alert' : 'status';
+  const live = type === 'error' ? 'assertive' : 'polite';
+  
+  return {
+    role,
+    'aria-live': live,
+    'aria-atomic': true,
   };
 }
 
-export function announceToScreenReader(
-  message: string,
-  priority: 'polite' | 'assertive' = 'polite'
-) {
-  const announcement = document.createElement('div');
-  announcement.setAttribute('role', 'status');
-  announcement.setAttribute('aria-live', priority);
-  announcement.setAttribute('aria-atomic', 'true');
-  announcement.className = 'sr-only';
-  announcement.textContent = message;
-
-  document.body.appendChild(announcement);
-
-  setTimeout(() => {
-    document.body.removeChild(announcement);
-  }, 1000);
-}
-
-export function getAriaLabel(context: string, value?: string | number): string {
-  if (value === undefined || value === null) return context;
-  return `${context}: ${value}`;
-}
-
-export function createAriaDescribedBy(id: string, description: string): string {
-  const existing = document.getElementById(id);
-  if (existing) return id;
-
-  const descElement = document.createElement('span');
-  descElement.id = id;
-  descElement.className = 'sr-only';
-  descElement.textContent = description;
-  document.body.appendChild(descElement);
-
-  return id;
-}
-
-export function getReadableTimestamp(timestamp: string): string {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'just now';
-  if (diffMins < 60) return `${diffMins} ${diffMins === 1 ? 'minute' : 'minutes'} ago`;
-  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
-  if (diffDays < 7) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
-
-  return date.toLocaleDateString();
-}
-
-export function getAccessiblePercentage(value: number): string {
-  return `${Math.round(value)} percent`;
-}
-
-export function shouldReduceMotion(): boolean {
-  if (typeof window === 'undefined') return false;
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-export function getHighContrastMode(): boolean {
-  if (typeof window === 'undefined') return false;
-  return (
-    window.matchMedia('(prefers-contrast: high)').matches ||
-    window.matchMedia('(-ms-high-contrast: active)').matches
-  );
-}
-
-export class KeyboardNavigationManager {
-  private elements: HTMLElement[] = [];
-  private currentIndex = 0;
-
-  constructor(selector?: string) {
-    if (selector) {
-      this.updateElements(selector);
-    }
+export function getIconButtonAriaLabel(iconName: string, action?: string): string {
+  if (action) {
+    return `${action} ${iconName}`;
   }
-
-  updateElements(selector: string) {
-    this.elements = Array.from(document.querySelectorAll<HTMLElement>(selector)).filter(
-      (el) => !el.hasAttribute('disabled')
-    );
-  }
-
-  next() {
-    this.currentIndex = (this.currentIndex + 1) % this.elements.length;
-    this.focusCurrentElement();
-  }
-
-  previous() {
-    this.currentIndex = (this.currentIndex - 1 + this.elements.length) % this.elements.length;
-    this.focusCurrentElement();
-  }
-
-  first() {
-    this.currentIndex = 0;
-    this.focusCurrentElement();
-  }
-
-  last() {
-    this.currentIndex = this.elements.length - 1;
-    this.focusCurrentElement();
-  }
-
-  private focusCurrentElement() {
-    this.elements[this.currentIndex]?.focus();
-  }
-
-  getCurrentElement(): HTMLElement | undefined {
-    return this.elements[this.currentIndex];
-  }
-}
-
-export function useReducedMotion() {
-  if (typeof window === 'undefined') return false;
-
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  return mediaQuery.matches;
+  return iconName;
 }

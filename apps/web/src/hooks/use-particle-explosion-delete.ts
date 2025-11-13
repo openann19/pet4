@@ -1,6 +1,6 @@
 'use client';
 
-import { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue } from '@petspark/motion';
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   spawnParticlesData,

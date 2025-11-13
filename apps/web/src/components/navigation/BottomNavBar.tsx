@@ -10,7 +10,7 @@ import {
   withDelay,
   withRepeat,
   withSequence,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
 import { useBounceOnTap } from '@/effects/reanimated';
@@ -18,6 +18,9 @@ import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { getAriaNavigationAttributes } from '@/lib/accessibility';
+import { isTruthy } from '@petspark/shared';
 
 interface NavItem {
   to: string;
@@ -93,7 +96,10 @@ export default function BottomNavBar() {
 
   return (
     <AnimatedView style={barStyle} className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-      <nav className="border-t border-border/40 bg-card/85 backdrop-blur-3xl shadow-2xl relative overflow-hidden">
+      <nav 
+        className="border-t border-border/40 bg-card/85 backdrop-blur-3xl shadow-2xl relative overflow-hidden"
+        aria-label="Bottom navigation"
+      >
         <div className="relative overflow-hidden">
           {/* Holographic gradient layers */}
           <div className="absolute inset-0 bg-linear-to-t from-primary/15 via-accent/10 to-secondary/15 opacity-60 pointer-events-none" />
@@ -117,7 +123,13 @@ export default function BottomNavBar() {
           {/* Holographic color shift overlay */}
           <div className="absolute inset-0 bg-linear-to-r from-primary/10 via-accent/10 via-secondary/10 to-primary/10 opacity-40 pointer-events-none mix-blend-overlay" />
 
-          <ul className="grid grid-cols-6 relative z-10">
+          <ul 
+            className={cn(
+              'grid grid-cols-6 relative z-10',
+              getSpacingClassesFromConfig({ gap: 'xs' })
+            )}
+            role="list"
+          >
             {items.map((item) => {
               const isActive = pathname.startsWith(item.to);
               const isHovered = hoveredItem === item.to;
@@ -207,18 +219,30 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
     }
   }, [bounceAnimation, isActive]);
 
+  const navAriaAttrs = getAriaNavigationAttributes({
+    label: item.label,
+    current: isActive ? 'page' : undefined,
+  });
+
   return (
-    <li className="text-center relative">
+    <li className="text-center relative" role="listitem">
       <Link
         to={item.to}
-        className="block py-3 px-1 relative group"
+        className={cn(
+          'block relative group',
+          getSpacingClassesFromConfig({ paddingY: 'md', paddingX: 'xs' })
+        )}
         onMouseEnter={onHover}
         onMouseLeave={onLeave}
         onClick={handleClick}
+        {...navAriaAttrs}
       >
         <AnimatedView
           style={animation.buttonStyle}
-          className="relative flex flex-col items-center justify-center gap-1"
+          className={cn(
+            'relative flex flex-col items-center justify-center',
+            getSpacingClassesFromConfig({ gap: 'xs' })
+          )}
         >
           {/* Active indicator background */}
           {isActive && (
@@ -241,14 +265,15 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
           )}
 
           {/* Icon container */}
-          <AnimatedView style={iconStyle} className="relative z-10">
+          <AnimatedView style={iconStyle} className="relative z-10" aria-hidden="true">
             <span className="text-2xl leading-none select-none">{item.icon}</span>
           </AnimatedView>
 
           {/* Label */}
           <span
             className={cn(
-              'text-[10px] leading-tight font-semibold transition-all duration-200 relative z-10',
+              getTypographyClasses('badge'),
+              'transition-all duration-200 relative z-10',
               isActive ? 'text-(--coral-primary) font-bold' : 'text-(--text-secondary) opacity-70'
             )}
           >
@@ -306,9 +331,16 @@ function Badge({ count, isActive }: BadgeProps) {
   return (
     <AnimatedView
       style={badgeStyle}
-      className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 rounded-full bg-destructive flex items-center justify-center shadow-lg z-20"
+      className={cn(
+        'absolute -top-1 -right-1 min-w-5 h-5 rounded-full bg-destructive flex items-center justify-center shadow-lg z-20',
+        getSpacingClassesFromConfig({ paddingX: 'xs' })
+      )}
+      aria-label={`${count} ${count === 1 ? 'notification' : 'notifications'}`}
     >
-      <span className="text-[10px] font-bold text-destructive-foreground">
+      <span className={cn(
+        getTypographyClasses('badge'),
+        'font-bold text-destructive-foreground'
+      )}>
         {count > 9 ? '9+' : count}
       </span>
     </AnimatedView>

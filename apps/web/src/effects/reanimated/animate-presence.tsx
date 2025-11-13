@@ -1,10 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode, Children, isValidElement } from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
-import { AnimatedView } from './animated-view';
+import React, { useEffect, useRef, useState, type ReactNode } from 'react';
+import { motion, AnimatePresence as FramerAnimatePresence, useMotionValue, animate, type Variants } from 'framer-motion';
 import { timingConfigs, springConfigs } from './transitions';
-import type { AnimatedStyle } from './animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface AnimatePresenceProps {
@@ -21,24 +19,46 @@ interface PresenceChildProps {
   childKey: string | number;
 }
 
-function PresenceChild({ children, isVisible, onExitComplete, childKey }: PresenceChildProps) {
-    const _uiConfig = useUIConfig();
-    const opacity = useSharedValue(isVisible ? 1 : 0);
-  const scale = useSharedValue(isVisible ? 1 : 0.95);
-  const translateY = useSharedValue(isVisible ? 0 : -8);
+function _PresenceChild({ children, isVisible, onExitComplete }: PresenceChildProps) {
+  const _uiConfig = useUIConfig();
+  const opacity = useMotionValue(isVisible ? 1 : 0);
+  const scale = useMotionValue(isVisible ? 1 : 0.95);
+  const translateY = useMotionValue(isVisible ? 0 : -8);
   const [shouldRender, setShouldRender] = useState(isVisible);
-  const exitTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const exitTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     if (isVisible) {
       setShouldRender(true);
-      opacity.value = withSpring(1, springConfigs.smooth);
-      scale.value = withSpring(1, springConfigs.smooth);
-      translateY.value = withSpring(0, springConfigs.smooth);
+      animate(opacity, 1, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(scale, 1, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(translateY, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
     } else {
-      opacity.value = withTiming(0, timingConfigs.fast);
-      scale.value = withTiming(0.95, timingConfigs.fast);
-      translateY.value = withTiming(-8, timingConfigs.fast);
+      const fastDuration = timingConfigs.fast.duration ?? 200;
+      animate(opacity, 0, {
+        duration: fastDuration / 1000,
+        ease: 'easeInOut',
+      });
+      animate(scale, 0.95, {
+        duration: fastDuration / 1000,
+        ease: 'easeInOut',
+      });
+      animate(translateY, -8, {
+        duration: fastDuration / 1000,
+        ease: 'easeInOut',
+      });
 
       if (exitTimeoutRef.current) {
         clearTimeout(exitTimeoutRef.current);
@@ -47,7 +67,7 @@ function PresenceChild({ children, isVisible, onExitComplete, childKey }: Presen
       exitTimeoutRef.current = setTimeout(() => {
         setShouldRender(false);
         onExitComplete?.();
-      }, timingConfigs.fast.duration);
+      }, fastDuration);
     }
 
     return () => {
@@ -57,79 +77,60 @@ function PresenceChild({ children, isVisible, onExitComplete, childKey }: Presen
     };
   }, [isVisible, opacity, scale, translateY, onExitComplete]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-      transform: [{ scale: scale.value }, { translateY: `${translateY.value}px` }],
-    };
-  }) as AnimatedStyle;
+  const variants: Variants = {
+    hidden: {
+      opacity: 0,
+      scale: 0.95,
+      y: -8,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      },
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.95,
+      y: -8,
+      transition: {
+        duration: (timingConfigs.fast.duration ?? 200) / 1000,
+        ease: 'easeInOut',
+      },
+    },
+  };
 
   if (!shouldRender) {
     return null;
   }
 
   return (
-    <AnimatedView style={animatedStyle} className="w-full">
+    <motion.div
+      variants={variants}
+      initial="hidden"
+      animate={isVisible ? "visible" : "exit"}
+      exit="exit"
+      style={{ opacity, scale, y: translateY }}
+      className="w-full"
+    >
       {children}
-    </AnimatedView>
+    </motion.div>
   );
 }
 
 export function AnimatePresence({
   children,
   mode = 'sync',
-  initial = false,
   onExitComplete,
 }: AnimatePresenceProps) {
-  const childrenArray = Children.toArray(children);
-  const [visibleKeys, setVisibleKeys] = useState<Set<string | number>>(() => {
-    const keys = new Set<string | number>();
-    childrenArray.forEach((child, index) => {
-      const key = isValidElement(child) && child.key !== null ? child.key : index;
-      if (initial) {
-        keys.add(key);
-      }
-    });
-    return keys;
-  });
-
-  useEffect(() => {
-    const newVisibleKeys = new Set<string | number>();
-    childrenArray.forEach((child, index) => {
-      const key = isValidElement(child) && child.key !== null ? child.key : index;
-      newVisibleKeys.add(key);
-    });
-    setVisibleKeys(newVisibleKeys);
-  }, [childrenArray]);
-
-  const handleExitComplete = (key: string | number) => {
-    setVisibleKeys((prev) => {
-      const next = new Set(prev);
-      next.delete(key);
-      if (next.size === 0) {
-        onExitComplete?.();
-      }
-      return next;
-    });
-  };
-
+  // Use Framer Motion's AnimatePresence directly for better performance
   return (
-    <>
-      {childrenArray.map((child, index) => {
-        const key = isValidElement(child) && child.key !== null ? child.key : index;
-        const isVisible = visibleKeys.has(key);
-
-        return (
-          <PresenceChild
-            key={key}
-            childKey={key}
-            isVisible={isVisible}
-            onExitComplete={() => { handleExitComplete(key); }}
-          >
-            {child}
-          </PresenceChild>
-        );
-      })}
-    </>
+    <FramerAnimatePresence mode={mode === 'wait' ? 'wait' : 'sync'} onExitComplete={onExitComplete}>
+      {children}
+    </FramerAnimatePresence>
   );
 }

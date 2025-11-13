@@ -8,7 +8,7 @@ import {
   withTiming,
   interpolate,
   Extrapolation,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { springConfigs, timingConfigs } from './transitions';
 import type { AnimatedStyle } from './animated-view';
 import { useReducedMotion } from '@/hooks/useReducedMotion';

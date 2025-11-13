@@ -5,6 +5,7 @@ import * as CheckboxPrimitive from '@radix-ui/react-checkbox';
 import { Check } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { getAriaFormFieldAttributes } from '@/lib/accessibility';
 
 function Checkbox({ className, ...props }: ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (
@@ -18,13 +19,18 @@ function Checkbox({ className, ...props }: ComponentProps<typeof CheckboxPrimiti
         'disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}
+      {...getAriaFormFieldAttributes({
+        invalid: props['aria-invalid'] === 'true' ? true : undefined,
+        disabled: props.disabled,
+      })}
       {...props}
     >
       <CheckboxPrimitive.Indicator
         data-slot="checkbox-indicator"
         className="flex items-center justify-center text-current transition-all duration-200 data-[state=checked]:scale-100 data-[state=unchecked]:scale-0"
+        aria-hidden="true"
       >
-        <Check className="size-3.5" />
+        <Check className="size-3.5" aria-hidden="true" />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   );

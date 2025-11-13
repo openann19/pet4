@@ -1,19 +1,9 @@
 'use client';
 
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withSequence,
-  withRepeat,
-  withTiming,
-  interpolate,
-  Extrapolation,
-  type SharedValue,
-} from 'react-native-reanimated';
+import { useMotionValue, animate, useTransform, type MotionValue, type Variants } from 'framer-motion';
 import { useEffect, useCallback } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseNavButtonAnimationOptions {
   isActive?: boolean;
@@ -25,16 +15,16 @@ export interface UseNavButtonAnimationOptions {
 }
 
 export interface UseNavButtonAnimationReturn {
-  scale: SharedValue<number>;
-  translateY: SharedValue<number>;
-  rotation: SharedValue<number>;
-  iconScale: SharedValue<number>;
-  iconRotation: SharedValue<number>;
-  indicatorOpacity: SharedValue<number>;
-  indicatorWidth: SharedValue<number>;
-  buttonStyle: AnimatedStyle;
-  iconStyle: AnimatedStyle;
-  indicatorStyle: AnimatedStyle;
+  scale: MotionValue<number>;
+  translateY: MotionValue<number>;
+  rotation: MotionValue<number>;
+  iconScale: MotionValue<number>;
+  iconRotation: MotionValue<number>;
+  indicatorOpacity: MotionValue<number>;
+  indicatorWidth: MotionValue<number>;
+  variants: Variants;
+  iconVariants: Variants;
+  indicatorVariants: Variants;
   handlePress: () => void;
   handleHover: () => void;
   handleLeave: () => void;
@@ -52,49 +42,74 @@ export function useNavButtonAnimation(
     hapticFeedback = true,
   } = options;
 
-  const scale = useSharedValue(1);
-  const translateY = useSharedValue(0);
-  const rotation = useSharedValue(0);
-  const iconScale = useSharedValue(1);
-  const iconRotation = useSharedValue(0);
-  const indicatorOpacity = useSharedValue(0);
-  const indicatorWidth = useSharedValue(0);
+  const scale = useMotionValue(1);
+  const translateY = useMotionValue(0);
+  const rotation = useMotionValue(0);
+  const iconScale = useMotionValue(1);
+  const iconRotation = useMotionValue(0);
+  const indicatorOpacity = useMotionValue(0);
+  const indicatorWidth = useMotionValue(0);
 
   useEffect(() => {
     if (isTruthy(isActive)) {
       // Active state animations
       if (isTruthy(enablePulse)) {
-        iconScale.value = withRepeat(
-          withSequence(
-            withSpring(pulseScale, springConfigs.bouncy),
-            withSpring(1, springConfigs.smooth)
-          ),
-          -1,
-          true
-        );
+        animate(iconScale, [pulseScale, 1], {
+          type: 'spring',
+          damping: springConfigs.bouncy.damping,
+          stiffness: springConfigs.bouncy.stiffness,
+          repeat: Infinity,
+          repeatType: 'reverse',
+        });
       } else {
-        iconScale.value = withSpring(1.1, springConfigs.smooth);
+        animate(iconScale, 1.1, {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
+        });
       }
 
       if (isTruthy(enableRotation)) {
-        iconRotation.value = withRepeat(
-          withTiming(rotationAmplitude, {
-            duration: 1200,
-            easing: (t) => Math.sin(t * Math.PI * 2) * 0.5 + 0.5,
-          }),
-          -1,
-          true
-        );
+        animate(iconRotation, [0, rotationAmplitude], {
+          duration: 1.2,
+          ease: (t) => Math.sin(t * Math.PI * 2) * 0.5 + 0.5,
+          repeat: Infinity,
+          repeatType: 'reverse',
+        });
       }
 
-      indicatorOpacity.value = withSpring(1, springConfigs.smooth);
-      indicatorWidth.value = withSpring(32, springConfigs.bouncy);
+      animate(indicatorOpacity, 1, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(indicatorWidth, 32, {
+        type: 'spring',
+        damping: springConfigs.bouncy.damping,
+        stiffness: springConfigs.bouncy.stiffness,
+      });
     } else {
       // Inactive state
-      iconScale.value = withSpring(1, springConfigs.smooth);
-      iconRotation.value = withSpring(0, springConfigs.smooth);
-      indicatorOpacity.value = withSpring(0, springConfigs.smooth);
-      indicatorWidth.value = withSpring(0, springConfigs.smooth);
+      animate(iconScale, 1, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(iconRotation, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(indicatorOpacity, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(indicatorWidth, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
     }
   }, [
     isActive,
@@ -117,29 +132,46 @@ export function useNavButtonAnimation(
       }
     }
 
-    scale.value = withSequence(
-      withSpring(0.92, {
-        damping: 15,
-        stiffness: 600,
-      }),
-      withSpring(1, springConfigs.smooth)
-    );
+    animate(scale, 0.92, {
+      type: 'spring',
+      damping: 15,
+      stiffness: 600,
+    }).then(() => {
+      animate(scale, 1, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+    });
 
-    translateY.value = withSequence(
-      withSpring(2, {
-        damping: 15,
-        stiffness: 600,
-      }),
-      withSpring(0, springConfigs.smooth)
-    );
+    animate(translateY, 2, {
+      type: 'spring',
+      damping: 15,
+      stiffness: 600,
+    }).then(() => {
+      animate(translateY, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+    });
   }, [hapticFeedback, scale, translateY]);
 
   const handleHover = useCallback(() => {
     if (isActive) return;
 
-    scale.value = withSpring(1.08, springConfigs.smooth);
-    translateY.value = withSpring(-3, springConfigs.smooth);
-    rotation.value = withSpring(2, {
+    animate(scale, 1.08, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
+    animate(translateY, -3, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
+    animate(rotation, 2, {
+      type: 'spring',
       damping: 25,
       stiffness: 300,
     });
@@ -148,37 +180,90 @@ export function useNavButtonAnimation(
   const handleLeave = useCallback(() => {
     if (isActive) return;
 
-    scale.value = withSpring(1, springConfigs.smooth);
-    translateY.value = withSpring(0, springConfigs.smooth);
-    rotation.value = withSpring(0, springConfigs.smooth);
+    animate(scale, 1, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
+    animate(translateY, 0, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
+    animate(rotation, 0, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
   }, [isActive, scale, translateY, rotation]);
 
-  const buttonStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { scale: scale.value },
-        { translateY: translateY.value },
-        { rotate: `${rotation.value}deg` },
-      ],
-    };
-  }) as AnimatedStyle;
+  const _indicatorOpacityTransformed = useTransform(indicatorOpacity, [0, 1], [0, 1]);
+  const _indicatorWidthTransformed = useTransform(indicatorWidth, [0, 32], [0, 32]);
 
-  const iconStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: iconScale.value }, { rotate: `${iconRotation.value}deg` }],
-    };
-  }) as AnimatedStyle;
+  const variants: Variants = {
+    rest: {
+      scale: 1,
+      y: 0,
+      rotate: 0,
+    },
+    hover: {
+      scale: 1.08,
+      y: -3,
+      rotate: 2,
+      transition: {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      },
+    },
+    active: {
+      scale: 1,
+      y: 0,
+      rotate: 0,
+    },
+  };
 
-  const indicatorStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(indicatorOpacity.value, [0, 1], [0, 1], Extrapolation.CLAMP);
+  const iconVariants: Variants = {
+    rest: {
+      scale: 1,
+      rotate: 0,
+    },
+    active: isTruthy(enablePulse)
+      ? {
+          scale: [pulseScale, 1],
+          transition: {
+            type: 'spring',
+            damping: springConfigs.bouncy.damping,
+            stiffness: springConfigs.bouncy.stiffness,
+            repeat: Infinity,
+            repeatType: 'reverse',
+          },
+        }
+      : {
+          scale: 1.1,
+          transition: {
+            type: 'spring',
+            damping: springConfigs.smooth.damping,
+            stiffness: springConfigs.smooth.stiffness,
+          },
+        },
+  };
 
-    const width = interpolate(indicatorWidth.value, [0, 32], [0, 32], Extrapolation.CLAMP);
-
-    return {
-      opacity,
-      width: `${width}px`,
-    };
-  }) as AnimatedStyle;
+  const indicatorVariants: Variants = {
+    hidden: {
+      opacity: 0,
+      width: 0,
+    },
+    visible: {
+      opacity: 1,
+      width: 32,
+      transition: {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      },
+    },
+  };
 
   return {
     scale,
@@ -188,9 +273,9 @@ export function useNavButtonAnimation(
     iconRotation,
     indicatorOpacity,
     indicatorWidth,
-    buttonStyle,
-    iconStyle,
-    indicatorStyle,
+    variants,
+    iconVariants,
+    indicatorVariants,
     handlePress,
     handleHover,
     handleLeave,

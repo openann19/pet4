@@ -10,12 +10,12 @@ import {
   withSequence,
   withDelay,
   Easing,
-} from 'react-native-reanimated';
+  animate,
+} from '@petspark/motion';
 import { Plus } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import { AnimatedView, useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -54,24 +54,32 @@ export function FloatingActionButton({
   // Entry animation
   useEffect(() => {
     if (reducedMotion) {
-      scale.value = withTiming(1, { duration: 200 });
-      rotate.value = withTiming(0, { duration: 200 });
+      animate(scale, 1, { duration: 0.2 });
+      animate(rotate, 0, { duration: 0.2 });
     } else {
-      scale.value = withSpring(1, SPRING_CONFIG);
-      rotate.value = withSpring(0, SPRING_CONFIG);
+      const scaleTransition = withSpring(1, SPRING_CONFIG);
+      animate(scale, scaleTransition.target, scaleTransition.transition);
+      const rotateTransition = withSpring(0, SPRING_CONFIG);
+      animate(rotate, rotateTransition.target, rotateTransition.transition);
     }
   }, [scale, rotate, reducedMotion]);
 
   // Expanded state
   useEffect(() => {
     if (expanded) {
-      iconRotate.value = withSpring(45, SPRING_CONFIG);
-      labelOpacity.value = withTiming(1, { duration: 200 });
-      labelWidth.value = withTiming(1, { duration: 200 });
+      const iconRotateTransition = withSpring(45, SPRING_CONFIG);
+      animate(iconRotate, iconRotateTransition.target, iconRotateTransition.transition);
+      const opacityTransition = withTiming(1, { duration: 200 });
+      animate(labelOpacity, opacityTransition.target, opacityTransition.transition);
+      const widthTransition = withTiming(1, { duration: 200 });
+      animate(labelWidth, widthTransition.target, widthTransition.transition);
     } else {
-      iconRotate.value = withSpring(0, SPRING_CONFIG);
-      labelOpacity.value = withTiming(0, { duration: 200 });
-      labelWidth.value = withTiming(0, { duration: 200 });
+      const iconRotateTransition = withSpring(0, SPRING_CONFIG);
+      animate(iconRotate, iconRotateTransition.target, iconRotateTransition.transition);
+      const opacityTransition = withTiming(0, { duration: 200 });
+      animate(labelOpacity, opacityTransition.target, opacityTransition.transition);
+      const widthTransition = withTiming(0, { duration: 200 });
+      animate(labelWidth, widthTransition.target, widthTransition.transition);
     }
   }, [expanded, iconRotate, labelOpacity, labelWidth]);
 
@@ -79,40 +87,39 @@ export function FloatingActionButton({
   useEffect(() => {
     if (reducedMotion) return;
 
-    shimmerX.value = withRepeat(
-      withSequence(
-        withDelay(3000, withTiming(100, { duration: 2000, easing: Easing.linear })),
-        withTiming(-100, { duration: 0 })
-      ),
-      -1,
-      false
+    const delayTransition = withDelay(3000, withTiming(100, { duration: 2000, easing: Easing.linear }));
+    const sequence = withSequence(
+      delayTransition,
+      withTiming(-100, { duration: 0 })
     );
+    const repeatTransition = withRepeat(sequence, -1, false);
+    animate(shimmerX, repeatTransition.target, repeatTransition.transition);
   }, [shimmerX, reducedMotion]);
 
   const buttonStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { scale: scale.value * hoverScale.value },
-        { rotate: `${rotate.value + hoverRotate.value}deg` },
+        { scale: scale.get() * hoverScale.get() },
+        { rotate: `${rotate.get() + hoverRotate.get()}deg` },
       ],
       width: expanded ? 'auto' : '56px',
       paddingLeft: expanded ? '20px' : '0',
       paddingRight: expanded ? '20px' : '0',
     };
-  }) as AnimatedStyle;
+  });
 
   const labelStyle = useAnimatedStyle(() => {
     return {
-      opacity: labelOpacity.value,
-      width: labelWidth.value === 0 ? 0 : 'auto',
+      opacity: labelOpacity.get(),
+      width: labelWidth.get() === 0 ? 0 : 'auto',
     };
-  }) as AnimatedStyle;
+  });
 
   const shimmerStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: `${shimmerX.value}%` }],
+      transform: [{ translateX: `${shimmerX.get()}%` }],
     };
-  }) as AnimatedStyle;
+  });
 
   const handleClick = useCallback(() => {
     haptics.impact('medium');
@@ -121,33 +128,39 @@ export function FloatingActionButton({
 
   const handleMouseEnter = useCallback(() => {
     if (reducedMotion) return;
-    hoverScale.value = withSpring(1.1, SPRING_CONFIG);
-    hoverRotate.value = withSpring(5, SPRING_CONFIG);
+    const scaleTransition = withSpring(1.1, SPRING_CONFIG);
+    animate(hoverScale, scaleTransition.target, scaleTransition.transition);
+    const rotateTransition = withSpring(5, SPRING_CONFIG);
+    animate(hoverRotate, rotateTransition.target, rotateTransition.transition);
   }, [hoverScale, hoverRotate, reducedMotion]);
 
   const handleMouseLeave = useCallback(() => {
     if (reducedMotion) return;
-    hoverScale.value = withSpring(1, SPRING_CONFIG);
-    hoverRotate.value = withSpring(0, SPRING_CONFIG);
+    const scaleTransition = withSpring(1, SPRING_CONFIG);
+    animate(hoverScale, scaleTransition.target, scaleTransition.transition);
+    const rotateTransition = withSpring(0, SPRING_CONFIG);
+    animate(hoverRotate, rotateTransition.target, rotateTransition.transition);
   }, [hoverScale, hoverRotate, reducedMotion]);
 
   const handleMouseDown = useCallback(() => {
     if (reducedMotion) return;
-    hoverScale.value = withSpring(0.95, SPRING_CONFIG);
+    const scaleTransition = withSpring(0.95, SPRING_CONFIG);
+    animate(hoverScale, scaleTransition.target, scaleTransition.transition);
   }, [hoverScale, reducedMotion]);
 
   const handleMouseUp = useCallback(() => {
     if (reducedMotion) return;
-    hoverScale.value = withSpring(1.1, SPRING_CONFIG);
+    const scaleTransition = withSpring(1.1, SPRING_CONFIG);
+    animate(hoverScale, scaleTransition.target, scaleTransition.transition);
   }, [hoverScale, reducedMotion]);
 
   const iconContainerStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${String(iconRotate.value ?? '')}deg` }],
+      transform: [{ rotate: `${String(iconRotate.get() ?? '')}deg` }],
       width: 56,
       height: 56,
     };
-  }) as AnimatedStyle;
+  });
 
   const buttonCSSStyle = useAnimatedStyleValue(buttonStyle);
 

@@ -6,7 +6,7 @@ import {
   withTiming,
   withDelay,
   withSpring,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import { springConfigs } from '@/effects/reanimated/transitions';

@@ -6,7 +6,7 @@ import {
   withSequence,
   withTiming,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 
 export interface ParticleData {
   id: string;

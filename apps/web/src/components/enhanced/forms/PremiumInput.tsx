@@ -1,17 +1,18 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect, useId } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import React, { useState, useCallback, useRef, useEffect, useId } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { Eye, EyeSlash, X, CheckCircle, WarningCircle } from '@phosphor-icons/react';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import type { InputHTMLAttributes, ReactNode } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { getColorToken } from '@/core/tokens';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { getAriaFormFieldAttributes, getAriaButtonAttributes, getAriaAlertAttributes } from '@/lib/accessibility';
 
 export interface PremiumInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;
@@ -71,23 +72,33 @@ export function PremiumInput({
     setHasValue(hasContent);
 
     if (hasContent || isFocused) {
-      labelScale.value = withSpring(0.85, springConfigs.smooth);
-      labelY.value = withSpring(-24, springConfigs.smooth);
+      const scaleTransition = withSpring(0.85, springConfigs.smooth);
+      animate(labelScale, scaleTransition.target, scaleTransition.transition);
+      const yTransition = withSpring(-24, springConfigs.smooth);
+      animate(labelY, yTransition.target, yTransition.transition);
     } else {
-      labelScale.value = withSpring(1, springConfigs.smooth);
-      labelY.value = withSpring(0, springConfigs.smooth);
+      const scaleTransition = withSpring(1, springConfigs.smooth);
+      animate(labelScale, scaleTransition.target, scaleTransition.transition);
+      const yTransition = withSpring(0, springConfigs.smooth);
+      animate(labelY, yTransition.target, yTransition.transition);
     }
   }, [value, isFocused, labelScale, labelY]);
 
   useEffect(() => {
     if (isFocused) {
-      borderWidth.value = withSpring(2, springConfigs.smooth);
-      borderColor.value = withTiming(error ? 1 : 0.5, timingConfigs.fast);
-      iconScale.value = withSpring(1.1, springConfigs.smooth);
+      const widthTransition = withSpring(2, springConfigs.smooth);
+      animate(borderWidth, widthTransition.target, widthTransition.transition);
+      const colorTransition = withTiming(error ? 1 : 0.5, timingConfigs.fast);
+      animate(borderColor, colorTransition.target, colorTransition.transition);
+      const iconTransition = withSpring(1.1, springConfigs.smooth);
+      animate(iconScale, iconTransition.target, iconTransition.transition);
     } else {
-      borderWidth.value = withSpring(variant === 'outlined' ? 1 : 0, springConfigs.smooth);
-      borderColor.value = withTiming(error ? 1 : 0, timingConfigs.fast);
-      iconScale.value = withSpring(1, springConfigs.smooth);
+      const widthTransition = withSpring(variant === 'outlined' ? 1 : 0, springConfigs.smooth);
+      animate(borderWidth, widthTransition.target, widthTransition.transition);
+      const colorTransition = withTiming(error ? 1 : 0, timingConfigs.fast);
+      animate(borderColor, colorTransition.target, colorTransition.transition);
+      const iconTransition = withSpring(1, springConfigs.smooth);
+      animate(iconScale, iconTransition.target, iconTransition.transition);
     }
   }, [isFocused, error, variant, borderWidth, borderColor, iconScale]);
 
@@ -136,8 +147,8 @@ export function PremiumInput({
   }, [showPassword]);
 
   const labelStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: labelScale.value }, { translateY: labelY.value }],
-  })) as AnimatedStyle;
+    transform: [{ scale: labelScale.get() }, { translateY: labelY.get() }],
+  }));
 
   // Use design token colors for animated styles
   // Note: For static styles, CSS variables are used in className
@@ -149,26 +160,38 @@ export function PremiumInput({
   };
 
   const borderStyle = useAnimatedStyle(() => ({
-    borderWidth: borderWidth.value,
+    borderWidth: borderWidth.get(),
     borderColor:
-      borderColor.value === 1
+      borderColor.get() === 1
         ? error
           ? THEME_COLORS.error
           : THEME_COLORS.primary
         : THEME_COLORS.borderLight,
-  })) as AnimatedStyle;
+  }));
 
   const iconStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: iconScale.value }],
-  })) as AnimatedStyle;
+    transform: [{ scale: iconScale.get() }],
+  }));
 
   const inputType =
     showPasswordToggle && type === 'password' ? (showPassword ? 'text' : 'password') : type;
 
   const sizes = {
-    sm: 'px-3 py-2 text-sm h-10',
-    md: 'px-4 py-2.5 text-base h-12',
-    lg: 'px-5 py-3 text-lg h-14',
+    sm: cn(
+      getSpacingClassesFromConfig({ paddingX: 'md', paddingY: 'sm' }),
+      getTypographyClasses('caption'),
+      'h-10'
+    ),
+    md: cn(
+      getSpacingClassesFromConfig({ paddingX: 'lg', paddingY: 'md' }),
+      getTypographyClasses('body'),
+      'h-12'
+    ),
+    lg: cn(
+      getSpacingClassesFromConfig({ paddingX: 'xl', paddingY: 'md' }),
+      getTypographyClasses('body'),
+      'h-14'
+    ),
   };
 
   const variants = {
@@ -198,7 +221,10 @@ export function PremiumInput({
         />
 
         {leftIcon && (
-          <AnimatedView style={iconStyle} className="shrink-0 mr-2 text-muted-foreground">
+          <AnimatedView style={iconStyle} className={cn(
+            'shrink-0 text-muted-foreground',
+            getSpacingClassesFromConfig({ marginX: 'sm' })
+          )} aria-hidden="true">
             {leftIcon}
           </AnimatedView>
         )}
@@ -239,27 +265,35 @@ export function PremiumInput({
           onFocus={handleFocus}
           onBlur={handleBlur}
           disabled={disabled}
-          aria-labelledby={label ? labelId : undefined}
-          aria-describedby={ariaDescribedBy}
-          aria-invalid={error ? 'true' : undefined}
+          {...getAriaFormFieldAttributes({
+            labelledBy: label ? labelId : undefined,
+            describedBy: ariaDescribedBy,
+            invalid: error ? true : undefined,
+            label: label ? undefined : (props['aria-label'] || props.placeholder || 'Input'),
+          })}
           className={cn(
             'flex-1 bg-transparent outline-none placeholder:text-muted-foreground/50',
             label && 'pt-6',
             !leftIcon && !label && 'pt-0'
           )}
-          {...(label ? {} : !props['aria-label'] ? { 'aria-label': props.placeholder || 'Input' } : {})}
           {...props}
         />
 
-        <div className="flex items-center gap-1 shrink-0 ml-2">
+        <div className={cn(
+          'flex items-center shrink-0',
+          getSpacingClassesFromConfig({ gap: 'xs', marginX: 'sm' })
+        )}>
           {showClearButton && hasValue && !disabled && (
             <button
               type="button"
               onClick={handleClear}
-              className="p-1 rounded-md hover:bg-muted transition-colors"
-              aria-label="Clear input"
+              className={cn(
+                'rounded-md hover:bg-muted transition-colors',
+                getSpacingClassesFromConfig({ padding: 'xs' })
+              )}
+              {...getAriaButtonAttributes({ label: 'Clear input' })}
             >
-              <X size={16} className="text-muted-foreground" />
+              <X size={16} className="text-muted-foreground" aria-hidden="true" />
             </button>
           )}
 
@@ -267,24 +301,29 @@ export function PremiumInput({
             <button
               type="button"
               onClick={togglePassword}
-              className="p-1 rounded-md hover:bg-muted transition-colors"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              className={cn(
+                'rounded-md hover:bg-muted transition-colors',
+                getSpacingClassesFromConfig({ padding: 'xs' })
+              )}
+              {...getAriaButtonAttributes({
+                label: showPassword ? 'Hide password' : 'Show password',
+              })}
             >
               {showPassword ? (
-                <EyeSlash size={16} className="text-muted-foreground" />
+                <EyeSlash size={16} className="text-muted-foreground" aria-hidden="true" />
               ) : (
-                <Eye size={16} className="text-muted-foreground" />
+                <Eye size={16} className="text-muted-foreground" aria-hidden="true" />
               )}
             </button>
           )}
 
-          {error && <WarningCircle size={16} className="text-(--error) shrink-0" />}
+          {error && <WarningCircle size={16} className="text-(--error) shrink-0" aria-hidden="true" />}
 
           {!error && hasValue && !showClearButton && (
-            <CheckCircle size={16} className="text-(--success) shrink-0" />
+            <CheckCircle size={16} className="text-(--success) shrink-0" aria-hidden="true" />
           )}
 
-          {rightIcon && <div className="shrink-0 text-muted-foreground">{rightIcon}</div>}
+          {rightIcon && <div className="shrink-0 text-muted-foreground" aria-hidden="true">{rightIcon}</div>}
         </div>
       </div>
 
@@ -292,12 +331,14 @@ export function PremiumInput({
         <div
           id={error ? errorId : helperTextId}
           className={cn(
-            'mt-1.5 text-xs flex items-center gap-1',
+            'flex items-center',
+            getTypographyClasses('caption'),
+            getSpacingClassesFromConfig({ marginY: 'xs', gap: 'xs' }),
             error ? 'text-(--error)' : 'text-muted-foreground'
           )}
-          role={error ? 'alert' : undefined}
+          {...(error ? getAriaAlertAttributes({ role: 'alert', live: 'polite' }) : {})}
         >
-          {error ? <WarningCircle size={12} /> : null}
+          {error ? <WarningCircle size={12} aria-hidden="true" /> : null}
           <span>{error || helperText}</span>
         </div>
       )}

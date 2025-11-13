@@ -9,7 +9,7 @@ import {
   useSharedValue,
   withRepeat,
   withTiming,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 
 export interface UseDynamicBackgroundMeshOptions {
   enabled?: boolean;

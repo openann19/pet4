@@ -9,7 +9,7 @@ import {
   withDelay,
   interpolate,
   Extrapolation,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { useApp } from '@/contexts/AppContext';

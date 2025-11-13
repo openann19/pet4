@@ -8,7 +8,7 @@ import {
   useAnimatedStyle,
   withSpring,
   withSequence,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback } from 'react';
 
 export interface UseElasticScaleOptions {

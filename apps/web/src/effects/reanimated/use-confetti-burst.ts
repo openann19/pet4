@@ -10,7 +10,7 @@ import {
   withSequence,
   interpolate,
   Easing,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback, useState } from 'react';
 import { makeRng } from '@petspark/shared';
 

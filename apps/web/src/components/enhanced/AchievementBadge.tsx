@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
-import { useSharedValue, withSpring, useAnimatedStyle } from 'react-native-reanimated';
+import React, { useEffect } from 'react';
+import { useSharedValue, withSpring, useAnimatedStyle, animate } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { cn } from '@/lib/utils';
 
 export interface AchievementBadgeProps {
   size?: number;
@@ -18,11 +19,12 @@ export function AchievementBadge({
     const scale = useSharedValue(0);
 
   useEffect(() => {
-    scale.value = withSpring(1, { stiffness: 300, damping: 20 });
+    const scaleTransition = withSpring(1, { stiffness: 300, damping: 20 });
+    animate(scale, scaleTransition.target, scaleTransition.transition);
   }, [scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{ scale: scale.get() }],
   }));
 
   return (

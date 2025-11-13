@@ -5,7 +5,7 @@ import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import SignInForm from './auth/SignInForm';
 import SignUpForm from './auth/SignUpForm';

@@ -1,16 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Heart, CheckCircle, Translate } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'
 import { analytics } from '@/lib/analytics'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, withDelay, withRepeat, withSequence } from 'react-native-reanimated'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { motion } from 'framer-motion'
+import type { Variants } from '@petspark/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { isTruthy } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared'
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography'
+import { getAriaButtonAttributes } from '@/lib/accessibility'
+import { cn } from '@/lib/utils'
 
-type WelcomeScreenProps = {
+interface WelcomeScreenProps {
   onGetStarted: () => void
   onSignIn: () => void
   onExplore: () => void
@@ -29,7 +31,6 @@ const track = (name: string, props?: Record<string, string | number | boolean>) 
 export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnline = true, deepLinkMessage }: WelcomeScreenProps) {
   const { t, language, toggleLanguage: _toggleLanguage } = useApp()
   const [isLoading, setIsLoading] = useState(true)
-  const shouldReduceMotion = useReducedMotion()
   const primaryBtnRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
@@ -79,25 +80,141 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
     track(`welcome_${String(type ?? '')}_opened`)
   }
 
-  // Animation values
-  const loadingOpacity = useSharedValue(0)
-  const languageButtonOpacity = useSharedValue(0)
-  const logoOpacity = useSharedValue(0)
-  const logoScale = useSharedValue(0.9)
-  const logoY = useSharedValue(20)
-  const logoShadow = useSharedValue(0)
-  const titleOpacity = useSharedValue(0)
-  const titleY = useSharedValue(20)
-  const proofItemsOpacity = useSharedValue(0)
-  const proofItemsY = useSharedValue(20)
-  const deepLinkOpacity = useSharedValue(0)
-  const deepLinkY = useSharedValue(20)
-  const offlineOpacity = useSharedValue(0)
-  const offlineY = useSharedValue(20)
-  const buttonsOpacity = useSharedValue(0)
-  const buttonsY = useSharedValue(20)
-  const legalOpacity = useSharedValue(0)
-  const legalY = useSharedValue(20)
+  // Animation variants using Framer Motion
+  const shouldReduceMotion = useReducedMotion()
+  
+  const loadingVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.3 } }
+  }
+
+  const languageButtonVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.4 } }
+  }
+
+  const logoVariants: Variants = {
+    hidden: { 
+      opacity: 0, 
+      scale: 0.9, 
+      y: 20,
+      boxShadow: '0 10px 40px rgba(0,0,0,0.15)'
+    },
+    visible: { 
+      opacity: 1, 
+      scale: 1, 
+      y: 0,
+      transition: shouldReduceMotion 
+        ? { duration: 0 }
+        : { 
+            opacity: { duration: 0.5 },
+            scale: { type: 'spring', damping: 20, stiffness: 300 },
+            y: { type: 'spring', damping: 20, stiffness: 300 }
+          }
+    },
+    pulsing: {
+      boxShadow: [
+        '0 10px 40px rgba(0,0,0,0.15)',
+        '0 20px 60px rgba(0,0,0,0.3)',
+        '0 10px 40px rgba(0,0,0,0.15)'
+      ],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        repeatType: 'reverse' as const
+      }
+    }
+  }
+
+  const titleVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : {
+            delay: 0.2,
+            opacity: { duration: 0.5 },
+            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.2 }
+          }
+    }
+  }
+
+  const proofItemsVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : {
+            delay: 0.3,
+            opacity: { duration: 0.4 },
+            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.3 }
+          }
+    }
+  }
+
+  const deepLinkVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : {
+            delay: 0.6,
+            opacity: { duration: 0.4 },
+            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.6 }
+          }
+    }
+  }
+
+  const offlineVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : {
+            delay: 0.6,
+            opacity: { duration: 0.4 },
+            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.6 }
+          }
+    }
+  }
+
+  const buttonsVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : {
+            delay: 0.7,
+            opacity: { duration: 0.5 },
+            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.7 }
+          }
+    }
+  }
+
+  const legalVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : {
+            delay: 0.9,
+            opacity: { duration: 0.5 },
+            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.9 }
+          }
+    }
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => { setIsLoading(false); }, 300)
@@ -116,225 +233,205 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
     if (!isLoading) primaryBtnRef.current?.focus()
   }, [isLoading])
 
-  // Initialize animations
-  useEffect(() => {
-    if (!isLoading) {
-      loadingOpacity.value = withTiming(1, { duration: 300 })
-      languageButtonOpacity.value = withTiming(1, { duration: 400 })
-      
-      if (!shouldReduceMotion) {
-        logoOpacity.value = withTiming(1, { duration: 500 })
-        logoScale.value = withSpring(1, { damping: 20, stiffness: 300 })
-        logoY.value = withSpring(0, { damping: 20, stiffness: 300 })
-        logoShadow.value = withRepeat(
-          withSequence(
-            withTiming(1, { duration: 1500 }),
-            withTiming(0, { duration: 1500 })
-          ),
-          -1,
-          true
-        )
-        
-        titleOpacity.value = withDelay(200, withTiming(1, { duration: 500 }))
-        titleY.value = withDelay(200, withSpring(0, { damping: 20, stiffness: 300 }))
-        
-        proofItemsOpacity.value = withDelay(300, withTiming(1, { duration: 400 }))
-        proofItemsY.value = withDelay(300, withSpring(0, { damping: 20, stiffness: 300 }))
-        
-        if (isTruthy(deepLinkMessage)) {
-          deepLinkOpacity.value = withDelay(600, withTiming(1, { duration: 400 }))
-          deepLinkY.value = withDelay(600, withSpring(0, { damping: 20, stiffness: 300 }))
-        }
-        
-        if (!isOnline) {
-          offlineOpacity.value = withDelay(600, withTiming(1, { duration: 400 }))
-          offlineY.value = withDelay(600, withSpring(0, { damping: 20, stiffness: 300 }))
-        }
-        
-        buttonsOpacity.value = withDelay(700, withTiming(1, { duration: 500 }))
-        buttonsY.value = withDelay(700, withSpring(0, { damping: 20, stiffness: 300 }))
-        
-        legalOpacity.value = withDelay(900, withTiming(1, { duration: 500 }))
-        legalY.value = withDelay(900, withSpring(0, { damping: 20, stiffness: 300 }))
-      } else {
-        // Reduced motion - instant appearance
-        logoOpacity.value = 1
-        logoScale.value = 1
-        logoY.value = 0
-        titleOpacity.value = 1
-        titleY.value = 0
-        proofItemsOpacity.value = 1
-        proofItemsY.value = 0
-        if (isTruthy(deepLinkMessage)) {
-          deepLinkOpacity.value = 1
-          deepLinkY.value = 0
-        }
-        if (!isOnline) {
-          offlineOpacity.value = 1
-          offlineY.value = 0
-        }
-        buttonsOpacity.value = 1
-        buttonsY.value = 0
-        legalOpacity.value = 1
-        legalY.value = 0
-      }
-    }
-  }, [isLoading, shouldReduceMotion, deepLinkMessage, isOnline, loadingOpacity, languageButtonOpacity, logoOpacity, logoScale, logoY, logoShadow, titleOpacity, titleY, proofItemsOpacity, proofItemsY, deepLinkOpacity, deepLinkY, offlineOpacity, offlineY, buttonsOpacity, buttonsY, legalOpacity, legalY])
-
-  // Animated styles
-  const loadingStyle = useAnimatedStyle(() => ({
-    opacity: loadingOpacity.value
-  })) as AnimatedStyle
-
-  const languageButtonStyle = useAnimatedStyle(() => ({
-    opacity: languageButtonOpacity.value
-  })) as AnimatedStyle
-
-  const logoStyle = useAnimatedStyle(() => ({
-    opacity: logoOpacity.value,
-    transform: [
-      { scale: logoScale.value },
-      { translateY: logoY.value }
-    ],
-    boxShadow: shouldReduceMotion ? undefined : `0 ${String(10 + logoShadow.value * 10 ?? '')}px ${String(40 + logoShadow.value * 20 ?? '')}px rgba(0,0,0,${String(0.15 + logoShadow.value * 0.15 ?? '')})`
-  })) as AnimatedStyle
-
-  const titleStyle = useAnimatedStyle(() => ({
-    opacity: titleOpacity.value,
-    transform: [{ translateY: titleY.value }]
-  })) as AnimatedStyle
-
-  const proofItemsStyle = useAnimatedStyle(() => ({
-    opacity: proofItemsOpacity.value,
-    transform: [{ translateY: proofItemsY.value }]
-  })) as AnimatedStyle
-
-  const deepLinkStyle = useAnimatedStyle(() => ({
-    opacity: deepLinkOpacity.value,
-    transform: [{ translateY: deepLinkY.value }]
-  })) as AnimatedStyle
-
-  const offlineStyle = useAnimatedStyle(() => ({
-    opacity: offlineOpacity.value,
-    transform: [{ translateY: offlineY.value }]
-  })) as AnimatedStyle
-
-  const buttonsStyle = useAnimatedStyle(() => ({
-    opacity: buttonsOpacity.value,
-    transform: [{ translateY: buttonsY.value }]
-  })) as AnimatedStyle
-
-  const legalStyle = useAnimatedStyle(() => ({
-    opacity: legalOpacity.value,
-    transform: [{ translateY: legalY.value }]
-  })) as AnimatedStyle
-
   if (isTruthy(isLoading)) {
     return (
-      <div className="fixed inset-0 bg-background flex items-center justify-center" role="status" aria-live="polite">                                           
-        <AnimatedView
-          style={loadingStyle}
+      <div 
+        className={cn(
+          'fixed inset-0 bg-background flex items-center justify-center',
+          getSpacingClassesFromConfig({ padding: 'xl' })
+        )}
+        role="status" 
+        aria-live="polite"
+        aria-label="Loading application"
+      >                                           
+        <motion.div
+          variants={loadingVariants}
+          initial="hidden"
+          animate="visible"
           className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center"                                          
         >
-          <Heart size={32} className="text-white" weight="fill" aria-hidden />
+          <Heart size={32} className="text-white" weight="fill" aria-hidden="true" />
           <span className="sr-only">{t.common.loading}</span>
-        </AnimatedView>
+        </motion.div>
       </div>
     )
   }
 
+  const languageButtonAria = getAriaButtonAttributes({
+    label: language === 'en' ? 'Switch to Bulgarian' : 'Превключи на English',
+    pressed: language === 'bg',
+  });
+
   return (
-    <main className="fixed inset-0 bg-background overflow-auto">
+    <main 
+      className="fixed inset-0 bg-background overflow-auto"
+      aria-label="Welcome screen"
+    >
       <div className="min-h-screen flex flex-col">
-        <AnimatedView
-          style={languageButtonStyle}
-          className="absolute top-6 right-6 z-10"
+        <nav 
+          className={cn(
+            'absolute z-10',
+            getSpacingClassesFromConfig({ marginY: 'xl', marginX: 'xl' })
+          )}
+          aria-label="Language selection"
         >
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleLanguageToggle}
-            className="rounded-full h-11 px-4 border-[1.5px] font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:underline"
-            aria-pressed={language === 'bg'}
-            aria-label={language === 'en' ? 'Switch to Bulgarian' : 'Превключи на English'}
+          <motion.div
+            variants={languageButtonVariants}
+            initial="hidden"
+            animate="visible"
+            className="top-6 right-6"
           >
-            <Translate size={20} weight="bold" aria-hidden />
-            <span>{language === 'en' ? 'БГ' : 'EN'}</span>
-          </Button>
-        </AnimatedView>
-
-        <div className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="w-full max-w-md">
-            <AnimatedView
-              style={titleStyle}
-              className="flex flex-col items-center mb-12"
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLanguageToggle}
+              className={cn(
+                'rounded-full h-11 border-[1.5px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:underline',
+                getTypographyClasses('button'),
+                getSpacingClassesFromConfig({ paddingX: 'lg' })
+              )}
+              {...languageButtonAria}
             >
-              <AnimatedView
-                style={logoStyle}
-                className="w-20 h-20 rounded-full bg-gradient-to-br from-primary via-accent to-secondary flex items-center justify-center shadow-2xl mb-6"      
-              >
-                <Heart size={40} className="text-white" weight="fill" aria-hidden />                                                                            
-              </AnimatedView>
+              <Translate size={20} weight="bold" aria-hidden="true" />
+              <span>{language === 'en' ? 'БГ' : 'EN'}</span>
+            </Button>
+          </motion.div>
+        </nav>
 
-              <h1 className="text-3xl md:text-5xl font-extrabold text-center text-foreground mb-3">
+        <div className={cn(
+          'flex-1 flex items-center justify-center',
+          getSpacingClassesFromConfig({ paddingX: 'xl', paddingY: '2xl' })
+        )}>
+          <div className="w-full max-w-md">
+            <motion.div
+              variants={titleVariants}
+              initial="hidden"
+              animate="visible"
+              className={cn(
+                'flex flex-col items-center',
+                getSpacingClassesFromConfig({ marginY: '2xl' })
+              )}
+            >
+              <motion.div
+                variants={logoVariants}
+                initial="hidden"
+                animate={shouldReduceMotion ? "visible" : ["visible", "pulsing"]}
+                className={cn(
+                  'w-20 h-20 rounded-full bg-gradient-to-br from-primary via-accent to-secondary flex items-center justify-center shadow-2xl',
+                  getSpacingClassesFromConfig({ marginY: 'xl' })
+                )}
+                aria-hidden="true"
+              >
+                <Heart size={40} className="text-white" weight="fill" aria-hidden="true" />                                                                            
+              </motion.div>
+
+              <h1 className={cn(
+                getTypographyClasses('title'),
+                'text-center text-foreground',
+                getSpacingClassesFromConfig({ marginY: 'md' })
+              )}>
                 {t.welcome.title}
               </h1>
 
-              <p className="text-lg text-muted-foreground text-center">
+              <p className={cn(
+                getTypographyClasses('subtitle'),
+                'text-muted-foreground text-center'
+              )}>
                 {t.welcome.subtitle}
               </p>
-            </AnimatedView>
+            </motion.div>
 
-            <AnimatedView
-              style={proofItemsStyle}
-              className="space-y-3 mb-10"
+            <motion.div
+              variants={proofItemsVariants}
+              initial="hidden"
+              animate="visible"
+              className={cn(
+                getSpacingClassesFromConfig({ spaceY: 'md', marginY: 'xl' })
+              )}
+              role="list"
+              aria-label="Key features"
             >
               {[t.welcome.proof1, t.welcome.proof2, t.welcome.proof3].map((text, idx) => (                                                                      
                 <div
                   key={idx}
-                  className="flex items-center gap-3"
+                  className={cn(
+                    'flex items-center',
+                    getSpacingClassesFromConfig({ gap: 'md' })
+                  )}
+                  role="listitem"
                 >
-                  <CheckCircle size={20} weight="fill" className="text-primary shrink-0" aria-hidden />                                                         
-                  <span className="text-foreground/80 text-sm">{text}</span>
+                  <CheckCircle size={20} weight="fill" className="text-primary shrink-0" aria-hidden="true" />                                                         
+                  <span className={cn(
+                    getTypographyClasses('caption'),
+                    'text-foreground/80'
+                  )}>
+                    {text}
+                  </span>
                 </div>
               ))}
-            </AnimatedView>
+            </motion.div>
 
             {deepLinkMessage && (
-              <AnimatedView
-                style={deepLinkStyle}
-                className="mb-6 p-3 rounded-lg bg-primary/10 border border-primary/20"                                                                          
+              <motion.div
+                variants={deepLinkVariants}
+                initial="hidden"
+                animate="visible"
+                className={cn(
+                  'rounded-lg bg-primary/10 border border-primary/20',
+                  getSpacingClassesFromConfig({ marginY: 'xl', padding: 'md' })
+                )}
                 role="note"
+                aria-label="Deep link information"
               >
-                <p className="text-sm text-foreground/70 text-center">
+                <p className={cn(
+                  getTypographyClasses('caption'),
+                  'text-foreground/70 text-center'
+                )}>
                   {deepLinkMessage}
                 </p>
-              </AnimatedView>
+              </motion.div>
             )}
 
             {!isOnline && (
-              <AnimatedView
-                style={offlineStyle}
-                className="mb-6 p-3 rounded-lg bg-destructive/10 border border-destructive/20"                                                                  
+              <motion.div
+                variants={offlineVariants}
+                initial="hidden"
+                animate="visible"
+                className={cn(
+                  'rounded-lg bg-destructive/10 border border-destructive/20',
+                  getSpacingClassesFromConfig({ marginY: 'xl', padding: 'md' })
+                )}
                 role="alert"
                 aria-live="polite"
+                aria-label="Offline status"
               >
-                <p className="text-sm text-destructive text-center">
+                <p className={cn(
+                  getTypographyClasses('caption'),
+                  'text-destructive text-center'
+                )}>
                   {t.welcome.offlineMessage}
                 </p>
-              </AnimatedView>
+              </motion.div>
             )}
 
-            <AnimatedView
-              style={buttonsStyle}
-              className="space-y-3"
+            <motion.div
+              variants={buttonsVariants}
+              initial="hidden"
+              animate="visible"
+              className={getSpacingClassesFromConfig({ spaceY: 'md' })}
+              role="group"
+              aria-label="Action buttons"
             >
               <Button
                 ref={primaryBtnRef}
                 size="lg"
                 onClick={handleGetStarted}
                 disabled={!isOnline}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className={cn(
+                  'w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                  getTypographyClasses('button'),
+                  getSpacingClassesFromConfig({ paddingX: 'xl', paddingY: 'md' })
+                )}
                 style={{
                   transform: shouldReduceMotion ? 'none' : undefined
                 }}
@@ -344,12 +441,18 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 {t.welcome.getStarted}
               </Button>
 
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className={cn(
+                'flex flex-col sm:flex-row',
+                getSpacingClassesFromConfig({ gap: 'sm' })
+              )}>
                 <Button
                   variant="outline"
                   size="lg"
                   onClick={handleSignIn}
-                  className="flex-1 h-12 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className={cn(
+                    'flex-1 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                    getTypographyClasses('button')
+                  )}
                   aria-label="Sign in to your account"
                 >
                   {t.welcome.signIn}
@@ -359,26 +462,35 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                   variant="outline"
                   size="lg"
                   onClick={handleExplore}
-                  className="flex-1 h-12 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  className={cn(
+                    'flex-1 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                    getTypographyClasses('button')
+                  )}
                   aria-label="Explore PawfectMatch"
                 >
                   {t.welcome.explore}
                 </Button>
               </div>
-            </AnimatedView>
+            </motion.div>
 
-            <AnimatedView
-              style={legalStyle}
-              className="mt-8 text-center"
+            <motion.div
+              variants={legalVariants}
+              initial="hidden"
+              animate="visible"
+              className={cn(
+                'text-center',
+                getSpacingClassesFromConfig({ marginY: 'xl' })
+              )}
             >
-              <p className="text-xs text-gray-400">
+              <p className={getTypographyClasses('caption')}>
                 {t.welcome.legal}{' '}
                 <a
                   href="https://github.com/site/terms"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => { handleLegalClick('terms'); }}
-                  className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded underline"                       
+                  className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded underline"
+                  aria-label="Terms of Service"                       
                 >
                   {t.welcome.terms}
                 </a>
@@ -388,13 +500,14 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => { handleLegalClick('privacy'); }}
-                  className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded underline"                       
+                  className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded underline"
+                  aria-label="Privacy Policy"                       
                 >
                   {t.welcome.privacy}
                 </a>
                 .
               </p>
-            </AnimatedView>
+            </motion.div>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
  * Depth-based parallax scrolling with multiple layers
  */
 
-import { useSharedValue, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, interpolate } from '@petspark/motion';
 import { useCallback, useEffect } from 'react';
 
 export interface UseParallaxScrollOptions {

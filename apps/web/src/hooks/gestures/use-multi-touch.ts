@@ -19,7 +19,7 @@ import {
   withTiming,
   runOnJS,
   type SharedValue,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 import { createLogger } from '@/lib/logger'
 import { triggerHapticByContext } from '@/effects/chat/core/haptic-manager'
 import { useUIConfig } from '@/hooks/use-ui-config'

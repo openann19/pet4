@@ -14,6 +14,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
+import { getTypographyClasses, getSpacingClassesFromConfig } from "@/lib/typography"
 
 const Form = FormProvider
 
@@ -79,7 +80,11 @@ function FormItem({ className, ...props }: ComponentProps<"div">) {
     <FormItemContext.Provider value={{ id }}>
       <div
         data-slot="form-item"
-        className={cn("grid gap-2", className)}
+        className={cn(
+          "grid",
+          getSpacingClassesFromConfig({ gap: 'sm' }),
+          className
+        )}
         {...props}
       />
     </FormItemContext.Provider>
@@ -128,7 +133,11 @@ function FormDescription({ className, ...props }: ComponentProps<"p">) {
     <p
       data-slot="form-description"
       id={formDescriptionId}
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn(
+        getTypographyClasses('caption'),
+        "text-muted-foreground",
+        className
+      )}
       {...props}
     />
   )
@@ -146,7 +155,14 @@ function FormMessage({ className, ...props }: ComponentProps<"p">) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("text-red-500 text-sm mt-1", className)}
+      role="alert"
+      aria-live="polite"
+      className={cn(
+        getTypographyClasses('caption'),
+        "text-red-500",
+        getSpacingClassesFromConfig({ marginY: 'xs' }),
+        className
+      )}
       {...props}
     >
       {body}

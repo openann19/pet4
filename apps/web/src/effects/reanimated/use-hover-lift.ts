@@ -1,13 +1,8 @@
 'use client';
 
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useMotionValue, animate, type MotionValue } from 'framer-motion';
 import { useCallback } from 'react';
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  type SharedValue,
-} from 'react-native-reanimated';
+import type { Variants } from 'framer-motion';
 
 export interface UseHoverLiftOptions {
   scale?: number;
@@ -17,9 +12,9 @@ export interface UseHoverLiftOptions {
 }
 
 export interface UseHoverLiftReturn {
-  scale: SharedValue<number>;
-  translateY: SharedValue<number>;
-  animatedStyle: AnimatedStyle;
+  scale: MotionValue<number>;
+  translateY: MotionValue<number>;
+  variants: Variants;
   handleEnter: () => void;
   handleLeave: () => void;
 }
@@ -37,29 +32,60 @@ export function useHoverLift(options: UseHoverLiftOptions = {}): UseHoverLiftRet
     stiffness = DEFAULT_STIFFNESS,
   } = options;
 
-  const scale = useSharedValue(1);
-  const translateY = useSharedValue(0);
+  const scale = useMotionValue(1);
+  const translateY = useMotionValue(0);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }, { translateY: translateY.value }],
-    };
-  }) as AnimatedStyle;
+  const variants: Variants = {
+    rest: {
+      scale: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        damping,
+        stiffness,
+      },
+    },
+    hover: {
+      scale: scaleValue,
+      y: translateYValue,
+      transition: {
+        type: 'spring',
+        damping,
+        stiffness,
+      },
+    },
+  };
 
   const handleEnter = useCallback(() => {
-    scale.value = withSpring(scaleValue, { damping, stiffness });
-    translateY.value = withSpring(translateYValue, { damping, stiffness });
+    animate(scale, scaleValue, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
+    animate(translateY, translateYValue, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
   }, [scale, translateY, scaleValue, translateYValue, damping, stiffness]);
 
   const handleLeave = useCallback(() => {
-    scale.value = withSpring(1, { damping, stiffness });
-    translateY.value = withSpring(0, { damping, stiffness });
+    animate(scale, 1, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
+    animate(translateY, 0, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
   }, [scale, translateY, damping, stiffness]);
 
   return {
     scale,
     translateY,
-    animatedStyle,
+    variants,
     handleEnter,
     handleLeave,
   };

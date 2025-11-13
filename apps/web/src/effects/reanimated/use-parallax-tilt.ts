@@ -6,7 +6,7 @@ import {
   withSpring,
   interpolate,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback } from 'react';
 
 export interface UseParallaxTiltOptions {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MotionView, Presence } from '@petspark/motion';
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from '@petspark/motion';
 import React from 'react';
 import {
   Plus,

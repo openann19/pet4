@@ -6,6 +6,7 @@ import * as SliderPrimitive from '@radix-ui/react-slider';
 import { MotionView } from '@petspark/motion';
 
 import { cn } from '@/lib/utils';
+import { getSpacingClassesFromConfig } from '@/lib/typography';
 
 function Slider({
   className,
@@ -31,7 +32,7 @@ function Slider({
         'relative flex w-full touch-none items-center select-none group',
         'data-disabled:opacity-50 data-disabled:cursor-not-allowed',
         'data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col',
-        'py-4',
+        getSpacingClassesFromConfig({ paddingY: 'lg' }),
         className
       )}
       {...props}
@@ -52,7 +53,7 @@ function Slider({
           data-slot="slider-range"
           className={cn(
             'absolute rounded-full',
-            'bg-gradient-to-r from-primary via-primary/95 to-accent',
+            'bg-linear-to-r from-primary via-primary/95 to-accent',
             'shadow-lg shadow-primary/25',
             'transition-all duration-300',
             'group-hover:shadow-xl group-hover:shadow-primary/30',
@@ -62,7 +63,7 @@ function Slider({
           )}
         >
           <MotionView
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"
             animate={{
               x: ['-100%', '200%'],
             }}
@@ -72,6 +73,7 @@ function Slider({
               ease: 'linear',
               repeatDelay: 1,
             }}
+            aria-hidden="true"
           />
         </SliderPrimitive.Range>
       </SliderPrimitive.Track>
@@ -104,6 +106,7 @@ function Slider({
               repeat: Infinity,
               ease: 'easeInOut',
             }}
+            aria-hidden="true"
           />
         </SliderPrimitive.Thumb>
       ))}

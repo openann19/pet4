@@ -23,11 +23,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { useSharedValue, useAnimatedStyle, withSpring, withDelay } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import React from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withDelay, animate } from '@petspark/motion';
 import { haptics } from '@/lib/haptics';
 import type { Pet } from '@/lib/types';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { cn } from '@/lib/utils';
 
 export interface EnhancedPetDetailViewProps {
   pet: Pet;
@@ -125,32 +127,39 @@ export function EnhancedPetDetailView({
 
   useEffect(() => {
     if (isVisible) {
-      containerOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
-      containerScale.value = withSpring(1, { damping: 20, stiffness: 300 });
-      modalOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
-      modalScale.value = withSpring(1, { damping: 20, stiffness: 300 });
+      const containerOpacityTransition = withSpring(1, { damping: 20, stiffness: 300 });
+      animate(containerOpacity, containerOpacityTransition.target, containerOpacityTransition.transition);
+      const containerScaleTransition = withSpring(1, { damping: 20, stiffness: 300 });
+      animate(containerScale, containerScaleTransition.target, containerScaleTransition.transition);
+      const modalOpacityTransition = withSpring(1, { damping: 20, stiffness: 300 });
+      animate(modalOpacity, modalOpacityTransition.target, modalOpacityTransition.transition);
+      const modalScaleTransition = withSpring(1, { damping: 20, stiffness: 300 });
+      animate(modalScale, modalScaleTransition.target, modalScaleTransition.transition);
     } else {
-      containerOpacity.value = withSpring(0, { damping: 20, stiffness: 300 });
-      modalScale.value = withSpring(0.95, { damping: 20, stiffness: 300 });
+      const containerOpacityTransition = withSpring(0, { damping: 20, stiffness: 300 });
+      animate(containerOpacity, containerOpacityTransition.target, containerOpacityTransition.transition);
+      const modalScaleTransition = withSpring(0.95, { damping: 20, stiffness: 300 });
+      animate(modalScale, modalScaleTransition.target, modalScaleTransition.transition);
     }
-  }, [isVisible]);
+  }, [isVisible, containerOpacity, containerScale, modalOpacity, modalScale]);
 
   useEffect(() => {
-    photoOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
-  }, [currentPhotoIndex]);
+    const photoOpacityTransition = withSpring(1, { damping: 20, stiffness: 300 });
+    animate(photoOpacity, photoOpacityTransition.target, photoOpacityTransition.transition);
+  }, [currentPhotoIndex, photoOpacity]);
 
   const containerStyle = useAnimatedStyle(() => ({
-    opacity: containerOpacity.value,
-  })) as AnimatedStyle;
+    opacity: containerOpacity.get(),
+  }));
 
   const modalStyle = useAnimatedStyle(() => ({
-    opacity: modalOpacity.value,
-    transform: [{ scale: modalScale.value }],
-  })) as AnimatedStyle;
+    opacity: modalOpacity.get(),
+    transform: [{ scale: modalScale.get() }],
+  }));
 
   const photoStyle = useAnimatedStyle(() => ({
-    opacity: photoOpacity.value,
-  })) as AnimatedStyle;
+    opacity: photoOpacity.get(),
+  }));
 
   return (
     <AnimatedView
@@ -333,14 +342,16 @@ function CompatibilityBadge({ score }: CompatibilityBadgeProps): React.JSX.Eleme
   const badgeScale = useSharedValue(0.8);
 
   useEffect(() => {
-    badgeOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
-    badgeScale.value = withSpring(1, { damping: 20, stiffness: 300 });
-  }, []);
+    const badgeOpacityTransition = withSpring(1, { damping: 20, stiffness: 300 });
+    animate(badgeOpacity, badgeOpacityTransition.target, badgeOpacityTransition.transition);
+    const badgeScaleTransition = withSpring(1, { damping: 20, stiffness: 300 });
+    animate(badgeScale, badgeScaleTransition.target, badgeScaleTransition.transition);
+  }, [badgeOpacity, badgeScale]);
 
   const badgeStyle = useAnimatedStyle(() => ({
-    opacity: badgeOpacity.value,
-    transform: [{ scale: badgeScale.value }],
-  })) as AnimatedStyle;
+    opacity: badgeOpacity.get(),
+    transform: [{ scale: badgeScale.get() }],
+  }));
 
   return (
     <div className="absolute top-4 left-4">
@@ -366,8 +377,8 @@ function PetHeader({ pet, trustScore, trustLevel }: PetHeaderProps): React.JSX.E
     <div>
       <div className="flex items-start justify-between mb-2">
         <div>
-          <h1 className="text-3xl font-bold">{pet.name}</h1>
-          <p className="text-lg text-muted-foreground">
+          <h1 className={cn(getTypographyClasses('h1'))}>{pet.name}</h1>
+          <p className={cn(getTypographyClasses('body'), 'text-muted-foreground')}>
             {pet.breed} • {pet.age} {pet.age === 1 ? 'year' : 'years'}
           </p>
         </div>
@@ -377,7 +388,7 @@ function PetHeader({ pet, trustScore, trustLevel }: PetHeaderProps): React.JSX.E
               <ShieldCheck size={20} className={trustLevel.color} weight="fill" />
               <span className={`font-semibold ${String(trustLevel.color ?? '')}`}>{trustLevel.label}</span>
             </div>
-            <span className="text-sm text-muted-foreground">Trust Score: {trustScore}</span>
+            <span className={cn(getTypographyClasses('body-sm'), 'text-muted-foreground')}>Trust Score: {trustScore}</span>
           </div>
         )}
       </div>
@@ -398,8 +409,8 @@ function MatchReasonsCard({ reasons }: MatchReasonsCardProps): React.JSX.Element
   return (
     <Card className="border-primary/20 bg-linear-to-br from-primary/5 to-accent/5">
       <CardContent className="p-4 space-y-2">
-        <h3 className="font-semibold flex items-center gap-2">
-          <Star size={20} className="text-accent" weight="fill" />
+        <h3 className={cn(getTypographyClasses('h3'), 'flex items-center', getSpacingClassesFromConfig({ gap: 'sm' }))}>
+          <Star size={20} className="text-accent" weight="fill" aria-hidden="true" />
           Why This Match Works
         </h3>
         <ul className="space-y-1.5">
@@ -422,14 +433,16 @@ function MatchReasonItem({ reason, index }: MatchReasonItemProps): React.JSX.Ele
   const itemX = useSharedValue(-10);
 
   useEffect(() => {
-    itemOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-    itemX.value = withDelay(index * 50, withSpring(0, { damping: 20, stiffness: 300 }));
-  }, [index]);
+    const itemOpacityDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    animate(itemOpacity, itemOpacityDelay.target, itemOpacityDelay.transition);
+    const itemXDelay = withDelay(index * 50, withSpring(0, { damping: 20, stiffness: 300 }));
+    animate(itemX, itemXDelay.target, itemXDelay.transition);
+  }, [index, itemOpacity, itemX]);
 
   const itemStyle = useAnimatedStyle(() => ({
-    opacity: itemOpacity.value,
-    transform: [{ translateX: itemX.value }],
-  })) as AnimatedStyle;
+    opacity: itemOpacity.get(),
+    transform: [{ translateX: itemX.get() }],
+  }));
 
   return (
     <AnimatedView className="text-sm flex items-start gap-2" style={itemStyle}>
@@ -562,14 +575,16 @@ function PersonalityTrait({ trait, index }: PersonalityTraitProps): React.JSX.El
   const traitScale = useSharedValue(0.9);
 
   useEffect(() => {
-    traitOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-    traitScale.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-  }, [index]);
+    const traitOpacityDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    animate(traitOpacity, traitOpacityDelay.target, traitOpacityDelay.transition);
+    const traitScaleDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    animate(traitScale, traitScaleDelay.target, traitScaleDelay.transition);
+  }, [index, traitOpacity, traitScale]);
 
   const traitStyle = useAnimatedStyle(() => ({
-    opacity: traitOpacity.value,
-    transform: [{ scale: traitScale.value }],
-  })) as AnimatedStyle;
+    opacity: traitOpacity.get(),
+    transform: [{ scale: traitScale.get() }],
+  }));
 
   return (
     <AnimatedView
@@ -624,14 +639,16 @@ function TrustBadgeItem({ badge, index }: TrustBadgeItemProps): React.JSX.Elemen
   const badgeScale = useSharedValue(0.8);
 
   useEffect(() => {
-    badgeOpacity.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-    badgeScale.value = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
-  }, [index]);
+    const badgeOpacityDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    animate(badgeOpacity, badgeOpacityDelay.target, badgeOpacityDelay.transition);
+    const badgeScaleDelay = withDelay(index * 50, withSpring(1, { damping: 20, stiffness: 300 }));
+    animate(badgeScale, badgeScaleDelay.target, badgeScaleDelay.transition);
+  }, [index, badgeOpacity, badgeScale]);
 
   const badgeStyle = useAnimatedStyle(() => ({
-    opacity: badgeOpacity.value,
-    transform: [{ scale: badgeScale.value }],
-  })) as AnimatedStyle;
+    opacity: badgeOpacity.get(),
+    transform: [{ scale: badgeScale.get() }],
+  }));
 
   return (
     <AnimatedView style={badgeStyle}>

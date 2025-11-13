@@ -1,18 +1,12 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import type { ComponentProps } from 'react';
-import { useEffect } from 'react';
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { isTruthy } from '@petspark/shared';
+import { getAriaLiveRegionAttributes } from '@/lib/accessibility';
 
 export interface SpinnerProps extends ComponentProps<'div'> {
   size?: 'sm' | 'md' | 'lg';
@@ -32,48 +26,58 @@ function Spinner({
   ...props
 }: SpinnerProps): React.JSX.Element {
   const reducedMotion = useReducedMotion();
-  const rotation = useSharedValue(0);
-  const opacity = useSharedValue(1);
+  const rotation = useMotionValue(0);
+  const opacity = useMotionValue(1);
 
   useEffect(() => {
     if (isTruthy(reducedMotion)) {
       // For reduced motion, use a slower, less noticeable animation
-      rotation.value = withRepeat(
-        withTiming(360, {
-          duration: 2000,
-          easing: Easing.linear,
-        }),
-        -1,
-        false
-      );
-      opacity.value = withRepeat(
-        withTiming(0.7, {
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        -1,
-        true
-      );
+      animate(rotation, 360, {
+        duration: 2,
+        ease: 'linear',
+        repeat: Infinity,
+        repeatType: 'loop',
+      });
+      animate(opacity, 0.7, {
+        duration: 1.5,
+        ease: 'easeInOut',
+        repeat: Infinity,
+        repeatType: 'reverse',
+      });
     } else {
       // Premium smooth animation for normal users
-      rotation.value = withRepeat(
-        withTiming(360, {
-          duration: 1000,
-          easing: Easing.linear,
-        }),
-        -1,
-        false
-      );
-      opacity.value = 1;
+      animate(rotation, 360, {
+        duration: 1,
+        ease: 'linear',
+        repeat: Infinity,
+        repeatType: 'loop',
+      });
+      opacity.set(1);
     }
   }, [reducedMotion, rotation, opacity]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ rotate: `${String(rotation.value ?? '')}deg` }],
-      opacity: opacity.value,
-    };
-  }) as AnimatedStyle;
+  const variants: Variants = {
+    spinning: {
+      rotate: 360,
+      opacity: isTruthy(reducedMotion) ? [1, 0.7, 1] : 1,
+      transition: {
+        rotate: {
+          duration: isTruthy(reducedMotion) ? 2 : 1,
+          ease: 'linear',
+          repeat: Infinity,
+          repeatType: 'loop',
+        },
+        opacity: isTruthy(reducedMotion)
+          ? {
+              duration: 1.5,
+              ease: 'easeInOut',
+              repeat: Infinity,
+              repeatType: 'reverse',
+            }
+          : undefined,
+      },
+    },
+  };
 
   const variantClasses = {
     default: 'border-primary border-t-transparent',
@@ -81,17 +85,25 @@ function Spinner({
     premium: 'border-primary border-t-transparent shadow-lg shadow-primary/20',
   } as const;
 
+  const liveRegionAttrs = getAriaLiveRegionAttributes({
+    live: 'polite',
+    atomic: true,
+  });
+
   return (
     <div
       role="status"
-      aria-live="polite"
       aria-label="Loading"
       className={cn('inline-block', className)}
+      {...liveRegionAttrs}
       {...props}
     >
-      <AnimatedView
-        style={animatedStyle}
+      <motion.div
+        variants={variants}
+        animate="spinning"
+        style={{ rotate: rotation, opacity }}
         className={cn('rounded-full', sizeClasses[size], variantClasses[variant])}
+        aria-hidden="true"
       />
       <span className="sr-only">Loading...</span>
     </div>

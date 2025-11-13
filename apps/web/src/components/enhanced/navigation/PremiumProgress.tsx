@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import React, { useEffect } from 'react';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { cn } from '@/lib/utils';
 import * as ProgressPrimitive from '@radix-ui/react-progress';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
+import { getTypographyClasses } from '@/lib/typography';
 
 export interface PremiumProgressProps {
   value?: number;
@@ -32,33 +32,45 @@ export function PremiumProgress({
   className,
   'aria-label': ariaLabel,
 }: PremiumProgressProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const progressWidth = useSharedValue(0);
-  const shimmerX = useSharedValue(-100);
+  const _uiConfig = useUIConfig();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const progressWidth = useMotionValue(0);
+  const shimmerX = useMotionValue(-100);
+  const progressWidthPercent = useTransform(progressWidth, (v: number) => `${v}%`);
+  const shimmerXPercent = useTransform(shimmerX, (v: number) => `${v}%`);
 
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   useEffect(() => {
-    if (animated) {
-      progressWidth.value = withSpring(percentage, springConfigs.smooth);
-    } else {
-      progressWidth.value = withTiming(percentage, { duration: 300 });
+    if (prefersReducedMotion) {
+      progressWidth.set(percentage);
+      return;
     }
-  }, [percentage, animated, progressWidth]);
+    if (animated) {
+      animate(progressWidth, percentage, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+    } else {
+      animate(progressWidth, percentage, {
+        duration: 0.3,
+        ease: 'easeInOut',
+      });
+    }
+  }, [percentage, animated, progressWidth, prefersReducedMotion]);
 
   useEffect(() => {
-    if (variant === 'striped') {
-      shimmerX.value = withTiming(200, { duration: 2000, repeat: Infinity });
+    if (variant === 'striped' && !prefersReducedMotion) {
+      animate(shimmerX, 200, {
+        duration: 2,
+        repeat: Infinity,
+        ease: 'linear',
+      });
+    } else {
+      shimmerX.set(-100);
     }
-  }, [variant, shimmerX]);
-
-  const progressStyle = useAnimatedStyle(() => ({
-    width: `${progressWidth.value}%`,
-  })) as AnimatedStyle;
-
-  const shimmerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: shimmerX.value }],
-  })) as AnimatedStyle;
+  }, [variant, shimmerX, prefersReducedMotion]);
 
   const sizes = {
     sm: 'h-1',
@@ -67,18 +79,24 @@ export function PremiumProgress({
   };
 
   const variants = {
-    default: 'bg-primary',
-    gradient: 'bg-linear-to-r from-primary via-primary/80 to-primary',
-    striped: 'bg-primary',
+    default: 'bg-(--primary)',
+    gradient: 'bg-(--primary)',
+    striped: 'bg-(--primary)',
   };
 
   return (
     <div className={cn('w-full', className)}>
-      {(label || showValue) && (
+      {(label ?? showValue) && (
         <div className="flex items-center justify-between mb-2">
-          {label && <label className="text-sm font-medium text-foreground">{label}</label>}
+          {label && (
+            <label className={cn(getTypographyClasses('caption'), 'text-(--text-primary)')}>
+              {label}
+            </label>
+          )}
           {showValue && (
-            <span className="text-sm text-muted-foreground">{Math.round(percentage)}%</span>
+            <span className={cn(getTypographyClasses('caption'), 'text-(--text-muted)')}>
+              {Math.round(percentage)}%
+            </span>
           )}
         </div>
       )}
@@ -86,27 +104,31 @@ export function PremiumProgress({
       <ProgressPrimitive.Root
         value={value}
         max={max}
-        className={cn('relative w-full overflow-hidden rounded-full bg-muted', sizes[size])}
+        className={cn('relative w-full overflow-hidden rounded-full bg-(--surface)', sizes[size])}
         aria-label={ariaLabel}
       >
-        <AnimatedView
-          style={progressStyle}
+        <motion.div
+          style={{
+            width: prefersReducedMotion ? `${percentage}%` : progressWidthPercent,
+            background: variant === 'gradient' ? 'linear-gradient(to right, var(--primary), var(--primary), var(--primary))' : undefined,
+          }}
           className={cn(
-            'h-full rounded-full transition-all duration-300',
+            'h-full rounded-full',
+            prefersReducedMotion ? '' : 'transition-all duration-300',
             variants[variant],
             variant === 'striped' && 'relative overflow-hidden'
           )}
         >
-          {variant === 'striped' && (
-            <AnimatedView
-              style={shimmerStyle}
-              className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent"
-            >
-              <div />
-            </AnimatedView>
+          {variant === 'striped' && !prefersReducedMotion && (
+            <motion.div
+              style={{
+                background: 'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent)',
+                x: shimmerXPercent,
+              }}
+              className="absolute inset-0"
+            />
           )}
-          <div />
-        </AnimatedView>
+        </motion.div>
       </ProgressPrimitive.Root>
     </div>
   );

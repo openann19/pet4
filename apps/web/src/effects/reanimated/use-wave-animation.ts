@@ -10,7 +10,7 @@ import {
   withTiming,
   interpolate,
   Easing,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect } from 'react';
 
 export const useWaveAnimation = useSharedWaveAnimation

@@ -8,7 +8,7 @@ import {
   runOnUI,
   runOnJS,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback } from 'react';
 import { timingConfigs, type TimingConfig } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';

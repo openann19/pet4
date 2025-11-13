@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { Sparkle, X } from '@phosphor-icons/react';

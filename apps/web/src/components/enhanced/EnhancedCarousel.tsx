@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { Presence } from '@petspark/motion';
@@ -7,8 +7,9 @@ import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 
 interface EnhancedCarouselProps {
   items: React.ReactNode[];
@@ -100,8 +101,10 @@ export function EnhancedCarousel({
   const dragX = useSharedValue(0);
 
   useEffect(() => {
-    translateX.value = withSpring(0, springConfigs.smooth);
-    opacity.value = withTiming(1, timingConfigs.fast);
+    const translateXTransition = withSpring(0, springConfigs.smooth);
+    animate(translateX, translateXTransition.target, translateXTransition.transition);
+    const opacityTransition = withTiming(1, timingConfigs.fast);
+    animate(opacity, opacityTransition.target, opacityTransition.transition);
     dragX.value = 0;
   }, [currentIndex, direction, translateX, opacity, dragX]);
 
@@ -133,10 +136,10 @@ export function EnhancedCarousel({
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: translateX.value + dragX.value }],
-      opacity: opacity.value,
+      transform: [{ translateX: translateX.get() + dragX.get() }],
+      opacity: opacity.get(),
     };
-  }) as AnimatedStyle;
+  });
 
   const styleValue = useAnimatedStyleValue(animatedStyle);
 
@@ -223,7 +226,7 @@ export function EnhancedCarousel({
       )}
 
       {itemCount > 1 && (
-        <div className="absolute top-3 right-3 z-10 px-3 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium shadow-lg">
+        <div className={cn('absolute top-3 right-3 z-10 rounded-full bg-background/80 backdrop-blur-sm shadow-lg', getTypographyClasses('caption'), getSpacingClassesFromConfig({ paddingX: 'md', paddingY: 'xs' }))}>
           {currentIndex + 1} / {itemCount}
         </div>
       )}

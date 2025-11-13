@@ -7,7 +7,7 @@ import {
   interpolate,
   Extrapolation,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
 

@@ -21,20 +21,22 @@ const createPolyEasing = (power: number) => {
 }
 
 export const motion = {
-  // Durations (ms) - Production presets
+  // Durations (ms) - Aligned with global UX rules
   durations: {
-    instant: 120, // Reduced motion fallback
-    ultraFast: 160, // Micro-interactions
-    fast: 200, // Quick feedback
+    instant: 75, // Reduced motion fallback
+    hoverPress: 100, // Hover/press micro-interactions (75-150ms range)
+    fast: 150, // Quick feedback
+    enterExit: 200, // Enter/exit transitions (150-300ms range)
     standard: 260, // Default transitions
-    slow: 360, // Deliberate animations
-    deliberate: 500, // Long transitions
+    slow: 300, // Deliberate animations (150-300ms range)
+    deliberate: 500, // Long transitions (only for non-core interactions)
     // Legacy aliases for backward compatibility
-    xs: 90,
-    sm: 140,
-    md: 220,
-    lg: 360,
-    xl: 600,
+    ultraFast: 100,
+    xs: 75,
+    sm: 100,
+    md: 200,
+    lg: 300,
+    xl: 500,
   },
 
   // Spring configurations - Critically damped for premium feel

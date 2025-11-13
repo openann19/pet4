@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useSharedValue, withTiming } from 'react-native-reanimated';
+import { useSharedValue, withTiming } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';

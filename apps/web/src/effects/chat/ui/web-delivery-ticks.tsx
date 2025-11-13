@@ -7,7 +7,7 @@ import {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view'
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '../core/reduced-motion'

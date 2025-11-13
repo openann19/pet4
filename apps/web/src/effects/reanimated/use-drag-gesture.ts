@@ -7,7 +7,7 @@ import {
   withSpring,
   withTiming,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';

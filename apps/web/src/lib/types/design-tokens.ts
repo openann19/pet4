@@ -55,13 +55,10 @@ export interface RadiiTokens {
 }
 
 export interface ShadowTokens {
-  xs: string;
-  sm: string;
-  md: string;
-  lg: string;
-  xl: string;
-  '2xl': string;
-  inner: string;
+  base: string;
+  raised: string;
+  overlay: string;
+  modal: string;
   glow: {
     primary: string;
     accent: string;
@@ -141,9 +138,16 @@ export interface ColorThemeTokens {
   accentForeground: string;
   destructive: string;
   destructiveForeground: string;
+  success: string;
+  successForeground: string;
+  warning: string;
+  warningForeground: string;
   border: string;
   input: string;
   ring: string;
+  surface: string;
+  textPrimary: string;
+  textMuted: string;
 }
 
 export interface ColorTokens {
@@ -170,7 +174,8 @@ export interface MotionTokens {
     normal: string;
     smooth: string;
     slow: string;
-    slower: string;
+    enterExit: string;
+    hoverPress: string;
   };
   easing: {
     linear: string;

@@ -2,7 +2,7 @@
 
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { PaperPlaneRight } from '@phosphor-icons/react';

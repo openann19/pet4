@@ -21,6 +21,11 @@
     "react": ">=18",
     "react-native-reanimated": "~3.10.1"
   },
+  "peerDependenciesMeta": {
+    "react-native-reanimated": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "framer-motion": "^11.11.17"
   },

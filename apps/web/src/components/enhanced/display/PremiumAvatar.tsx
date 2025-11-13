@@ -1,14 +1,15 @@
 'use client';
 
-import { useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import React, { useCallback } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, animate } from '@petspark/motion';
+import type { AnimatedStyle } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 
 export type AvatarStatus = 'online' | 'offline' | 'away' | 'busy';
 
@@ -33,10 +34,10 @@ const SIZE_CONFIG = {
 } as const;
 
 const STATUS_COLORS: Record<AvatarStatus, string> = {
-  online: 'bg-green-500',
-  offline: 'bg-gray-400',
-  away: 'bg-yellow-500',
-  busy: 'bg-red-500',
+  online: 'bg-(--success)',
+  offline: 'bg-(--text-muted)',
+  away: 'bg-(--warning)',
+  busy: 'bg-(--danger)',
 };
 
 export function PremiumAvatar({
@@ -51,29 +52,36 @@ export function PremiumAvatar({
   className,
   'aria-label': ariaLabel,
 }: PremiumAvatarProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const scale = useSharedValue(1);
+  const _uiConfig = useUIConfig();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const scale = useSharedValue(1);
   const glowOpacity = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  })) as AnimatedStyle;
+    transform: [{ scale: scale.get() }],
+  }));
 
   const glowStyle = useAnimatedStyle(() => ({
-    opacity: glowOpacity.value,
-  })) as AnimatedStyle;
+    opacity: glowOpacity.get(),
+  }));
 
   const handleMouseEnter = useCallback(() => {
-    scale.value = withSpring(1.05, springConfigs.smooth);
+    if (prefersReducedMotion) return;
+    const scaleTransition = withSpring(1.05, springConfigs.smooth);
+    animate(scale, scaleTransition.target, scaleTransition.transition);
     if (variant === 'glow') {
-      glowOpacity.value = withSpring(1, springConfigs.smooth);
+      const glowTransition = withSpring(1, springConfigs.smooth);
+      animate(glowOpacity, glowTransition.target, glowTransition.transition);
     }
-  }, [scale, glowOpacity, variant]);
+  }, [scale, glowOpacity, variant, prefersReducedMotion]);
 
   const handleMouseLeave = useCallback(() => {
-    scale.value = withSpring(1, springConfigs.smooth);
-    glowOpacity.value = withSpring(0, springConfigs.smooth);
-  }, [scale, glowOpacity]);
+    if (prefersReducedMotion) return;
+    const scaleTransition = withSpring(1, springConfigs.smooth);
+    animate(scale, scaleTransition.target, scaleTransition.transition);
+    const glowTransition = withSpring(0, springConfigs.smooth);
+    animate(glowOpacity, glowTransition.target, glowTransition.transition);
+  }, [scale, glowOpacity, prefersReducedMotion]);
 
   const handleClick = useCallback(() => {
     if (onClick) {
@@ -84,9 +92,11 @@ export function PremiumAvatar({
 
   const handleLongPress = useCallback(() => {
     if (variant === 'glow') {
-      glowOpacity.value = withSpring(1, springConfigs.smooth);
+      const glowTransition1 = withSpring(1, springConfigs.smooth);
+      animate(glowOpacity, glowTransition1.target, glowTransition1.transition);
       setTimeout(() => {
-        glowOpacity.value = withSpring(0, springConfigs.smooth);
+        const glowTransition2 = withSpring(0, springConfigs.smooth);
+        animate(glowOpacity, glowTransition2.target, glowTransition2.transition);
       }, 500);
     }
     haptics.impact('medium');
@@ -102,11 +112,11 @@ export function PremiumAvatar({
       onClick={handleClick}
       onContextMenu={handleLongPress}
       role={onClick ? 'button' : 'img'}
-      aria-label={ariaLabel || alt}
+      aria-label={ariaLabel ?? alt}
     >
       {variant === 'ring' && (
         <div
-          className="absolute inset-0 rounded-full border-2 border-primary"
+          className="absolute inset-0 rounded-full border-2 border-(--primary)"
           style={{
             width: config.size + config.ring * 2,
             height: config.size + config.ring * 2,
@@ -118,18 +128,16 @@ export function PremiumAvatar({
 
       {variant === 'glow' && (
         <AnimatedView
-          style={[
-            glowStyle,
-            {
-              position: 'absolute',
-              width: config.size + 8,
-              height: config.size + 8,
-              top: -4,
-              left: -4,
-              borderRadius: '50%',
-            },
-          ]}
-          className="bg-primary/30 blur-md"
+          style={{
+            ...(glowStyle as AnimatedStyle),
+            position: 'absolute',
+            width: config.size + 8,
+            height: config.size + 8,
+            top: -4,
+            left: -4,
+            borderRadius: '50%',
+          }}
+          className="bg-(--primary)/30 blur-md"
         >
           <div />
         </AnimatedView>
@@ -139,7 +147,10 @@ export function PremiumAvatar({
         <Avatar
           className={cn(
             'relative overflow-hidden shadow-lg',
-            onClick && 'cursor-pointer transition-shadow hover:shadow-xl'
+            onClick && cn(
+              'cursor-pointer',
+              prefersReducedMotion ? '' : 'transition-shadow duration-200 hover:shadow-xl'
+            )
           )}
           style={{
             width: config.size,
@@ -147,8 +158,8 @@ export function PremiumAvatar({
           }}
         >
           <AvatarImage src={src} alt={alt} />
-          <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-            {fallback || '?'}
+          <AvatarFallback className="bg-(--surface) text-(--text-muted) font-semibold">
+            {fallback ?? '?'}
           </AvatarFallback>
         </Avatar>
       </AnimatedView>
@@ -156,18 +167,20 @@ export function PremiumAvatar({
       {status && (
         <div
           className={cn(
-            'absolute bottom-0 right-0 rounded-full border-2 border-background',
+            'absolute bottom-0 right-0 rounded-full border-2 border-(--background)',
             STATUS_COLORS[status]
           )}
           style={{
             width: config.status,
             height: config.status,
+            minWidth: '8px',
+            minHeight: '8px',
           }}
         />
       )}
 
       {badge !== undefined && (
-        <div className="absolute -top-1 -right-1 flex items-center justify-center min-w-5 h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full border-2 border-background shadow-lg">
+        <div className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] min-h-[20px] px-1 bg-(--danger) text-(--primary-foreground) text-xs font-bold rounded-full border-2 border-(--background) shadow-lg">
           {typeof badge === 'number' && badge > 99 ? '99+' : badge}
         </div>
       )}

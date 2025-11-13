@@ -46,7 +46,7 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { memo, useEffect, useRef, useState, useMemo } from 'react';
-import { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue, withSpring, withTiming } from '@petspark/motion';
 import { AnimatedAIWrapper, BubbleWrapperGodTier } from './bubble-wrapper-god-tier';
 import { useHapticFeedback } from './bubble-wrapper-god-tier/effects/useHapticFeedback';
 import { useParticleBurstOnEvent } from './bubble-wrapper-god-tier/effects/useParticleBurstOnEvent';

@@ -7,7 +7,7 @@ import {
   Easing,
   type WithSpringConfig,
   type WithTimingConfig,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 
 export interface SpringConfig {
   damping?: number;

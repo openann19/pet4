@@ -20,7 +20,7 @@ import {
   withRepeat,
   withTiming,
   withSequence,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';

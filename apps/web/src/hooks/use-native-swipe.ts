@@ -11,7 +11,7 @@ import {
   useSharedValue,
   withSpring,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 
 export interface UseNativeSwipeOptions {
   cardWidth: number;

@@ -5,7 +5,7 @@ import {
   useAnimatedStyle,
   withSpring,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback, useRef } from 'react';
 import { haptics } from '@/lib/haptics';
 import { springConfigs } from '@/effects/reanimated/transitions';

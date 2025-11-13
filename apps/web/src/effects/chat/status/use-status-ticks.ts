@@ -18,7 +18,7 @@ import {
   interpolate,
   Extrapolation,
   type SharedValue,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 import { createLogger } from '@/lib/logger'
 import { triggerHaptic } from '../core/haptic-manager'
 import {

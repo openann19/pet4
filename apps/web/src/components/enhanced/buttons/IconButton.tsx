@@ -1,14 +1,7 @@
 'use client';
 
-import { useCallback, useRef, useEffect, type ReactNode, type ButtonHTMLAttributes } from 'react';
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withSequence,
-} from 'react-native-reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import React, { useCallback, useRef, useEffect, type ReactNode, type ButtonHTMLAttributes } from 'react';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useRippleEffect } from '@/effects/reanimated/use-ripple-effect';
 import { useMagneticHover } from '@/effects/reanimated/use-magnetic-hover';
@@ -16,11 +9,11 @@ import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { Dimens } from '@/core/tokens/dimens';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { ensureFocusAppearance } from '@/core/a11y/focus-appearance';
 import { useTargetSize } from '@/hooks/use-target-size';
+import { getAriaButtonAttributes } from '@/lib/accessibility';
 
 const logger = createLogger('IconButton');
 
@@ -69,8 +62,8 @@ export function IconButton({
   // Target size validation - ensures 44x44px minimum touch target (already enforced by SIZE_CONFIG)
   const { ensure: ensureTargetSize } = useTargetSize({ enabled: !disabled, autoFix: true });
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const glowOpacity = useSharedValue(0);
-  const isActive = useSharedValue(0);
+  const glowOpacity = useMotionValue(0);
+  const activeScale = useMotionValue(1);
 
   const hoverLift = useHoverLift({
     scale: 1.1,
@@ -91,20 +84,32 @@ export function IconButton({
     opacity: 0.5,
   });
 
-  const glowStyle = useAnimatedStyle(() => {
-    if (!enableGlow) return {};
-    return {
-      opacity: glowOpacity.value,
-      boxShadow: `0 0 ${Dimens.glowSpread * 2}px rgba(59, 130, 246, ${glowOpacity.value * 0.6})`,
-    };
-  }) as AnimatedStyle;
+  const glowVariants: Variants = {
+    off: {
+      opacity: 0,
+      boxShadow: `0 0 ${Dimens.glowSpread * 2}px rgba(59, 130, 246, 0)`,
+    },
+    on: {
+      opacity: 1,
+      boxShadow: `0 0 ${Dimens.glowSpread * 2}px rgba(59, 130, 246, 0.6)`,
+      transition: {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      },
+    },
+  };
 
   const handleMouseEnter = useCallback(() => {
     if (disabled) return;
     hoverLift.handleEnter();
     magnetic.handleMouseEnter();
     if (enableGlow) {
-      glowOpacity.value = withSpring(1, springConfigs.smooth);
+      animate(glowOpacity, 1, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
     }
   }, [disabled, hoverLift, magnetic, enableGlow, glowOpacity]);
 
@@ -112,7 +117,11 @@ export function IconButton({
     hoverLift.handleLeave();
     magnetic.handleMouseLeave();
     if (enableGlow) {
-      glowOpacity.value = withSpring(0, springConfigs.smooth);
+      animate(glowOpacity, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
     }
   }, [hoverLift, magnetic, enableGlow, glowOpacity]);
 
@@ -127,10 +136,15 @@ export function IconButton({
 
         haptics.impact('light');
 
-        isActive.value = withSequence(
-          withTiming(1, { duration: 100 }),
-          withTiming(0, { duration: 200 })
-        );
+        animate(activeScale, 0.9, {
+          duration: 0.1,
+          ease: 'easeOut',
+        }).then(() => {
+          animate(activeScale, 1, {
+            duration: 0.2,
+            ease: 'easeIn',
+          });
+        });
 
         onClick?.(e);
       } catch (error) {
@@ -138,12 +152,9 @@ export function IconButton({
         logger.error('IconButton onClick error', err);
       }
     },
-    [disabled, enableRipple, ripple, onClick, isActive]
+    [disabled, enableRipple, ripple, onClick, activeScale]
   );
 
-  const activeStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: 1 - isActive.value * 0.1 }],
-  })) as AnimatedStyle;
 
   // Ensure focus appearance and target size meet WCAG 2.2 AAA requirements
   useEffect(() => {
@@ -164,6 +175,11 @@ export function IconButton({
     glass: 'glass-card text-(--btn-primary-fg) hover:bg-(--btn-primary-hover-bg)',
   };
 
+  const iconButtonAria = getAriaButtonAttributes({
+    label: ariaLabel,
+    disabled,
+  });
+
   return (
     <div
       ref={magnetic.handleRef}
@@ -172,16 +188,29 @@ export function IconButton({
       onMouseMove={magnetic.handleMouseMove}
       className="inline-block relative"
     >
-      <AnimatedView style={magnetic.animatedStyle}>
-        <AnimatedView style={hoverLift.animatedStyle}>
-          <AnimatedView style={activeStyle}>
+      <motion.div
+        style={magnetic.variants ? undefined : { x: magnetic.translateX, y: magnetic.translateY }}
+        variants={magnetic.variants}
+        initial="rest"
+        animate="rest"
+        whileHover="hover"
+      >
+        <motion.div
+          variants={hoverLift.variants}
+          initial="rest"
+          animate="rest"
+          whileHover="hover"
+          style={{ scale: hoverLift.scale, y: hoverLift.translateY }}
+        >
+          <motion.div
+            style={{ scale: activeScale }}
+          >
             <button
               ref={buttonRef}
               onClick={handleClick}
               disabled={disabled}
-              aria-label={ariaLabel}
               className={cn(
-                'relative overflow-hidden rounded-xl font-semibold',
+                'relative overflow-hidden rounded-xl',
                 'transition-all duration-300',
                 'disabled:cursor-not-allowed disabled:opacity-50',
                 'flex items-center justify-center',
@@ -199,15 +228,16 @@ export function IconButton({
                   '--tw-ring-color': 'var(--btn-primary-focus-ring)',
                 } as React.CSSProperties
               }
+              {...iconButtonAria}
               {...props}
             >
               {enableGlow && (
-                <AnimatedView
-                  style={glowStyle}
+                <motion.div
+                  variants={glowVariants}
+                  animate={glowOpacity.get() > 0 ? 'on' : 'off'}
+                  style={{ opacity: glowOpacity }}
                   className="absolute inset-0 pointer-events-none rounded-xl"
-                >
-                  <div />
-                </AnimatedView>
+                />
               )}
               <span
                 className="relative z-10 flex items-center justify-center"
@@ -215,12 +245,13 @@ export function IconButton({
                   width: config.iconSize,
                   height: config.iconSize,
                 }}
+                aria-hidden="true"
               >
                 {icon}
               </span>
               {enableRipple &&
                 ripple.ripples.map((r) => (
-                  <AnimatedView
+                  <motion.div
                     key={r.id}
                     className="absolute rounded-full pointer-events-none"
                     style={{
@@ -231,14 +262,12 @@ export function IconButton({
                       backgroundColor: ripple.color,
                       ...ripple.animatedStyle,
                     }}
-                  >
-                    <div />
-                  </AnimatedView>
+                  />
                 ))}
             </button>
-          </AnimatedView>
-        </AnimatedView>
-      </AnimatedView>
+          </motion.div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

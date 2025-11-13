@@ -6,7 +6,7 @@ import {
   withSpring,
   withTiming,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback, useRef } from 'react';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 

@@ -8,7 +8,7 @@ import {
   withTiming,
   withDelay,
   Easing,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect } from 'react';
 
 export interface UseTypingIndicatorOptions {

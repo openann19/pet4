@@ -1,22 +1,14 @@
 'use client';
 
 import { useCallback, useEffect } from 'react';
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withSequence,
-  withDelay,
-  type SharedValue,
-} from 'react-native-reanimated';
+import { useMotionValue, animate, type MotionValue } from 'framer-motion';
+import type { Variants as FramerVariants } from 'framer-motion';
 import {
   springConfigs,
   timingConfigs,
   type SpringConfig,
   type TimingConfig,
 } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface VariantDefinition {
   opacity?: number;
@@ -53,16 +45,16 @@ export interface UseMotionVariantsOptions {
 }
 
 export interface UseMotionVariantsReturn {
-  opacity: SharedValue<number>;
-  scale: SharedValue<number>;
-  translateX: SharedValue<number>;
-  translateY: SharedValue<number>;
-  rotate: SharedValue<number>;
-  rotateX: SharedValue<number>;
-  rotateY: SharedValue<number>;
-  backgroundColor: SharedValue<string>;
-  color: SharedValue<string>;
-  animatedStyle: AnimatedStyle;
+  opacity: MotionValue<number>;
+  scale: MotionValue<number>;
+  translateX: MotionValue<number>;
+  translateY: MotionValue<number>;
+  rotate: MotionValue<number>;
+  rotateX: MotionValue<number>;
+  rotateY: MotionValue<number>;
+  backgroundColor: MotionValue<string>;
+  color: MotionValue<string>;
+  variants: FramerVariants;
   setVariant: (variant: string) => void;
   setCustomVariant: (variant: VariantDefinition) => void;
 }
@@ -80,7 +72,7 @@ function getVariantValue(
 }
 
 function applyTransition(
-  value: SharedValue<number | string>,
+  value: MotionValue<number | string>,
   target: number | string,
   transition?: VariantDefinition['transition']
 ): void {
@@ -88,25 +80,33 @@ function applyTransition(
   const duration = transition?.duration ?? timingConfigs.smooth.duration;
 
   if (transition?.type === 'spring') {
-    const springConfig: SpringConfig = {
+    const springConfig = {
+      type: 'spring' as const,
       stiffness: transition.stiffness ?? springConfigs.smooth.stiffness ?? 400,
       damping: transition.damping ?? springConfigs.smooth.damping ?? 25,
       mass: transition.mass ?? 1,
     };
     if (delay > 0) {
-      value.value = withDelay(delay, withSpring(target as number, springConfig));
+      animate(value, target, {
+        ...springConfig,
+        delay: delay / 1000,
+      });
     } else {
-      value.value = withSpring(target as number, springConfig);
+      animate(value, target, springConfig);
     }
   } else {
-    const timingConfig: TimingConfig = {
-      duration,
-      easing: timingConfigs.smooth.easing,
+    const timingConfig = {
+      type: 'tween' as const,
+      duration: duration / 1000,
+      ease: 'easeInOut' as const,
     };
     if (delay > 0) {
-      value.value = withDelay(delay, withTiming(target as number, timingConfig));
+      animate(value, target, {
+        ...timingConfig,
+        delay: delay / 1000,
+      });
     } else {
-      value.value = withTiming(target as number, timingConfig);
+      animate(value, target, timingConfig);
     }
   }
 }
@@ -125,29 +125,29 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
   const animateVariant = getVariantValue(variants, animate, { opacity: 1, scale: 1 });
   const exitVariant = getVariantValue(variants, exit, { opacity: 0, scale: 0.95 });
 
-  const opacity = useSharedValue(initialVariant.opacity ?? animateVariant.opacity ?? 1);
-  const scale = useSharedValue(initialVariant.scale ?? animateVariant.scale ?? 1);
-  const translateX = useSharedValue(
+  const opacity = useMotionValue(initialVariant.opacity ?? animateVariant.opacity ?? 1);
+  const scale = useMotionValue(initialVariant.scale ?? animateVariant.scale ?? 1);
+  const translateX = useMotionValue(
     initialVariant.translateX ??
       initialVariant.x ??
       animateVariant.translateX ??
       animateVariant.x ??
       0
   );
-  const translateY = useSharedValue(
+  const translateY = useMotionValue(
     initialVariant.translateY ??
       initialVariant.y ??
       animateVariant.translateY ??
       animateVariant.y ??
       0
   );
-  const rotate = useSharedValue(initialVariant.rotate ?? animateVariant.rotate ?? 0);
-  const rotateX = useSharedValue(initialVariant.rotateX ?? animateVariant.rotateX ?? 0);
-  const rotateY = useSharedValue(initialVariant.rotateY ?? animateVariant.rotateY ?? 0);
-  const backgroundColor = useSharedValue(
+  const rotate = useMotionValue(initialVariant.rotate ?? animateVariant.rotate ?? 0);
+  const rotateX = useMotionValue(initialVariant.rotateX ?? animateVariant.rotateX ?? 0);
+  const rotateY = useMotionValue(initialVariant.rotateY ?? animateVariant.rotateY ?? 0);
+  const backgroundColor = useMotionValue(
     initialVariant.backgroundColor ?? animateVariant.backgroundColor ?? 'transparent'
   );
-  const color = useSharedValue(initialVariant.color ?? animateVariant.color ?? 'inherit');
+  const color = useMotionValue(initialVariant.color ?? animateVariant.color ?? 'inherit');
 
   const applyVariant = useCallback(
     (variant: VariantDefinition) => {
@@ -177,10 +177,10 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
         applyTransition(rotateY, variant.rotateY, transition);
       }
       if (variant.backgroundColor !== undefined) {
-        backgroundColor.value = variant.backgroundColor;
+        backgroundColor.set(variant.backgroundColor);
       }
       if (variant.color !== undefined) {
-        color.value = variant.color;
+        color.set(variant.color);
       }
     },
     [
@@ -224,46 +224,40 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
     [applyVariant]
   );
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const transforms: Record<string, number | string>[] = [];
-
-    if (translateX.value !== 0) {
-      transforms.push({ translateX: translateX.value });
+  // Convert variants to Framer Motion format
+  const framerVariants: FramerVariants = {}
+  
+  for (const [key, variant] of Object.entries(variants)) {
+    const transition = variant.transition ?? defaultTransition
+    const delay = transition?.delay ?? 0
+    const duration = transition?.duration ?? timingConfigs.smooth.duration
+    
+    framerVariants[key] = {
+      opacity: variant.opacity,
+      scale: variant.scale,
+      x: variant.translateX ?? variant.x,
+      y: variant.translateY ?? variant.y,
+      rotate: variant.rotate,
+      rotateX: variant.rotateX,
+      rotateY: variant.rotateY,
+      backgroundColor: variant.backgroundColor,
+      color: variant.color,
+      transition: transition?.type === 'spring' 
+        ? {
+            type: 'spring',
+            stiffness: transition.stiffness ?? springConfigs.smooth.stiffness ?? 400,
+            damping: transition.damping ?? springConfigs.smooth.damping ?? 25,
+            mass: transition.mass ?? 1,
+            delay: delay / 1000,
+          }
+        : {
+            type: 'tween',
+            duration: duration / 1000,
+            ease: 'easeInOut',
+            delay: delay / 1000,
+          },
     }
-    if (translateY.value !== 0) {
-      transforms.push({ translateY: translateY.value });
-    }
-    if (scale.value !== 1) {
-      transforms.push({ scale: scale.value });
-    }
-    if (rotate.value !== 0) {
-      transforms.push({ rotate: `${rotate.value}deg` });
-    }
-    if (rotateX.value !== 0) {
-      transforms.push({ rotateX: `${rotateX.value}deg` });
-    }
-    if (rotateY.value !== 0) {
-      transforms.push({ rotateY: `${rotateY.value}deg` });
-    }
-
-    const style: Record<string, unknown> = {
-      opacity: opacity.value,
-    };
-
-    if (transforms.length > 0) {
-      style.transform = transforms;
-    }
-
-    if (backgroundColor.value !== 'transparent') {
-      style.backgroundColor = backgroundColor.value;
-    }
-
-    if (color.value !== 'inherit') {
-      style.color = color.value;
-    }
-
-    return style;
-  }) as AnimatedStyle;
+  }
 
   return {
     opacity,
@@ -275,7 +269,7 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
     rotateY,
     backgroundColor,
     color,
-    animatedStyle,
+    variants: framerVariants,
     setVariant,
     setCustomVariant,
   };

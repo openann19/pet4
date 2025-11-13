@@ -10,9 +10,8 @@ import {
   withRepeat,
   withSequence,
   interpolate,
-  Extrapolation,
-  type SharedValue,
-} from 'react-native-reanimated';
+  animate,
+} from '@petspark/motion';
 import { AnimatedView, useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
@@ -21,7 +20,7 @@ import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { getTypographyClasses } from '@/lib/typography';
 
 const logger = createLogger('EnhancedButton');
 
@@ -76,14 +75,14 @@ export function EnhancedButton({
 
   // Combined animation style
   const combinedAnimatedStyle = useAnimatedStyle(() => {
-    const hoverScale = enableHoverLift ? hoverLift.scale.value : 1;
-    const tapScale = enableBounceOnTap ? bounceOnTap.scale.value : 1;
-    const hoverY = enableHoverLift ? hoverLift.translateY.value : 0;
+    const hoverScale = enableHoverLift ? hoverLift.scale.get() : 1;
+    const tapScale = enableBounceOnTap ? bounceOnTap.scale.get() : 1;
+    const hoverY = enableHoverLift ? hoverLift.translateY.get() : 0;
 
     return {
       transform: [{ scale: hoverScale * tapScale }, { translateY: hoverY }],
     };
-  }) as AnimatedStyle;
+  });
 
   // Glow animation style
   const glowAnimatedStyle = useAnimatedStyle(() => {
@@ -92,53 +91,51 @@ export function EnhancedButton({
     }
 
     const opacity = interpolate(
-      glowProgress.value,
+      glowProgress.get(),
       [0, 0.5, 1],
       [0.3, 0.6, 0.3],
-      Extrapolation.CLAMP
+      { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
     );
 
     return {
-      opacity: glowOpacity.value * opacity,
+      opacity: glowOpacity.get() * opacity,
     };
-  }) as AnimatedStyle;
+  });
 
   // Loading spinner animation
   useEffect(() => {
     if (loading) {
-      loadingRotation.value = withRepeat(
-        withTiming(360, {
-          duration: 1000,
-          easing: (t) => t,
-        }),
-        -1,
-        false
-      );
+      const timingTransition = withTiming(360, {
+        duration: 1000,
+        easing: (t) => t,
+      });
+      const repeatTransition = withRepeat(timingTransition, -1, false);
+      animate(loadingRotation, repeatTransition.target, repeatTransition.transition);
     } else {
-      loadingRotation.value = withTiming(0, { duration: 0 });
+      animate(loadingRotation, 0, { duration: 0 });
     }
   }, [loading, loadingRotation]);
 
   const loadingSpinnerStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${loadingRotation.value}deg` }],
+      transform: [{ rotate: `${loadingRotation.get()}deg` }],
     };
-  }) as AnimatedStyle;
+  });
 
   // Start glow animation when enabled
   useEffect(() => {
     if (enableGlow && !reducedMotion) {
-      glowProgress.value = withRepeat(
-        withTiming(1, {
-          duration: 2000,
-          easing: (t) => t,
-        }),
-        -1,
-        true
-      );
-      glowOpacity.value = withSpring(1, springConfigs.smooth);
+      const timingTransition = withTiming(1, {
+        duration: 2000,
+        easing: (t) => t,
+      });
+      const repeatTransition = withRepeat(timingTransition, -1, true);
+      animate(glowProgress, repeatTransition.target, repeatTransition.transition);
+      const opacityTransition = withSpring(1, springConfigs.smooth);
+      animate(glowOpacity, opacityTransition.target, opacityTransition.transition);
     } else {
-      glowOpacity.value = withTiming(0, timingConfigs.fast);
+      const opacityTransition = withTiming(0, timingConfigs.fast);
+      animate(glowOpacity, opacityTransition.target, opacityTransition.transition);
       glowProgress.value = 0;
     }
   }, [enableGlow, reducedMotion, glowOpacity, glowProgress]);
@@ -160,10 +157,11 @@ export function EnhancedButton({
 
         // Trigger glow pulse on click
         if (enableGlow && !reducedMotion) {
-          glowOpacity.value = withSequence(
+          const sequence = withSequence(
             withSpring(1, springConfigs.bouncy),
             withSpring(0.6, springConfigs.smooth)
           );
+          animate(glowOpacity, sequence.target, sequence.transition);
         }
 
         onClick?.(e);
@@ -197,7 +195,8 @@ export function EnhancedButton({
     }
 
     if (enableGlow) {
-      glowOpacity.value = withSpring(1, springConfigs.smooth);
+      const opacityTransition = withSpring(1, springConfigs.smooth);
+      animate(glowOpacity, opacityTransition.target, opacityTransition.transition);
     }
   }, [disabled, loading, reducedMotion, enableHoverLift, enableGlow, hoverLift, glowOpacity]);
 
@@ -211,7 +210,8 @@ export function EnhancedButton({
     }
 
     if (enableGlow) {
-      glowOpacity.value = withSpring(0.3, springConfigs.smooth);
+      const opacityTransition = withSpring(0.3, springConfigs.smooth);
+      animate(glowOpacity, opacityTransition.target, opacityTransition.transition);
     }
   }, [disabled, loading, reducedMotion, enableHoverLift, enableGlow, hoverLift, glowOpacity]);
 
@@ -234,13 +234,13 @@ export function EnhancedButton({
     return variants[variant] ?? variants.default;
   }, [variant]);
 
-  // Size styles
+  // Size styles with typography tokens
   const sizeClasses = useMemo(() => {
     const sizes = {
-      default: 'h-11 px-4 py-2 text-sm min-h-11 min-w-11',
-      sm: 'h-9 px-3 py-1.5 text-sm rounded-md gap-1.5 min-h-11 min-w-11',
-      lg: 'h-14 px-6 py-3 text-base rounded-md min-h-11 min-w-11',
-      icon: 'size-11 min-w-11 min-h-11 p-0',
+      default: cn('h-11 px-4 py-2 min-h-[44px] min-w-[44px]', getTypographyClasses('body')),
+      sm: cn('h-9 px-3 py-1.5 rounded-md gap-1.5 min-h-[44px] min-w-[44px]', getTypographyClasses('caption')),
+      lg: cn('h-14 px-6 py-3 rounded-md min-h-[44px] min-w-[44px]', getTypographyClasses('h3')),
+      icon: 'size-11 min-w-[44px] min-h-[44px] p-0',
     };
 
     return sizes[size] ?? sizes.default;
@@ -314,9 +314,9 @@ export function EnhancedButton({
             />
           ) : (
             <>
-              {icon && iconPosition === 'left' && <span className="flex-shrink-0">{icon}</span>}
+              {icon && iconPosition === 'left' && <span className="shrink-0">{icon}</span>}
               {children}
-              {icon && iconPosition === 'right' && <span className="flex-shrink-0">{icon}</span>}
+              {icon && iconPosition === 'right' && <span className="shrink-0">{icon}</span>}
             </>
           )}
         </span>

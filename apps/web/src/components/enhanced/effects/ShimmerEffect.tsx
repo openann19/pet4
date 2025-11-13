@@ -1,11 +1,8 @@
 'use client';
 
-import { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { timingConfigs } from '@/effects/reanimated/transitions';
+import React, { useEffect } from 'react';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-import type { ReactNode } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ShimmerEffectProps {
@@ -23,16 +20,31 @@ export function ShimmerEffect({
   className,
   animated = true,
 }: ShimmerEffectProps) {
-    const _uiConfig = useUIConfig();
-    const shimmerPosition = useSharedValue(-100);
+  const _uiConfig = useUIConfig();
+  const shimmerPosition = useMotionValue(-100);
 
-  if (animated) {
-    shimmerPosition.value = withRepeat(withTiming(200, { duration: 1500 }), -1, false);
-  }
+  useEffect(() => {
+    if (animated) {
+      animate(shimmerPosition, 200, {
+        duration: 1.5,
+        ease: 'linear',
+        repeat: Infinity,
+        repeatType: 'loop',
+      });
+    }
+  }, [animated, shimmerPosition]);
 
-  const shimmerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: shimmerPosition.value }],
-  })) as AnimatedStyle;
+  const shimmerVariants: Variants = {
+    shimmer: {
+      x: [-100, 200],
+      transition: {
+        duration: 1.5,
+        ease: 'linear',
+        repeat: Infinity,
+        repeatType: 'loop',
+      },
+    },
+  };
 
   return (
     <div
@@ -43,8 +55,12 @@ export function ShimmerEffect({
         borderRadius: typeof borderRadius === 'number' ? `${borderRadius}px` : borderRadius,
       }}
     >
-      <AnimatedView
-        style={shimmerStyle}
+      <motion.div
+        variants={shimmerVariants}
+        animate={animated ? 'shimmer' : undefined}
+        style={{
+          x: animated ? shimmerPosition : -100,
+        }}
         className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent w-1/2"
       />
     </div>

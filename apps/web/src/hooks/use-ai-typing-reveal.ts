@@ -10,7 +10,7 @@ import {
   interpolate,
   Extrapolation,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect, useCallback, useState } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 

@@ -1,14 +1,15 @@
 'use client';
 
-import { useCallback, useRef, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import React, { useCallback, useRef, useEffect } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, animate } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
+import { getTypographyClasses } from '@/lib/typography';
 
 export interface PremiumTab {
   value: string;
@@ -41,11 +42,12 @@ export function PremiumTabs({
   className,
   children,
 }: PremiumTabsProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const containerRef = useRef<HTMLDivElement>(null);
+  const _uiConfig = useUIConfig();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
   const indicatorPosition = useSharedValue(0);
   const indicatorWidth = useSharedValue(0);
-  const activeTab = value || defaultValue || tabs[0]?.value;
+  const activeTab = value ?? defaultValue ?? tabs[0]?.value;
 
   const updateIndicator = useCallback(() => {
     if (!containerRef.current || tabs.length === 0) return;
@@ -59,13 +61,20 @@ export function PremiumTabs({
       const containerRect = container.getBoundingClientRect();
       const buttonRect = activeButton.getBoundingClientRect();
 
-      indicatorPosition.value = withSpring(
-        buttonRect.left - containerRect.left,
-        springConfigs.smooth
-      );
-      indicatorWidth.value = withSpring(buttonRect.width, springConfigs.smooth);
+      const newPosition = buttonRect.left - containerRect.left;
+      const newWidth = buttonRect.width;
+
+      if (prefersReducedMotion) {
+        indicatorPosition.value = newPosition;
+        indicatorWidth.value = newWidth;
+      } else {
+        const positionTransition = withSpring(newPosition, springConfigs.smooth);
+        animate(indicatorPosition, positionTransition.target, positionTransition.transition);
+        const widthTransition = withSpring(newWidth, springConfigs.smooth);
+        animate(indicatorWidth, widthTransition.target, widthTransition.transition);
+      }
     }
-  }, [tabs, activeTab, indicatorPosition, indicatorWidth]);
+  }, [tabs, activeTab, indicatorPosition, indicatorWidth, prefersReducedMotion]);
 
   useEffect(() => {
     updateIndicator();
@@ -77,9 +86,9 @@ export function PremiumTabs({
   }, [updateIndicator]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: indicatorPosition.value }],
-    width: indicatorWidth.value,
-  })) as AnimatedStyle;
+    transform: [{ translateX: indicatorPosition.get() }],
+    width: indicatorWidth.get(),
+  }));
 
   const handleValueChange = useCallback(
     (newValue: string) => {
@@ -97,9 +106,9 @@ export function PremiumTabs({
   };
 
   const sizes = {
-    sm: 'h-8 text-sm px-3',
-    md: 'h-10 text-base px-4',
-    lg: 'h-12 text-lg px-5',
+    sm: cn('h-8 px-3', getTypographyClasses('caption')),
+    md: cn('h-10 px-4', getTypographyClasses('body')),
+    lg: cn('h-12 px-5', getTypographyClasses('subtitle')),
   };
 
   return (
@@ -137,30 +146,31 @@ export function PremiumTabs({
                 disabled={tab.disabled}
                 data-tab-trigger
                 className={cn(
-                  'relative z-10 flex items-center gap-2 font-medium transition-all duration-200',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                  'relative z-10 flex items-center gap-2 font-medium',
+                  prefersReducedMotion ? '' : 'transition-all duration-200',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--background)',
                   'disabled:pointer-events-none disabled:opacity-50',
                   sizes[size],
                   variant === 'default' &&
                     cn(
                       'rounded-md',
                       isActive
-                        ? 'bg-background text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
+                        ? 'bg-(--background) text-(--text-primary) shadow-sm'
+                        : 'text-(--text-muted) hover:text-(--text-primary)'
                     ),
                   variant === 'pills' &&
                     cn(
                       'rounded-full px-4',
                       isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        ? 'bg-(--primary) text-(--primary-foreground)'
+                        : 'bg-(--surface) text-(--text-muted) hover:bg-(--surface)/80'
                     ),
                   variant === 'underline' &&
                     cn(
                       'border-b-2 border-transparent',
                       isActive
-                        ? 'border-primary text-primary'
-                        : 'text-muted-foreground hover:text-foreground hover:border-muted-foreground/50'
+                        ? 'border-(--primary) text-(--primary)'
+                        : 'text-(--text-muted) hover:text-(--text-primary) hover:border-(--text-muted)/50'
                     )
                 )}
               >

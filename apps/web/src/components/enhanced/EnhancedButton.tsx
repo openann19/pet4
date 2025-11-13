@@ -15,9 +15,9 @@ import {
   withTiming,
   withSequence,
   withSpring,
-} from 'react-native-reanimated';
+  animate,
+} from '@petspark/motion';
 import { useEffect } from 'react';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 
 const logger = createLogger('EnhancedButton');
@@ -60,19 +60,19 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
 
     const successAnimatedStyle = useAnimatedStyle(() => {
       return {
-        transform: [{ scale: successScale.value }],
+        transform: [{ scale: successScale.get() }],
       };
-    }) as AnimatedStyle;
+    });
 
     const errorAnimatedStyle = useAnimatedStyle(() => {
       return {
-        transform: [{ translateX: errorShake.value }],
+        transform: [{ translateX: errorShake.get() }],
       };
-    }) as AnimatedStyle;
+    });
 
     useEffect(() => {
       // Reset success scale when component mounts
-      successScale.value = 1;
+      animate(successScale, 1, { type: 'tween', duration: 0 });
     }, [successScale]);
 
     const handleClick = useCallback(
@@ -91,10 +91,11 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
               await result;
 
               if (successAnimation) {
-                successScale.value = withSequence(
+                const sequence = withSequence(
                   withSpring(1.1, springConfigs.bouncy),
                   withSpring(1, springConfigs.smooth)
                 );
+                animate(successScale, sequence.target, sequence.transition);
                 if (hapticFeedback) {
                   haptic.medium();
                 }
@@ -104,13 +105,14 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
           }
         } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));
-          errorShake.value = withSequence(
+          const shakeSequence = withSequence(
             withTiming(-5, { duration: 50 }),
             withTiming(5, { duration: 50 }),
             withTiming(-5, { duration: 50 }),
             withTiming(5, { duration: 50 }),
             withTiming(0, { duration: 50 })
           );
+          animate(errorShake, shakeSequence.target, shakeSequence.transition);
           if (hapticFeedback) {
             haptic.heavy();
           }

@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
-import { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
+import React, { useEffect } from 'react';
+import { useSharedValue, withTiming, useAnimatedStyle, animate } from '@petspark/motion';
 import { MotionView } from '@petspark/motion';
 import { useHoverLift } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { getSpacingClassesFromConfig } from '@/lib/typography';
 
 interface PremiumCardProps {
   variant?: 'default' | 'glass' | 'elevated' | 'gradient';
@@ -21,7 +22,7 @@ export function PremiumCard({
   glow = false,
   className,
   children,
-  style,
+  style: _style,
   ...props
 }: PremiumCardProps) {
     const _uiConfig = useUIConfig();
@@ -30,13 +31,15 @@ export function PremiumCard({
   const hoverLift = useHoverLift(8);
 
   useEffect(() => {
-    opacity.value = withTiming(1, { duration: 220 });
-    translateY.value = withTiming(0, { duration: 220 });
+    const opacityTransition = withTiming(1, { duration: 220 });
+    animate(opacity, opacityTransition.target, opacityTransition.transition);
+    const translateYTransition = withTiming(0, { duration: 220 });
+    animate(translateY, translateYTransition.target, translateYTransition.transition);
   }, [opacity, translateY]);
 
   const entryStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
+    opacity: opacity.get(),
+    transform: [{ translateY: translateY.get() }],
   }));
 
   const combinedStyle =
@@ -50,12 +53,13 @@ export function PremiumCard({
   };
 
   return (
-    <AnimatedView
-      style={combinedStyle}
-      onMouseEnter={hover ? hoverLift.handleEnter : undefined}
-      onMouseLeave={hover ? hoverLift.handleLeave : undefined}
+    <MotionView
+      animatedStyle={combinedStyle}
+      onMouseEnter={hover ? hoverLift.onMouseEnter : undefined}
+      onMouseLeave={hover ? hoverLift.onMouseLeave : undefined}
       className={cn(
-        'rounded-xl p-6 transition-all duration-300',
+        'rounded-xl transition-all duration-300',
+        getSpacingClassesFromConfig({ padding: 'xl' }),
         variants[variant],
         hover && 'cursor-pointer hover-lift-premium',
         glow && 'animate-glow-ring',

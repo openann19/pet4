@@ -9,7 +9,7 @@ import {
   interpolate,
   Extrapolation,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback, useRef } from 'react';
 import { triggerHaptic } from '@/effects/chat/core/haptic-manager';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';

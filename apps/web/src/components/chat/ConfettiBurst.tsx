@@ -16,7 +16,7 @@ import {
   Easing,
   runOnJS,
   type SharedValue,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng';
 import { AnimatedView } from '@/effects/reanimated/animated-view';

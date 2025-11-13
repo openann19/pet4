@@ -1,9 +1,9 @@
 'use client';
 
+import { useMotionValue, animate, type MotionValue } from 'framer-motion';
 import { useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import type { Variants } from 'framer-motion';
 import { springConfigs, timingConfigs } from './transitions';
-import type { AnimatedStyle } from './animated-view';
 
 export interface UseEntryAnimationOptions {
   delay?: number;
@@ -15,10 +15,10 @@ export interface UseEntryAnimationOptions {
 }
 
 export interface UseEntryAnimationReturn {
-  animatedStyle: AnimatedStyle;
-  opacity: ReturnType<typeof useSharedValue<number>>;
-  translateY: ReturnType<typeof useSharedValue<number>>;
-  scale: ReturnType<typeof useSharedValue<number>>;
+  variants: Variants;
+  opacity: MotionValue<number>;
+  translateY: MotionValue<number>;
+  scale: MotionValue<number>;
 }
 
 export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEntryAnimationReturn {
@@ -31,22 +31,34 @@ export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEn
     enabled = true,
   } = options;
 
-  const opacity = useSharedValue(enabled ? initialOpacity : 1);
-  const translateY = useSharedValue(enabled ? initialY : 0);
-  const scale = useSharedValue(enabled ? initialScale : 1);
+  const opacity = useMotionValue(enabled ? initialOpacity : 1);
+  const translateY = useMotionValue(enabled ? initialY : 0);
+  const scale = useMotionValue(enabled ? initialScale : 1);
 
   useEffect(() => {
     if (!enabled) {
-      opacity.value = 1;
-      translateY.value = 0;
-      scale.value = 1;
+      opacity.set(1);
+      translateY.set(0);
+      scale.set(1);
       return;
     }
 
     const timeoutId = setTimeout(() => {
-      opacity.value = withSpring(1, springConfigs.smooth);
-      translateY.value = withSpring(0, springConfigs.smooth);
-      scale.value = withSpring(1, springConfigs.smooth);
+      animate(opacity, 1, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(translateY, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(scale, 1, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
     }, delay);
 
     return () => {
@@ -54,15 +66,27 @@ export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEn
     };
   }, [delay, enabled, opacity, translateY, scale]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-      transform: [{ translateY: `${translateY.value}px` }, { scale: scale.value }],
-    };
-  }) as AnimatedStyle;
+  const variants: Variants = {
+    hidden: {
+      opacity: enabled ? initialOpacity : 1,
+      y: enabled ? initialY : 0,
+      scale: enabled ? initialScale : 1,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        delay: delay / 1000,
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      },
+    },
+  };
 
   return {
-    animatedStyle,
+    variants,
     opacity,
     translateY,
     scale,

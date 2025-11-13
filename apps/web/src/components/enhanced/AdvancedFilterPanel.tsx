@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { X, Funnel, Check, Eraser } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,9 +11,11 @@ import { cn } from '@/lib/utils';
 import { useFilters } from '@/hooks/use-filters';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withTiming, animate } from '@petspark/motion';
+import { motion } from 'framer-motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 
 interface FilterOption {
   id: string;
@@ -71,11 +73,13 @@ export function AdvancedFilterPanel({
   }, [applyFilters]);
 
   return (
-    <Card className="w-full max-w-md p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Funnel size={20} weight="bold" className="text-primary" />
-          <h3 className="text-lg font-semibold">Filters</h3>
+    <Card className={cn('w-full max-w-md', getSpacingClassesFromConfig({ padding: 'lg', spaceY: 'lg' }))}>
+      <div className={cn('flex items-center justify-between')}>
+        <div className={cn('flex items-center', getSpacingClassesFromConfig({ gap: 'sm' }))}>
+          <Funnel size={20} weight="bold" className="text-(--primary)" aria-hidden="true" />
+          <h3 className={cn(getTypographyClasses('h3'), 'text-(--text-primary)')}>
+            Filters
+          </h3>
           {showActiveCount && activeFiltersCount > 0 && (
             <Badge variant="secondary" className="ml-2">
               {activeFiltersCount}
@@ -94,13 +98,15 @@ export function AdvancedFilterPanel({
         )}
       </div>
 
-      <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+      <div className={cn(getSpacingClassesFromConfig({ spaceY: 'lg' }), 'max-h-[60vh] overflow-y-auto pr-2')}>
         {categories.map((category) => (
-          <div key={category.id} className="space-y-3">
-            <Label className="text-sm font-medium">{category.label}</Label>
+          <div key={category.id} className={getSpacingClassesFromConfig({ spaceY: 'md' })}>
+            <Label className={cn(getTypographyClasses('caption'), 'font-medium text-(--text-primary)')}>
+              {category.label}
+            </Label>
 
             {category.type === 'multi-select' && category.options && (
-              <div className="flex flex-wrap gap-2">
+              <div className={cn('flex flex-wrap', getSpacingClassesFromConfig({ gap: 'sm' }))}>
                 {category.options.map((option) => {
                   const isSelected = ((localValues[category.id] as string[]) ?? []).includes(
                     option.id
@@ -119,7 +125,7 @@ export function AdvancedFilterPanel({
             )}
 
             {category.type === 'single-select' && category.options && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className={cn('grid grid-cols-2', getSpacingClassesFromConfig({ gap: 'sm' }))}>
                 {category.options.map((option) => {
                   const isSelected = localValues[category.id] === option.id;
                   return (
@@ -137,16 +143,16 @@ export function AdvancedFilterPanel({
             )}
 
             {category.type === 'range' && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
+              <div className={getSpacingClassesFromConfig({ spaceY: 'md' })}>
+                <div className={cn('flex items-center justify-between', getTypographyClasses('caption'))}>
+                  <span className="text-(--text-muted)">
                     {category.min} {category.unit}
                   </span>
-                  <span className="font-semibold text-primary">
+                  <span className="font-semibold text-(--primary)">
                     {(localValues[category.id] as number | undefined) ?? category.min ?? 0}{' '}
                     {category.unit}
                   </span>
-                  <span className="text-muted-foreground">
+                  <span className="text-(--text-muted)">
                     {category.max} {category.unit}
                   </span>
                 </div>
@@ -176,18 +182,23 @@ export function AdvancedFilterPanel({
         ))}
       </div>
 
-      <div className="flex gap-2 pt-4 border-t">
+      <div className={cn('flex border-t', getSpacingClassesFromConfig({ gap: 'sm', paddingY: 'md' }))}>
         <Button
           variant="outline"
           onClick={resetFilters}
-          className="flex-1 gap-2"
+          className={cn('flex-1', getSpacingClassesFromConfig({ gap: 'sm' }))}
           disabled={activeFiltersCount === 0}
+          aria-label="Reset all filters"
         >
-          <Eraser size={16} />
+          <Eraser size={16} aria-hidden="true" />
           Reset
         </Button>
-        <Button onClick={handleApply} className="flex-1 gap-2">
-          <Check size={16} weight="bold" />
+        <Button 
+          onClick={handleApply} 
+          className={cn('flex-1', getSpacingClassesFromConfig({ gap: 'sm' }))}
+          aria-label={`Apply ${activeFiltersCount > 0 ? `${activeFiltersCount} ` : ''}filters`}
+        >
+          <Check size={16} weight="bold" aria-hidden="true" />
           Apply Filters
           {activeFiltersCount > 0 && (
             <Badge variant="secondary" className="ml-1 bg-primary-foreground/20">
@@ -215,28 +226,40 @@ function FilterOptionButton({
   showCheck,
   className,
 }: FilterOptionButtonProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const bounceAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
 
+  const ButtonComponent = prefersReducedMotion ? 'button' : motion.button;
+
   return (
-    <AnimatedView style={bounceAnimation.animatedStyle}>
-      <button
-        onClick={() => {
+    <ButtonComponent
+      onClick={() => {
+        if (!prefersReducedMotion) {
           bounceAnimation.handlePress();
-          onClick();
-        }}
-        className={cn(
-          'flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-200',
-          isSelected
-            ? 'bg-primary text-primary-foreground border-primary'
-            : 'bg-background border-border hover:border-primary/50',
-          className
-        )}
-      >
-        {option.icon}
-        <span className="text-sm font-medium">{option.label}</span>
-        {showCheck && isSelected && <Check size={16} weight="bold" />}
-      </button>
-    </AnimatedView>
+        }
+        onClick();
+      }}
+      aria-label={`${option.label} filter option`}
+      aria-pressed={isSelected}
+      variants={prefersReducedMotion ? undefined : bounceAnimation.variants}
+      initial="rest"
+      whileTap={prefersReducedMotion ? undefined : "tap"}
+      className={cn(
+        'flex items-center rounded-full border-2 min-h-[44px]',
+        prefersReducedMotion ? '' : 'transition-all duration-200',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--background)',
+        getTypographyClasses('caption'),
+        getSpacingClassesFromConfig({ gap: 'sm', paddingX: 'lg', paddingY: 'sm' }),
+        isSelected
+          ? 'bg-(--primary) text-(--primary-foreground) border-(--primary)'
+          : 'bg-(--background) border-(--border) hover:border-(--primary)/50',
+        className
+      )}
+    >
+      {option.icon && <span aria-hidden="true">{option.icon}</span>}
+      <span>{option.label}</span>
+      {showCheck && isSelected && <Check size={16} weight="bold" aria-hidden="true" />}
+    </ButtonComponent>
   );
 }
 
@@ -247,44 +270,66 @@ interface ToggleSwitchProps {
 }
 
 function ToggleSwitch({ label, checked, onChange }: ToggleSwitchProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const translateX = useSharedValue(checked ? 20 : 0);
 
   const toggleAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
 
   useEffect(() => {
-    translateX.value = withTiming(checked ? 20 : 0, { duration: 200 });
-  }, [checked, translateX]);
+    if (prefersReducedMotion) {
+      translateX.value = checked ? 20 : 0;
+      return;
+    }
+    const translateXTransition = withTiming(checked ? 20 : 0, { duration: 200 });
+    animate(translateX, translateXTransition.target, translateXTransition.transition);
+  }, [checked, translateX, prefersReducedMotion]);
 
   const handleClick = useCallback(() => {
-    toggleAnimation.handlePress();
+    if (!prefersReducedMotion) {
+      toggleAnimation.handlePress();
+    }
     onChange();
-  }, [onChange, toggleAnimation]);
+  }, [onChange, toggleAnimation, prefersReducedMotion]);
 
   const thumbStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: translateX.value }],
+      transform: [{ translateX: translateX.get() }],
     };
-  }) as AnimatedStyle;
+  });
+
+  const ButtonComponent = prefersReducedMotion ? 'button' : motion.button;
 
   return (
-    <AnimatedView style={toggleAnimation.animatedStyle}>
-      <button
-        onClick={handleClick}
-        className="flex items-center justify-between w-full p-3 rounded-lg border-2 border-border hover:border-primary/50 transition-all duration-200"
+    <ButtonComponent
+      onClick={handleClick}
+      role="switch"
+      aria-checked={checked}
+      aria-label={`${label} toggle`}
+      variants={prefersReducedMotion ? undefined : toggleAnimation.variants}
+      initial="rest"
+      whileTap={prefersReducedMotion ? undefined : "tap"}
+      className={cn(
+        'flex items-center justify-between w-full rounded-lg border-2 border-(--border) min-h-[44px]',
+        prefersReducedMotion ? '' : 'transition-all duration-200 hover:border-(--primary)/50',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--background)',
+        getTypographyClasses('caption'),
+        getSpacingClassesFromConfig({ padding: 'md' })
+      )}
+    >
+      <span className="text-(--text-primary)">{label}</span>
+      <div
+        className={cn(
+          'w-11 h-6 rounded-full',
+          prefersReducedMotion ? '' : 'transition-colors duration-200',
+          checked ? 'bg-(--primary)' : 'bg-(--surface)'
+        )}
       >
-        <span className="text-sm font-medium">{label}</span>
-        <div
-          className={cn(
-            'w-11 h-6 rounded-full transition-colors duration-200',
-            checked ? 'bg-primary' : 'bg-muted'
-          )}
-        >
-          <AnimatedView
-            style={thumbStyle}
-            className="w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-white shadow-md"
-          />
-        </div>
-      </button>
-    </AnimatedView>
+        <AnimatedView
+          style={thumbStyle}
+          className="w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-(--background) shadow-md"
+          aria-hidden="true"
+        />
+      </div>
+    </ButtonComponent>
   );
 }

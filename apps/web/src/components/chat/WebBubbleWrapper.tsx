@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { type ReactNode, useCallback } from 'react';
-import { useAnimatedStyle } from 'react-native-reanimated';
+import { useAnimatedStyle } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useBubbleTilt } from '@/effects/reanimated/use-bubble-tilt';
 import { useBubbleEntry } from '@/effects/reanimated/use-bubble-entry';

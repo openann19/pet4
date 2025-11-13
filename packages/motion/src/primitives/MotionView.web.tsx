@@ -1,6 +1,8 @@
-import { forwardRef, useMemo } from 'react';
+import { forwardRef, useMemo, useEffect, useState } from 'react';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { motion, type HTMLMotionProps, type Variants } from 'framer-motion';
+import type { CSSProperties } from 'react';
+import { convertTransformToStyle } from '../framer-api/useMotionStyle';
 
 interface HoverStyle {
   scale?: number;
@@ -10,6 +12,13 @@ interface HoverStyle {
   translateY?: number;
 }
 
+// Reanimated-style animated style type
+type AnimatedStyle = 
+  | (() => CSSProperties | { transform?: Array<{ [key: string]: number | string }>; [key: string]: unknown })
+  | CSSProperties
+  | { transform?: Array<{ [key: string]: number | string }>; [key: string]: unknown }
+  | undefined;
+
 // Extract all valid HTML div attributes while excluding motion-specific props
 type DivAttributes = Omit<
   React.HTMLAttributes<HTMLDivElement>,
@@ -18,13 +27,16 @@ type DivAttributes = Omit<
 
 interface MotionViewWebProps extends DivAttributes {
   children?: React.ReactNode;
-  animatedStyle?: never;
+  animatedStyle?: AnimatedStyle;
   whileHover?: HoverStyle;
   whileTap?: HoverStyle;
   initial?: Variants | boolean | Variants['initial'];
   animate?: Variants['animate'] | Variants | boolean;
   exit?: Variants['exit'] | Variants;
   transition?: HTMLMotionProps<'div'>['transition'];
+  layout?: boolean | 'position' | 'size';
+  layoutId?: string;
+  layoutDependency?: unknown;
   onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
   onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
   onMouseDown?: React.MouseEventHandler<HTMLDivElement>;
@@ -51,11 +63,59 @@ export const MotionView: ForwardRefExoticComponent<
       animate,
       exit,
       transition,
-      animatedStyle: _animatedStyle, // Explicitly ignore animatedStyle prop
+      animatedStyle,
+      layout,
+      layoutId,
+      layoutDependency,
       ...restProps
     },
     ref
   ) => {
+    // Convert animatedStyle to Framer Motion style
+    const [computedStyle, setComputedStyle] = useState<CSSProperties>({})
+    
+    useEffect(() => {
+      if (!animatedStyle) {
+        setComputedStyle({})
+        return undefined
+      }
+
+      const updateStyle = () => {
+        try {
+          let styleValue: CSSProperties | { transform?: { [key: string]: number | string }[]; [key: string]: unknown }
+          
+          if (typeof animatedStyle === 'function') {
+            styleValue = animatedStyle() as CSSProperties
+          } else {
+            styleValue = animatedStyle as CSSProperties
+          }
+
+          // Convert Reanimated transform format to CSS
+          if (styleValue && typeof styleValue === 'object' && 'transform' in styleValue && Array.isArray(styleValue.transform)) {
+            const transformStyle = convertTransformToStyle(styleValue.transform)
+            const { transform: _, ...rest } = styleValue
+            setComputedStyle({ ...rest, ...transformStyle } as CSSProperties)
+          } else {
+            setComputedStyle(styleValue as CSSProperties)
+          }
+        } catch {
+          setComputedStyle({})
+        }
+      }
+
+      updateStyle()
+      
+      // For dynamic styles, we'd need to subscribe to changes
+      // For now, we'll update on every render if it's a function
+      if (typeof animatedStyle === 'function') {
+        const rafId = requestAnimationFrame(updateStyle)
+        return () => {
+          if (rafId) cancelAnimationFrame(rafId)
+        }
+      }
+      
+      return undefined
+    }, [animatedStyle, layoutDependency])
     // Map HoverStyle to framer-motion format
     // Filter out undefined values to avoid passing undefined to framer-motion
     const mappedWhileHover = useMemo(() => {
@@ -130,6 +190,15 @@ export const MotionView: ForwardRefExoticComponent<
       animatedStyle?: unknown;
     };
 
+    // Merge computed style from animatedStyle with any existing style prop
+    const mergedStyle = useMemo(() => {
+      const existingStyle = restProps.style as CSSProperties | undefined
+      if (!animatedStyle) {
+        return existingStyle
+      }
+      return { ...computedStyle, ...existingStyle }
+    }, [computedStyle, animatedStyle, restProps.style])
+
     return (
       <motion.div
         ref={ref}
@@ -139,6 +208,9 @@ export const MotionView: ForwardRefExoticComponent<
         transition={transition}
         whileHover={mappedWhileHover}
         whileTap={mappedWhileTap}
+        layout={layout}
+        layoutId={layoutId}
+        style={mergedStyle}
         {...domProps}
       >
         {children}

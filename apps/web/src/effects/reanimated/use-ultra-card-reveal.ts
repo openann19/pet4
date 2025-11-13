@@ -10,7 +10,7 @@ import {
   withDelay,
   withSequence,
   interpolate,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useEffect } from 'react';
 import { isTruthy, isDefined } from '@petspark/shared';
 

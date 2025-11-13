@@ -9,7 +9,7 @@ import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
-import { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from '@petspark/motion';
 
 interface GenerateProfilesButtonProps {
   variant?: 'default' | 'outline' | 'ghost';

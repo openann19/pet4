@@ -1,9 +1,10 @@
 import { cn } from '@/lib/utils';
 import { MotionView } from '@petspark/motion';
-import { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withTiming, animate } from '@petspark/motion';
 import React from 'react';
 import type { ReactNode } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 
 interface GlassCardProps {
   children: ReactNode;
@@ -13,9 +14,9 @@ interface GlassCardProps {
 }
 
 const intensityClasses = {
-  light: 'bg-white/5 backdrop-blur-sm border-white/10',
-  medium: 'bg-white/10 backdrop-blur-md border-white/20',
-  strong: 'bg-white/20 backdrop-blur-xl border-white/30',
+  light: 'bg-(--background)/5 backdrop-blur-sm border-(--border)/10',
+  medium: 'bg-(--background)/10 backdrop-blur-md border-(--border)/20',
+  strong: 'bg-(--background)/20 backdrop-blur-xl border-(--border)/30',
 };
 
 export default function GlassCard({
@@ -25,6 +26,7 @@ export default function GlassCard({
   className,
   ...props
 }: GlassCardProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
   const opacity = useSharedValue(0);
   const y = useSharedValue(20);
   const hoverScale = useSharedValue(1);
@@ -32,30 +34,41 @@ export default function GlassCard({
 
   // Entry animation
   React.useEffect(() => {
-    opacity.value = withTiming(1, { duration: 400 });
-    y.value = withTiming(0, { duration: 400 });
-  }, []);
+    if (prefersReducedMotion) {
+      opacity.value = 1;
+      y.value = 0;
+      return;
+    }
+    const opacityTransition = withTiming(1, { duration: 400 });
+    animate(opacity, opacityTransition.target, opacityTransition.transition);
+    const yTransition = withTiming(0, { duration: 400 });
+    animate(y, yTransition.target, yTransition.transition);
+  }, [opacity, y, prefersReducedMotion]);
 
   // Hover animation
   const handleMouseEnter = React.useCallback(() => {
-    if (isTruthy(enableHover)) {
-      hoverScale.value = withTiming(1.02, { duration: 200 });
-      hoverY.value = withTiming(-6, { duration: 200 });
+    if (isTruthy(enableHover) && !prefersReducedMotion) {
+      const scaleTransition = withTiming(1.02, { duration: 200 });
+      animate(hoverScale, scaleTransition.target, scaleTransition.transition);
+      const yTransition = withTiming(-6, { duration: 200 });
+      animate(hoverY, yTransition.target, yTransition.transition);
     }
-  }, [enableHover]);
+  }, [enableHover, hoverScale, hoverY, prefersReducedMotion]);
 
   const handleMouseLeave = React.useCallback(() => {
-    if (isTruthy(enableHover)) {
-      hoverScale.value = withTiming(1, { duration: 200 });
-      hoverY.value = withTiming(0, { duration: 200 });
+    if (isTruthy(enableHover) && !prefersReducedMotion) {
+      const scaleTransition = withTiming(1, { duration: 200 });
+      animate(hoverScale, scaleTransition.target, scaleTransition.transition);
+      const yTransition = withTiming(0, { duration: 200 });
+      animate(hoverY, yTransition.target, yTransition.transition);
     }
-  }, [enableHover]);
+  }, [enableHover, hoverScale, hoverY, prefersReducedMotion]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: y.value + hoverY.value }, { scale: hoverScale.value }],
+    opacity: opacity.get(),
+    transform: [{ translateY: y.get() + hoverY.get() }, { scale: hoverScale.get() }],
     boxShadow:
-      enableHover && hoverY.value < 0 ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : undefined,
+      enableHover && hoverY.get() < 0 ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : undefined,
   }));
 
   return (
@@ -64,7 +77,8 @@ export default function GlassCard({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        'rounded-3xl border shadow-xl transition-all duration-300',
+        'rounded-3xl border shadow-xl',
+        prefersReducedMotion ? '' : 'transition-all duration-300',
         intensityClasses[intensity],
         className
       )}

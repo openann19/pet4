@@ -1,6 +1,6 @@
 'use client';
 
-import { useAnimatedStyle } from 'react-native-reanimated';
+import { useAnimatedStyle } from '@petspark/motion';
 import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import type { Particle } from '@/effects/reanimated/particle-engine';
 

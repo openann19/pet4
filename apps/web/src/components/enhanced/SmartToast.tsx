@@ -1,13 +1,15 @@
-import { useEffect, useCallback } from 'react';
-import { useSharedValue, withSpring, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import React, { useEffect, useCallback } from 'react';
+import { useSharedValue, withSpring, useAnimatedStyle, withTiming, animate } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { Presence } from '@petspark/motion';
 import { X, CheckCircle, Warning, Info, XCircle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { getToastAriaAttributes, getAriaButtonAttributes, generateId } from '@/lib/accessibility';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -35,17 +37,17 @@ const icons = {
 };
 
 const colors = {
-  success: 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-300',
-  error: 'bg-red-500/10 border-red-500/30 text-red-700 dark:text-red-300',
-  warning: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-300',
-  info: 'bg-blue-500/10 border-blue-500/30 text-blue-700 dark:text-blue-300',
+  success: 'bg-(--success)/10 border-(--success)/30 text-(--success)',
+  error: 'bg-(--danger)/10 border-(--danger)/30 text-(--danger)',
+  warning: 'bg-(--warning)/10 border-(--warning)/30 text-(--warning)',
+  info: 'bg-(--accent)/10 border-(--accent)/30 text-(--accent)',
 };
 
 const iconColors = {
-  success: 'text-green-600 dark:text-green-400',
-  error: 'text-red-600 dark:text-red-400',
-  warning: 'text-yellow-600 dark:text-yellow-400',
-  info: 'text-blue-600 dark:text-blue-400',
+  success: 'text-(--success)',
+  error: 'text-(--danger)',
+  warning: 'text-(--warning)',
+  info: 'text-(--accent)',
 };
 
 export function SmartToast({
@@ -58,25 +60,45 @@ export function SmartToast({
   onDismiss,
   position = 'top',
 }: SmartToastProps) {
-    const _uiConfig = useUIConfig();
-    const Icon = icons[type];
+  const _uiConfig = useUIConfig();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const Icon = icons[type];
+  const titleId = generateId('toast-title');
+  const descriptionId = description ? generateId('toast-description') : undefined;
+  const toastAria = getToastAriaAttributes(type);
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(position === 'top' ? -20 : 20);
   const translateX = useSharedValue(0);
   const scale = useSharedValue(0.95);
 
   const handleDismiss = useCallback(() => {
-    opacity.value = withTiming(0, { duration: 200 });
-    translateX.value = withTiming(300, { duration: 200 });
-    scale.value = withTiming(0.9, { duration: 200 });
+    if (prefersReducedMotion) {
+      onDismiss(id);
+      return;
+    }
+    const opacityTransition = withTiming(0, { duration: 200 });
+    animate(opacity, opacityTransition.target, opacityTransition.transition);
+    const translateXTransition = withTiming(300, { duration: 200 });
+    animate(translateX, translateXTransition.target, translateXTransition.transition);
+    const scaleTransition = withTiming(0.9, { duration: 200 });
+    animate(scale, scaleTransition.target, scaleTransition.transition);
     setTimeout(() => onDismiss(id), 200);
-  }, [id, onDismiss, opacity, translateX, scale]);
+  }, [id, onDismiss, opacity, translateX, scale, prefersReducedMotion]);
 
   useEffect(() => {
-    opacity.value = withSpring(1, springConfigs.smooth);
-    translateY.value = withSpring(0, springConfigs.smooth);
-    scale.value = withSpring(1, springConfigs.smooth);
-  }, [opacity, translateY, scale]);
+    if (prefersReducedMotion) {
+      opacity.value = 1;
+      translateY.value = 0;
+      scale.value = 1;
+      return;
+    }
+    const opacityTransition = withSpring(1, springConfigs.smooth);
+    animate(opacity, opacityTransition.target, opacityTransition.transition);
+    const translateYTransition = withSpring(0, springConfigs.smooth);
+    animate(translateY, translateYTransition.target, translateYTransition.transition);
+    const scaleTransition = withSpring(1, springConfigs.smooth);
+    animate(scale, scaleTransition.target, scaleTransition.transition);
+  }, [opacity, translateY, scale, prefersReducedMotion]);
 
   // Auto-dismiss after duration
   useEffect(() => {
@@ -93,27 +115,39 @@ export function SmartToast({
   }, [duration, handleDismiss]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    opacity: opacity.get(),
     transform: [
-      { translateY: translateY.value },
-      { translateX: translateX.value },
-      { scale: scale.value },
+      { translateY: translateY.get() },
+      { translateX: translateX.get() },
+      { scale: scale.get() },
     ],
-  })) as AnimatedStyle;
+  }));
 
   return (
     <AnimatedView
       style={animatedStyle}
+      role={toastAria.role}
+      aria-live={toastAria['aria-live']}
+      aria-atomic={toastAria['aria-atomic']}
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
       className={cn(
-        'relative flex items-start gap-3 p-4 rounded-xl border backdrop-blur-xl shadow-xl min-w-80 max-w-md',
+        'relative flex items-start rounded-xl border backdrop-blur-xl shadow-xl min-w-80 max-w-md',
+        getSpacingClassesFromConfig({ gap: 'md', padding: 'lg' }),
         colors[type]
       )}
     >
-      <Icon className={cn('shrink-0 mt-0.5', iconColors[type])} size={20} weight="fill" />
+      <Icon className={cn('shrink-0 mt-0.5', iconColors[type])} size={20} weight="fill" aria-hidden="true" />
 
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-sm mb-1">{title}</div>
-        {description && <div className="text-xs opacity-90 leading-relaxed">{description}</div>}
+        <div id={titleId} className={cn(getTypographyClasses('caption'), 'font-semibold text-(--text-primary)', getSpacingClassesFromConfig({ marginY: 'xs' }))}>
+          {title}
+        </div>
+        {description && (
+          <div id={descriptionId} className={cn(getTypographyClasses('caption'), 'opacity-90 leading-relaxed text-(--text-muted)')}>
+            {description}
+          </div>
+        )}
         {action && (
           <Button
             variant="ghost"
@@ -122,7 +156,8 @@ export function SmartToast({
               action.onClick();
               handleDismiss();
             }}
-            className="mt-2 h-7 text-xs font-medium hover:bg-background/50"
+            className={cn(getTypographyClasses('caption'), 'font-medium hover:bg-(--background)/50', getSpacingClassesFromConfig({ marginY: 'sm' }))}
+            {...getAriaButtonAttributes({ label: action.label })}
           >
             {action.label}
           </Button>
@@ -131,10 +166,14 @@ export function SmartToast({
 
       <button
         onClick={handleDismiss}
-        className="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
-        aria-label="Dismiss notification"
+        className={cn(
+          'shrink-0 opacity-50 hover:opacity-100 min-w-[44px] min-h-[44px] flex items-center justify-center',
+          prefersReducedMotion ? '' : 'transition-opacity duration-200',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--background)'
+        )}
+        {...getAriaButtonAttributes({ label: 'Dismiss notification' })}
       >
-        <X size={16} />
+        <X size={16} aria-hidden="true" />
       </button>
     </AnimatedView>
   );
@@ -151,8 +190,13 @@ export function SmartToastContainer({
 }) {
   return (
     <div
+      role="region"
+      aria-label="Notifications"
+      aria-live="polite"
+      aria-atomic="false"
       className={cn(
-        'fixed left-0 right-0 z-50 flex flex-col items-end gap-2 px-4 pointer-events-none',
+        'fixed left-0 right-0 z-50 flex flex-col items-end pointer-events-none',
+        getSpacingClassesFromConfig({ gap: 'sm', paddingX: 'lg' }),
         position === 'top' ? 'top-4' : 'bottom-4'
       )}
     >

@@ -8,7 +8,7 @@ import {
   useAnimatedStyle,
   withTiming,
   withSequence,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useState, useCallback } from 'react';
 
 export interface UseRippleEffectOptions {

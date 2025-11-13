@@ -9,7 +9,7 @@ import {
   withTiming,
   interpolate,
   Easing,
-} from 'react-native-reanimated';
+} from '@petspark/motion';
 import { useCallback } from 'react';
 
 export interface UseMorphShapeOptions {

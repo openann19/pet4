@@ -7,8 +7,8 @@ import {
   withTiming,
   withRepeat,
   withSequence,
-} from 'react-native-reanimated';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+  animate,
+} from '@petspark/motion';
 
 export default function LoadingState() {
   // Main container scale animation
@@ -59,225 +59,268 @@ export default function LoadingState() {
 
   useEffect(() => {
     // Main container scale
-    mainScale.value = withRepeat(
-      withSequence(withTiming(1.05, { duration: 1250 }), withTiming(1, { duration: 1250 })),
-      -1,
-      false
+    const mainSequence = withSequence(
+      withTiming(1.05, { duration: 1250 }),
+      withTiming(1, { duration: 1250 })
     );
+    const mainRepeat = withRepeat(mainSequence, -1, false);
+    animate(mainScale, mainRepeat.target, mainRepeat.transition);
 
     // Outer glow ring
-    outerScale.value = withRepeat(
-      withSequence(withTiming(1.8, { duration: 1500 }), withTiming(1, { duration: 1500 })),
-      -1,
-      false
+    const outerScaleSequence = withSequence(
+      withTiming(1.8, { duration: 1500 }),
+      withTiming(1, { duration: 1500 })
     );
-    outerOpacity.value = withRepeat(
-      withSequence(withTiming(0, { duration: 1500 }), withTiming(0.4, { duration: 1500 })),
-      -1,
-      false
+    const outerScaleRepeat = withRepeat(outerScaleSequence, -1, false);
+    animate(outerScale, outerScaleRepeat.target, outerScaleRepeat.transition);
+    
+    const outerOpacitySequence = withSequence(
+      withTiming(0, { duration: 1500 }),
+      withTiming(0.4, { duration: 1500 })
     );
-    outerRotate.value = withRepeat(withTiming(360, { duration: 3000 }), -1, false);
+    const outerOpacityRepeat = withRepeat(outerOpacitySequence, -1, false);
+    animate(outerOpacity, outerOpacityRepeat.target, outerOpacityRepeat.transition);
+    
+    const outerRotateRepeat = withRepeat(withTiming(360, { duration: 3000 }), -1, false);
+    animate(outerRotate, outerRotateRepeat.target, outerRotateRepeat.transition);
 
     // Middle glow ring
-    middleScale.value = withRepeat(
-      withSequence(withTiming(1.4, { duration: 1250 }), withTiming(1, { duration: 1250 })),
-      -1,
-      false
+    const middleScaleSequence = withSequence(
+      withTiming(1.4, { duration: 1250 }),
+      withTiming(1, { duration: 1250 })
     );
-    middleOpacity.value = withRepeat(
-      withSequence(withTiming(0, { duration: 1250 }), withTiming(0.3, { duration: 1250 })),
-      -1,
-      false
+    const middleScaleRepeat = withRepeat(middleScaleSequence, -1, false);
+    animate(middleScale, middleScaleRepeat.target, middleScaleRepeat.transition);
+    
+    const middleOpacitySequence = withSequence(
+      withTiming(0, { duration: 1250 }),
+      withTiming(0.3, { duration: 1250 })
     );
-    middleRotate.value = withRepeat(withTiming(0, { duration: 2500 }), -1, false);
+    const middleOpacityRepeat = withRepeat(middleOpacitySequence, -1, false);
+    animate(middleOpacity, middleOpacityRepeat.target, middleOpacityRepeat.transition);
+    
+    const middleRotateRepeat = withRepeat(withTiming(0, { duration: 2500 }), -1, false);
+    animate(middleRotate, middleRotateRepeat.target, middleRotateRepeat.transition);
 
     // Center icon rotation
-    centerRotate.value = withRepeat(withTiming(360, { duration: 4000 }), -1, false);
-    iconRotate.value = withRepeat(withTiming(-360, { duration: 4000 }), -1, false);
+    const centerRotateRepeat = withRepeat(withTiming(360, { duration: 4000 }), -1, false);
+    animate(centerRotate, centerRotateRepeat.target, centerRotateRepeat.transition);
+    const iconRotateRepeat = withRepeat(withTiming(-360, { duration: 4000 }), -1, false);
+    animate(iconRotate, iconRotateRepeat.target, iconRotateRepeat.transition);
 
     // Floating hearts
-    heart1Y.value = withRepeat(
-      withSequence(withTiming(-40, { duration: 1000 }), withTiming(-20, { duration: 1000 })),
-      -1,
-      false
+    const heart1YSequence = withSequence(
+      withTiming(-40, { duration: 1000 }),
+      withTiming(-20, { duration: 1000 })
     );
-    heart1Opacity.value = withRepeat(
-      withSequence(withTiming(1, { duration: 1000 }), withTiming(0, { duration: 1000 })),
-      -1,
-      false
+    const heart1YRepeat = withRepeat(heart1YSequence, -1, false);
+    animate(heart1Y, heart1YRepeat.target, heart1YRepeat.transition);
+    
+    const heart1OpacitySequence = withSequence(
+      withTiming(1, { duration: 1000 }),
+      withTiming(0, { duration: 1000 })
     );
-    heart1Scale.value = withRepeat(
-      withSequence(withTiming(1, { duration: 1000 }), withTiming(0.5, { duration: 1000 })),
-      -1,
-      false
+    const heart1OpacityRepeat = withRepeat(heart1OpacitySequence, -1, false);
+    animate(heart1Opacity, heart1OpacityRepeat.target, heart1OpacityRepeat.transition);
+    
+    const heart1ScaleSequence = withSequence(
+      withTiming(1, { duration: 1000 }),
+      withTiming(0.5, { duration: 1000 })
     );
+    const heart1ScaleRepeat = withRepeat(heart1ScaleSequence, -1, false);
+    animate(heart1Scale, heart1ScaleRepeat.target, heart1ScaleRepeat.transition);
 
     setTimeout(() => {
-      heart2Y.value = withRepeat(
-        withSequence(withTiming(-40, { duration: 1000 }), withTiming(-20, { duration: 1000 })),
-        -1,
-        false
+      const heart2YSequence = withSequence(
+        withTiming(-40, { duration: 1000 }),
+        withTiming(-20, { duration: 1000 })
       );
-      heart2Opacity.value = withRepeat(
-        withSequence(withTiming(1, { duration: 1000 }), withTiming(0, { duration: 1000 })),
-        -1,
-        false
+      const heart2YRepeat = withRepeat(heart2YSequence, -1, false);
+      animate(heart2Y, heart2YRepeat.target, heart2YRepeat.transition);
+      
+      const heart2OpacitySequence = withSequence(
+        withTiming(1, { duration: 1000 }),
+        withTiming(0, { duration: 1000 })
       );
-      heart2Scale.value = withRepeat(
-        withSequence(withTiming(1, { duration: 1000 }), withTiming(0.5, { duration: 1000 })),
-        -1,
-        false
+      const heart2OpacityRepeat = withRepeat(heart2OpacitySequence, -1, false);
+      animate(heart2Opacity, heart2OpacityRepeat.target, heart2OpacityRepeat.transition);
+      
+      const heart2ScaleSequence = withSequence(
+        withTiming(1, { duration: 1000 }),
+        withTiming(0.5, { duration: 1000 })
       );
+      const heart2ScaleRepeat = withRepeat(heart2ScaleSequence, -1, false);
+      animate(heart2Scale, heart2ScaleRepeat.target, heart2ScaleRepeat.transition);
     }, 400);
 
     setTimeout(() => {
-      heart3Y.value = withRepeat(
-        withSequence(withTiming(-40, { duration: 1000 }), withTiming(-20, { duration: 1000 })),
-        -1,
-        false
+      const heart3YSequence = withSequence(
+        withTiming(-40, { duration: 1000 }),
+        withTiming(-20, { duration: 1000 })
       );
-      heart3Opacity.value = withRepeat(
-        withSequence(withTiming(1, { duration: 1000 }), withTiming(0, { duration: 1000 })),
-        -1,
-        false
+      const heart3YRepeat = withRepeat(heart3YSequence, -1, false);
+      animate(heart3Y, heart3YRepeat.target, heart3YRepeat.transition);
+      
+      const heart3OpacitySequence = withSequence(
+        withTiming(1, { duration: 1000 }),
+        withTiming(0, { duration: 1000 })
       );
-      heart3Scale.value = withRepeat(
-        withSequence(withTiming(1, { duration: 1000 }), withTiming(0.5, { duration: 1000 })),
-        -1,
-        false
+      const heart3OpacityRepeat = withRepeat(heart3OpacitySequence, -1, false);
+      animate(heart3Opacity, heart3OpacityRepeat.target, heart3OpacityRepeat.transition);
+      
+      const heart3ScaleSequence = withSequence(
+        withTiming(1, { duration: 1000 }),
+        withTiming(0.5, { duration: 1000 })
       );
+      const heart3ScaleRepeat = withRepeat(heart3ScaleSequence, -1, false);
+      animate(heart3Scale, heart3ScaleRepeat.target, heart3ScaleRepeat.transition);
     }, 800);
 
     // Text container
     setTimeout(() => {
-      textOpacity.value = withTiming(1, { duration: 500 });
-      textY.value = withTiming(0, { duration: 500 });
+      const textOpacityTransition = withTiming(1, { duration: 500 });
+      animate(textOpacity, textOpacityTransition.target, textOpacityTransition.transition);
+      const textYTransition = withTiming(0, { duration: 500 });
+      animate(textY, textYTransition.target, textYTransition.transition);
     }, 300);
 
     // Dots container
     setTimeout(() => {
-      dotsOpacity.value = withTiming(1, { duration: 500 });
+      const dotsOpacityTransition = withTiming(1, { duration: 500 });
+      animate(dotsOpacity, dotsOpacityTransition.target, dotsOpacityTransition.transition);
     }, 500);
 
     // Individual dots
-    dot1Scale.value = withRepeat(
-      withSequence(withTiming(1.3, { duration: 600 }), withTiming(1, { duration: 600 })),
-      -1,
-      false
+    const dot1ScaleSequence = withSequence(
+      withTiming(1.3, { duration: 600 }),
+      withTiming(1, { duration: 600 })
     );
-    dot1Opacity.value = withRepeat(
-      withSequence(withTiming(1, { duration: 600 }), withTiming(0.4, { duration: 600 })),
-      -1,
-      false
+    const dot1ScaleRepeat = withRepeat(dot1ScaleSequence, -1, false);
+    animate(dot1Scale, dot1ScaleRepeat.target, dot1ScaleRepeat.transition);
+    
+    const dot1OpacitySequence = withSequence(
+      withTiming(1, { duration: 600 }),
+      withTiming(0.4, { duration: 600 })
     );
+    const dot1OpacityRepeat = withRepeat(dot1OpacitySequence, -1, false);
+    animate(dot1Opacity, dot1OpacityRepeat.target, dot1OpacityRepeat.transition);
 
     setTimeout(() => {
-      dot2Scale.value = withRepeat(
-        withSequence(withTiming(1.3, { duration: 600 }), withTiming(1, { duration: 600 })),
-        -1,
-        false
+      const dot2ScaleSequence = withSequence(
+        withTiming(1.3, { duration: 600 }),
+        withTiming(1, { duration: 600 })
       );
-      dot2Opacity.value = withRepeat(
-        withSequence(withTiming(1, { duration: 600 }), withTiming(0.4, { duration: 600 })),
-        -1,
-        false
+      const dot2ScaleRepeat = withRepeat(dot2ScaleSequence, -1, false);
+      animate(dot2Scale, dot2ScaleRepeat.target, dot2ScaleRepeat.transition);
+      
+      const dot2OpacitySequence = withSequence(
+        withTiming(1, { duration: 600 }),
+        withTiming(0.4, { duration: 600 })
       );
+      const dot2OpacityRepeat = withRepeat(dot2OpacitySequence, -1, false);
+      animate(dot2Opacity, dot2OpacityRepeat.target, dot2OpacityRepeat.transition);
     }, 180);
 
     setTimeout(() => {
-      dot3Scale.value = withRepeat(
-        withSequence(withTiming(1.3, { duration: 600 }), withTiming(1, { duration: 600 })),
-        -1,
-        false
+      const dot3ScaleSequence = withSequence(
+        withTiming(1.3, { duration: 600 }),
+        withTiming(1, { duration: 600 })
       );
-      dot3Opacity.value = withRepeat(
-        withSequence(withTiming(1, { duration: 600 }), withTiming(0.4, { duration: 600 })),
-        -1,
-        false
+      const dot3ScaleRepeat = withRepeat(dot3ScaleSequence, -1, false);
+      animate(dot3Scale, dot3ScaleRepeat.target, dot3ScaleRepeat.transition);
+      
+      const dot3OpacitySequence = withSequence(
+        withTiming(1, { duration: 600 }),
+        withTiming(0.4, { duration: 600 })
       );
+      const dot3OpacityRepeat = withRepeat(dot3OpacitySequence, -1, false);
+      animate(dot3Opacity, dot3OpacityRepeat.target, dot3OpacityRepeat.transition);
     }, 360);
 
     setTimeout(() => {
-      dot4Scale.value = withRepeat(
-        withSequence(withTiming(1.3, { duration: 600 }), withTiming(1, { duration: 600 })),
-        -1,
-        false
+      const dot4ScaleSequence = withSequence(
+        withTiming(1.3, { duration: 600 }),
+        withTiming(1, { duration: 600 })
       );
-      dot4Opacity.value = withRepeat(
-        withSequence(withTiming(1, { duration: 600 }), withTiming(0.4, { duration: 600 })),
-        -1,
-        false
+      const dot4ScaleRepeat = withRepeat(dot4ScaleSequence, -1, false);
+      animate(dot4Scale, dot4ScaleRepeat.target, dot4ScaleRepeat.transition);
+      
+      const dot4OpacitySequence = withSequence(
+        withTiming(1, { duration: 600 }),
+        withTiming(0.4, { duration: 600 })
       );
+      const dot4OpacityRepeat = withRepeat(dot4OpacitySequence, -1, false);
+      animate(dot4Opacity, dot4OpacityRepeat.target, dot4OpacityRepeat.transition);
     }, 540);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount - animations are managed by reanimated
 
   // Animated styles
   const mainStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: mainScale.value }],
-  })) as AnimatedStyle;
+    transform: [{ scale: mainScale.get() }],
+  }));
 
   const outerStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: outerScale.value }, { rotate: `${outerRotate.value}deg` }],
-    opacity: outerOpacity.value,
-  })) as AnimatedStyle;
+    transform: [{ scale: outerScale.get() }, { rotate: `${outerRotate.get()}deg` }],
+    opacity: outerOpacity.get(),
+  }));
 
   const middleStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: middleScale.value }, { rotate: `${middleRotate.value}deg` }],
-    opacity: middleOpacity.value,
-  })) as AnimatedStyle;
+    transform: [{ scale: middleScale.get() }, { rotate: `${middleRotate.get()}deg` }],
+    opacity: middleOpacity.get(),
+  }));
 
   const centerStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${centerRotate.value}deg` }],
-  })) as AnimatedStyle;
+    transform: [{ rotate: `${centerRotate.get()}deg` }],
+  }));
 
   const iconStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${iconRotate.value}deg` }],
-  })) as AnimatedStyle;
+    transform: [{ rotate: `${iconRotate.get()}deg` }],
+  }));
 
   const heart1Style = useAnimatedStyle(() => ({
-    transform: [{ translateY: heart1Y.value }, { scale: heart1Scale.value }],
-    opacity: heart1Opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ translateY: heart1Y.get() }, { scale: heart1Scale.get() }],
+    opacity: heart1Opacity.get(),
+  }));
 
   const heart2Style = useAnimatedStyle(() => ({
-    transform: [{ translateY: heart2Y.value }, { scale: heart2Scale.value }],
-    opacity: heart2Opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ translateY: heart2Y.get() }, { scale: heart2Scale.get() }],
+    opacity: heart2Opacity.get(),
+  }));
 
   const heart3Style = useAnimatedStyle(() => ({
-    transform: [{ translateY: heart3Y.value }, { scale: heart3Scale.value }],
-    opacity: heart3Opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ translateY: heart3Y.get() }, { scale: heart3Scale.get() }],
+    opacity: heart3Opacity.get(),
+  }));
 
   const textStyle = useAnimatedStyle(() => ({
-    opacity: textOpacity.value,
-    transform: [{ translateY: textY.value }],
-  })) as AnimatedStyle;
+    opacity: textOpacity.get(),
+    transform: [{ translateY: textY.get() }],
+  }));
 
   const dotsStyle = useAnimatedStyle(() => ({
-    opacity: dotsOpacity.value,
-  })) as AnimatedStyle;
+    opacity: dotsOpacity.get(),
+  }));
 
   const dot1Style = useAnimatedStyle(() => ({
-    transform: [{ scale: dot1Scale.value }],
-    opacity: dot1Opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ scale: dot1Scale.get() }],
+    opacity: dot1Opacity.get(),
+  }));
 
   const dot2Style = useAnimatedStyle(() => ({
-    transform: [{ scale: dot2Scale.value }],
-    opacity: dot2Opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ scale: dot2Scale.get() }],
+    opacity: dot2Opacity.get(),
+  }));
 
   const dot3Style = useAnimatedStyle(() => ({
-    transform: [{ scale: dot3Scale.value }],
-    opacity: dot3Opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ scale: dot3Scale.get() }],
+    opacity: dot3Opacity.get(),
+  }));
 
   const dot4Style = useAnimatedStyle(() => ({
-    transform: [{ scale: dot4Scale.value }],
-    opacity: dot4Opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ scale: dot4Scale.get() }],
+    opacity: dot4Opacity.get(),
+  }));
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 px-4">

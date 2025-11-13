@@ -1,15 +1,8 @@
 'use client';
 
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withRepeat,
-  withSequence,
-} from 'react-native-reanimated';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
 import {
   Heart,
   Translate,
@@ -21,7 +14,6 @@ import {
   List,
   X,
 } from '@phosphor-icons/react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useApp } from '@/contexts/AppContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
@@ -29,8 +21,8 @@ import { useBounceOnTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { getAriaButtonAttributes } from '@/lib/accessibility';
 
 interface TopNavBarProps {
   onAdminClick?: () => void;
@@ -45,7 +37,7 @@ export default function TopNavBar({
   onNotificationsClick,
   onProfileClick,
 }: TopNavBarProps) {
-  const { pathname } = useLocation();
+  useLocation(); // Keep for potential future use
   const { theme, toggleTheme, language, toggleLanguage, t } = useApp();
   const { isAuthenticated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -60,61 +52,90 @@ export default function TopNavBar({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Animation values
-  const barOpacity = useSharedValue(1);
-  const barY = useSharedValue(0);
-  const blurIntensity = useSharedValue(20);
-  const glowOpacity = useSharedValue(0.3);
+  // Animation values using Framer Motion
+  const barY = useMotionValue(0);
+  const blurIntensity = useMotionValue(20);
+  const glowOpacity = useMotionValue(0.3);
+  const shimmerX = useMotionValue(-100);
 
   useEffect(() => {
     if (isScrolled) {
-      barY.value = withSpring(0, springConfigs.smooth);
-      blurIntensity.value = withTiming(30, timingConfigs.smooth);
-      glowOpacity.value = withTiming(0.5, timingConfigs.smooth);
+      animate(barY, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(blurIntensity, 30, {
+        duration: timingConfigs.smooth.duration / 1000,
+        ease: 'easeInOut',
+      });
+      animate(glowOpacity, 0.5, {
+        duration: timingConfigs.smooth.duration / 1000,
+        ease: 'easeInOut',
+      });
     } else {
-      barY.value = withSpring(0, springConfigs.smooth);
-      blurIntensity.value = withTiming(20, timingConfigs.smooth);
-      glowOpacity.value = withTiming(0.3, timingConfigs.smooth);
+      animate(barY, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(blurIntensity, 20, {
+        duration: timingConfigs.smooth.duration / 1000,
+        ease: 'easeInOut',
+      });
+      animate(glowOpacity, 0.3, {
+        duration: timingConfigs.smooth.duration / 1000,
+        ease: 'easeInOut',
+      });
     }
   }, [isScrolled, barY, blurIntensity, glowOpacity]);
 
   // Holographic shimmer effect
-  const shimmerX = useSharedValue(-100);
   useEffect(() => {
-    shimmerX.value = withRepeat(
-      withSequence(
-        withTiming(200, { duration: 3000 }),
-        withTiming(-100, { duration: 0 })
-      ),
-      -1,
-      false
-    );
+    animate(shimmerX, [200, -100], {
+      duration: 3,
+      ease: 'linear',
+      repeat: Infinity,
+      repeatType: 'loop',
+    });
   }, [shimmerX]);
 
-  const barStyle = useAnimatedStyle(() => {
-    return {
-      opacity: barOpacity.value,
-      transform: [{ translateY: barY.value }],
-    };
-  }) as AnimatedStyle;
+  const barVariants: Variants = {
+    visible: {
+      opacity: 1,
+      y: 0,
+    },
+  };
 
-  const backdropStyle = useAnimatedStyle(() => {
-    return {
-      backdropFilter: `blur(${blurIntensity.value}px)`,
-    };
-  }) as AnimatedStyle;
+  const backdropVariants: Variants = {
+    scrolled: {
+      backdropFilter: 'blur(30px)',
+    },
+    normal: {
+      backdropFilter: 'blur(20px)',
+    },
+  };
 
-  const glowStyle = useAnimatedStyle(() => {
-    return {
-      opacity: glowOpacity.value,
-    };
-  }) as AnimatedStyle;
+  const glowVariants: Variants = {
+    scrolled: {
+      opacity: 0.5,
+    },
+    normal: {
+      opacity: 0.3,
+    },
+  };
 
-  const shimmerStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: shimmerX.value }],
-    };
-  }) as AnimatedStyle;
+  const shimmerVariants: Variants = {
+    shimmer: {
+      x: [-100, 200],
+      transition: {
+        duration: 3,
+        ease: 'linear',
+        repeat: Infinity,
+        repeatType: 'loop',
+      },
+    },
+  };
 
   const handleThemeToggle = useCallback(() => {
     haptics.trigger('light');
@@ -148,8 +169,11 @@ export default function TopNavBar({
   }, []);
 
   return (
-    <AnimatedView
-      style={barStyle}
+    <motion.div
+      variants={barVariants}
+      initial="visible"
+      animate="visible"
+      style={{ y: barY }}
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         isScrolled ? 'shadow-2xl shadow-primary/20' : 'shadow-lg'
@@ -157,48 +181,76 @@ export default function TopNavBar({
     >
       {/* Holographic backdrop with blur */}
       <div className="absolute inset-0 bg-card/90 border-b border-border/50">
-        <AnimatedView
-          style={backdropStyle}
+        <motion.div
+          variants={backdropVariants}
+          animate={isScrolled ? 'scrolled' : 'normal'}
+          style={{ backdropFilter: `blur(${blurIntensity.get()}px)` }}
           className="absolute inset-0 backdrop-blur-xl"
         />
         {/* Holographic gradient overlay */}
         <div className="absolute inset-0 bg-linear-to-r from-primary/10 via-accent/10 to-secondary/10 opacity-60" />
         {/* Shimmer effect */}
-        <AnimatedView
-          style={shimmerStyle}
+        <motion.div
+          variants={shimmerVariants}
+          animate="shimmer"
+          style={{ x: shimmerX }}
           className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent w-1/3 h-full"
         />
         {/* Glow effect */}
-        <AnimatedView
-          style={glowStyle}
+        <motion.div
+          variants={glowVariants}
+          animate={isScrolled ? 'scrolled' : 'normal'}
+          style={{ opacity: glowOpacity.get() }}
           className="absolute inset-0 bg-linear-to-r from-primary/20 via-accent/20 to-primary/20 blur-2xl"
         />
       </div>
 
       {/* Content */}
-      <nav className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <nav 
+        className={cn(
+          'relative z-10 max-w-7xl mx-auto',
+          getSpacingClassesFromConfig({ paddingX: 'lg' })
+        )}
+        aria-label="Main navigation"
+      >
+        <div className={cn(
+          'flex items-center justify-between',
+          getSpacingClassesFromConfig({ gap: 'md' })
+        )}
+        style={{ height: '4rem' }}
+        >
           {/* Logo */}
           <Link
             to="/discover"
-            className="flex items-center gap-2 sm:gap-3 group"
+            className={cn(
+              'flex items-center group',
+              getSpacingClassesFromConfig({ gap: 'sm' })
+            )}
             onClick={() => haptics.trigger('light')}
+            aria-label="Go to home page"
           >
             <div className="relative">
-              <div className="absolute inset-0 bg-linear-to-r from-primary/40 via-accent/40 to-primary/40 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 bg-linear-to-r from-primary/40 via-accent/40 to-primary/40 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
               <Heart
                 className="text-primary drop-shadow-2xl relative z-10 group-hover:scale-125 transition-transform duration-300"
                 size={28}
                 weight="fill"
+                aria-hidden="true"
               />
             </div>
-            <h1 className="text-lg sm:text-xl font-bold bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+            <h1 className={cn(
+              getTypographyClasses('subtitle'),
+              'bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-transparent'
+            )}>
               {t.app?.title || 'PawfectMatch'}
             </h1>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className={cn(
+            'hidden md:flex items-center',
+            getSpacingClassesFromConfig({ gap: 'sm' })
+          )}>
             <NavButton
               icon={<Translate size={20} weight="bold" />}
               label={language === 'en' ? 'БГ' : 'EN'}
@@ -246,22 +298,34 @@ export default function TopNavBar({
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-primary/10 transition-colors"
+            className={cn(
+              'md:hidden rounded-lg hover:bg-primary/10 transition-colors',
+              getSpacingClassesFromConfig({ padding: 'sm' })
+            )}
             onClick={toggleMobileMenu}
-            aria-label="Toggle menu"
+            aria-label="Toggle navigation menu"
             aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             {isMobileMenuOpen ? (
-              <X size={24} weight="bold" />
+              <X size={24} weight="bold" aria-hidden="true" />
             ) : (
-              <List size={24} weight="bold" />
+              <List size={24} weight="bold" aria-hidden="true" />
             )}
           </button>
         </div>
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border/50 py-4 space-y-2">
+          <div 
+            id="mobile-menu"
+            className={cn(
+              'md:hidden border-t border-border/50',
+              getSpacingClassesFromConfig({ paddingY: 'lg', spaceY: 'sm' })
+            )}
+            role="menu"
+            aria-label="Mobile navigation menu"
+          >
             <MobileNavButton
               icon={<Translate size={20} weight="bold" />}
               label={
@@ -319,7 +383,7 @@ export default function TopNavBar({
           </div>
         )}
       </nav>
-    </AnimatedView>
+    </motion.div>
   );
 }
 
@@ -350,25 +414,46 @@ function NavButton({
     hapticFeedback: false,
   });
 
+  const buttonAriaAttrs = getAriaButtonAttributes({
+    label: ariaLabel ?? label ?? 'Button',
+  });
+
   return (
     <button
       onClick={() => {
         bounceAnimation.handlePress();
         onClick();
       }}
-      aria-label={ariaLabel || label}
-      className="relative p-2.5 rounded-xl hover:bg-primary/10 active:bg-primary/20 transition-all duration-200 group"
+      {...buttonAriaAttrs}
+      className={cn(
+        'relative rounded-xl hover:bg-primary/10 active:bg-primary/20 transition-all duration-200 group',
+        getSpacingClassesFromConfig({ padding: 'md' })
+      )}
     >
-      <AnimatedView style={animation.buttonStyle} className="relative">
+      <motion.div
+        variants={animation.variants}
+        initial="rest"
+        animate="rest"
+        whileHover="hover"
+        whileTap="tap"
+        className="relative"
+      >
         {badge !== undefined && badge > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 rounded-full bg-destructive flex items-center justify-center text-xs font-bold text-destructive-foreground">
+          <span 
+            className={cn(
+              'absolute -top-1 -right-1 min-w-5 h-5 rounded-full bg-destructive flex items-center justify-center text-destructive-foreground',
+              getTypographyClasses('badge'),
+              getSpacingClassesFromConfig({ paddingX: 'xs' })
+            )}
+            aria-label={`${badge} ${badge === 1 ? 'notification' : 'notifications'}`}
+          >
             {badge > 9 ? '9+' : badge}
           </span>
         )}
-        <div className="text-(--text-primary) group-hover:text-(--coral-primary) transition-colors">
+        <div className="text-(--text-primary) group-hover:text-(--coral-primary) transition-colors" aria-hidden="true">
           {icon}
         </div>
-      </AnimatedView>
+      </motion.div>
     </button>
   );
 }
@@ -380,13 +465,22 @@ interface MobileNavButtonProps {
 }
 
 function MobileNavButton({ icon, label, onClick }: MobileNavButtonProps) {
+  const buttonAriaAttrs = getAriaButtonAttributes({
+    label,
+  });
+
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/10 active:bg-primary/20 transition-colors text-left"
+      {...buttonAriaAttrs}
+      className={cn(
+        'w-full flex items-center rounded-lg hover:bg-primary/10 active:bg-primary/20 transition-colors text-left',
+        getSpacingClassesFromConfig({ gap: 'md', paddingX: 'lg', paddingY: 'md' })
+      )}
+      role="menuitem"
     >
-      <div className="text-(--text-primary)">{icon}</div>
-      <span className="text-sm font-medium">{label}</span>
+      <div className="text-(--text-primary)" aria-hidden="true">{icon}</div>
+      <span className={getTypographyClasses('caption')}>{label}</span>
     </button>
   );
 }

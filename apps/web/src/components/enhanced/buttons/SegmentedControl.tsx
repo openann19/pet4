@@ -1,13 +1,14 @@
 'use client';
 
-import { useCallback, useRef, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import React, { useCallback, useRef, useEffect } from 'react';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { isTruthy } from '@petspark/shared';
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
 
 export interface SegmentedControlOption {
   label: string;
@@ -34,10 +35,11 @@ export function SegmentedControl({
   className,
   'aria-label': ariaLabel,
 }: SegmentedControlProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const containerRef = useRef<HTMLDivElement>(null);
-  const indicatorPosition = useSharedValue(0);
-  const indicatorWidth = useSharedValue(0);
+  const _uiConfig = useUIConfig();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const indicatorPosition = useMotionValue(0);
+  const indicatorWidth = useMotionValue(0);
   const selectedValues = Array.isArray(value) ? value : value ? [value] : [];
 
   const updateIndicator = useCallback(() => {
@@ -52,13 +54,26 @@ export function SegmentedControl({
       const containerRect = container.getBoundingClientRect();
       const buttonRect = selectedButton.getBoundingClientRect();
 
-      indicatorPosition.value = withSpring(
-        buttonRect.left - containerRect.left,
-        springConfigs.smooth
-      );
-      indicatorWidth.value = withSpring(buttonRect.width, springConfigs.smooth);
+      const newPosition = buttonRect.left - containerRect.left;
+      const newWidth = buttonRect.width;
+
+      if (prefersReducedMotion) {
+        indicatorPosition.set(newPosition);
+        indicatorWidth.set(newWidth);
+      } else {
+        animate(indicatorPosition, newPosition, {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
+        });
+        animate(indicatorWidth, newWidth, {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
+        });
+      }
     }
-  }, [options, selectedValues, indicatorPosition, indicatorWidth]);
+  }, [options, selectedValues, indicatorPosition, indicatorWidth, prefersReducedMotion]);
 
   useEffect(() => {
     updateIndicator();
@@ -69,10 +84,25 @@ export function SegmentedControl({
     return () => resizeObserver.disconnect();
   }, [updateIndicator]);
 
-  const indicatorStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: indicatorPosition.value }],
-    width: indicatorWidth.value,
-  })) as AnimatedStyle;
+  const indicatorVariants: Variants = prefersReducedMotion
+    ? {
+        animate: {
+          x: indicatorPosition,
+          width: indicatorWidth,
+          transition: { duration: 0 },
+        },
+      }
+    : {
+        animate: {
+          x: indicatorPosition,
+          width: indicatorWidth,
+          transition: {
+            type: 'spring',
+            damping: springConfigs.smooth.damping,
+            stiffness: springConfigs.smooth.stiffness,
+          },
+        },
+      };
 
   const handleOptionClick = useCallback(
     (optionValue: string) => {
@@ -91,9 +121,9 @@ export function SegmentedControl({
   );
 
   const sizes = {
-    sm: 'px-2 py-1 text-sm min-h-9',
-    md: 'px-3 py-1.5 text-base min-h-11',
-    lg: 'px-4 py-2 text-lg min-h-13',
+    sm: cn('px-2 py-1 min-h-[44px]', getTypographyClasses('caption')),
+    md: cn('px-3 py-1.5 min-h-[44px]', getTypographyClasses('body')),
+    lg: cn('px-4 py-2 min-h-[44px]', getTypographyClasses('body')),
   };
 
   return (
@@ -102,14 +132,22 @@ export function SegmentedControl({
       role="tablist"
       aria-label={ariaLabel}
       className={cn(
-        'relative inline-flex rounded-xl bg-muted p-1',
-        'border border-border',
+        'relative inline-flex rounded-xl bg-(--surface) p-1',
+        'border border-(--border)',
         className
       )}
     >
-      <AnimatedView
-        style={indicatorStyle}
-        className="absolute top-1 bottom-1 bg-background rounded-lg shadow-sm transition-all"
+      <motion.div
+        variants={indicatorVariants}
+        animate="animate"
+        style={{
+          x: indicatorPosition,
+          width: indicatorWidth,
+        }}
+        className={cn(
+          'absolute top-1 bottom-1 bg-(--background) rounded-lg shadow-sm',
+          prefersReducedMotion ? '' : 'transition-all duration-200'
+        )}
       />
       {options.map((option) => {
         const isSelected = selectedValues.includes(option.value);
@@ -121,14 +159,15 @@ export function SegmentedControl({
             role="tab"
             aria-selected={isSelected}
             className={cn(
-              'relative z-10 flex items-center justify-center gap-2',
-              'rounded-lg font-medium transition-all duration-200',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+              'relative z-10 flex items-center justify-center rounded-lg font-medium',
+              prefersReducedMotion ? '' : 'transition-all duration-200',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--primary) focus-visible:ring-offset-2 focus-visible:ring-offset-(--background)',
+              getSpacingClassesFromConfig({ gap: 'sm' }),
               sizes[size],
-              isSelected ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+              isSelected ? 'text-(--text-primary)' : 'text-(--text-muted) hover:text-(--text-primary)'
             )}
           >
-            {option.icon && <span>{option.icon}</span>}
+            {option.icon && <span aria-hidden="true">{option.icon}</span>}
             {option.label}
           </button>
         );

@@ -1,14 +1,15 @@
 'use client';
 
-import { useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import React, { useCallback, useEffect } from 'react';
+import { useSharedValue, useAnimatedStyle, withSpring, animate } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { PremiumButton } from '../PremiumButton';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { usePrefersReducedMotion } from '@/utils/reduced-motion';
+import { getTypographyClasses } from '@/lib/typography';
 
 export interface PremiumEmptyStateProps {
   icon?: React.ReactNode;
@@ -30,18 +31,29 @@ export function PremiumEmptyState({
   variant = 'default',
   className,
 }: PremiumEmptyStateProps): React.JSX.Element {
-    const _uiConfig = useUIConfig();
-    const scale = useSharedValue(0.9);
+  const _uiConfig = useUIConfig();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const scale = useSharedValue(0.9);
   const opacity = useSharedValue(0);
 
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      scale.value = 1;
+      opacity.value = 1;
+      return;
+    }
+    const scaleTransition = withSpring(1, springConfigs.smooth);
+    animate(scale, scaleTransition.target, scaleTransition.transition);
+    const opacityTransition = withSpring(1, springConfigs.smooth);
+    animate(opacity, opacityTransition.target, opacityTransition.transition);
+  }, [scale, opacity, prefersReducedMotion]);
+
   const animatedStyle = useAnimatedStyle(() => {
-    scale.value = withSpring(1, springConfigs.smooth);
-    opacity.value = withSpring(1, springConfigs.smooth);
     return {
-      transform: [{ scale: scale.value }],
-      opacity: opacity.value,
+      transform: [{ scale: scale.get() }],
+      opacity: opacity.get(),
     };
-  }) as AnimatedStyle;
+  });
 
   const handleAction = useCallback(() => {
     haptics.impact('light');
@@ -59,9 +71,19 @@ export function PremiumEmptyState({
       style={animatedStyle}
       className={cn('flex flex-col items-center', variants[variant], className)}
     >
-      {icon && <div className="mb-4 text-muted-foreground">{icon}</div>}
-      <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-      {description && <p className="text-sm text-muted-foreground mb-6 max-w-md">{description}</p>}
+      {icon && (
+        <div className="mb-4 text-(--text-muted)" aria-hidden="true">
+          {icon}
+        </div>
+      )}
+      <h3 className={cn(getTypographyClasses('subtitle'), 'mb-2 text-(--text-primary)')}>
+        {title}
+      </h3>
+      {description && (
+        <p className={cn(getTypographyClasses('body'), 'mb-6 max-w-[60ch] text-(--text-muted)')}>
+          {description}
+        </p>
+      )}
       {action && (
         <PremiumButton onClick={handleAction} variant="primary" size="md">
           {action.label}

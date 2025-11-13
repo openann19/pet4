@@ -1,6 +1,6 @@
 'use client';
 
-import { useSharedValue, withSpring, withTiming, Easing } from 'react-native-reanimated';
+import { useSharedValue, withSpring, withTiming, Easing } from '@petspark/motion';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useEffect, useState, useCallback } from 'react';

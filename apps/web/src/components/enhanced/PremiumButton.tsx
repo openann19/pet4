@@ -1,13 +1,13 @@
+import React, { useEffect } from 'react';
+import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { AnimatedView, useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
-import { useSharedValue, useAnimatedStyle, withTiming, withRepeat } from 'react-native-reanimated';
-import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import type { ButtonHTMLAttributes } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { getAriaButtonAttributes } from '@/lib/accessibility';
 
 interface PremiumButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
   variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'gradient';
@@ -29,35 +29,23 @@ export function PremiumButton({
   onClick,
   ...props
 }: PremiumButtonProps) {
-    const _uiConfig = useUIConfig();
-    const hoverLift = useHoverLift({ scale: 1.05 });
+  const _uiConfig = useUIConfig();
+  const hoverLift = useHoverLift({ scale: 1.05 });
   const bounceOnTap = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
-  const rotation = useSharedValue(0);
+  const rotation = useMotionValue(0);
 
   useEffect(() => {
     if (loading) {
-      rotation.value = withRepeat(withTiming(360, { duration: 1000 }), -1, false);
+      animate(rotation, 360, {
+        duration: 1,
+        ease: 'linear',
+        repeat: Infinity,
+        repeatType: 'loop',
+      });
     } else {
-      rotation.value = 0;
+      rotation.set(0);
     }
   }, [loading, rotation]);
-
-  const loadingStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
-  })) as AnimatedStyle;
-
-  const buttonStyle = useAnimatedStyle(() => {
-    const hoverScale = hoverLift.scale.value;
-    const tapScale = bounceOnTap.scale.value;
-    const hoverY = hoverLift.translateY.value;
-
-    return {
-      transform: [{ scale: hoverScale * tapScale }, { translateY: hoverY }],
-    };
-  }) as AnimatedStyle;
-
-  const buttonStyleValue = useAnimatedStyleValue(buttonStyle);
-  const loadingStyleValue = useAnimatedStyleValue(loadingStyle);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     haptics.impact('light');
@@ -79,41 +67,84 @@ export function PremiumButton({
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm min-h-11 min-w-11',
-    md: 'px-4 py-2 text-base min-h-11 min-w-11',
-    lg: 'px-6 py-3 text-lg min-h-11 min-w-11',
+    sm: cn(
+      getSpacingClassesFromConfig({ paddingX: 'md', paddingY: 'sm' }),
+      getTypographyClasses('button'),
+      'min-h-11 min-w-11'
+    ),
+    md: cn(
+      getSpacingClassesFromConfig({ paddingX: 'lg', paddingY: 'sm' }),
+      getTypographyClasses('button'),
+      'min-h-11 min-w-11'
+    ),
+    lg: cn(
+      getSpacingClassesFromConfig({ paddingX: 'xl', paddingY: 'md' }),
+      getTypographyClasses('button'),
+      'min-h-11 min-w-11'
+    ),
+  };
+
+  const buttonAriaAttrs = getAriaButtonAttributes({
+    label: props['aria-label'] ?? (typeof children === 'string' ? children : undefined),
+    disabled: loading ?? props.disabled,
+  });
+
+  const buttonVariants: Variants = {
+    rest: { scale: 1, y: 0 },
+    hover: { scale: 1.05, y: -2 },
+    tap: { scale: 0.95 },
+  };
+
+  const loadingVariants: Variants = {
+    spinning: {
+      rotate: 360,
+      transition: {
+        duration: 1,
+        repeat: Infinity,
+        ease: 'linear',
+      },
+    },
   };
 
   return (
-    <button
+    <motion.button
       onClick={handleClick}
       onMouseEnter={hoverLift.handleEnter}
       onMouseLeave={hoverLift.handleLeave}
-      style={buttonStyleValue}
+      variants={buttonVariants}
+      initial="rest"
+      animate="rest"
+      whileHover="hover"
+      whileTap="tap"
       className={cn(
-        'relative overflow-hidden rounded-xl font-semibold',
+        'relative overflow-hidden rounded-xl',
         'shadow-lg transition-all duration-300',
         'disabled:cursor-not-allowed',
-        'flex items-center justify-center gap-2',
+        'flex items-center justify-center',
+        getSpacingClassesFromConfig({ gap: 'sm' }),
         variants[variant],
         sizes[size],
         className
       )}
       disabled={loading}
+      {...buttonAriaAttrs}
       {...props}
     >
       {loading ? (
-        <div
-          style={loadingStyleValue}
+        <motion.div
+          variants={loadingVariants}
+          animate="spinning"
+          style={{ rotate: rotation }}
           className="h-5 w-5 rounded-full border-2 border-current border-t-transparent"
+          aria-hidden="true"
         />
       ) : (
         <>
-          {icon && iconPosition === 'left' && icon}
+          {icon && iconPosition === 'left' && <span aria-hidden="true">{icon}</span>}
           {children}
-          {icon && iconPosition === 'right' && icon}
+          {icon && iconPosition === 'right' && <span aria-hidden="true">{icon}</span>}
         </>
       )}
-    </button>
+    </motion.button>
   );
 }

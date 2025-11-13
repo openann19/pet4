@@ -1,15 +1,9 @@
 'use client';
 
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSpring,
-  withDelay,
-} from 'react-native-reanimated';
+import { useMotionValue, animate, type MotionValue } from 'framer-motion';
 import { useEffect } from 'react';
+import type { Variants } from 'framer-motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface UseModalAnimationOptions {
   isVisible: boolean;
@@ -18,43 +12,87 @@ export interface UseModalAnimationOptions {
 }
 
 export interface UseModalAnimationReturn {
-  opacity: ReturnType<typeof useSharedValue<number>>;
-  scale: ReturnType<typeof useSharedValue<number>>;
-  y: ReturnType<typeof useSharedValue<number>>;
-  style: AnimatedStyle;
+  opacity: MotionValue<number>;
+  scale: MotionValue<number>;
+  y: MotionValue<number>;
+  variants: Variants;
 }
 
 export function useModalAnimation(options: UseModalAnimationOptions): UseModalAnimationReturn {
   const { isVisible, duration = 300, delay = 0 } = options;
 
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(0.9);
-  const y = useSharedValue(20);
+  const opacity = useMotionValue(0);
+  const scale = useMotionValue(0.9);
+  const y = useMotionValue(20);
 
   useEffect(() => {
     if (isVisible) {
       const delayMs = delay * 1000;
-      opacity.value = withDelay(delayMs, withTiming(1, { duration }));
-      scale.value = withSpring(1, springConfigs.smooth);
-      y.value = withSpring(0, springConfigs.smooth);
+      animate(opacity, 1, {
+        delay: delayMs / 1000,
+        duration: duration / 1000,
+        ease: 'easeInOut',
+      });
+      animate(scale, 1, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
+      animate(y, 0, {
+        type: 'spring',
+        damping: springConfigs.smooth.damping,
+        stiffness: springConfigs.smooth.stiffness,
+      });
     } else {
-      opacity.value = withTiming(0, { duration });
-      scale.value = withTiming(0.9, { duration });
-      y.value = withTiming(20, { duration });
+      animate(opacity, 0, {
+        duration: duration / 1000,
+        ease: 'easeInOut',
+      });
+      animate(scale, 0.9, {
+        duration: duration / 1000,
+        ease: 'easeInOut',
+      });
+      animate(y, 20, {
+        duration: duration / 1000,
+        ease: 'easeInOut',
+      });
     }
   }, [isVisible, duration, delay, opacity, scale, y]);
 
-  const style = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-      transform: [{ scale: scale.value }, { translateY: y.value }],
-    };
-  }) as AnimatedStyle;
+  const variants: Variants = {
+    hidden: {
+      opacity: 0,
+      scale: 0.9,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        delay: delay / 1000,
+        opacity: {
+          duration: duration / 1000,
+          ease: 'easeInOut',
+        },
+        scale: {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
+        },
+        y: {
+          type: 'spring',
+          damping: springConfigs.smooth.damping,
+          stiffness: springConfigs.smooth.stiffness,
+        },
+      },
+    },
+  };
 
   return {
     opacity,
     scale,
     y,
-    style,
+    variants,
   };
 }

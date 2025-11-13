@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useEffect } from 'react';
 import { MonitorPlay, Check } from '@phosphor-icons/react';
-import { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

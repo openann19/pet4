@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
 import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
@@ -16,7 +16,6 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface PremiumModalProps {
@@ -60,18 +59,22 @@ export function PremiumModal({
 
   useEffect(() => {
     if (open) {
-      scale.value = withSpring(1, springConfigs.smooth);
-      opacity.value = withTiming(1, { duration: 200 });
+      const scaleTransition = withSpring(1, springConfigs.smooth);
+      animate(scale, scaleTransition.target, scaleTransition.transition);
+      const opacityTransition = withTiming(1, { duration: 200 });
+      animate(opacity, opacityTransition.target, opacityTransition.transition);
     } else {
-      scale.value = withSpring(0.95, springConfigs.smooth);
-      opacity.value = withTiming(0, { duration: 150 });
+      const scaleTransition = withSpring(0.95, springConfigs.smooth);
+      animate(scale, scaleTransition.target, scaleTransition.transition);
+      const opacityTransition = withTiming(0, { duration: 150 });
+      animate(opacity, opacityTransition.target, opacityTransition.transition);
     }
   }, [open, scale, opacity]);
 
   const contentStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  })) as AnimatedStyle;
+    transform: [{ scale: scale.get() }],
+    opacity: opacity.get(),
+  }));
 
   const handleOpenChange = useCallback(
     (newOpen: boolean) => {
