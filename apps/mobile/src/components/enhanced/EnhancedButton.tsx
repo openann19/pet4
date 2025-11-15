@@ -30,6 +30,11 @@ import Animated, {
 
 const AnimatedView = Animated.createAnimatedComponent(View)
 
+// Helper for truthiness checks
+const isTruthy = <T,>(value: T): value is NonNullable<T> => {
+  return value !== null && value !== undefined && value !== false
+}
+
 export interface EnhancedButtonProps extends Omit<PressableProps, 'onPress'> {
   title?: string
   children?: React.ReactNode

@@ -6,7 +6,6 @@
 import { useCallback, useState } from 'react'
 import type React from 'react'
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -16,10 +15,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
 import { apiClient } from '@/utils/api-client'
 import { createLogger } from '@/utils/logger'
 import { saveAuthToken, saveRefreshToken } from '@/utils/secure-storage'
 import { useStorage } from '@/hooks/use-storage'
+import { EnhancedButton } from '../enhanced/EnhancedButton'
+import { colors } from '../../theme/colors'
+import { typography, spacing } from '../../theme/typography'
 
 type SignUpFormProps = {
   readonly onSuccess: () => void
@@ -121,6 +124,8 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [errors, setErrors] = useState<SignUpFormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -242,9 +247,12 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.container}>
+        <Animated.View entering={FadeInUp.duration(400).delay(100)} style={styles.container}>
           <Text style={styles.title}>{t.auth.signUpTitle}</Text>
           <Text style={styles.subtitle}>{t.auth.signUpSubtitle}</Text>
+        </Animated.View>
+
+        <Animated.View entering={FadeInDown.duration(400).delay(200)} style={styles.container}>
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t.auth.email}</Text>
@@ -269,39 +277,63 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t.auth.password}</Text>
-            <TextInput
-              accessibilityLabel={t.auth.password}
-              placeholder={t.auth.passwordPlaceholder}
-              placeholderTextColor="#9CA3AF"
-              secureTextEntry
-              style={[styles.input, errors.password ? styles.inputError : null]}
-              value={password}
-              onChangeText={value => {
-                setPassword(value)
-                clearError('password')
-                clearError('form')
-              }}
-              editable={!isSubmitting}
-            />
+            <View style={styles.passwordRow}>
+              <TextInput
+                accessibilityLabel={t.auth.password}
+                placeholder={t.auth.passwordPlaceholder}
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showPassword}
+                style={[styles.input, errors.password ? styles.inputError : null, { flex: 1 }]}
+                value={password}
+                onChangeText={value => {
+                  setPassword(value)
+                  clearError('password')
+                  clearError('form')
+                }}
+                editable={!isSubmitting}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  setShowPassword(!showPassword)
+                  haptics.trigger('selection')
+                }}
+                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                style={styles.toggleButton}
+              >
+                <Text style={styles.toggleText}>{showPassword ? '✓' : '○'}</Text>
+              </TouchableOpacity>
+            </View>
             {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
           </View>
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t.auth.confirmPassword}</Text>
-            <TextInput
-              accessibilityLabel={t.auth.confirmPassword}
-              placeholder={t.auth.confirmPasswordPlaceholder}
-              placeholderTextColor="#9CA3AF"
-              secureTextEntry
-              style={[styles.input, errors.confirmPassword ? styles.inputError : null]}
-              value={confirmPassword}
-              onChangeText={value => {
-                setConfirmPassword(value)
-                clearError('confirmPassword')
-                clearError('form')
-              }}
-              editable={!isSubmitting}
-            />
+            <View style={styles.passwordRow}>
+              <TextInput
+                accessibilityLabel={t.auth.confirmPassword}
+                placeholder={t.auth.confirmPasswordPlaceholder}
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showConfirmPassword}
+                style={[styles.input, errors.confirmPassword ? styles.inputError : null, { flex: 1 }]}
+                value={confirmPassword}
+                onChangeText={value => {
+                  setConfirmPassword(value)
+                  clearError('confirmPassword')
+                  clearError('form')
+                }}
+                editable={!isSubmitting}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  setShowConfirmPassword(!showConfirmPassword)
+                  haptics.trigger('selection')
+                }}
+                accessibilityLabel={showConfirmPassword ? 'Hide password' : 'Show password'}
+                style={styles.toggleButton}
+              >
+                <Text style={styles.toggleText}>{showConfirmPassword ? '✓' : '○'}</Text>
+              </TouchableOpacity>
+            </View>
             {errors.confirmPassword ? (
               <Text style={styles.errorText}>{errors.confirmPassword}</Text>
             ) : null}
@@ -309,20 +341,16 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
 
           {errors.form ? <Text style={styles.formErrorText}>{errors.form}</Text> : null}
 
-          <TouchableOpacity
-            accessibilityRole="button"
-            onPress={() => {
-              void handleSubmit()
-            }}
-            style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
+          <EnhancedButton
+            title={t.auth.signUp}
+            onPress={handleSubmit}
+            variant="default"
+            size="lg"
+            loading={isSubmitting}
             disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color="var(--color-bg-overlay)" />
-            ) : (
-              <Text style={styles.submitButtonText}>{t.auth.signUp}</Text>
-            )}
-          </TouchableOpacity>
+            style={styles.submitButton}
+            hapticFeedback={true}
+          />
 
           <View style={styles.switchRow}>
             <Text style={styles.switchText}>{t.auth.alreadyHaveAccount} </Text>
@@ -330,7 +358,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
               <Text style={styles.switchLink}>{t.auth.signIn}</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
   )
@@ -339,12 +367,12 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
 const styles = StyleSheet.create({
   keyboardAvoider: {
     flex: 1,
-    backgroundColor: 'var(--color-bg-overlay)',
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 32,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing['2xl'],
     justifyContent: 'center',
   },
   container: {
@@ -353,79 +381,82 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 8,
+    ...typography.h1,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 15,
-    color: '#6B7280',
-    marginBottom: 24,
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: spacing.xl,
     textAlign: 'center',
   },
   formGroup: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   label: {
-    fontSize: 14,
+    ...typography['body-sm'],
     fontWeight: '500',
-    marginBottom: 6,
-    color: '#111827',
+    marginBottom: spacing.xs,
+    color: colors.textPrimary,
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: colors.border,
     borderRadius: 10,
-    paddingHorizontal: 14,
-    backgroundColor: '#F9FAFB',
-    color: '#111827',
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.card,
+    color: colors.textPrimary,
+    ...typography.body,
   },
   inputError: {
-    borderColor: '#DC2626',
+    borderColor: colors.danger,
   },
   errorText: {
-    marginTop: 6,
-    color: '#DC2626',
-    fontSize: 12,
+    marginTop: spacing.xs,
+    color: colors.danger,
+    ...typography.caption,
   },
   formErrorText: {
-    color: '#DC2626',
-    fontSize: 13,
+    color: colors.danger,
+    ...typography['body-sm'],
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   submitButton: {
-    backgroundColor: '#2563EB',
-    borderRadius: 10,
-    paddingVertical: 14,
+    width: '100%',
+    marginTop: spacing.sm,
+  },
+  passwordRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
   },
-  submitButtonDisabled: {
-    opacity: 0.7,
+  toggleButton: {
+    marginLeft: spacing.sm,
+    padding: spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  submitButtonText: {
-    color: 'var(--color-bg-overlay)',
-    fontSize: 16,
-    fontWeight: '600',
+  toggleText: {
+    fontSize: 18,
+    color: colors.textSecondary,
   },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 18,
+    marginTop: spacing.lg,
   },
   switchText: {
-    color: '#6B7280',
-    fontSize: 13,
+    color: colors.textSecondary,
+    ...typography.caption,
   },
   switchLink: {
-    color: '#2563EB',
+    color: colors.primary,
     fontWeight: '600',
-    fontSize: 13,
+    ...typography.caption,
   },
 })
 

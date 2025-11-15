@@ -6,11 +6,14 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
 import { useStorage } from '../../hooks/use-storage'
+import { EnhancedButton } from '../enhanced/EnhancedButton'
+import { colors } from '../../theme/colors'
+import { typography, spacing } from '../../theme/typography'
 // Stubs for missing web-only modules
 const useApp = (): {
   t: {
@@ -118,7 +121,7 @@ export default function SignInForm({
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (): Promise<void> => {
+  const handleSubmit = async () => {
     if (!validateForm()) {
       haptics.trigger('error')
       return
@@ -156,11 +159,14 @@ export default function SignInForm({
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      <Text style={styles.title}>{t.auth?.signInTitle || 'Welcome Back'}</Text>
-      <Text style={styles.subtitle}>
-        {t.auth?.signInSubtitle || 'Sign in to continue to PawfectMatch'}
-      </Text>
-      <View style={styles.form}>
+      <Animated.View entering={FadeInUp.duration(400).delay(100)}>
+        <Text style={styles.title}>{t.auth?.signInTitle || 'Welcome Back'}</Text>
+        <Text style={styles.subtitle}>
+          {t.auth?.signInSubtitle || 'Sign in to continue to PawfectMatch'}
+        </Text>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.duration(400).delay(200)} style={styles.form}>
         <Text style={styles.label}>{t.auth?.email || 'Email'}</Text>
         <TextInput
           style={[styles.input, errors.email ? styles.inputError : null]}
@@ -197,7 +203,7 @@ export default function SignInForm({
             accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
             style={styles.toggleButton}
           >
-            <Text style={styles.toggleText}>{showPassword ? '🙈' : '👁️'}</Text>
+            <Text style={styles.toggleText}>{showPassword ? '✓' : '○'}</Text>
           </TouchableOpacity>
         </View>
         {errors.password ? <Text style={styles.error}>{errors.password}</Text> : null}
@@ -206,19 +212,16 @@ export default function SignInForm({
           <Text style={styles.forgotText}>{t.auth?.forgotPassword || 'Forgot password?'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => {
-            void handleSubmit()
-          }}
-          style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
+        <EnhancedButton
+          title={t.auth?.signIn || 'Sign In'}
+          onPress={handleSubmit}
+          variant="default"
+          size="lg"
+          loading={isLoading}
           disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="var(--color-bg-overlay)" />
-          ) : (
-            <Text style={styles.submitText}>{t.auth?.signIn || 'Sign In'}</Text>
-          )}
-        </TouchableOpacity>
+          style={styles.submitButton}
+          hapticFeedback={true}
+        />
 
         <View style={styles.dividerRow}>
           <View style={styles.divider} />
@@ -232,7 +235,7 @@ export default function SignInForm({
             <Text style={styles.signUpText}>{t.auth?.signUp || 'Sign up'}</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </KeyboardAvoidingView>
   )
 }
@@ -242,19 +245,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
-    backgroundColor: 'var(--color-bg-overlay)',
+    padding: spacing.xl,
+    backgroundColor: colors.background,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 8,
+    ...typography.h1,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 24,
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: spacing.xl,
     textAlign: 'center',
   },
   form: {
@@ -262,91 +265,84 @@ const styles = StyleSheet.create({
     maxWidth: 400,
   },
   label: {
-    fontSize: 14,
+    ...typography['body-sm'],
     fontWeight: '500',
-    marginBottom: 4,
-    color: '#222',
+    marginBottom: spacing.xs,
+    color: colors.textPrimary,
   },
   input: {
     height: 48,
-    borderColor: '#ccc',
+    borderColor: colors.border,
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    marginBottom: 4,
-    backgroundColor: '#f9f9f9',
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.xs,
+    backgroundColor: colors.card,
+    ...typography.body,
   },
   inputError: {
-    borderColor: '#e53935',
+    borderColor: colors.danger,
   },
   error: {
-    color: '#e53935',
-    fontSize: 12,
-    marginBottom: 8,
+    color: colors.danger,
+    ...typography.caption,
+    marginBottom: spacing.sm,
   },
   passwordRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   toggleButton: {
-    marginLeft: 8,
-    padding: 4,
+    marginLeft: spacing.sm,
+    padding: spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   toggleText: {
     fontSize: 18,
+    color: colors.textSecondary,
   },
   forgotButton: {
     alignSelf: 'flex-end',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   forgotText: {
-    color: '#007AFF',
-    fontSize: 13,
+    color: colors.primary,
+    ...typography.caption,
   },
   submitButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  submitButtonDisabled: {
-    opacity: 0.6,
-  },
-  submitText: {
-    color: 'var(--color-bg-overlay)',
-    fontSize: 16,
-    fontWeight: 'bold',
+    width: '100%',
+    marginBottom: spacing.lg,
   },
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 16,
+    marginVertical: spacing.lg,
   },
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#eee',
+    backgroundColor: colors.border,
   },
   orText: {
-    marginHorizontal: 8,
-    color: '#888',
-    fontSize: 13,
+    marginHorizontal: spacing.sm,
+    color: colors.textSecondary,
+    ...typography.caption,
   },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   switchText: {
-    color: '#666',
-    fontSize: 13,
+    color: colors.textSecondary,
+    ...typography.caption,
   },
   signUpText: {
-    color: '#007AFF',
+    color: colors.primary,
     fontWeight: 'bold',
-    fontSize: 13,
+    ...typography.caption,
   },
 })
