@@ -11,7 +11,7 @@ import SignUpScreen from '@mobile/screens/SignUpScreen'
 import WelcomeScreen from '@mobile/screens/WelcomeScreen'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
-export type RootStackParamList = {
+export interface RootStackParamList {
   Welcome: undefined
   MainTabs: undefined
   UploadAndEdit: { onDone: (uri: string) => void; onCancel?: () => void }

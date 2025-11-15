@@ -11,8 +11,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Platform,
-  TouchableOpacity,
 } from 'react-native'
 import Animated, { FadeInUp, FadeInDown } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
@@ -180,6 +178,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   logoText: {
+    ...typography.h1,
     fontSize: 40,
   },
   title: {
@@ -193,7 +192,6 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginBottom: spacing.xl,
     textAlign: 'center',
-    lineHeight: 24,
   },
   features: {
     width: '100%',
@@ -206,9 +204,8 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   featureIcon: {
-    fontSize: 20,
+    ...typography.h3,
     color: colors.primary,
-    fontWeight: '700',
   },
   featureText: {
     ...typography['body-sm'],
@@ -233,11 +230,11 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 18,
   },
   link: {
     color: colors.primary,
-    fontWeight: '600',
+    ...typography.caption,
+    fontWeight: '600' as const,
   },
 })
 

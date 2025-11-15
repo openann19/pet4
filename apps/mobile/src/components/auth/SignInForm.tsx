@@ -69,14 +69,29 @@ const useApp = (): {
   },
 })
 
-const toast = { success: (_: string) => {}, error: (_: string) => {}, info: (_: string) => {} }
+// TODO: Replace with real toast implementation
+const toast: {
+  success: (message: string) => void
+  error: (message: string) => void
+  info: (message: string) => void
+} = {
+  success: () => {
+    // Stub - replace with real implementation
+  },
+  error: () => {
+    // Stub - replace with real implementation
+  },
+  info: () => {
+    // Stub - replace with real implementation
+  },
+}
 
-export type SignInFormProps = {
+export interface SignInFormProps {
   onSuccess: () => void
   onSwitchToSignUp: () => void
 }
 
-export type UserCredentials = {
+export interface UserCredentials {
   email: string
   password: string
 }
@@ -122,7 +137,7 @@ export default function SignInForm({
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     if (!validateForm()) {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
       return
@@ -134,9 +149,9 @@ export default function SignInForm({
     try {
       await new Promise(resolve => setTimeout(resolve, 1500))
       const mockToken = `mock_token_${String(Date.now() ?? '')}`
-      await setAuthToken(mockToken)
-      await setUserEmail(email)
-      await setIsAuthenticated(true)
+      setAuthToken(mockToken)
+      setUserEmail(email)
+      setIsAuthenticated(true)
       toast.success(t.auth?.signInSuccess || 'Welcome back!')
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       onSuccess()
@@ -211,6 +226,7 @@ export default function SignInForm({
               void Haptics.selectionAsync()
             }}
             accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+            accessibilityRole="button"
             style={styles.toggleButton}
           >
             <Text style={styles.toggleText}>{showPassword ? '✓' : '○'}</Text>
@@ -218,7 +234,7 @@ export default function SignInForm({
         </View>
         {errors.password ? <Text style={styles.error}>{errors.password}</Text> : null}
 
-        <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotButton}>
+        <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotButton} accessibilityRole="button">
           <Text style={styles.forgotText}>{t.auth?.forgotPassword || 'Forgot password?'}</Text>
         </TouchableOpacity>
 
@@ -241,7 +257,11 @@ export default function SignInForm({
 
         <View style={styles.switchRow}>
           <Text style={styles.switchText}>{t.auth?.noAccount || "Don't have an account?"} </Text>
-          <TouchableOpacity onPress={handleSwitchToSignUp} accessibilityLabel="Sign up">
+          <TouchableOpacity
+            onPress={handleSwitchToSignUp}
+            accessibilityLabel="Sign up"
+            accessibilityRole="button"
+          >
             <Text style={styles.signUpText}>{t.auth?.signUp || 'Sign up'}</Text>
           </TouchableOpacity>
         </View>
@@ -276,7 +296,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography['body-sm'],
-    fontWeight: '500',
+    fontWeight: '500' as const,
     marginBottom: spacing.xs,
     color: colors.textPrimary,
   },
@@ -308,14 +328,18 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     justifyContent: 'center',
     alignItems: 'center',
+    minHeight: 44,
+    minWidth: 44,
   },
   toggleText: {
-    fontSize: 18,
+    ...typography.body,
     color: colors.textSecondary,
   },
   forgotButton: {
     alignSelf: 'flex-end',
     marginBottom: spacing.lg,
+    minHeight: 44,
+    justifyContent: 'center',
   },
   forgotText: {
     color: colors.primary,
@@ -352,7 +376,7 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     color: colors.primary,
-    fontWeight: 'bold',
     ...typography.caption,
+    fontWeight: '600' as const,
   },
 })

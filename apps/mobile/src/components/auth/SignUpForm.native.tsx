@@ -21,16 +21,19 @@ import { colors } from '../../theme/colors'
 import { typography, spacing } from '../../theme/typography'
 import { useReducedMotionSV } from '@petspark/motion'
 
-type SignUpFormProps = {
+export interface SignUpFormProps {
   readonly onSuccess: () => void
   readonly onSwitchToSignIn: () => void
 }
 
-type SignUpFormErrors = Partial<Record<'email' | 'password' | 'confirmPassword', string>> & {
+export interface SignUpFormErrors {
+  email?: string
+  password?: string
+  confirmPassword?: string
   form?: string
 }
 
-type SignUpResponse = {
+export interface SignUpResponse {
   accessToken?: string
   refreshToken?: string
   user?: {
@@ -97,11 +100,6 @@ const useApp = (): {
     },
   },
 })
-
-const toast = {
-  success: (_: string) => {},
-  error: (_: string) => {},
-}
 
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -192,25 +190,24 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
       const refreshToken = response?.refreshToken ?? null
 
       if (accessToken) {
-        await Promise.all([
-          setAuthToken(accessToken),
-          saveAuthToken(accessToken),
-          refreshToken ? setRefreshToken(refreshToken) : Promise.resolve(),
-          refreshToken ? saveRefreshToken(refreshToken) : Promise.resolve(),
-        ])
+        // Save tokens - intentionally fire-and-forget with error logging
+        void setAuthToken(accessToken)
+        void saveAuthToken(accessToken)
+        if (refreshToken) {
+          void setRefreshToken(refreshToken)
+          void saveRefreshToken(refreshToken)
+        }
       }
 
-      await setUserEmail(payload.email)
-      await setIsAuthenticated(true)
+      void setUserEmail(payload.email)
+      void setIsAuthenticated(true)
 
-      toast.success(t.auth.signUpSuccess)
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       onSuccess()
     } catch (error) {
       const message = error instanceof Error && error.message ? error.message : t.auth.signUpError
       logger.error('Sign up failed', error instanceof Error ? error : new Error(String(error)))
       setErrors(prev => ({ ...prev, form: message }))
-      toast.error(message)
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
     } finally {
       setIsSubmitting(false)
@@ -225,7 +222,6 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
     setRefreshToken,
     setUserEmail,
     t.auth.signUpError,
-    t.auth.signUpSuccess,
     validate,
   ])
 
@@ -295,6 +291,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
                   void Haptics.selectionAsync()
                 }}
                 accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                accessibilityRole="button"
                 style={styles.toggleButton}
               >
                 <Text style={styles.toggleText}>{showPassword ? '✓' : '○'}</Text>
@@ -326,6 +323,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
                   void Haptics.selectionAsync()
                 }}
                 accessibilityLabel={showConfirmPassword ? 'Hide password' : 'Show password'}
+                accessibilityRole="button"
                 style={styles.toggleButton}
               >
                 <Text style={styles.toggleText}>{showConfirmPassword ? '✓' : '○'}</Text>
@@ -355,6 +353,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
               onPress={handleSwitchToSignIn}
               disabled={isSubmitting}
               accessibilityLabel="Sign in"
+              accessibilityRole="button"
             >
               <Text style={styles.switchLink}>{t.auth.signIn}</Text>
             </TouchableOpacity>
@@ -398,7 +397,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography['body-sm'],
-    fontWeight: '500',
+    fontWeight: '500' as const,
     marginBottom: spacing.xs,
     color: colors.textPrimary,
   },
@@ -439,9 +438,11 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     justifyContent: 'center',
     alignItems: 'center',
+    minHeight: 44,
+    minWidth: 44,
   },
   toggleText: {
-    fontSize: 18,
+    ...typography.body,
     color: colors.textSecondary,
   },
   switchRow: {
@@ -456,8 +457,8 @@ const styles = StyleSheet.create({
   },
   switchLink: {
     color: colors.primary,
-    fontWeight: '600',
     ...typography.caption,
+    fontWeight: '600' as const,
   },
 })
 
