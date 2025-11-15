@@ -6,7 +6,6 @@
 import { useCallback, useState } from 'react'
 import type React from 'react'
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -20,6 +19,7 @@ import { apiClient } from '@/utils/api-client'
 import { createLogger } from '@/utils/logger'
 import { saveAuthToken, saveRefreshToken } from '@/utils/secure-storage'
 import { useStorage } from '@/hooks/use-storage'
+import { EnhancedButton } from '../enhanced/EnhancedButton'
 
 type SignUpFormProps = {
   readonly onSuccess: () => void
@@ -121,6 +121,8 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [errors, setErrors] = useState<SignUpFormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -269,39 +271,63 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t.auth.password}</Text>
-            <TextInput
-              accessibilityLabel={t.auth.password}
-              placeholder={t.auth.passwordPlaceholder}
-              placeholderTextColor="#9CA3AF"
-              secureTextEntry
-              style={[styles.input, errors.password ? styles.inputError : null]}
-              value={password}
-              onChangeText={value => {
-                setPassword(value)
-                clearError('password')
-                clearError('form')
-              }}
-              editable={!isSubmitting}
-            />
+            <View style={styles.passwordRow}>
+              <TextInput
+                accessibilityLabel={t.auth.password}
+                placeholder={t.auth.passwordPlaceholder}
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showPassword}
+                style={[styles.input, errors.password ? styles.inputError : null, { flex: 1 }]}
+                value={password}
+                onChangeText={value => {
+                  setPassword(value)
+                  clearError('password')
+                  clearError('form')
+                }}
+                editable={!isSubmitting}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  setShowPassword(!showPassword)
+                  haptics.trigger('selection')
+                }}
+                accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                style={styles.toggleButton}
+              >
+                <Text style={styles.toggleText}>{showPassword ? '✓' : '○'}</Text>
+              </TouchableOpacity>
+            </View>
             {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
           </View>
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t.auth.confirmPassword}</Text>
-            <TextInput
-              accessibilityLabel={t.auth.confirmPassword}
-              placeholder={t.auth.confirmPasswordPlaceholder}
-              placeholderTextColor="#9CA3AF"
-              secureTextEntry
-              style={[styles.input, errors.confirmPassword ? styles.inputError : null]}
-              value={confirmPassword}
-              onChangeText={value => {
-                setConfirmPassword(value)
-                clearError('confirmPassword')
-                clearError('form')
-              }}
-              editable={!isSubmitting}
-            />
+            <View style={styles.passwordRow}>
+              <TextInput
+                accessibilityLabel={t.auth.confirmPassword}
+                placeholder={t.auth.confirmPasswordPlaceholder}
+                placeholderTextColor="#9CA3AF"
+                secureTextEntry={!showConfirmPassword}
+                style={[styles.input, errors.confirmPassword ? styles.inputError : null, { flex: 1 }]}
+                value={confirmPassword}
+                onChangeText={value => {
+                  setConfirmPassword(value)
+                  clearError('confirmPassword')
+                  clearError('form')
+                }}
+                editable={!isSubmitting}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  setShowConfirmPassword(!showConfirmPassword)
+                  haptics.trigger('selection')
+                }}
+                accessibilityLabel={showConfirmPassword ? 'Hide password' : 'Show password'}
+                style={styles.toggleButton}
+              >
+                <Text style={styles.toggleText}>{showConfirmPassword ? '✓' : '○'}</Text>
+              </TouchableOpacity>
+            </View>
             {errors.confirmPassword ? (
               <Text style={styles.errorText}>{errors.confirmPassword}</Text>
             ) : null}
@@ -309,20 +335,16 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
 
           {errors.form ? <Text style={styles.formErrorText}>{errors.form}</Text> : null}
 
-          <TouchableOpacity
-            accessibilityRole="button"
-            onPress={() => {
-              void handleSubmit()
-            }}
-            style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
+          <EnhancedButton
+            title={t.auth.signUp}
+            onPress={handleSubmit}
+            variant="default"
+            size="lg"
+            loading={isSubmitting}
             disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color="var(--color-bg-overlay)" />
-            ) : (
-              <Text style={styles.submitButtonText}>{t.auth.signUp}</Text>
-            )}
-          </TouchableOpacity>
+            style={styles.submitButton}
+            hapticFeedback={true}
+          />
 
           <View style={styles.switchRow}>
             <Text style={styles.switchText}>{t.auth.alreadyHaveAccount} </Text>
@@ -398,19 +420,22 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   submitButton: {
-    backgroundColor: '#2563EB',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
+    width: '100%',
     marginTop: 8,
   },
-  submitButtonDisabled: {
-    opacity: 0.7,
+  passwordRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  submitButtonText: {
-    color: 'var(--color-bg-overlay)',
-    fontSize: 16,
-    fontWeight: '600',
+  toggleButton: {
+    marginLeft: 8,
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toggleText: {
+    fontSize: 18,
+    color: '#666',
   },
   switchRow: {
     flexDirection: 'row',

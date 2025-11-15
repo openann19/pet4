@@ -6,11 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
 import { useStorage } from '../../hooks/use-storage'
+import { EnhancedButton } from '../enhanced/EnhancedButton'
 // Stubs for missing web-only modules
 const useApp = (): {
   t: {
@@ -118,7 +118,7 @@ export default function SignInForm({
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (): Promise<void> => {
+  const handleSubmit = async () => {
     if (!validateForm()) {
       haptics.trigger('error')
       return
@@ -197,7 +197,7 @@ export default function SignInForm({
             accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
             style={styles.toggleButton}
           >
-            <Text style={styles.toggleText}>{showPassword ? '🙈' : '👁️'}</Text>
+            <Text style={styles.toggleText}>{showPassword ? '✓' : '○'}</Text>
           </TouchableOpacity>
         </View>
         {errors.password ? <Text style={styles.error}>{errors.password}</Text> : null}
@@ -206,19 +206,16 @@ export default function SignInForm({
           <Text style={styles.forgotText}>{t.auth?.forgotPassword || 'Forgot password?'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => {
-            void handleSubmit()
-          }}
-          style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
+        <EnhancedButton
+          title={t.auth?.signIn || 'Sign In'}
+          onPress={handleSubmit}
+          variant="default"
+          size="lg"
+          loading={isLoading}
           disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="var(--color-bg-overlay)" />
-          ) : (
-            <Text style={styles.submitText}>{t.auth?.signIn || 'Sign In'}</Text>
-          )}
-        </TouchableOpacity>
+          style={styles.submitButton}
+          hapticFeedback={true}
+        />
 
         <View style={styles.dividerRow}>
           <View style={styles.divider} />
@@ -291,10 +288,13 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     marginLeft: 8,
-    padding: 4,
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   toggleText: {
     fontSize: 18,
+    color: '#666',
   },
   forgotButton: {
     alignSelf: 'flex-end',
@@ -305,19 +305,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   submitButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: 'center',
+    width: '100%',
     marginBottom: 16,
-  },
-  submitButtonDisabled: {
-    opacity: 0.6,
-  },
-  submitText: {
-    color: 'var(--color-bg-overlay)',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   dividerRow: {
     flexDirection: 'row',
