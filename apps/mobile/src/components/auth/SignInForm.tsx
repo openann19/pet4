@@ -6,11 +6,16 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
 import { useStorage } from '../../hooks/use-storage'
+import { EnhancedButton } from '../enhanced/EnhancedButton'
+import { colors } from '../../theme/colors'
+import { typography, spacing } from '../../theme/typography'
+import { useReducedMotionSV } from '@petspark/motion'
 // Stubs for missing web-only modules
 const useApp = (): {
   t: {
@@ -64,16 +69,29 @@ const useApp = (): {
   },
 })
 
-const haptics = { trigger: (_: string) => {} }
-const analytics = { track: (_: string, _p?: Record<string, unknown>) => {} }
-const toast = { success: (_: string) => {}, error: (_: string) => {}, info: (_: string) => {} }
+// TODO: Replace with real toast implementation
+const toast: {
+  success: (message: string) => void
+  error: (message: string) => void
+  info: (message: string) => void
+} = {
+  success: () => {
+    // Stub - replace with real implementation
+  },
+  error: () => {
+    // Stub - replace with real implementation
+  },
+  info: () => {
+    // Stub - replace with real implementation
+  },
+}
 
-export type SignInFormProps = {
+export interface SignInFormProps {
   onSuccess: () => void
   onSwitchToSignUp: () => void
 }
 
-export type UserCredentials = {
+export interface UserCredentials {
   email: string
   password: string
 }
@@ -83,6 +101,7 @@ export default function SignInForm({
   onSwitchToSignUp,
 }: SignInFormProps): React.JSX.Element {
   const { t } = useApp()
+  const reducedMotion = useReducedMotionSV()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -120,49 +139,60 @@ export default function SignInForm({
 
   const handleSubmit = async (): Promise<void> => {
     if (!validateForm()) {
-      haptics.trigger('error')
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
       return
     }
 
     setIsLoading(true)
-    haptics.trigger('light')
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
 
     try {
       await new Promise(resolve => setTimeout(resolve, 1500))
       const mockToken = `mock_token_${String(Date.now() ?? '')}`
-      await setAuthToken(mockToken)
-      await setUserEmail(email)
-      await setIsAuthenticated(true)
-      analytics.track('user_signed_in', { email, method: 'email' })
+      setAuthToken(mockToken)
+      setUserEmail(email)
+      setIsAuthenticated(true)
       toast.success(t.auth?.signInSuccess || 'Welcome back!')
-      haptics.trigger('success')
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       onSuccess()
     } catch {
       toast.error(t.auth?.signInError || 'Failed to sign in. Please try again.')
-      haptics.trigger('error')
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleForgotPassword = (): void => {
-    haptics.trigger('selection')
-    analytics.track('forgot_password_clicked')
+    void Haptics.selectionAsync()
     toast.info(t.auth?.forgotPasswordInfo || 'Password reset link would be sent to your email')
   }
+
+  const handleSwitchToSignUp = (): void => {
+    void Haptics.selectionAsync()
+    onSwitchToSignUp()
+  }
+
+  // Compute animation durations based on reduced motion
+  const titleDelay = reducedMotion.value ? 0 : 100
+  const formDelay = reducedMotion.value ? 0 : 200
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      <Text style={styles.title}>{t.auth?.signInTitle || 'Welcome Back'}</Text>
-      <Text style={styles.subtitle}>
-        {t.auth?.signInSubtitle || 'Sign in to continue to PawfectMatch'}
-      </Text>
-      <View style={styles.form}>
+      <Animated.View entering={FadeInUp.duration(reducedMotion.value ? 0 : 400).delay(titleDelay)}>
+        <Text style={styles.title}>{t.auth?.signInTitle || 'Welcome Back'}</Text>
+        <Text style={styles.subtitle}>
+          {t.auth?.signInSubtitle || 'Sign in to continue to PawfectMatch'}
+        </Text>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.duration(reducedMotion.value ? 0 : 400).delay(formDelay)} style={styles.form}>
         <Text style={styles.label}>{t.auth?.email || 'Email'}</Text>
         <TextInput
+          accessibilityLabel={t.auth?.email || 'Email'}
           style={[styles.input, errors.email ? styles.inputError : null]}
           placeholder={t.auth?.emailPlaceholder || 'you@example.com'}
           value={email}
@@ -179,6 +209,7 @@ export default function SignInForm({
         <Text style={styles.label}>{t.auth?.password || 'Password'}</Text>
         <View style={styles.passwordRow}>
           <TextInput
+            accessibilityLabel={t.auth?.password || 'Password'}
             style={[styles.input, errors.password ? styles.inputError : null, { flex: 1 }]}
             placeholder={t.auth?.passwordPlaceholder || '••••••••'}
             value={password}
@@ -192,33 +223,31 @@ export default function SignInForm({
           <TouchableOpacity
             onPress={() => {
               setShowPassword(!showPassword)
-              haptics.trigger('selection')
+              void Haptics.selectionAsync()
             }}
             accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+            accessibilityRole="button"
             style={styles.toggleButton}
           >
-            <Text style={styles.toggleText}>{showPassword ? '🙈' : '👁️'}</Text>
+            <Text style={styles.toggleText}>{showPassword ? '✓' : '○'}</Text>
           </TouchableOpacity>
         </View>
         {errors.password ? <Text style={styles.error}>{errors.password}</Text> : null}
 
-        <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotButton}>
+        <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotButton} accessibilityRole="button">
           <Text style={styles.forgotText}>{t.auth?.forgotPassword || 'Forgot password?'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => {
-            void handleSubmit()
-          }}
-          style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
+        <EnhancedButton
+          title={t.auth?.signIn || 'Sign In'}
+          onPress={handleSubmit}
+          variant="default"
+          size="lg"
+          loading={isLoading}
           disabled={isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="var(--color-bg-overlay)" />
-          ) : (
-            <Text style={styles.submitText}>{t.auth?.signIn || 'Sign In'}</Text>
-          )}
-        </TouchableOpacity>
+          style={styles.submitButton}
+          hapticFeedback={true}
+        />
 
         <View style={styles.dividerRow}>
           <View style={styles.divider} />
@@ -228,11 +257,15 @@ export default function SignInForm({
 
         <View style={styles.switchRow}>
           <Text style={styles.switchText}>{t.auth?.noAccount || "Don't have an account?"} </Text>
-          <TouchableOpacity onPress={onSwitchToSignUp}>
+          <TouchableOpacity
+            onPress={handleSwitchToSignUp}
+            accessibilityLabel="Sign up"
+            accessibilityRole="button"
+          >
             <Text style={styles.signUpText}>{t.auth?.signUp || 'Sign up'}</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </KeyboardAvoidingView>
   )
 }
@@ -242,19 +275,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
-    backgroundColor: 'var(--color-bg-overlay)',
+    padding: spacing.xl,
+    backgroundColor: colors.background,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 8,
+    ...typography.h1,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 24,
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: spacing.xl,
     textAlign: 'center',
   },
   form: {
@@ -262,91 +295,88 @@ const styles = StyleSheet.create({
     maxWidth: 400,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 4,
-    color: '#222',
+    ...typography['body-sm'],
+    fontWeight: '500' as const,
+    marginBottom: spacing.xs,
+    color: colors.textPrimary,
   },
   input: {
     height: 48,
-    borderColor: '#ccc',
+    borderColor: colors.border,
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    marginBottom: 4,
-    backgroundColor: '#f9f9f9',
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.xs,
+    backgroundColor: colors.card,
+    ...typography.body,
   },
   inputError: {
-    borderColor: '#e53935',
+    borderColor: colors.danger,
   },
   error: {
-    color: '#e53935',
-    fontSize: 12,
-    marginBottom: 8,
+    color: colors.danger,
+    ...typography.caption,
+    marginBottom: spacing.sm,
   },
   passwordRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   toggleButton: {
-    marginLeft: 8,
-    padding: 4,
+    marginLeft: spacing.sm,
+    padding: spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 44,
+    minWidth: 44,
   },
   toggleText: {
-    fontSize: 18,
+    ...typography.body,
+    color: colors.textSecondary,
   },
   forgotButton: {
     alignSelf: 'flex-end',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
+    minHeight: 44,
+    justifyContent: 'center',
   },
   forgotText: {
-    color: '#007AFF',
-    fontSize: 13,
+    color: colors.primary,
+    ...typography.caption,
   },
   submitButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  submitButtonDisabled: {
-    opacity: 0.6,
-  },
-  submitText: {
-    color: 'var(--color-bg-overlay)',
-    fontSize: 16,
-    fontWeight: 'bold',
+    width: '100%',
+    marginBottom: spacing.lg,
   },
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 16,
+    marginVertical: spacing.lg,
   },
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#eee',
+    backgroundColor: colors.border,
   },
   orText: {
-    marginHorizontal: 8,
-    color: '#888',
-    fontSize: 13,
+    marginHorizontal: spacing.sm,
+    color: colors.textSecondary,
+    ...typography.caption,
   },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   switchText: {
-    color: '#666',
-    fontSize: 13,
+    color: colors.textSecondary,
+    ...typography.caption,
   },
   signUpText: {
-    color: '#007AFF',
-    fontWeight: 'bold',
-    fontSize: 13,
+    color: colors.primary,
+    ...typography.caption,
+    fontWeight: '600' as const,
   },
 })

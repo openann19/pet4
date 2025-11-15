@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MotionView } from '@petspark/motion'
+import { motion, type Variants } from '@petspark/motion'
 import { EnvelopeSimple, LockKey, User, Eye, EyeSlash } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,7 +15,10 @@ import AgeGateModal from './AgeGateModal'
 import { recordConsent } from '@/lib/kyc-service'
 import { createLogger } from '@/lib/logger'
 import type { APIError } from '@/lib/contracts'
-import { isTruthy } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { cn } from '@/lib/utils'
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography'
 
 const logger = createLogger('SignUpForm')
 
@@ -45,7 +48,18 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
   const [errors, setErrors] = useState<Partial<Record<keyof SignUpData | 'terms', string>>>({})
   const [showAgeGate, setShowAgeGate] = useState(false)
   const [ageVerified, setAgeVerified] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
   
+  const formVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion 
+        ? { duration: 0 }
+        : { duration: 0.3 }
+    }
+  };
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
@@ -157,22 +171,28 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
   }
 
   return (
-    <MotionView
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
+    <motion.div
+      variants={formVariants}
+      initial="hidden"
+      animate="visible"
     >
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-foreground mb-2">
+      <div className={cn('text-center', getSpacingClassesFromConfig({ marginY: 'xl' }))}>
+        <h2 className={cn(
+          getTypographyClasses('h2'),
+          'text-foreground',
+          getSpacingClassesFromConfig({ marginY: 'sm' })
+        )}>
           {t.auth?.signUpTitle || 'Create Account'}
         </h2>
-        <p className="text-muted-foreground">
+        <p className={cn(
+          getTypographyClasses('body'),
+          'text-muted-foreground'
+        )}>
           {t.auth?.signUpSubtitle || 'Join PawfectMatch to find your pet\'s perfect companion'}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className={getSpacingClassesFromConfig({ spaceY: 'lg' })}>
         <div className="space-y-1">
           <Label htmlFor="name" className="block text-sm font-medium mb-1">
             {t.auth?.name || 'Full Name'}
@@ -251,17 +271,19 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
               disabled={isLoading}
               autoComplete="new-password"
             />
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() => {
                 setShowPassword(!showPassword)
                 haptics.trigger('selection')
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
-            </button>
+            </Button>
           </div>
           {errors.password && (
             <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -290,17 +312,19 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
               disabled={isLoading}
               autoComplete="new-password"
             />
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() => {
                 setShowConfirmPassword(!showConfirmPassword)
                 haptics.trigger('selection')
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
               aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
             >
               {showConfirmPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
-            </button>
+            </Button>
           </div>
           {errors.confirmPassword && (
             <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
@@ -353,9 +377,11 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
 
         <Button
           type="submit"
+          variant="default"
           size="lg"
           disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="w-full rounded-xl"
+          onMouseEnter={() => !shouldReduceMotion && haptics.trigger('selection')}
         >
           {isLoading ? (t.common.loading || 'Loading...') : (t.auth?.createAccount || 'Create Account')}
         </Button>
@@ -377,16 +403,20 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
           disabled={isLoading}
         />
 
-        <div className="text-center mt-6">
-          <p className="text-sm text-muted-foreground">
-            {t.auth?.hasAccount || 'Already have an account?'}{' '}
-            <button
+        <div className="text-center">
+          <p className={getTypographyClasses('body-sm')}>
+            <span className="text-muted-foreground">
+              {t.auth?.hasAccount || 'Already have an account?'}{' '}
+            </span>
+            <Button
               type="button"
+              variant="link"
+              size="sm"
               onClick={onSwitchToSignIn}
-              className="text-primary font-semibold hover:underline outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded"
+              className="h-auto p-0 font-semibold"
             >
               {t.auth?.signIn || 'Sign in'}
-            </button>
+            </Button>
           </p>
         </div>
       </form>
@@ -396,6 +426,6 @@ export default function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormPr
         onVerified={() => { handleAgeVerified() }}
         onClose={() => { setShowAgeGate(false); }}
       />
-    </MotionView>
+    </motion.div>
   )
 }

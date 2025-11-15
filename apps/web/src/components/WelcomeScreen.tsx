@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button'
 import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'
 import { analytics } from '@/lib/analytics'
-import { motion } from 'framer-motion'
-import type { Variants } from '@petspark/motion'
+import { motion, type Variants } from '@petspark/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { isTruthy } from '@petspark/shared'
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography'
@@ -286,9 +285,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
               size="sm"
               onClick={handleLanguageToggle}
               className={cn(
-                'rounded-full h-11 border-[1.5px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:underline',
-                getTypographyClasses('button'),
-                getSpacingClassesFromConfig({ paddingX: 'lg' })
+                'rounded-full gap-2'
               )}
               {...languageButtonAria}
             >
@@ -326,7 +323,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
               </motion.div>
 
               <h1 className={cn(
-                getTypographyClasses('title'),
+                getTypographyClasses('h1'),
                 'text-center text-foreground',
                 getSpacingClassesFromConfig({ marginY: 'md' })
               )}>
@@ -334,7 +331,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
               </h1>
 
               <p className={cn(
-                getTypographyClasses('subtitle'),
+                getTypographyClasses('body'),
                 'text-muted-foreground text-center'
               )}>
                 {t.welcome.subtitle}
@@ -424,17 +421,11 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
             >
               <Button
                 ref={primaryBtnRef}
+                variant="default"
                 size="lg"
                 onClick={handleGetStarted}
                 disabled={!isOnline}
-                className={cn(
-                  'w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                  getTypographyClasses('button'),
-                  getSpacingClassesFromConfig({ paddingX: 'xl', paddingY: 'md' })
-                )}
-                style={{
-                  transform: shouldReduceMotion ? 'none' : undefined
-                }}
+                className="w-full rounded-xl"
                 onMouseEnter={() => !shouldReduceMotion && haptics.trigger('selection')}
                 aria-label="Get started with PawfectMatch"
               >
@@ -449,10 +440,8 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                   variant="outline"
                   size="lg"
                   onClick={handleSignIn}
-                  className={cn(
-                    'flex-1 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                    getTypographyClasses('button')
-                  )}
+                  className="flex-1 rounded-xl"
+                  onMouseEnter={() => !shouldReduceMotion && haptics.trigger('selection')}
                   aria-label="Sign in to your account"
                 >
                   {t.welcome.signIn}
@@ -462,10 +451,8 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                   variant="outline"
                   size="lg"
                   onClick={handleExplore}
-                  className={cn(
-                    'flex-1 h-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                    getTypographyClasses('button')
-                  )}
+                  className="flex-1 rounded-xl"
+                  onMouseEnter={() => !shouldReduceMotion && haptics.trigger('selection')}
                   aria-label="Explore PawfectMatch"
                 >
                   {t.welcome.explore}

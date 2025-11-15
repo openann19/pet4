@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MotionView } from '@petspark/motion'
+import { motion, type Variants } from '@petspark/motion'
 import { EnvelopeSimple, LockKey, Eye, EyeSlash } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,6 +12,9 @@ import { toast } from 'sonner'
 import OAuthButtons from './OAuthButtons'
 import { createLogger } from '@/lib/logger'
 import type { APIError } from '@/lib/contracts'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { cn } from '@/lib/utils'
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography'
 
 const logger = createLogger('SignInForm')
 
@@ -33,7 +36,18 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<Partial<Record<keyof UserCredentials, string>>>({})
+  const shouldReduceMotion = useReducedMotion()
   
+  const formVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion 
+        ? { duration: 0 }
+        : { duration: 0.3 }
+    }
+  };
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
@@ -96,30 +110,40 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
   }
 
   return (
-    <MotionView
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
+    <motion.div
+      variants={formVariants}
+      initial="hidden"
+      animate="visible"
     >
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-foreground mb-2">
+      <div className={cn('text-center', getSpacingClassesFromConfig({ marginY: 'xl' }))}>
+        <h2 className={cn(
+          getTypographyClasses('h2'),
+          'text-foreground',
+          getSpacingClassesFromConfig({ marginY: 'sm' })
+        )}>
           {t.auth?.signInTitle || 'Welcome Back'}
         </h2>
-        <p className="text-muted-foreground">
+        <p className={cn(
+          getTypographyClasses('body'),
+          'text-muted-foreground'
+        )}>
           {t.auth?.signInSubtitle || 'Sign in to continue to PawfectMatch'}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="space-y-1">
-          <Label htmlFor="email" className="block text-sm font-medium mb-1">
+      <form onSubmit={handleSubmit} className={getSpacingClassesFromConfig({ spaceY: 'lg' })}>
+        <div className={getSpacingClassesFromConfig({ spaceY: 'xs' })}>
+          <Label htmlFor="email" className={cn(
+            getTypographyClasses('body-sm'),
+            'font-medium'
+          )}>
             {t.auth?.email || 'Email'}
           </Label>
           <div className="relative">
             <EnvelopeSimple 
               size={20} 
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
             />
             <Input
               id="email"
@@ -130,24 +154,35 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
                 setEmail(e.target.value)
                 setErrors(prev => ({ ...prev, email: '' }))
               }}
-              className={`pl-10 h-12 ${errors.email ? 'border-red-500' : ''}`}
+              className={cn('pl-10', errors.email ? 'border-destructive' : '')}
               disabled={isLoading}
               autoComplete="email"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'email-error' : undefined}
             />
           </div>
           {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            <p id="email-error" className={cn(
+              getTypographyClasses('caption'),
+              'text-destructive'
+            )}>
+              {errors.email}
+            </p>
           )}
         </div>
 
-        <div className="space-y-1">
-          <Label htmlFor="password" className="block text-sm font-medium mb-1">
+        <div className={getSpacingClassesFromConfig({ spaceY: 'xs' })}>
+          <Label htmlFor="password" className={cn(
+            getTypographyClasses('body-sm'),
+            'font-medium'
+          )}>
             {t.auth?.password || 'Password'}
           </Label>
           <div className="relative">
             <LockKey 
               size={20} 
               className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
             />
             <Input
               id="password"
@@ -158,52 +193,69 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
                 setPassword(e.target.value)
                 setErrors(prev => ({ ...prev, password: '' }))
               }}
-              className={`pl-10 pr-12 h-12 ${errors.password ? 'border-red-500' : ''}`}
+              className={cn('pl-10 pr-12', errors.password ? 'border-destructive' : '')}
               disabled={isLoading}
               autoComplete="current-password"
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? 'password-error' : undefined}
             />
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() => {
                 setShowPassword(!showPassword)
                 haptics.trigger('selection')
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
-            </button>
+            </Button>
           </div>
           {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            <p id="password-error" className={cn(
+              getTypographyClasses('caption'),
+              'text-destructive'
+            )}>
+              {errors.password}
+            </p>
           )}
         </div>
 
         <div className="flex justify-end">
-          <button
+          <Button
             type="button"
+            variant="link"
+            size="sm"
             onClick={handleForgotPassword}
-            className="text-sm text-primary hover:underline outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded"
+            className="h-auto p-0"
           >
             {t.auth?.forgotPassword || 'Forgot password?'}
-          </button>
+          </Button>
         </div>
 
         <Button
           type="submit"
+          variant="default"
           size="lg"
           disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="w-full rounded-xl"
+          onMouseEnter={() => !shouldReduceMotion && haptics.trigger('selection')}
         >
           {isLoading ? (t.common.loading || 'Loading...') : (t.auth?.signIn || 'Sign In')}
         </Button>
 
-        <div className="relative my-6">
+        <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-border" />
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-background text-muted-foreground">
+          <div className="relative flex justify-center">
+            <span className={cn(
+              getTypographyClasses('caption'),
+              'bg-background text-muted-foreground',
+              getSpacingClassesFromConfig({ paddingX: 'md' })
+            )}>
               {t.auth?.or || 'or'}
             </span>
           </div>
@@ -213,31 +265,33 @@ export default function SignInForm({ onSuccess, onSwitchToSignUp }: SignInFormPr
           onGoogleSignIn={() => {
             haptics.trigger('light')
             analytics.track('oauth_clicked', { provider: 'google', action: 'signin' })
-            // OAuth flow would handle sign-in
             toast.info(t.auth?.signInWithGoogle || 'Signing in with Google...')
           }}
           onAppleSignIn={() => {
             haptics.trigger('light')
             analytics.track('oauth_clicked', { provider: 'apple', action: 'signin' })
-            // OAuth flow would handle sign-in
             toast.info(t.auth?.signInWithApple || 'Signing in with Apple...')
           }}
           disabled={isLoading}
         />
 
-        <div className="text-center mt-6">
-          <p className="text-sm text-muted-foreground">
-            {t.auth?.noAccount || "Don't have an account?"}{' '}
-            <button
+        <div className="text-center">
+          <p className={getTypographyClasses('body-sm')}>
+            <span className="text-muted-foreground">
+              {t.auth?.noAccount || "Don't have an account?"}{' '}
+            </span>
+            <Button
               type="button"
+              variant="link"
+              size="sm"
               onClick={onSwitchToSignUp}
-              className="text-primary font-semibold hover:underline outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded"
+              className="h-auto p-0 font-semibold"
             >
               {t.auth?.signUp || 'Sign up'}
-            </button>
+            </Button>
           </p>
         </div>
       </form>
-    </MotionView>
+    </motion.div>
   )
 }

@@ -175,7 +175,7 @@ describe('SignInForm', () => {
       render(<SignInForm onSuccess={mockOnSuccess} onSwitchToSignUp={mockOnSwitchToSignUp} />);
     });
 
-    const passwordInput = screen.getByPlaceholderText('••••••••');
+    const passwordInput = screen.getByPlaceholderText('••••••••') as HTMLInputElement;
     await act(async () => {
       await user.type(passwordInput, 'password123');
     });
