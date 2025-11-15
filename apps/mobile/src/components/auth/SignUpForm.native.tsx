@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
 import { apiClient } from '@/utils/api-client'
 import { createLogger } from '@/utils/logger'
 import { saveAuthToken, saveRefreshToken } from '@/utils/secure-storage'
@@ -246,9 +247,12 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <View style={styles.container}>
+        <Animated.View entering={FadeInUp.duration(400).delay(100)} style={styles.container}>
           <Text style={styles.title}>{t.auth.signUpTitle}</Text>
           <Text style={styles.subtitle}>{t.auth.signUpSubtitle}</Text>
+        </Animated.View>
+
+        <Animated.View entering={FadeInDown.duration(400).delay(200)} style={styles.container}>
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t.auth.email}</Text>
@@ -354,7 +358,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
               <Text style={styles.switchLink}>{t.auth.signIn}</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
   )

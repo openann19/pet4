@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
 import { useStorage } from '../../hooks/use-storage'
 import { EnhancedButton } from '../enhanced/EnhancedButton'
 import { colors } from '../../theme/colors'
@@ -158,11 +159,14 @@ export default function SignInForm({
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      <Text style={styles.title}>{t.auth?.signInTitle || 'Welcome Back'}</Text>
-      <Text style={styles.subtitle}>
-        {t.auth?.signInSubtitle || 'Sign in to continue to PawfectMatch'}
-      </Text>
-      <View style={styles.form}>
+      <Animated.View entering={FadeInUp.duration(400).delay(100)}>
+        <Text style={styles.title}>{t.auth?.signInTitle || 'Welcome Back'}</Text>
+        <Text style={styles.subtitle}>
+          {t.auth?.signInSubtitle || 'Sign in to continue to PawfectMatch'}
+        </Text>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.duration(400).delay(200)} style={styles.form}>
         <Text style={styles.label}>{t.auth?.email || 'Email'}</Text>
         <TextInput
           style={[styles.input, errors.email ? styles.inputError : null]}
@@ -231,7 +235,7 @@ export default function SignInForm({
             <Text style={styles.signUpText}>{t.auth?.signUp || 'Sign up'}</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
     </KeyboardAvoidingView>
   )
 }
