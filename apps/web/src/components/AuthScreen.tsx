@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, Translate } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
+import { SegmentedControl } from '@/components/enhanced/buttons/SegmentedControl';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { motion, type Variants } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import SignInForm from './auth/SignInForm';
 import SignUpForm from './auth/SignUpForm';
+import { cn } from '@/lib/utils';
+import { getSpacingClassesFromConfig } from '@/lib/typography';
 
 type AuthMode = 'signin' | 'signup';
 
@@ -21,36 +22,46 @@ interface AuthScreenProps {
 export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }: AuthScreenProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const { t, language, toggleLanguage } = useApp();
+  const shouldReduceMotion = useReducedMotion();
 
-  // Animation values for header
-  const headerOpacity = useSharedValue(0);
-  const headerY = useSharedValue(-20);
-  const languageButtonOpacity = useSharedValue(0);
+  // Animation variants using Framer Motion
+  const headerVariants: Variants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion 
+        ? { duration: 0 }
+        : { 
+            type: 'spring', 
+            damping: 20, 
+            stiffness: 300 
+          }
+    }
+  };
 
-  // Initialize header animation
-  useEffect(() => {
-    headerOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
-    headerY.value = withSpring(0, { damping: 20, stiffness: 300 });
-    languageButtonOpacity.value = withTiming(1, { duration: 400 });
-  }, [headerOpacity, headerY, languageButtonOpacity]);
+  const formVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : { duration: 0.3 }
+    },
+    exit: { 
+      opacity: 0, 
+      y: -20,
+      transition: shouldReduceMotion
+        ? { duration: 0 }
+        : { duration: 0.2 }
+    }
+  };
 
-  // Animated styles
-  const headerStyle = useAnimatedStyle(() => ({
-    opacity: headerOpacity.value,
-    transform: [{ translateY: headerY.value }],
-  })) as AnimatedStyle;
-
-  const languageButtonStyle = useAnimatedStyle(() => ({
-    opacity: languageButtonOpacity.value,
-  })) as AnimatedStyle;
-
-  // Presence animation for form switching
-  const signInPresence = useAnimatePresence({ isVisible: mode === 'signin' });
-  const signUpPresence = useAnimatePresence({ isVisible: mode === 'signup' });
-
-  const handleModeSwitch = (newMode: AuthMode) => {
-    haptics.trigger('selection');
-    setMode(newMode);
+  const handleModeSwitch = (newMode: string | string[]) => {
+    if (typeof newMode === 'string') {
+      setMode(newMode as AuthMode);
+    }
   };
 
   const handleBack = () => {
@@ -58,54 +69,78 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
     onBack();
   };
 
+  const handleLanguageToggle = () => {
+    haptics.trigger('selection');
+    toggleLanguage();
+  };
+
   return (
-    <div className="fixed inset-0 bg-(--background-cream) overflow-auto">
+    <div className="fixed inset-0 bg-background overflow-auto">
       <div className="min-h-screen flex flex-col">
-        {/* Header with back button and language toggle */}
-        <AnimatedView style={headerStyle} className="p-4 sm:p-6 flex items-center justify-between">
-          <button
+        {/* Header with back button, mode switcher, and language toggle */}
+        <motion.div
+          variants={headerVariants}
+          initial="hidden"
+          animate="visible"
+          className={cn(
+            'flex items-center justify-between',
+            getSpacingClassesFromConfig({ padding: 'lg' })
+          )}
+        >
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={handleBack}
-            className="w-11 h-11 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors focus:outline-none"
             aria-label={t.common.back}
           >
-            <ArrowLeft size={20} className="text-gray-700" />
-          </button>
-          <AnimatedView style={languageButtonStyle}>
-            <button
-              onClick={() => {
-                haptics.trigger('selection');
-                toggleLanguage();
-              }}
-              className="h-11 px-4 rounded-full bg-white border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors flex items-center gap-2 focus:outline-none"
-              aria-pressed={language === 'bg'}
-              aria-label={language === 'en' ? 'Switch to Bulgarian' : 'Превключи на English'}
-            >
-              <Translate size={18} weight="regular" aria-hidden />
-              <span>{language === 'en' ? 'БГ' : 'EN'}</span>
-            </button>
-          </AnimatedView>
-        </AnimatedView>
+            <ArrowLeft size={20} />
+          </Button>
 
-        <div className="flex-1 flex items-center justify-center px-6 pb-12">
+          <SegmentedControl
+            options={[
+              { label: t.auth?.signIn || 'Sign In', value: 'signin' },
+              { label: t.auth?.signUp || 'Sign Up', value: 'signup' }
+            ]}
+            value={mode}
+            onChange={handleModeSwitch}
+            aria-label="Authentication mode"
+          />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLanguageToggle}
+            aria-pressed={language === 'bg'}
+            aria-label={language === 'en' ? 'Switch to Bulgarian' : 'Превключи на English'}
+          >
+            <Translate size={20} />
+          </Button>
+        </motion.div>
+
+        <div className={cn(
+          'flex-1 flex items-center justify-center',
+          getSpacingClassesFromConfig({ paddingX: 'xl', paddingY: 'xl' })
+        )}>
           <div className="w-full max-w-md">
-            {signInPresence.shouldRender && mode === 'signin' && (
-              <AnimatedView style={signInPresence.animatedStyle}>
+            <motion.div
+              key={mode}
+              variants={formVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {mode === 'signin' ? (
                 <SignInForm
-                  key="signin"
                   onSuccess={onSuccess}
                   onSwitchToSignUp={() => { handleModeSwitch('signup'); }}
                 />
-              </AnimatedView>
-            )}
-            {signUpPresence.shouldRender && mode === 'signup' && (
-              <AnimatedView style={signUpPresence.animatedStyle}>
+              ) : (
                 <SignUpForm
-                  key="signup"
                   onSuccess={onSuccess}
                   onSwitchToSignIn={() => { handleModeSwitch('signin'); }}
                 />
-              </AnimatedView>
-            )}
+              )}
+            </motion.div>
           </div>
         </div>
       </div>
