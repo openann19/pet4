@@ -1,8 +1,3 @@
-/**
- * Mobile SignUp form with validation and API integration.
- * Location: apps/mobile/src/components/auth/SignUpForm.tsx
- */
-
 import { useCallback, useState } from 'react'
 import type React from 'react'
 import {
@@ -16,6 +11,7 @@ import {
   View,
 } from 'react-native'
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
 import { apiClient } from '@/utils/api-client'
 import { createLogger } from '@/utils/logger'
 import { saveAuthToken, saveRefreshToken } from '@/utils/secure-storage'
@@ -23,6 +19,7 @@ import { useStorage } from '@/hooks/use-storage'
 import { EnhancedButton } from '../enhanced/EnhancedButton'
 import { colors } from '../../theme/colors'
 import { typography, spacing } from '../../theme/typography'
+import { useReducedMotionSV } from '@petspark/motion'
 
 type SignUpFormProps = {
   readonly onSuccess: () => void
@@ -101,14 +98,6 @@ const useApp = (): {
   },
 })
 
-const haptics = {
-  trigger: (_: 'success' | 'error' | 'light' | 'selection') => {},
-}
-
-const analytics = {
-  track: (_: string, __?: Record<string, unknown>) => {},
-}
-
 const toast = {
   success: (_: string) => {},
   error: (_: string) => {},
@@ -121,6 +110,7 @@ const validateEmail = (email: string): boolean => {
 
 export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): React.JSX.Element {
   const { t } = useApp()
+  const reducedMotion = useReducedMotionSV()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -182,13 +172,13 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
 
   const handleSubmit = useCallback(async () => {
     if (!validate()) {
-      haptics.trigger('error')
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
       return
     }
 
     setIsSubmitting(true)
     clearError('form')
-    haptics.trigger('light')
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
 
     try {
       const payload = {
@@ -208,22 +198,20 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
           refreshToken ? setRefreshToken(refreshToken) : Promise.resolve(),
           refreshToken ? saveRefreshToken(refreshToken) : Promise.resolve(),
         ])
-        analytics.track('auth_tokens_saved')
       }
 
       await setUserEmail(payload.email)
       await setIsAuthenticated(true)
 
-      analytics.track('user_signed_up', { email: payload.email })
       toast.success(t.auth.signUpSuccess)
-      haptics.trigger('success')
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       onSuccess()
     } catch (error) {
       const message = error instanceof Error && error.message ? error.message : t.auth.signUpError
       logger.error('Sign up failed', error instanceof Error ? error : new Error(String(error)))
       setErrors(prev => ({ ...prev, form: message }))
       toast.error(message)
-      haptics.trigger('error')
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
     } finally {
       setIsSubmitting(false)
     }
@@ -241,18 +229,27 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
     validate,
   ])
 
+  const handleSwitchToSignIn = useCallback(() => {
+    void Haptics.selectionAsync()
+    onSwitchToSignIn()
+  }, [onSwitchToSignIn])
+
+  // Compute animation durations based on reduced motion
+  const titleDelay = reducedMotion.value ? 0 : 100
+  const formDelay = reducedMotion.value ? 0 : 200
+
   return (
     <KeyboardAvoidingView
       style={styles.keyboardAvoider}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <Animated.View entering={FadeInUp.duration(400).delay(100)} style={styles.container}>
+        <Animated.View entering={FadeInUp.duration(reducedMotion.value ? 0 : 400).delay(titleDelay)} style={styles.container}>
           <Text style={styles.title}>{t.auth.signUpTitle}</Text>
           <Text style={styles.subtitle}>{t.auth.signUpSubtitle}</Text>
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.duration(400).delay(200)} style={styles.container}>
+        <Animated.View entering={FadeInDown.duration(reducedMotion.value ? 0 : 400).delay(formDelay)} style={styles.container}>
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t.auth.email}</Text>
@@ -295,7 +292,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
               <TouchableOpacity
                 onPress={() => {
                   setShowPassword(!showPassword)
-                  haptics.trigger('selection')
+                  void Haptics.selectionAsync()
                 }}
                 accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
                 style={styles.toggleButton}
@@ -326,7 +323,7 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
               <TouchableOpacity
                 onPress={() => {
                   setShowConfirmPassword(!showConfirmPassword)
-                  haptics.trigger('selection')
+                  void Haptics.selectionAsync()
                 }}
                 accessibilityLabel={showConfirmPassword ? 'Hide password' : 'Show password'}
                 style={styles.toggleButton}
@@ -354,7 +351,11 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
 
           <View style={styles.switchRow}>
             <Text style={styles.switchText}>{t.auth.alreadyHaveAccount} </Text>
-            <TouchableOpacity onPress={onSwitchToSignIn} disabled={isSubmitting}>
+            <TouchableOpacity
+              onPress={handleSwitchToSignIn}
+              disabled={isSubmitting}
+              accessibilityLabel="Sign in"
+            >
               <Text style={styles.switchLink}>{t.auth.signIn}</Text>
             </TouchableOpacity>
           </View>

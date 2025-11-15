@@ -10,10 +10,12 @@ import {
   Platform,
 } from 'react-native'
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
 import { useStorage } from '../../hooks/use-storage'
 import { EnhancedButton } from '../enhanced/EnhancedButton'
 import { colors } from '../../theme/colors'
 import { typography, spacing } from '../../theme/typography'
+import { useReducedMotionSV } from '@petspark/motion'
 // Stubs for missing web-only modules
 const useApp = (): {
   t: {
@@ -67,8 +69,6 @@ const useApp = (): {
   },
 })
 
-const haptics = { trigger: (_: string) => {} }
-const analytics = { track: (_: string, _p?: Record<string, unknown>) => {} }
 const toast = { success: (_: string) => {}, error: (_: string) => {}, info: (_: string) => {} }
 
 export type SignInFormProps = {
@@ -86,6 +86,7 @@ export default function SignInForm({
   onSwitchToSignUp,
 }: SignInFormProps): React.JSX.Element {
   const { t } = useApp()
+  const reducedMotion = useReducedMotionSV()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -123,12 +124,12 @@ export default function SignInForm({
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      haptics.trigger('error')
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
       return
     }
 
     setIsLoading(true)
-    haptics.trigger('light')
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
 
     try {
       await new Promise(resolve => setTimeout(resolve, 1500))
@@ -136,39 +137,47 @@ export default function SignInForm({
       await setAuthToken(mockToken)
       await setUserEmail(email)
       await setIsAuthenticated(true)
-      analytics.track('user_signed_in', { email, method: 'email' })
       toast.success(t.auth?.signInSuccess || 'Welcome back!')
-      haptics.trigger('success')
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
       onSuccess()
     } catch {
       toast.error(t.auth?.signInError || 'Failed to sign in. Please try again.')
-      haptics.trigger('error')
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleForgotPassword = (): void => {
-    haptics.trigger('selection')
-    analytics.track('forgot_password_clicked')
+    void Haptics.selectionAsync()
     toast.info(t.auth?.forgotPasswordInfo || 'Password reset link would be sent to your email')
   }
+
+  const handleSwitchToSignUp = (): void => {
+    void Haptics.selectionAsync()
+    onSwitchToSignUp()
+  }
+
+  // Compute animation durations based on reduced motion
+  const titleDelay = reducedMotion.value ? 0 : 100
+  const formDelay = reducedMotion.value ? 0 : 200
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      <Animated.View entering={FadeInUp.duration(400).delay(100)}>
+      <Animated.View entering={FadeInUp.duration(reducedMotion.value ? 0 : 400).delay(titleDelay)}>
         <Text style={styles.title}>{t.auth?.signInTitle || 'Welcome Back'}</Text>
         <Text style={styles.subtitle}>
           {t.auth?.signInSubtitle || 'Sign in to continue to PawfectMatch'}
         </Text>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.duration(400).delay(200)} style={styles.form}>
+      <Animated.View entering={FadeInDown.duration(reducedMotion.value ? 0 : 400).delay(formDelay)} style={styles.form}>
         <Text style={styles.label}>{t.auth?.email || 'Email'}</Text>
         <TextInput
+          accessibilityLabel={t.auth?.email || 'Email'}
           style={[styles.input, errors.email ? styles.inputError : null]}
           placeholder={t.auth?.emailPlaceholder || 'you@example.com'}
           value={email}
@@ -185,6 +194,7 @@ export default function SignInForm({
         <Text style={styles.label}>{t.auth?.password || 'Password'}</Text>
         <View style={styles.passwordRow}>
           <TextInput
+            accessibilityLabel={t.auth?.password || 'Password'}
             style={[styles.input, errors.password ? styles.inputError : null, { flex: 1 }]}
             placeholder={t.auth?.passwordPlaceholder || '••••••••'}
             value={password}
@@ -198,7 +208,7 @@ export default function SignInForm({
           <TouchableOpacity
             onPress={() => {
               setShowPassword(!showPassword)
-              haptics.trigger('selection')
+              void Haptics.selectionAsync()
             }}
             accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
             style={styles.toggleButton}
@@ -231,7 +241,7 @@ export default function SignInForm({
 
         <View style={styles.switchRow}>
           <Text style={styles.switchText}>{t.auth?.noAccount || "Don't have an account?"} </Text>
-          <TouchableOpacity onPress={onSwitchToSignUp}>
+          <TouchableOpacity onPress={handleSwitchToSignUp} accessibilityLabel="Sign up">
             <Text style={styles.signUpText}>{t.auth?.signUp || 'Sign up'}</Text>
           </TouchableOpacity>
         </View>
