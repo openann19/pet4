@@ -1,0 +1,23 @@
+
+> petspark-monorepo@0.1.0 lint:fix /home/ben/Public/PETSPARK
+> eslint . --max-warnings=0 --fix
+
+
+Oops! Something went wrong! :(
+
+ESLint: 9.39.1
+
+Error: Error while loading rule '@typescript-eslint/await-thenable': You have used a rule which requires type information, but don't have parserOptions set to generate type information for this file. See https://typescript-eslint.io/getting-started/typed-linting for enabling linting with type information.
+Parser: typescript-eslint/parser
+Occurred while linting /home/ben/Public/PETSPARK/apps/mobile/App.tsx
+    at throwError (/home/ben/Public/PETSPARK/node_modules/.pnpm/@typescript-eslint+utils@8.46.3_eslint@9.39.1_jiti@2.6.1__typescript@5.7.3/node_modules/@typescript-eslint/utils/dist/eslint-utils/getParserServices.js:38:11)
+    at getParserServices (/home/ben/Public/PETSPARK/node_modules/.pnpm/@typescript-eslint+utils@8.46.3_eslint@9.39.1_jiti@2.6.1__typescript@5.7.3/node_modules/@typescript-eslint/utils/dist/eslint-utils/getParserServices.js:27:9)
+    at create (/home/ben/Public/PETSPARK/node_modules/.pnpm/@typescript-eslint+eslint-plugin@8.46.3_@typescript-eslint+parser@8.46.3_eslint@9.39.1__3868057cd1cdaba8e935bb84e52debf9/node_modules/@typescript-eslint/eslint-plugin/dist/rules/await-thenable.js:63:55)
+    at Object.create (/home/ben/Public/PETSPARK/node_modules/.pnpm/@typescript-eslint+utils@8.46.3_eslint@9.39.1_jiti@2.6.1__typescript@5.7.3/node_modules/@typescript-eslint/utils/dist/eslint-utils/RuleCreator.js:31:20)
+    at createRuleListeners (/home/ben/Public/PETSPARK/node_modules/.pnpm/eslint@9.39.1_jiti@2.6.1/node_modules/eslint/lib/linter/linter.js:1019:15)
+    at /home/ben/Public/PETSPARK/node_modules/.pnpm/eslint@9.39.1_jiti@2.6.1/node_modules/eslint/lib/linter/linter.js:1151:7
+    at Array.forEach (<anonymous>)
+    at runRules (/home/ben/Public/PETSPARK/node_modules/.pnpm/eslint@9.39.1_jiti@2.6.1/node_modules/eslint/lib/linter/linter.js:1085:31)
+    at #flatVerifyWithoutProcessors (/home/ben/Public/PETSPARK/node_modules/.pnpm/eslint@9.39.1_jiti@2.6.1/node_modules/eslint/lib/linter/linter.js:2101:4)
+    at Linter._verifyWithFlatConfigArrayAndWithoutProcessors (/home/ben/Public/PETSPARK/node_modules/.pnpm/eslint@9.39.1_jiti@2.6.1/node_modules/eslint/lib/linter/linter.js:2189:43)
+ ELIFECYCLE  Command failed with exit code 2.

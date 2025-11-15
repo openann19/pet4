@@ -1,0 +1,854 @@
+{
+  "summary": {
+    "total": 93,
+    "byType": {
+      "floating-promise": 72,
+      "async-handler": 6,
+      "non-null-assertion": 15
+    },
+    "bySeverity": {
+      "high": 78,
+      "medium": 15
+    }
+  },
+  "issues": [
+    {
+      "file": "apps/web/scripts/e2e-walkthrough.ts",
+      "line": 347,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((result) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/optimization-core.ts",
+      "line": 131,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((cleanupFn) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/theme-presets.ts",
+      "line": 696,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(({ applyButtonTokensForTheme }) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/kyc-native.ts",
+      "line": 47,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((module) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/kyc-native.ts",
+      "line": 120,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "this.initializationPromise = loadReactNative().then((module) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-image-loader.ts",
+      "line": 148,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(() => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/advanced-features.ts",
+      "line": 186,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((battery: BatteryManager) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/logger.ts",
+      "line": 53,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((module) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/i18n/hooks/useTranslation.ts",
+      "line": 220,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((translations) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/maps/useMapLibreMap.ts",
+      "line": 30,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "mapLibreLoadPromise = import('maplibre-gl').then(async (mod) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/api/request-deduplication.ts",
+      "line": 37,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((result) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/error-reporting.ts",
+      "line": 34,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((Sentry) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/error-reporting.ts",
+      "line": 71,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((Sentry) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/error-reporting.ts",
+      "line": 95,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((Sentry) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/performance-utils.ts",
+      "line": 132,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "return fn().then(",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/lib/image-loader.ts",
+      "line": 83,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((loadedImg) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/enhanced/ProgressiveImage.tsx",
+      "line": 56,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((avifSupported) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/admin/AdoptionManagement.tsx",
+      "line": 171,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(() => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/admin/AdoptionManagement.tsx",
+      "line": 187,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(() => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/views/DiscoverView.tsx",
+      "line": 9,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "import('@/components/enhanced/EnhancedPetDetailView').then((m) => ({",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/views/ProfileView.tsx",
+      "line": 32,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "import('@/components/VisualAnalysisDemo').then((module) => ({ default: module.default }))",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/playdate/PlaydateScheduler.tsx",
+      "line": 187,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(() => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/playdate/PlaydateScheduler.tsx",
+      "line": 204,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(() => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/playdate/PlaydateMap.tsx",
+      "line": 33,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((location) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/DiscoverMapMode.tsx",
+      "line": 44,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((location) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/CreatePetDialog.tsx",
+      "line": 45,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "import('@/components/PetPhotoAnalyzer').then((module) => ({ default: module.default }))",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/media-editor/video-trimmer.tsx",
+      "line": 29,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "getVideoThumbnails(uri, 8).then((thumbnails) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/streaming/lazy-exports.ts",
+      "line": 23,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "import('./LiveStreamRoom').then((module) => ({",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/community/MediaViewer.tsx",
+      "line": 397,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(() => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/community/PostDetailView.tsx",
+      "line": 80,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((user) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/community/PostDetailView.tsx",
+      "line": 86,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((saved) => setIsSaved(saved))",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/chat/window/Overlays.tsx",
+      "line": 8,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "import('../ConfettiBurst').then((m) => ({ default: m.ConfettiBurst }))",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/chat/window/Overlays.tsx",
+      "line": 11,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "import('../ReactionBurstParticles').then((m) => ({ default: m.ReactionBurstParticles }))",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/auth/ProtectedRoute.tsx",
+      "line": 57,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((status) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/maps/LostFoundMap.tsx",
+      "line": 43,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((location) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/maps/VenuePicker.tsx",
+      "line": 58,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((location) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/maps/LocationSharing.tsx",
+      "line": 153,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((location) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/lazy-exports.ts",
+      "line": 13,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "import('./community/MediaViewer').then((module) => ({",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/lazy-exports.ts",
+      "line": 34,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "import('./media-editor/MediaEditor').then((module) => ({",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/effects/sound/SendPing.ts",
+      "line": 26,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((module) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/effects/chat/core/reduced-motion.ts",
+      "line": 52,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((v: boolean) => mounted && setReduced(!!v))",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/effects/chat/core/haptic-manager.ts",
+      "line": 56,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((module) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/hooks/use-consent-manager.ts",
+      "line": 401,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((module) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/hooks/use-storage.ts",
+      "line": 160,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((stored) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/hooks/useMatches.ts",
+      "line": 167,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(setMatchReasoning)",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/utils/background-uploads.ts",
+      "line": 23,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(TaskManager => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/utils/telemetry.ts",
+      "line": 38,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(id => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/components/enhanced/ProgressiveImage.tsx",
+      "line": 40,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(() => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/components/chat/PresenceAvatar.tsx",
+      "line": 46,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(module => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/effects/chat/core/performance.ts",
+      "line": 83,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(hz => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/effects/chat/core/reduced-motion.ts",
+      "line": 38,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ").then(module => module?.AccessibilityInfo ?? null)",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/effects/chat/core/reduced-motion.ts",
+      "line": 100,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(info => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/effects/chat/core/reduced-motion.ts",
+      "line": 109,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((v: boolean) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/effects/core/use-reduced-motion-sv.ts",
+      "line": 45,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(enabled => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/effects/core/sound-feedback.ts",
+      "line": 110,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "return Promise.resolve().then(() => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/hooks/use-reduced-motion.ts",
+      "line": 24,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "AccessibilityInfo.isReduceMotionEnabled().then(setReduced);",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/mobile/src/hooks/use-pull-to-refresh.ts",
+      "line": 95,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(enabled => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/native/src/lib/haptics.ts",
+      "line": 12,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(({ Vibration }) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/native/src/components/call/CallInterface.tsx",
+      "line": 83,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((module: { RTCView: RTCViewComponent }) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/native/src/components/stories/StoryViewer.tsx",
+      "line": 77,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((module: { Video: unknown; ResizeMode: unknown }) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/native/src/components/stories/StoryViewer.tsx",
+      "line": 92,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((module: { default: unknown } | HapticsAPI) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/native/src/components/stories/StoryViewer.tsx",
+      "line": 104,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "]).then(() => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/native/src/hooks/call/useWebRTC.ts",
+      "line": 108,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/native/src/hooks/call/useWebRTC.ts",
+      "line": 133,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((module: { default: unknown; [key: string]: unknown }) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/native/src/hooks/call/useWebRTC.ts",
+      "line": 141,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": "]).then((results) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "packages/motion/src/recipes/useMagnetic.ts",
+      "line": 55,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(module => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "packages/motion/src/recipes/useMagnetic.ts",
+      "line": 106,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(gesture => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "packages/motion/src/recipes/haptic.ts",
+      "line": 38,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(module => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "packages/motion/src/reduced-motion.ts",
+      "line": 33,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(module => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "packages/motion/src/reduced-motion.ts",
+      "line": 94,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(info => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "packages/motion/src/reduced-motion.ts",
+      "line": 103,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then((v: boolean) => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "packages/core/src/api/client.ts",
+      "line": 157,
+      "type": "floating-promise",
+      "severity": "high",
+      "description": "Potential floating promise without error handling",
+      "code": ".then(token => {",
+      "suggestion": "Add await, void operator, or .catch() handler"
+    },
+    {
+      "file": "apps/web/src/components/views/CommunityView.tsx",
+      "line": 519,
+      "type": "async-handler",
+      "severity": "high",
+      "description": "Async event handler without error handling",
+      "code": "onClick={async () => {",
+      "suggestion": "Wrap handler in try-catch or use error boundary"
+    },
+    {
+      "file": "apps/web/src/components/chat/window/ChatHeader.tsx",
+      "line": 91,
+      "type": "async-handler",
+      "severity": "high",
+      "description": "Async event handler without error handling",
+      "code": "onClick={async () => {",
+      "suggestion": "Wrap handler in try-catch or use error boundary"
+    },
+    {
+      "file": "apps/mobile/src/components/camera/camera-view.tsx",
+      "line": 185,
+      "type": "async-handler",
+      "severity": "high",
+      "description": "Async event handler without error handling",
+      "code": "onPress={async () => {",
+      "suggestion": "Wrap handler in try-catch or use error boundary"
+    },
+    {
+      "file": "apps/native/src/screens/ProfileScreen.tsx",
+      "line": 76,
+      "type": "async-handler",
+      "severity": "high",
+      "description": "Async event handler without error handling",
+      "code": "onPress: async () => {",
+      "suggestion": "Wrap handler in try-catch or use error boundary"
+    },
+    {
+      "file": "apps/native/src/screens/ProfileScreen.tsx",
+      "line": 85,
+      "type": "async-handler",
+      "severity": "high",
+      "description": "Async event handler without error handling",
+      "code": "onPress: async () => {",
+      "suggestion": "Wrap handler in try-catch or use error boundary"
+    },
+    {
+      "file": "apps/native/src/screens/PlaydatesScreen.tsx",
+      "line": 30,
+      "type": "async-handler",
+      "severity": "high",
+      "description": "Async event handler without error handling",
+      "code": "onPress: async () => {",
+      "suggestion": "Wrap handler in try-catch or use error boundary"
+    },
+    {
+      "file": "apps/web/src/lib/smart-recommendations.ts",
+      "line": 327,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "this.userPreferences!.favoritePersonalities.includes(p)",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/lib/chat-service.ts",
+      "line": 154,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "? new Date(messageCache.get(lastSentKey)!.createdAt).getTime()",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/lib/chat-utils.ts",
+      "line": 134,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "groups.get(dateKey)!.push(message);",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/lib/websocket-manager.ts",
+      "line": 160,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "this.eventHandlers.get(event)!.add(handler);",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/lib/adoption-marketplace-service.ts",
+      "line": 92,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "listings = listings.filter((l: AdoptionListing) => filters.species!.includes(l.petSpecies));",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/lib/adoption-marketplace-service.ts",
+      "line": 105,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "filters.energyLevel!.includes(l.energyLevel)",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/lib/adoption-marketplace-service.ts",
+      "line": 111,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "filters.temperament!.some((trait) => l.temperament.includes(trait))",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/lib/realtime.ts",
+      "line": 55,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "this.listeners.get(event)!.add(callback);",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/lib/performance-utils.ts",
+      "line": 90,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "this.measures.get(name)!.push(duration);",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/test/setup.ts",
+      "line": 507,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "this.listeners.get(event)!.add(callback);",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/components/notifications/hooks/useNotifications.ts",
+      "line": 75,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "groups.get(groupKey)!.push(notification);",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/web/src/components/a11y/KeyboardShortcutsHelp.tsx",
+      "line": 51,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "grouped.get(context)!.push(shortcut);",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/mobile/src/lib/realtime.ts",
+      "line": 54,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "this.listeners.get(event)!.add(callback)",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/native/src/components/stories/StoriesBar.tsx",
+      "line": 155,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "petName={firstStory!.petName}",
+      "suggestion": "Add null check or use optional chaining"
+    },
+    {
+      "file": "apps/native/src/components/stories/StoriesBar.tsx",
+      "line": 156,
+      "type": "non-null-assertion",
+      "severity": "medium",
+      "description": "Non-null assertion without null check",
+      "code": "petPhoto={firstStory!.petPhoto}",
+      "suggestion": "Add null check or use optional chaining"
+    }
+  ],
+  "timestamp": "2025-11-09T12:21:23.651Z"
+}

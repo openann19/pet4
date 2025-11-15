@@ -1,0 +1,38 @@
+---
+alwaysApply: true
+---
+# 🚨 CRITICAL: IMMUTABLE HARD-CODED PRODUCTION READINESS RULE 🚨
+
+## THIS POLICY IS HARD-CODED – IT IS ABSOLUTELY MANDATORY AND NON-BYPASSABLE
+
+### All rules below are enforced as non-negotiable, permanent project law.
+- **NO EXEMPTIONS, NO OVERRIDES, NO CIRCUMVENTION.**
+- **ANY deviation instantly voids production readiness status and triggers immediate rollback.**
+- **These prohibitions are as immutable as business logic: treat as core, hard-coded enforcement.**
+
+## ABSOLUTE PROHIBITIONS (HARD-CODED)
+
+- **`@ts-ignore`, `@ts-expect-error`, and ALL code suppression comments are categorically BANNED.**
+- **No use of eslint disabling: `eslint-disable`, `eslint-disable-line`, `eslint-disable-next-line`, or anything that disables automated quality checks.**
+- **`any`, `as any`, unknown type casts, or similar unsound typing: strictly forbidden unless FULLY justified, peer-reviewed, cross-referenced to project documentation, and explicitly whitelisted with project lead approval.**
+- **No `console.log`, `console.error`, `console.warn`, or ANY ad-hoc logging in production. Debug code MUST NOT SHIP.**
+
+## ENGINEERING INTEGRITY REQUIREMENT (HARD-CODED)
+
+- **All code must exemplify professional, maintainable engineering standards.**
+- **NO hacks, NO shortcuts, NO cheats, NO technical debt inserted into the codebase.**
+- **Temporary/partial workarounds, band-aids, “for now” changes: ABSOLUTELY FORBIDDEN unless documented and formally amended in project governance.**
+
+## CODE REVIEW AND ENFORCEMENT (HARD-CODED)
+
+- **ANY code violating these rules MUST be rejected and reverted on sight—responsibility shared by EVERY contributor and reviewer.**
+- **“I didn’t see it” is not an excuse: every team member owns enforcement.**
+- **All historic and new code must comply—seek and destroy forbidden patterns proactively.**
+
+## RATIONALE
+
+- **This is a PERMANENT, HARD-CODED project safety restraint: these rules are not guidance—they are critical, enforced, and exist at the same level as source control.**
+- **No exceptions now or in the future, absent a ratified, explicitly cross-referenced policy change in the PETSPARK documentation suite.**
+
+*Violation of any provision results in immediate reversion, halt of deployment, and mandatory remediation as a condition of production readiness.*
+

@@ -1,0 +1,26 @@
+
+> petspark-monorepo@0.1.0 typecheck /home/ben/Public/PETSPARK
+> pnpm -r --filter './apps/*' --filter './packages/*' exec tsc --noEmit
+
+src/api/client.ts(66,3): error TS6133: 'url' is declared but its value is never read.
+src/api/client.ts(75,9): error TS2375: Type '{ code: any; message: any; details: any; statusCode: number | undefined; correlationId: string | undefined; }' is not assignable to type 'APIError' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'statusCode' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/api/client.ts(87,5): error TS2375: Type '{ code: string; message: string; statusCode: number | undefined; correlationId: string | undefined; }' is not assignable to type 'APIError' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'statusCode' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/api/client.ts(95,3): error TS2375: Type '{ code: string; message: string; statusCode: number | undefined; correlationId: string | undefined; }' is not assignable to type 'APIError' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'statusCode' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+src/api/client.ts(113,5): error TS2375: Type '{ baseURL: string; timeout: number; defaultHeaders: HeadersInit; auth: AuthConfig | undefined; telemetry: TelemetryHooks | undefined; }' is not assignable to type 'Required<Pick<APIClientConfig, "timeout" | "baseURL" | "defaultHeaders">> & Pick<APIClientConfig, "auth" | "telemetry">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Type '{ baseURL: string; timeout: number; defaultHeaders: HeadersInit; auth: AuthConfig | undefined; telemetry: TelemetryHooks | undefined; }' is not assignable to type 'Pick<APIClientConfig, "auth" | "telemetry">' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+    Types of property 'auth' are incompatible.
+      Type 'AuthConfig | undefined' is not assignable to type 'AuthConfig'.
+        Type 'undefined' is not assignable to type 'AuthConfig'.
+undefined
+/home/ben/Public/PETSPARK/packages/core:
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 2: tsc --noEmit
+ ELIFECYCLE  Command failed with exit code 1.

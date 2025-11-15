@@ -1,0 +1,12 @@
+
+> petspark-monorepo@0.1.0 typecheck /home/ben/Public/PETSPARK
+> pnpm -r --filter './apps/*' --filter './packages/*' exec tsc --noEmit
+
+src/useOutbox.ts(157,9): error TS7022: 'processQueue' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+src/useOutbox.ts(242,70): error TS2448: Block-scoped variable 'scheduleNext' used before its declaration.
+src/useOutbox.ts(242,70): error TS2454: Variable 'scheduleNext' is used before being assigned.
+src/useOutbox.ts(244,9): error TS7022: 'scheduleNext' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+undefined
+/home/ben/Public/PETSPARK/packages/chat-core:
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 2: tsc --noEmit
+ ELIFECYCLE  Command failed with exit code 1.

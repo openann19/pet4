@@ -1,0 +1,38 @@
+{
+  "name": "petspark-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install:all": "pnpm install",
+    "typecheck": "pnpm --filter ./packages/shared typecheck",
+    "lint": "pnpm --filter ./packages/shared lint",
+    "test": "pnpm --filter ./packages/shared test:run",
+    "dev:single": "pnpm --filter ./packages/shared dev",
+    "test:single": "pnpm --filter ./packages/shared test:run",
+    "web-dev": "pnpm --filter spark-template dev",
+    "mobile-start": "pnpm --filter petspark-mobile start",
+    "mobile-android": "pnpm --filter petspark-mobile android",
+    "mobile-ios": "pnpm --filter petspark-mobile ios",
+    "check:parity": "tsx scripts/check-mobile-parity.ts",
+    "typecheck:motion": "pnpm --filter ./packages/motion typecheck && pnpm --filter ./apps/web typecheck && pnpm --filter ./apps/mobile typecheck",
+    "lint:motion": "eslint packages/motion apps/web/src/effects apps/mobile/src/effects apps/web/src/components apps/mobile/src/components --ext .ts,.tsx",
+    "test:motion": "pnpm --filter ./packages/motion test:run",
+    "migrate:motion": "node scripts/motion-migrate.mjs",
+    "e2e:smoke": "pnpm --filter ./apps/web e2e:smoke"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6",
+    "typescript": "~5.7.2",
+    "ts-morph": "^23.0.0",
+    "globby": "^14.0.0"
+  },
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  }
+}

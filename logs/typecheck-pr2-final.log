@@ -1,0 +1,196 @@
+
+> petspark-monorepo@0.1.0 typecheck /home/ben/Public/PETSPARK
+> pnpm -r --filter './apps/*' --filter './packages/*' exec tsc --noEmit
+
+App.tsx(140,17): error TS2322: Type '({ route, }: { route: { params: { matchId: string; }; }; }) => Element' is not assignable to type 'ScreenComponentType<ParamListBase, "Chat">'.
+  Type '({ route, }: { route: { params: { matchId: string; }; }; }) => Element' is not assignable to type 'FunctionComponent<{}>'.
+    Types of parameters '__0' and 'props' are incompatible.
+      Property 'route' is missing in type '{}' but required in type '{ route: { params: { matchId: string; }; }; }'.
+App.tsx(152,17): error TS2322: Type '({ route, }: { route: { params: { pet: Pet; }; }; }) => Element' is not assignable to type 'ScreenComponentType<ParamListBase, "PetDetail">'.
+  Type '({ route, }: { route: { params: { pet: Pet; }; }; }) => Element' is not assignable to type 'FunctionComponent<{}>'.
+    Types of parameters '__0' and 'props' are incompatible.
+      Property 'route' is missing in type '{}' but required in type '{ route: { params: { pet: Pet; }; }; }'.
+App.tsx(212,17): error TS2322: Type 'FC<CallScreenProps>' is not assignable to type 'ScreenComponentType<ParamListBase, "Call">'.
+  Type 'FunctionComponent<CallScreenProps>' is not assignable to type 'FunctionComponent<{}>'.
+    Types of parameters 'props' and 'props' are incompatible.
+      Property 'route' is missing in type '{}' but required in type 'CallScreenProps'.
+src/components/AnimatedCard.tsx(2,40): error TS1484: 'ViewStyle' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/DataInitializer.tsx(19,19): error TS2345: Argument of type 'Pet[]' is not assignable to parameter of type 'never[]'.
+  Type 'Pet' is not assignable to type 'never'.
+src/components/DataInitializer.tsx(20,24): error TS2345: Argument of type 'AdoptionListing[]' is not assignable to parameter of type 'never[]'.
+  Type 'AdoptionListing' is not assignable to type 'never'.
+src/components/DataInitializer.tsx(21,26): error TS2345: Argument of type 'LostPetReport[]' is not assignable to parameter of type 'never[]'.
+  Type 'LostPetReport' is not assignable to type 'never'.
+src/components/DataInitializer.tsx(22,20): error TS2345: Argument of type 'Post[]' is not assignable to parameter of type 'never[]'.
+  Type 'Post' is not assignable to type 'never'.
+src/components/SwipeableCard.tsx(3,29): error TS1484: 'PanGestureHandlerGestureEvent' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/call/CallInterface.tsx(16,3): error TS6133: 'callId' is declared but its value is never read.
+src/components/call/CallInterface.tsx(17,3): error TS6133: 'remoteUserId' is declared but its value is never read.
+src/components/call/CallInterface.tsx(19,3): error TS6133: 'remotePhoto' is declared but its value is never read.
+src/components/call/CallInterface.tsx(28,13): error TS7030: Not all code paths return a value.
+src/components/call/IncomingCallNotification.tsx(11,7): error TS6133: 'width' is declared but its value is never read.
+src/components/call/VideoQualitySettings.tsx(2,21): error TS2307: Cannot find module '@react-native-community/netinfo' or its corresponding type declarations.
+src/components/call/VideoQualitySettings.tsx(36,51): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/components/call/VideoQualitySettings.tsx(72,42): error TS2307: Cannot find module '@react-native-community/netinfo' or its corresponding type declarations.
+src/components/chat/StickerPicker.tsx(20,28): error TS2307: Cannot find module '../hooks/use-storage' or its corresponding type declarations.
+src/components/chat/StickerPicker.tsx(30,8): error TS2307: Cannot find module '../lib/sticker-library' or its corresponding type declarations.
+src/components/chat/StickerPicker.tsx(31,25): error TS2307: Cannot find module '../lib/haptics' or its corresponding type declarations.
+src/components/chat/VoiceRecorder.tsx(27,13): error TS7030: Not all code paths return a value.
+src/components/chat/VoiceRecorder.tsx(56,41): error TS2307: Cannot find module 'expo-av' or its corresponding type declarations.
+src/components/livestream/LiveStreamInterface.tsx(10,33): error TS2307: Cannot find module './LiveChatOverlay' or its corresponding type declarations.
+src/components/livestream/LiveStreamInterface.tsx(11,29): error TS2307: Cannot find module './ViewersList' or its corresponding type declarations.
+src/components/livestream/LiveStreamInterface.tsx(24,3): error TS6133: 'hostPhoto' is declared but its value is never read.
+src/components/livestream/LiveStreamInterface.tsx(28,24): error TS6133: 'setViewersCount' is declared but its value is never read.
+src/components/livestream/StreamControls.tsx(27,9): error TS2607: JSX element class does not support attributes because it does not have a 'props' property.
+src/components/livestream/StreamControls.tsx(27,10): error TS2786: 'Text' cannot be used as a JSX component.
+  Its type '{ new (data?: string | undefined): Text; prototype: Text; }' is not a valid JSX element type.
+    Type '{ new (data?: string | undefined): Text; prototype: Text; }' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+      Type 'Text' is missing the following properties from type 'Component<any, any, any>': context, setState, forceUpdate, render, and 3 more.
+src/components/livestream/StreamControls.tsx(31,9): error TS2607: JSX element class does not support attributes because it does not have a 'props' property.
+src/components/livestream/StreamControls.tsx(31,10): error TS2786: 'Text' cannot be used as a JSX component.
+  Its type '{ new (data?: string | undefined): Text; prototype: Text; }' is not a valid JSX element type.
+    Type '{ new (data?: string | undefined): Text; prototype: Text; }' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+      Type 'Text' is missing the following properties from type 'Component<any, any, any>': context, setState, forceUpdate, render, and 3 more.
+src/components/livestream/StreamControls.tsx(35,9): error TS2607: JSX element class does not support attributes because it does not have a 'props' property.
+src/components/livestream/StreamControls.tsx(35,10): error TS2786: 'Text' cannot be used as a JSX component.
+  Its type '{ new (data?: string | undefined): Text; prototype: Text; }' is not a valid JSX element type.
+    Type '{ new (data?: string | undefined): Text; prototype: Text; }' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+      Type 'Text' is missing the following properties from type 'Component<any, any, any>': context, setState, forceUpdate, render, and 3 more.
+src/components/livestream/StreamControls.tsx(39,9): error TS2607: JSX element class does not support attributes because it does not have a 'props' property.
+src/components/livestream/StreamControls.tsx(39,10): error TS2786: 'Text' cannot be used as a JSX component.
+  Its type '{ new (data?: string | undefined): Text; prototype: Text; }' is not a valid JSX element type.
+    Type '{ new (data?: string | undefined): Text; prototype: Text; }' is not assignable to type 'new (props: any, deprecatedLegacyContext?: any) => Component<any, any, any>'.
+      Type 'Text' is missing the following properties from type 'Component<any, any, any>': context, setState, forceUpdate, render, and 3 more.
+src/components/payments/PricingModal.tsx(3,1): error TS6192: All imports in import declaration are unused.
+src/components/payments/PricingModal.tsx(10,7): error TS6133: 'width' is declared but its value is never read.
+src/components/playdate/PlaydateScheduler.tsx(233,24): error TS6133: 'event' is declared but its value is never read.
+src/components/playdate/PlaydateScheduler.tsx(249,24): error TS6133: 'event' is declared but its value is never read.
+src/components/stories/CreateStoryDialog.tsx(100,13): error TS2375: Type '{ id: string; userId: string; userName: string; userAvatar: string | undefined; petId: string; petName: string; petPhoto: string; type: "photo"; mediaUrl: string; caption: string | undefined; ... 6 more ...; reactions: never[]; }' is not assignable to type 'Story' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'userAvatar' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/components/stories/SaveToHighlightDialog.tsx(13,49): error TS2307: Cannot find module '@/lib/stories-types' or its corresponding type declarations.
+src/components/stories/SaveToHighlightDialog.tsx(14,38): error TS2307: Cannot find module '@/lib/stories-utils' or its corresponding type declarations.
+src/components/stories/SaveToHighlightDialog.tsx(15,23): error TS2307: Cannot find module '@github/spark/hooks' or its corresponding type declarations.
+src/components/stories/SaveToHighlightDialog.tsx(36,53): error TS7006: Parameter 'h' implicitly has an 'any' type.
+src/components/stories/SaveToHighlightDialog.tsx(38,44): error TS7006: Parameter 'h' implicitly has an 'any' type.
+src/components/stories/SaveToHighlightDialog.tsx(39,37): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/components/stories/SaveToHighlightDialog.tsx(52,20): error TS7006: Parameter 'current' implicitly has an 'any' type.
+src/components/stories/SaveToHighlightDialog.tsx(53,28): error TS7006: Parameter 'h' implicitly has an 'any' type.
+src/components/stories/SaveToHighlightDialog.tsx(81,20): error TS7006: Parameter 'current' implicitly has an 'any' type.
+src/components/stories/StoriesBar.tsx(95,10): error TS2375: Type '{ open: boolean; onOpenChange: Dispatch<SetStateAction<boolean>>; userId: string; userName: string; petId: string; petName: string; petPhoto: string; userAvatar: string | undefined; onStoryCreated: (story: Story) => void; }' is not assignable to type 'CreateStoryDialogProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'userAvatar' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/components/stories/StoriesBar.tsx(155,26): error TS18048: 'firstStory' is possibly 'undefined'.
+src/components/stories/StoriesBar.tsx(156,27): error TS18048: 'firstStory' is possibly 'undefined'.
+src/components/stories/StoriesBar.tsx(170,10): error TS2375: Type '{ stories: Story[]; currentUserId: string; currentUserName: string; currentUserAvatar: string | undefined; onClose: () => void; onStoryUpdate: (story: Story) => void; }' is not assignable to type 'StoryViewerProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'currentUserAvatar' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/components/stories/StoriesBar.tsx(180,8): error TS2375: Type '{ open: boolean; onOpenChange: Dispatch<SetStateAction<boolean>>; userId: string; userName: string; petId: string; petName: string; petPhoto: string; userAvatar: string | undefined; onStoryCreated: (story: Story) => void; }' is not assignable to type 'CreateStoryDialogProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'userAvatar' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/components/stories/StoryRing.tsx(54,9): error TS6133: 'getInitial' is declared but its value is never read.
+src/components/stories/StoryViewer.tsx(11,3): error TS6133: 'Animated' is declared but its value is never read.
+src/components/stories/StoryViewer.tsx(39,3): error TS6133: 'currentUserId' is declared but its value is never read.
+src/components/stories/StoryViewer.tsx(40,3): error TS6133: 'currentUserName' is declared but its value is never read.
+src/components/stories/StoryViewer.tsx(41,3): error TS6133: 'currentUserAvatar' is declared but its value is never read.
+src/components/stories/StoryViewer.tsx(44,3): error TS6133: 'onStoryUpdate' is declared but its value is never read.
+src/components/stories/StoryViewer.tsx(48,10): error TS6133: 'progress' is declared but its value is never read.
+src/components/stories/StoryViewer.tsx(52,9): error TS6133: 'startTimeRef' is declared but its value is never read.
+src/components/stories/highlights/CreateHighlightDialog.tsx(13,1): error TS6133: 'StoryItem' is declared but its value is never read.
+src/components/stories/highlights/CreateHighlightDialog.tsx(13,15): error TS2614: Module '"../StoriesBar"' has no exported member 'StoryItem'. Did you mean to use 'import StoryItem from "../StoriesBar"' instead?
+src/components/stories/index.ts(1,27): error TS2614: Module '"./StoriesBar"' has no exported member 'Story'. Did you mean to use 'import Story from "./StoriesBar"' instead?
+src/components/stories/index.ts(1,39): error TS2614: Module '"./StoriesBar"' has no exported member 'StoryItem'. Did you mean to use 'import StoryItem from "./StoriesBar"' instead?
+src/components/stories/templates/TemplateEditor.tsx(15,7): error TS6198: All destructured elements are unused.
+src/hooks/call/useWebRTC.ts(11,27): error TS6133: 'callId' is declared but its value is never read.
+src/hooks/call/useWebRTC.ts(11,43): error TS6133: 'remoteUserId' is declared but its value is never read.
+src/hooks/livestream/useLiveStream.ts(16,22): error TS2345: Argument of type '{ id: string; title: string; category: string; privacy: string; startedAt: Date; }' is not assignable to parameter of type 'SetStateAction<null>'.
+  Type '{ id: string; title: string; category: string; privacy: string; startedAt: Date; }' provides no match for the signature '(prevState: null): null'.
+src/hooks/stories/useStories.ts(3,15): error TS2614: Module '"../../components/stories/StoriesBar"' has no exported member 'Story'. Did you mean to use 'import Story from "../../components/stories/StoriesBar"' instead?
+src/hooks/stories/useStories.ts(3,22): error TS2614: Module '"../../components/stories/StoriesBar"' has no exported member 'StoryItem'. Did you mean to use 'import StoryItem from "../../components/stories/StoriesBar"' instead?
+src/hooks/stories/useStories.ts(149,59): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/hooks/useStorage.ts(6,10): error TS6133: 'isLoading' is declared but its value is never read.
+src/screens/AdminConsoleScreen.tsx(24,7): error TS6133: 'width' is declared but its value is never read.
+src/screens/CallScreen.tsx(1,17): error TS6133: 'useState' is declared but its value is never read.
+src/screens/CallScreen.tsx(28,8): error TS2375: Type '{ callId: string; remoteUserId: string; remoteName: string; remotePhoto: string | undefined; onEndCall: () => void; }' is not assignable to type 'CallInterfaceProps' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'remotePhoto' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/screens/ChatListScreen.tsx(14,42): error TS2345: Argument of type '[never, never]' is not assignable to parameter of type 'never'.
+src/screens/ChatScreen.tsx(13,24): error TS6196: 'Reaction' is declared but never used.
+src/screens/CommunityScreen.tsx(105,21): error TS6133: 'setIsLoading' is declared but its value is never read.
+src/screens/DiscoverScreen.tsx(4,8): error TS6133: 'Animated' is declared but its value is never read.
+src/screens/DiscoverScreen.tsx(5,3): error TS6133: 'useAnimatedStyle' is declared but its value is never read.
+src/screens/DiscoverScreen.tsx(8,3): error TS6133: 'withTiming' is declared but its value is never read.
+src/screens/DiscoverScreen.tsx(9,3): error TS6133: 'runOnJS' is declared but its value is never read.
+src/screens/DiscoverScreen.tsx(25,16): error TS6133: 'setPets' is declared but its value is never read.
+src/screens/DiscoverScreen.tsx(82,26): error TS6133: 'index' is declared but its value is never read.
+src/screens/DiscoverScreen.tsx(109,9): error TS2322: Type '{ stories: Story[]; onStoryPress: (story: Story) => void; onAddStory: () => void; currentUserId: string; }' is not assignable to type 'IntrinsicAttributes & StoriesBarProps'.
+  Property 'stories' does not exist on type 'IntrinsicAttributes & StoriesBarProps'.
+src/screens/DiscoverScreen.tsx(143,48): error TS2345: Argument of type '[never, never]' is not assignable to parameter of type 'never'.
+src/screens/DiscoverScreen.tsx(208,9): error TS2322: Type '{ visible: boolean; stories: Story[]; initialStoryIndex: number; onClose: () => void; onStoryComplete: (storyId: string) => Promise<void>; }' is not assignable to type 'IntrinsicAttributes & StoryViewerProps'.
+  Property 'visible' does not exist on type 'IntrinsicAttributes & StoryViewerProps'.
+src/screens/DiscoverScreen.tsx(217,9): error TS2322: Type '{ visible: boolean; onClose: () => void; onCreateStory: (imageUri: string, text?: string | undefined, privacy?: "public" | "friends" | "private" | undefined) => Promise<void>; }' is not assignable to type 'IntrinsicAttributes & CreateStoryDialogProps'.
+  Property 'visible' does not exist on type 'IntrinsicAttributes & CreateStoryDialogProps'.
+src/screens/DiscoverScreen.tsx(272,5): error TS2345: Argument of type '{ container: { flex: number; backgroundColor: string; justifyContent: "center"; alignItems: "center"; }; cardContainer: { width: number; height: number; position: "relative"; }; nextCard: { position: "absolute"; width: "100%"; height: "100%"; opacity: number; transform: { ...; }[]; }; ... 21 more ...; emptySubtitle:...' is not assignable to parameter of type '{ container: { flex: number; backgroundColor: string; justifyContent: "center"; alignItems: "center"; }; cardContainer: { width: number; height: number; position: "relative"; }; nextCard: { position: "absolute"; width: "100%"; height: "100%"; opacity: number; transform: { ...; }[]; }; ... 21 more ...; emptySubtitle:...'.
+  Property 'gradient' is incompatible with index signature.
+    Object literal may only specify known properties, and 'backgroundImage' does not exist in type 'ViewStyle | TextStyle | ImageStyle'.
+src/screens/HomeScreen.tsx(1,10): error TS2305: Module '"@petspark/shared"' has no exported member 'generateCorrelationId'.
+src/screens/HomeScreen.tsx(1,33): error TS2305: Module '"@petspark/shared"' has no exported member 'getAppEnvironment'.
+src/screens/MapScreen.tsx(78,32): error TS2304: Cannot find name 'lostFoundApi'.
+src/screens/MapScreen.tsx(79,27): error TS7006: Parameter 'alert' implicitly has an 'any' type.
+src/screens/MapScreen.tsx(98,34): error TS2304: Cannot find name 'adoptionApi'.
+src/screens/MapScreen.tsx(99,29): error TS7006: Parameter 'listing' implicitly has an 'any' type.
+src/screens/MatchesScreen.tsx(13,7): error TS2345: Argument of type '[never, never]' is not assignable to parameter of type 'never'.
+src/screens/MatchesScreen.tsx(27,44): error TS2345: Argument of type '[never, never]' is not assignable to parameter of type 'never'.
+src/screens/NotificationsScreen.tsx(53,13): error TS2322: Type '{ id: string; type: "mention" | "match" | "like" | "follow" | "comment"; title: string; message: string; timestamp: number; read: boolean; postId: string | undefined; userId: string | undefined; }[]' is not assignable to type 'Notification[]'.
+  Type '{ id: string; type: Notification["type"]; title: string; message: string; timestamp: number; read: boolean; postId: string | undefined; userId: string | undefined; }' is not assignable to type 'Notification' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+    Types of property 'postId' are incompatible.
+      Type 'string | undefined' is not assignable to type 'string'.
+        Type 'undefined' is not assignable to type 'string'.
+src/screens/NotificationsScreen.tsx(233,17): error TS2322: Type '(false | { backgroundColor: string; borderRadius: number; padding: number; marginBottom: number; flexDirection: "row"; alignItems: "flex-start"; } | { borderLeftWidth: number; borderLeftColor: string; })[]' is not assignable to type 'ViewStyle'.
+  Types of property 'filter' are incompatible.
+    Type '{ <S extends false | { backgroundColor: string; borderRadius: number; padding: number; marginBottom: number; flexDirection: "row"; alignItems: "flex-start"; } | { borderLeftWidth: number; borderLeftColor: string; }>(predicate: (value: false | ... 1 more ... | { ...; }, index: number, array: (false | ... 1 more ... |...' is not assignable to type 'string | readonly FilterFunction[] | undefined'.
+src/screens/SavedPostsScreen.tsx(56,13): error TS2322: Type 'number' is not assignable to type 'string'.
+src/screens/SavedPostsScreen.tsx(140,44): error TS2339: Property 'userAvatar' does not exist on type 'Post'.
+src/screens/SavedPostsScreen.tsx(142,55): error TS2339: Property 'userName' does not exist on type 'Post'.
+src/screens/SavedPostsScreen.tsx(143,61): error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
+src/screens/SavedPostsScreen.tsx(152,21): error TS2339: Property 'imageUrl' does not exist on type 'Post'.
+src/screens/SavedPostsScreen.tsx(154,39): error TS2339: Property 'imageUrl' does not exist on type 'Post'.
+src/screens/SavedPostsScreen.tsx(177,63): error TS2551: Property 'liked' does not exist on type 'Post'. Did you mean 'likes'?
+src/screens/SettingsScreen.tsx(1,17): error TS6133: 'useState' is declared but its value is never read.
+src/screens/SettingsScreen.tsx(23,20): error TS6133: 'setLanguage' is declared but its value is never read.
+src/screens/WelcomeScreen.tsx(2,52): error TS6133: 'Image' is declared but its value is never read.
+src/screens/admin/AuditLogScreen.tsx(50,13): error TS2322: Type '{ id: string; adminId: string; adminName: string; action: string; targetType: string; targetId: string; details: string | undefined; timestamp: string; }[]' is not assignable to type 'AuditLogEntry[]'.
+  Type '{ id: string; adminId: string; adminName: string; action: string; targetType: string; targetId: string; details: string | undefined; timestamp: string; }' is not assignable to type 'AuditLogEntry' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+    Types of property 'details' are incompatible.
+      Type 'string | undefined' is not assignable to type 'string'.
+        Type 'undefined' is not assignable to type 'string'.
+src/screens/admin/ChatModerationScreen.tsx(37,10): error TS6133: 'selectedReport' is declared but its value is never read.
+src/screens/admin/ConfigManagementScreen.tsx(54,10): error TS6133: 'selectedConfig' is declared but its value is never read.
+src/screens/admin/SupportChatScreen.tsx(15,3): error TS6133: 'TextInput' is declared but its value is never read.
+src/screens/admin/SupportChatScreen.tsx(18,30): error TS2307: Cannot find module '@petspark/shared/core/logger' or its corresponding type declarations.
+src/screens/admin/SupportChatScreen.tsx(37,10): error TS6133: 'selectedTicket' is declared but its value is never read.
+src/utils/api-client.ts(13,54): error TS4111: Property 'EXPO_PUBLIC_API_URL' comes from an index signature, so it must be accessed with ['EXPO_PUBLIC_API_URL'].
+src/utils/api-client.ts(14,24): error TS4111: Property 'EXPO_PUBLIC_API_URL' comes from an index signature, so it must be accessed with ['EXPO_PUBLIC_API_URL'].
+src/utils/api-client.ts(71,38): error TS2379: Argument of type '{ method: string; body: string | undefined; timeout?: number; cache?: RequestCache; credentials?: RequestCredentials; headers?: HeadersInit; integrity?: string; keepalive?: boolean; mode?: RequestMode; ... 5 more ...; window?: null; }' is not assignable to parameter of type 'RequestOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'body' are incompatible.
+    Type 'string | undefined' is not assignable to type 'BodyInit | null'.
+      Type 'undefined' is not assignable to type 'BodyInit | null'.
+src/utils/api-client.ts(79,38): error TS2379: Argument of type '{ method: string; body: string | undefined; timeout?: number; cache?: RequestCache; credentials?: RequestCredentials; headers?: HeadersInit; integrity?: string; keepalive?: boolean; mode?: RequestMode; ... 5 more ...; window?: null; }' is not assignable to parameter of type 'RequestOptions' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'body' are incompatible.
+    Type 'string | undefined' is not assignable to type 'BodyInit | null'.
+      Type 'undefined' is not assignable to type 'BodyInit | null'.
+../../packages/motion/src/recipes/haptic.ts(29,31): error TS2307: Cannot find module 'expo-haptics' or its corresponding type declarations.
+../../packages/motion/src/recipes/useHoverLift.ts(58,3): error TS2375: Type '{ onMouseEnter: (() => void) | undefined; onMouseLeave: (() => void) | undefined; animatedStyle: { transform: ({ translateY: number; scale?: never; } | { scale: number; translateY?: never; })[]; }; }' is not assignable to type 'UseHoverLiftReturn' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'onMouseEnter' are incompatible.
+    Type '(() => void) | undefined' is not assignable to type '() => void'.
+      Type 'undefined' is not assignable to type '() => void'.
+../../packages/motion/src/recipes/useMagnetic.ts(39,31): error TS2307: Cannot find module 'react-native-gesture-handler' or its corresponding type declarations.
+undefined
+/home/ben/Public/PETSPARK/apps/native:
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 2: tsc --noEmit
+ ELIFECYCLE  Command failed with exit code 1.

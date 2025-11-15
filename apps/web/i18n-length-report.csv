@@ -1,0 +1,468 @@
+Key,EN Length,BG Length,Max Length,Bucket,Status,EN Text Preview,BG Text Preview,Ratio
+"app.title",12,12,12,"0-30","OK","PawfectMatch","PawfectMatch",1.00
+"app.tagline",33,28,33,"31-60","OK","AI-Powered Pet Companion Matching","AI Подбор на Домашни Любимци",0.85
+"nav.discover",8,9,9,"0-30","OK","Discover","Откриване",1.13
+"nav.matches",7,10,10,"0-30","OK","Matches","Съвпадения",1.43
+"nav.map",3,5,5,"0-30","OK","Map","Карта",1.67
+"nav.chat",4,3,4,"0-30","OK","Chat","Чат",0.75
+"nav.community",9,7,9,"0-30","OK","Community","Общност",0.78
+"nav.adoption",5,11,11,"0-30","OK","Adopt","Осиновяване",2.20
+"nav.profile",7,6,7,"0-30","OK","Profile","Профил",0.86
+"discover.title",24,33,33,"31-60","OK","Discover Perfect Matches","Откриване на Перфектни Съвпадения",1.38
+"discover.subtitle",30,31,31,"31-60","OK","Find compatible companions for","Намерете съвместими спътници за",1.03
+"discover.createProfile",25,32,32,"31-60","OK","Create Your Pet's Profile","Създайте Профил на Вашия Любимец",1.28
+"discover.createProfileDesc",72,78,78,"61-120","WARNING","Start matching by creating a profile for your pet ...","Започнете съвпадения, като създадете профил за ваш...",1.08
+"discover.noMore",24,32,32,"31-60","OK","No More Pets to Discover","Няма Повече Любимци за Откриване",1.33
+"discover.noMoreDesc",44,52,52,"31-60","OK","Check back later for more potential matches!","Проверете по-късно за повече потенциални съвпадени...",1.18
+"discover.noMoreDescAdjust",57,79,79,"61-120","WARNING","Try adjusting your filters to see more potential m...","Опитайте да коригирате филтрите си, за да видите п...",1.39
+"discover.filters",7,6,7,"0-30","OK","Filters","Филтри",0.86
+"discover.analyzePhoto",17,19,19,"0-30","OK","AI Photo Analysis","AI Анализ на Снимка",1.12
+"discover.compatibility",13,12,13,"0-30","OK","Compatibility","Съвместимост",0.92
+"discover.viewDetails",12,13,13,"0-30","OK","View Details","Вижте Детайли",1.08
+"discover.skip",4,8,8,"0-30","OK","Skip","Пропусни",2.00
+"discover.like",4,7,7,"0-30","OK","Like","Харесай",1.75
+"discover.pass",4,8,8,"0-30","OK","Pass","Прескочи",2.00
+"discover.match",5,10,10,"0-30","OK","Match","Съвпадение",2.00
+"discover.about",5,2,5,"0-30","OK","ABOUT","ЗА",0.40
+"discover.whyMatch",16,19,19,"0-30","OK","WHY YOU'LL MATCH","ЗАЩО ЩЕ СЕ ХАРЕСАТЕ",1.19
+"discover.personality",11,7,11,"0-30","OK","PERSONALITY","ЛИЧНОСТ",0.64
+"discover.swipeHintPass",4,8,8,"0-30","OK","Pass","Прескочи",2.00
+"discover.swipeHintLike",4,7,7,"0-30","OK","Like","Харесай",1.75
+"matches.title",12,17,17,"0-30","OK","Your Matches","Вашите Съвпадения",1.42
+"matches.subtitle",17,17,17,"0-30","OK","perfect companion","перфектен спътник",1.00
+"matches.subtitlePlural",24,27,27,"0-30","OK","perfect companions found","перфектни спътници намерени",1.13
+"matches.noMatches",14,23,23,"0-30","OK","No Matches Yet","Все Още Няма Съвпадения",1.64
+"matches.noMatchesDesc",65,81,81,"61-120","WARNING","Start swiping in the Discover section to find perf...","Започнете да преглеждате в секцията Откриване, за ...",1.25
+"matches.startChat",14,13,14,"0-30","OK","Start Chatting","Започнете Чат",0.93
+"matches.viewProfile",12,12,12,"0-30","OK","View Profile","Вижте Профил",1.00
+"matches.compatibility",13,12,13,"0-30","OK","Compatibility","Съвместимост",0.92
+"matches.whyMatched",15,17,17,"0-30","OK","WHY YOU MATCHED","ЗАЩО СЕ ХАРЕСАХТЕ",1.13
+"matches.compatibilityWith",18,14,18,"0-30","OK","Compatibility with","Съвместимост с",0.78
+"chat.title",8,9,9,"0-30","OK","Messages","Съобщения",1.13
+"chat.subtitle",12,8,12,"0-30","OK","conversation","разговор",0.67
+"chat.subtitlePlural",13,9,13,"0-30","OK","conversations","разговора",0.69
+"chat.noChats",20,22,22,"0-30","OK","No conversations yet","Все още няма разговори",1.10
+"chat.noChatsDesc",34,41,41,"31-60","OK","Match with pets to start chatting!","Намерете съвпадения, за да започнете чат!",1.21
+"chat.createProfile",23,32,32,"31-60","OK","Create Your Pet Profile","Създайте Профил на Вашия Любимец",1.39
+"chat.createProfileDesc",52,69,69,"61-120","WARNING","Create a pet profile to start chatting with matche...","Създайте профил на любимец, за да започнете да чат...",1.33
+"chat.selectConversation",21,17,21,"0-30","OK","Select a conversation","Изберете разговор",0.81
+"chat.selectConversationDesc",32,40,40,"31-60","OK","Choose a match to start chatting","Изберете съвпадение, за да започнете чат",1.25
+"chat.typeMessage",17,21,21,"0-30","OK","Type a message...","Напишете съобщение...",1.24
+"chat.send",4,7,7,"0-30","OK","Send","Изпрати",1.75
+"chat.stickers",8,7,8,"0-30","OK","Stickers","Стикери",0.88
+"chat.typing",9,7,9,"0-30","OK","typing...","пише...",0.78
+"chat.online",6,6,6,"0-30","OK","Online","Онлайн",1.00
+"chat.offline",7,6,7,"0-30","OK","Offline","Офлайн",0.86
+"profile.title",12,13,13,"0-30","OK","Your Profile","Вашият Профил",1.08
+"profile.subtitle",7,6,7,"0-30","OK","profile","профил",0.86
+"profile.subtitlePlural",8,7,8,"0-30","OK","profiles","профила",0.88
+"profile.myPets",9,14,14,"0-30","OK","Your Pets","Вашите Любимци",1.56
+"profile.addPet",7,14,14,"0-30","OK","Add Pet","Добави Любимец",2.00
+"profile.noPets",11,20,20,"0-30","OK","No pets yet","Все още няма любимци",1.82
+"profile.noPetsDesc",128,108,128,"120+","CRITICAL","Get started by creating a profile for your pet. Sh...","Започнете, като създадете профил за вашия любимец....",0.84
+"profile.createProfile",25,32,32,"31-60","OK","Create Your Pet's Profile","Създайте Профил на Вашия Любимец",1.28
+"profile.createProfileBtn",18,24,24,"0-30","OK","Create Pet Profile","Създай Профил на Любимец",1.33
+"profile.stats",10,17,17,"0-30","OK","Your Stats","Вашата Статистика",1.70
+"profile.totalMatches",13,15,15,"0-30","OK","Total Matches","Общо Съвпадения",1.15
+"profile.totalSwipes",11,18,18,"0-30","OK","Pets Viewed","Прегледани Любимци",1.64
+"profile.successRate",12,16,16,"0-30","OK","Success Rate","Процент на Успех",1.33
+"profile.settings",8,9,9,"0-30","OK","Settings","Настройки",1.13
+"profile.darkMode",9,11,11,"0-30","OK","Dark Mode","Тъмен Режим",1.22
+"profile.language",8,4,8,"0-30","OK","Language","Език",0.50
+"profile.yearsOld",9,6,9,"0-30","OK","years old","години",0.67
+"petProfile.name",4,3,4,"0-30","OK","Name","Име",0.75
+"petProfile.breed",5,6,6,"0-30","OK","Breed","Порода",1.20
+"petProfile.age",3,7,7,"0-30","OK","Age","Възраст",2.33
+"petProfile.size",4,6,6,"0-30","OK","Size","Размер",1.50
+"petProfile.location",8,14,14,"0-30","OK","Location","Местоположение",1.75
+"petProfile.personality",11,7,11,"0-30","OK","Personality","Личност",0.64
+"petProfile.interests",9,8,9,"0-30","OK","Interests","Интереси",0.89
+"petProfile.about",5,2,5,"0-30","OK","About","За",0.40
+"petProfile.photos",6,6,6,"0-30","OK","Photos","Снимки",1.00
+"petProfile.owner",5,10,10,"0-30","OK","Owner","Собственик",2.00
+"petProfile.distance",13,10,13,"0-30","OK","Distance away","Разстояние",0.77
+"petProfile.lookingFor",11,5,11,"0-30","OK","Looking For","Търси",0.45
+"petProfile.gender",6,3,6,"0-30","OK","Gender","Пол",0.50
+"petProfile.male",4,5,5,"0-30","OK","Male","Мъжки",1.25
+"petProfile.female",6,6,6,"0-30","OK","Female","Женски",1.00
+"petProfile.bio",3,9,9,"0-30","OK","Bio","Биография",3.00
+"filters.title",17,19,19,"0-30","OK","Discovery Filters","Филтри за Откриване",1.12
+"filters.age",9,18,18,"0-30","OK","Age Range","Възрастов Диапазон",2.00
+"filters.ageMin",11,17,17,"0-30","OK","Minimum Age","Минимална Възраст",1.55
+"filters.ageMax",11,18,18,"0-30","OK","Maximum Age","Максимална Възраст",1.64
+"filters.size",4,6,6,"0-30","OK","Size","Размер",1.50
+"filters.distance",16,21,21,"0-30","OK","Maximum Distance","Максимално Разстояние",1.31
+"filters.small",5,5,5,"0-30","OK","Small","Малък",1.00
+"filters.medium",6,6,6,"0-30","OK","Medium","Среден",1.00
+"filters.large",5,5,5,"0-30","OK","Large","Голям",1.00
+"filters.extraLarge",11,11,11,"0-30","OK","Extra Large","Много Голям",1.00
+"filters.apply",13,14,14,"0-30","OK","Apply Filters","Приложи Филтри",1.08
+"filters.reset",5,7,7,"0-30","OK","Reset","Нулирай",1.40
+"filters.yearsOld",9,6,9,"0-30","OK","years old","години",0.67
+"filters.km",2,2,2,"0-30","OK","km","км",1.00
+"createPet.title",18,24,24,"0-30","OK","Create Pet Profile","Създай Профил на Любимец",1.33
+"createPet.editTitle",16,28,28,"0-30","OK","Edit Pet Profile","Редактирай Профил на Любимец",1.75
+"createPet.uploadPhoto",12,11,12,"0-30","OK","Upload Photo","Качи Снимка",0.92
+"createPet.analyzeWithAI",21,22,22,"0-30","OK","Analyze Photo with AI","Анализирай Снимка с AI",1.05
+"createPet.analyzing",12,14,14,"0-30","OK","Analyzing...","Анализиране...",1.17
+"createPet.basicInfo",17,18,18,"0-30","OK","Basic Information","Основна Информация",1.06
+"createPet.name",8,14,14,"0-30","OK","Pet Name","Име на Любимец",1.75
+"createPet.namePlaceholder",9,11,11,"0-30","OK","e.g., Max","напр., Макс",1.22
+"createPet.breed",5,6,6,"0-30","OK","Breed","Порода",1.20
+"createPet.breedPlaceholder",22,22,22,"0-30","OK","e.g., Golden Retriever","напр., Голдън Ретривър",1.00
+"createPet.age",3,7,7,"0-30","OK","Age","Възраст",2.33
+"createPet.ageYears",5,6,6,"0-30","OK","years","години",1.20
+"createPet.gender",6,3,6,"0-30","OK","Gender","Пол",0.50
+"createPet.male",4,5,5,"0-30","OK","Male","Мъжки",1.25
+"createPet.female",6,6,6,"0-30","OK","Female","Женски",1.00
+"createPet.size",4,6,6,"0-30","OK","Size","Размер",1.50
+"createPet.small",5,5,5,"0-30","OK","Small","Малък",1.00
+"createPet.medium",6,6,6,"0-30","OK","Medium","Среден",1.00
+"createPet.large",5,5,5,"0-30","OK","Large","Голям",1.00
+"createPet.extraLarge",11,11,11,"0-30","OK","Extra Large","Много Голям",1.00
+"createPet.location",8,14,14,"0-30","OK","Location","Местоположение",1.75
+"createPet.locationPlaceholder",23,22,23,"0-30","OK","e.g., San Francisco, CA","напр., София, България",0.96
+"createPet.bio",3,9,9,"0-30","OK","Bio","Биография",3.00
+"createPet.bioPlaceholder",25,32,32,"31-60","OK","Tell us about your pet...","Разкажете ни за вашия любимец...",1.28
+"createPet.personality",18,18,18,"0-30","OK","Personality Traits","Черти на Характера",1.00
+"createPet.interests",9,8,9,"0-30","OK","Interests","Интереси",0.89
+"createPet.lookingFor",11,5,11,"0-30","OK","Looking For","Търси",0.45
+"createPet.save",12,13,13,"0-30","OK","Save Profile","Запази Профил",1.08
+"createPet.cancel",6,6,6,"0-30","OK","Cancel","Откажи",1.00
+"createPet.fillRequired",34,42,42,"31-60","OK","Please fill in all required fields","Моля, попълнете всички задължителни полета",1.24
+"createPet.profileCreated",33,39,39,"31-60","OK","Pet profile created successfully!","Профилът на любимец е създаден успешно!",1.18
+"createPet.profileUpdated",33,43,43,"31-60","OK","Pet profile updated successfully!","Профилът на любимец е актуализиран успешно!",1.30
+"welcome.title",23,26,26,"0-30","OK","Welcome to PawfectMatch","Добре дошли в PawfectMatch",1.13
+"welcome.subtitle",30,35,35,"31-60","OK","Smarter matches. Happier pets.","По-умни срещи. По-щастливи любимци.",1.17
+"welcome.proof1",14,15,15,"0-30","OK","Smart Matching","Умно Съвпадение",1.07
+"welcome.proof2",9,11,11,"0-30","OK","Safe Chat","Сигурен Чат",1.22
+"welcome.proof3",17,16,17,"0-30","OK","Trusted Community","Доверена Общност",0.94
+"welcome.getStarted",11,7,11,"0-30","OK","Get started","Започни",0.64
+"welcome.signIn",25,16,25,"0-30","OK","I already have an account","Вече имам акаунт",0.64
+"welcome.explore",13,15,15,"0-30","OK","Explore first","Разгледай първо",1.15
+"welcome.legal",30,31,31,"31-60","OK","By continuing you agree to our","Продължавайки, прием��те нашите",1.03
+"welcome.terms",5,12,12,"0-30","OK","Terms","Общи условия",2.40
+"welcome.and",3,1,3,"0-30","OK","and","и",0.33
+"welcome.privacy",7,25,25,"0-30","OK","Privacy","Политика за поверителност",3.57
+"welcome.offlineMessage",55,71,71,"61-120","WARNING","You're offline. Reconnect to continue or explore l...","Нямате връзка. Свържете се, за да продължите, или ...",1.29
+"welcome.deepLinkMessage",42,45,45,"31-60","OK","We'll take you to your link after sign-in.","Ще ви отведем към вашата връзка след влизане.",1.07
+"auth.signInTitle",12,18,18,"0-30","OK","Welcome Back","Добре дошли отново",1.50
+"auth.signInSubtitle",35,39,39,"31-60","OK","Sign in to continue to PawfectMatch","Влезте, за да продължите в PawfectMatch",1.11
+"auth.signIn",7,4,7,"0-30","OK","Sign In","Вход",0.57
+"auth.signUpTitle",14,15,15,"0-30","OK","Create Account","Създайте Акаунт",1.07
+"auth.signUpSubtitle",54,84,84,"61-120","WARNING","Join PawfectMatch to find your pet's perfect compa...","Присъединете се към PawfectMatch, за да намерите п...",1.56
+"auth.signUp",7,11,11,"0-30","OK","Sign up","Регистрация",1.57
+"auth.createAccount",14,15,15,"0-30","OK","Create Account","Създайте Акаунт",1.07
+"auth.email",5,5,5,"0-30","OK","Email","Имейл",1.00
+"auth.emailPlaceholder",15,14,15,"0-30","OK","you@example.com","вие@пример.com",0.93
+"auth.emailRequired",17,22,22,"0-30","OK","Email is required","Имейлът е задължителен",1.29
+"auth.emailInvalid",26,28,28,"0-30","OK","Please enter a valid email","Моля, въведете валиден имейл",1.08
+"auth.password",8,6,8,"0-30","OK","Password","Парола",0.75
+"auth.passwordPlaceholder",8,8,8,"0-30","OK","••••••••","••••••••",1.00
+"auth.passwordRequired",20,23,23,"0-30","OK","Password is required","Паролата е задължителна",1.15
+"auth.passwordTooShort",38,38,38,"31-60","OK","Password must be at least 6 characters","Паролата трябва да бъде поне 6 символа",1.00
+"auth.confirmPassword",16,19,19,"0-30","OK","Confirm Password","Потвърдете Паролата",1.19
+"auth.confirmPasswordPlaceholder",8,8,8,"0-30","OK","••••••••","••••••••",1.00
+"auth.confirmPasswordRequired",28,28,28,"0-30","OK","Please confirm your password","Моля, потвърдете паролата си",1.00
+"auth.passwordMismatch",22,20,22,"0-30","OK","Passwords do not match","Паролите не съвпадат",0.91
+"auth.name",9,9,9,"0-30","OK","Full Name","Пълно Име",1.00
+"auth.namePlaceholder",8,11,11,"0-30","OK","John Doe","Иван Иванов",1.38
+"auth.nameRequired",16,20,20,"0-30","OK","Name is required","Името е задължително",1.25
+"auth.nameTooShort",34,35,35,"31-60","OK","Name must be at least 2 characters","Името трябва да бъде поне 2 символа",1.03
+"auth.forgotPassword",16,17,17,"0-30","OK","Forgot password?","Забравена парола?",1.06
+"auth.forgotPasswordInfo",47,60,60,"31-60","OK","Password reset link would be sent to your email","Линк за нулиране на паролата ще бъде изпратен на в...",1.28
+"auth.noAccount",22,14,22,"0-30","OK","Don't have an account?","Нямате акаунт?",0.64
+"auth.hasAccount",24,18,24,"0-30","OK","Already have an account?","Вече имате акаунт?",0.75
+"auth.or",2,3,3,"0-30","OK","or","или",1.50
+"auth.agreeToTerms",14,7,14,"0-30","OK","I agree to the","Приемам",0.50
+"auth.terms",16,14,16,"0-30","OK","Terms of Service","Общите условия",0.88
+"auth.and",3,1,3,"0-30","OK","and","и",0.33
+"auth.privacyPolicy",14,27,27,"0-30","OK","Privacy Policy","Политиката за поверителност",1.93
+"auth.termsRequired",46,63,63,"61-120","WARNING","You must agree to the Terms and Privacy Policy","Трябва да приемете Общите условия и Политиката за ...",1.37
+"auth.signInSuccess",13,19,19,"0-30","OK","Welcome back!","Добре дошли отново!",1.46
+"auth.signInError",36,38,38,"31-60","OK","Failed to sign in. Please try again.","Неуспешен вход. Моля, опитайте отново.",1.06
+"auth.signUpSuccess",29,28,29,"0-30","OK","Account created successfully!","Акаунтът е създаден успешно!",0.97
+"auth.signUpError",43,53,53,"31-60","OK","Failed to create account. Please try again.","Неуспешно създаване на акаунт. Моля, опитайте отно...",1.23
+"common.loading",10,12,12,"0-30","OK","Loading...","Зареждане...",1.20
+"common.error",5,6,6,"0-30","OK","Error","Грешка",1.20
+"common.save",4,6,6,"0-30","OK","Save","Запази",1.50
+"common.cancel",6,6,6,"0-30","OK","Cancel","Откажи",1.00
+"common.delete",6,6,6,"0-30","OK","Delete","Изтрий",1.00
+"common.edit",4,10,10,"0-30","OK","Edit","Редактирай",2.50
+"common.close",5,7,7,"0-30","OK","Close","Затвори",1.40
+"common.confirm",7,8,8,"0-30","OK","Confirm","Потвърди",1.14
+"common.yes",3,2,3,"0-30","OK","Yes","Да",0.67
+"common.no",2,2,2,"0-30","OK","No","Не",1.00
+"common.ok",2,2,2,"0-30","OK","OK","ОК",1.00
+"common.back",4,5,5,"0-30","OK","Back","Назад",1.25
+"common.ago",3,5,5,"0-30","OK","ago","преди",1.67
+"common.just_now",8,7,8,"0-30","OK","just now","току що",0.88
+"common.minutes",7,6,7,"0-30","OK","minutes","минути",0.86
+"common.hours",5,4,5,"0-30","OK","hours","часа",0.80
+"common.days",4,3,4,"0-30","OK","days","дни",0.75
+"common.years",9,6,9,"0-30","OK","years old","години",0.67
+"common.year_singular",8,6,8,"0-30","OK","year old","година",0.75
+"common.km",2,2,2,"0-30","OK","km","км",1.00
+"common.match",6,11,11,"0-30","OK","Match!","Съвпадение!",1.83
+"common.itsAMatch",13,17,17,"0-30","OK","It's a Match!","Имате Съвпадение!",1.31
+"common.and",3,1,3,"0-30","OK","and","и",0.33
+"common.areNowConnected",18,17,18,"0-30","OK","are now connected!","вече са свързани!",0.94
+"common.posting",10,14,14,"0-30","OK","Posting...","Публикуване...",1.40
+"common.post",4,10,10,"0-30","OK","Post","Публикувай",2.50
+"common.submitting",13,12,13,"0-30","OK","Submitting...","Изпращане...",0.92
+"traits.Playful",7,5,7,"0-30","OK","Playful","Игрив",0.71
+"traits.Calm",4,7,7,"0-30","OK","Calm","Спокоен",1.75
+"traits.Energetic",9,9,9,"0-30","OK","Energetic","Енергичен",1.00
+"traits.Gentle",6,5,6,"0-30","OK","Gentle","Нежен",0.83
+"traits.Social",6,9,9,"0-30","OK","Social","Общителен",1.50
+"traits.Independent",11,9,11,"0-30","OK","Independent","Независим",0.82
+"traits.Affectionate",12,7,12,"0-30","OK","Affectionate","Обичлив",0.58
+"traits.Curious",7,9,9,"0-30","OK","Curious","Любопитен",1.29
+"traits.Protective",10,21,21,"0-30","OK","Protective","Защитнически настроен",2.10
+"traits.Loyal",5,5,5,"0-30","OK","Loyal","Верен",1.00
+"traits.Friendly",8,19,19,"0-30","OK","Friendly","Приятелски настроен",2.38
+"traits.Quiet",5,3,5,"0-30","OK","Quiet","Тих",0.60
+"interests.Fetch",5,7,7,"0-30","OK","Fetch","Търсене",1.40
+"interests.Swimming",8,7,8,"0-30","OK","Swimming","Плуване",0.88
+"interests.Hiking",6,7,7,"0-30","OK","Hiking","Туризъм",1.17
+"interests.Running",7,6,7,"0-30","OK","Running","Бягане",0.86
+"interests.Cuddling",8,9,9,"0-30","OK","Cuddling","Прегръдки",1.13
+"interests.Treats",6,9,9,"0-30","OK","Treats","Лакомства",1.50
+"interests.Toys",4,7,7,"0-30","OK","Toys","Играчки",1.75
+"interests.Parks",5,7,7,"0-30","OK","Parks","Паркове",1.40
+"interests.Beach",5,4,5,"0-30","OK","Beach","Плаж",0.80
+"interests.Car Rides",9,15,15,"0-30","OK","Car Rides","Разходки с Кола",1.67
+"interests.Napping",7,6,7,"0-30","OK","Napping","Дрямка",0.86
+"interests.Exploring",9,10,10,"0-30","OK","Exploring","Изследване",1.11
+"lookingFor.Playdate",8,13,13,"0-30","OK","Playdate","Среща за Игра",1.63
+"lookingFor.Walking Buddy",13,19,19,"0-30","OK","Walking Buddy","Приятел за Разходка",1.46
+"lookingFor.Best Friend",11,17,17,"0-30","OK","Best Friend","Най-добър Приятел",1.55
+"lookingFor.Training Partner",16,22,22,"0-30","OK","Training Partner","Партньор за Тренировка",1.38
+"lookingFor.Cuddle Companion",16,20,20,"0-30","OK","Cuddle Companion","Спътник за Прегръдки",1.25
+"lookingFor.Adventure Buddy",15,22,22,"0-30","OK","Adventure Buddy","Приятел за Приключения",1.47
+"map.interactiveMap",15,18,18,"0-30","OK","Interactive Map","Интерактивна Карта",1.20
+"map.mapDescription",113,190,190,"120+","CRITICAL","Discover pet-friendly places, plan playdates, and ...","Откривайте места, приятелски настроени към домашни...",1.68
+"map.searchPlaceholder",16,19,19,"0-30","OK","Search places...","Търсене на места...",1.19
+"map.locationEnabled",16,29,29,"0-30","OK","Location enabled","Местоположението е активирано",1.81
+"map.locationDenied",47,83,83,"61-120","WARNING","Location access denied. Using default location.","Достъпът до местоположение е отказан. Използване н...",1.77
+"map.approximateLocation",26,42,42,"31-60","OK","Using approximate location","Използване на приблизително местоположение",1.62
+"map.enablePrecisePrompt",62,67,67,"61-120","WARNING","Enable precise location for live meet-ups and exac...","Активирайте точно местоположение за срещи на живо ...",1.08
+"map.enable",6,9,9,"0-30","OK","Enable","Активирай",1.50
+"map.preciseEnabled",23,32,32,"31-60","OK","Precise location active","Точното местоположение е активно",1.39
+"map.preciseExpires",10,11,11,"0-30","OK","Expires in","Изтича след",1.10
+"map.disable",7,11,11,"0-30","OK","Disable","Деактивирай",1.57
+"map.precisionEnabled",39,44,44,"31-60","OK","Precise location enabled for 60 minutes","Точно местоположение активирано за 60 минути",1.13
+"map.precisionDisabled",25,37,37,"31-60","OK","Precise location disabled","Точното местоположение е деактивирано",1.48
+"map.precisionExpired",30,44,44,"31-60","OK","Precise location sharing ended","Споделянето на точно местоположение приключи",1.47
+"map.nearbyPlaces",13,12,13,"0-30","OK","Nearby Places","Близки Места",0.92
+"map.save",4,6,6,"0-30","OK","Save","Запази",1.50
+"map.saved",5,8,8,"0-30","OK","Saved","Запазено",1.60
+"map.placeSaved",11,18,18,"0-30","OK","Place saved","Мястото е запазено",1.64
+"map.placeRemoved",24,34,34,"31-60","OK","Place removed from saved","Мястото е премахнато от запазените",1.42
+"map.navigate",8,9,9,"0-30","OK","Navigate","Навигирай",1.13
+"map.placesNearby",6,5,6,"0-30","OK","Places","Места",0.83
+"map.radiusKm",9,9,9,"0-30","OK","km radius","км радиус",1.00
+"map.viewMode",4,6,6,"0-30","OK","View","Изглед",1.50
+"map.cards",5,5,5,"0-30","OK","Cards","Карти",1.00
+"map.mapView",3,5,5,"0-30","OK","Map","Карта",1.67
+"map.planPlaydate",13,14,14,"0-30","OK","Plan Playdate","Планирай Среща",1.08
+"map.choosePlace",14,14,14,"0-30","OK","Choose a place","Избор на място",1.00
+"map.selectLocation",15,23,23,"0-30","OK","Select Location","Избор на Местоположение",1.53
+"map.shareLocation",14,22,22,"0-30","OK","Share location","Сподели местоположение",1.57
+"map.openInMaps",12,14,14,"0-30","OK","Open in Maps","Отвори в Карти",1.17
+"map.locationShared",15,28,28,"0-30","OK","Location shared","Местоположението е споделено",1.87
+"map.lostAndFound",12,19,19,"0-30","OK","Lost & Found","Изгубени и намерени",1.58
+"map.reportLost",15,25,25,"0-30","OK","Report Lost Pet","Докладвай изгубен любимец",1.67
+"map.reportSighting",15,21,21,"0-30","OK","Report Sighting","Докладвай забелязване",1.40
+"map.lastSeen",9,14,14,"0-30","OK","Last seen","Последно видян",1.56
+"map.sightings",9,12,12,"0-30","OK","Sightings","Забелязвания",1.33
+"map.contactInfo",19,21,21,"0-30","OK","Contact Information","Информация за контакт",1.11
+"map.preferredArea",14,17,17,"0-30","OK","Preferred Area","Предпочитана зона",1.21
+"map.updateArea",11,17,17,"0-30","OK","Update Area","Актуализирай зона",1.55
+"map.yourArea",9,11,11,"0-30","OK","Your Area","Вашата зона",1.22
+"map.selectYourArea",46,55,55,"31-60","OK","Select your area to get better recommendations","Изберете вашата зона, за да получите по-добри преп...",1.20
+"map.categoryPark",4,4,4,"0-30","OK","Park","Парк",1.00
+"map.categoryVet",3,9,9,"0-30","OK","Vet","Ветеринар",3.00
+"map.categoryGroomer",7,7,7,"0-30","OK","Groomer","Груминг",1.00
+"map.categoryCafe",8,17,17,"0-30","OK","Pet Café","Кафене за Любимци",2.13
+"map.categoryStore",9,10,10,"0-30","OK","Pet Store","Зоомагазин",1.11
+"map.verified",8,9,9,"0-30","OK","Verified","Проверено",1.13
+"map.openNow",8,13,13,"0-30","OK","Open Now","Отворено сега",1.63
+"map.closed",6,9,9,"0-30","OK","Closed","Затворено",1.50
+"map.amenities",9,8,9,"0-30","OK","Amenities","Удобства",0.89
+"map.hours",5,13,13,"0-30","OK","Hours","Работно време",2.60
+"map.phone",5,7,7,"0-30","OK","Phone","Телефон",1.40
+"map.website",7,7,7,"0-30","OK","Website","Уебсайт",1.00
+"map.distance",8,10,10,"0-30","OK","Distance","Разстояние",1.25
+"map.tapToSelect",13,25,25,"0-30","OK","Tap to select","Докоснете, за да изберете",1.92
+"map.selected",8,7,8,"0-30","OK","Selected","Избрано",0.88
+"map.confirm",7,8,8,"0-30","OK","Confirm","Потвърди",1.14
+"map.noPlacesFound",15,20,20,"0-30","OK","No places found","Не са намерени места",1.33
+"map.tryDifferentSearch",34,39,39,"31-60","OK","Try a different search or category","Опитайте различно търсене или категория",1.15
+"map.loading",14,21,21,"0-30","OK","Loading map...","Зареждане на карта...",1.50
+"map.errorLoadingMap",17,31,31,"31-60","OK","Error loading map","Грешка при зареждане на картата",1.82
+"map.retryLocation",5,13,13,"0-30","OK","Retry","Опитай отново",2.60
+"community.title",9,7,9,"0-30","OK","Community","Общност",0.78
+"community.feed",4,5,5,"0-30","OK","Feed","Поток",1.25
+"community.forYou",7,6,7,"0-30","OK","For You","За Вас",0.86
+"community.following",9,10,10,"0-30","OK","Following","Последвани",1.11
+"community.createPost",11,17,17,"0-30","OK","Create Post","Създай Публикация",1.55
+"community.whatsOnYourMind",20,14,20,"0-30","OK","What's on your mind?","Какво мислите?",0.70
+"community.shareUpdate",33,36,36,"31-60","OK","Share an update about your pet...","Споделете новина за вашия любимец...",1.09
+"community.post",4,10,10,"0-30","OK","Post","Публикувай",2.50
+"community.posting",10,14,14,"0-30","OK","Posting...","Публикуване...",1.40
+"community.postSuccess",25,33,33,"31-60","OK","Post shared successfully!","Публикацията е споделена успешно!",1.32
+"community.postError",20,33,33,"31-60","OK","Failed to share post","Неуспешно споделяне на публикация",1.65
+"community.refreshed",15,18,18,"0-30","OK","Feed refreshed!","Потокът е обновен!",1.20
+"community.refreshError",17,20,20,"0-30","OK","Failed to refresh","Неуспешно обновяване",1.18
+"community.addPhotos",10,13,13,"0-30","OK","Add Photos","Добави Снимки",1.30
+"community.addVideo",9,12,12,"0-30","OK","Add Video","Добави Видео",1.33
+"community.tagPets",8,16,16,"0-30","OK","Tag Pets","Отбележи Любимци",2.00
+"community.addLocation",12,21,21,"0-30","OK","Add Location","Добави Местоположение",1.75
+"community.visibility",10,8,10,"0-30","OK","Visibility","Видимост",0.80
+"community.public",6,8,8,"0-30","OK","Public","Публична",1.33
+"community.matchesOnly",12,15,15,"0-30","OK","Matches Only","Само Съвпадения",1.25
+"community.private",7,6,7,"0-30","OK","Private","Частна",0.86
+"community.showMore",9,13,13,"0-30","OK","Show more","Покажи повече",1.44
+"community.showLess",9,15,15,"0-30","OK","Show less","Покажи по-малко",1.67
+"community.like",4,9,9,"0-30","OK","Like","Харесване",2.25
+"community.liked",5,8,8,"0-30","OK","Liked","Харесано",1.60
+"community.comment",7,8,8,"0-30","OK","Comment","Коментар",1.14
+"community.comments",8,9,9,"0-30","OK","Comments","Коментари",1.13
+"community.reply",5,7,7,"0-30","OK","Reply","Отговор",1.40
+"community.replies",7,8,8,"0-30","OK","Replies","Отговори",1.14
+"community.share",5,7,7,"0-30","OK","Share","Сподели",1.40
+"community.save",4,6,6,"0-30","OK","Save","Запази",1.50
+"community.saved",6,9,9,"0-30","OK","Saved!","Запазено!",1.50
+"community.unsaved",18,24,24,"0-30","OK","Removed from saved","Премахнато от запазените",1.33
+"community.linkCopied",24,31,31,"31-60","OK","Link copied to clipboard","Връзката е копирана в клипборда",1.29
+"community.viewComments",13,15,15,"0-30","OK","View comments","Вижте коментари",1.15
+"community.writeComment",18,20,20,"0-30","OK","Write a comment...","Напишете коментар...",1.11
+"community.postComment",4,10,10,"0-30","OK","Post","Публикувай",2.50
+"community.deletePost",11,17,17,"0-30","OK","Delete Post","Изтрий Публикация",1.55
+"community.editPost",9,21,21,"0-30","OK","Edit Post","Редактирай Публикация",2.33
+"community.reportPost",11,20,20,"0-30","OK","Report Post","Докладвай Публикация",1.82
+"community.deleteConfirm",42,54,54,"31-60","OK","Are you sure you want to delete this post?","Сигурни ли сте, че искате да изтриете тази публика...",1.29
+"community.report",6,9,9,"0-30","OK","Report","Докладвай",1.50
+"community.reportReason",17,21,21,"0-30","OK","Reason for report","Причина за докладване",1.24
+"community.spam",4,4,4,"0-30","OK","Spam","Спам",1.00
+"community.harassment",10,6,10,"0-30","OK","Harassment","Тормоз",0.60
+"community.inappropriate",21,22,22,"0-30","OK","Inappropriate Content","Неподходящо Съдържание",1.05
+"community.misleading",10,10,10,"0-30","OK","Misleading","Подвеждащо",1.00
+"community.violence",8,7,8,"0-30","OK","Violence","Насилие",0.88
+"community.hateSpeech",11,13,13,"0-30","OK","Hate Speech","Реч на Омраза",1.18
+"community.copyright",19,28,28,"0-30","OK","Copyright Violation","Нарушаване на Авторски Права",1.47
+"community.other",5,5,5,"0-30","OK","Other","Друго",1.00
+"community.reportDescription",29,33,33,"31-60","OK","Additional details (optional)","Допълнителни детайли (опционално)",1.14
+"community.reportSubmit",13,14,14,"0-30","OK","Submit Report","Изпрати Доклад",1.08
+"community.reportSuccess",28,35,35,"31-60","OK","Report submitted. Thank you!","Докладът е изпратен. Благодарим Ви!",1.25
+"community.trending",8,8,8,"0-30","OK","Trending","Актуално",1.00
+"community.explore",7,11,11,"0-30","OK","Explore","Разглеждане",1.57
+"community.topThisWeek",13,16,16,"0-30","OK","Top This Week","Топ Тази Седмица",1.23
+"community.nearMe",7,16,16,"0-30","OK","Near Me","В Близост до Мен",2.29
+"community.savedPosts",11,19,19,"0-30","OK","Saved Posts","Запазени Публикации",1.73
+"community.myPosts",8,16,16,"0-30","OK","My Posts","Моите Публикации",2.00
+"community.noPosts",12,23,23,"0-30","OK","No posts yet","Все още няма публикации",1.92
+"community.noPostsDesc",32,35,35,"31-60","OK","Be the first to share something!","Бъдете първият, който споделя нещо!",1.09
+"community.noSavedPosts",14,24,24,"0-30","OK","No saved posts","Няма запазени публикации",1.71
+"community.noSavedPostsDesc",34,49,49,"31-60","OK","Save posts to view them here later","Запазете публикации, за да ги видите тук по-късно",1.44
+"community.follow",6,9,9,"0-30","OK","Follow","Последвай",1.50
+"community.followingUser",9,9,9,"0-30","OK","Following","Последван",1.00
+"community.unfollow",8,12,12,"0-30","OK","Unfollow","Не последвай",1.50
+"community.followers",9,13,13,"0-30","OK","Followers","Последователи",1.44
+"community.viewsCount",13,16,16,"0-30","OK","{count} views","{count} прегледа",1.23
+"community.likesCount",13,18,18,"0-30","OK","{count} likes","{count} харесвания",1.38
+"community.commentsCount",16,17,17,"0-30","OK","{count} comments","{count} коментара",1.06
+"community.draft",5,7,7,"0-30","OK","Draft","Чернова",1.40
+"community.drafts",6,7,7,"0-30","OK","Drafts","Чернови",1.17
+"community.saveDraft",10,14,14,"0-30","OK","Save Draft","Запази Чернова",1.40
+"community.draftSaved",11,20,20,"0-30","OK","Draft saved","Черновата е запазена",1.82
+"community.loadMore",9,13,13,"0-30","OK","Load More","Зареди Повече",1.44
+"community.refreshFeed",12,13,13,"0-30","OK","Refresh Feed","Обнови Потока",1.08
+"community.newPosts",19,26,26,"0-30","OK","New posts available","Налични са нови публикации",1.37
+"community.offline",58,68,68,"61-120","WARNING","You're offline. Posts will be uploaded when you re...","Офлайн сте. Публикациите ще бъдат качени, когато с...",1.17
+"community.uploading",12,10,12,"0-30","OK","Uploading...","Качване...",0.83
+"community.posted",6,11,11,"0-30","OK","Posted","Публикувано",1.83
+"community.justNow",8,7,8,"0-30","OK","Just now","Току що",0.88
+"community.commentsLoadError",23,32,32,"31-60","OK","Failed to load comments","Неуспешно зареждане на коментари",1.39
+"community.commentPosted",15,24,24,"0-30","OK","Comment posted!","Коментарът е публикуван!",1.60
+"community.commentError",22,33,33,"31-60","OK","Failed to post comment","Неуспешно публикуване на коментар",1.50
+"community.noComments",15,22,22,"0-30","OK","No comments yet","Все още няма коментари",1.47
+"community.beFirst",36,41,41,"31-60","OK","Be the first to share your thoughts!","Бъдете първият, който споделя мислите си!",1.14
+"community.replyingTo",11,13,13,"0-30","OK","Replying to","Отговаряте на",1.18
+"community.replyPlaceholder",16,19,19,"0-30","OK","Write a reply...","Напишете отговор...",1.19
+"community.commentPlaceholder",18,20,20,"0-30","OK","Write a comment...","Напишете коментар...",1.11
+"community.author",6,5,6,"0-30","OK","Author","Автор",0.83
+"community.postPlaceholder",33,36,36,"31-60","OK","Share an update about your pet...","Споделете новина за вашия любимец...",1.09
+"community.postCreated",26,33,33,"31-60","OK","Post created successfully!","Публикацията е създадена успешно!",1.27
+"community.postFailed",21,33,33,"31-60","OK","Failed to create post","Неуспешно създаване на публикация",1.57
+"community.tags",4,7,7,"0-30","OK","Tags","Етикети",1.75
+"community.addTag",7,13,13,"0-30","OK","Add Tag","Добави Етикет",1.86
+"community.maxTagsReached",30,37,37,"31-60","OK","Maximum number of tags reached","Достигнат е максималният брой етикети",1.23
+"community.maxImagesReached",32,41,41,"31-60","OK","Maximum number of images reached","Достигнат е максималният брой изображения",1.28
+"community.imageAdded",11,24,24,"0-30","OK","Image added","Изображението е добавено",2.18
+"community.charsRemaining",20,14,20,"0-30","OK","characters remaining","останали знака",0.70
+"community.visibilityPublic",6,8,8,"0-30","OK","Public","Публична",1.33
+"community.visibilityMatches",12,15,15,"0-30","OK","Matches Only","Само Съвпадения",1.25
+"community.visibilityPrivate",7,6,7,"0-30","OK","Private","Частна",0.86
+"community.noFollowingPosts",28,29,29,"0-30","OK","No posts from followed users","Няма публикации от последвани",1.04
+"community.endOfFeed",11,14,14,"0-30","OK","End of feed","Край на потока",1.27
+"community.mediaNotAvailable",19,20,20,"0-30","OK","Media not available","Медията не е налична",1.05
+"community.tapToZoom",11,24,24,"0-30","OK","Tap to zoom","Докоснете за увеличаване",2.18
+"community.tapToZoomOut",15,23,23,"0-30","OK","Tap to zoom out","Докоснете за намаляване",1.53
+"community.downloadError",14,20,20,"0-30","OK","Download error","Грешка при изтегляне",1.43
+"community.downloaded",10,9,10,"0-30","OK","Downloaded","Изтеглено",0.90
+"adoption.title",8,11,11,"0-30","OK","Adoption","Осиновяване",1.38
+"adoption.subtitle",27,32,32,"31-60","OK","Find your perfect companion","Намерете вашия перфектен спътник",1.19
+"adoption.available",9,7,9,"0-30","OK","Available","Наличен",0.78
+"adoption.pending",7,10,10,"0-30","OK","Pending","В очакване",1.43
+"adoption.adopted",7,8,8,"0-30","OK","Adopted","Осиновен",1.14
+"adoption.onHold",7,10,10,"0-30","OK","On Hold","Резервиран",1.43
+"adoption.vaccinated",10,10,10,"0-30","OK","Vaccinated","Ваксиниран",1.00
+"adoption.spayedNeutered",15,22,22,"0-30","OK","Spayed/Neutered","Кастриран/Стерилизиран",1.47
+"adoption.goodWithKids",14,12,14,"0-30","OK","Good with kids","Добър с деца",0.86
+"adoption.goodWithPets",14,21,21,"0-30","OK","Good with pets","Добър с други любимци",1.50
+"adoption.adoptionFee",12,20,20,"0-30","OK","Adoption Fee","Такса за осиновяване",1.67
+"adoption.viewDetails",12,11,12,"0-30","OK","View Details","Виж Детайли",0.92
+"adoption.about",5,2,5,"0-30","OK","About","За",0.40
+"adoption.details",7,7,7,"0-30","OK","Details","Детайли",1.00
+"adoption.personality",11,7,11,"0-30","OK","Personality","Личност",0.64
+"adoption.specialNeeds",13,15,15,"0-30","OK","Special Needs","Специални Нужди",1.15
+"adoption.shelter",19,19,19,"0-30","OK","Shelter Information","Информация за приют",1.00
+"adoption.applyToAdopt",14,28,28,"0-30","OK","Apply to Adopt","Кандидатствай за Осиновяване",2.00
+"adoption.notAvailable",13,12,13,"0-30","OK","Not Available","Не е наличен",0.92
+"adoption.yes",3,2,3,"0-30","OK","Yes","Да",0.67
+"adoption.no",2,2,2,"0-30","OK","No","Не",1.00
+"adoption.age",3,7,7,"0-30","OK","Age","Възраст",2.33
+"adoption.size",4,6,6,"0-30","OK","Size","Размер",1.50
+"adoption.energy",6,7,7,"0-30","OK","Energy","Енергия",1.17
+"adoption.gender",6,3,6,"0-30","OK","Gender","Пол",0.50
+"adoption.noProfiles",30,35,35,"31-60","OK","No pets available for adoption","Няма налични любимци за осиновяване",1.17
+"adoption.noProfilesDesc",57,51,57,"31-60","OK","Check back soon for pets looking for their forever...","Проверете скоро за любимци, търсещи своя вечен дом...",0.89
+"adoption.endOfList",34,34,34,"31-60","OK","You've seen all available pets! 🐾","Видяхте всички налични любимци! 🐾",1.00
+"adoption.applicationDesc",104,104,104,"61-120","WARNING","Fill out this application to express your interest...","Попълнете тази заявка, за да изразите интерес към ...",1.00
+"adoption.contactInfo",19,21,21,"0-30","OK","Contact Information","Информация за Контакт",1.11
+"adoption.fullName",9,9,9,"0-30","OK","Full Name","Пълно Име",1.00
+"adoption.email",5,5,5,"0-30","OK","Email","Имейл",1.00
+"adoption.phone",12,15,15,"0-30","OK","Phone Number","Телефонен Номер",1.25
+"adoption.householdInfo",21,27,27,"0-30","OK","Household Information","Информация за Домакинството",1.29
+"adoption.householdType",14,15,15,"0-30","OK","Household Type","Тип Домакинство",1.07
+"adoption.house",5,4,5,"0-30","OK","House","Къща",0.80
+"adoption.apartment",9,10,10,"0-30","OK","Apartment","Апартамент",1.11
+"adoption.condo",5,10,10,"0-30","OK","Condo","Апартамент",2.00
+"adoption.other",5,5,5,"0-30","OK","Other","Друго",1.00
+"adoption.hasYard",13,9,13,"0-30","OK","I have a yard","Имам двор",0.69
+"adoption.hasOtherPets",17,18,18,"0-30","OK","I have other pets","Имам други любимци",1.06
+"adoption.describeOtherPets",27,31,31,"31-60","OK","Describe your other pets...","Опишете вашите други любимци...",1.15
+"adoption.hasChildren",15,9,15,"0-30","OK","I have children","Имам деца",0.60
+"adoption.childrenAges",19,21,21,"0-30","OK","Ages of children...","Възрасти на децата...",1.11
+"adoption.additionalInfo",22,23,23,"0-30","OK","Additional Information","Допълнителна Информация",1.05
+"adoption.petExperience",24,22,24,"0-30","OK","Pet ownership experience","Опит с домашни любимци",0.92
+"adoption.experiencePlaceholder",42,39,42,"31-60","OK","Tell us about your experience with pets...","Разкажете ни за вашия опит с любимци...",0.93
+"adoption.whyAdopt",34,38,38,"31-60","OK","Why do you want to adopt this pet?","Защо искате да осиновите този любимец?",1.12
+"adoption.reasonPlaceholder",32,40,40,"31-60","OK","Tell us why you want to adopt...","Разкажете ни защо искате да осиновите...",1.25
+"adoption.submitApplication",18,14,18,"0-30","OK","Submit Application","Изпрати Заявка",0.78
+"adoption.applicationSubmitted",22,21,22,"0-30","OK","Application Submitted!","Заявката е изпратена!",0.95
+"adoption.applicationSubmittedDesc",62,61,62,"61-120","WARNING","The shelter will review your application and conta...","Приютът ще прегледа вашата заявка и ще се свърже с...",0.98
+"adoption.applicationFailed",47,55,55,"31-60","OK","Failed to submit application. Please try again.","Неуспешно изпращане на заявката. Моля, опитайте от...",1.17
+"adoption.fillRequired",34,42,42,"31-60","OK","Please fill in all required fields","Моля, попълнете всички задължителни полета",1.24

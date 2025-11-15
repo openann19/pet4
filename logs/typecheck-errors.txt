@@ -1,0 +1,23 @@
+
+> petspark-monorepo@0.1.0 typecheck /home/ben/Public/PETSPARK
+> pnpm -r --filter './apps/web' --filter './apps/mobile' --filter './packages/core' --filter './packages/chat-core' --filter './packages/shared' --filter './packages/config' exec tsc --noEmit
+
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(2495,11): error TS2300: Duplicate identifier 'AbortController'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(2510,13): error TS2300: Duplicate identifier 'AbortController'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(2524,11): error TS2300: Duplicate identifier 'AbortSignal'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(2543,13): error TS2300: Duplicate identifier 'AbortSignal'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(8754,14): error TS2687: All declarations of 'lastModified' must have identical modifiers.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(8756,14): error TS2687: All declarations of 'name' must have identical modifiers.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(9102,11): error TS2300: Duplicate identifier 'FormData'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(9122,13): error TS2300: Duplicate identifier 'FormData'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(23219,11): error TS2300: Duplicate identifier 'URL'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(23249,13): error TS2300: Duplicate identifier 'URL'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(23266,11): error TS2300: Duplicate identifier 'URLSearchParams'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(23312,13): error TS2300: Duplicate identifier 'URLSearchParams'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(26345,14): error TS2687: All declarations of 'navigator' must have identical modifiers.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(28790,6): error TS2300: Duplicate identifier 'RequestInfo'.
+../../node_modules/.pnpm/typescript@5.7.3/node_modules/typescript/lib/lib.dom.d.ts(28983,6): error TS2300: Duplicate identifier 'XMLHttpRequestResponseType'.
+undefined
+/home/ben/Public/PETSPARK/packages/chat-core:
+ ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 2: tsc --noEmit
+ ELIFECYCLE  Command failed with exit code 1.

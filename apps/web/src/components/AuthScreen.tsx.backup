@@ -1,0 +1,93 @@
+import { useState } from 'react'
+import { MotionView, Presence } from '@petspark/motion'
+import { ArrowLeft, Translate } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
+import { useApp } from '@/contexts/AppContext'
+import { haptics } from '@/lib/haptics'
+import SignInForm from './auth/SignInForm'
+import SignUpForm from './auth/SignUpForm'
+
+type AuthMode = 'signin' | 'signup'
+
+type AuthScreenProps = {
+  initialMode?: AuthMode
+  onBack: () => void
+  onSuccess: () => void
+}
+
+export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }: AuthScreenProps) {
+  const [mode, setMode] = useState<AuthMode>(initialMode)
+  const { t, language, toggleLanguage } = useApp()
+
+  const handleModeSwitch = (newMode: AuthMode) => {
+    haptics.trigger('selection')
+    setMode(newMode)
+  }
+
+  const handleBack = () => {
+    haptics.trigger('light')
+    onBack()
+  }
+
+  return (
+    <div className="fixed inset-0 bg-background overflow-auto">
+      <div className="min-h-screen flex flex-col">
+        <MotionView
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 flex items-center justify-between"
+        >
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleBack}
+            className="rounded-full"
+            aria-label={t.common.back || 'Back'}
+          >
+            <ArrowLeft size={24} />
+          </Button>
+          <MotionView
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                haptics.trigger('selection')
+                toggleLanguage()
+              }}
+              className="rounded-full h-11 px-4 border-[1.5px] font-semibold text-sm"
+              aria-pressed={language === 'bg'}
+              aria-label={language === 'en' ? 'Switch to Bulgarian' : 'Превключи на English'}
+            >
+              <Translate size={20} weight="bold" aria-hidden />
+              <span>{language === 'en' ? 'БГ' : 'EN'}</span>
+            </Button>
+          </MotionView>
+        </MotionView>
+
+        <div className="flex-1 flex items-center justify-center px-6 pb-12">
+          <div className="w-full max-w-md">
+            <Presence visible={mode === 'signin'}>
+              {mode === 'signin' ? (
+                <SignInForm
+                  key="signin"
+                  onSuccess={onSuccess}
+                  onSwitchToSignUp={() => handleModeSwitch('signup')}
+                />
+              ) : (
+                <SignUpForm
+                  key="signup"
+                  onSuccess={onSuccess}
+                  onSwitchToSignIn={() => handleModeSwitch('signin')}
+                />
+              )}
+            </Presence>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

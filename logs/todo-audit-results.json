@@ -1,0 +1,99 @@
+{
+  "summary": {
+    "total": 9,
+    "byType": {
+      "XXX": 1,
+      "TODO": 8
+    },
+    "byCategory": {
+      "review": 9
+    },
+    "byPriority": {
+      "medium": 9
+    }
+  },
+  "items": [
+    {
+      "file": "apps/web/src/components/admin/APIConfigView.tsx",
+      "line": 1264,
+      "content": "? 'G-XXXXXXXXXX'",
+      "type": "XXX",
+      "category": "review",
+      "priority": "medium",
+      "description": "? 'G-XXXXXXXXXX'"
+    },
+    {
+      "file": "apps/web/src/effects/chat/celebrations/use-match-confetti.ts",
+      "line": 146,
+      "content": "// TODO: Integrate with sound feedback system",
+      "type": "TODO",
+      "category": "review",
+      "priority": "medium",
+      "description": "// TODO: Integrate with sound feedback system"
+    },
+    {
+      "file": "apps/web/src/hooks/media/use-ar-filter.ts",
+      "line": 210,
+      "content": "// TODO: Integrate with actual face detection library (e.g., MediaPipe, face-api.js)",
+      "type": "TODO",
+      "category": "review",
+      "priority": "medium",
+      "description": "// TODO: Integrate with actual face detection library (e.g., MediaPipe, face-api.js)"
+    },
+    {
+      "file": "apps/web/src/hooks/offline/use-offline-queue.ts",
+      "line": 378,
+      "content": "// TODO: Replace with actual API call based on operation type",
+      "type": "TODO",
+      "category": "review",
+      "priority": "medium",
+      "description": "// TODO: Replace with actual API call based on operation type"
+    },
+    {
+      "file": "apps/mobile/app.config.ts",
+      "line": 82,
+      "content": "// TODO: Replace with actual EAS Project ID from expo.dev",
+      "type": "TODO",
+      "category": "review",
+      "priority": "medium",
+      "description": "// TODO: Replace with actual EAS Project ID from expo.dev"
+    },
+    {
+      "file": "apps/mobile/types/vendor/react-native-gesture-handler.d.ts",
+      "line": 3,
+      "content": "* TODO: Temporary triage - Update to use official types when available",
+      "type": "TODO",
+      "category": "review",
+      "priority": "medium",
+      "description": "* TODO: Temporary triage - Update to use official types when available"
+    },
+    {
+      "file": "apps/mobile/types/globals.d.ts",
+      "line": 3,
+      "content": "* TODO: Temporary triage - These are platform-specific and should be properly typed",
+      "type": "TODO",
+      "category": "review",
+      "priority": "medium",
+      "description": "* TODO: Temporary triage - These are platform-specific and should be properly typed"
+    },
+    {
+      "file": "apps/mobile/src/effects/chat/celebrations/use-match-confetti.ts",
+      "line": 134,
+      "content": "// TODO: Integrate with sound feedback system",
+      "type": "TODO",
+      "category": "review",
+      "priority": "medium",
+      "description": "// TODO: Integrate with sound feedback system"
+    },
+    {
+      "file": "apps/mobile/src/effects/chat/celebrations/use-match-confetti.ts",
+      "line": 138,
+      "content": "// TODO: Dispatch event to ConfettiBurst component",
+      "type": "TODO",
+      "category": "review",
+      "priority": "medium",
+      "description": "// TODO: Dispatch event to ConfettiBurst component"
+    }
+  ],
+  "timestamp": "2025-11-09T12:21:23.589Z"
+}

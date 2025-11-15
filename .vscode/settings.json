@@ -1,0 +1,155 @@
+{
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.next/**": true,
+    "**/.turbo/**": true,
+    "**/coverage/**": true,
+    "**/.eslintcache": true,
+    "**/*.tsbuildinfo": true,
+    "**/logs/**": true,
+    "**/docs/archive/**": true,
+    "**/storybook-static/**": true,
+    "**/playwright-report/**": true,
+    "**/test-results/**": true,
+    "**/.cache/**": true,
+    "**/.vite/**": true,
+    "**/ios/**": true,
+    "**/android/**": true,
+    "**/.expo/**": true,
+    "**/.pnpm-store/**": true,
+    "**/.venv/**": true,
+    "**/.windsurf/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/coverage": true,
+    "**/.eslintcache": true,
+    "**/*.tsbuildinfo": true,
+    "**/logs": true,
+    "**/docs/archive": true,
+    "**/storybook-static": true,
+    "**/playwright-report": true,
+    "**/test-results": true,
+    "**/.cache": true,
+    "**/.vite": true,
+    "**/android": true,
+    "**/ios": true,
+    "**/backend": true,
+    "**/.expo": true,
+    "**/.pnpm-store": true,
+    "**/.venv": true,
+    "**/.windsurf": true,
+    "**/.git": true
+  },
+  "files.exclude": {
+    "**/.git": false,
+    "**/.DS_Store": true,
+    "**/node_modules": false,
+    "**/.eslintcache": true,
+    "**/*.tsbuildinfo": true,
+    "**/.cache": true,
+    "**/.vite": true
+  },
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.tsserver.watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority",
+    "synchronousWatchDirectory": false,
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/dist",
+      "**/build",
+      "**/.next",
+      "**/.turbo",
+      "**/coverage",
+      "**/logs",
+      "**/docs/archive",
+      "**/storybook-static",
+      "**/playwright-report",
+      "**/test-results",
+      "**/.expo",
+      "**/.pnpm-store",
+      "**/.venv",
+      "**/.windsurf"
+    ]
+  },
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "eslint.enable": true,
+  "eslint.useESLintClass": true,
+  "eslint.experimental.useFlatConfig": true,
+  "eslint.options": {
+    "cache": true,
+    "cacheLocation": ".eslintcache"
+  },
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.ts": "typescript"
+  },
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+  "editor.suggest.showMethods": true,
+  "editor.suggest.showFunctions": true,
+  "editor.suggest.showConstructors": true,
+  "editor.suggest.showDeprecated": false,
+  "editor.suggest.maxVisibleSuggestions": 12,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "vitest.maximumConfigs": 10,
+  "vitest.include": [
+    "**/vitest.config.{ts,js,mjs}"
+  ],
+  "vitest.commandLine": "pnpm test",
+  "vitest.nodeEnv": {
+    "NODE_ENV": "test"
+  },
+  "typescript.tsserver.useSeparateSyntaxServer": true,
+  "typescript.tsserver.experimental.useVsCodeTseserver": true,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "javascript.suggest.completeFunctionCalls": false,
+  "git.decorations.enabled": false,
+  "git.countBadge": "off",
+  "git.autorefresh": false,
+  "git.autofetch": false,
+  "git.autoRepositoryDetection": false,
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "none",
+  "editor.smoothScrolling": false,
+  "editor.bracketPairColorization.enabled": false,
+  "editor.guides.bracketPairs": false,
+  "editor.stickyScroll.enabled": false,
+  "editor.occurrencesHighlight": "off",
+  "editor.codeLens": false,
+  "editor.inlayHints.enabled": "off",
+  "editor.parameterHints.enabled": false
+}
