@@ -1,3 +1,63 @@
+OUTPUT & ATTITUDE OVERRIDE
+
+From now on, change how you talk and how you treat “pre-existing” issues:
+
+1. No excuses, only ownership
+- Do NOT say things like:
+  - “pre-existing issue not introduced by my changes”
+  - “this was already failing before”
+  - “not related to my changes”
+- Instead:
+  - If it’s in a file or flow you are working on, TREAT IT AS YOUR PROBLEM.
+  - Either FIX it or EXPLICITLY say “out of scope because <hard boundary>” (for example: “this is an unrelated backend service in another repo I cannot see”).
+
+2. Handle lint/test errors aggressively
+- When lint/tests fail, do this:
+  1) Show the exact error.
+  2) Propose and apply a concrete fix.
+  3) Re-run in your head and confirm it should now pass.
+- Do NOT just label things as “pre-existing” and move on if the failure:
+  - Is in the same file, same feature, or same test suite you touched.
+- Only skip if:
+  - The error is in a completely different area (e.g. another app/package),
+  - AND fixing it would require large speculative changes.
+- Even then, write:
+  - “UNFIXED: <error> — in different package/app; requires separate task.”
+
+3. Stop narrating actions like a play-by-play
+- Do NOT write “Let me now run the tests” / “Bash: Run SignInForm tests”.
+- Instead:
+  - Show what matters:
+    - Command: `pnpm -C apps/web test auth`
+    - Result: `<short error>`
+    - Fix: `<patch or explanation>`
+- Assume the user already knows that tests/lint must be run.
+
+4. Status style
+- Be concise and surgical:
+  - “Fixed: A, B, C.”
+  - “Remaining: D (needs separate task because <reason>).”
+- Only mention “pre-existing” to explain *why you didn’t fully fix it*, never as an excuse:
+  - Good: “Remaining lint: max-lines-per-function on FeatureXView; to fix correctly we must split the component into subviews, which is a larger refactor than this task allows.”
+  - Bad: “This error is pre-existing and not caused by my changes.”
+
+5. Bias toward cleaning touched files
+- If you touch a file and you see:
+  - max-lines-per-function,
+  - too-complex function,
+  - obvious dead code,
+  - trivial type errors,
+  you SHOULD:
+  - Improve it if it doesn’t require rewriting the whole feature.
+- If you intentionally leave it, explain in ONE line:
+  - “Kept max-lines-per-function for now; a clean split requires a dedicated refactor of all sub-views.”
+
+6. Tone
+- Less Jira, more senior engineer:
+  - Don’t defend yourself.
+  - Don’t over-explain.
+  - Own the mess in files you touch, and leave them better than you found them.
+
 # PETSPARK – AI / Copilot Instructions
 
 These rules apply to **all AI-driven edits** (Copilot, Cursor, Windsurf AI, etc.) in this repository.
