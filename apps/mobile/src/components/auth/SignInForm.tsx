@@ -11,6 +11,8 @@ import {
 } from 'react-native'
 import { useStorage } from '../../hooks/use-storage'
 import { EnhancedButton } from '../enhanced/EnhancedButton'
+import { colors } from '../../theme/colors'
+import { typography, spacing } from '../../theme/typography'
 // Stubs for missing web-only modules
 const useApp = (): {
   t: {
@@ -239,19 +241,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
-    backgroundColor: 'var(--color-bg-overlay)',
+    padding: spacing.xl,
+    backgroundColor: colors.background,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#222',
-    marginBottom: 8,
+    ...typography.h1,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 24,
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: spacing.xl,
     textAlign: 'center',
   },
   form: {
@@ -259,83 +261,84 @@ const styles = StyleSheet.create({
     maxWidth: 400,
   },
   label: {
-    fontSize: 14,
+    ...typography['body-sm'],
     fontWeight: '500',
-    marginBottom: 4,
-    color: '#222',
+    marginBottom: spacing.xs,
+    color: colors.textPrimary,
   },
   input: {
     height: 48,
-    borderColor: '#ccc',
+    borderColor: colors.border,
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    marginBottom: 4,
-    backgroundColor: '#f9f9f9',
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.xs,
+    backgroundColor: colors.card,
+    ...typography.body,
   },
   inputError: {
-    borderColor: '#e53935',
+    borderColor: colors.danger,
   },
   error: {
-    color: '#e53935',
-    fontSize: 12,
-    marginBottom: 8,
+    color: colors.danger,
+    ...typography.caption,
+    marginBottom: spacing.sm,
   },
   passwordRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   toggleButton: {
-    marginLeft: 8,
-    padding: 8,
+    marginLeft: spacing.sm,
+    padding: spacing.sm,
     justifyContent: 'center',
     alignItems: 'center',
   },
   toggleText: {
     fontSize: 18,
-    color: '#666',
+    color: colors.textSecondary,
   },
   forgotButton: {
     alignSelf: 'flex-end',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   forgotText: {
-    color: '#007AFF',
-    fontSize: 13,
+    color: colors.primary,
+    ...typography.caption,
   },
   submitButton: {
     width: '100%',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 16,
+    marginVertical: spacing.lg,
   },
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: '#eee',
+    backgroundColor: colors.border,
   },
   orText: {
-    marginHorizontal: 8,
-    color: '#888',
-    fontSize: 13,
+    marginHorizontal: spacing.sm,
+    color: colors.textSecondary,
+    ...typography.caption,
   },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   switchText: {
-    color: '#666',
-    fontSize: 13,
+    color: colors.textSecondary,
+    ...typography.caption,
   },
   signUpText: {
-    color: '#007AFF',
+    color: colors.primary,
     fontWeight: 'bold',
-    fontSize: 13,
+    ...typography.caption,
   },
 })

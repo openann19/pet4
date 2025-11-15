@@ -20,6 +20,8 @@ import { createLogger } from '@/utils/logger'
 import { saveAuthToken, saveRefreshToken } from '@/utils/secure-storage'
 import { useStorage } from '@/hooks/use-storage'
 import { EnhancedButton } from '../enhanced/EnhancedButton'
+import { colors } from '../../theme/colors'
+import { typography, spacing } from '../../theme/typography'
 
 type SignUpFormProps = {
   readonly onSuccess: () => void
@@ -361,12 +363,12 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
 const styles = StyleSheet.create({
   keyboardAvoider: {
     flex: 1,
-    backgroundColor: 'var(--color-bg-overlay)',
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 32,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing['2xl'],
     justifyContent: 'center',
   },
   container: {
@@ -375,82 +377,82 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 8,
+    ...typography.h1,
+    color: colors.textPrimary,
+    marginBottom: spacing.sm,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 15,
-    color: '#6B7280',
-    marginBottom: 24,
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: spacing.xl,
     textAlign: 'center',
   },
   formGroup: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   label: {
-    fontSize: 14,
+    ...typography['body-sm'],
     fontWeight: '500',
-    marginBottom: 6,
-    color: '#111827',
+    marginBottom: spacing.xs,
+    color: colors.textPrimary,
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: colors.border,
     borderRadius: 10,
-    paddingHorizontal: 14,
-    backgroundColor: '#F9FAFB',
-    color: '#111827',
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.card,
+    color: colors.textPrimary,
+    ...typography.body,
   },
   inputError: {
-    borderColor: '#DC2626',
+    borderColor: colors.danger,
   },
   errorText: {
-    marginTop: 6,
-    color: '#DC2626',
-    fontSize: 12,
+    marginTop: spacing.xs,
+    color: colors.danger,
+    ...typography.caption,
   },
   formErrorText: {
-    color: '#DC2626',
-    fontSize: 13,
+    color: colors.danger,
+    ...typography['body-sm'],
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   submitButton: {
     width: '100%',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   passwordRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   toggleButton: {
-    marginLeft: 8,
-    padding: 8,
+    marginLeft: spacing.sm,
+    padding: spacing.sm,
     justifyContent: 'center',
     alignItems: 'center',
   },
   toggleText: {
     fontSize: 18,
-    color: '#666',
+    color: colors.textSecondary,
   },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 18,
+    marginTop: spacing.lg,
   },
   switchText: {
-    color: '#6B7280',
-    fontSize: 13,
+    color: colors.textSecondary,
+    ...typography.caption,
   },
   switchLink: {
-    color: '#2563EB',
+    color: colors.primary,
     fontWeight: '600',
-    fontSize: 13,
+    ...typography.caption,
   },
 })
 
