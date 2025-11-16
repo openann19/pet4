@@ -24,7 +24,8 @@ import { convertTransformToStyle } from './useMotionStyle'
  */
 export type SharedValue<T extends number | string> = Omit<MotionValue<T>, 'value'> & {
   get value(): T
-  set value(newValue: T | { target: T; transition: Transition })
+  // Use T & number to widen literal types to number while maintaining type safety
+  set value(newValue: (T extends number ? number : T) | { target: T extends number ? number : T; transition: Transition })
 }
 
 /**
