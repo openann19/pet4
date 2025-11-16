@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { isTruthy } from '@petspark/shared';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { Story, StoryHighlight } from '@/lib/stories-types';
 import type { Pet } from '@/lib/types';

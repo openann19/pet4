@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import type { MessageTemplate, SmartSuggestion } from '@/lib/chat-types';
-import type { InputRef } from '@/components/ui/Input';
+import type { InputRef } from '@/components/ui/input';
 
 export interface UseInputHandlingOptions {
   onSendMessage: (content: string, type?: 'text' | 'sticker') => void;

@@ -8,7 +8,7 @@
 
 import { useState, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';

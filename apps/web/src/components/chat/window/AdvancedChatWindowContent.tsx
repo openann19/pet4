@@ -11,7 +11,7 @@ import { Overlays } from './Overlays';
 import { ChatErrorBoundary } from './ChatErrorBoundary';
 import { AnnounceNewMessage, AnnounceTyping } from './LiveRegions';
 import type { ChatMessage } from '@/lib/chat-types';
-import type { InputRef } from '@/components/ui/Input';
+import type { InputRef } from '@/components/ui/input';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 interface AdvancedChatWindowContentProps {

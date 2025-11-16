@@ -8,7 +8,7 @@ import type { Call, CallSession } from '@/lib/call-types';
 import { haptics } from '@/lib/haptics';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
-import type { InputRef } from '@/components/ui/Input';
+import type { InputRef } from '@/components/ui/input';
 import type { SharedValue } from '@petspark/motion';
 
 interface ChatWindowContentProps {

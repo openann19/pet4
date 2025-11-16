@@ -8,7 +8,7 @@ import {
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { MagnifyingGlass, X, Crown, Clock } from '@phosphor-icons/react';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';

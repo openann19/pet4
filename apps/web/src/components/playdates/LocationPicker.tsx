@@ -8,7 +8,7 @@
 
 import { useState, useCallback } from 'react';
 import { MapPin, Search } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { cn } from '@/lib/utils';
