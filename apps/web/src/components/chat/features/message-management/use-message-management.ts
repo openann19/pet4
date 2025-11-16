@@ -78,7 +78,7 @@ export function useMessageManagement(
         ...(metadata ? { metadata } : {}),
       };
 
-      setMessages((current) => [...(current || []), newMessage]);
+      setMessages((current) => [...(current ?? []), newMessage]);
 
       toast.success('Message sent!', {
         duration: 1500,
@@ -91,7 +91,7 @@ export function useMessageManagement(
   const updateMessage = useCallback(
     (messageId: string, updates: Partial<ChatMessage>): void => {
       setMessages((current) =>
-        (current || []).map((msg) => (msg.id === messageId ? { ...msg, ...updates } : msg))
+        (current ?? []).map((msg) => (msg.id === messageId ? { ...msg, ...updates } : msg))
       );
     },
     [setMessages]
@@ -99,13 +99,13 @@ export function useMessageManagement(
 
   const deleteMessage = useCallback(
     (messageId: string): void => {
-      setMessages((current) => (current || []).filter((msg) => msg.id !== messageId));
+      setMessages((current) => (current ?? []).filter((msg) => msg.id !== messageId));
     },
     [setMessages]
   );
 
   return {
-    messages: messages || [],
+    messages: messages ?? [],
     setMessages,
     scrollRef,
     scrollToBottom,

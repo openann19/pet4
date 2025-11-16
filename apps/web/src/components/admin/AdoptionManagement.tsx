@@ -1,5 +1,6 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { useState, useMemo, useCallback } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,6 @@ import {
   CheckCircle,
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useStaggeredItem } from '@/effects/reanimated';
 import { adoptionApi } from '@/api/adoption-api';
 import { createLogger } from '@/lib/logger';
@@ -57,7 +57,7 @@ function AdoptionProfileCard({
   const animation = useStaggeredItem({ index, staggerDelay: 50 });
 
   return (
-    <AnimatedView
+    <MotionView
       style={animation.itemStyle}
       className="relative"
       role="article"
@@ -101,7 +101,7 @@ function AdoptionProfileCard({
         isFavorited={false}
         onSelect={() => { }}
       />
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -125,7 +125,7 @@ export default function AdoptionManagement(): JSX.Element {
   const [activeTab, setActiveTab] = useState<TabValue>('all');
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-  const allProfiles = useMemo<AdoptionProfile[]>(() => profiles || [], [profiles]);
+  const allProfiles = useMemo<AdoptionProfile[]>(() => profiles ?? [], [profiles]);
   const flaggedProfilesList = useMemo<AdoptionProfile[]>(
     () => allProfiles.filter((p) => flaggedProfiles?.includes(p._id)),
     [allProfiles, flaggedProfiles]
@@ -163,7 +163,7 @@ export default function AdoptionManagement(): JSX.Element {
     (profileId: string): void => {
       try {
         setHiddenProfiles((prev) => {
-          const current = prev || [];
+          const current = prev ?? [];
           if (current.includes(profileId)) {
             return current;
           }
@@ -183,7 +183,7 @@ export default function AdoptionManagement(): JSX.Element {
   const handleUnhideProfile = useCallback(
     (profileId: string): void => {
       try {
-        setHiddenProfiles((prev) => (prev || []).filter((id) => id !== profileId));
+        setHiddenProfiles((prev) => (prev ?? []).filter((id) => id !== profileId));
         toast.success('Adoption profile restored');
         logger.info('Profile unhidden', { profileId });
       } catch (error) {

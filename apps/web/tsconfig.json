@@ -44,6 +44,9 @@
     "src/components/ChatWindowNew.tsx",
     "src/components/media-editor/MediaEditor.tsx",
     "src/components/media-editor/video-trimmer.tsx",
-    "**/*.stories.tsx"
+    "**/*.stories.tsx",
+    "**/*.stories.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

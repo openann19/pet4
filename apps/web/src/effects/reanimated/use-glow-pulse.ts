@@ -3,9 +3,7 @@
 import {
   useSharedValue,
   useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  Easing,
+  animate,
   interpolate,
 } from '@petspark/motion';
 import { useEffect } from 'react';
@@ -38,8 +36,9 @@ export function useGlowPulse(options: UseGlowPulseOptions = {}): UseGlowPulseRet
   const progress = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
+    const progressValue = progress.get();
     const shadowOpacity = interpolate(
-      progress.value,
+      progressValue,
       [0, 0.5, 1],
       [0.3 * intensity, 0.6 * intensity, 0.3 * intensity]
     );
@@ -48,24 +47,22 @@ export function useGlowPulse(options: UseGlowPulseOptions = {}): UseGlowPulseRet
       shadowColor: color,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity,
-      shadowRadius: interpolate(progress.value, [0, 0.5, 1], [10, 20, 10]),
-      elevation: interpolate(progress.value, [0, 0.5, 1], [5, 10, 5]),
+      shadowRadius: interpolate(progressValue, [0, 0.5, 1], [10, 20, 10]),
+      elevation: interpolate(progressValue, [0, 0.5, 1], [5, 10, 5]),
     };
   });
 
   const start = () => {
-    progress.value = withRepeat(
-      withTiming(1, {
-        duration,
-        easing: Easing.inOut(Easing.ease),
-      }),
-      -1,
-      true
-    );
+    animate(progress, 1, {
+      duration: duration / 1000,
+      ease: 'easeInOut',
+      repeat: Infinity,
+      repeatType: 'reverse',
+    });
   };
 
   const stop = () => {
-    progress.value = 0;
+    progress.set(0);
   };
 
   useEffect(() => {

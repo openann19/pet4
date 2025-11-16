@@ -1,8 +1,7 @@
 'use client';
 
 import { useCallback, useEffect } from 'react';
-import { useMotionValue, animate, type MotionValue } from 'framer-motion';
-import type { Variants as FramerVariants } from 'framer-motion';
+import { useMotionValue, animate, type MotionValue, type Variants as FramerVariants } from '@petspark/motion';
 import {
   springConfigs,
   timingConfigs,

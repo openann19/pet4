@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import type { CSSProperties, ReactNode, MouseEventHandler } from 'react';
-import { motion, type HTMLMotionProps } from 'framer-motion';
-import { convertReanimatedStyleToCSS } from '@petspark/motion';
+import { motion, type HTMLMotionProps, convertReanimatedStyleToCSS } from '@petspark/motion';
 
 // Accept any style object that could come from useAnimatedStyle or be used as CSS
 // Using a permissive type since we convert to CSS at runtime anyway

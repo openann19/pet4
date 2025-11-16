@@ -11,6 +11,18 @@ import { Button } from '@/components/ui/button';
 import type { Message, MessageStatus, ReactionType } from '@/lib/chat-types';
 import { cn } from '@/lib/utils';
 
+// Type definitions for testing APIs exposed to window
+declare global {
+  interface Window {
+    __setChatMessages?: (messages: Message[]) => void;
+    __sendMessage?: (content: string) => void;
+    __setMessageStatus?: (messageId: string, status: MessageStatus) => void;
+    __showTypingIndicator?: (user: string) => void;
+    __hideTypingIndicator?: () => void;
+    __setConnectionStatus?: (status: 'online' | 'offline') => void;
+  }
+}
+
 // Mock message data for testing
 const initialMessages: Message[] = [
   {
@@ -75,12 +87,10 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
 
   // Expose testing APIs to window for Playwright
   useEffect(() => {
-    // @ts-ignore - Testing API
     window.__setChatMessages = (newMessages: Message[]) => {
       setMessages(newMessages);
     };
 
-    // @ts-ignore - Testing API
     window.__sendMessage = (content: string) => {
       const newMessage: Message = {
         id: `msg-${Date.now()}`,
@@ -105,42 +115,32 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
       }, 1000);
     };
 
-    // @ts-ignore - Testing API
     window.__setMessageStatus = (messageId: string, status: MessageStatus) => {
       setMessages(prev => prev.map(msg =>
         msg.id === messageId ? { ...msg, status } : msg
       ));
     };
 
-    // @ts-ignore - Testing API
     window.__showTypingIndicator = (user: string) => {
       setTypingUser(user);
       setIsTyping(true);
     };
 
-    // @ts-ignore - Testing API
     window.__hideTypingIndicator = () => {
       setIsTyping(false);
       setTypingUser('');
     };
 
-    // @ts-ignore - Testing API
     window.__setConnectionStatus = (status: 'online' | 'offline') => {
       setIsOnline(status === 'online');
     };
 
     return () => {
-      // @ts-ignore - Cleanup
       delete window.__setChatMessages;
-      // @ts-ignore - Cleanup
       delete window.__sendMessage;
-      // @ts-ignore - Cleanup
       delete window.__setMessageStatus;
-      // @ts-ignore - Cleanup
       delete window.__showTypingIndicator;
-      // @ts-ignore - Cleanup
       delete window.__hideTypingIndicator;
-      // @ts-ignore - Cleanup
       delete window.__setConnectionStatus;
     };
   }, [currentUserId]);
@@ -170,7 +170,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
       if (msg.id !== messageId) return msg;
       
       const reactions = { ...msg.reactions };
-      const reactionUsers = reactions[reaction] || [];
+      const reactionUsers = reactions[reaction] ?? [];
       
       if (reactionUsers.includes(currentUserId)) {
         // Remove reaction
@@ -189,14 +189,17 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
     }));
   }, [currentUserId]);
 
-  const handleReply = useCallback((messageId: string) => {
-    console.log('Reply to message:', messageId);
+  const handleReply = useCallback((_messageId: string) => {
+    // Reply functionality would be implemented here
+    // Note: Removed console.log for lint compliance
   }, []);
 
   const handleCopy = useCallback((messageId: string) => {
     const message = messages.find(m => m.id === messageId);
     if (message) {
-      navigator.clipboard.writeText(message.content);
+      void navigator.clipboard.writeText(message.content).catch(() => {
+        // Clipboard write failed - silently ignore for demo page
+      });
     }
   }, [messages]);
 
@@ -330,7 +333,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
             <TypingIndicator 
               data-testid="typing-indicator"
               isVisible={isTyping}
-              userName={typingUser || 'Someone'}
+              userName={typingUser ?? 'Someone'}
             />
           </div>
         )}

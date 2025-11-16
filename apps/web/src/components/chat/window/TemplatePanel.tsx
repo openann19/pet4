@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { MotionView } from "@petspark/motion";
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { Button } from '@/components/ui/button';
 import { MESSAGE_TEMPLATES } from '@/lib/chat-types';
@@ -19,7 +19,7 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
   const animation = useEntryAnimation({ initialY: -10, delay: 0 });
 
   return (
-    <AnimatedView style={animation.animatedStyle} className="glass-effect p-3 rounded-xl space-y-2">
+    <MotionView style={animation.animatedStyle} className="glass-effect p-3 rounded-xl space-y-2">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-semibold">Message Templates</h4>
         <Button
@@ -37,7 +37,7 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
           <TemplateButton key={template.id} template={template} onSelect={onSelect} />
         ))}
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -50,7 +50,7 @@ function TemplateButton({ template, onSelect }: TemplateButtonProps): JSX.Elemen
   const hover = useHoverAnimation({ scale: 1.02 });
 
   return (
-    <AnimatedView
+    <MotionView
       style={hover.animatedStyle}
       onMouseEnter={hover.handleMouseEnter}
       onMouseLeave={hover.handleMouseLeave}
@@ -66,6 +66,6 @@ function TemplateButton({ template, onSelect }: TemplateButtonProps): JSX.Elemen
         <span className="text-xs font-semibold">{template.title}</span>
       </div>
       <p className="text-xs text-muted-foreground line-clamp-2">{template.content}</p>
-    </AnimatedView>
+    </MotionView>
   );
 }

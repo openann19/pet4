@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
+import { isTruthy } from '@petspark/shared';
 
 export interface AnnounceNewMessageProps {
   lastText: string | null;

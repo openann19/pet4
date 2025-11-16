@@ -163,7 +163,7 @@ export function usePetDiscovery({
         action: 'pass',
         timestamp: new Date().toISOString(),
       };
-      setSwipeHistory((prev) => [...(prev || []), newSwipe]);
+      setSwipeHistory((prev) => [...(prev ?? []), newSwipe]);
     },
     [userPet, setSwipeHistory]
   );

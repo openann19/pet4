@@ -1,13 +1,11 @@
-'use client';
-
+'use client';;
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Plus } from '@phosphor-icons/react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import type { MessageReaction } from '@/lib/chat-types';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { haptics } from '@/lib/haptics';
@@ -175,10 +173,10 @@ function ReactionButton({
             userReacted ? 'bg-primary/20 ring-1 ring-primary' : 'bg-white/10 hover:bg-white/20'
           }`}
         >
-          <AnimatedView style={buttonStyle} className="flex items-center gap-1">
+          <MotionView style={buttonStyle} className="flex items-center gap-1">
             <span className="text-sm">{emoji}</span>
             <span className="text-[10px] font-semibold">{count}</span>
-          </AnimatedView>
+          </MotionView>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-48 glass-strong p-2">
@@ -273,19 +271,19 @@ function AddReactionButton({
           onMouseLeave={handleMouseLeave}
           className="flex items-center justify-center w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 transition-colors cursor-pointer"
         >
-          <AnimatedView style={buttonStyle}>
+          <MotionView style={buttonStyle}>
             <Plus size={12} weight="bold" />
-          </AnimatedView>
+          </MotionView>
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64 glass-strong p-3">
-        <AnimatedView style={pickerStyle}>
+        <MotionView style={pickerStyle}>
           <div className="grid grid-cols-6 gap-2">
             {availableReactions.map((emoji) => (
               <EmojiButton key={emoji} emoji={emoji} onClick={() => handleEmojiClick(emoji)} />
             ))}
           </div>
-        </AnimatedView>
+        </MotionView>
       </PopoverContent>
     </Popover>
   );
@@ -320,7 +318,7 @@ function EmojiButton({ emoji, onClick }: EmojiButtonProps): React.JSX.Element {
   }, [hoverScale]);
 
   return (
-    <AnimatedView
+    <MotionView
       style={buttonStyle}
       onClick={bounce.handlePress}
       onMouseEnter={handleMouseEnter}
@@ -328,6 +326,6 @@ function EmojiButton({ emoji, onClick }: EmojiButtonProps): React.JSX.Element {
       className="text-2xl p-1 rounded-lg hover:bg-white/20 transition-colors cursor-pointer flex items-center justify-center"
     >
       {emoji}
-    </AnimatedView>
+    </MotionView>
   );
 }

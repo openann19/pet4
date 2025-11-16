@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Reaction Button Component
  *
@@ -5,7 +6,6 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { useTargetSize } from '@/hooks/use-target-size';
@@ -33,7 +33,7 @@ export function ReactionButton({ emoji, onClick }: ReactionButtonProps): JSX.Ele
 
   return (
     <div ref={containerRef}>
-      <AnimatedView
+      <MotionView
         style={hover.animatedStyle}
         onMouseEnter={hover.handleMouseEnter}
         onMouseLeave={hover.handleMouseLeave}
@@ -45,7 +45,7 @@ export function ReactionButton({ emoji, onClick }: ReactionButtonProps): JSX.Ele
         tabIndex={0}
       >
         {emoji}
-      </AnimatedView>
+      </MotionView>
     </div>
   );
 }

@@ -5,11 +5,10 @@
  */
 
 import { memo, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Check, Trash, Archive } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
@@ -67,7 +66,7 @@ function NotificationItemComponent({
   })) as AnimatedStyle;
 
   return (
-    <AnimatedView
+    <MotionView
       style={itemStyle}
       onMouseEnter={hover.handleMouseEnter}
       onMouseLeave={hover.handleMouseLeave}
@@ -80,12 +79,12 @@ function NotificationItemComponent({
         <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 relative">
           {getIcon(notification.type, notification.priority)}
           {!notification.read && (
-            <AnimatedView
+            <MotionView
               style={unreadDotStyle}
               className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-primary"
             >
               {null}
-            </AnimatedView>
+            </MotionView>
           )}
         </div>
 
@@ -99,12 +98,12 @@ function NotificationItemComponent({
             </div>
 
             {!notification.read && (
-              <AnimatedView
+              <MotionView
                 style={unreadDotStyle}
                 className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1"
               >
                 {null}
-              </AnimatedView>
+              </MotionView>
             )}
           </div>
 
@@ -146,7 +145,7 @@ function NotificationItemComponent({
           </div>
         </div>
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }
 

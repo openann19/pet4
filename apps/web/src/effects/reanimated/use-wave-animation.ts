@@ -3,7 +3,7 @@
  * Simple wave animation using Framer Motion for web platform.
  */
 
-import { useMotionValue, animate, type MotionValue } from 'framer-motion';
+import { useMotionValue, animate, type MotionValue } from '@petspark/motion';
 import { useEffect } from 'react';
 
 export interface UseWaveAnimationOptions {

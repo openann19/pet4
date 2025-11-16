@@ -38,7 +38,7 @@ export function useBubbleGlow(options: UseBubbleGlowOptions = {}): UseBubbleGlow
   const { enabled = true, color = '#6EE7B7', intensity = 0.8 } = options;
   const { visual } = useUIConfig();
 
-  const glowIntensity = useSharedValue(0);
+  const glowIntensity = useSharedValue<number>(0);
 
   useEffect(() => {
     if (!enabled || !visual.enableGlow) {

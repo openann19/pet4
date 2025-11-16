@@ -86,7 +86,6 @@ export default function AuditLogView() {
           </div>
         </div>
       </div>
-
       <ScrollArea className="flex-1 p-6">
         <div className="space-y-3">
           {filteredEntries.map((entry, index) => (

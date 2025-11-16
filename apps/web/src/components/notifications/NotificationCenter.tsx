@@ -58,9 +58,9 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const unreadCount = (notifications || []).filter((n) => !n.read).length;
+  const unreadCount = (notifications ?? []).filter((n) => !n.read).length;
 
-  const filteredNotifications = (notifications || [])
+  const filteredNotifications = (notifications ?? [])
     .filter((n) => filter === 'all' || !n.read)
     .filter((n) => selectedCategory === 'all' || n.type === selectedCategory)
     .sort((a, b) => b.timestamp - a.timestamp);
@@ -68,23 +68,23 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
   const markAsRead = (id: string) => {
     haptics.trigger('light');
     void setNotifications((current) =>
-      (current || []).map((n) => (n.id === id ? { ...n, read: true } : n))
+      (current ?? []).map((n) => (n.id === id ? { ...n, read: true } : n))
     );
   };
 
   const markAllAsRead = () => {
     haptics.trigger('medium');
-    void setNotifications((current) => (current || []).map((n) => ({ ...n, read: true })));
+    void setNotifications((current) => (current ?? []).map((n) => ({ ...n, read: true })));
   };
 
   const deleteNotification = (id: string) => {
     haptics.trigger('medium');
-    void setNotifications((current) => (current || []).filter((n) => n.id !== id));
+    void setNotifications((current) => (current ?? []).filter((n) => n.id !== id));
   };
 
   const deleteAllRead = () => {
     haptics.trigger('heavy');
-    void setNotifications((current) => (current || []).filter((n) => !n.read));
+    void setNotifications((current) => (current ?? []).filter((n) => !n.read));
   };
 
   const getNotificationIcon = (
@@ -178,7 +178,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={deleteAllRead}
-                    disabled={(notifications || []).every((n) => !n.read)}
+                    disabled={(notifications ?? []).every((n) => !n.read)}
                   >
                     <Trash size={16} className="mr-2" />
                     Clear read
@@ -190,7 +190,7 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
             <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-2 -mb-2">
               {categories.map((cat) => {
                 const Icon = cat.icon;
-                const count = (notifications || []).filter(
+                const count = (notifications ?? []).filter(
                   (n) => (cat.value === 'all' || n.type === cat.value) && !n.read
                 ).length;
 

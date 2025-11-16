@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import { Presence } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
+// Unused import removed: Presence
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';

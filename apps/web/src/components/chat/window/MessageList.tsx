@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { MotionView } from "@petspark/motion";
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import TypingIndicatorComponent from '../TypingIndicator';
 import { MessageItem } from './MessageItem';
@@ -30,7 +30,7 @@ export function MessageList({
   onTranslate,
   scrollRef,
 }: MessageListProps): JSX.Element {
-  const groups = groupMessagesByDate(messages || []);
+  const groups = groupMessagesByDate(messages ?? []);
 
   return (
     <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -69,10 +69,10 @@ function DateGroup({ date, delay }: DateGroupProps): JSX.Element {
   const anim = useEntryAnimation({ initialScale: 0.8, delay });
 
   return (
-    <AnimatedView style={anim.animatedStyle} className="flex justify-center">
+    <MotionView style={anim.animatedStyle} className="flex justify-center">
       <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
         {date}
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }

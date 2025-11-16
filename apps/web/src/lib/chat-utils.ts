@@ -118,7 +118,7 @@ export function groupMessagesByDate(messages: Message[]): { date: string; messag
   const groups = new Map<string, Message[]>();
 
   for (const message of messages) {
-    const timestamp = message.timestamp || message.createdAt;
+    const timestamp = message.timestamp ?? message.createdAt;
     if (!timestamp) continue;
 
     const date = new Date(timestamp);

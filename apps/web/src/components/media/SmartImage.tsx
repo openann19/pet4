@@ -1,8 +1,6 @@
-'use client';
-
+'use client';;
 import { useState, useEffect, useRef } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { useFeatureFlags } from '@/config/feature-flags';
@@ -118,18 +116,16 @@ export function SmartImage({
           aria-hidden="true"
         />
       )}
-
       {/* Shimmer effect */}
       {!isLoaded && (
-        <AnimatedView
+        <MotionView
           style={shimmerStyle}
           className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer"
           aria-hidden="true"
         >
           <div />
-        </AnimatedView>
+        </MotionView>
       )}
-
       {/* Sharp image */}
       <img
         ref={imgRef}

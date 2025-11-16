@@ -21,7 +21,7 @@ import {
   UserPlus,
 } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
-import { MotionView } from '@petspark/motion';
+import { MotionView, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -69,7 +69,7 @@ function _EmptyStateView({ filter }: { filter: 'all' | 'unread' }) {
   const entry = useEntryAnimation({ initialY: 20, initialOpacity: 0 })
 
   return (
-    <AnimatedView
+    <MotionView
       style={entry.animatedStyle}
       className="flex flex-col items-center justify-center py-16 text-center"
     >
@@ -84,8 +84,8 @@ function _EmptyStateView({ filter }: { filter: 'all' | 'unread' }) {
           ? 'You\'re all caught up!'
           : 'When you get notifications, they\'ll appear here'}
       </p>
-    </AnimatedView>
-  )
+    </MotionView>
+  );
 }
 
 function _NotificationItemView({
@@ -97,13 +97,13 @@ function _NotificationItemView({
   index: number
   onNotificationClick: (notification: CommunityNotification) => void
 }) {
-  const opacity = useSharedValue(0)
-  const translateX = useSharedValue(-20)
+  const opacity = useSharedValue<number>(0)
+  const translateX = useSharedValue<number>(-20)
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      opacity.value = withSpring(1, springConfigs.smooth)
-      translateX.value = withSpring(0, springConfigs.smooth)
+      opacity.value = withSpring(1, { damping: 25, stiffness: 400 })
+      translateX.value = withSpring(0, { damping: 25, stiffness: 400 })
     }, index * 30)
 
     return () => {
@@ -120,7 +120,7 @@ function _NotificationItemView({
   const message = getNotificationMessage(notification)
 
   return (
-    <AnimatedView
+    <MotionView
       style={animatedStyle}
       onClick={() => {
         onNotificationClick(notification)
@@ -154,8 +154,8 @@ function _NotificationItemView({
           )}
         </div>
       </div>
-    </AnimatedView>
-  )
+    </MotionView>
+  );
 }
 
 interface NotificationsViewProps {

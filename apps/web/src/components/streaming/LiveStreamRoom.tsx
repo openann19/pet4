@@ -1,420 +1,183 @@
-import { liveStreamingAPI } from '@/api/live-streaming-api';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { haptics } from '@/lib/haptics';
-import type { LiveStream, LiveStreamChatMessage } from '@/lib/live-streaming-types';
-import { logger } from '@/lib/logger';
-import { userService } from '@/lib/user-service';
-import { MotionView, Presence } from '@petspark/motion';
-import {
-  CameraRotate,
-  ChatCircle,
-  Eye,
-  Microphone,
-  MicrophoneSlash,
-  PaperPlaneTilt,
-  Phone,
-  VideoCamera,
-  X,
-} from '@phosphor-icons/react';
-import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
+/**
+ * Live Stream Room
+ *
+ * Main streaming interface for live streaming
+ */
 
-interface LiveStreamRoomProps {
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { Users, Heart, MessageCircle, Share2, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { PremiumCard } from '@/components/enhanced/PremiumCard';
+import { ViewerEngagement } from './ViewerEngagement';
+import { StreamAnalyticsPanel } from './StreamAnalyticsPanel';
+import { PremiumFeatureGate } from '@/components/billing/PremiumFeatureGate';
+import { cn } from '@/lib/utils';
+import { getTypographyClasses } from '@/lib/typography';
+import { useWebRTC } from '@/hooks/streaming/use-webrtc';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('LiveStreamRoom');
+
+export interface LiveStreamRoomProps {
   streamId: string;
   isHost: boolean;
-  onClose: () => void;
+  onEndStream?: () => void;
+  className?: string;
 }
 
-const REACTION_EMOJIS = ['❤️', '👏', '🔥', '😍', '🐾', '⭐'];
-
-export function LiveStreamRoom({ streamId, isHost, onClose }: LiveStreamRoomProps) {
-  const [stream, setStream] = useState<LiveStream | null>(null);
-  const [chatMessages, setChatMessages] = useState<LiveStreamChatMessage[]>([]);
-  const [messageInput, setMessageInput] = useState('');
-  const [isMuted, setIsMuted] = useState(false);
-  const [isCameraOff, setIsCameraOff] = useState(false);
-  const [showChat, setShowChat] = useState(true);
-  const [floatingReactions, setFloatingReactions] = useState<
-    { id: string; emoji: string; x: number }[]
-  >([]);
+export function LiveStreamRoom({
+  streamId,
+  isHost,
+  onEndStream,
+  className,
+}: LiveStreamRoomProps): React.JSX.Element {
+  const [viewerCount, setViewerCount] = useState(0);
+  const [isLive, setIsLive] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+
+  const { addStream, state } = useWebRTC({
+    onRemoteStream: (stream) => {
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    },
+    onConnectionStateChange: (state) => {
+      logger.debug('Stream connection state', { state });
+    },
+  });
 
   useEffect(() => {
-    loadStream();
-    joinStream();
-
-    const interval = setInterval(loadChatMessages, 2000);
+    if (isHost) {
+      void startStreaming();
+    }
 
     return () => {
-      clearInterval(interval);
-      leaveStream();
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach((track) => track.stop());
+      }
     };
-  }, [streamId]);
+  }, [isHost]);
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages]);
-
-  const loadStream = async () => {
-    const streamData = await liveStreamingAPI.getStreamById(streamId);
-    if (streamData) {
-      setStream(streamData);
-    }
-  };
-
-  const joinStream = async () => {
+  const startStreaming = async (): Promise<void> => {
     try {
-      const user = await userService.user();
-      if (!user) {
-        toast.error('User not authenticated');
-        return;
-      }
-      await liveStreamingAPI.joinStream(streamId, user.id, user.login || 'User', user.avatarUrl ?? undefined);
-      await loadStream();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to join stream', err, { action: 'joinStream', streamId });
-    }
-  };
-
-  const leaveStream = async () => {
-    try {
-      const user = await userService.user();
-      if (!user) return;
-      await liveStreamingAPI.leaveStream(streamId, user.id);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to leave stream', err, { action: 'leaveStream', streamId });
-    }
-  };
-
-  const loadChatMessages = async () => {
-    const messages = await liveStreamingAPI.queryChatMessages(streamId);
-    setChatMessages(messages);
-  };
-
-  const handleSendMessage = async () => {
-    if (!messageInput.trim() || !stream?.allowChat) return;
-
-    try {
-      const user = await userService.user();
-      if (!user) {
-        toast.error('User not authenticated');
-        return;
-      }
-      await liveStreamingAPI.sendChatMessage(
-        streamId,
-        user.id,
-        user.login || 'User',
-        user.avatarUrl ?? undefined,
-        messageInput.trim()
-      );
-      setMessageInput('');
-      await loadChatMessages();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to send message', err, { action: 'sendMessage', streamId });
-      toast.error('Failed to send message');
-    }
-  };
-
-  const handleReaction = async (emoji: string) => {
-    haptics.impact('light');
-
-    const id = Date.now().toString();
-    const x = Math.random() * 80 + 10;
-    setFloatingReactions((prev) => [...prev, { id, emoji, x }]);
-
-    setTimeout(() => {
-      setFloatingReactions((prev) => prev.filter((r) => r.id !== id));
-    }, 3000);
-
-    try {
-      const user = await userService.user();
-      if (!user) return;
-      await liveStreamingAPI.sendReaction(
-        streamId,
-        user.id,
-        user.login || 'User',
-        user.avatarUrl ?? undefined,
-        emoji as '❤️' | '👏' | '🔥' | '😊' | '🎉'
-      );
-      await loadStream();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to send reaction', err, {
-        action: 'sendReaction',
-        streamId,
-        reaction: emoji,
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          frameRate: { ideal: 30 },
+        },
+        audio: true,
       });
-    }
-  };
 
-  const handleEndStream = async () => {
-    if (!isHost) return;
+      localStreamRef.current = stream;
+      addStream(stream);
 
-    try {
-      const user = await userService.user();
-      if (!user) {
-        toast.error('User not authenticated');
-        return;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
       }
-      await liveStreamingAPI.endRoom(streamId, user.id);
-      toast.success('Stream ended');
-      onClose();
+
+      setIsLive(true);
+      logger.info('Stream started', { streamId });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to end stream', err, { action: 'endStream', streamId });
-      toast.error('Failed to end stream');
+      logger.error('Failed to start stream', err);
     }
   };
 
-  const formatViewerCount = (count: number): string => {
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`;
+  const handleEndStream = (): void => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
     }
-    return count.toString();
+    setIsLive(false);
+    onEndStream?.();
   };
 
-  if (!stream) {
+  if (!isHost) {
     return (
-      <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading stream...</p>
+      <PremiumFeatureGate requiredTier="plus">
+        <div className={cn('relative w-full h-full', className)}>
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover rounded-lg"
+          />
+          <ViewerEngagement
+            viewerCount={viewerCount}
+            onHeart={() => {
+              // Handle heart reaction
+            }}
+            onComment={() => {
+              // Handle comment
+            }}
+            className="absolute bottom-4 left-4 right-4"
+          />
         </div>
-      </div>
+      </PremiumFeatureGate>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      <div className="absolute top-4 left-4 right-4 flex items-start justify-between z-10">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md rounded-full px-4 py-2">
-            <Badge variant="destructive" className="animate-pulse">
-              LIVE
-            </Badge>
-            <div className="flex items-center gap-1 text-white">
-              <Eye size={16} weight="fill" />
-              <span className="text-sm font-semibold">{formatViewerCount(stream.viewerCount)}</span>
+    <PremiumFeatureGate requiredTier="pro">
+      <div className={cn('relative w-full h-full space-y-4', className)}>
+        <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black">
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="w-full h-full object-cover"
+          />
+          {isLive && (
+            <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500 text-white">
+              <div className="size-2 rounded-full bg-white animate-pulse" />
+              <span className={cn(getTypographyClasses('caption'), 'font-semibold')}>LIVE</span>
             </div>
-          </div>
+          )}
 
-          <div className="bg-black/60 backdrop-blur-md rounded-2xl px-4 py-3 max-w-sm">
-            <div className="flex items-center gap-2 mb-1">
-              <Avatar className="w-8 h-8 border-2 border-primary">
-                <AvatarImage src={stream.hostAvatar} />
-                <AvatarFallback>{stream.hostName[0]}</AvatarFallback>
-              </Avatar>
-              <span className="text-white font-semibold">{stream.hostName}</span>
-            </div>
-            <h3 className="text-white text-sm font-medium line-clamp-2">{stream.title}</h3>
-            {stream.description && (
-              <p className="text-white/70 text-xs mt-1 line-clamp-1">{stream.description}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {isHost && (
+          <div className="absolute top-4 right-4 flex items-center gap-2">
             <Button
-              variant="destructive"
-              size="sm"
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={() => setShowAnalytics(!showAnalytics)}
+              className="bg-black/50 text-white hover:bg-black/70"
+            >
+              <Settings className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
               onClick={handleEndStream}
-              className="rounded-full"
+              className="bg-red-500/80 text-white hover:bg-red-500"
             >
               End Stream
             </Button>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="rounded-full bg-black/60 backdrop-blur-md text-white hover:bg-black/80"
-            aria-label="Close stream"
-          >
-            <X size={24} />
-          </Button>
-        </div>
-      </div>
+          </div>
 
-      <div className="flex-1 relative">
-        <video
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          autoPlay
-          playsInline
-          muted={isMuted}
-        />
-
-        {isCameraOff && (
-          <div className="absolute inset-0 bg-black flex items-center justify-center">
-            <div className="text-center text-white">
-              <VideoCamera size={64} className="mx-auto mb-4 opacity-50" />
-              <p className="text-lg">Camera is off</p>
+          <div className="absolute bottom-4 left-4 flex items-center gap-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/50 text-white">
+              <Users className="size-4" />
+              <span className={cn(getTypographyClasses('body'), 'font-medium')}>
+                {viewerCount}
+              </span>
             </div>
           </div>
-        )}
-
-        <div className="absolute inset-0 pointer-events-none">
-          <Presence>
-            {floatingReactions.map((reaction) => (
-              <MotionView
-                key={reaction.id}
-                initial={{ y: 0, opacity: 1, scale: 0 }}
-                animate={{ y: -300, opacity: 0, scale: 1.5 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 3, ease: 'easeOut' }}
-                className="absolute bottom-20 text-4xl"
-                style={{ left: `${String(reaction.x ?? '')}%` }}
-              >
-                {reaction.emoji}
-              </MotionView>
-            ))}
-          </Presence>
         </div>
-      </div>
 
-      {isHost && (
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-3 z-10">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => { setIsMuted(!isMuted); }}
-            className="rounded-full w-14 h-14 bg-black/60 backdrop-blur-md text-white hover:bg-black/80"
-            aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
-          >
-            {isMuted ? <MicrophoneSlash size={24} /> : <Microphone size={24} />}
-          </Button>
-
-          <Button
-            variant="destructive"
-            size="icon"
-            onClick={handleEndStream}
-            className="rounded-full w-16 h-16"
-            aria-label="End stream"
-          >
-            <Phone size={28} />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => { setIsCameraOff(!isCameraOff); }}
-            className="rounded-full w-14 h-14 bg-black/60 backdrop-blur-md text-white hover:bg-black/80"
-            aria-label={isCameraOff ? 'Turn camera on' : 'Turn camera off'}
-          >
-            <CameraRotate size={24} />
-          </Button>
-        </div>
-      )}
-
-      <Presence>
-        {showChat && stream.allowChat && (
-          <MotionView
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="absolute right-0 top-0 bottom-0 w-full sm:w-96 bg-black/90 backdrop-blur-xl flex flex-col border-l border-white/10"
-          >
-            <div className="flex items-center justify-between p-4 border-b border-white/10">
-              <h3 className="text-white font-semibold flex items-center gap-2">
-                <ChatCircle size={20} weight="fill" />
-                Chat
-              </h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => { setShowChat(false); }}
-                className="text-white hover:bg-white/10 rounded-full"
-                aria-label="Close chat"
-              >
-                <X size={20} />
-              </Button>
-            </div>
-
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-3">
-                {chatMessages.map((msg) => (
-                  <div key={msg.id} className="flex items-start gap-2">
-                    <Avatar className="w-6 h-6 shrink-0">
-                      <AvatarImage src={msg.userAvatar} />
-                      <AvatarFallback className="text-xs">{msg.userName[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-white text-sm font-medium">{msg.userName}</span>
-                        <span className="text-white/40 text-xs">
-                          {new Date(msg.createdAt).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                      </div>
-                      <p className="text-white/90 text-sm wrap-break-word">{msg.text}</p>
-                    </div>
-                  </div>
-                ))}
-                <div ref={chatEndRef} />
-              </div>
-            </ScrollArea>
-
-            <div className="p-4 border-t border-white/10">
-              <div className="flex gap-2">
-                <Input
-                  value={messageInput}
-                  onChange={(e) => { setMessageInput(e.target.value); }}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder="Send a message..."
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={!messageInput.trim()}
-                  size="icon"
-                  className="rounded-full"
-                  aria-label="Send message"
-                >
-                  <PaperPlaneTilt size={18} weight="fill" />
-                </Button>
-              </div>
-            </div>
-          </MotionView>
+        {showAnalytics && isHost && (
+          <StreamAnalyticsPanel
+            viewerCount={viewerCount}
+            streamDuration={0}
+            onClose={() => setShowAnalytics(false)}
+          />
         )}
-      </Presence>
-
-      {!showChat && stream.allowChat && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => { setShowChat(true); }}
-          className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full w-14 h-14 bg-black/60 backdrop-blur-md text-white hover:bg-black/80 z-10"
-          aria-label="Open chat"
-        >
-          <ChatCircle size={24} weight="fill" />
-        </Button>
-      )}
-
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-        {REACTION_EMOJIS.map((emoji) => (
-          <MotionView
-            as="button"
-            key={emoji}
-            onClick={() => handleReaction(emoji)}
-            whileTap={{ scale: 1.3 }}
-            className="w-12 h-12 rounded-full bg-black/60 backdrop-blur-md text-2xl hover:bg-black/80 transition-all hover:scale-110"
-          >
-            {emoji}
-          </MotionView>
-        ))}
       </div>
-    </div>
+    </PremiumFeatureGate>
   );
 }

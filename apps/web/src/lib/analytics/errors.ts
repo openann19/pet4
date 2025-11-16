@@ -14,6 +14,7 @@
  */
 
 import { createLogger } from '../logger'
+import { toErrorLike } from '../utils'
 
 const logger = createLogger('error-tracking')
 
@@ -102,9 +103,10 @@ export class ErrorTracker {
 
     // Global error handler
     window.addEventListener('error', (event) => {
+      const errorLike = event.error ? toErrorLike(event.error) : { message: event.message };
       this.trackError({
-        message: event.message,
-        stack: event.error?.stack,
+        message: errorLike.message,
+        stack: errorLike.stack,
         severity: 'high',
         filename: event.filename,
         lineno: event.lineno,
@@ -114,12 +116,77 @@ export class ErrorTracker {
 
     // Unhandled promise rejection handler
     window.addEventListener('unhandledrejection', (event) => {
+      const errorLike = toErrorLike(event.reason);
       this.trackError({
-        message: event.reason?.message ?? String(event.reason),
-        stack: event.reason?.stack,
+        message: errorLike.message,
+        stack: errorLike.stack,
         severity: 'medium',
       })
     })
+  }
+
+  private buildErrorContext(
+    error: {
+      filename?: string
+      lineno?: number
+      colno?: number
+      context?: Partial<ErrorContext>
+    },
+    timestamp: number
+  ): ErrorContext {
+    return {
+      userId: error.context?.userId,
+      sessionId: error.context?.sessionId,
+      url: typeof window !== 'undefined' ? window.location.href : undefined,
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      timestamp,
+      properties: {
+        ...error.context?.properties,
+        filename: error.filename,
+        lineno: error.lineno,
+        colno: error.colno,
+      },
+    }
+  }
+
+  private updateExistingError(
+    existingError: TrackedError,
+    errorId: string,
+    context: ErrorContext,
+    now: number
+  ): void {
+    const updatedError: TrackedError = {
+      ...existingError,
+      count: existingError.count + 1,
+      lastSeen: now,
+      context: this.mergeContext(existingError.context, context),
+    }
+    this.errors.set(errorId, updatedError)
+  }
+
+  private createNewError(
+    error: { message: string; stack?: string },
+    errorId: string,
+    severity: ErrorSeverity,
+    context: ErrorContext,
+    now: number
+  ): void {
+    const newError: TrackedError = {
+      id: errorId,
+      message: error.message,
+      stack: error.stack,
+      severity,
+      context,
+      count: 1,
+      firstSeen: now,
+      lastSeen: now,
+      resolved: false,
+    }
+    this.errors.set(errorId, newError)
+
+    if (this.errors.size > this.maxErrors) {
+      this.trimErrors()
+    }
   }
 
   /**
@@ -136,58 +203,19 @@ export class ErrorTracker {
   }): void {
     const severity = error.severity ?? this.determineSeverity(error.message, error.stack)
 
-    // Check severity threshold
     if (this.shouldIgnoreSeverity(severity)) {
       return
     }
 
     const errorId = this.generateErrorId(error.message, error.stack)
     const now = Date.now()
-
-    const context: ErrorContext = {
-      userId: error.context?.userId,
-      sessionId: error.context?.sessionId,
-      url: typeof window !== 'undefined' ? window.location.href : undefined,
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-      timestamp: now,
-      properties: {
-        ...error.context?.properties,
-        filename: error.filename,
-        lineno: error.lineno,
-        colno: error.colno,
-      },
-    }
-
+    const context = this.buildErrorContext(error, now)
     const existingError = this.errors.get(errorId)
 
     if (existingError) {
-      // Update existing error
-      const updatedError: TrackedError = {
-        ...existingError,
-        count: existingError.count + 1,
-        lastSeen: now,
-        context: this.mergeContext(existingError.context, context),
-      }
-      this.errors.set(errorId, updatedError)
+      this.updateExistingError(existingError, errorId, context, now)
     } else {
-      // Create new error
-      const newError: TrackedError = {
-        id: errorId,
-        message: error.message,
-        stack: error.stack,
-        severity,
-        context,
-        count: 1,
-        firstSeen: now,
-        lastSeen: now,
-        resolved: false,
-      }
-      this.errors.set(errorId, newError)
-
-      // Trim errors if exceeds max
-      if (this.errors.size > this.maxErrors) {
-        this.trimErrors()
-      }
+      this.createNewError(error, errorId, severity, context, now)
     }
 
     logger.error('Error tracked', {
@@ -224,7 +252,7 @@ export class ErrorTracker {
   /**
    * Determine error severity
    */
-  private determineSeverity(message: string, stack?: string): ErrorSeverity {
+  private determineSeverity(message: string, _stack?: string): ErrorSeverity {
     const lowerMessage = message.toLowerCase()
 
     // Critical errors
@@ -387,8 +415,6 @@ export class ErrorTracker {
 let errorTrackerInstance: ErrorTracker | null = null
 
 export function getErrorTracker(options?: ErrorTrackingOptions): ErrorTracker {
-  if (!errorTrackerInstance) {
-    errorTrackerInstance = new ErrorTracker(options)
-  }
-  return errorTrackerInstance
+  errorTrackerInstance ??= new ErrorTracker(options);
+  return errorTrackerInstance;
 }

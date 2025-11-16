@@ -114,7 +114,7 @@ class PerformanceMonitorImpl {
               timestamp: Date.now(),
               tags: {
                 resource_type: resourceEntry.initiatorType,
-                resource_name: resourceEntry.name.split('/').pop() || 'unknown',
+                resource_name: resourceEntry.name.split('/').pop() ?? 'unknown',
               },
             });
           }
@@ -123,13 +123,11 @@ class PerformanceMonitorImpl {
           if (resourceEntry.transferSize > 1000000) {
             // 1MB
             this.recordMetric({
-              name: 'resource.large_size',
+              name: 'resource_large_size',
               value: resourceEntry.transferSize,
-              unit: 'bytes',
-              timestamp: Date.now(),
               tags: {
                 resource_type: resourceEntry.initiatorType,
-                resource_name: resourceEntry.name.split('/').pop() || 'unknown',
+                resource_name: resourceEntry.name.split('/').pop() ?? 'unknown',
               },
             });
           }
@@ -270,7 +268,7 @@ class PerformanceMonitorImpl {
   trackFeatureUsage(feature: string, duration?: number): void {
     this.recordMetric({
       name: 'feature.usage',
-      value: duration || 1,
+      value: duration ?? 1,
       unit: duration ? 'ms' : 'count',
       timestamp: Date.now(),
       tags: { feature },
@@ -328,9 +326,7 @@ class PerformanceMonitorImpl {
     // Calculate averages by metric name
     const metricGroups = this.metrics.reduce(
       (groups, metric) => {
-        if (!groups[metric.name]) {
-          groups[metric.name] = [];
-        }
+        groups[metric.name] ??= [];
         const group = groups[metric.name];
         if (group) {
           group.push(metric.value);

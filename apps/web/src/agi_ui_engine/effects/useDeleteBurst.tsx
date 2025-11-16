@@ -38,8 +38,8 @@ export function useDeleteBurst(options: UseDeleteBurstOptions = {}): UseDeleteBu
   const { enabled = true, onFinish } = options;
   const { animation } = useUIConfig();
 
-  const opacity = useSharedValue(1);
-  const scale = useSharedValue(1);
+  const opacity = useSharedValue<number>(1);
+  const scale = useSharedValue<number>(1);
 
   const trigger = useCallback(() => {
     if (!enabled || !animation.showParticles) {

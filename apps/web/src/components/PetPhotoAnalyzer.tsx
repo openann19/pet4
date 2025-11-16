@@ -7,15 +7,16 @@ import { parseLLMError } from '@/lib/llm-utils';
 import { createLogger } from '@/lib/logger';
 import { Camera, Check, Image as ImageIcon, Sparkle, Upload, X } from '@phosphor-icons/react';
 import { useRef, useState, useEffect } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
+import { useAnimatePresence } from '@/effects/reanimated';
 import {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
   withSpring,
+  MotionView,
+  Presence,
 } from '@petspark/motion';
 import { toast } from 'sonner';
 
@@ -215,17 +216,17 @@ Return ONLY valid JSON with this exact structure, nothing else:
 
   return (
     <div className="space-y-4">
-      <AnimatedView style={entryStyle} className="relative">
+      <MotionView style={entryStyle} className="relative">
         <Card className="p-6 bg-linear-to-br from-primary/5 via-accent/5 to-secondary/5 border-2 border-dashed border-primary/20">
           <div className="flex items-start gap-4">
-            <AnimatedView
+            <MotionView
               style={glowStyle}
               className="w-12 h-12 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center shrink-0"
             >
-              <AnimatedView style={rotateStyle}>
+              <MotionView style={rotateStyle}>
                 <Sparkle size={24} weight="fill" className="text-white" />
-              </AnimatedView>
-            </AnimatedView>
+              </MotionView>
+            </MotionView>
             <div className="flex-1 min-w-0">
               <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
                 AI Photo Analysis
@@ -239,7 +240,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
               </p>
 
               <div className="flex gap-2 mb-3">
-                <AnimatedView
+                <MotionView
                   style={buttonHover.animatedStyle}
                   onMouseEnter={buttonHover.handleMouseEnter}
                   onMouseLeave={buttonHover.handleMouseLeave}
@@ -258,8 +259,8 @@ Return ONLY valid JSON with this exact structure, nothing else:
                     <Camera size={16} weight="fill" />
                     <span>Camera</span>
                   </Button>
-                </AnimatedView>
-                <AnimatedView
+                </MotionView>
+                <MotionView
                   style={buttonHover.animatedStyle}
                   onMouseEnter={buttonHover.handleMouseEnter}
                   onMouseLeave={buttonHover.handleMouseLeave}
@@ -278,8 +279,8 @@ Return ONLY valid JSON with this exact structure, nothing else:
                     <ImageIcon size={16} weight="fill" />
                     <span>Upload</span>
                   </Button>
-                </AnimatedView>
-                <AnimatedView
+                </MotionView>
+                <MotionView
                   style={buttonHover.animatedStyle}
                   onMouseEnter={buttonHover.handleMouseEnter}
                   onMouseLeave={buttonHover.handleMouseLeave}
@@ -295,7 +296,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                     <Upload size={16} weight="fill" />
                     <span>URL</span>
                   </Button>
-                </AnimatedView>
+                </MotionView>
               </div>
 
               <input
@@ -342,9 +343,9 @@ Return ONLY valid JSON with this exact structure, nothing else:
                   >
                     {analyzing ? (
                       <>
-                        <AnimatedView style={rotateStyle}>
+                        <MotionView style={rotateStyle}>
                           <Sparkle size={18} weight="fill" />
-                        </AnimatedView>
+                        </MotionView>
                         <span className="ml-2">Analyzing...</span>
                       </>
                     ) : (
@@ -370,9 +371,9 @@ Return ONLY valid JSON with this exact structure, nothing else:
                   >
                     {analyzing ? (
                       <>
-                        <AnimatedView style={rotateStyle}>
+                        <MotionView style={rotateStyle}>
                           <Sparkle size={18} weight="fill" />
-                        </AnimatedView>
+                        </MotionView>
                         <span className="ml-2">Analyzing...</span>
                       </>
                     ) : (
@@ -387,24 +388,22 @@ Return ONLY valid JSON with this exact structure, nothing else:
             </div>
           </div>
         </Card>
-      </AnimatedView>
-
+      </MotionView>
       {photoPresence.shouldRender && photo && !analyzing && (
-        <AnimatedView
+        <MotionView
           style={photoPresence.animatedStyle}
           className="relative h-64 rounded-lg overflow-hidden bg-muted"
         >
           <img src={photo} alt="Pet preview" className="w-full h-full object-cover" />
-        </AnimatedView>
+        </MotionView>
       )}
-
       {analyzingPresence.shouldRender && analyzing && (
-        <AnimatedView style={analyzingPresence.animatedStyle}>
+        <MotionView style={analyzingPresence.animatedStyle}>
           <Card className="p-6 bg-linear-to-br from-background to-muted/30">
             <div className="flex items-center gap-3 mb-4">
-              <AnimatedView style={rotateStyle}>
+              <MotionView style={rotateStyle}>
                 <Sparkle size={24} weight="fill" className="text-primary" />
-              </AnimatedView>
+              </MotionView>
               <div>
                 <h4 className="font-semibold">Analyzing photo...</h4>
                 <p className="text-sm text-muted-foreground">This may take a few seconds</p>
@@ -425,10 +424,10 @@ Return ONLY valid JSON with this exact structure, nothing else:
               ))}
             </div>
           </Card>
-        </AnimatedView>
+        </MotionView>
       )}
       {resultPresence.shouldRender && result && (
-        <AnimatedView style={resultPresence.animatedStyle}>
+        <MotionView style={resultPresence.animatedStyle}>
           <Card className="p-6 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800">
             <div className="flex items-start gap-4 mb-4">
               <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center shrink-0">
@@ -510,7 +509,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
               </Button>
             </div>
           </Card>
-        </AnimatedView>
+        </MotionView>
       )}
     </div>
   );

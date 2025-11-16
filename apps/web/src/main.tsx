@@ -37,12 +37,12 @@ if (import.meta.env.PROD) {
 
 // Initialize refresh rate detection
 import { detectRefreshRate } from './lib/refresh-rate';
-let refreshRateCleanup: (() => void) | null = null;
+let _refreshRateCleanup: (() => void) | null = null;
 if (typeof window !== 'undefined') {
   try {
-    refreshRateCleanup = detectRefreshRate();
-    if (refreshRateCleanup) {
-      window.addEventListener('beforeunload', refreshRateCleanup);
+    _refreshRateCleanup = detectRefreshRate();
+    if (_refreshRateCleanup) {
+      window.addEventListener('beforeunload', _refreshRateCleanup);
     }
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));

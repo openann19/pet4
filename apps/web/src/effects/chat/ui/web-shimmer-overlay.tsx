@@ -1,7 +1,8 @@
-'use client'
+'use client';
+import { MotionView } from "@petspark/motion";
 
 import React from 'react'
-import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view'
+import { type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useShimmerSweep } from '@/effects/reanimated/use-shimmer-sweep'
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '../core/reduced-motion'
@@ -51,10 +52,10 @@ export function WebShimmerOverlay({
   const streakWidthPx = Math.max(width * streakWidth, 1)
 
   return (
-    <AnimatedView
+    <MotionView
       className={cn('absolute inset-0 pointer-events-none overflow-hidden rounded-[inherit]', className)}
     >
-      <AnimatedView
+      <MotionView
         style={{
           ...(shimmer.animatedStyle as AnimatedStyle),
           width: streakWidthPx,
@@ -63,9 +64,9 @@ export function WebShimmerOverlay({
         className="absolute top-1/2 -translate-y-1/2 rounded-full bg-white/40 blur-md"
       >
         {children ?? <div className="h-full w-full bg-white/30" />}
-      </AnimatedView>
-    </AnimatedView>
-  )
+      </MotionView>
+    </MotionView>
+  );
 }
 
 export default WebShimmerOverlay

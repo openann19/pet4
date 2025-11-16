@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import { useEffect } from 'react';
 import {
   useSharedValue,
@@ -8,8 +7,8 @@ import {
   withRepeat,
   withSequence,
   withDelay,
+  MotionView,
 } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -98,8 +97,8 @@ function TypingDot({
   })) as AnimatedStyle;
 
   return (
-    <AnimatedView style={animatedStyle} className="rounded-full">
+    <MotionView style={animatedStyle} className="rounded-full">
       <div />
-    </AnimatedView>
+    </MotionView>
   );
 }

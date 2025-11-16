@@ -62,7 +62,7 @@ export function useAdoptionFilters({
     value: T
   ) => {
     setLocalFilters((prev) => {
-      const current = (prev[key] as T[] | undefined) || [];
+      const current = (prev[key] as T[] | undefined) ?? [];
       const updated = current.includes(value)
         ? current.filter((item) => item !== value)
         : [...current, value];

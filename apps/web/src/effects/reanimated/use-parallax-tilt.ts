@@ -3,7 +3,7 @@
 import {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
+  animate,
   interpolate,
   type SharedValue,
 } from '@petspark/motion';
@@ -52,8 +52,8 @@ export function useParallaxTilt(options: UseParallaxTiltOptions = {}): UseParall
     return {
       transform: [
         { perspective },
-        { rotateX: `${rotateX.value}deg` },
-        { rotateY: `${rotateY.value}deg` },
+        { rotateX: `${rotateX.get()}deg` },
+        { rotateY: `${rotateY.get()}deg` },
       ],
     };
   });
@@ -72,16 +72,32 @@ export function useParallaxTilt(options: UseParallaxTiltOptions = {}): UseParall
 
       const tiltY = interpolate(deltaX, [-width / 2, width / 2], [-maxTilt, maxTilt]);
 
-      rotateX.value = withSpring(tiltX, { damping, stiffness });
-      rotateY.value = withSpring(tiltY, { damping, stiffness });
+      animate(rotateX, tiltX, {
+        type: 'spring',
+        damping,
+        stiffness,
+      });
+      animate(rotateY, tiltY, {
+        type: 'spring',
+        damping,
+        stiffness,
+      });
     },
     [enabled, maxTilt, damping, stiffness, rotateX, rotateY]
   );
 
   const handleLeave = useCallback(() => {
     if (!enabled) return;
-    rotateX.value = withSpring(0, { damping, stiffness });
-    rotateY.value = withSpring(0, { damping, stiffness });
+    animate(rotateX, 0, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
+    animate(rotateY, 0, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
   }, [enabled, damping, stiffness, rotateX, rotateY]);
 
   return {

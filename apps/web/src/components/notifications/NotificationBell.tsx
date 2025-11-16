@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { Button } from '@/components/ui/button';
@@ -7,13 +6,13 @@ import { Bell, BellRinging } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/badge';
 import { haptics } from '@/lib/haptics';
 import { NotificationCenter, type AppNotification } from './NotificationCenter';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withRepeat,
   withSequence,
+  MotionView,
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
@@ -105,20 +104,20 @@ function BellIconView({ hasNewNotification, unreadCount }: BellIconViewProps) {
 
   if (hasNewNotification && unreadCount > 0) {
     return (
-      <AnimatedView style={iconStyle}>
+      <MotionView style={iconStyle}>
         <BellRinging size={20} weight="fill" className="text-primary" />
-      </AnimatedView>
+      </MotionView>
     );
   }
 
   return (
-    <AnimatedView style={iconStyle}>
+    <MotionView style={iconStyle}>
       <Bell
         size={20}
         weight={unreadCount > 0 ? 'fill' : 'regular'}
         className={unreadCount > 0 ? 'text-primary' : 'text-foreground/80'}
       />
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -143,14 +142,14 @@ function BadgeView({ unreadCount }: BadgeViewProps) {
   }) as AnimatedStyle;
 
   return (
-    <AnimatedView style={badgeStyle} className="absolute -top-1 -right-1">
+    <MotionView style={badgeStyle} className="absolute -top-1 -right-1">
       <Badge
         variant="destructive"
         className="h-5 min-w-5 px-1 rounded-full text-xs font-bold flex items-center justify-center shadow-lg"
       >
         {unreadCount > 99 ? '99+' : unreadCount}
       </Badge>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -179,7 +178,7 @@ function PulseRingView() {
   }) as AnimatedStyle;
 
   return (
-    <AnimatedView
+    <MotionView
       style={ringStyle}
       className="absolute inset-0 rounded-full border-2 border-primary pointer-events-none"
     />

@@ -1,6 +1,4 @@
 import { useEffect } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -9,8 +7,12 @@ import {
   withRepeat,
   withSequence,
   withDelay,
+  MotionView,
 } from '@petspark/motion';
+import type { Transition } from 'framer-motion';
+import { isTruthy } from '@petspark/shared';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useAnimatePresence } from '@/effects/reanimated';
 import { Heart, Sparkle } from '@phosphor-icons/react';
 
 interface MatchCelebrationProps {
@@ -31,44 +33,46 @@ function Particle({ index, total }: ParticleProps) {
   const x = Math.cos(angle) * distance;
   const y = Math.sin(angle) * distance;
 
-  const particleOpacity = useSharedValue(1);
-  const particleScale = useSharedValue(0);
-  const particleRotate = useSharedValue(0);
-  const particleX = useSharedValue(0);
-  const particleY = useSharedValue(0);
+  const particleOpacity = useSharedValue<number>(1);
+  const particleScale = useSharedValue<number>(0);
+  const particleRotate = useSharedValue<number>(0);
+  const particleX = useSharedValue<number>(0);
+  const particleY = useSharedValue<number>(0);
 
   useEffect(() => {
-    particleX.value = withDelay(index * 20, withTiming(x, { duration: 2000 }));
-    particleY.value = withDelay(index * 20, withTiming(y, { duration: 2000 }));
+    particleX.value = withDelay(index * 20, withTiming(x, { duration: 2000 })) as { target: typeof x; transition: Transition };
+    particleY.value = withDelay(index * 20, withTiming(y, { duration: 2000 })) as { target: typeof y; transition: Transition };
     particleScale.value = withDelay(
       index * 20,
       withSequence(withTiming(1.5, { duration: 666 }), withTiming(0, { duration: 1334 }))
-    );
+    ) as { target: number; transition: Transition };
     particleOpacity.value = withDelay(
       index * 20,
       withSequence(withTiming(1, { duration: 666 }), withTiming(0, { duration: 1334 }))
-    );
-    particleRotate.value = withDelay(index * 20, withTiming(360, { duration: 2000 }));
+    ) as { target: number; transition: Transition };
+    particleRotate.value = withDelay(index * 20, withTiming(360, { duration: 2000 })) as { target: 360; transition: Transition };
   }, [index, x, y]);
 
-  const particleStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: particleX.value },
-      { translateY: particleY.value },
-      { scale: particleScale.value },
-      { rotate: `${particleRotate.value}deg` },
-    ],
-    opacity: particleOpacity.value,
-  })) as AnimatedStyle;
+  const particleStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, number | string>[] = [];
+    transforms.push({ translateX: particleX.value });
+    transforms.push({ translateY: particleY.value });
+    transforms.push({ scale: particleScale.value });
+    transforms.push({ rotate: `${particleRotate.value}deg` });
+    return {
+      transform: transforms,
+      opacity: particleOpacity.value,
+    };
+  }) as AnimatedStyle;
 
   return (
-    <AnimatedView className="absolute" style={particleStyle}>
+    <MotionView className="absolute" animatedStyle={particleStyle}>
       {index % 2 === 0 ? (
         <Heart size={24} weight="fill" className="text-primary drop-shadow-2xl" />
       ) : (
         <Sparkle size={20} weight="fill" className="text-accent drop-shadow-2xl" />
       )}
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -85,50 +89,50 @@ export default function MatchCelebration({
   });
 
   // Main container animations
-  const containerOpacity = useSharedValue(0);
-  const backdropOpacity = useSharedValue(0);
+  const containerOpacity = useSharedValue<number>(0);
+  const backdropOpacity = useSharedValue<number>(0);
 
   // Modal animations
-  const modalScale = useSharedValue(0);
-  const modalRotate = useSharedValue(-180);
-  const gradientOpacity = useSharedValue(0.5);
+  const modalScale = useSharedValue<number>(0);
+  const modalRotate = useSharedValue<number>(-180);
+  const gradientOpacity = useSharedValue<number>(0.5);
 
   // Heart icon animations
-  const heartScale = useSharedValue(1);
-  const heartRotate = useSharedValue(0);
+  const heartScale = useSharedValue<number>(1);
+  const heartRotate = useSharedValue<number>(0);
 
   // Text animations
-  const titleOpacity = useSharedValue(0);
-  const titleY = useSharedValue(20);
-  const subtitleOpacity = useSharedValue(0);
-  const subtitleY = useSharedValue(20);
-  const footerOpacity = useSharedValue(0);
+  const titleOpacity = useSharedValue<number>(0);
+  const titleY = useSharedValue<number>(20);
+  const subtitleOpacity = useSharedValue<number>(0);
+  const subtitleY = useSharedValue<number>(20);
+  const footerOpacity = useSharedValue<number>(0);
 
   // Sparkle rotations
-  const sparkle1Rotate = useSharedValue(0);
-  const sparkle2Rotate = useSharedValue(0);
+  const sparkle1Rotate = useSharedValue<number>(0);
+  const sparkle2Rotate = useSharedValue<number>(0);
 
   useEffect(() => {
     if (isTruthy(show)) {
       // Start animations
-      containerOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
-      backdropOpacity.value = withSpring(1, { damping: 20, stiffness: 300 });
-      modalScale.value = withSpring(1, { damping: 20, stiffness: 200 });
-      modalRotate.value = withSpring(0, { damping: 20, stiffness: 200 });
+      containerOpacity.value = withSpring(1, { damping: 20, stiffness: 300 }) as { target: 1; transition: Transition };
+      backdropOpacity.value = withSpring(1, { damping: 20, stiffness: 300 }) as { target: 1; transition: Transition };
+      modalScale.value = withSpring(1, { damping: 20, stiffness: 200 }) as { target: 1; transition: Transition };
+      modalRotate.value = withSpring(0, { damping: 20, stiffness: 200 }) as { target: 0; transition: Transition };
 
       // Gradient pulse
       gradientOpacity.value = withRepeat(
         withSequence(withTiming(0.8, { duration: 1000 }), withTiming(0.5, { duration: 1000 })),
         -1,
         true
-      );
+      ) as { target: number; transition: Transition };
 
       // Heart pulse and rotate
       heartScale.value = withRepeat(
         withSequence(withTiming(1.3, { duration: 300 }), withTiming(1, { duration: 300 })),
         -1,
         true
-      );
+      ) as { target: number; transition: Transition };
       heartRotate.value = withRepeat(
         withSequence(
           withTiming(5, { duration: 200 }),
@@ -137,18 +141,18 @@ export default function MatchCelebration({
         ),
         -1,
         true
-      );
+      ) as { target: number; transition: Transition };
 
       // Text animations with delays
-      titleOpacity.value = withDelay(300, withSpring(1, { damping: 20, stiffness: 300 }));
-      titleY.value = withDelay(300, withSpring(0, { damping: 20, stiffness: 300 }));
-      subtitleOpacity.value = withDelay(400, withSpring(1, { damping: 20, stiffness: 300 }));
-      subtitleY.value = withDelay(400, withSpring(0, { damping: 20, stiffness: 300 }));
-      footerOpacity.value = withDelay(500, withSpring(1, { damping: 20, stiffness: 300 }));
+      titleOpacity.value = withDelay(300, withSpring(1, { damping: 20, stiffness: 300 })) as { target: 1; transition: Transition };
+      titleY.value = withDelay(300, withSpring(0, { damping: 20, stiffness: 300 })) as { target: 0; transition: Transition };
+      subtitleOpacity.value = withDelay(400, withSpring(1, { damping: 20, stiffness: 300 })) as { target: 1; transition: Transition };
+      subtitleY.value = withDelay(400, withSpring(0, { damping: 20, stiffness: 300 })) as { target: 0; transition: Transition };
+      footerOpacity.value = withDelay(500, withSpring(1, { damping: 20, stiffness: 300 })) as { target: 1; transition: Transition };
 
       // Sparkle rotations
-      sparkle1Rotate.value = withRepeat(withTiming(360, { duration: 3000 }), -1, false);
-      sparkle2Rotate.value = withRepeat(withTiming(-360, { duration: 3000 }), -1, false);
+      sparkle1Rotate.value = withRepeat(withTiming(360, { duration: 3000 }), -1, false) as { target: number; transition: Transition };
+      sparkle2Rotate.value = withRepeat(withTiming(-180, { duration: 3000 }), -1, false) as { target: number; transition: Transition };
 
       const timer = setTimeout(() => {
         onComplete();
@@ -156,10 +160,10 @@ export default function MatchCelebration({
       return () => clearTimeout(timer);
     } else {
       // Reset animations
-      containerOpacity.value = 0;
-      backdropOpacity.value = 0;
-      modalScale.value = 0;
-      modalRotate.value = 180;
+      containerOpacity.value = 0 as number;
+      backdropOpacity.value = 0 as number;
+      modalScale.value = 0 as number;
+      modalRotate.value = 180 as number;
     }
     return undefined;
   }, [show, onComplete]);
@@ -172,17 +176,23 @@ export default function MatchCelebration({
     opacity: backdropOpacity.value,
   })) as AnimatedStyle;
 
-  const modalStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: modalScale.value }, { rotate: `${modalRotate.value}deg` }],
-  })) as AnimatedStyle;
+  const modalStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, number | string>[] = [];
+    transforms.push({ scale: modalScale.value });
+    transforms.push({ rotate: `${modalRotate.value}deg` });
+    return { transform: transforms };
+  }) as AnimatedStyle;
 
   const gradientStyle = useAnimatedStyle(() => ({
     opacity: gradientOpacity.value,
   })) as AnimatedStyle;
 
-  const heartStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: heartScale.value }, { rotate: `${heartRotate.value}deg` }],
-  })) as AnimatedStyle;
+  const heartStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, number | string>[] = [];
+    transforms.push({ scale: heartScale.value });
+    transforms.push({ rotate: `${heartRotate.value}deg` });
+    return { transform: transforms };
+  }) as AnimatedStyle;
 
   const titleStyle = useAnimatedStyle(() => ({
     opacity: titleOpacity.value,
@@ -211,62 +221,62 @@ export default function MatchCelebration({
   return (
     <>
       {presence.shouldRender && show && (
-        <AnimatedView
-          style={containerStyle}
+        <MotionView
+          animatedStyle={containerStyle}
           className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
         >
-          <AnimatedView
+          <MotionView
             className="absolute inset-0 glass-strong backdrop-blur-2xl"
-            style={backdropStyle}
+            animatedStyle={backdropStyle}
           />
 
           {particles.map((i) => (
             <Particle key={i} index={i} total={particles.length} />
           ))}
 
-          <AnimatedView
+          <MotionView
             className="relative z-10 rounded-3xl glass-strong premium-shadow border-2 border-white/40 p-10 max-w-md mx-4 backdrop-blur-2xl overflow-hidden"
-            style={modalStyle}
+            animatedStyle={modalStyle}
           >
-            <AnimatedView
+            <MotionView
               className="absolute inset-0 bg-linear-to-br from-primary/30 via-accent/30 to-secondary/30"
-              style={gradientStyle}
+              animatedStyle={gradientStyle}
             />
 
-            <AnimatedView style={heartStyle} className="text-center mb-6 relative z-10">
+            <MotionView animatedStyle={heartStyle} className="text-center mb-6 relative z-10">
               <div className="inline-block p-4 rounded-full glass-strong border-2 border-white/50 shadow-2xl">
                 <Heart size={72} weight="fill" className="text-white drop-shadow-2xl" />
               </div>
-            </AnimatedView>
+            </MotionView>
 
-            <AnimatedView
-              style={titleStyle}
+            <MotionView
+              animatedStyle={titleStyle}
               className="text-4xl font-bold text-white text-center mb-3 drop-shadow-2xl relative z-10"
             >
               It's a Match! 🎉
-            </AnimatedView>
+            </MotionView>
 
-            <AnimatedView
-              style={subtitleStyle}
+            <MotionView
+              animatedStyle={subtitleStyle}
               className="text-white/95 text-center text-xl font-medium drop-shadow-lg relative z-10"
             >
               {petName1} and {petName2} are now connected!
-            </AnimatedView>
+            </MotionView>
 
-            <AnimatedView
+            <MotionView
               className="mt-8 flex items-center justify-center gap-5 relative z-10"
-              style={footerStyle}
+              animatedStyle={footerStyle}
             >
-              <AnimatedView style={sparkle1Style}>
+              <MotionView animatedStyle={sparkle1Style}>
                 <Sparkle size={32} weight="fill" className="text-white drop-shadow-2xl" />
-              </AnimatedView>
+              </MotionView>
               <div className="text-white font-bold text-lg drop-shadow-lg">Perfect Companions!</div>
-              <AnimatedView style={sparkle2Style}>
+              <MotionView animatedStyle={sparkle2Style}>
                 <Sparkle size={32} weight="fill" className="text-white drop-shadow-2xl" />
-              </AnimatedView>
-            </AnimatedView>
-          </AnimatedView>
-        </AnimatedView>
+              </MotionView>
+            </MotionView>
+          </MotionView>
+        </MotionView>
       )}
     </>
   );

@@ -23,7 +23,7 @@ export default function HighlightsBar({ petId, userId, onlyOwn = false }: Highli
   const [selectedHighlight, setSelectedHighlight] = useState<StoryHighlight | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  const filteredHighlights = (highlights || []).filter((h) => {
+  const filteredHighlights = (highlights ?? []).filter((h) => {
     if (petId) return h.petId === petId;
     if (userId) return h.userId === userId;
     if (onlyOwn) return h.userId === (currentUser?.id || 'user-1');

@@ -1,7 +1,13 @@
 import React, { useEffect, useCallback } from 'react';
-import { useSharedValue, withSpring, useAnimatedStyle, withTiming, animate } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { Presence } from '@petspark/motion';
+import {
+  useSharedValue,
+  withSpring,
+  useAnimatedStyle,
+  withTiming,
+  animate,
+  MotionView,
+} from '@petspark/motion';
+import { Presence, MotionView } from '@petspark/motion';
 import { X, CheckCircle, Warning, Info, XCircle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -124,7 +130,7 @@ export function SmartToast({
   }));
 
   return (
-    <AnimatedView
+    <MotionView
       style={animatedStyle}
       role={toastAria.role}
       aria-live={toastAria['aria-live']}
@@ -138,7 +144,6 @@ export function SmartToast({
       )}
     >
       <Icon className={cn('shrink-0 mt-0.5', iconColors[type])} size={20} weight="fill" aria-hidden="true" />
-
       <div className="flex-1 min-w-0">
         <div id={titleId} className={cn(getTypographyClasses('caption'), 'font-semibold text-(--text-primary)', getSpacingClassesFromConfig({ marginY: 'xs' }))}>
           {title}
@@ -163,7 +168,6 @@ export function SmartToast({
           </Button>
         )}
       </div>
-
       <button
         onClick={handleDismiss}
         className={cn(
@@ -175,7 +179,7 @@ export function SmartToast({
       >
         <X size={16} aria-hidden="true" />
       </button>
-    </AnimatedView>
+    </MotionView>
   );
 }
 

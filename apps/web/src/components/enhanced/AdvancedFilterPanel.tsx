@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import React, { useCallback, useEffect } from 'react';
 import { X, Funnel, Check, Eraser } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
@@ -9,10 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useFilters } from '@/hooks/use-filters';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { useSharedValue, useAnimatedStyle, withTiming, animate } from '@petspark/motion';
-import { motion } from 'framer-motion';
+import { useSharedValue, useAnimatedStyle, withTiming, animate, MotionView, motion } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
@@ -324,7 +321,7 @@ function ToggleSwitch({ label, checked, onChange }: ToggleSwitchProps) {
           checked ? 'bg-(--primary)' : 'bg-(--surface)'
         )}
       >
-        <AnimatedView
+        <MotionView
           style={thumbStyle}
           className="w-5 h-5 mt-0.5 ml-0.5 rounded-full bg-(--background) shadow-md"
           aria-hidden="true"

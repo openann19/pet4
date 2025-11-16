@@ -10,6 +10,7 @@ import {
   closePeerConnection,
   getActualResolution,
 } from '@/lib/call-utils';
+import { isTruthy } from '@petspark/shared';
 import type { WebRTCPeer } from '@/lib/webrtc-peer';
 import { toast } from 'sonner';
 import { createLogger } from '@/lib/logger';
@@ -247,23 +248,23 @@ export function useCall(
   const endCall = () => {
     if (activeCall) {
       const duration = Math.floor(
-        (new Date().getTime() - new Date(activeCall.call.startTime || Date.now()).getTime()) / 1000
+        (new Date().getTime() - new Date(activeCall.call.startTime ?? Date.now()).getTime()) / 1000
       );
 
       addToHistory({
         id: activeCall.call.id,
         roomId: activeCall.call.roomId,
         matchedPetName: activeCall.remoteParticipant.name,
-        matchedPetPhoto: activeCall.remoteParticipant.avatar || '',
+        matchedPetPhoto: activeCall.remoteParticipant.avatar ?? '',
         type: activeCall.call.type,
         status: activeCall.call.status === 'active' ? 'ended' : 'missed',
         timestamp: new Date().toISOString(),
         duration,
       });
 
-      stopMediaStream(localStreamRef.current || undefined);
-      stopMediaStream(remoteStreamRef.current || undefined);
-      closePeerConnection(peerConnectionRef.current || undefined);
+      stopMediaStream(localStreamRef.current ?? undefined);
+      stopMediaStream(remoteStreamRef.current ?? undefined);
+      closePeerConnection(peerConnectionRef.current ?? undefined);
       localStreamRef.current = null;
       remoteStreamRef.current = null;
       peerConnectionRef.current = null;
@@ -312,7 +313,7 @@ export function useCall(
   };
 
   const addToHistory = (item: CallHistoryItem) => {
-    setCallHistory((prev) => [item, ...(prev || [])].slice(0, 50));
+    setCallHistory((prev) => [item, ...(prev ?? [])].slice(0, 50));
   };
 
   return {

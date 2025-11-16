@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import { useEffect, useState, useCallback } from 'react';
 import {
   useSharedValue,
@@ -7,6 +6,7 @@ import {
   withTiming,
   withRepeat,
   withSequence,
+  MotionView,
 } from '@petspark/motion';
 import ChatRoomsList from '@/components/ChatRoomsList';
 import ChatWindow from '@/components/ChatWindowNew';
@@ -19,7 +19,6 @@ import type { ChatRoom } from '@/lib/chat-types';
 import { createChatRoom } from '@/lib/chat-utils';
 import { createLogger } from '@/lib/logger';
 import type { Match, Pet } from '@/lib/types';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { timingConfigs } from '@/effects/reanimated/transitions';
@@ -206,13 +205,13 @@ export default function ChatView() {
   if (!userPet) {
     return (
       <main aria-label="Chat view" className={cn('flex flex-col items-center justify-center min-h-[60vh] text-center', getSpacingClassesFromConfig({ paddingX: 'lg' }))}>
-        <AnimatedView
+        <MotionView
           style={emptyStateAnimation.style}
           className={cn('glass-strong rounded-3xl max-w-md', getSpacingClassesFromConfig({ padding: '2xl' }))}
         >
           <h2 className={cn(getTypographyClasses('h2'), getSpacingClassesFromConfig({ marginY: 'sm' }))}>{t.chat.createProfile}</h2>
           <p className={cn(getTypographyClasses('body'), 'text-muted-foreground')}>{t.chat.createProfileDesc}</p>
-        </AnimatedView>
+        </MotionView>
       </main>
     );
   }
@@ -223,30 +222,30 @@ export default function ChatView() {
   return (
     <PageTransitionWrapper key="chat-view" direction="up">
       <main aria-label="Chat view" className="h-[calc(100vh-8rem)]">
-        <AnimatedView style={headerAnimation.style} className={getSpacingClassesFromConfig({ marginY: 'xl' })}>
+        <MotionView style={headerAnimation.style} className={getSpacingClassesFromConfig({ marginY: 'xl' })}>
           <h2 className={cn(getTypographyClasses('h2'), getSpacingClassesFromConfig({ marginY: 'sm' }))}>{t.chat.title}</h2>
           <p className={cn(getTypographyClasses('body'), 'text-muted-foreground')}>
-            {(chatRooms || []).length}{' '}
-            {(chatRooms || []).length === 1 ? t.chat.subtitle : t.chat.subtitlePlural}
+            {(chatRooms ?? []).length}{' '}
+            {(chatRooms ?? []).length === 1 ? t.chat.subtitle : t.chat.subtitlePlural}
           </p>
-        </AnimatedView>
+        </MotionView>
 
         <div className={cn('grid grid-cols-1 md:grid-cols-12 h-[calc(100%-5rem)]', getSpacingClassesFromConfig({ gap: 'xl' }))}>
           {showRoomsList && (
-            <AnimatedView
+            <MotionView
               style={roomsListAnimation.style}
               className="md:col-span-4 glass-strong rounded-3xl p-4 shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden"
             >
               <ChatRoomsList
-                rooms={chatRooms || []}
+                rooms={chatRooms ?? []}
                 onSelectRoom={handleSelectRoom}
                 {...(selectedRoom?.id && { selectedRoomId: selectedRoom.id })}
               />
-            </AnimatedView>
+            </MotionView>
           )}
 
           {showChatWindow && selectedRoom && (
-            <AnimatedView
+            <MotionView
               style={chatWindowAnimation.style}
               className={`${isMobile ? 'col-span-1' : 'md:col-span-8'
                 } glass-strong rounded-3xl shadow-xl backdrop-blur-2xl border border-white/20 overflow-hidden flex flex-col`}
@@ -260,24 +259,24 @@ export default function ChatView() {
                   {...(isMobile && { onBack: handleBack })}
                 />
               </ChatErrorBoundary>
-            </AnimatedView>
+            </MotionView>
           )}
 
           {!selectedRoom && !isMobile && (
-            <AnimatedView
+            <MotionView
               style={emptyChatAnimation.style}
               className="md:col-span-8 glass-effect rounded-3xl flex items-center justify-center border border-white/20"
               role="status"
               aria-live="polite"
             >
               <div className={cn('text-center', getSpacingClassesFromConfig({ paddingX: 'lg' }))}>
-                <AnimatedView style={emptyChatIconStyle} className={cn('text-6xl', getSpacingClassesFromConfig({ marginY: 'lg' }))} aria-hidden="true">
+                <MotionView style={emptyChatIconStyle} className={cn('text-6xl', getSpacingClassesFromConfig({ marginY: 'lg' }))} aria-hidden="true">
                   💬
-                </AnimatedView>
+                </MotionView>
                 <h3 className={cn(getTypographyClasses('h3'), getSpacingClassesFromConfig({ marginY: 'sm' }))}>{t.chat.selectConversation}</h3>
                 <p className={cn(getTypographyClasses('body'), 'text-muted-foreground')}>{t.chat.selectConversationDesc}</p>
               </div>
-            </AnimatedView>
+            </MotionView>
           )}
         </div>
       </main>

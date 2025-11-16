@@ -1,4 +1,5 @@
 import { generateULID } from './utils';
+import { isTruthy } from '@petspark/shared';
 
 export interface TrustBadge {
   id: string;

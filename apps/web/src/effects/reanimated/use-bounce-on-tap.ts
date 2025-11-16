@@ -1,9 +1,8 @@
 'use client';
 
-import { useMotionValue, animate, type MotionValue } from 'framer-motion';
+import { useMotionValue, animate, type MotionValue, type Variants } from '@petspark/motion';
 import { haptics } from '@/lib/haptics';
 import { useCallback } from 'react';
-import type { Variants } from 'framer-motion';
 
 export interface UseBounceOnTapOptions {
   scale?: number;

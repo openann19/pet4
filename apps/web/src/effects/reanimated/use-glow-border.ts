@@ -3,7 +3,7 @@
  * Pulsating glow effect with customizable colors and intensity
  */
 
-import { useMotionValue, animate, useTransform, type MotionValue } from 'framer-motion';
+import { useMotionValue, animate, useTransform, type MotionValue } from '@petspark/motion';
 import { useEffect } from 'react';
 
 export interface UseGlowBorderOptions {

@@ -3,7 +3,7 @@ import { createLogger } from '@/lib/logger';
 import { Warning } from '@phosphor-icons/react';
 import type { ErrorInfo, ReactNode } from 'react';
 import { Component } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('ErrorBoundary');
 

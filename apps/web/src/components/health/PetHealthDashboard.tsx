@@ -1,8 +1,6 @@
-'use client';
-
+'use client';;
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withTiming, MotionView } from '@petspark/motion';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
@@ -56,7 +54,7 @@ function VaccinationItem({ vaccination, index }: VaccinationItemProps): JSX.Elem
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={staggeredAnimation.itemStyle}
       className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:shadow-md transition-shadow"
     >
@@ -75,7 +73,7 @@ function VaccinationItem({ vaccination, index }: VaccinationItemProps): JSX.Elem
           </Badge>
         )}
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -91,7 +89,7 @@ function HealthRecordItem({ record, index }: HealthRecordItemProps): JSX.Element
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={staggeredAnimation.itemStyle}
       className="p-4 rounded-lg border bg-card hover:shadow-md transition-shadow"
     >
@@ -109,7 +107,7 @@ function HealthRecordItem({ record, index }: HealthRecordItemProps): JSX.Element
           <span className="font-medium">Diagnosis:</span> {record.diagnosis}
         </p>
       )}
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -129,7 +127,7 @@ function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.E
   const daysUntil = differenceInDays(new Date(reminder.dueDate), new Date());
 
   return (
-    <AnimatedView
+    <MotionView
       style={staggeredAnimation.itemStyle}
       className={`flex items-start gap-3 p-4 rounded-lg border bg-card hover:shadow-md transition-shadow ${
         String(reminder.completed ? 'opacity-50' : '' ?? '')
@@ -170,7 +168,7 @@ function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.E
           Complete
         </Button>
       )}
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -214,7 +212,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
   const generateHealthSummary = useCallback((): void => {
     try {
       const today = new Date();
-      const upcomingVaccinations = (vaccinations || []).filter((v): boolean => {
+      const upcomingVaccinations = (vaccinations ?? []).filter((v): boolean => {
         if (!v.nextDueDate) return false;
         const nextDate = new Date(v.nextDueDate);
         if (isNaN(nextDate.getTime())) return false;
@@ -224,12 +222,12 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         return daysUntil >= 0 && daysUntil <= 90;
       });
 
-      const activeReminders = (reminders || []).filter((r): boolean => !r.completed);
-      const recentRecords = (healthRecords || [])
+      const activeReminders = (reminders ?? []).filter((r): boolean => !r.completed);
+      const recentRecords = (healthRecords ?? [])
         .sort((a, b): number => new Date(b.date).getTime() - new Date(a.date).getTime())
         .slice(0, 5);
 
-      const checkups = (healthRecords || []).filter((r): boolean => r.type === 'checkup');
+      const checkups = (healthRecords ?? []).filter((r): boolean => r.type === 'checkup');
       const firstCheckup = checkups[0];
       const lastCheckup = firstCheckup?.date;
 
@@ -321,7 +319,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         clinic: 'Happy Paws Veterinary',
         createdAt: new Date().toISOString(),
       };
-      setVaccinations((current): VaccinationRecord[] => [...(current || []), newVaccination]);
+      setVaccinations((current): VaccinationRecord[] => [...(current ?? []), newVaccination]);
       toast.success('Vaccination added', {
         description: 'Vaccination record created successfully',
       });
@@ -345,7 +343,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      setHealthRecords((current): HealthRecord[] => [...(current || []), newRecord]);
+      setHealthRecords((current): HealthRecord[] => [...(current ?? []), newRecord]);
       toast.success('Health record added', {
         description: 'Health record created successfully',
       });
@@ -369,7 +367,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         notificationsSent: 0,
         createdAt: new Date().toISOString(),
       };
-      setReminders((current): VetReminder[] => [...(current || []), newReminder]);
+      setReminders((current): VetReminder[] => [...(current ?? []), newReminder]);
       toast.success('Reminder added', { description: 'Reminder created successfully' });
       logger.info('Reminder added', { petId: pet.id, reminderId: newReminder.id });
     } catch (error) {
@@ -383,7 +381,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
     (reminderId: string): void => {
       try {
         setReminders((current): VetReminder[] =>
-          (current || []).map(
+          (current ?? []).map(
             (r): VetReminder =>
               r.id === reminderId
                 ? { ...r, completed: true, completedAt: new Date().toISOString() }
@@ -402,19 +400,19 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
   );
 
   const sortedVaccinations = useMemo((): VaccinationRecord[] => {
-    return (vaccinations || []).sort(
+    return (vaccinations ?? []).sort(
       (a, b): number => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
   }, [vaccinations]);
 
   const sortedHealthRecords = useMemo((): HealthRecord[] => {
-    return (healthRecords || []).sort(
+    return (healthRecords ?? []).sort(
       (a, b): number => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
   }, [healthRecords]);
 
   const sortedReminders = useMemo((): VetReminder[] => {
-    return (reminders || []).sort(
+    return (reminders ?? []).sort(
       (a, b): number => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
     );
   }, [reminders]);
@@ -432,11 +430,11 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
   }) as AnimatedStyle;
 
   return (
-    <AnimatedView
+    <MotionView
       style={backdropStyle}
       className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 overflow-auto"
     >
-      <AnimatedView style={modalAnimation.style} className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+      <MotionView style={modalAnimation.style} className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center">
@@ -447,11 +445,11 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
               <p className="text-sm text-muted-foreground">{pet.name}'s health records</p>
             </div>
           </div>
-          <AnimatedView style={closeButtonAnimation.animatedStyle}>
+          <MotionView style={closeButtonAnimation.animatedStyle}>
             <Button variant="ghost" size="icon" onClick={closeButtonAnimation.handlePress} aria-label="X">
               <X size={24} />
             </Button>
-          </AnimatedView>
+          </MotionView>
         </div>
 
         {healthSummary && (
@@ -629,8 +627,8 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
             </Card>
           </TabsContent>
         </Tabs>
-      </AnimatedView>
-    </AnimatedView>
+      </MotionView>
+    </MotionView>
   );
 }
 

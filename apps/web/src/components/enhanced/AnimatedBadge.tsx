@@ -1,9 +1,6 @@
-'use client';
-
+'use client';;
 import React, { useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { Presence } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView, Presence } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import type { ReactNode } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -44,9 +41,9 @@ export function AnimatedBadge({ children, show = true, className }: AnimatedBadg
 
   return (
     <Presence visible={show}>
-      <AnimatedView style={animatedStyle} className={className}>
+      <MotionView style={animatedStyle} className={className}>
         {children}
-      </AnimatedView>
+      </MotionView>
     </Presence>
   );
 }

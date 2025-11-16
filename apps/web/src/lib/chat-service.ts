@@ -39,7 +39,7 @@ export async function sendMessage(
 
   // Optimistic update - cache immediately
   messageCache.set(optimisticMessage.id, optimisticMessage);
-  const cachedRoomMessages = roomMessagesCache.get(roomId) || [];
+  const cachedRoomMessages = roomMessagesCache.get(roomId) ?? [];
   cachedRoomMessages.push(optimisticMessage);
   roomMessagesCache.set(roomId, cachedRoomMessages);
 
@@ -128,7 +128,7 @@ export async function addReaction(
 
     // Update in room cache
     const roomId = updatedMessage.roomId;
-    const roomMessages = roomMessagesCache.get(roomId) || [];
+    const roomMessages = roomMessagesCache.get(roomId) ?? [];
     const index = roomMessages.findIndex((m) => m.id === messageId);
     if (index >= 0) {
       roomMessages[index] = updatedMessage;
@@ -199,7 +199,7 @@ export async function getRoomMessages(
       roomMessagesCache.set(roomId, result.messages);
     } else {
       // Subsequent pages - append to cache
-      const cached = roomMessagesCache.get(roomId) || [];
+      const cached = roomMessagesCache.get(roomId) ?? [];
       roomMessagesCache.set(roomId, [...cached, ...result.messages]);
     }
 
@@ -216,7 +216,7 @@ export async function getRoomMessages(
     });
 
     // Fallback to cached messages
-    const cached = roomMessagesCache.get(roomId) || [];
+    const cached = roomMessagesCache.get(roomId) ?? [];
     return { messages: cached };
   }
 }
@@ -248,7 +248,7 @@ export async function deleteMessage(
       messageCache.set(messageId, cachedMessage);
 
       // Update in room cache
-      const roomMessages = roomMessagesCache.get(cachedMessage.roomId) || [];
+      const roomMessages = roomMessagesCache.get(cachedMessage.roomId) ?? [];
       const index = roomMessages.findIndex((m) => m.id === messageId);
       if (index >= 0) {
         roomMessages[index] = cachedMessage;

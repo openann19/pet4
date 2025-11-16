@@ -57,7 +57,7 @@ export function cluster(points: Point[], zoom: number, cellSize = 60): Cluster[]
     const key = `${Math.round((point.lat * scale) / cellSize)},${Math.round((point.lng * scale) / cellSize)}`;
 
     // Add point to bucket
-    const bucket = buckets.get(key) || [];
+    const bucket = buckets.get(key) ?? [];
     bucket.push(point);
     buckets.set(key, bucket);
   }

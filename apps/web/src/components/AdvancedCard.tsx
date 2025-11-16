@@ -3,7 +3,7 @@ import { MotionView } from '@petspark/motion';
 import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion';
 import React from 'react';
 import type { ReactNode } from 'react';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export type CardVariant =
   | 'glass'
@@ -55,10 +55,10 @@ export default function AdvancedCard({
   className,
   ...props
 }: AdvancedCardProps) {
-  const opacity = useSharedValue(0);
-  const y = useSharedValue(20);
-  const hoverScale = useSharedValue(1);
-  const hoverY = useSharedValue(0);
+  const opacity = useSharedValue<number>(0);
+  const y = useSharedValue<number>(20);
+  const hoverScale = useSharedValue<number>(1);
+  const hoverY = useSharedValue<number>(0);
 
   // Entry animation
   React.useEffect(() => {
@@ -81,10 +81,16 @@ export default function AdvancedCard({
     }
   }, [enableHover]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: y.value + hoverY.value }, { scale: hoverScale.value }],
-  }));
+  const animatedStyle = useAnimatedStyle(() => {
+    const transform: Record<string, number>[] = [
+      { translateY: y.value + hoverY.value },
+      { scale: hoverScale.value },
+    ];
+    return {
+      opacity: opacity.value,
+      transform,
+    };
+  });
 
   return (
     <MotionView

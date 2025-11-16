@@ -67,7 +67,7 @@ export function useBusinessConfig(
           },
           experiments: {},
           updatedAt: new Date().toISOString(),
-          updatedBy: currentUser?.id || 'admin',
+          updatedBy: currentUser?.id ?? 'admin',
         };
         setConfig(defaultConfig);
       }

@@ -34,7 +34,7 @@ class LostFoundService {
 
   async getAlertById(id: string): Promise<LostAlert | undefined> {
     try {
-      return (await lostFoundAPI.getAlertById(id)) || undefined;
+      return (await lostFoundAPI.getAlertById(id)) ?? undefined;
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to get alert by ID', err, { id });
@@ -95,8 +95,8 @@ class LostFoundService {
     try {
       return await lostFoundAPI.createSighting({
         ...data,
-        reporterId: data.reporterId || '',
-        reporterName: data.reporterName || '',
+        reporterId: data.reporterId ?? '',
+        reporterName: data.reporterName ?? '',
       });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));

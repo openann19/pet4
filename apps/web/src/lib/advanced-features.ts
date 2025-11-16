@@ -279,13 +279,13 @@ export function useNetworkStatus() {
     if (nav.connection) {
       try {
         const connection = nav.connection;
-        setConnectionType(connection.type || 'unknown');
-        setEffectiveType(connection.effectiveType || 'unknown');
+        setConnectionType(connection.type ?? 'unknown');
+        setEffectiveType(connection.effectiveType ?? 'unknown');
 
         const handleChange = () => {
           try {
-            setConnectionType(connection.type || 'unknown');
-            setEffectiveType(connection.effectiveType || 'unknown');
+            setConnectionType(connection.type ?? 'unknown');
+            setEffectiveType(connection.effectiveType ?? 'unknown');
           } catch (error) {
             const err = error instanceof Error ? error : new Error(String(error));
             logger.error('useNetworkStatus handleChange error', err);
@@ -483,11 +483,11 @@ export function usePrefersColorScheme() {
 }
 
 export function useOrientation() {
-  const [orientation, setOrientation] = useState(window.screen?.orientation?.type || 'unknown');
+  const [orientation, setOrientation] = useState(window.screen?.orientation?.type ?? 'unknown');
 
   useEffect(() => {
     const handleChange = () => {
-      setOrientation(window.screen?.orientation?.type || 'unknown');
+      setOrientation(window.screen?.orientation?.type ?? 'unknown');
     };
 
     window.screen?.orientation?.addEventListener('change', handleChange);

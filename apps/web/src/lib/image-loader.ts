@@ -1,4 +1,5 @@
 import { LRUCache } from './optimization-core';
+import { isTruthy } from '@petspark/shared';
 
 interface ImageLoadOptions {
   crossOrigin?: 'anonymous' | 'use-credentials';

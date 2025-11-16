@@ -1,10 +1,11 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Ultra Enhanced Button
  * Button with magnetic hover, elastic scale, and ripple effects
  */
 
 import React, { type ReactNode, type ButtonHTMLAttributes, useCallback } from 'react';
-import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
+import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
 import { useMagneticEffect } from '@/effects/reanimated/use-magnetic-effect';
 import { useShimmer } from '@/effects/reanimated/use-shimmer';
 import { springConfigs } from '@/effects/reanimated/transitions';
@@ -13,7 +14,6 @@ import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 
 const logger = createLogger('UltraButton');
 

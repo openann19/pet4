@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Ultra Theme Settings Panel
  * Comprehensive theme customization with live preview and animations
@@ -7,7 +8,6 @@ import { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { themePresets, type ThemePreset } from '@/lib/theme-presets';
 import { Button } from '@/components/ui/button';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import {
   useUltraCardReveal,
   useMagneticHover,
@@ -199,13 +199,13 @@ function ThemeCard({ preset, index, isActive, onPreview, onSelect }: ThemeCardPr
       onMouseMove={magnetic.handleMouseMove}
       className="relative"
     >
-      <AnimatedView style={combinedStyle}>
+      <MotionView style={combinedStyle}>
         <div
           onMouseDown={elastic.handlePressIn}
           onMouseUp={elastic.handlePressOut}
           onMouseLeave={elastic.handlePressOut}
         >
-          <AnimatedView style={elastic.animatedStyle}>
+          <MotionView style={elastic.animatedStyle}>
             <div
               onMouseEnter={() => { onPreview(preset.id); }}
               onClick={() => { onSelect(preset.id); }}
@@ -216,9 +216,9 @@ function ThemeCard({ preset, index, isActive, onPreview, onSelect }: ThemeCardPr
               `}
             >
               {isActive && (
-                <AnimatedView style={glow.animatedStyle}>
+                <MotionView style={glow.animatedStyle}>
                   <div className="absolute inset-0 rounded-2xl pointer-events-none" />
-                </AnimatedView>
+                </MotionView>
               )}
 
               {isActive && (
@@ -283,9 +283,9 @@ function ThemeCard({ preset, index, isActive, onPreview, onSelect }: ThemeCardPr
                 </div>
               </div>
             </div>
-          </AnimatedView>
+          </MotionView>
         </div>
-      </AnimatedView>
+      </MotionView>
     </div>
   );
 }

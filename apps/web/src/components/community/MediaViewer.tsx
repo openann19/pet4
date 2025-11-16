@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import { useEffect, useRef, useState, useCallback } from 'react';
 import {
   useSharedValue,
@@ -9,6 +8,7 @@ import {
   withDelay,
   interpolate,
   Extrapolation,
+  MotionView,
 } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -30,7 +30,6 @@ import {
 } from '@phosphor-icons/react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { toast } from 'sonner';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
@@ -84,12 +83,12 @@ function SlideTransition({
   if (!isVisible) return null;
 
   return (
-    <AnimatedView
+    <MotionView
       style={animatedStyle}
       className="absolute inset-0 flex items-center justify-center"
     >
       {children}
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -568,7 +567,7 @@ export function MediaViewer({
             onTouchEnd={handleTouchEnd}
           >
             {(showVideoControls || !isVideo) && (
-              <AnimatedView
+              <MotionView
                 style={headerStyle}
                 className="absolute top-0 left-0 right-0 z-50 p-4 bg-gradient-to-b from-black/80 to-transparent"
               >
@@ -622,12 +621,12 @@ export function MediaViewer({
                     </Button>
                   </div>
                 </div>
-              </AnimatedView>
+              </MotionView>
             )}
 
             <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
               <SlideTransition direction={direction} isVisible={true}>
-                <AnimatedView
+                <MotionView
                   style={[mediaContainerStyle, dragOpacity]}
                   className="absolute inset-0 flex items-center justify-center"
                 >
@@ -643,11 +642,11 @@ export function MediaViewer({
                       />
 
                       {showVideoControls && (
-                        <AnimatedView
+                        <MotionView
                           style={videoControlsStyle}
                           className="absolute inset-0 flex items-center justify-center pointer-events-none"
                         >
-                          <AnimatedView
+                          <MotionView
                             style={playButtonHover.animatedStyle}
                             onMouseEnter={playButtonHover.handleMouseEnter}
                             onMouseLeave={playButtonHover.handleMouseLeave}
@@ -659,12 +658,12 @@ export function MediaViewer({
                             ) : (
                               <Play size={40} weight="fill" />
                             )}
-                          </AnimatedView>
-                        </AnimatedView>
+                          </MotionView>
+                        </MotionView>
                       )}
 
                       {showVideoControls && duration > 0 && !isNaN(duration) && (
-                        <AnimatedView
+                        <MotionView
                           style={videoControlsStyle}
                           className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent"
                         >
@@ -711,11 +710,11 @@ export function MediaViewer({
                               )}
                             </Button>
                           </div>
-                        </AnimatedView>
+                        </MotionView>
                       )}
                     </div>
                   ) : (
-                    <AnimatedView
+                    <MotionView
                       style={imageStyle}
                       onClick={handleImageClick}
                       className="max-w-full max-h-full cursor-zoom-in select-none"
@@ -726,16 +725,16 @@ export function MediaViewer({
                         className="max-w-full max-h-full object-contain select-none"
                         draggable={false}
                       />
-                    </AnimatedView>
+                    </MotionView>
                   )}
-                </AnimatedView>
+                </MotionView>
               </SlideTransition>
             </div>
 
             {media.length > 1 && (
               <>
                 {currentIndex > 0 && (
-                  <AnimatedView
+                  <MotionView
                     style={navButtonLeftStyle}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-50"
                   >
@@ -747,11 +746,11 @@ export function MediaViewer({
                     >
                       <CaretLeft size={32} weight="bold" />
                     </Button>
-                  </AnimatedView>
+                  </MotionView>
                 )}
 
                 {currentIndex < media.length - 1 && (
-                  <AnimatedView
+                  <MotionView
                     style={navButtonRightStyle}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-50"
                   >
@@ -763,7 +762,7 @@ export function MediaViewer({
                     >
                       <CaretRight size={32} weight="bold" />
                     </Button>
-                  </AnimatedView>
+                  </MotionView>
                 )}
               </>
             )}
@@ -791,14 +790,14 @@ export function MediaViewer({
             )}
 
             {!isVideo && (
-              <AnimatedView
+              <MotionView
                 style={hintStyle}
                 className="absolute bottom-20 left-1/2 -translate-x-1/2 text-white/60 text-xs bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm"
               >
                 {isZoomed
                   ? t.community?.tapToZoomOut || 'Tap to zoom out'
                   : t.community?.tapToZoom || 'Tap to zoom in'}
-              </AnimatedView>
+              </MotionView>
             )}
           </div>
         </DialogPrimitive.Content>

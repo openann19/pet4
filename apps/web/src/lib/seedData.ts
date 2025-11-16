@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- Pet generation service with comprehensive LLM prompts and data transformation logic */
 import { buildLLMPrompt } from './llm-prompt';
 import { llmService } from './llm-service';
 import { parseLLMError } from './llm-utils';

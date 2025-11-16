@@ -1,6 +1,6 @@
 import type { MapConfig } from './types';
 
-const ENV = import.meta.env.MODE || 'development';
+const ENV = import.meta.env.MODE ?? 'development';
 
 export const BASE_CONFIGS: Record<string, Partial<MapConfig>> = {
   development: {
@@ -27,7 +27,7 @@ export const BASE_CONFIGS: Record<string, Partial<MapConfig>> = {
 };
 
 export const getBaseMapConfig = (): Partial<MapConfig> => {
-  const config = BASE_CONFIGS[ENV] || BASE_CONFIGS.development;
+  const config = BASE_CONFIGS[ENV] ?? BASE_CONFIGS.development;
   return config ?? {};
 };
 

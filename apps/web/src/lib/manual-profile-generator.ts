@@ -284,7 +284,7 @@ export async function generateAndSaveManualProfiles(count = 15): Promise<Pet[]> 
 
     // Get current pets
     const { storage } = await import('./storage');
-    const currentPets = (await storage.get<Pet[]>('all-pets')) || [];
+    const currentPets = (await storage.get<Pet[]>('all-pets')) ?? [];
 
     // Generate new profiles
     const newPets = await generateManualProfiles(count);

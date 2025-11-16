@@ -29,7 +29,7 @@ export function safeArrayAccessWithDefault<T>(
   defaultValue: T
 ): T {
   const value = safeArrayAccess(array, index);
-  return value !== undefined ? value : defaultValue;
+  return value ?? defaultValue;
 }
 
 /**

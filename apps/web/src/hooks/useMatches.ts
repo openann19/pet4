@@ -30,13 +30,13 @@ function convertAPIPetToPet(apiPet: APIPet): Pet {
     age: apiPet.age,
     gender: apiPet.gender,
     size: apiPet.size,
-    photo: apiPet.photos[0]?.url || '',
+    photo: apiPet.photos[0]?.url ?? '',
     photos: apiPet.photos.map((p) => p.url),
     bio: apiPet.bio,
     personality: apiPet.personality,
     interests: [], // API doesn't have this
     lookingFor: [], // API doesn't have this
-    location: apiPet.location.city || '',
+    location: apiPet.location.city ?? '',
     coordinates: {
       latitude: apiPet.location.latitude,
       longitude: apiPet.location.longitude,
@@ -66,7 +66,7 @@ export function useMatches(petId?: string): {
   const [matchReasoning, setMatchReasoning] = useState<string[]>([]);
 
   const petsArray = Array.isArray(userPets) ? userPets : [];
-  const activePetId = petId || (petsArray.length > 0 ? petsArray[0]?.id : undefined);
+  const activePetId = petId ?? (petsArray.length > 0 ? petsArray[0]?.id : undefined);
 
   const { data: apiMatches = [], isLoading: matchesLoading } = useQuery({
     queryKey: activePetId ? [...queryKeys.matches.list, activePetId] : queryKeys.matches.list,
@@ -94,7 +94,7 @@ export function useMatches(petId?: string): {
 
   const userPet = useMemo(() => {
     if (!convertedUserPets?.length) return undefined;
-    return convertedUserPets.find((p) => p.id === activePetId) || convertedUserPets[0];
+    return convertedUserPets.find((p) => p.id === activePetId) ?? convertedUserPets[0];
   }, [convertedUserPets, activePetId]);
 
   // Get unique matched pet IDs

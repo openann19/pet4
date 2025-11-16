@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 
-// Web adapter using Framer Motion
-import { useMotionValue, animate, type MotionValue } from 'framer-motion';
+// Web adapter using Framer Motion via façade
+import { useMotionValue, animate, type MotionValue } from '@petspark/motion';
 
 export interface ShimmerSweepOptions {
   width: number; // px width of the shimmering mask path

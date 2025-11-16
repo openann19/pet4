@@ -11,6 +11,7 @@ import { CreditCard, Crown, Lightning, Sparkle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { PricingModal } from './PricingModal';
+import { isTruthy } from '@petspark/shared';
 
 export function SubscriptionStatusCard() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -116,10 +117,10 @@ export function SubscriptionStatusCard() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {getPlanIcon(entitlements?.planTier || 'free')}
+              {getPlanIcon(entitlements?.planTier ?? 'free')}
               <div>
-                <CardTitle className="text-2xl">{plan?.name || 'Free'} Plan</CardTitle>
-                <CardDescription>{plan?.description || 'Basic matching features'}</CardDescription>
+                <CardTitle className="text-2xl">{plan?.name ?? 'Free'} Plan</CardTitle>
+                <CardDescription>{plan?.description ?? 'Basic matching features'}</CardDescription>
               </div>
             </div>
             {subscription && (
@@ -274,7 +275,6 @@ export function SubscriptionStatusCard() {
             )}
         </CardContent>
       </Card>
-
       <PricingModal
         open={pricingModalOpen}
         onOpenChange={setPricingModalOpen}

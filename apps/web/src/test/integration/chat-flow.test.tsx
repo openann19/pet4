@@ -6,11 +6,6 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { Mock } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
 
 // Create properly typed mocks
 const mockGetMessages = vi.fn();
@@ -46,21 +41,6 @@ vi.mock('@/lib/logger', () => ({
         debug: vi.fn(),
     }),
 }));
-
-const createTestWrapper = () => {
-    const queryClient = new QueryClient({
-        defaultOptions: {
-            queries: { retry: false },
-            mutations: { retry: false },
-        },
-    });
-
-    return ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-            <BrowserRouter>{children}</BrowserRouter>
-        </QueryClientProvider>
-    );
-};
 
 describe('Chat Flow Integration', () => {
     beforeEach(() => {

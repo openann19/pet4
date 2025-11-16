@@ -36,6 +36,20 @@ export function getErrorMessage(error: unknown): string {
 }
 
 /**
+ * Normalize error to a safe object with message and optional stack
+ * Use this when you need to access error.message or error.stack safely
+ */
+export function toErrorLike(err: unknown): { message: string; stack?: string } {
+  if (err instanceof Error) {
+    return { message: err.message, stack: err.stack ?? undefined };
+  }
+  if (typeof err === 'string') {
+    return { message: err };
+  }
+  return { message: JSON.stringify(err) };
+}
+
+/**
  * Check if running in browser
  */
 export const isBrowser = typeof window !== 'undefined'

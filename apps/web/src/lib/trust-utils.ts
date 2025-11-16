@@ -1,4 +1,5 @@
 import type { TrustBadge, Rating, PetTrustProfile } from './types';
+import { isTruthy } from '@petspark/shared';
 
 export function generateTrustBadges(petId: string, verified: boolean): TrustBadge[] {
   const badges: TrustBadge[] = [];

@@ -7,6 +7,7 @@ import type {
   CallHistoryItem,
   VideoQuality,
 } from '@/lib/call-types';
+import { isTruthy } from '@petspark/shared';
 import {
   requestMediaPermissions,
   stopMediaStream,
@@ -306,7 +307,7 @@ export function useGroupCall(
   };
 
   const addToHistory = (item: CallHistoryItem) => {
-    setCallHistory((prev) => [item, ...(prev || [])].slice(0, 50));
+    setCallHistory((prev) => [item, ...(prev ?? [])].slice(0, 50));
   };
 
   return {

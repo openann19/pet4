@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import {
@@ -10,8 +9,8 @@ import {
   withDelay,
   withRepeat,
   withSequence,
+  MotionView,
 } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
 import { useBounceOnTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
@@ -95,7 +94,7 @@ export default function BottomNavBar() {
   }) as AnimatedStyle;
 
   return (
-    <AnimatedView style={barStyle} className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+    <MotionView style={barStyle} className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
       <nav 
         className="border-t border-border/40 bg-card/85 backdrop-blur-3xl shadow-2xl relative overflow-hidden"
         aria-label="Bottom navigation"
@@ -106,13 +105,13 @@ export default function BottomNavBar() {
           <div className="absolute inset-0 bg-linear-to-b from-transparent via-accent/5 to-transparent pointer-events-none" />
 
           {/* Animated shimmer effect */}
-          <AnimatedView
+          <MotionView
             style={shimmerStyle}
             className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent w-1/2 h-full pointer-events-none"
           />
 
           {/* Pulsing glow effect */}
-          <AnimatedView
+          <MotionView
             style={glowStyle2}
             className="absolute inset-0 bg-linear-to-t from-accent/20 via-primary/15 to-accent/20 blur-2xl pointer-events-none"
           />
@@ -148,7 +147,7 @@ export default function BottomNavBar() {
           </ul>
         </div>
       </nav>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -237,7 +236,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
         onClick={handleClick}
         {...navAriaAttrs}
       >
-        <AnimatedView
+        <MotionView
           style={animation.buttonStyle}
           className={cn(
             'relative flex flex-col items-center justify-center',
@@ -246,28 +245,28 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
         >
           {/* Active indicator background */}
           {isActive && (
-            <AnimatedView
+            <MotionView
               style={animation.indicatorStyle}
               className="absolute inset-0 rounded-2xl bg-(--coral-primary)/20 blur-xl"
             >
               <></>
-            </AnimatedView>
+            </MotionView>
           )}
 
           {/* Glow effect for active item */}
           {isActive && (
-            <AnimatedView
+            <MotionView
               style={glowStyle}
               className="absolute inset-0 rounded-2xl bg-(--coral-primary)/30 blur-2xl -z-10"
             >
               <></>
-            </AnimatedView>
+            </MotionView>
           )}
 
           {/* Icon container */}
-          <AnimatedView style={iconStyle} className="relative z-10" aria-hidden="true">
+          <MotionView style={iconStyle} className="relative z-10" aria-hidden="true">
             <span className="text-2xl leading-none select-none">{item.icon}</span>
-          </AnimatedView>
+          </MotionView>
 
           {/* Label */}
           <span
@@ -282,17 +281,17 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
 
           {/* Active indicator dot */}
           {isActive && (
-            <AnimatedView
+            <MotionView
               style={animation.indicatorStyle}
               className="absolute bottom-0 w-1 h-1 rounded-full bg-(--coral-primary)"
             >
               <></>
-            </AnimatedView>
+            </MotionView>
           )}
 
           {/* Badge */}
           {item.badge && item.badge > 0 && <Badge count={item.badge} isActive={isActive} />}
-        </AnimatedView>
+        </MotionView>
       </Link>
     </li>
   );
@@ -329,7 +328,7 @@ function Badge({ count, isActive }: BadgeProps) {
   }) as AnimatedStyle;
 
   return (
-    <AnimatedView
+    <MotionView
       style={badgeStyle}
       className={cn(
         'absolute -top-1 -right-1 min-w-5 h-5 rounded-full bg-destructive flex items-center justify-center shadow-lg z-20',
@@ -343,6 +342,6 @@ function Badge({ count, isActive }: BadgeProps) {
       )}>
         {count > 9 ? '9+' : count}
       </span>
-    </AnimatedView>
+    </MotionView>
   );
 }

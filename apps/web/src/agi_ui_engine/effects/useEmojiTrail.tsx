@@ -38,7 +38,7 @@ export function useEmojiTrail(options: UseEmojiTrailOptions = {}): UseEmojiTrail
   const { enabled = true } = options;
   const { animation } = useUIConfig();
 
-  const trailOpacity = useSharedValue(0);
+  const trailOpacity = useSharedValue<number>(0);
 
   const trigger = useCallback(
     (_x: number, _y: number): void => {
@@ -65,16 +65,18 @@ export function useEmojiTrail(options: UseEmojiTrailOptions = {}): UseEmojiTrail
       return {};
     }
 
+    const transform: Record<string, number>[] = [
+      {
+        translateY: -trailOpacity.value * 30,
+      },
+      {
+        scale: 0.5 + trailOpacity.value * 0.5,
+      },
+    ];
+
     return {
       opacity: trailOpacity.value,
-      transform: [
-        {
-          translateY: -trailOpacity.value * 30,
-        },
-        {
-          scale: 0.5 + trailOpacity.value * 0.5,
-        },
-      ],
+      transform,
     };
   }) as AnimatedStyle;
 

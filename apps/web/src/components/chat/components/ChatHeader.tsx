@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Chat Header Component
  *
@@ -8,7 +9,6 @@ import { ArrowLeft, DotsThree } from '@phosphor-icons/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { TypingIndicator as TypingIndicatorComponent } from './TypingIndicator';
 import type { ChatRoom } from '@/lib/chat-types';
@@ -36,7 +36,7 @@ export function ChatHeader({
   const animation = useEntryAnimation({ initialY: -20, delay: 0 });
 
   return (
-    <AnimatedView
+    <MotionView
       style={animation.animatedStyle}
       className="glass-strong border-b border-white/20 p-4 shadow-xl backdrop-blur-2xl"
     >
@@ -92,6 +92,6 @@ export function ChatHeader({
           </PopoverContent>
         </Popover>
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }

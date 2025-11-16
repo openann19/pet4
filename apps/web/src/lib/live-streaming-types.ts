@@ -84,6 +84,7 @@ export interface LiveStreamFilters {
   category?: LiveStreamCategory[];
   status?: LiveStreamStatus[];
   hostId?: string;
+  tags?: string[];
   sortBy?: 'recent' | 'popular' | 'viewers';
   cursor?: string;
   limit?: number;

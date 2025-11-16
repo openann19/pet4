@@ -19,11 +19,11 @@ import { toast } from 'sonner';
 
 const logger = createLogger('UserPostsView');
 
-function EmptyStateView({ authorName }: { authorName: string }) {
+function _EmptyStateView({ authorName }: { authorName: string }) {
   const entry = useEntryAnimation({ initialY: 20, initialOpacity: 0 })
 
   return (
-    <AnimatedView
+    <MotionView
       style={entry.animatedStyle}
       className="flex flex-col items-center justify-center py-16 text-center"
     >
@@ -34,8 +34,8 @@ function EmptyStateView({ authorName }: { authorName: string }) {
       <p className="text-sm text-muted-foreground max-w-sm">
         {authorName} hasn't shared any posts yet
       </p>
-    </AnimatedView>
-  )
+    </MotionView>
+  );
 }
 
 function PostItemView({
@@ -56,7 +56,7 @@ function PostItemView({
   })
 
   return (
-    <AnimatedView style={entry.animatedStyle}>
+    <MotionView style={entry.animatedStyle}>
       <div
         onClick={() => { onPostClick(post.id); }}
         className="cursor-pointer"
@@ -66,8 +66,8 @@ function PostItemView({
           {...(onAuthorClick && { onAuthorClick })}
         />
       </div>
-    </AnimatedView>
-  )
+    </MotionView>
+  );
 }
 
 interface UserPostsViewProps {

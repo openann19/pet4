@@ -144,26 +144,39 @@ async function main(): Promise<void> {
       // Import the translations object dynamically
       const i18nModule: unknown = await import(i18nPath);
 
-      const translations = safelyExtractTranslations(i18nModule);
-      if (translations) {
-        enTranslations = translations.en ?? {};
-        bgTranslations = translations.bg ?? {};
-      } else {
-        // Fallback: try to read and parse as JSON (if exported)
+      // Try to extract translations from the imported module
+      if (i18nModule && typeof i18nModule === 'object' && 'default' in i18nModule) {
+        const moduleDefault = i18nModule.default as Record<string, unknown>;
+        if (moduleDefault && typeof moduleDefault === 'object') {
+          if ('en' in moduleDefault && typeof moduleDefault.en === 'object') {
+            enTranslations = moduleDefault.en as Record<string, unknown>;
+          }
+          if ('bg' in moduleDefault && typeof moduleDefault.bg === 'object') {
+            bgTranslations = moduleDefault.bg as Record<string, unknown>;
+          }
+        }
+      }
+
+      // Fallback: try to read and parse as JSON (if exported)
+      if (Object.keys(enTranslations).length === 0 || Object.keys(bgTranslations).length === 0) {
         const content = readFileSync(i18nPath, 'utf-8');
         // Simple extraction - look for the translations object
         const enMatch = /en:\s*\{([\s\S]*?)\n\s*\},/.exec(content);
         const bgMatch = /bg:\s*\{([\s\S]*?)\n\s*\},/.exec(content);
-        if (enMatch && bgMatch) {
+        if (enMatch && bgMatch && enMatch[1] && bgMatch[1]) {
           // This is a simplified parser - for production, use a proper TS parser
           scriptLogger.warn('⚠️  Could not import TypeScript directly. Using fallback parser.');
           scriptLogger.warn(
             '⚠️  For accurate results, export translations as JSON or use tsx to run this script.'
           );
-          const enJson = JSON.parse(enMatch[1]);
-          const bgJson = JSON.parse(bgMatch[1]);
-          enTranslations = enJson;
-          bgTranslations = bgJson;
+          try {
+            const enJson = JSON.parse(enMatch[1]);
+            const bgJson = JSON.parse(bgMatch[1]);
+            enTranslations = enJson;
+            bgTranslations = bgJson;
+          } catch {
+            // JSON parse failed, continue with empty translations
+          }
         }
       }
     } catch {

@@ -18,7 +18,7 @@ declare global {
 
 export default function GlobalNavErrorTrap(): null {
     useEffect(() => {
-        window.__NAV_ERRORS__ = window.__NAV_ERRORS__ || [];
+        window.__NAV_ERRORS__ ??= [];
 
         const push = (kind: string, payload: Record<string, unknown>): void => {
             window.__NAV_ERRORS__!.push({

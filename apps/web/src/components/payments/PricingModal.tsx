@@ -126,13 +126,11 @@ export function PricingModal({ open, onOpenChange, onSuccess }: PricingModalProp
                     Most Popular
                   </Badge>
                 )}
-
                 <div className="flex flex-col items-center gap-4 mb-6">
                   {getPlanIcon(plan.tier)}
                   <h3 className="text-2xl font-bold">{plan.name}</h3>
                   <p className="text-sm text-muted-foreground text-center">{plan.description}</p>
                 </div>
-
                 <div className="text-center mb-6">
                   {plan.tier === 'free' ? (
                     <div className="text-4xl font-bold">Free</div>
@@ -155,7 +153,6 @@ export function PricingModal({ open, onOpenChange, onSuccess }: PricingModalProp
                     </>
                   )}
                 </div>
-
                 <ul className="space-y-3 mb-6">
                   {plan.entitlements.length === 0 ? (
                     <li className="flex items-start gap-2 text-sm">
@@ -181,7 +178,6 @@ export function PricingModal({ open, onOpenChange, onSuccess }: PricingModalProp
                     </li>
                   )}
                 </ul>
-
                 <Button
                   className="w-full"
                   variant={isPopular ? 'default' : 'outline'}
@@ -195,7 +191,6 @@ export function PricingModal({ open, onOpenChange, onSuccess }: PricingModalProp
                       ? 'Current Plan'
                       : 'Get Started'}
                 </Button>
-
                 {plan.tier !== 'free' && (
                   <p className="text-xs text-center text-muted-foreground mt-4">
                     Cancel anytime • Auto-renews{' '}

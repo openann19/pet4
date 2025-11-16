@@ -1,6 +1,7 @@
 import type { QueryFilter } from './types/database-query';
 import { isQueryOperator } from './types/database-query';
 import { generateULID } from './utils';
+import { isTruthy } from '@petspark/shared';
 
 export interface DBRecord {
   id: string;
@@ -27,7 +28,7 @@ export class DatabaseService {
   private async getCollection<T extends DBRecord>(collectionName: string): Promise<T[]> {
     const { storage } = await import('./storage');
     const data = await storage.get<T[]>(collectionName);
-    return data || [];
+    return data ?? [];
   }
 
   private async setCollection<T extends DBRecord>(
@@ -60,7 +61,7 @@ export class DatabaseService {
 
   async findById<T extends DBRecord>(collectionName: string, id: string): Promise<T | null> {
     const collection = await this.getCollection<T>(collectionName);
-    return collection.find((item) => item.id === id) || null;
+    return collection.find((item) => item.id === id) ?? null;
   }
 
   async findOne<T extends DBRecord>(
@@ -68,7 +69,7 @@ export class DatabaseService {
     filter: QueryFilter<T & Record<string, unknown>>
   ): Promise<T | null> {
     const collection = await this.getCollection<T>(collectionName);
-    return collection.find((item) => this.matchesFilter(item, filter)) || null;
+    return collection.find((item) => this.matchesFilter(item, filter)) ?? null;
   }
 
   async findMany<T extends DBRecord>(
@@ -93,8 +94,8 @@ export class DatabaseService {
     }
 
     const total = filtered.length;
-    const offset = options.offset || 0;
-    const limit = options.limit || total;
+    const offset = options.offset ?? 0;
+    const limit = options.limit ?? total;
 
     const data = filtered.slice(offset, offset + limit);
     const hasMore = offset + limit < total;

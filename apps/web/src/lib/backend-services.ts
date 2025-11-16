@@ -395,7 +395,7 @@ export class ModerationService {
       title: isApproved ? 'Photo Approved!' : 'Photo Review Update',
       body: isApproved
         ? 'Your photo is now visible to the community.'
-          : `Your photo was not approved. Reason: ${String((decision.reasonText || decision.reason || 'See details in the app.') ?? '')}`,
+          : `Your photo was not approved. Reason: ${String(decision.reasonText ?? decision.reason ?? 'See details in the app.')}`,
       data: { photoId: photo.id, decision: decision.action },
       read: false,
       createdAt: decision.reviewedAt,

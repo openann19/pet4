@@ -4,17 +4,18 @@ import { Heart, Sparkle, PawPrint, X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useApp } from '@/contexts/AppContext';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import {
+  MotionView,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withRepeat,
   withSequence,
   withSpring,
+  type AnimatedStyle,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export default function WelcomeModal(): JSX.Element | null {
   const { t } = useApp();
@@ -34,43 +35,43 @@ export default function WelcomeModal(): JSX.Element | null {
 
   const bgAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: bgScale.value }, { rotate: `${bgRotate.value}deg` }],
-  })) as AnimatedStyle;
+  }));
 
   const iconAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: iconScale.value }],
-  })) as AnimatedStyle;
+  }));
 
   const iconPulseStyle = useAnimatedStyle(() => ({
     transform: [{ scale: iconPulse.value }],
-  })) as AnimatedStyle;
+  }));
 
   const iconGlowStyle = useAnimatedStyle(() => ({
     transform: [{ scale: iconGlowScale.value }],
     opacity: iconGlowOpacity.value,
-  })) as AnimatedStyle;
+  }));
 
   const arrowStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: arrowX.value }],
-  })) as AnimatedStyle;
+  }));
 
   // Animation hooks
-  const containerEntry = useEntryAnimation({ initialOpacity: 0 })
-  const titleEntry = useEntryAnimation({ initialY: 20, delay: 300 })
-  const subtitleEntry = useEntryAnimation({ initialY: 20, delay: 400 })
-  const buttonEntry = useEntryAnimation({ initialY: 20, delay: 1000 })
+  const _containerEntry = useEntryAnimation({ initialOpacity: 0 })
+  const _titleEntry = useEntryAnimation({ initialY: 20, delay: 300 })
+  const _subtitleEntry = useEntryAnimation({ initialY: 20, delay: 400 })
+  const _buttonEntry = useEntryAnimation({ initialY: 20, delay: 1000 })
   const closeButtonHover = useHoverLift({ scale: 1.1 })
   const closeButtonRotate = useSharedValue(0)
-  const closeButtonRotateStyle = useAnimatedStyle(() => ({
+  const _closeButtonRotateStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${closeButtonRotate.value}deg` }],
   }))
-  const closeButtonTap = useBounceOnTap({ scale: 0.9 })
+  const _closeButtonTap = useBounceOnTap({ scale: 0.9 })
   const buttonHover = useHoverLift({ scale: 1.05 })
-  const buttonTap = useBounceOnTap({ scale: 0.95 })
+  const _buttonTap = useBounceOnTap({ scale: 0.95 })
 
   // Background gradient animation
   const bgScale = useSharedValue(1)
   const bgRotate = useSharedValue(0)
-  const bgStyle = useAnimatedStyle(() => ({
+  const _bgStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: bgScale.value },
       { rotate: `${bgRotate.value}deg` },
@@ -79,14 +80,14 @@ export default function WelcomeModal(): JSX.Element | null {
 
   // Heart icon animations
   const heartScale = useSharedValue(1)
-  const heartStyle = useAnimatedStyle(() => ({
+  const _heartStyle = useAnimatedStyle(() => ({
     transform: [{ scale: heartScale.value }],
   }))
 
   // Heart pulse animation
   const heartPulseScale = useSharedValue(1)
   const heartPulseOpacity = useSharedValue(0.5)
-  const heartPulseStyle = useAnimatedStyle(() => ({
+  const _heartPulseStyle = useAnimatedStyle(() => ({
     transform: [{ scale: heartPulseScale.value }],
     opacity: heartPulseOpacity.value,
   }))
@@ -194,12 +195,12 @@ export default function WelcomeModal(): JSX.Element | null {
           Discover perfect companions for your pet with AI-powered matching, secure messaging, and a vibrant community
         </DialogDescription>
         <div className="relative bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 p-8 md:p-12 overflow-hidden animate-in fade-in duration-300">
-          <AnimatedView
+          <MotionView
             style={bgAnimatedStyle}
             className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20"
           />
 
-          <AnimatedView
+          <MotionView
             style={closeButtonHover.animatedStyle}
             onMouseEnter={closeButtonHover.handleMouseEnter}
             onMouseLeave={closeButtonHover.handleMouseLeave}
@@ -213,21 +214,21 @@ export default function WelcomeModal(): JSX.Element | null {
             >
               <X size={16} />
             </button>
-          </AnimatedView>
+          </MotionView>
 
-          <AnimatedView
+          <MotionView
             style={iconAnimatedStyle}
             className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-6 shadow-2xl relative z-10"
             style={logoStyle}
           >
-            <AnimatedView style={iconPulseStyle}>
+            <MotionView style={iconPulseStyle}>
               <Heart size={40} className="text-white" weight="fill" />
-            </AnimatedView>
-            <AnimatedView
+            </MotionView>
+            <MotionView
               style={iconGlowStyle}
               className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent"
             />
-          </AnimatedView>
+          </MotionView>
 
           <div className="text-3xl md:text-4xl font-bold text-center mb-4 relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-300 delay-300">
             {t.welcome.title} 🐾
@@ -256,7 +257,7 @@ export default function WelcomeModal(): JSX.Element | null {
           </div>
 
           <div className="flex justify-center relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-300 delay-1000">
-            <AnimatedView
+            <MotionView
               style={buttonHover.animatedStyle}
               onMouseEnter={buttonHover.handleMouseEnter}
               onMouseLeave={buttonHover.handleMouseLeave}
@@ -268,11 +269,11 @@ export default function WelcomeModal(): JSX.Element | null {
                 className="px-8 shadow-xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
               >
                 {t.welcome.getStarted}
-                <AnimatedView style={arrowStyle} className="ml-2">
+                <MotionView style={arrowStyle} className="ml-2">
                   →
-                </AnimatedView>
+                </MotionView>
               </Button>
-            </AnimatedView>
+            </MotionView>
           </div>
         </div>
       </DialogContent>

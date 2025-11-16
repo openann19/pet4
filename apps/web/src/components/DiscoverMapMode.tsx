@@ -1,4 +1,6 @@
+import { MotionView } from "@petspark/motion";
 import { useState, useEffect, useMemo } from 'react';
+import { useAnimatePresence } from '@/effects/reanimated';
 import { MapPin, X, Heart, Info } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,8 +18,6 @@ import { calculateCompatibility } from '@/lib/matching';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
 import MapLibreMap from '@/components/maps/MapLibreMap';
 import type { MapMarker } from '@/lib/maps/useMapLibreMap';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 
 interface DiscoverMapModeProps {
   pets: Pet[];
@@ -109,7 +109,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
       id: pet.id,
       location: pet.locationData,
       data: pet,
-      icon: pet.photos?.[0] || '/placeholder-pet.png',
+      icon: pet.photos?.[0] ?? '/placeholder-pet.png',
       color: 'hsl(var(--primary))',
     }));
   }, [petsWithLocations]);
@@ -172,10 +172,9 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
         height="100%"
         clusterMarkers={true}
       />
-
       {selectedPetPresence.shouldRender && selectedPet && (
-        <AnimatedView
-          style={selectedPetPresence.animatedStyle}
+        <MotionView
+          animatedStyle={selectedPetPresence.animatedStyle}
           className="absolute bottom-0 left-0 right-0 max-h-[70%] bg-background rounded-t-3xl shadow-2xl border-t border-border overflow-y-auto"
         >
           <div className="p-6 space-y-4">
@@ -183,7 +182,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
               <div className="flex-1">
                 <div className="flex items-center gap-3">
                   <img
-                    src={selectedPet.photos?.[0] || '/placeholder-pet.png'}
+                    src={selectedPet.photos?.[0] ?? '/placeholder-pet.png'}
                     alt={selectedPet.name}
                     className="w-20 h-20 rounded-2xl object-cover shadow-lg"
                   />
@@ -195,7 +194,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
                     <p className="text-sm text-primary font-medium">
                       📍{' '}
                       {Math.round(
-                        petsWithLocations.find((p) => p.id === selectedPet.id)?.distance || 0
+                        petsWithLocations.find((p) => p.id === selectedPet.id)?.distance ?? 0
                       )}{' '}
                       {t.common.km} {t.petProfile.distance}
                     </p>
@@ -264,9 +263,8 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
               </Button>
             </div>
           </div>
-        </AnimatedView>
+        </MotionView>
       )}
-
       {selectedPet && (
         <ErrorBoundary
           fallback={
@@ -278,7 +276,6 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
           <PetDetailDialog pet={selectedPet} open={showDetail} onOpenChange={setShowDetail} />
         </ErrorBoundary>
       )}
-
       <div className="absolute bottom-4 left-4 right-4 z-10 pointer-events-none">
         <div className="backdrop-blur-xl bg-background/80 rounded-2xl shadow-xl border border-border p-4">
           <div className="grid grid-cols-2 gap-4 text-center">

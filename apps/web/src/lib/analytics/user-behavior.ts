@@ -134,13 +134,11 @@ export class UserBehaviorAnalytics {
     const journeyKey = `${event.userId}:${event.sessionId}`
     let journey = this.userJourneys.get(journeyKey)
 
-    if (!journey) {
-      journey = {
-        userId: event.userId,
-        sessionId: event.sessionId,
-        events: [],
-        startTime: Date.now(),
-      }
+    journey ??= {
+      userId: event.userId,
+      sessionId: event.sessionId,
+      events: [],
+      startTime: Date.now(),
     }
 
     journey = {
@@ -294,8 +292,6 @@ export class UserBehaviorAnalytics {
 let analyticsInstance: UserBehaviorAnalytics | null = null
 
 export function getUserBehaviorAnalytics(): UserBehaviorAnalytics {
-  if (!analyticsInstance) {
-    analyticsInstance = new UserBehaviorAnalytics()
-  }
+  analyticsInstance ??= new UserBehaviorAnalytics()
   return analyticsInstance
 }

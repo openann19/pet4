@@ -11,11 +11,12 @@ import {
   withDelay,
   Easing,
   animate,
+  MotionView,
 } from '@petspark/motion';
 import { Plus } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
-import { AnimatedView, useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
+import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -182,23 +183,21 @@ export function FloatingActionButton({
         className
       )}
     >
-      <AnimatedView style={iconContainerStyle} className="flex items-center justify-center">
+      <MotionView style={iconContainerStyle} className="flex items-center justify-center">
         {icon}
-      </AnimatedView>
-
+      </MotionView>
       {expanded && label && (
-        <AnimatedView style={labelStyle} className="font-semibold text-sm whitespace-nowrap">
+        <MotionView style={labelStyle} className="font-semibold text-sm whitespace-nowrap">
           {label}
-        </AnimatedView>
+        </MotionView>
       )}
-
       {!reducedMotion && (
-        <AnimatedView
+        <MotionView
           style={shimmerStyle}
           className="absolute inset-0 bg-linear-to-r from-white/0 via-white/30 to-white/0 pointer-events-none"
         >
           {null}
-        </AnimatedView>
+        </MotionView>
       )}
     </button>
   );

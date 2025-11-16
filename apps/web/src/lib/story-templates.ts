@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- centralized story template registry, data-only */
 import type { StoryTemplate } from '@petspark/shared';
 
 export interface StoryFilter {

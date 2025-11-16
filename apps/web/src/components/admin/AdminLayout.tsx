@@ -1,5 +1,6 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { useState, useCallback } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { Button } from '@/components/ui/button';
@@ -29,7 +30,6 @@ import {
   ArrowLeft,
   Headset,
 } from '@phosphor-icons/react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useSidebarAnimation } from '@/effects/reanimated/use-sidebar-animation';
 import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
@@ -150,7 +150,7 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      <AnimatedView
+      <MotionView
         style={sidebarAnimation.widthStyle}
         className="border-r border-border bg-card flex flex-col shrink-0"
       >
@@ -160,10 +160,10 @@ export default function AdminLayout({
               <ShieldCheck className="text-white" size={20} weight="fill" />
             </div>
             {sidebarOpen && (
-              <AnimatedView style={sidebarAnimation.opacityStyle} className="min-w-0">
+              <MotionView style={sidebarAnimation.opacityStyle} className="min-w-0">
                 <h2 className="font-bold text-lg truncate">Admin Console</h2>
                 <p className="text-xs text-muted-foreground truncate">Moderation & Management</p>
-              </AnimatedView>
+              </MotionView>
             )}
           </div>
           {onExit
@@ -279,8 +279,7 @@ export default function AdminLayout({
             {sidebarOpen ? '←' : '→'}
           </Button>
         </div>
-      </AnimatedView>
-
+      </MotionView>
       <main className="flex-1 overflow-auto">
         <div className="p-4 sm:p-6 lg:p-8 min-h-full">{children}</div>
       </main>

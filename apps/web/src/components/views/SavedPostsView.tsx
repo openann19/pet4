@@ -18,11 +18,11 @@ import { toast } from 'sonner';
 
 const logger = createLogger('SavedPostsView');
 
-function EmptyStateView() {
+function _EmptyStateView() {
   const entry = useEntryAnimation({ initialY: 20, initialOpacity: 0 })
 
   return (
-    <AnimatedView
+    <MotionView
       style={entry.animatedStyle}
       className="flex flex-col items-center justify-center py-16 text-center"
     >
@@ -33,8 +33,8 @@ function EmptyStateView() {
       <p className="text-sm text-muted-foreground max-w-sm">
         Posts you save will appear here for easy access later
       </p>
-    </AnimatedView>
-  )
+    </MotionView>
+  );
 }
 
 function PostItemView({
@@ -55,7 +55,7 @@ function PostItemView({
   })
 
   return (
-    <AnimatedView style={entry.animatedStyle}>
+    <MotionView style={entry.animatedStyle}>
       <div
         onClick={() => { onPostClick(post.id); }}
         className="cursor-pointer"
@@ -65,8 +65,8 @@ function PostItemView({
           {...(onAuthorClick ? { onAuthorClick } : {})}
         />
       </div>
-    </AnimatedView>
-  )
+    </MotionView>
+  );
 }
 
 interface SavedPostsViewProps {

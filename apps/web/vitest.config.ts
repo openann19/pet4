@@ -12,7 +12,7 @@ const projectRoot = __dirname;
 const reactNativeTransformPlugin = () => {
   return {
     name: 'react-native-transform',
-    enforce: 'pre' as const,
+    enforce: 'pre',
     resolveId(id: string, importer?: string) {
       // Handle the virtual module ID created by transform hook
       if (id === '\0react-native-web-workspace') {

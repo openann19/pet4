@@ -6,6 +6,7 @@
  */
 
 import { createLogger } from './logger';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('deep-linking');
 
@@ -307,7 +308,7 @@ class DeepLinkManager {
 // Common route handlers
 export const createChatRouteHandler = (onNavigate: (chatId: string) => void): DeepLinkHandler => {
   return (route: DeepLinkRoute): Promise<void> => {
-    const chatId = route.params.id || route.query.chatId;
+    const chatId = route.params.id ?? route.query.chatId;
     if (chatId) {
       onNavigate(chatId);
     }
@@ -317,7 +318,7 @@ export const createChatRouteHandler = (onNavigate: (chatId: string) => void): De
 
 export const createMatchRouteHandler = (onNavigate: (matchId: string) => void): DeepLinkHandler => {
   return (route: DeepLinkRoute): Promise<void> => {
-    const matchId = route.params.id || route.query.matchId;
+    const matchId = route.params.id ?? route.query.matchId;
     if (matchId) {
       onNavigate(matchId);
     }
@@ -329,7 +330,7 @@ export const createProfileRouteHandler = (
   onNavigate: (profileId: string) => void
 ): DeepLinkHandler => {
   return (route: DeepLinkRoute): Promise<void> => {
-    const profileId = route.params.id || route.query.profileId;
+    const profileId = route.params.id ?? route.query.profileId;
     if (profileId) {
       onNavigate(profileId);
     }
@@ -341,7 +342,7 @@ export const createAdoptionRouteHandler = (
   onNavigate: (listingId: string) => void
 ): DeepLinkHandler => {
   return (route: DeepLinkRoute): Promise<void> => {
-    const listingId = route.params.id || route.query.listingId;
+    const listingId = route.params.id ?? route.query.listingId;
     if (listingId) {
       onNavigate(listingId);
     }

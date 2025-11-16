@@ -1,13 +1,6 @@
-'use client';
-
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from '@petspark/motion';
+'use client';;
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
 import { useCallback, useEffect, useState } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -65,7 +58,7 @@ export function UndoDeleteChip({ onUndo, duration = 5000, className }: UndoDelet
   }
 
   return (
-    <AnimatedView
+    <MotionView
       style={animatedStyle}
       className={cn(
         'fixed bottom-20 left-1/2 -translate-x-1/2 z-50',
@@ -86,6 +79,6 @@ export function UndoDeleteChip({ onUndo, duration = 5000, className }: UndoDelet
         <ArrowUUpLeft size={16} className="text-foreground" />
         <span className="text-foreground">Undo delete</span>
       </button>
-    </AnimatedView>
+    </MotionView>
   );
 }

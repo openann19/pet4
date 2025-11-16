@@ -131,7 +131,7 @@ export class PaymentsService {
 
       await paymentsApi.updateEntitlements(
         userId,
-        getPlanById(planId)?.tier || 'premium',
+        getPlanById(planId)?.tier ?? 'premium',
         reason,
         actorUserId
       );

@@ -176,7 +176,7 @@ export async function createAchievementNotification(
     actionLabel: 'View Achievements',
     ...(imageUrl ? { imageUrl } : {}),
     metadata: {
-      achievementBadge: badge || achievementName,
+      achievementBadge: badge ?? achievementName,
     },
   });
 }

@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * AppNavBar Component
  *
@@ -7,9 +8,8 @@
 
 import { Sparkle, Heart, ChatCircle, Users, User, MapPin } from '@phosphor-icons/react';
 import { NavButton } from '@/components/navigation/NavButton';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { UseAppAnimationsReturn } from '@/hooks/use-app-animations';
-import type { View } from '@/hooks/use-app-navigation';
+import type { View } from '@/lib/routes';
 import { haptics } from '@/lib/haptics';
 
 interface AppNavBarProps {
@@ -41,17 +41,17 @@ export function AppNavBar({
   const { navBarAnimation, lostFoundAnimation } = animations;
 
   return (
-    <AnimatedView
-      style={navBarAnimation.navStyle}
+    <MotionView
+      animatedStyle={navBarAnimation.navStyle}
       className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-2xl border-t border-border/50 z-40 shadow-2xl shadow-primary/20 safe-area-inset-bottom"
     >
       <div className="absolute inset-0 bg-linear-to-t from-primary/8 via-accent/4 to-transparent pointer-events-none" />
-      <AnimatedView
-        style={navBarAnimation.shimmerStyle}
+      <MotionView
+        animatedStyle={navBarAnimation.shimmerStyle}
         className="absolute inset-0 bg-linear-to-r from-transparent via-accent/5 to-transparent pointer-events-none"
       >
         <div />
-      </AnimatedView>
+      </MotionView>
       <div className="max-w-7xl mx-auto px-1 sm:px-2 relative">
         <div className="flex items-center justify-around py-2 sm:py-3 gap-1">
           <NavButton
@@ -95,13 +95,15 @@ export function AppNavBar({
             enablePulse={currentView === 'adoption'}
           />
 
-          <AnimatedView
+          <MotionView
             className={`${NAV_BUTTON_BASE_CLASSES} relative cursor-pointer ${
               currentView === 'lost-found'
                 ? 'text-primary bg-linear-to-br from-primary/20 to-accent/15 shadow-lg shadow-primary/25'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
             }`}
-            style={lostFoundAnimation.buttonStyle}
+            variants={lostFoundAnimation.variants}
+            initial={'initial' as const}
+            animate={'animate' as const}
             onMouseEnter={lostFoundAnimation.handleHover}
             onMouseLeave={lostFoundAnimation.handleLeave}
             onClick={() => {
@@ -110,21 +112,23 @@ export function AppNavBar({
               onViewChange('lost-found');
             }}
           >
-            <AnimatedView style={lostFoundAnimation.iconStyle}>
+            <MotionView variants={lostFoundAnimation.iconVariants} initial={'initial' as const} animate={'animate' as const}>
               <MapPin size={22} weight={currentView === 'lost-found' ? 'fill' : 'regular'} />
-            </AnimatedView>
+            </MotionView>
             <span className="text-[10px] sm:text-xs font-semibold leading-tight">
               {translations.nav['lost-found']}
             </span>
             {currentView === 'lost-found' && (
-              <AnimatedView
+              <MotionView
                 className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-1 bg-linear-to-r from-primary via-accent to-secondary rounded-full shadow-lg shadow-primary/50"
-                style={lostFoundAnimation.indicatorStyle}
+                variants={lostFoundAnimation.indicatorVariants}
+                initial={'initial' as const}
+                animate={'animate' as const}
               >
                 <div />
-              </AnimatedView>
+              </MotionView>
             )}
-          </AnimatedView>
+          </MotionView>
 
           <NavButton
             isActive={currentView === 'profile'}
@@ -135,7 +139,7 @@ export function AppNavBar({
           />
         </div>
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }
 

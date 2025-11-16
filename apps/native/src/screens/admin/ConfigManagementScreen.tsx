@@ -16,10 +16,11 @@ import { getBusinessConfig } from '../../api/business-config-api';
 import { getMatchingConfig } from '../../api/matching-config-api';
 import { getMapConfig } from '../../api/map-config-api';
 import { getAPIConfig } from '../../api/api-config-api';
+import { getSystemConfig } from '../../api/system-config-api';
 
 const logger = createLogger('ConfigManagementScreen');
 
-type ConfigType = 'business' | 'matching' | 'map' | 'api';
+type ConfigType = 'business' | 'matching' | 'map' | 'api' | 'system';
 
 interface ConfigItem {
   type: ConfigType;
@@ -53,6 +54,12 @@ const configItems: ConfigItem[] = [
     description: 'API keys and service endpoints',
     icon: '🔑',
   },
+  {
+    type: 'system',
+    name: 'System Configuration',
+    description: 'Feature flags and system settings',
+    icon: '⚙️',
+  },
 ];
 
 export const ConfigManagementScreen: React.FC = () => {
@@ -62,6 +69,7 @@ export const ConfigManagementScreen: React.FC = () => {
     matching: false,
     map: false,
     api: false,
+    system: false,
   });
 
   const handleEdit = (configType: ConfigType): void => {
@@ -77,6 +85,9 @@ export const ConfigManagementScreen: React.FC = () => {
         break;
       case 'api':
         navigation.navigate('APIConfig' as never);
+        break;
+      case 'system':
+        navigation.navigate('SystemConfig' as never);
         break;
     }
   };
@@ -113,6 +124,13 @@ export const ConfigManagementScreen: React.FC = () => {
             const apiConfig = await getAPIConfig();
             if (apiConfig) {
               config = apiConfig as unknown as Record<string, unknown>;
+            }
+            break;
+          }
+          case 'system': {
+            const systemConfig = await getSystemConfig();
+            if (systemConfig) {
+              config = systemConfig as unknown as Record<string, unknown>;
             }
             break;
           }

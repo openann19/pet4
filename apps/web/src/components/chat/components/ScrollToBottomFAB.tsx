@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Scroll to Bottom FAB Component
  *
@@ -6,7 +7,6 @@
 
 import { PaperPlaneRight } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -31,7 +31,7 @@ export function ScrollToBottomFAB({
       }
 
   return (
-    <AnimatedView style={animatedStyle} className="fixed bottom-24 right-6 z-40">
+    <MotionView style={animatedStyle} className="fixed bottom-24 right-6 z-40">
       <Button
         size="icon"
         className="rounded-full shadow-lg bg-primary hover:bg-primary/90"
@@ -40,14 +40,14 @@ export function ScrollToBottomFAB({
       >
         <PaperPlaneRight size={20} weight="fill" />
         {badgeCount > 0 && badgeAnimatedStyle && (
-          <AnimatedView
+          <MotionView
             style={badgeAnimatedStyle}
             className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
           >
             <span>{badgeCount}</span>
-          </AnimatedView>
+          </MotionView>
         )}
       </Button>
-    </AnimatedView>
+    </MotionView>
   );
 }

@@ -143,7 +143,7 @@ export class PerformanceMonitor {
     // Calculate 95th percentile frame time
     const sorted = [...this.frameTimes].sort((a, b) => a - b);
     const index95 = Math.floor(sorted.length * 0.95);
-    this.metrics.frameTime95th = Math.round(sorted[index95] || 0);
+    this.metrics.frameTime95th = Math.round(sorted[index95] ?? 0);
 
     logger.info('FPS sampling completed', {
       averageFPS: this.metrics.averageFPS,
@@ -163,9 +163,7 @@ export class PerformanceMonitor {
       const memory = perfWithMemory.memory;
       const memoryMB = memory.usedJSHeapSize / (1024 * 1024);
 
-      if (this.memoryBaseline === null) {
-        this.memoryBaseline = memoryMB;
-      }
+      this.memoryBaseline ??= memoryMB;
 
       if (this.metrics.peakMemoryMB === null || memoryMB > this.metrics.peakMemoryMB) {
         this.metrics.peakMemoryMB = Math.round(memoryMB);
@@ -305,11 +303,11 @@ export class PerformanceMonitor {
     return `
 Performance Report
 ==================
-Cold Start: ${String(metrics.coldStartTime !== null ? `${String(metrics.coldStartTime ?? '')}ms` : 'Not measured' ?? '')}
-Average FPS: ${String(metrics.averageFPS !== null ? metrics.averageFPS : 'Not measured' ?? '')}
-95th Percentile Frame Time: ${String(metrics.frameTime95th !== null ? `${String(metrics.frameTime95th ?? '')}ms` : 'Not measured' ?? '')}
-Peak Memory: ${String(metrics.peakMemoryMB !== null ? `${String(metrics.peakMemoryMB ?? '')}MB` : 'Not measured' ?? '')}
-Crash-Free Rate: ${String((crashFreeRate * 100).toFixed(2) ?? '')}% (${String(metrics.crashFreeSessions ?? '')}/${String(metrics.totalSessions ?? '')} sessions)
+Cold Start: ${metrics.coldStartTime != null ? `${metrics.coldStartTime}ms` : 'Not measured'}                                       
+Average FPS: ${metrics.averageFPS != null ? String(metrics.averageFPS) : 'Not measured'}                                                                 
+95th Percentile Frame Time: ${metrics.frameTime95th != null ? `${metrics.frameTime95th}ms` : 'Not measured'}                       
+Peak Memory: ${metrics.peakMemoryMB != null ? `${metrics.peakMemoryMB}MB` : 'Not measured'}                                        
+Crash-Free Rate: ${String((crashFreeRate * 100).toFixed(2))}% (${String(metrics.crashFreeSessions ?? '')}/${String(metrics.totalSessions ?? '')} sessions)
 Errors: ${String(metrics.errorCount ?? '')}
 
 Budget Status: ${budgetCheck.passed ? 'PASSED' : 'FAILED'}

@@ -7,4 +7,5 @@ export * from './useMotionValue'
 export * from './useMotionStyle'
 export * from './animations'
 export * from './hooks'
+export * from './motionTokens'
 

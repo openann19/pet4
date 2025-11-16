@@ -1,9 +1,9 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { useState, useCallback } from 'react';
 import { Play, Pause, DownloadSimple } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { SmartImage } from '@/components/media/SmartImage';
 import type { MessageAttachment } from '@/lib/chat-types';
@@ -105,7 +105,7 @@ function PhotoAttachment({ attachment }: PhotoAttachmentProps): React.JSX.Elemen
   }, [attachment.url, attachment.name]);
 
   return (
-    <AnimatedView
+    <MotionView
       style={hoverAnimation.animatedStyle}
       className="relative rounded-lg overflow-hidden max-w-sm"
       onMouseEnter={hoverAnimation.handleEnter}
@@ -129,7 +129,7 @@ function PhotoAttachment({ attachment }: PhotoAttachmentProps): React.JSX.Elemen
       >
         <DownloadSimple size={16} weight="bold" />
       </Button>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -143,7 +143,7 @@ function VideoAttachment({ attachment }: VideoAttachmentProps): React.JSX.Elemen
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={hoverAnimation.animatedStyle}
       className="relative rounded-lg overflow-hidden max-w-sm"
       onMouseEnter={hoverAnimation.handleEnter}
@@ -156,7 +156,7 @@ function VideoAttachment({ attachment }: VideoAttachmentProps): React.JSX.Elemen
         poster={attachment.thumbnail}
         aria-label={attachment.name ?? 'Video attachment'}
       />
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -183,7 +183,7 @@ function DocumentAttachment({ attachment }: DocumentAttachmentProps): React.JSX.
   }, [attachment.url, attachment.name]);
 
   return (
-    <AnimatedView
+    <MotionView
       style={hoverAnimation.animatedStyle}
       className="flex items-center gap-3 p-3 glass-effect rounded-lg"
       onMouseEnter={hoverAnimation.handleEnter}
@@ -204,6 +204,6 @@ function DocumentAttachment({ attachment }: DocumentAttachmentProps): React.JSX.
       >
         <DownloadSimple size={16} weight="bold" />
       </Button>
-    </AnimatedView>
+    </MotionView>
   );
 }

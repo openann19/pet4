@@ -43,9 +43,7 @@ export async function lockCommand(options: LockOptions): Promise<LockFile> {
     }> | undefined
     let keyPair = options.keyPair
 
-    if (!keyPair) {
-      keyPair = await loadKeyPair()
-    }
+    keyPair ??= await loadKeyPair()
 
     if (keyPair) {
       const signature = await signLockFile(content, keyPair)

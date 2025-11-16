@@ -1,6 +1,6 @@
 import type { Location } from './types';
 import { snapToGrid } from './utils';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface PrivacyLocation extends Location {
   isPrecise: boolean;

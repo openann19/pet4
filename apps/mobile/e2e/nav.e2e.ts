@@ -7,7 +7,7 @@
  * Location: apps/mobile/e2e/nav.e2e.ts
  */
 
-import { device, expect, element, by, waitFor } from 'detox';
+import { device, element, by, waitFor } from 'detox';
 
 describe('RN navigation audit', () => {
   beforeAll(async () => {

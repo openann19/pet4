@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * GenerateProfilesModal Component
  *
@@ -7,7 +8,6 @@
 
 import { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import LoadingState from '@/components/LoadingState';
 import type { UseAppAnimationsReturn } from '@/hooks/use-app-animations';
 import GenerateProfilesButton from '@/components/GenerateProfilesButton';
@@ -28,12 +28,12 @@ export function GenerateProfilesModal({
     const { generateProfilesModal, generateProfilesContent, closeButtonBounce } = animations;
 
     return (
-        <AnimatedView
+        <MotionView
             style={generateProfilesModal.style}
             className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4"
             onClick={onClose}
         >
-            <AnimatedView
+            <MotionView
                 style={generateProfilesContent.style}
                 onClick={(e?: React.MouseEvent<Element>) => e?.stopPropagation()}
                 className="bg-card p-6 rounded-2xl shadow-2xl max-w-md w-full border border-border/50"
@@ -41,12 +41,12 @@ export function GenerateProfilesModal({
                 <Suspense fallback={<LoadingState />}>
                     <GenerateProfilesButton />
                 </Suspense>
-                <AnimatedView style={closeButtonBounce.animatedStyle}>
+                <MotionView style={closeButtonBounce.animatedStyle}>
                     <Button variant="outline" className="w-full mt-4" onClick={onClose}>
                         Close
                     </Button>
-                </AnimatedView>
-            </AnimatedView>
-        </AnimatedView>
+                </MotionView>
+            </MotionView>
+        </MotionView>
     );
 }

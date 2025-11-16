@@ -1,5 +1,6 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -14,7 +15,6 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { useApp } from '@/contexts/AppContext';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useRotation } from '@/effects/reanimated/use-rotation';
 import { adoptionService } from '@/lib/adoption-service';
 import type { AdoptionProfile, HouseholdType } from '@/lib/adoption-types';
@@ -43,9 +43,9 @@ function LoadingSpinner() {
   });
 
   return (
-    <AnimatedView style={rotationAnimation.rotationStyle} className="inline-block">
+    <MotionView style={rotationAnimation.rotationStyle} className="inline-block">
       <PaperPlaneRight size={18} />
-    </AnimatedView>
+    </MotionView>
   );
 }
 

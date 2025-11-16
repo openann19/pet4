@@ -29,7 +29,7 @@ const createAPIClientMock = () => {
     const response = await fetch(testUrl, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: data ? JSON.stringify(data) : undefined,
+      ...(data ? { body: JSON.stringify(data) } : {}),
     });
 
     if (!response.ok) {
@@ -173,7 +173,6 @@ beforeAll(async () => {
         JSON.stringify({
           data: {
             streams: [mockStream],
-            nextCursor: undefined,
             total: 1,
           },
         })

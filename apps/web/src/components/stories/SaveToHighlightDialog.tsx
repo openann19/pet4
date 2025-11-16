@@ -41,7 +41,7 @@ export default function SaveToHighlightDialog({
   const [newHighlightTitle, setNewHighlightTitle] = useState('');
   const [selectedHighlightId, setSelectedHighlightId] = useState<string | null>(null);
 
-  const userHighlights = (highlights || []).filter((h) => h.userId === story.userId);
+  const userHighlights = (highlights ?? []).filter((h) => h.userId === story.userId);
   const storyAlreadyInHighlight = (highlightId: string) => {
     const highlight = userHighlights.find((h) => h.id === highlightId);
     return highlight?.stories.some((s) => s.id === story.id) || false;
@@ -62,7 +62,7 @@ export default function SaveToHighlightDialog({
     haptics.trigger('success');
 
     setHighlights((current) =>
-      (current || []).map((h) =>
+      (current ?? []).map((h) =>
         h.id === selectedHighlightId
           ? {
             ...h,
@@ -100,7 +100,7 @@ export default function SaveToHighlightDialog({
       [story]
     );
 
-    setHighlights((current) => [...(current || []), newHighlight]);
+    setHighlights((current) => [...(current ?? []), newHighlight]);
 
     toast.success('Highlight created!', {
       duration: 2000,

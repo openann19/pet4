@@ -7,9 +7,8 @@
  */
 
 import { useEffect } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useVoiceWaveform } from '@/effects/chat/media/use-voice-waveform';
-import { useAnimatedStyle } from '@petspark/motion';
+import { useAnimatedStyle, MotionView } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface VoiceWaveformProps {
@@ -62,13 +61,13 @@ export function VoiceWaveform({
   });
 
   return (
-    <AnimatedView style={animatedStyle} className={`relative ${className ?? ''}`}>
+    <MotionView style={animatedStyle} className={`relative ${className ?? ''}`}>
       <canvas ref={canvasRef} width={width} height={height} className="w-full h-full" />
       {isPlaying && (
-        <AnimatedView style={playheadStyle}>
+        <MotionView style={playheadStyle}>
           <div />
-        </AnimatedView>
+        </MotionView>
       )}
-    </AnimatedView>
+    </MotionView>
   );
 }

@@ -68,6 +68,8 @@ function isLegacyMediaQueryList(
   )
 }
 
+import { isTruthy } from '@petspark/shared';
+
 export function isReduceMotionEnabled(): boolean {
   // RN path: prefer AccessibilityInfo snapshot if available (non-blocking)
   if (isTruthy(AccessibilityInfo?.isReduceMotionEnabled)) {

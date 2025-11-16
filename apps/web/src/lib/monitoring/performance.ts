@@ -4,7 +4,7 @@
 
 import type { LayoutShiftEntry } from '@/lib/types/performance-api';
 import { createLogger } from '../logger';
-import { isTruthy, isDefined } from '@petspark/shared';
+// Unused imports removed: isTruthy, isDefined
 
 const logger = createLogger('PerformanceMonitoring');
 

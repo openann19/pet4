@@ -134,7 +134,7 @@ export class AdvancedImageLoader {
 }
 
 export function useProgressiveImage(src: string, placeholderSrc?: string) {
-  const [currentSrc, setCurrentSrc] = useState(placeholderSrc || '');
+  const [currentSrc, setCurrentSrc] = useState(placeholderSrc ?? '');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 

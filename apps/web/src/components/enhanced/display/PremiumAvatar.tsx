@@ -1,9 +1,7 @@
-'use client';
-
+'use client';;
 import React, { useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate } from '@petspark/motion';
-import type { AnimatedStyle } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView } from '@petspark/motion';
+import type { AnimatedStyle, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -125,9 +123,8 @@ export function PremiumAvatar({
           }}
         />
       )}
-
       {variant === 'glow' && (
-        <AnimatedView
+        <MotionView
           style={{
             ...(glowStyle),
             position: 'absolute',
@@ -140,10 +137,9 @@ export function PremiumAvatar({
           className="bg-(--primary)/30 blur-md"
         >
           <div />
-        </AnimatedView>
+        </MotionView>
       )}
-
-      <AnimatedView style={animatedStyle}>
+      <MotionView style={animatedStyle}>
         <Avatar
           className={cn(
             'relative overflow-hidden shadow-lg',
@@ -162,8 +158,7 @@ export function PremiumAvatar({
             {fallback ?? '?'}
           </AvatarFallback>
         </Avatar>
-      </AnimatedView>
-
+      </MotionView>
       {status && (
         <div
           className={cn(
@@ -178,7 +173,6 @@ export function PremiumAvatar({
           }}
         />
       )}
-
       {badge !== undefined && (
         <div className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] min-h-[20px] px-1 bg-(--danger) text-(--primary-foreground) text-xs font-bold rounded-full border-2 border-(--background) shadow-lg">
           {typeof badge === 'number' && badge > 99 ? '99+' : badge}

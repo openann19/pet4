@@ -53,7 +53,7 @@ async function getMapboxAccessToken(): Promise<string> {
   if (!mapsConfig || !mapsConfig.enabled || mapsConfig.provider !== 'mapbox') {
     return '';
   }
-  return mapsConfig.apiKey || '';
+  return mapsConfig.apiKey ?? '';
 }
 
 function getPlaceTypeFromCategory(category: string): 'park' | 'cafe' | 'beach' | 'trail' | 'other' {
@@ -161,7 +161,7 @@ export async function searchNearbyPlaces(
         }
 
         // Determine category from place_type
-        const category = feature.place_type[0] || 'poi';
+        const category = feature.place_type[0] ?? 'poi';
         const type = getPlaceTypeFromCategory(category);
 
         return {
@@ -175,7 +175,7 @@ export async function searchNearbyPlaces(
           // rating is optional, omit if not available
         };
       })
-      .sort((a, b) => (a.distance || 0) - (b.distance || 0));
+      .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0));
 
     logger.info('Found nearby places', {
       count: places.length,
@@ -249,7 +249,7 @@ export async function searchPlacesByQuery(
         }
       }
 
-      const category = feature.place_type[0] || 'poi';
+      const category = feature.place_type[0] ?? 'poi';
       const type = getPlaceTypeFromCategory(category);
 
       const place: MapboxPlace = {
@@ -269,7 +269,7 @@ export async function searchPlacesByQuery(
     });
 
     if (location) {
-      places.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+      places.sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0));
     }
 
     logger.info('Found places by query', {

@@ -179,8 +179,8 @@ export class SmartRecommendationEngine {
   }
 
   private scorePersonalityMatch(targetPet: Pet, userPet: Pet): number {
-    const targetTraits = targetPet.personality || [];
-    const userTraits = userPet.personality || [];
+    const targetTraits = targetPet.personality ?? [];
+    const userTraits = userPet.personality ?? [];
 
     if (targetTraits.length === 0 || userTraits.length === 0) {
       return 50;
@@ -237,8 +237,8 @@ export class SmartRecommendationEngine {
   }
 
   private scoreAgeCompatibility(targetPet: Pet, userPet: Pet): number {
-    const targetAge = targetPet.age || 3;
-    const userAge = userPet.age || 3;
+    const targetAge = targetPet.age ?? 3;
+    const userAge = userPet.age ?? 3;
 
     const ageDiff = Math.abs(targetAge - userAge);
 
@@ -251,8 +251,8 @@ export class SmartRecommendationEngine {
   }
 
   private scoreInterestOverlap(targetPet: Pet, userPet: Pet): number {
-    const targetInterests = targetPet.interests || [];
-    const userInterests = userPet.interests || [];
+    const targetInterests = targetPet.interests ?? [];
+    const userInterests = userPet.interests ?? [];
 
     if (targetInterests.length === 0 || userInterests.length === 0) {
       return 50;
@@ -289,8 +289,8 @@ export class SmartRecommendationEngine {
   }
 
   private extractActivityLevel(pet: Pet, activityMap: Record<string, number>): number {
-    const personality = pet.personality || [];
-    const interests = pet.interests || [];
+    const personality = pet.personality ?? [];
+    const interests = pet.interests ?? [];
     const allTraits = [...personality, ...interests].map((t) => t.toLowerCase());
 
     let totalLevel = 0;
@@ -316,14 +316,14 @@ export class SmartRecommendationEngine {
 
     if (this.userPreferences.favoriteBreeds.length > 0) {
       factors++;
-      if (this.userPreferences.favoriteBreeds.includes(targetPet.breed || '')) {
+      if (this.userPreferences.favoriteBreeds.includes(targetPet.breed ?? '')) {
         score += 100;
       }
     }
 
     if (this.userPreferences.favoritePersonalities.length > 0) {
       factors++;
-      const hasPreferredPersonality = (targetPet.personality || []).some((p) =>
+      const hasPreferredPersonality = (targetPet.personality ?? []).some((p) =>
         this.userPreferences!.favoritePersonalities.includes(p)
       );
       if (hasPreferredPersonality) {

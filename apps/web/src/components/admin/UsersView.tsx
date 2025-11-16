@@ -31,7 +31,7 @@ import {
   Warning,
 } from '@phosphor-icons/react';
 import type { VariantProps } from 'class-variance-authority';
-import { Presence, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -239,7 +239,6 @@ export default function UsersView() {
           </div>
         </div>
       </div>
-
       <div className="p-6">
         <Tabs
           value={filterStatus}
@@ -257,7 +256,6 @@ export default function UsersView() {
           </TabsList>
         </Tabs>
       </div>
-
       <ScrollArea className="flex-1 px-6 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredUsers.map((user, index) => {
@@ -268,7 +266,7 @@ export default function UsersView() {
             })
             
             return (
-              <AnimatedView key={user.id} style={entry.animatedStyle}>
+              <MotionView key={user.id} style={entry.animatedStyle}>
                 <Card className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
@@ -314,8 +312,8 @@ export default function UsersView() {
                     </div>
                   </CardContent>
                 </Card>
-              </AnimatedView>
-            )
+              </MotionView>
+            );
           })}
         </div>
 
@@ -333,7 +331,6 @@ export default function UsersView() {
           </Card>
         )}
       </ScrollArea>
-
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -458,7 +455,6 @@ export default function UsersView() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>

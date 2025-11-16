@@ -466,7 +466,7 @@ export class MediaUploadService {
 
       const validation = this.validateFile(file, mediaType);
       if (!validation.valid) {
-        throw new Error(validation.error || 'File validation failed');
+        throw new Error(validation.error ?? 'File validation failed');
       }
 
       let metadata: UploadCompletionRequest['metadata'] = {

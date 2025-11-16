@@ -1,8 +1,8 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { useCallback } from 'react';
 import { useRippleEffect } from '@/effects/reanimated/use-ripple-effect';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
 import type { ReactNode, HTMLAttributes } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -42,7 +42,7 @@ export function RippleEffect({
     <div onClick={handleClick} className={cn('relative overflow-hidden', className)} {...props}>
       {children}
       {ripple.ripples.map((rippleState) => (
-        <AnimatedView
+        <MotionView
           key={rippleState.id}
           style={{
             ...ripple.animatedStyle,

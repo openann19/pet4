@@ -11,6 +11,7 @@ import {
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from '@/hooks/use-ui-config';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseAIReplyAuraReturn {
   animatedStyle: AnimatedStyle;
@@ -32,8 +33,8 @@ export interface UseAIReplyAuraReturn {
 export function useAIReplyAura(): UseAIReplyAuraReturn {
   const { visual } = useUIConfig();
 
-  const glow = useSharedValue(0);
-  const shimmer = useSharedValue(0);
+  const glow = useSharedValue<number>(0);
+  const shimmer = useSharedValue<number>(0);
 
   useEffect(() => {
     if (!visual.enableGlow && !visual.enableShimmer) {

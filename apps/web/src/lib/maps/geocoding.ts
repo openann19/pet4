@@ -69,7 +69,7 @@ export async function forwardGeocode(
     const data = await response.json();
     const latency = Date.now() - startTime;
 
-    const results: GeocodingResult[] = (data.features || []).map(
+    const results: GeocodingResult[] = (data.features ?? []).map(
       (feature: {
         id: string;
         place_name: string;
@@ -78,9 +78,9 @@ export async function forwardGeocode(
         relevance?: number;
         properties?: Record<string, unknown>;
       }) => ({
-        id: feature.id || `place_${Date.now()}_${Math.random()}`,
-        name: feature.place_name || query,
-        address: feature.place_name || '',
+        id: feature.id ?? `place_${Date.now()}_${Math.random()}`,
+        name: feature.place_name ?? query,
+        address: feature.place_name ?? '',
         location: {
           lng: feature.center[0],
           lat: feature.center[1],
@@ -162,9 +162,9 @@ export async function reverseGeocode(
     }
 
     const result: GeocodingResult = {
-      id: feature.id || `place_${String(Date.now() ?? '')}_${String(Math.random() ?? '')}`,
-      name: feature.place_name || 'Unknown location',
-      address: feature.place_name || '',
+      id: feature.id ?? `place_${Date.now()}_${Math.random()}`,
+      name: feature.place_name ?? 'Unknown location',
+      address: feature.place_name ?? '',
       location: {
         lng: feature.center[0],
         lat: feature.center[1],

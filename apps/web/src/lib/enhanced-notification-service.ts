@@ -10,6 +10,7 @@ import { generateULID } from './utils';
 import { APIClient } from './api-client';
 import { ENDPOINTS } from './endpoints';
 import type { Notification, User, Match } from './contracts';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('EnhancedNotifications');
 
@@ -296,7 +297,7 @@ export class EnhancedNotificationService {
           id: notification.id,
           title: notification.title,
           body: notification.body,
-          icon: user.avatarUrl || '/icon-192.png',
+          icon: user.avatarUrl ?? '/icon-192.png',
           tag: notification.type,
           data: {
             ...notification.data,
@@ -354,7 +355,7 @@ export class EnhancedNotificationService {
 
     const summary =
       notifications.length === 1 && notifications[0]
-        ? notifications[0].body || 'New notification'
+        ? notifications[0].body ?? 'New notification'
         : `You have ${notifications.length} new notifications`;
 
     return {

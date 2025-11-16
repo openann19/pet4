@@ -19,13 +19,13 @@ import {
   type PetProfileTemplate,
 } from '@/lib/pet-profile-templates';
 import { cn } from '@/lib/utils';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
   withRepeat,
   withSequence,
+  MotionView,
 } from '@petspark/motion';
 
 interface PetProfileTemplatesDialogProps {
@@ -244,9 +244,9 @@ export default function PetProfileTemplatesDialog({
           <DialogHeader className="px-8 pt-8 pb-5 border-b border-border/40">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <AnimatedView style={sparkleStyle}>
+                <MotionView style={sparkleStyle}>
                   <Sparkle size={28} weight="fill" className="text-primary" />
-                </AnimatedView>
+                </MotionView>
                 <div>
                   <DialogTitle className="text-2xl font-bold text-foreground">
                     Pet Profile Templates
@@ -263,7 +263,7 @@ export default function PetProfileTemplatesDialog({
               </div>
 
               <div className="h-2 w-32 bg-muted/50 rounded-full overflow-hidden">
-                <AnimatedView
+                <MotionView
                   style={progressStyle}
                   className="h-full bg-gradient-to-r from-primary to-accent"
                 />

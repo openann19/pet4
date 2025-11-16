@@ -1,8 +1,13 @@
-'use client';
-
+'use client';;
 import React, { useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  animate,
+  MotionView,
+} from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -82,7 +87,7 @@ export function PremiumChip({
   };
 
   return (
-    <AnimatedView style={animatedStyle}>
+    <MotionView style={animatedStyle}>
       <div
         onClick={handleClick}
         className={cn(
@@ -116,6 +121,6 @@ export function PremiumChip({
           </button>
         )}
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }

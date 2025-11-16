@@ -1,10 +1,10 @@
+import { MotionView } from "@petspark/motion";
 import type { ReactNode } from 'react';
 import { useEffect, useCallback, useRef } from 'react';
+import { useAnimatePresence } from '@/effects/reanimated';
 import { X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 
 export interface DismissibleOverlayProps {
   isOpen: boolean;
@@ -163,14 +163,13 @@ export function DismissibleOverlay({
   return (
     <div className={cn('fixed inset-0 z-50 flex items-center justify-center', className)}>
       {overlayPresence.shouldRender && (
-        <AnimatedView
-          style={overlayPresence.animatedStyle}
+        <MotionView
+          style={overlayPresence.animatedStyle as React.CSSProperties}
           className={cn('absolute inset-0 bg-background/80 backdrop-blur-sm', overlayClassName)}
           aria-hidden="true"
           onClick={closeOnOutsideClick ? onClose : undefined}
         />
       )}
-
       {contentPresence.shouldRender && (
         <div
           ref={contentRef}
@@ -182,7 +181,7 @@ export function DismissibleOverlay({
           aria-modal="true"
           aria-labelledby={title ? 'overlay-title' : undefined}
         >
-          <AnimatedView style={contentPresence.animatedStyle} className="h-full w-full">
+          <MotionView style={contentPresence.animatedStyle as React.CSSProperties} className="h-full w-full">
             {(title || showCloseButton) && (
               <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                 {title && (
@@ -205,7 +204,7 @@ export function DismissibleOverlay({
             )}
 
             <div className="overflow-y-auto max-h-[calc(90vh-5rem)]">{children}</div>
-          </AnimatedView>
+          </MotionView>
         </div>
       )}
     </div>

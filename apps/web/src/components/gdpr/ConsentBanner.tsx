@@ -45,8 +45,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
     if (!dismissed || dismissedVersion !== CONSENT_VERSION) {
       setIsVisible(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [showOnMount]);
 
   // Handle accept all
   const handleAcceptAll = async (): Promise<void> => {

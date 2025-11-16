@@ -1,6 +1,5 @@
+import { MotionView } from "@petspark/motion";
 import { useState } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -76,18 +75,18 @@ export function AdoptionDetailDialog({
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
           <div className="relative h-80 bg-muted">
             {photoPresence.shouldRender && (
-              <AnimatedView key={currentPhotoIndex} style={photoPresence.animatedStyle}>
+              <MotionView key={currentPhotoIndex} style={photoPresence.animatedStyle}>
                 <img
                   src={photos[currentPhotoIndex]}
                   alt={`${profile.petName} - Photo ${currentPhotoIndex + 1}`}
                   className="w-full h-full object-cover"
                 />
-              </AnimatedView>
+              </MotionView>
             )}
 
             {photos.length > 1 && (
               <>
-                <AnimatedView
+                <MotionView
                   style={prevButtonHover.animatedStyle}
                   onMouseEnter={prevButtonHover.handleMouseEnter}
                   onMouseLeave={prevButtonHover.handleMouseLeave}
@@ -102,8 +101,8 @@ export function AdoptionDetailDialog({
                   >
                     <CaretLeft size={20} weight="bold" />
                   </button>
-                </AnimatedView>
-                <AnimatedView
+                </MotionView>
+                <MotionView
                   style={nextButtonHover.animatedStyle}
                   onMouseEnter={nextButtonHover.handleMouseEnter}
                   onMouseLeave={nextButtonHover.handleMouseLeave}
@@ -118,7 +117,7 @@ export function AdoptionDetailDialog({
                   >
                     <CaretRight size={20} weight="bold" />
                   </button>
-                </AnimatedView>
+                </MotionView>
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                   {photos.map((_, index) => (
                     <button
@@ -384,7 +383,6 @@ export function AdoptionDetailDialog({
           </div>
         </DialogContent>
       </Dialog>
-
       <AdoptionApplicationDialog
         profile={profile}
         open={showApplicationDialog}

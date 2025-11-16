@@ -94,6 +94,12 @@ export const ENDPOINTS = {
     COMMENT: (postId: string) => `/community/posts/${postId}/comments`,
     LIKE_COMMENT: (postId: string, commentId: string) =>
       `/community/posts/${postId}/comments/${commentId}/like`,
+    LIKES: (postId: string) => `/community/posts/${postId}/likes`,
+    IS_LIKED: (postId: string) => `/community/posts/${postId}/liked`,
+    SAVE_POST: (postId: string) => `/community/posts/${postId}/save`,
+    SAVED_POSTS: '/community/posts/saved',
+    IS_SAVED: (postId: string) => `/community/posts/${postId}/saved`,
+    FOLLOW: '/community/follow',
   },
 
   // Admin
@@ -107,6 +113,7 @@ export const ENDPOINTS = {
     SETTINGS: '/admin/settings',
     CONFIG_BROADCAST: '/admin/config/broadcast',
     CONFIG_HISTORY: '/admin/config/history',
+    CONFIG_SYSTEM: '/admin/config/system',
     SUPPORT_TICKETS: '/admin/support/tickets',
     SUPPORT_TICKET: (id: string) => `/admin/support/tickets/${id}`,
     SUPPORT_TICKET_MESSAGES: (id: string) => `/admin/support/tickets/${id}/messages`,
@@ -162,7 +169,9 @@ export const ENDPOINTS = {
     CREATE_ROOM: '/live/createRoom',
     END_ROOM: '/live/endRoom',
     QUERY_ACTIVE: '/live/active',
+    ACTIVE_STREAMS: '/live/active',
     GET_STREAM: (id: string) => `/live/${id}`,
+    STREAM: (id: string) => `/live/${id}`,
     JOIN_STREAM: (id: string) => `/live/${id}/join`,
     LEAVE_STREAM: (id: string) => `/live/${id}/leave`,
     SEND_REACTION: (id: string) => `/live/${id}/react`,

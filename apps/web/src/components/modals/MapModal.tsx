@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * MapModal Component
  *
@@ -6,7 +7,6 @@
  */
 
 import { Suspense } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import LoadingState from '@/components/LoadingState';
 import PlaydateMap from '@/components/playdate/PlaydateMap';
 import type { UseAppAnimationsReturn } from '@/hooks/use-app-animations';
@@ -30,12 +30,12 @@ export function MapModal({
     const { mapModal, mapContent } = animations;
 
     return (
-        <AnimatedView style={mapModal.style} className="fixed inset-0 z-50">
+        <MotionView style={mapModal.style} className="fixed inset-0 z-50">
             <Suspense fallback={<LoadingState />}>
-                <AnimatedView style={mapContent.style} className="h-full w-full">
+                <MotionView style={mapContent.style} className="h-full w-full">
                     <PlaydateMap playdates={playdates} onClose={onClose} />
-                </AnimatedView>
+                </MotionView>
             </Suspense>
-        </AnimatedView>
+        </MotionView>
     );
 }

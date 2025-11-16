@@ -14,6 +14,29 @@ export interface SEOConfig {
   modifiedTime?: string;
 }
 
+function updateTitleMetaTags(title: string): void {
+  document.title = title;
+  updateMetaTag('property', 'og:title', title);
+  updateMetaTag('name', 'twitter:title', title);
+}
+
+function updateDescriptionMetaTags(description: string): void {
+  updateMetaTag('name', 'description', description);
+  updateMetaTag('property', 'og:description', description);
+  updateMetaTag('name', 'twitter:description', description);
+}
+
+function updateImageMetaTags(image: string): void {
+  updateMetaTag('property', 'og:image', image);
+  updateMetaTag('name', 'twitter:image', image);
+}
+
+function updateURLMetaTags(url: string): void {
+  updateMetaTag('property', 'og:url', url);
+  updateMetaTag('name', 'twitter:url', url);
+  updateLinkTag('canonical', url);
+}
+
 /**
  * Update page meta tags dynamically
  */
@@ -32,57 +55,15 @@ export function updateSEO(config: SEOConfig): void {
     modifiedTime,
   } = config;
 
-  // Update title
-  if (title) {
-    document.title = title;
-    updateMetaTag('property', 'og:title', title);
-    updateMetaTag('name', 'twitter:title', title);
-  }
-
-  // Update description
-  if (description) {
-    updateMetaTag('name', 'description', description);
-    updateMetaTag('property', 'og:description', description);
-    updateMetaTag('name', 'twitter:description', description);
-  }
-
-  // Update image
-  if (image) {
-    updateMetaTag('property', 'og:image', image);
-    updateMetaTag('name', 'twitter:image', image);
-  }
-
-  // Update URL
-  if (url) {
-    updateMetaTag('property', 'og:url', url);
-    updateMetaTag('name', 'twitter:url', url);
-    updateLinkTag('canonical', url);
-  }
-
-  // Update type
-  if (type) {
-    updateMetaTag('property', 'og:type', type);
-  }
-
-  // Update keywords
-  if (keywords && keywords.length > 0) {
-    updateMetaTag('name', 'keywords', keywords.join(', '));
-  }
-
-  // Update author
-  if (author) {
-    updateMetaTag('name', 'author', author);
-  }
-
-  // Update published time
-  if (publishedTime) {
-    updateMetaTag('property', 'article:published_time', publishedTime);
-  }
-
-  // Update modified time
-  if (modifiedTime) {
-    updateMetaTag('property', 'article:modified_time', modifiedTime);
-  }
+  if (title) updateTitleMetaTags(title);
+  if (description) updateDescriptionMetaTags(description);
+  if (image) updateImageMetaTags(image);
+  if (url) updateURLMetaTags(url);
+  if (type) updateMetaTag('property', 'og:type', type);
+  if (keywords && keywords.length > 0) updateMetaTag('name', 'keywords', keywords.join(', '));
+  if (author) updateMetaTag('name', 'author', author);
+  if (publishedTime) updateMetaTag('property', 'article:published_time', publishedTime);
+  if (modifiedTime) updateMetaTag('property', 'article:modified_time', modifiedTime);
 
   logger.debug('SEO updated', { title, description, url });
 }
@@ -140,7 +121,7 @@ export function setPetProfileSEO(petName: string, petBreed: string, petImage?: s
   updateSEO({
     title: `${petName} - ${petBreed} | PawfectMatch`,
     description: `Meet ${petName}, a ${petBreed} looking for friends on PawfectMatch.`,
-    image: petImage || 'https://pawfectmatch.com/og-image.jpg',
+    image: petImage ?? 'https://pawfectmatch.com/og-image.jpg',
     type: 'profile',
     keywords: [petName, petBreed, 'pet profile', 'pet matching'],
   });

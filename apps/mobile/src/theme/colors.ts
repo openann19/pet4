@@ -19,4 +19,13 @@ export const colors = {
   success: base.success,
   warning: base.warning,
   danger: base.danger,
+  // Additional tokens required by components
+  foreground: base.foreground,
+  mutedForeground: base.mutedForeground,
+  primaryForeground: base.primaryForeground,
+  destructive: base.destructive,
+  destructiveForeground: base.destructiveForeground,
+  // Aliases for component compatibility
+  error: base.danger, // error is an alias for danger
+  text: base.textPrimary, // text is an alias for textPrimary
 } as const

@@ -64,14 +64,16 @@ export function convertReanimatedStyleToCSS(
   }
 
   if (styleValue.transform && Array.isArray(styleValue.transform)) {
-    const transformStyle = convertTransformToStyle(styleValue.transform as any)
+    const transformArray: Array<{ [key: string]: number | string }> = styleValue.transform as Array<{ [key: string]: number | string }>
+    const transformStyle = convertTransformToStyle(transformArray)
     Object.assign(css, transformStyle)
   }
 
   // Copy other properties
   for (const [key, value] of Object.entries(styleValue)) {
     if (!['opacity', 'transform', 'backgroundColor', 'color', 'width', 'height'].includes(key)) {
-      (css as any)[key] = value as string | number
+      const cssRecord = css as Record<string, string | number>
+      cssRecord[key] = value as string | number
     }
   }
 

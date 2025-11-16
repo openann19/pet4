@@ -1,8 +1,6 @@
-'use client';
-
+'use client';;
 import React, { useCallback, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -86,7 +84,7 @@ export function PremiumErrorState({
   };
 
   return (
-    <AnimatedView
+    <MotionView
       style={animatedStyle}
       className={cn('flex flex-col items-center', variants[variant], className)}
     >
@@ -121,6 +119,6 @@ export function PremiumErrorState({
           {retryLabel}
         </PremiumButton>
       )}
-    </AnimatedView>
+    </MotionView>
   );
 }

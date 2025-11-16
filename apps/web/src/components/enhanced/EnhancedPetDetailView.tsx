@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import { useCallback, useState, useEffect } from 'react';
 import {
   Calendar,
@@ -21,10 +20,16 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import React from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withDelay, animate } from '@petspark/motion';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withDelay,
+  animate,
+  MotionView,
+} from '@petspark/motion';
 import { haptics } from '@/lib/haptics';
 import type { Pet } from '@/lib/types';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -162,12 +167,12 @@ export function EnhancedPetDetailView({
   }));
 
   return (
-    <AnimatedView
+    <MotionView
       className="fixed inset-0 bg-background/95 backdrop-blur-xl z-50 flex items-center justify-center p-4"
       onClick={handleClose}
       style={containerStyle}
     >
-      <AnimatedView
+      <MotionView
         className="w-full max-w-4xl max-h-[90vh] bg-card rounded-3xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         style={modalStyle}
@@ -186,7 +191,7 @@ export function EnhancedPetDetailView({
                   <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                 </div>
               )}
-              <AnimatedView className="w-full h-full" key={currentPhotoIndex} style={photoStyle}>
+              <MotionView className="w-full h-full" key={currentPhotoIndex} style={photoStyle}>
                 <img
                   src={photos[currentPhotoIndex]}
                   alt={pet.name}
@@ -194,7 +199,7 @@ export function EnhancedPetDetailView({
                   onLoad={handleImageLoad}
                   onError={handleImageError}
                 />
-              </AnimatedView>
+              </MotionView>
 
               {photos.length > 1 && (
                 <>
@@ -247,8 +252,8 @@ export function EnhancedPetDetailView({
             />
           )}
         </div>
-      </AnimatedView>
-    </AnimatedView>
+      </MotionView>
+    </MotionView>
   );
 }
 
@@ -272,9 +277,9 @@ function CloseButton({ onClose }: CloseButtonProps): React.JSX.Element {
       className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
       aria-label="Close pet detail view"
     >
-      <AnimatedView style={bounce.animatedStyle}>
+      <MotionView style={bounce.animatedStyle}>
         <X size={24} weight="bold" />
-      </AnimatedView>
+      </MotionView>
     </Button>
   );
 }
@@ -299,9 +304,9 @@ function PhotoNavButton({ onClick }: PhotoNavButtonProps): React.JSX.Element {
       className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background pointer-events-auto"
       aria-label="Navigate to next photo"
     >
-      <AnimatedView style={bounce.animatedStyle}>
+      <MotionView style={bounce.animatedStyle}>
         <PawPrint size={20} weight="fill" />
-      </AnimatedView>
+      </MotionView>
     </Button>
   );
 }
@@ -320,7 +325,7 @@ function PhotoIndicator({ index, isActive, onClick }: PhotoIndicatorProps): Reac
         }`}
       aria-label={`Go to photo ${index + 1}`}
     >
-      <AnimatedView
+      <MotionView
         className="h-full rounded-full bg-white"
         style={
           useAnimatedStyle(() => ({
@@ -355,13 +360,13 @@ function CompatibilityBadge({ score }: CompatibilityBadgeProps): React.JSX.Eleme
 
   return (
     <div className="absolute top-4 left-4">
-      <AnimatedView
+      <MotionView
         className="flex items-center gap-2 px-4 py-2 rounded-full bg-linear-to-r from-primary to-accent backdrop-blur-sm"
         style={badgeStyle}
       >
         <TrendUp size={20} weight="bold" className="text-white" />
         <span className="text-lg font-bold text-white">{score}% Match</span>
-      </AnimatedView>
+      </MotionView>
     </div>
   );
 }
@@ -445,10 +450,10 @@ function MatchReasonItem({ reason, index }: MatchReasonItemProps): React.JSX.Ele
   }));
 
   return (
-    <AnimatedView className="text-sm flex items-start gap-2" style={itemStyle}>
+    <MotionView className="text-sm flex items-start gap-2" style={itemStyle}>
       <Heart size={14} className="text-primary mt-0.5 shrink-0" weight="fill" />
       <span>{reason}</span>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -587,13 +592,13 @@ function PersonalityTrait({ trait, index }: PersonalityTraitProps): React.JSX.El
   }));
 
   return (
-    <AnimatedView
+    <MotionView
       className="p-3 rounded-lg bg-muted/50 border border-border text-center"
       style={traitStyle}
     >
       <PawPrint size={24} className="text-primary mx-auto mb-1" weight="fill" />
       <span className="text-sm font-medium">{trait}</span>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -651,12 +656,12 @@ function TrustBadgeItem({ badge, index }: TrustBadgeItemProps): React.JSX.Elemen
   }));
 
   return (
-    <AnimatedView style={badgeStyle}>
+    <MotionView style={badgeStyle}>
       <Badge className="px-3 py-1.5">
         <ShieldCheck size={14} className="mr-1" weight="fill" />
         {badge.label}
       </Badge>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -719,10 +724,10 @@ function ActionButton({
       onClick={handlePress}
       className={`flex-1 rounded-full ${className ?? ''}`}
     >
-      <AnimatedView style={bounce.animatedStyle} className="flex items-center">
+      <MotionView style={bounce.animatedStyle} className="flex items-center">
         <Icon size={20} weight={variant === 'primary' ? 'fill' : 'bold'} className="mr-2" />
         {label}
-      </AnimatedView>
+      </MotionView>
     </Button>
   );
 }

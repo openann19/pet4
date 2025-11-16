@@ -395,13 +395,13 @@ export function useBubbleEntry(
 
   // Create animated style
   const style = useAnimatedStyle(() => {
-    const transforms: any[] = []
-    if (translateX.value !== 0) transforms.push({ translateX: translateX.value })
-    if (translateY.value !== 0) transforms.push({ translateY: translateY.value })
+    const transforms: Array<{ [key: string]: number | string }> = []
+    if (translateX.value !== 0) transforms.push({ translateX: translateX.value })                                                                               
+    if (translateY.value !== 0) transforms.push({ translateY: translateY.value })                                                                               
     if (scale.value !== 1) transforms.push({ scale: scale.value })
     
     return {
-      transform: transforms as any,
+      transform: transforms,
       opacity: opacity.value,
     }
   })

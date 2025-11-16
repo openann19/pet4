@@ -9,6 +9,7 @@ import {
   interpolate,
   Extrapolation,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { springConfigs, timingConfigs } from './transitions';
 import type { AnimatedStyle } from './animated-view';
 import { useReducedMotion } from '@/hooks/useReducedMotion';

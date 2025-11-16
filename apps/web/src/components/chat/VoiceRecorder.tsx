@@ -5,12 +5,12 @@ import {
   withTiming,
   withRepeat,
   withSequence,
+  MotionView,
 } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { Microphone, X, Check } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { toast } from 'sonner';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -245,8 +245,8 @@ function WaveformBar({ value }: { value: number }) {
   })) as AnimatedStyle;
 
   return (
-    <AnimatedView style={barStyle} className="flex-1 bg-primary rounded-full">
+    <MotionView style={barStyle} className="flex-1 bg-primary rounded-full">
       <div />
-    </AnimatedView>
+    </MotionView>
   );
 }

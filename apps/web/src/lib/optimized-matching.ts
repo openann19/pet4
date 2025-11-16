@@ -1,11 +1,7 @@
 import { memoize } from './performance-utils';
 import type { Pet } from './types';
 
-const _calculateCompatibilityScoreImpl = (pet1: Pet, pet2: Pet): number => {
-  let score = 0;
-  let factors = 0;
-
-  // Safe array access for personality
+function calculatePersonalityScore(pet1: Pet, pet2: Pet): { score: number; hasMatch: boolean } {
   if (
     pet1.personality &&
     Array.isArray(pet1.personality) &&
@@ -16,12 +12,14 @@ const _calculateCompatibilityScoreImpl = (pet1: Pet, pet2: Pet): number => {
       pet2.personality.includes(trait)
     ).length;
     if (personalityMatch > 0) {
-      score += (personalityMatch / Math.max(pet1.personality.length, pet2.personality.length)) * 30;
-      factors++;
+      const score = (personalityMatch / Math.max(pet1.personality.length, pet2.personality.length)) * 30;
+      return { score, hasMatch: true };
     }
   }
+  return { score: 0, hasMatch: false };
+}
 
-  // Safe array access for interests
+function calculateInterestsScore(pet1: Pet, pet2: Pet): { score: number; hasMatch: boolean } {
   if (
     pet1.interests &&
     Array.isArray(pet1.interests) &&
@@ -32,23 +30,27 @@ const _calculateCompatibilityScoreImpl = (pet1: Pet, pet2: Pet): number => {
       pet2.interests.includes(interest)
     ).length;
     if (interestsMatch > 0) {
-      score += (interestsMatch / Math.max(pet1.interests.length, pet2.interests.length)) * 25;
-      factors++;
+      const score = (interestsMatch / Math.max(pet1.interests.length, pet2.interests.length)) * 25;
+      return { score, hasMatch: true };
     }
   }
+  return { score: 0, hasMatch: false };
+}
 
+function calculateSizeScore(pet1: Pet, pet2: Pet): number {
+  const sizeOrder = ['small', 'medium', 'large', 'extra-large'];
   const sizeDiff = Math.abs(
-    ['small', 'medium', 'large', 'extra-large'].indexOf(pet1.size) -
-      ['small', 'medium', 'large', 'extra-large'].indexOf(pet2.size)
+    sizeOrder.indexOf(pet1.size) - sizeOrder.indexOf(pet2.size)
   );
-  score += (1 - sizeDiff / 3) * 20;
-  factors++;
+  return (1 - sizeDiff / 3) * 20;
+}
 
+function calculateAgeScore(pet1: Pet, pet2: Pet): number {
   const ageDiff = Math.abs(pet1.age - pet2.age);
-  score += Math.max(0, (1 - ageDiff / 10) * 15);
-  factors++;
+  return Math.max(0, (1 - ageDiff / 10) * 15);
+}
 
-  // Safe array access for lookingFor
+function calculateLookingForScore(pet1: Pet, pet2: Pet): { score: number; hasMatch: boolean } {
   if (
     pet1.lookingFor &&
     Array.isArray(pet1.lookingFor) &&
@@ -57,10 +59,34 @@ const _calculateCompatibilityScoreImpl = (pet1: Pet, pet2: Pet): number => {
   ) {
     const lookingForMatch = pet1.lookingFor.filter((goal) => pet2.lookingFor.includes(goal)).length;
     if (lookingForMatch > 0) {
-      score += (lookingForMatch / Math.max(pet1.lookingFor.length, pet2.lookingFor.length)) * 10;
-      factors++;
+      const score = (lookingForMatch / Math.max(pet1.lookingFor.length, pet2.lookingFor.length)) * 10;
+      return { score, hasMatch: true };
     }
   }
+  return { score: 0, hasMatch: false };
+}
+
+const _calculateCompatibilityScoreImpl = (pet1: Pet, pet2: Pet): number => {
+  let score = 0;
+  let factors = 0;
+
+  const personalityResult = calculatePersonalityScore(pet1, pet2);
+  score += personalityResult.score;
+  if (personalityResult.hasMatch) factors++;
+
+  const interestsResult = calculateInterestsScore(pet1, pet2);
+  score += interestsResult.score;
+  if (interestsResult.hasMatch) factors++;
+
+  score += calculateSizeScore(pet1, pet2);
+  factors++;
+
+  score += calculateAgeScore(pet1, pet2);
+  factors++;
+
+  const lookingForResult = calculateLookingForScore(pet1, pet2);
+  score += lookingForResult.score;
+  if (lookingForResult.hasMatch) factors++;
 
   return Math.round(factors > 0 ? score : 50);
 };

@@ -22,8 +22,6 @@ import {
   Sparkle,
   VideoCamera,
 } from '@phosphor-icons/react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import {
@@ -33,6 +31,8 @@ import {
   withTiming,
   withRepeat,
   withSequence,
+  MotionView,
+  Presence,
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -146,11 +146,11 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
       <PageTransitionWrapper key="matches-empty" direction="up">
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
           {emptyStatePresence.shouldRender && (
-            <AnimatedView
+            <MotionView
               style={[emptyHeartStyle, emptyStatePresence.animatedStyle]}
               className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
             >
-              <AnimatedView
+              <MotionView
                 style={
                   useAnimatedStyle(() => ({
                     transform: [
@@ -169,19 +169,19 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                 }
               >
                 <Heart size={48} className="text-primary" />
-              </AnimatedView>
-              <AnimatedView
+              </MotionView>
+              <MotionView
                 style={emptyPulseStyle}
                 className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-accent/20"
               />
-            </AnimatedView>
+            </MotionView>
           )}
-          <AnimatedView style={emptyTextStyle} className="text-2xl font-bold mb-2">
+          <MotionView style={emptyTextStyle} className="text-2xl font-bold mb-2">
             {t.matches.noMatches}
-          </AnimatedView>
-          <AnimatedView style={emptyTextStyle} className="text-muted-foreground mb-6 max-w-md">
+          </MotionView>
+          <MotionView style={emptyTextStyle} className="text-muted-foreground mb-6 max-w-md">
             {t.matches.noMatchesDesc}
-          </AnimatedView>
+          </MotionView>
         </div>
       </PageTransitionWrapper>
     );
@@ -199,7 +199,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
             </p>
           </div>
           {onNavigateToChat && matchedPets.length > 0 && (
-            <AnimatedView>
+            <MotionView>
               <Button
                 onClick={handleStartChat}
                 className="bg-gradient-to-r from-primary to-accent hover:shadow-xl transition-all"
@@ -208,7 +208,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                 <ChatCircle size={20} weight="fill" className="mr-2" />
                 {t.matches.startChat}
               </Button>
-            </AnimatedView>
+            </MotionView>
           )}
         </div>
 
@@ -227,7 +227,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
           ))}
         </div>
 
-        <AnimatedView>
+        <MotionView>
           {selectedPet && selectedMatch && (
             <EnhancedPetDetailView
               pet={selectedPet}
@@ -238,7 +238,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
               showActions={false}
             />
           )}
-        </AnimatedView>
+        </MotionView>
 
         <Dialog open={!!breakdownPet} onOpenChange={(open) => !open && setBreakdownPet(null)}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -262,7 +262,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
                         ? { trustProfile: breakdownPet.trustProfile }
                         : {})}
                       compatibilityScore={calculateCompatibility(userPet, breakdownPet)}
-                      matchReasons={breakdownPet.match.reasoning || []}
+                      matchReasons={breakdownPet.match.reasoning ?? []}
                     />
                   </TabsContent>
                   <TabsContent value="breakdown" className="mt-4">
@@ -294,7 +294,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
           </Suspense>
         )}
 
-        <AnimatedView>
+        <MotionView>
           {activeCall && (
             <CallInterface
               session={activeCall}
@@ -303,7 +303,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
               onToggleVideo={toggleVideo}
             />
           )}
-        </AnimatedView>
+        </MotionView>
       </div>
     </PageTransitionWrapper>
   );
@@ -329,9 +329,9 @@ function MatchCard({
   t,
 }: MatchCardProps): React.ReactElement {
   return (
-    <AnimatedView>
+    <MotionView>
       <div className="overflow-hidden rounded-3xl glass-strong premium-shadow backdrop-blur-2xl cursor-pointer group relative border border-white/20">
-        <AnimatedView className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <MotionView className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         <div
           className="relative h-64 overflow-hidden"
           onClick={() => {
@@ -341,13 +341,13 @@ function MatchCard({
         >
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
           <img src={pet.photo} alt={pet.name} className="w-full h-full object-cover" />
-          <AnimatedView className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-          <AnimatedView className="absolute top-3 right-3 glass-strong px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl border border-white/30 backdrop-blur-xl">
+          <MotionView className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <MotionView className="absolute top-3 right-3 glass-strong px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl border border-white/30 backdrop-blur-xl">
             <span className="bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent">
               {pet.match.compatibilityScore}%
             </span>
-          </AnimatedView>
-          <AnimatedView
+          </MotionView>
+          <MotionView
             onClick={(e) => {
               e.stopPropagation();
               haptics.trigger('selection');
@@ -356,7 +356,7 @@ function MatchCard({
             className="absolute bottom-3 right-3 w-11 h-11 glass-strong rounded-full flex items-center justify-center shadow-xl border border-white/30 backdrop-blur-xl"
           >
             <ChartBar size={20} className="text-white drop-shadow-lg" weight="bold" />
-          </AnimatedView>
+          </MotionView>
         </div>
 
         <div className="p-5 bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-md">
@@ -386,7 +386,7 @@ function MatchCard({
           )}
         </div>
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -403,7 +403,7 @@ function MatchCardActions({
 }: MatchCardActionsProps): React.ReactElement {
   return (
     <div className="flex items-center gap-1.5 shrink-0">
-      <AnimatedView
+      <MotionView
         onClick={(e) => {
           e.stopPropagation();
           haptics.trigger('selection');
@@ -413,8 +413,8 @@ function MatchCardActions({
         title="Schedule playdate"
       >
         <Calendar size={18} weight="fill" className="text-white" />
-      </AnimatedView>
-      <AnimatedView
+      </MotionView>
+      <MotionView
         onClick={(e) => {
           e.stopPropagation();
           haptics.trigger('medium');
@@ -424,9 +424,9 @@ function MatchCardActions({
         title="Start video call"
       >
         <VideoCamera size={18} weight="fill" className="text-white" />
-      </AnimatedView>
+      </MotionView>
       {onChat && (
-        <AnimatedView
+        <MotionView
           onClick={(e) => {
             e.stopPropagation();
             haptics.trigger('medium');
@@ -436,7 +436,7 @@ function MatchCardActions({
           title="Start chat"
         >
           <ChatCircle size={18} weight="fill" className="text-white" />
-        </AnimatedView>
+        </MotionView>
       )}
     </div>
   );

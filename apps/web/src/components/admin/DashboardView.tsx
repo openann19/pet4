@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 import { adminApi } from '@/api/admin-api';
 import { createLogger } from '@/lib/logger';
 import { PetProfileGenerator } from '@/components/admin/PetProfileGenerator';
@@ -16,7 +17,6 @@ import {
   Users,
   type Icon,
 } from '@phosphor-icons/react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEffect, useState } from 'react';
 
 interface Report {
@@ -182,7 +182,6 @@ export default function DashboardView() {
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">System overview and key metrics</p>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat) => {
           const Icon = stat.icon;
@@ -190,7 +189,7 @@ export default function DashboardView() {
             stat.trend === 'up' ? TrendUp : stat.trend === 'down' ? TrendDown : Clock;
 
           return (
-            <AnimatedView key={stat.title}>
+            <MotionView key={stat.title}>
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
@@ -204,15 +203,13 @@ export default function DashboardView() {
                   </div>
                 </CardContent>
               </Card>
-            </AnimatedView>
+            </MotionView>
           );
         })}
       </div>
-
       <div className="mb-6">
         <PetProfileGenerator />
       </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>

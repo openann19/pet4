@@ -67,7 +67,7 @@ export class MockRTCPeerConnection {
     return Promise.resolve();
   });
 
-  getConfiguration = vi.fn(() => ({}) as RTCConfiguration);
+  getConfiguration = vi.fn(() => (({}) as RTCConfiguration));
 
   setConfiguration = vi.fn((_configuration: RTCConfiguration) => {
     // Mock implementation
@@ -175,13 +175,13 @@ export class MockMediaStreamTrack {
     this.readyState = 'ended';
   });
 
-  getConstraints = vi.fn(() => ({}) as MediaTrackConstraints);
+  getConstraints = vi.fn(() => (({}) as MediaTrackConstraints));
 
   applyConstraints = vi.fn(() => Promise.resolve());
 
-  getCapabilities = vi.fn(() => ({}) as MediaTrackCapabilities);
+  getCapabilities = vi.fn(() => (({}) as MediaTrackCapabilities));
 
-  getSettings = vi.fn(() => ({}) as MediaTrackSettings);
+  getSettings = vi.fn(() => (({}) as MediaTrackSettings));
 
   addEventListener = vi.fn();
 
@@ -213,7 +213,7 @@ export function setupWebRTCMocks(): void {
       enumerateDevices: vi.fn(() => {
         return Promise.resolve([] as MediaDeviceInfo[]);
       }),
-      getSupportedConstraints: vi.fn(() => ({}) as MediaTrackSupportedConstraints),
+      getSupportedConstraints: vi.fn(() => (({}) as MediaTrackSupportedConstraints)),
     } satisfies Partial<MediaDevices>,
   });
 

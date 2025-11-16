@@ -20,7 +20,7 @@ export async function addNotification(
     type: newNotification.type,
     title: newNotification.title,
     body: newNotification.message,
-    data: newNotification.metadata || {},
+    data: newNotification.metadata ?? {},
     read: false,
     createdAt: new Date(newNotification.timestamp).toISOString(),
   });

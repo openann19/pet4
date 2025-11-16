@@ -21,7 +21,7 @@ export interface Match {
 }
 
 const API_BASE_URL =
-  (import.meta.env.VITE_API_URL) || 'https://api.petspark.app';
+  (import.meta.env.VITE_API_URL) ?? 'https://api.petspark.app';
 
 async function fetchMatches(): Promise<Match[]> {
   const response = await fetch(`${String(API_BASE_URL ?? '')}/api/matches`, {
@@ -30,7 +30,7 @@ async function fetchMatches(): Promise<Match[]> {
   });
   if (!response.ok) throw new Error('Failed to fetch matches');
   const data = await response.json();
-  return Array.isArray(data) ? data : data.items || [];
+  return Array.isArray(data) ? data : data.items ?? [];
 }
 
 export function useMatches(): UseQueryResult<Match[]> {

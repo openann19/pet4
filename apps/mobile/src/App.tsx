@@ -5,6 +5,9 @@ import { QueryProvider } from './providers/QueryProvider'
 import { colors } from './theme/colors'
 import { initBackgroundUploads } from './utils/background-uploads'
 import { createLogger } from './utils/logger'
+import { isAgeVerified } from './utils/age-verification'
+import { errorTracking } from './utils/error-tracking'
+import { AgeVerification } from './components/AgeVerification'
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -64,7 +67,7 @@ export default function App(): React.JSX.Element {
 
   // Show loading while checking age verification
   if (ageVerified === null) {
-    return null // Or show a loading screen
+    return <></>
   }
 
   return (

@@ -1,9 +1,8 @@
 'use client';
 
 
-import { useEffect } from 'react';
-import type { MotionValue } from 'framer-motion';
-import { useMotionValue, animate } from 'framer-motion';
+import { useEffect, useCallback } from 'react';
+import { useMotionValue, animate, type MotionValue } from '@petspark/motion';
 import { springConfigs, timingConfigs } from './transitions';
 import type { AnimatedStyle } from './animated-view';
 
@@ -63,7 +62,7 @@ export function useSlideAnimation(options: UseSlideAnimationOptions = {}): UseSl
   const translateX = useMotionValue(initialValues.x);
   const translateY = useMotionValue(initialValues.y);
 
-  const slideIn = () => {
+  const slideIn = useCallback(() => {
     if (!enabled) return;
     if (useSpring) {
       animate(translateX, 0, { type: 'spring', ...springConfigs.smooth });
@@ -72,12 +71,12 @@ export function useSlideAnimation(options: UseSlideAnimationOptions = {}): UseSl
       animate(translateX, 0, { duration: (duration ?? 300) / 1000 });
       animate(translateY, 0, { duration: (duration ?? 300) / 1000 });
     }
-  };
+  }, [enabled, useSpring, translateX, translateY, duration]);
 
-  const slideOut = () => {
+  const slideOut = useCallback(() => {
     if (!enabled) return;
-    const targetX = direction === 'left' ? -distance : direction === 'right' ? distance : 0;
-    const targetY = direction === 'up' ? -distance : direction === 'down' ? distance : 0;
+    const targetX = direction === 'left' ? -distance : direction === 'right' ? distance : 0;                                                                    
+    const targetY = direction === 'up' ? -distance : direction === 'down' ? distance : 0;                                                                       
 
     if (useSpring) {
       animate(translateX, targetX, { type: 'spring', ...springConfigs.smooth });
@@ -86,16 +85,16 @@ export function useSlideAnimation(options: UseSlideAnimationOptions = {}): UseSl
       animate(translateX, targetX, { duration: (duration ?? 300) / 1000 });
       animate(translateY, targetY, { duration: (duration ?? 300) / 1000 });
     }
-  };
+  }, [enabled, useSpring, direction, distance, translateX, translateY, duration]);
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     const isVisible = translateX.get() === 0 && translateY.get() === 0;
     if (isVisible) {
       slideOut();
     } else {
       slideIn();
     }
-  };
+  }, [translateX, translateY, slideIn, slideOut]);
 
   useEffect(() => {
     if (!enabled) {
@@ -108,8 +107,7 @@ export function useSlideAnimation(options: UseSlideAnimationOptions = {}): UseSl
     } else {
       slideOut();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, initial]);
+  }, [enabled, initial, slideIn, slideOut, translateX, translateY]);
 
   const animatedStyle: AnimatedStyle = {
     transform: [

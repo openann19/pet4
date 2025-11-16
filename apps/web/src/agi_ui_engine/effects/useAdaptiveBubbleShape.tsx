@@ -56,7 +56,7 @@ export function useAdaptiveBubbleShape(
     return 16;
   }, [text, enabled, theme.adaptiveMood]);
 
-  const radiusValue = useSharedValue(16);
+  const radiusValue = useSharedValue<number>(16);
 
   if (enabled && theme.adaptiveMood) {
     radiusValue.value = withSpring(borderRadius, springConfigs.smooth);

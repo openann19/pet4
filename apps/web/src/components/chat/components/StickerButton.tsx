@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Sticker Button Component
  *
@@ -5,7 +6,6 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
 import { useTargetSize } from '@/hooks/use-target-size';
 
@@ -31,7 +31,7 @@ export function StickerButton({ sticker, onSelect }: StickerButtonProps): JSX.El
 
   return (
     <div ref={containerRef}>
-      <AnimatedView
+      <MotionView
         style={hover.animatedStyle}
         onMouseEnter={hover.handleMouseEnter}
         onMouseLeave={hover.handleMouseLeave}
@@ -43,7 +43,7 @@ export function StickerButton({ sticker, onSelect }: StickerButtonProps): JSX.El
         tabIndex={0}
       >
         {sticker.emoji}
-      </AnimatedView>
+      </MotionView>
     </div>
   );
 }

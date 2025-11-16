@@ -8,9 +8,7 @@ export function addChangelogEntry(
   version: string,
   changes: string[]
 ): void {
-  if (!entry.changelog) {
-    entry.changelog = []
-  }
+  entry.changelog ??= []
 
   entry.changelog.push({
     version,

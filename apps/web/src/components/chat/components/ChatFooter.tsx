@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Chat Footer Component
  *
@@ -9,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { StickerButton } from './StickerButton';
@@ -68,7 +68,7 @@ export function ChatFooter({
     const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
   return (
-    <AnimatedView
+    <MotionView
       style={animation.animatedStyle}
       className="glass-strong border-t border-white/20 p-4 shadow-2xl backdrop-blur-2xl space-y-3"
     >
@@ -87,7 +87,6 @@ export function ChatFooter({
           Location
         </Button>
       </div>
-
       {showTemplates && (
         <AnimatePresence>
           <TemplatePanel
@@ -105,7 +104,6 @@ export function ChatFooter({
           />
         </AnimatePresence>
       )}
-
       <div className="flex items-end gap-2">
         <Popover open={showStickers} onOpenChange={setShowStickers}>
           <PopoverTrigger asChild>
@@ -188,6 +186,6 @@ export function ChatFooter({
           />
         )}
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }

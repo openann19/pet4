@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Ultra Enhanced Card
  * Card with 3D transforms, hover effects, and smooth animations
@@ -10,7 +11,6 @@ import {
   useParallaxTilt,
   useUltraCardReveal,
 } from '@/effects/reanimated';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
 import { type HTMLAttributes, type ReactNode } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -92,13 +92,13 @@ export function UltraCard({
       onMouseMove={enableMagnetic ? magnetic.handleMouseMove : undefined}
       className="inline-block"
     >
-      <AnimatedView style={combinedStyle}>
+      <MotionView style={combinedStyle}>
         <div
           onMouseMove={enableTilt ? handleTiltMove : undefined}
           onMouseLeave={enableTilt ? tilt.handleLeave : undefined}
           className="relative"
         >
-          <AnimatedView
+          <MotionView
             style={enableHoverLift ? hoverLift.animatedStyle : enableTilt ? tilt.animatedStyle : {}}
           >
             <div
@@ -110,15 +110,15 @@ export function UltraCard({
               {...props}
             >
               {enableGlow && (
-                <AnimatedView style={glow.animatedStyle}>
+                <MotionView style={glow.animatedStyle}>
                   <div className="absolute inset-0 rounded-xl pointer-events-none" />
-                </AnimatedView>
+                </MotionView>
               )}
               <div className="relative z-10">{children}</div>
             </div>
-          </AnimatedView>
+          </MotionView>
         </div>
-      </AnimatedView>
+      </MotionView>
     </div>
   );
 }

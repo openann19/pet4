@@ -1,8 +1,6 @@
-'use client';
-
+'use client';;
 import React, { useCallback, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -142,7 +140,7 @@ export function Stepper({
   return (
     <div className={cn('w-full', className)}>
       <div className="relative flex items-center justify-between mb-4">
-        <AnimatedView
+        <MotionView
           style={progressStyle}
           className={cn(
             'absolute top-5 left-0 h-0.5 bg-(--primary)',
@@ -150,7 +148,7 @@ export function Stepper({
           )}
         >
           <div />
-        </AnimatedView>
+        </MotionView>
         <div className="absolute top-5 left-0 right-0 h-0.5 bg-(--surface)" />
 
         {steps.map((step, index) => {

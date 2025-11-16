@@ -1,8 +1,9 @@
-'use client';
+'use client';;
+import { MotionView } from "@petspark/motion";
 
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
-import { AnimatedView, useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
+import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { usePageTransitionWrapper } from '@/effects/reanimated/use-page-transition-wrapper';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
@@ -50,8 +51,8 @@ export function PageTransitionWrapper({
   }
 
   return (
-    <AnimatedView style={animatedStyleValue} className={wrapperClassName}>
+    <MotionView style={animatedStyleValue} className={wrapperClassName}>
       {children}
-    </AnimatedView>
+    </MotionView>
   );
 }

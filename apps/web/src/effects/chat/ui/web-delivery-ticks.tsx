@@ -7,8 +7,9 @@ import {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from '@petspark/motion'
-import { AnimatedView, type AnimatedStyle } from '@/effects/reanimated/animated-view'
+  MotionView,
+} from '@petspark/motion';
+import { type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '../core/reduced-motion'
 
@@ -61,18 +62,18 @@ export function WebDeliveryTicks({ state, className }: WebDeliveryTicksProps): R
   }) as AnimatedStyle
 
   return (
-    <AnimatedView
+    <MotionView
       style={containerStyle}
       className={cn('inline-flex items-center gap-1 text-xs font-medium', className)}
     >
-      <AnimatedView style={firstTickStyle} className="inline-flex">
+      <MotionView style={firstTickStyle} className="inline-flex">
         <span>✓</span>
-      </AnimatedView>
-      <AnimatedView style={secondTickStyle} className="inline-flex">
+      </MotionView>
+      <MotionView style={secondTickStyle} className="inline-flex">
         <span>✓</span>
-      </AnimatedView>
-    </AnimatedView>
-  )
+      </MotionView>
+    </MotionView>
+  );
 }
 
 export default WebDeliveryTicks

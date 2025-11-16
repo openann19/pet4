@@ -21,32 +21,32 @@ const DEFAULT_PROVIDER_CONFIG: MapProviderConfig = {
 };
 
 function getEnvConfig(): MapProviderConfig {
-  const env = import.meta.env.MODE || 'development';
+  const env = import.meta.env.MODE ?? 'development';
 
   const configs: Record<string, Partial<MapProviderConfig>> = {
     development: {
-      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY || '',
-      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY || '',
+      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL ?? DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
+      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY ?? '',
+      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY ?? '',
       GEOCODING_ENDPOINT:
-        import.meta.env.VITE_GEOCODING_ENDPOINT || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER || 'maplibre') as 'maplibre' | 'mapbox',
+        import.meta.env.VITE_GEOCODING_ENDPOINT ?? DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER ?? 'maplibre') as 'maplibre' | 'mapbox',
     },
     staging: {
-      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY || '',
-      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY || '',
+      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL ?? DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
+      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY ?? '',
+      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY ?? '',
       GEOCODING_ENDPOINT:
-        import.meta.env.VITE_GEOCODING_ENDPOINT || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER || 'maplibre') as 'maplibre' | 'mapbox',
+        import.meta.env.VITE_GEOCODING_ENDPOINT ?? DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER ?? 'maplibre') as 'maplibre' | 'mapbox',
     },
     production: {
-      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
-      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY || '',
-      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY || '',
+      MAP_STYLE_URL: import.meta.env.VITE_MAP_STYLE_URL ?? DEFAULT_PROVIDER_CONFIG.MAP_STYLE_URL,
+      MAP_TILES_API_KEY: import.meta.env.VITE_MAP_TILES_API_KEY ?? '',
+      GEOCODING_API_KEY: import.meta.env.VITE_GEOCODING_API_KEY ?? '',
       GEOCODING_ENDPOINT:
-        import.meta.env.VITE_GEOCODING_ENDPOINT || DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
-      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER || 'maplibre') as 'maplibre' | 'mapbox',
+        import.meta.env.VITE_GEOCODING_ENDPOINT ?? DEFAULT_PROVIDER_CONFIG.GEOCODING_ENDPOINT,
+      PROVIDER: (import.meta.env.VITE_MAP_PROVIDER ?? 'maplibre') as 'maplibre' | 'mapbox',
     },
   };
 
@@ -64,7 +64,7 @@ export function getAdminMapProviderConfig(): MapProviderConfig {
     const stored = localStorage.getItem('admin-map-provider-config');
     if (isTruthy(stored)) {
       cachedAdminConfig = JSON.parse(stored);
-      return cachedAdminConfig || getEnvConfig();
+      return cachedAdminConfig ?? getEnvConfig();
     }
   } catch {
     return getEnvConfig();
@@ -96,7 +96,7 @@ export function useMapProviderConfig(): {
     getEnvConfig()
   );
 
-  const config = adminConfig || getEnvConfig();
+  const config = adminConfig ?? getEnvConfig();
   const envConfig = getEnvConfig();
 
   const updateConfig = (updates: Partial<MapProviderConfig>): void => {

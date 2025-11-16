@@ -11,24 +11,21 @@ import {
   withSequence,
   interpolate,
   animate,
+  MotionView,
+  usePressMotion,
 } from '@petspark/motion';
-import { AnimatedView, type AnimatedStyle as ViewAnimatedStyle } from '@/effects/reanimated/animated-view';
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import type { Transition } from 'framer-motion';
+import { type AnimatedStyle as ViewAnimatedStyle } from '@/effects/reanimated/animated-view';                                                                   
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
-import { getTypographyClasses } from '@/lib/typography';
-import type { MotionValue, Transition } from 'framer-motion';
+import { Button, type buttonVariants } from '@/components/ui/button';
+import type { VariantProps } from 'class-variance-authority';
 
 const logger = createLogger('EnhancedButton');
 
-const runAnimation = (
-  value: MotionValue<number>,
-  animation: { target: number; transition?: Transition }
-) => animate(value, animation.target, animation.transition);
+// Removed runAnimation helper - using animate directly
 
 export interface EnhancedButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
@@ -62,14 +59,11 @@ export function EnhancedButton({
   disabled,
   ...props
 }: EnhancedButtonProps): React.JSX.Element {
-  const reducedMotion = usePrefersReducedMotion();
-  const hoverLift = useHoverLift({
-    scale: reducedMotion ? 1 : 1.05,
-    translateY: reducedMotion ? 0 : -4,
-  });
-  const bounceOnTap = useBounceOnTap({
-    scale: reducedMotion ? 1 : 0.96,
-    hapticFeedback: false,
+  // Use canonical press motion hook
+  const pressMotion = usePressMotion({
+    scaleOnPress: 0.96,
+    scaleOnHover: 1.05,
+    enableHover: enableHoverLift,
   });
 
   // Glow effect
@@ -96,16 +90,7 @@ export function EnhancedButton({
     return glowColors[variant] ?? glowColors.default;
   }, [glowColor, variant]);
 
-  // Combined animation style
-  const combinedAnimatedStyle = useAnimatedStyle(() => {
-    const hoverScale = enableHoverLift ? hoverLift.scale.get() : 1;
-    const tapScale = enableBounceOnTap ? bounceOnTap.scale.get() : 1;
-    const hoverY = enableHoverLift ? hoverLift.translateY.get() : 0;
-
-    return {
-      transform: [{ scale: hoverScale * tapScale }, { translateY: hoverY }],
-    };
-  }) as ViewAnimatedStyle;
+  // Note: Press motion is handled via motionProps, keeping glow and loading animations separate
 
   // Glow animation style
   const glowOverlayStyle = useAnimatedStyle(() => {
@@ -133,10 +118,9 @@ export function EnhancedButton({
         duration: 1000,
         easing: (t) => t,
       });
-      const repeatTransition = withRepeat(timingTransition, -1, false);
-      runAnimation(loadingRotation, repeatTransition);
+      loadingRotation.value = withRepeat(timingTransition, -1, false) as { target: number; transition: Transition };
     } else {
-      runAnimation(loadingRotation, { target: 0, transition: { duration: 0 } });
+      loadingRotation.set(0);
     }
   }, [loading, loadingRotation]);
 
@@ -146,21 +130,18 @@ export function EnhancedButton({
 
   // Start glow animation when enabled
   useEffect(() => {
-    if (enableGlow && !reducedMotion) {
+    if (enableGlow) {
       const timingTransition = withTiming(1, {
         duration: 2000,
         easing: (t) => t,
       });
-      const repeatTransition = withRepeat(timingTransition, -1, true);
-      runAnimation(glowProgress, repeatTransition);
-      const opacityTransition = withSpring(1, springConfigs.smooth);
-      runAnimation(glowOpacity, opacityTransition);
+      glowProgress.value = withRepeat(timingTransition, -1, true) as { target: number; transition: Transition };
+      glowOpacity.value = withSpring(1, springConfigs.smooth) as { target: 1; transition: Transition };
     } else {
-      const opacityTransition = withTiming(0, timingConfigs.fast);
-      runAnimation(glowOpacity, opacityTransition);
+      glowOpacity.value = withTiming(0, timingConfigs.fast) as { target: 0; transition: Transition };
       glowProgress.set(0);
     }
-  }, [enableGlow, reducedMotion, glowOpacity, glowProgress]);
+  }, [enableGlow, glowOpacity, glowProgress]);
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLButtonElement>) => {
@@ -173,17 +154,12 @@ export function EnhancedButton({
           haptics.impact('light');
         }
 
-        if (enableBounceOnTap) {
-          bounceOnTap.handlePress();
-        }
-
         // Trigger glow pulse on click
-        if (enableGlow && !reducedMotion) {
-          const sequence = withSequence(
-            withSpring(1, springConfigs.bouncy),
-            withSpring(0.6, springConfigs.smooth)
-          );
-          runAnimation(glowOpacity, sequence);
+        if (enableGlow) {
+          glowOpacity.value = withSpring(1, springConfigs.bouncy) as { target: 1; transition: Transition };
+          setTimeout(() => {
+            glowOpacity.value = withSpring(0.6, springConfigs.smooth) as { target: 0.6; transition: Transition };
+          }, 200);
         }
 
         onClick?.(e);
@@ -196,10 +172,7 @@ export function EnhancedButton({
       disabled,
       loading,
       hapticFeedback,
-      enableBounceOnTap,
       enableGlow,
-      reducedMotion,
-      bounceOnTap,
       glowOpacity,
       onClick,
       variant,
@@ -208,92 +181,46 @@ export function EnhancedButton({
   );
 
   const handleMouseEnter = useCallback(() => {
-    if (disabled || loading || reducedMotion) {
+    if (disabled || loading) {
       return;
     }
 
-    if (enableHoverLift) {
-      hoverLift.handleEnter();
-    }
-
     if (enableGlow) {
-      const opacityTransition = withSpring(1, springConfigs.smooth);
-      runAnimation(glowOpacity, opacityTransition);
+      glowOpacity.value = withSpring(1, springConfigs.smooth) as { target: 1; transition: Transition };
     }
-  }, [disabled, loading, reducedMotion, enableHoverLift, enableGlow, hoverLift, glowOpacity]);
+  }, [disabled, loading, enableGlow, glowOpacity]);
 
   const handleMouseLeave = useCallback(() => {
-    if (disabled || loading || reducedMotion) {
+    if (disabled || loading) {
       return;
     }
 
-    if (enableHoverLift) {
-      hoverLift.handleLeave();
-    }
-
     if (enableGlow) {
-      const opacityTransition = withSpring(0.3, springConfigs.smooth);
-      runAnimation(glowOpacity, opacityTransition);
+      glowOpacity.value = withSpring(0.3, springConfigs.smooth) as { target: 0.3; transition: Transition };
     }
-  }, [disabled, loading, reducedMotion, enableHoverLift, enableGlow, hoverLift, glowOpacity]);
+  }, [disabled, loading, enableGlow, glowOpacity]);
 
-  // Variant styles using design tokens
-  const variantClasses = useMemo(() => {
-    const focusRing = 'focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring';
-    const disabledState = 'disabled:bg-muted/40 disabled:text-muted-foreground/70 disabled:shadow-none';
-
-    const variants: Record<NonNullable<EnhancedButtonProps['variant']>, string> = {
-      default:
-        cn(
-          'group relative inline-flex min-h-[52px] items-center justify-center overflow-hidden rounded-2xl bg-primary px-6 py-3 text-primary-foreground shadow-[0px_8px_20px_rgba(255,113,91,0.35)] transition-transform duration-300 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0px_15px_35px_rgba(255,113,91,0.35)]',
-          focusRing
-        ),
-      destructive:
-        cn('bg-destructive text-destructive-foreground shadow-lg hover:shadow-xl hover:bg-destructive/90', focusRing, 'focus-visible:ring-destructive'),
-      outline: cn('border border-border bg-transparent text-foreground shadow-sm hover:bg-muted/60 hover:text-foreground', focusRing),
-      secondary:
-        cn('bg-secondary text-secondary-foreground shadow-lg hover:shadow-xl hover:bg-secondary/90', focusRing),
-      ghost: cn('bg-transparent text-foreground hover:bg-muted/40', focusRing),
-      link: cn('text-primary underline-offset-4 hover:underline bg-transparent shadow-none px-0', focusRing),
-    };
-
-    return cn(variants[variant] ?? variants.default, disabledState);
-  }, [variant]);
-
-  // Size styles with typography tokens
-  const sizeClasses = useMemo(() => {
-    const sizes: Record<NonNullable<EnhancedButtonProps['size']>, string> = {
-      default: cn('h-11 px-4 py-2 min-h-[44px] min-w-[44px]', getTypographyClasses('body')),
-      sm: cn('h-9 px-3 py-1.5 rounded-lg gap-1.5 min-h-[44px] min-w-[44px]', getTypographyClasses('bodyMuted')),
-      lg: cn('h-14 px-6 py-3 rounded-xl min-h-[44px] min-w-[44px]', getTypographyClasses('h3')),
-      icon: 'size-11 min-w-[44px] min-h-[44px] p-0',
-    };
-
-    return sizes[size] ?? sizes.default;
-  }, [size]);
+  // Map variant to Button variant
+  const buttonVariant: VariantProps<typeof buttonVariants>['variant'] = variant;
 
   const isDisabled = disabled || loading;
 
-  // Determine glow color based on variant
+  // Compose core Button with enhanced features
   return (
-    <AnimatedView
-      style={combinedAnimatedStyle}
+    <MotionView
+      {...(pressMotion.motionProps as { whileHover?: { scale?: number; opacity?: number }; whileTap?: { scale?: number; opacity?: number }; transition?: Transition })}
       className="inline-block"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <button
-        type="button"
+      <Button
+        variant={buttonVariant}
+        size={size}
         onClick={handleClick}
         disabled={isDisabled}
         className={cn(
-          'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-2xl font-medium',
-          'disabled:pointer-events-none disabled:cursor-default',
-          'outline-none',
-          '[&_svg]:pointer-events-none [&_svg:not([class*="size-"])]:size-5 shrink-0 [&_svg]:shrink-0',
           'relative overflow-hidden',
-          variantClasses,
-          sizeClasses,
+          enableGlow && 'shadow-lg',
           className
         )}
         aria-busy={loading}
@@ -301,28 +228,28 @@ export function EnhancedButton({
         {...props}
       >
         {enableGlow && (
-          <AnimatedView
-            className="absolute inset-0 pointer-events-none rounded-2xl"
-            style={glowOverlayStyle}
+          <MotionView
+            className="absolute inset-0 pointer-events-none rounded-xl"
+            style={glowOverlayStyle as React.CSSProperties}
           />
         )}
 
         <span className="relative z-10 flex items-center justify-center gap-2">
           {loading ? (
-            <AnimatedView
-              className="h-5 w-5 rounded-full border-2 border-current border-t-transparent"
-              style={loadingSpinnerStyle}
+            <MotionView
+              className="h-5 w-5 rounded-full border-2 border-current border-t-transparent"                                                                     
+              style={loadingSpinnerStyle as React.CSSProperties}
               aria-hidden="true"
             />
           ) : (
             <>
-              {icon && iconPosition === 'left' && <span className="shrink-0">{icon}</span>}
+              {icon && iconPosition === 'left' && <span className="shrink-0">{icon}</span>}                                                                     
               {children}
-              {icon && iconPosition === 'right' && <span className="shrink-0">{icon}</span>}
+              {icon && iconPosition === 'right' && <span className="shrink-0">{icon}</span>}                                                                    
             </>
           )}
         </span>
-      </button>
-    </AnimatedView>
+      </Button>
+    </MotionView>
   );
 }

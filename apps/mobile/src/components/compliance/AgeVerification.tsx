@@ -6,7 +6,7 @@
 
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, Alert, TextInput } from 'react-native'
-import { EnhancedButton } from '@mobile/components/enhanced/EnhancedButton.native'
+import { EnhancedButton } from '@mobile/components/enhanced/EnhancedButton'
 import { createLogger } from '@mobile/utils/logger'
 import * as SecureStore from 'expo-secure-store'
 

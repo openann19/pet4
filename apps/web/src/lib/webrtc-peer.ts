@@ -9,7 +9,7 @@ import SimplePeer from 'simple-peer';
 import { createLogger } from './logger';
 import type { WebRTCSignalData } from './realtime';
 import { realtime } from './realtime';
-import { isTruthy } from '@petspark/shared';
+
 
 const logger = createLogger('WebRTCPeer');
 

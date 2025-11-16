@@ -1,3 +1,6 @@
+import { MotionView } from "@petspark/motion";
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { kycApi } from '@/api/kyc-api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,7 +28,6 @@ import {
   Warning,
   XCircle,
 } from '@phosphor-icons/react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -60,7 +62,7 @@ export function KYCManagement() {
   });
 
   // Empty state component
-  function EmptyState() {
+  function _EmptyState() {
     const isEmpty = filteredSessions.length === 0
     const presence = useAnimatePresence({ 
       isVisible: isEmpty,
@@ -71,15 +73,15 @@ export function KYCManagement() {
     if (!presence.shouldRender) return null
     
     return (
-      <AnimatedView style={presence.animatedStyle} className="text-center py-12">
+      <MotionView style={presence.animatedStyle} className="text-center py-12">
         <ShieldCheck size={48} className="mx-auto text-muted-foreground mb-4" />
         <p className="text-muted-foreground">No sessions in this category</p>
-      </AnimatedView>
-    )
+      </MotionView>
+    );
   }
 
   // Session card component
-  function SessionCard({ session, index }: { session: KYCSubmission; index: number }) {
+  function _SessionCard({ session, index }: { session: KYCSubmission; index: number }) {
     const entry = useEntryAnimation({ 
       initialY: 20, 
       initialOpacity: 0,
@@ -87,7 +89,7 @@ export function KYCManagement() {
     })
     
     return (
-      <AnimatedView style={entry.animatedStyle}>
+      <MotionView initial="hidden" animate="visible" variants={entry.variants}>
         <Card
           className="p-4 cursor-pointer hover:bg-accent/50 transition-colors"
           onClick={() => { handleSessionClick(session); }}
@@ -138,8 +140,8 @@ export function KYCManagement() {
             <ArrowRight size={20} className="text-muted-foreground shrink-0" />
           </div>
         </Card>
-      </AnimatedView>
-    )
+      </MotionView>
+    );
   }
 
   const handleSessionClick = (session: KYCSubmission) => {
@@ -243,7 +245,6 @@ export function KYCManagement() {
           Refresh
         </Button>
       </div>
-
       <div className="grid grid-cols-5 gap-4">
         <Card className="p-4">
           <div className="text-sm text-muted-foreground">Total Sessions</div>
@@ -279,7 +280,6 @@ export function KYCManagement() {
           </div>
         </Card>
       </div>
-
       <Tabs
         value={selectedTab}
         onValueChange={(v) => setSelectedTab(v as typeof selectedTab)}
@@ -298,13 +298,13 @@ export function KYCManagement() {
           <ScrollArea className="h-150">
             <div className="space-y-4">
               {filteredSessions.length === 0 ? (
-                <AnimatedView className="text-center py-12">
+                <MotionView className="text-center py-12">
                   <ShieldCheck size={48} className="mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">No sessions in this category</p>
-                </AnimatedView>
+                </MotionView>
               ) : (
                 filteredSessions.map((session) => (
-                  <AnimatedView key={session.id} layout>
+                  <MotionView key={session.id} layout>
                     <Card
                       className="p-4 cursor-pointer hover:bg-accent/50 transition-colors"
                       onClick={() => handleSessionClick(session)}
@@ -359,14 +359,13 @@ export function KYCManagement() {
                         <ArrowRight size={20} className="text-muted-foreground shrink-0" />
                       </div>
                     </Card>
-                  </AnimatedView>
+                  </MotionView>
                 ))
               )}
             </div>
           </ScrollArea>
         </TabsContent>
       </Tabs>
-
       <Dialog
         open={selectedSession !== null}
         onOpenChange={() => {

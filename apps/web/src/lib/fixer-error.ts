@@ -1,4 +1,3 @@
-import { isTruthy, isDefined } from '@petspark/shared';
 
 /**
  * FixerError - Structured error class for application errors with context metadata

@@ -5,9 +5,8 @@
  */
 
 import { useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, MotionView } from '@petspark/motion';
 import { PaperPlaneRight } from '@phosphor-icons/react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -38,8 +37,8 @@ export function SendButtonIcon({ isActive = false }: SendButtonIconProps): JSX.E
   }, [isActive, translateX, scale]);
 
   return (
-    <AnimatedView style={iconStyle}>
+    <MotionView style={iconStyle}>
       <PaperPlaneRight size={20} weight="fill" />
-    </AnimatedView>
+    </MotionView>
   );
 }

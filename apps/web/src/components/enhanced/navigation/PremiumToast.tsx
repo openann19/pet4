@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { useMotionValue, animate, MotionView } from '@petspark/motion';
-import { useTransform } from 'framer-motion';
+import { useMotionValue, animate, MotionView, useTransform } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import { X, CheckCircle, AlertTriangle, Info, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';

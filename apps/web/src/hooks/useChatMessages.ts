@@ -75,7 +75,7 @@ export function useChatMessages({
         status: msg.status || 'sent',
         timestamp: msg.createdAt,
         createdAt: msg.createdAt,
-        reactions: msg.reactions || [],
+        reactions: msg.reactions ?? [],
       };
       // senderName and senderAvatar are optional, omit if not provided
       return chatMessage;
@@ -83,7 +83,7 @@ export function useChatMessages({
   }, [messagesPages, roomId]);
 
   const messageGroups = useMemo(() => {
-    return groupMessagesByDate(messages || []);
+    return groupMessagesByDate(messages ?? []);
   }, [messages]);
 
   const sendMessage = useCallback(
@@ -119,7 +119,7 @@ export function useChatMessages({
           }
           return {
             ...old,
-            pages: [[newMessage, ...(old.pages[0] || [])]],
+            pages: [[newMessage, ...(old.pages[0] ?? [])]],
           };
         }
       );

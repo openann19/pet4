@@ -4,15 +4,32 @@
  * Provides locale-aware formatting for dates, numbers, currency, and more
  */
 
-import type { Language, RegionalSettings } from './i18n/core/types'
+import type { Language } from './i18n/core/types'
 import { createLogger } from './logger'
+import { toErrorLike } from './utils'
 
 const logger = createLogger('RegionalFormatting')
 
 /**
+ * Regional settings interface
+ */
+export interface RegionalSettings {
+  readonly language: string
+  readonly locale: string
+  readonly currency: string
+  readonly dateFormat: string
+  readonly timeFormat: string
+  readonly numberFormat: {
+    readonly decimalSeparator: string
+    readonly thousandsSeparator: string
+  }
+  readonly rtl: boolean
+}
+
+/**
  * Regional settings per language
  */
-const REGIONAL_SETTINGS: Record<Language, RegionalSettings> = {
+const REGIONAL_SETTINGS: Record<string, RegionalSettings> = {
   en: {
     language: 'en',
     locale: 'en-US',
@@ -163,7 +180,12 @@ const REGIONAL_SETTINGS: Record<Language, RegionalSettings> = {
  * Get regional settings for a language
  */
 export function getRegionalSettings(language: Language): RegionalSettings {
-  return REGIONAL_SETTINGS[language] ?? REGIONAL_SETTINGS.en
+  const settings = REGIONAL_SETTINGS[language as keyof typeof REGIONAL_SETTINGS];
+  if (settings) {
+    return settings;
+  }
+  // Fallback to English settings (guaranteed to exist)
+  return REGIONAL_SETTINGS.en!;
 }
 
 /**
@@ -189,7 +211,8 @@ export function formatCurrency(
       maximumFractionDigits: options?.maximumFractionDigits ?? 2
     }).format(amount)
   } catch (error) {
-    logger.warn('Failed to format currency, using fallback', { amount, language, error })
+    const normalized = toErrorLike(error);
+    logger.warn('Failed to format currency, using fallback', { amount, language, error: normalized.message });
     return `${currency} ${amount.toFixed(2)}`
   }
 }
@@ -213,7 +236,8 @@ export function formatNumber(
       maximumFractionDigits: options?.maximumFractionDigits ?? 2
     }).format(value)
   } catch (error) {
-    logger.warn('Failed to format number, using fallback', { value, language, error })
+    const normalized = toErrorLike(error);
+    logger.warn('Failed to format number, using fallback', { value, language, error: normalized.message });
     return value.toString()
   }
 }
@@ -246,7 +270,8 @@ export function formatDate(
 
     return new Intl.DateTimeFormat(settings.locale, formatOptions).format(dateObj)
   } catch (error) {
-    logger.warn('Failed to format date, using fallback', { date, language, error })
+    const normalized = toErrorLike(error);
+    logger.warn('Failed to format date, using fallback', { date, language, error: normalized.message });
     return dateObj.toLocaleDateString()
   }
 }
@@ -286,7 +311,8 @@ export function formatRelativeTime(
 
     return rtf.format(0, 'second')
   } catch (error) {
-    logger.warn('Failed to format relative time, using fallback', { date, language, error })
+    const normalized = toErrorLike(error);
+    logger.warn('Failed to format relative time, using fallback', { date, language, error: normalized.message });
     return 'just now'
   }
 }

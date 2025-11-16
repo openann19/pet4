@@ -1,4 +1,3 @@
-import { isTruthy, isDefined } from '@petspark/shared';
 
 /**
  * Error Reporting (Sentry/Crashlytics)
@@ -37,7 +36,7 @@ export function initErrorReporting(config: ErrorReportingConfig = {}): void {
         Sentry.init({
           dsn,
           environment: config.environment ?? import.meta.env.MODE ?? 'production',
-          release: config.release ?? import.meta.env.VITE_APP_VERSION,
+          release: config.release ?? (import.meta.env.VITE_APP_VERSION as string | undefined),
           integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()],
           tracesSampleRate: import.meta.env.PROD ? 0.1 : 1.0,
           replaysSessionSampleRate: import.meta.env.PROD ? 0.1 : 1.0,

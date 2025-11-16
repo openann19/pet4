@@ -150,9 +150,7 @@ export function KeyboardShortcuts({
         return shortcuts.reduce(
             (acc, shortcut) => {
                 const category = shortcut.category ?? 'Other';
-                if (!acc[category]) {
-                    acc[category] = [];
-                }
+                acc[category] ??= [];
                 acc[category].push(shortcut);
                 return acc;
             },

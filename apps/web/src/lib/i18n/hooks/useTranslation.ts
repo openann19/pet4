@@ -200,7 +200,7 @@ export function useLazyTranslation(lang: Language = 'en'): UseLazyTranslationRet
 
   const fallbackModule = useMemo(() => translations.en, []);
   const legacyModule = useMemo(
-    () => translations[language] || fallbackModule,
+    () => translations[language] ?? fallbackModule,
     [language, fallbackModule]
   );
 

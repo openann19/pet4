@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import {
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
   withTiming,
   withSequence,
+  MotionView,
+  Presence,
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { useAnimatePresence } from '@/effects/reanimated';
 import { Sparkle, Eye, ArrowRight } from '@phosphor-icons/react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -142,12 +143,12 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
   return (
     <Card className="p-6 bg-linear-to-br from-primary/5 via-accent/5 to-secondary/5">
       <div className="flex items-start gap-4 mb-6">
-        <AnimatedView
+        <MotionView
           style={iconStyle}
           className="w-12 h-12 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center shrink-0"
         >
           <Eye size={24} weight="fill" className="text-white" />
-        </AnimatedView>
+        </MotionView>
         <div className="flex-1">
           <h3 className="text-xl font-bold mb-1">AI Visual Analysis Demo</h3>
           <p className="text-sm text-muted-foreground">
@@ -155,10 +156,9 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
           </p>
         </div>
       </div>
-
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <AnimatedView
+          <MotionView
             key={selectedIndex}
             style={photoStyle}
             className="relative aspect-square rounded-lg overflow-hidden bg-muted mb-4"
@@ -174,7 +174,7 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
                 Sample {selectedIndex + 1}/{DEMO_PETS.length}
               </Badge>
             </div>
-          </AnimatedView>
+          </MotionView>
 
           <div className="flex gap-2">
             <Button
@@ -184,9 +184,9 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
             >
               {analyzing ? (
                 <>
-                  <AnimatedView style={sparkleStyle}>
+                  <MotionView style={sparkleStyle}>
                     <Sparkle size={18} weight="fill" />
-                  </AnimatedView>
+                  </MotionView>
                   <span className="ml-2">Analyzing...</span>
                 </>
               ) : (
@@ -204,7 +204,7 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
 
         <div>
           {promptPresence.shouldRender && !showResult && !analyzing && (
-            <AnimatedView
+            <MotionView
               style={promptPresence.animatedStyle}
               className="flex items-center justify-center h-full text-center p-8"
             >
@@ -214,16 +214,16 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
                   Click "Analyze This Photo" to see AI in action
                 </p>
               </div>
-            </AnimatedView>
+            </MotionView>
           )}
 
           {analyzingPresence.shouldRender && analyzing && (
-            <AnimatedView style={analyzingPresence.animatedStyle} className="space-y-4">
+            <MotionView style={analyzingPresence.animatedStyle} className="space-y-4">
               <Card className="p-4 bg-background/50">
                 <div className="flex items-center gap-3 mb-4">
-                  <AnimatedView style={sparkleStyle}>
+                  <MotionView style={sparkleStyle}>
                     <Sparkle size={24} weight="fill" className="text-primary" />
-                  </AnimatedView>
+                  </MotionView>
                   <div>
                     <h4 className="font-semibold">Analyzing photo...</h4>
                     <p className="text-xs text-muted-foreground">Processing visual features</p>
@@ -242,7 +242,7 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
                       className="flex items-center gap-2 text-sm animate-in fade-in slide-in-from-left duration-300"
                       style={{ animationDelay: `${idx * 400}ms` }}
                     >
-                      <AnimatedView
+                      <MotionView
                         style={dotStyle}
                         className="w-1.5 h-1.5 rounded-full bg-primary"
                       />
@@ -251,11 +251,11 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
                   ))}
                 </div>
               </Card>
-            </AnimatedView>
+            </MotionView>
           )}
 
           {resultPresence.shouldRender && showResult && (
-            <AnimatedView style={resultPresence.animatedStyle} className="h-full">
+            <MotionView style={resultPresence.animatedStyle} className="h-full">
               <Card className="p-5 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800 h-full">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-semibold text-lg">Analysis Results</h4>
@@ -310,7 +310,7 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
                   </div>
                 </div>
               </Card>
-            </AnimatedView>
+            </MotionView>
           )}
         </div>
       </div>

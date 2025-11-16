@@ -274,8 +274,8 @@ export class EnhancedAuthService {
     }
 
     const result = await db.findMany<UserProfile>('users', {
-      limit: options.limit || 50,
-      offset: options.offset || 0,
+      limit: options.limit ?? 50,
+      offset: options.offset ?? 0,
       sortBy: 'createdAt',
       sortOrder: 'desc',
     });

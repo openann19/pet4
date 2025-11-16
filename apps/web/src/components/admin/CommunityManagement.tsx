@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { Button } from '@/components/ui/button';
@@ -30,8 +29,7 @@ import type { Post } from '@/lib/community-types';
 import { PostCard } from '@/components/community/PostCard';
 import { communityService } from '@/lib/community-service';
 import { createLogger } from '@/lib/logger';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withTiming, MotionView } from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 const logger = createLogger('CommunityManagement');
@@ -66,7 +64,7 @@ function PostItem({ post, isHidden, onHide, onUnhide, onDelete }: PostItemProps)
   }
 
   return (
-    <AnimatedView style={animatedStyle} className="relative">
+    <MotionView style={animatedStyle} className="relative">
       <div className="absolute top-4 right-4 z-10 flex gap-2">
         {isHidden ? (
           <Button size="sm" variant="secondary" onClick={() => onUnhide(postId)}>
@@ -85,7 +83,7 @@ function PostItem({ post, isHidden, onHide, onUnhide, onDelete }: PostItemProps)
         </Button>
       </div>
       <PostCard post={post} />
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -157,7 +155,7 @@ export default function CommunityManagement() {
         if (prev?.includes(postId)) {
           return prev;
         }
-        return [...(prev || []), postId];
+        return [...(prev ?? []), postId];
       }).catch((error) => {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to hide post', err, { postId });
@@ -170,7 +168,7 @@ export default function CommunityManagement() {
 
   const handleUnhidePost = useCallback(
     (postId: string) => {
-      void setHiddenPosts((prev) => (prev || []).filter((id) => id !== postId)).catch((error) => {
+      void setHiddenPosts((prev) => (prev ?? []).filter((id) => id !== postId)).catch((error) => {
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('Failed to unhide post', err, { postId });
         toast.error('Failed to restore post');

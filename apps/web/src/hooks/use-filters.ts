@@ -69,7 +69,7 @@ export function useFilters({ categories, initialValues = {}, onApply }: UseFilte
   const handleMultiSelect = useCallback(
     (categoryId: string, optionId: string) => {
       haptics.impact('light');
-      const current = (localValues[categoryId] as string[]) || [];
+      const current = (localValues[categoryId] as string[]) ?? [];
       const updated = current.includes(optionId)
         ? current.filter((id) => id !== optionId)
         : [...current, optionId];

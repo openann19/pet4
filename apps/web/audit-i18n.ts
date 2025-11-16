@@ -34,10 +34,7 @@ function getBucket(length: number): '0-30' | '31-60' | '61-120' | '120+' {
   return '120+';
 }
 
-function auditI18nStrings() {
-  const enFlat = flattenObject(translations.en);
-  const bgFlat = flattenObject(translations.bg);
-
+function collectStringEntries(enFlat: Record<string, string>, bgFlat: Record<string, string>): StringEntry[] {
   const entries: StringEntry[] = [];
 
   for (const key in enFlat) {
@@ -57,12 +54,10 @@ function auditI18nStrings() {
     });
   }
 
-  entries.sort((a, b) => {
-    const maxA = Math.max(a.enLength, a.bgLength);
-    const maxB = Math.max(b.enLength, b.bgLength);
-    return maxB - maxA;
-  });
+  return entries;
+}
 
+function writeCsvReport(entries: StringEntry[]): void {
   scriptLogger.writeLine('\n=== i18n String Length Audit ===\n');
   scriptLogger.writeLine('Key,EN Length,BG Length,Max Length,Bucket,EN Text,BG Text');
 
@@ -72,7 +67,9 @@ function auditI18nStrings() {
       `"${entry.key}",${entry.enLength},${entry.bgLength},${maxLength},"${entry.bucket}","${entry.enText.replace(/"/g, '""')}","${entry.bgText.replace(/"/g, '""')}"`
     );
   }
+}
 
+function writeSummary(entries: StringEntry[]): void {
   const bucketCounts = entries.reduce(
     (acc, entry) => {
       acc[entry.bucket] = (acc[entry.bucket] ?? 0) + 1;
@@ -100,6 +97,21 @@ function auditI18nStrings() {
     scriptLogger.warn(`\n⚠️  ${missingBg.length} strings missing BG translation:`);
     missingBg.forEach((e) => scriptLogger.writeLine(`  - ${e.key}`));
   }
+}
+
+function auditI18nStrings() {
+  const enFlat = flattenObject(translations.en);
+  const bgFlat = flattenObject(translations.bg);
+  const entries = collectStringEntries(enFlat, bgFlat);
+
+  entries.sort((a, b) => {
+    const maxA = Math.max(a.enLength, a.bgLength);
+    const maxB = Math.max(b.enLength, b.bgLength);
+    return maxB - maxA;
+  });
+
+  writeCsvReport(entries);
+  writeSummary(entries);
 }
 
 auditI18nStrings();

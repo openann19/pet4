@@ -5,10 +5,11 @@ import { useUploadPicker } from '@/core/services/media/picker';
 import type { ImageOperation, MediaInput, VideoOperation } from '@/core/types/media-types';
 import { createLogger } from '@/lib/logger';
 import React, { useCallback, useState } from 'react';
-import { motion, useMotionValue, animate } from 'framer-motion';
+import { motion, useMotionValue, animate } from '@petspark/motion';
 import { DropZoneWeb } from './drop-zone-web';
 import { MediaEditor } from './MediaEditor';
 import { VideoTrimmer } from './video-trimmer';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('UploadAndEditScreen');
 

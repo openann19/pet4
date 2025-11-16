@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { cn } from '@/lib/utils';
 import * as ProgressPrimitive from '@radix-ui/react-progress';

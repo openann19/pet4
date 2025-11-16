@@ -1,5 +1,10 @@
-// Platform-specific exports
-// React Native will automatically resolve .native.ts files
-// Web will use the default .ts file
-export { useOutbox } from './useOutbox'
-export type { OutboxItem, UseOutboxOptions, UseOutboxReturn } from './useOutbox'
+/**
+ * Chat Core Package
+ *
+ * Shared chat logic and hooks
+ */
+
+export * from './hooks/use-chat-session';
+export * from './hooks/use-chat-messages';
+export * from './hooks/use-typing';
+export * from './hooks/use-presence';

@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { CloudArrowUp, CloudSlash, CloudCheck, Warning } from '@phosphor-icons/react';
 import { subscribeToSyncStatus, type SyncStatus } from '@/lib/offline-sync';
 import { Button } from '@/components/ui/button';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withSequence,
   withTiming,
+  MotionView,
 } from '@petspark/motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { logger } from '@/lib/logger';
@@ -108,7 +108,7 @@ export function SyncStatusIndicator() {
           size="sm"
           className="h-9 px-3 gap-2 hover:bg-primary/10 active:bg-primary/20 transition-colors"
         >
-          <AnimatedView style={iconStyle}>{getIcon()}</AnimatedView>
+          <MotionView style={iconStyle}>{getIcon()}</MotionView>
           <span className="text-xs font-medium">{getLabel()}</span>
         </Button>
       </PopoverTrigger>

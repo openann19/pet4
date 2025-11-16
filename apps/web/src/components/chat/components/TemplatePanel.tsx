@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Template Panel Component
  *
@@ -6,7 +7,6 @@
 
 import { X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import type { MessageTemplate } from '@/lib/chat-types';
 import { MESSAGE_TEMPLATES } from '@/lib/chat-types';
@@ -23,7 +23,7 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
     const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
   return (
-    <AnimatedView
+    <MotionView
       style={animation.animatedStyle}
       className="glass-strong border border-white/20 rounded-xl p-4 space-y-3 backdrop-blur-xl"
     >
@@ -44,6 +44,6 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
           <TemplateButton key={template.id} template={template} onSelect={onSelect} />
         ))}
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }

@@ -7,7 +7,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { usePetDiscovery } from '@/hooks/usePetDiscovery';
 import type { Pet, SwipeAction } from '@/lib/types';
-import type { DiscoveryPreferences } from '@/components/DiscoveryFilters';
+import type { DiscoveryPreferences } from '@/components/discovery-preferences';
 
 export interface UseDiscoverDataOptions {
   preferences: DiscoveryPreferences;

@@ -1,4 +1,4 @@
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 /**
  * Browser-only dynamic loader for NSFWJS + TFJS (avoids bundling Node deps)

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSharedValue, withSpring, useAnimatedStyle, animate } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useSharedValue, withSpring, useAnimatedStyle, animate, MotionView } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { cn } from '@/lib/utils';
 
@@ -28,7 +27,7 @@ export function AchievementBadge({
   }));
 
   return (
-    <AnimatedView
+    <MotionView
       style={[
         animatedStyle,
         {

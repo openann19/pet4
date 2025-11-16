@@ -1,5 +1,6 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,6 @@ import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service';
 import type { AdoptionListing } from '@/lib/adoption-marketplace-types';
 import { createLogger } from '@/lib/logger';
 import { userService } from '@/lib/user-service';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 
 const logger = createLogger('AdoptionListingReview');
@@ -54,7 +54,7 @@ function ListingItem({ listing, isSelected, onSelect, animation }: ListingItemPr
   }, [animation, onSelect]);
 
   return (
-    <AnimatedView
+    <MotionView
       style={animation.animatedStyle}
       onClick={handleClick}
       className={`w-full text-left p-4 rounded-lg border-2 transition-all cursor-pointer ${
@@ -80,7 +80,7 @@ function ListingItem({ listing, isSelected, onSelect, animation }: ListingItemPr
           </p>
         </div>
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }
 

@@ -17,6 +17,7 @@ import {
   withTiming,
   type SharedValue,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { triggerHaptic } from '../core/haptic-manager';
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion';
 import { logEffectEnd, logEffectStart } from '../core/telemetry';

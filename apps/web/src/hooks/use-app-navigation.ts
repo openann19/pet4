@@ -6,8 +6,8 @@
  */
 
 import { useState } from 'react';
-
-type View = 'discover' | 'matches' | 'chat' | 'community' | 'adoption' | 'lost-found' | 'profile';
+import { getDefaultView } from '@/lib/routes';
+import type { View } from '@/lib/routes';
 
 interface UseAppNavigationReturn {
   currentView: View;
@@ -16,7 +16,7 @@ interface UseAppNavigationReturn {
 }
 
 export function useAppNavigation(): UseAppNavigationReturn {
-  const [currentView, setCurrentView] = useState<View>('discover');
+  const [currentView, setCurrentView] = useState<View>(getDefaultView());
 
   const navigateToChat = (): void => {
     setCurrentView('chat');

@@ -138,9 +138,9 @@ export default function DiscoveryFilters() {
   const [maxAge, setMaxAge] = useState(currentPrefs.maxAge);
   const [sizes, setSizes] = useState(currentPrefs.sizes);
   const [maxDistance, setMaxDistance] = useState(currentPrefs.maxDistance);
-  const [personalities, setPersonalities] = useState(currentPrefs.personalities || []);
-  const [interests, setInterests] = useState(currentPrefs.interests || []);
-  const [lookingFor, setLookingFor] = useState(currentPrefs.lookingFor || []);
+  const [personalities, setPersonalities] = useState(currentPrefs.personalities ?? []);
+  const [interests, setInterests] = useState(currentPrefs.interests ?? []);
+  const [lookingFor, setLookingFor] = useState(currentPrefs.lookingFor ?? []);
   const [minCompatibility, setMinCompatibility] = useState(currentPrefs.minCompatibility || 0);
 
   const [cropSize, setCropSize] = useState(currentPrefs.mediaFilters?.cropSize || 'any');

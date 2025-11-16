@@ -1,5 +1,6 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { adoptionApi } from '@/api/adoption-api';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { isTruthy } from '@petspark/shared';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -40,7 +42,6 @@ import {
 } from '@phosphor-icons/react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { useExpandCollapse } from '@/effects/reanimated/use-expand-collapse';
 import { useRotation } from '@/effects/reanimated/use-rotation';
@@ -56,9 +57,9 @@ function LoadingSpinner() {
 
   return (
     <>
-      <AnimatedView style={rotationAnimation.rotationStyle} className="mr-2 inline-block">
+      <MotionView animatedStyle={rotationAnimation.rotationStyle} className="mr-2 inline-block">
         <Clock size={16} />
-      </AnimatedView>
+      </MotionView>
       Processing...
     </>
   );
@@ -95,7 +96,7 @@ function ApplicationCard({
   });
 
   return (
-    <AnimatedView key={application._id} style={staggeredAnimation.itemStyle}>
+    <MotionView key={application._id} animatedStyle={staggeredAnimation.itemStyle}>
       <Card
         className={`overflow-hidden transition-all duration-300 ${
           application.status === 'pending' ? 'border-amber-500/30 shadow-lg shadow-amber-500/5' : ''
@@ -173,7 +174,7 @@ function ApplicationCard({
           </div>
 
           {isExpanded && (
-            <AnimatedView style={expandAnimation.heightStyle} className="overflow-hidden">
+            <MotionView animatedStyle={expandAnimation.heightStyle} className="overflow-hidden">
               <Separator className="my-3" />
 
               <div className="space-y-3">
@@ -245,7 +246,7 @@ function ApplicationCard({
                   </div>
                 )}
               </div>
-            </AnimatedView>
+            </MotionView>
           )}
         </CardContent>
 
@@ -292,7 +293,7 @@ function ApplicationCard({
           )}
         </CardFooter>
       </Card>
-    </AnimatedView>
+    </MotionView>
   );
 }
 

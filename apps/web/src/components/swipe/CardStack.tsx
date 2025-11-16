@@ -1,11 +1,9 @@
-'use client';
-
+'use client';;
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useSharedValue, withSpring, useAnimatedStyle } from '@petspark/motion';
+import { useSharedValue, withSpring, useAnimatedStyle, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { imagePrefetcher } from '@/lib/image-prefetcher';
 import { useNativeSwipe } from '@/hooks/use-native-swipe';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { createLogger } from '@/lib/logger';
 
@@ -192,9 +190,9 @@ export function CardStack<T extends CardData>({
                 onButtonSwipe={handleButtonSwipe}
               />
             ) : isNext ? (
-              <AnimatedView style={nextCardStyle}>
+              <MotionView style={nextCardStyle}>
                 {renderCard(pooled.card, pooled.index)}
-              </AnimatedView>
+              </MotionView>
             ) : (
               <div
                 style={{
@@ -235,7 +233,7 @@ function SwipeableCard<T extends CardData>({
 
   return (
     <div className="relative" style={{ width, height }}>
-      <AnimatedView
+      <MotionView
         style={swipeHook.animatedStyle}
         onMouseDown={(e: React.MouseEvent) => {
           const startX = e.clientX;
@@ -344,7 +342,7 @@ function SwipeableCard<T extends CardData>({
         className="absolute inset-0 cursor-grab active:cursor-grabbing touch-none select-none"
       >
         <div className="absolute inset-0 pointer-events-none">
-          <AnimatedView
+          <MotionView
             style={swipeHook.badgeStyle}
             className="absolute -top-12 left-1/2 -translate-x-1/2 z-50"
           >
@@ -360,7 +358,7 @@ function SwipeableCard<T extends CardData>({
             >
               PASS
             </div>
-          </AnimatedView>
+          </MotionView>
         </div>
 
         {renderCard(card, index)}
@@ -381,7 +379,7 @@ function SwipeableCard<T extends CardData>({
             ♥
           </button>
         </div>
-      </AnimatedView>
+      </MotionView>
     </div>
   );
 }

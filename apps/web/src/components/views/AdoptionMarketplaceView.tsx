@@ -71,19 +71,24 @@ export default function AdoptionMarketplaceView() {
   return (
     <PageTransitionWrapper key="adoption-marketplace-view" direction="up">
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className={`flex items-center gap-3 ${getTypographyClasses('h2')}`}>
-              <Heart size={32} weight="fill" className="text-primary" />
+        {/* Premium Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-2">
+            <h1 className={`flex items-center gap-3 ${getTypographyClasses('h1')}`}>                                                                            
+              <Heart size={36} weight="fill" className="text-primary" />
               Adoption Marketplace
-            </h2>
-            <p className={`mt-1 text-muted-foreground ${getTypographyClasses('body-sm')}`}>
+            </h1>
+            <p className={`text-muted-foreground ${getTypographyClasses('body')}`}>                                                                     
               Find your perfect companion and give them a loving forever home
             </p>
           </div>
 
-          <Button onClick={handleCreateListing} className="gap-2" type="button">
+          <Button 
+            onClick={handleCreateListing} 
+            size="lg"
+            className="gap-2 shadow-lg hover:shadow-xl transition-all" 
+            type="button"
+          >
             <Plus size={20} weight="bold" />
             List Pet
           </Button>
@@ -113,32 +118,33 @@ export default function AdoptionMarketplaceView() {
 
           {/* Browse Tab */}
           <TabsContent value="browse" className="mt-6 space-y-4">
-            {/* Premium Search + Filters Control Strip */}
-            <Card className="p-4 bg-background/50 backdrop-blur-sm border-border/50">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <div className="relative flex-1">
+            {/* Premium Search + Filters Control Strip - iMessage/Telegram X Style */}
+            <Card className="p-5 bg-background/80 backdrop-blur-xl border-border/40 shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl">                                                                           
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="relative flex-1 group">
                   <MagnifyingGlass
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors duration-200"                                                                  
                     size={20}
                   />
                   <Input
                     placeholder="Search by name, breed, or location..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 border-border/60 bg-background/80 focus:bg-background transition-colors"
+                    className="pl-12 pr-4 h-12 text-base border-border/60 bg-background/90 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-xl"                                                   
                   />
                 </div>
 
                 <Button
                   variant="outline"
+                  size="lg"
                   onClick={handleToggleFilters}
-                  className="relative gap-2 bg-background/80 hover:bg-background border-border/60 transition-all hover:scale-[1.02]"
+                  className="relative gap-2 bg-background/90 hover:bg-background border-border/50 hover:border-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98] rounded-xl shadow-sm hover:shadow-md"                            
                   type="button"
                 >
-                  <Funnel size={20} />
-                  Filters
+                  <Funnel size={20} weight="bold" />
+                  <span className="font-medium">Filters</span>
                   {activeFilterCount > 0 && (
-                    <Badge variant="secondary" className="ml-1">
+                    <Badge variant="secondary" className="ml-1 bg-primary/10 text-primary border-primary/20">
                       {activeFilterCount}
                     </Badge>
                   )}
@@ -146,18 +152,18 @@ export default function AdoptionMarketplaceView() {
               </div>
             </Card>
 
-            {/* Active Filters */}
+            {/* Active Filters - Premium Style */}
             {activeFilterCount > 0 && (
               <MotionView
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, height: 0, y: -10 }}
+                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: [0.22, 0.61, 0.36, 1] }}
                 className="overflow-hidden"
               >
-                <Card className="p-3 bg-muted/30 border-border/30">
-                  <div className="flex flex-wrap gap-2 items-center">
-                    <span className={`${getTypographyClasses('caption')} text-muted-foreground font-medium`}>
+                <Card className="p-4 bg-background/60 backdrop-blur-md border-border/40 shadow-md rounded-xl">
+                  <div className="flex flex-wrap gap-2.5 items-center">
+                    <span className={`${getTypographyClasses('body')} text-muted-foreground font-medium`}>                                                   
                       Active filters:
                     </span>
                     
@@ -236,8 +242,11 @@ export default function AdoptionMarketplaceView() {
                       variant="ghost"
                       size="sm"
                       type="button"
-                      onClick={() => setFilters({})}
-                      className="h-7 px-3 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                      onClick={() => {
+                        haptics.impact('light');
+                        setFilters({});
+                      }}
+                      className="h-8 px-4 text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all rounded-lg font-medium"                          
                     >
                       Clear All
                     </Button>
@@ -249,9 +258,8 @@ export default function AdoptionMarketplaceView() {
             {/* Listings */}
             {loading && listings.length === 0 ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <div key={i} className="h-96 animate-pulse rounded-2xl bg-muted" />
+                {Array.from({ length: 6 }, (_, i) => (
+                  <div key={`skeleton-${i}`} className="h-96 animate-pulse rounded-2xl bg-muted" />
                 ))}
               </div>
             ) : filteredListings.length === 0 ? (
@@ -259,32 +267,33 @@ export default function AdoptionMarketplaceView() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, ease: [0.22, 0.61, 0.36, 1] }}
-                className="flex flex-col items-center justify-center py-16 text-center"
+                className="flex flex-col items-center justify-center py-20 text-center"                                                                         
               >
                 <MotionView
                   initial={{ scale: 0.5, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.1, duration: 0.4, type: 'spring' }}
+                  transition={{ delay: 0.1, duration: 0.4, type: 'spring', stiffness: 200 }}
                 >
-                  <Heart size={64} className="mb-6 text-muted-foreground/60" weight="thin" />
+                  <Heart size={72} className="mb-6 text-muted-foreground/50" weight="thin" />                                                                   
                 </MotionView>
-                <h3 className={`mb-3 ${getTypographyClasses('h3')}`}>
+                <h3 className={`mb-4 ${getTypographyClasses('h2')}`}>
                   {searchQuery ? 'No results found' : 'No pets available'}
                 </h3>
-                <p className={`max-w-md ${getTypographyClasses('body-sm')} text-muted-foreground`}>
+                <p className={`max-w-md ${getTypographyClasses('body')} text-muted-foreground mb-6`}>                                                             
                   {searchQuery
-                    ? 'Try adjusting your search or filters to find more companions'
-                    : 'Check back soon for new pets looking for their forever homes.'}
+                    ? 'Try adjusting your search or filters to find more companions'                                                                            
+                    : 'Check back soon for new pets looking for their forever homes.'}                                                                          
                 </p>
                 {searchQuery && (
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="lg"
                     onClick={() => {
+                      haptics.impact('light');
                       setSearchQuery('');
                       setFilters({});
                     }}
-                    className="mt-4"
+                    className="mt-2 rounded-xl"
                   >
                     Clear Search & Filters
                   </Button>

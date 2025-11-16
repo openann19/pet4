@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
+import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
 import {
   Heart,
   Translate,
@@ -242,7 +242,7 @@ export default function TopNavBar({
               getTypographyClasses('subtitle'),
               'bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-transparent'
             )}>
-              {t.app?.title || 'PawfectMatch'}
+              {t.app?.title ?? 'PawfectMatch'}
             </h1>
           </Link>
 

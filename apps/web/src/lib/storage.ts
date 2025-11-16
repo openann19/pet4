@@ -5,6 +5,7 @@
  * Replaces legacy KV functionality.
  */
 
+/* eslint-disable max-lines -- Unified storage service with IndexedDB and localStorage coordination, error recovery, and cross-tab synchronization */
 import { createLogger } from './logger';
 import { isTruthy } from './utils';
 

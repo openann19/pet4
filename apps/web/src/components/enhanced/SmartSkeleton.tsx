@@ -1,8 +1,8 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useShimmer } from '@/effects/reanimated/use-shimmer';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -44,12 +44,12 @@ export function SmartSkeleton({
         return (
           <div className={cn(baseClasses, 'rounded-full')} style={{ width: size, height: size }}>
             {animate && (
-              <AnimatedView
+              <MotionView
                 style={shimmerStyle}
                 className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"
               >
                 <div />
-              </AnimatedView>
+              </MotionView>
             )}
           </div>
         );
@@ -65,12 +65,12 @@ export function SmartSkeleton({
             }}
           >
             {animate && (
-              <AnimatedView
+              <MotionView
                 style={shimmerStyle}
                 className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"
               >
                 <div />
-              </AnimatedView>
+              </MotionView>
             )}
           </div>
         );
@@ -80,12 +80,12 @@ export function SmartSkeleton({
         return (
           <div className={cn(baseClasses, 'rounded-lg p-4 space-y-3')}>
             {animate && (
-              <AnimatedView
+              <MotionView
                 style={shimmerStyle}
                 className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent pointer-events-none"
               >
                 <div />
-              </AnimatedView>
+              </MotionView>
             )}
             <div className="h-4 bg-muted-foreground/10 rounded w-3/4" />
             <div className="h-3 bg-muted-foreground/10 rounded w-full" />
@@ -103,33 +103,33 @@ export function SmartSkeleton({
           <div className="flex items-center gap-3">
             <div className={cn(baseClasses, 'rounded-full w-10 h-10 relative')}>
               {animate && (
-                <AnimatedView
+                <MotionView
                   style={shimmerStyle}
                   className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded-full"
                 >
                   <div />
-                </AnimatedView>
+                </MotionView>
               )}
             </div>
             <div className="flex-1 space-y-2">
               <div className={cn(baseClasses, 'h-4 rounded w-24 relative')}>
                 {animate && (
-                  <AnimatedView
+                  <MotionView
                     style={shimmerStyle}
                     className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded"
                   >
                     <div />
-                  </AnimatedView>
+                  </MotionView>
                 )}
               </div>
               <div className={cn(baseClasses, 'h-3 rounded w-32 relative')}>
                 {animate && (
-                  <AnimatedView
+                  <MotionView
                     style={shimmerStyle}
                     className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded"
                   >
                     <div />
-                  </AnimatedView>
+                  </MotionView>
                 )}
               </div>
             </div>
@@ -141,12 +141,12 @@ export function SmartSkeleton({
         return (
           <div className={cn(baseClasses, 'rounded-lg p-4 space-y-4')}>
             {animate && (
-              <AnimatedView
+              <MotionView
                 style={shimmerStyle}
                 className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent pointer-events-none rounded-lg"
               >
                 <div />
-              </AnimatedView>
+              </MotionView>
             )}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-muted-foreground/10" />
@@ -179,12 +179,12 @@ export function SmartSkeleton({
             }}
           >
             {animate && (
-              <AnimatedView
+              <MotionView
                 style={shimmerStyle}
                 className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent rounded"
               >
                 <div />
-              </AnimatedView>
+              </MotionView>
             )}
           </div>
         );

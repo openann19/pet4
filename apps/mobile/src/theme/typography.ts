@@ -39,6 +39,13 @@ export const typography = {
     fontWeight: '400' as const,
     letterSpacing: 0,
   },
+  // Muted body text (for descriptions, secondary content)
+  bodyMuted: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '400' as const,
+    letterSpacing: 0,
+  },
   // Small metadata (timestamps, badges subtitles)
   caption: {
     fontSize: 12,

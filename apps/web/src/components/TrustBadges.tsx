@@ -14,11 +14,15 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { TrustBadge } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { useKYCStatus } from '@/hooks/use-kyc-status';
+import { isTruthy } from '@petspark/shared';
 
 interface TrustBadgesProps {
   badges: TrustBadge[];
   compact?: boolean;
   showLabels?: boolean;
+  userId?: string;
+  includeKYC?: boolean;
 }
 
 const badgeIcons: Record<
@@ -54,13 +58,33 @@ const badgeColors: Record<TrustBadge['type'], string> = {
   top_rated: 'text-violet-600 dark:text-violet-400 bg-violet-500/10 border-violet-500/30',
 };
 
-export function TrustBadges({ badges, compact = false, showLabels = false }: TrustBadgesProps) {
-  if (!badges || badges.length === 0) return null;
+export function TrustBadges({
+  badges,
+  compact = false,
+  showLabels = false,
+  userId,
+  includeKYC = true,
+}: TrustBadgesProps) {
+  const { status: kycStatus } = useKYCStatus(userId ?? '');
+  const allBadges = [...badges];
+
+  // Add KYC badge if verified
+  if (includeKYC && userId && kycStatus === 'verified') {
+    allBadges.push({
+      id: 'kyc-verified',
+      type: 'verified_owner',
+      label: 'Verified Owner',
+      description: 'Identity verified through KYC',
+      earnedAt: new Date().toISOString(),
+    });
+  }
+
+  if (!allBadges || allBadges.length === 0) return null;
 
   return (
     <TooltipProvider>
       <div className={cn('flex flex-wrap gap-2', compact && 'gap-1.5')}>
-        {badges.map((badge, index) => {
+        {allBadges.map((badge, index) => {
           const Icon = badgeIcons[badge.type];
           const colorClass = badgeColors[badge.type];
 

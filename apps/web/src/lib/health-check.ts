@@ -23,8 +23,8 @@ export function getHealthStatus(): HealthStatus {
   return {
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: ENV.VITE_APP_VERSION || '0.0.0',
-    environment: ENV.VITE_ENVIRONMENT || 'development',
+    version: ENV.VITE_APP_VERSION ?? '0.0.0',
+    environment: ENV.VITE_ENVIRONMENT ?? 'development',
   };
 }
 
@@ -73,8 +73,8 @@ export function getReadinessStatus(): HealthStatus {
   return {
     status: allHealthy ? 'healthy' : 'unhealthy',
     timestamp: new Date().toISOString(),
-    version: ENV.VITE_APP_VERSION || '0.0.0',
-    environment: ENV.VITE_ENVIRONMENT || 'development',
+    version: ENV.VITE_APP_VERSION ?? '0.0.0',
+    environment: ENV.VITE_ENVIRONMENT ?? 'development',
     checks,
   };
 }
@@ -104,7 +104,7 @@ export function readyzHandler(): Response {
   const readiness = getReadinessStatus();
   logger.debug('Readiness check', { 
     status: readiness.status,
-    checks: Object.keys(readiness.checks || {}),
+    checks: Object.keys(readiness.checks ?? {}),
   });
   
   return new Response(JSON.stringify(readiness, null, 2), {

@@ -6,9 +6,7 @@ interface TypographyConfig {
   maxLines: string;
 }
 
-const TYPOGRAPHY_VARIANTS = ['display', 'h1', 'h2', 'h3', 'body', 'bodyMuted', 'caption'] as const;
-
-export type TypographyVariant = (typeof TYPOGRAPHY_VARIANTS)[number];
+export type TypographyVariant = 'display' | 'h1' | 'h2' | 'h3' | 'body' | 'bodyMuted' | 'caption';
 
 export const typographyScale: Record<TypographyVariant, TypographyConfig> = {
   display: {
@@ -62,7 +60,7 @@ export const typographyScale: Record<TypographyVariant, TypographyConfig> = {
   },
 };
 
-const typographyAliases: Record<string, TypographyVariant> = {
+const typographyAliases = {
   title: 'h1',
   subtitle: 'h2',
   'section-title': 'h2',
@@ -82,7 +80,11 @@ const typographyAliases: Record<string, TypographyVariant> = {
   button: 'body',
   'body-sm': 'bodyMuted',
   'body-small': 'bodyMuted',
-  'body-muted': 'bodyMuted',
+  'body-medium': 'body',
+  'bodyMedium': 'body',
+  'bodySmall': 'bodyMuted',
+  'bodyMuted': 'bodyMuted',
+  subheading: 'h3',
   hero: 'display',
   heading: 'h1',
   'heading-lg': 'h1',
@@ -91,7 +93,7 @@ const typographyAliases: Record<string, TypographyVariant> = {
   stat: 'h2',
   'stat-label': 'bodyMuted',
   kicker: 'caption',
-};
+} as const satisfies Record<string, TypographyVariant>;
 
 export const spacingScale = {
   xs: '4px',
@@ -173,13 +175,17 @@ export const spacingTailwindClasses = {
 
 export const minTouchTarget = '44px';
 
-type TypographyVariantInput = TypographyVariant | keyof typeof typographyAliases;
+export type TypographyAliasKey = keyof typeof typographyAliases;
+export type TypographyVariantInput = TypographyVariant | TypographyAliasKey;
 
 function resolveTypographyVariant(variant: TypographyVariantInput): TypographyVariant {
-  if ((typographyScale as Record<string, TypographyConfig>)[variant]) {
+  if (variant in typographyScale) {
     return variant as TypographyVariant;
   }
-  return typographyAliases[variant] ?? 'body';
+  if (variant in typographyAliases) {
+    return typographyAliases[variant as TypographyAliasKey];
+  }
+  return 'body';
 }
 
 export function getTypographyClasses(variant: TypographyVariantInput) {

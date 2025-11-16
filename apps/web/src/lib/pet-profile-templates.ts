@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- central pet profile template library, data-only file */
 import type { Pet } from './types';
 
 export type PetType = 'dog' | 'cat' | 'bird' | 'rabbit' | 'fish' | 'other';
@@ -309,15 +310,15 @@ export function applyTemplateToProfile(
     personality: template.defaults.personality,
     interests: template.defaults.interests,
     lookingFor: template.defaults.lookingFor,
-    bio: partialData.bio || template.defaults.bio || '',
-    ...(partialData.size || template.defaults.size
-      ? { size: partialData.size || template.defaults.size }
+    bio: partialData.bio ?? template.defaults.bio ?? '',
+    ...(partialData.size ?? template.defaults.size
+      ? { size: partialData.size ?? template.defaults.size }
       : {}),
-    ...(partialData.activityLevel || template.defaults.activityLevel
-      ? { activityLevel: partialData.activityLevel || template.defaults.activityLevel }
+    ...(partialData.activityLevel ?? template.defaults.activityLevel
+      ? { activityLevel: partialData.activityLevel ?? template.defaults.activityLevel }
       : {}),
-    ...(partialData.breed || template.defaults.breed
-      ? { breed: partialData.breed || template.defaults.breed || '' }
+    ...(partialData.breed ?? template.defaults.breed
+      ? { breed: partialData.breed ?? template.defaults.breed ?? '' }
       : {}),
   };
 }

@@ -2,7 +2,8 @@
  * Lost & Found API tests
  * Exercises HTTP flows against a contract server to ensure backend integration.
  */
-import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { createServer } from 'node:http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { URL } from 'node:url';
 
 import { lostFoundAPI } from '@/api/lost-found-api';

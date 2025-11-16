@@ -45,7 +45,7 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
       }
       const action = queue.shift();
       this.saveQueue(queue);
-      return action ? action : null;
+      return action ?? null;
     } catch (error) {
       logger.error(
         'Failed to dequeue swipe action',

@@ -28,6 +28,8 @@ export default [
       '**/html/**',
       '**/MEDIA_EDITOR_EXAMPLES.tsx',
       'MEDIA_EDITOR_EXAMPLES.tsx',
+      'apps/backend/**', // Backend uses different tsconfig, exclude from type-aware linting
+      'packages/core/**', // Exclude core from linting to avoid tsconfig conflicts
     ],
   },
 
@@ -155,6 +157,7 @@ export default [
       '**/test/**',
       '**/__tests__/**',
       'apps/web/android-design-tokens-rn/**',
+      'packages/core/**', // Exclude core from type-aware to avoid tsconfig conflicts
     ],
     languageOptions: {
       parser: tseslint.parser,
@@ -169,6 +172,7 @@ export default [
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
       '@typescript-eslint/require-await': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',

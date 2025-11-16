@@ -15,20 +15,6 @@ interface SignupCredentials extends LoginCredentials {
   displayName: string;
 }
 
-const logger = createLogger('AuthService')
-
-class AuthError extends Error {
-  code: string
-  timestamp: string
-
-  constructor(code: string, message: string) {
-    super(message)
-    this.name = 'AuthError'
-    this.code = code
-    this.timestamp = new Date().toISOString()
-  }
-}
-
 export class AuthService {
   private currentUser: User | null = null;
   private accessToken: string | null = null;
@@ -40,7 +26,7 @@ export class AuthService {
   }
 
   async login(credentials: LoginCredentials): Promise<{ user: User; tokens: AuthTokens }> {
-    const existingUsers = (await storage.get<User[]>('all-users')) || [];
+    const existingUsers = (await storage.get<User[]>('all-users')) ?? [];
     const user = existingUsers.find((u) => u.email === credentials.email && u.status === 'active');
 
     if (!user) {
@@ -82,7 +68,7 @@ export class AuthService {
   }
 
   async signup(credentials: SignupCredentials): Promise<{ user: User; tokens: AuthTokens }> {
-    const existingUsers = (await storage.get<User[]>('all-users')) || [];
+    const existingUsers = (await storage.get<User[]>('all-users')) ?? [];
 
     if (existingUsers.some((u) => u.email === credentials.email)) {
       throw {
@@ -298,7 +284,7 @@ export class AuthService {
       updatedAt: new Date().toISOString(),
     };
 
-    const allUsers = (await storage.get<User[]>('all-users')) || [];
+    const allUsers = (await storage.get<User[]>('all-users')) ?? [];
     const userIndex = allUsers.findIndex((u) => u.id === updatedUser.id);
 
     if (userIndex >= 0) {
@@ -313,7 +299,7 @@ export class AuthService {
   }
 
   async createDemoUsers(): Promise<void> {
-    const existingUsers = (await storage.get<User[]>('all-users')) || [];
+    const existingUsers = (await storage.get<User[]>('all-users')) ?? [];
 
     if (existingUsers.length > 0) return;
 

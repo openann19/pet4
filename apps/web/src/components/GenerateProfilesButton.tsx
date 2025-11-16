@@ -7,9 +7,8 @@ import { generateSamplePets } from '@/lib/seedData';
 import type { Pet } from '@/lib/types';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
-import { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from '@petspark/motion';
+import { useAnimatedStyle, useSharedValue, withRepeat, withTiming, MotionView } from '@petspark/motion';
 
 interface GenerateProfilesButtonProps {
   variant?: 'default' | 'outline' | 'ghost';
@@ -39,8 +38,8 @@ export default function GenerateProfilesButton({
 
   useEffect(() => {
     if (isGenerating) {
-      shimmerX.value = withRepeat(withTiming(200, { duration: 1500 }), -1, false);
-      iconRotate.value = withRepeat(withTiming(360, { duration: 2000 }), -1, false);
+      shimmerX.value = withRepeat(withTiming(200 as const, { duration: 1500 }), -1, false) as { target: 200; transition: import('@petspark/motion').Transition };
+      iconRotate.value = withRepeat(withTiming(360 as const, { duration: 2000 }), -1, false) as { target: 360; transition: import('@petspark/motion').Transition };
     } else {
       shimmerX.value = -100;
       iconRotate.value = 0;
@@ -81,8 +80,8 @@ export default function GenerateProfilesButton({
 
   return (
     <div className={showLabel ? 'w-full' : ''}>
-      <AnimatedView
-        style={buttonHover.animatedStyle}
+      <MotionView
+        style={buttonHover.animatedStyle as React.CSSProperties}
         onMouseEnter={buttonHover.handleMouseEnter}
         onMouseLeave={buttonHover.handleMouseLeave}
       >
@@ -100,21 +99,21 @@ export default function GenerateProfilesButton({
           }
         >
           {showLabel && (
-            <AnimatedView
-              style={shimmerStyle}
-              className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"
+            <MotionView
+              style={shimmerStyle as React.CSSProperties}
+              className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"                                                          
             />
           )}
-          <AnimatedView style={iconStyle} className={showLabel ? 'mr-2' : ''}>
+          <MotionView style={iconStyle as React.CSSProperties} className={showLabel ? 'mr-2' : ''}>
             {isGenerating ? <Sparkle size={20} weight="fill" /> : <Plus size={20} weight="bold" />}
-          </AnimatedView>
+          </MotionView>
           {showLabel && (
             <span className="relative z-10 font-semibold">
               {isGenerating ? 'Generating Profiles...' : 'Generate More Profiles'}
             </span>
           )}
         </Button>
-      </AnimatedView>
+      </MotionView>
     </div>
   );
 }

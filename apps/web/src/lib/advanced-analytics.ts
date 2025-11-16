@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- advanced analytics service with comprehensive metrics computation */
 import { useEffect } from 'react';
 import { generateCorrelationId } from './utils';
 import { createLogger } from './logger';
@@ -95,11 +96,11 @@ class AnalyticsService {
   constructor() {
     this.sessionId = generateCorrelationId();
     this.sessionStart = Date.now();
-    this.initializeSession();
+    void this.initializeSession();
   }
 
   private async initializeSession() {
-    const userId = localStorage.getItem('user-id') || undefined;
+    const userId = localStorage.getItem('user-id') ?? undefined;
     if (userId) {
       this.userId = userId;
     }
@@ -140,7 +141,7 @@ class AnalyticsService {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to track event via API, storing locally', err, { name });
       // Store locally as fallback
-      const allEvents = (await storage.get<AnalyticsEvent[]>('analytics-events')) || [];
+      const allEvents = (await storage.get<AnalyticsEvent[]>('analytics-events')) ?? [];
       allEvents.push(event);
       await storage.set('analytics-events', allEvents.slice(-10000));
     }
@@ -215,7 +216,7 @@ class AnalyticsService {
         language: navigator.language,
         screenSize: `${window.innerWidth}x${window.innerHeight}`,
       },
-      entryPoint: (this.events[0]?.properties?.pathname as string | undefined) || '/',
+      entryPoint: (this.events[0]?.properties?.pathname as string | undefined) ?? '/',
       exitPoint: window.location.pathname,
     };
 
@@ -226,7 +227,7 @@ class AnalyticsService {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to create session via API, storing locally', err);
       // Store locally as fallback
-      const sessions = (await storage.get<UserSession[]>('analytics-sessions')) || [];
+      const sessions = (await storage.get<UserSession[]>('analytics-sessions')) ?? [];
       sessions.push(session);
       await storage.set('analytics-sessions', sessions.slice(-1000));
     }
@@ -253,7 +254,7 @@ export function getAnalytics(): AnalyticsService {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('beforeunload', () => {
-        analyticsInstance?.endSession();
+        void analyticsInstance?.endSession();
       });
     }
   }
@@ -264,10 +265,103 @@ export function useAnalytics() {
   const analytics = getAnalytics();
 
   useEffect(() => {
-    analytics.trackPageView(window.location.pathname);
+    void analytics.trackPageView(window.location.pathname);
   }, []);
 
   return analytics;
+}
+
+function calculateActiveUsers(
+  sessions: UserSession[],
+  timeThreshold: number
+): number {
+  return new Set(
+    sessions
+      .filter((s) => new Date(s.startTime).getTime() > timeThreshold)
+      .filter((s) => s.userId)
+      .map((s) => s.userId)
+  ).size;
+}
+
+function calculateRetentionRate(sessions: UserSession[]): number {
+  const now = Date.now();
+  const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+  const twoWeeksAgo = now - 14 * 24 * 60 * 60 * 1000;
+
+  const usersThisWeek = new Set(
+    sessions
+      .filter((s) => new Date(s.startTime).getTime() > oneWeekAgo)
+      .filter((s) => s.userId)
+      .map((s) => s.userId)
+  );
+
+  const usersLastWeek = new Set(
+    sessions
+      .filter((s) => {
+        const time = new Date(s.startTime).getTime();
+        return time > twoWeeksAgo && time <= oneWeekAgo;
+      })
+      .filter((s) => s.userId)
+      .map((s) => s.userId)
+  );
+
+  const retainedUsers = [...usersThisWeek].filter((u) => usersLastWeek.has(u));
+  return usersLastWeek.size > 0 ? retainedUsers.length / usersLastWeek.size : 0;
+}
+
+function calculateBasicMetrics(
+  sessions: UserSession[],
+  events: AnalyticsEvent[]
+): {
+  uniqueUsers: number;
+  totalSessions: number;
+  totalEvents: number;
+  averageSessionDuration: number;
+} {
+  const uniqueUsers = new Set(sessions.filter((s) => s.userId).map((s) => s.userId)).size;
+  const totalSessions = sessions.length;
+  const totalEvents = events.length;
+
+  const sessionDurations = sessions
+    .filter((s) => s.endTime)
+    .map((s) => new Date(s.endTime!).getTime() - new Date(s.startTime).getTime());
+  const averageSessionDuration =
+    sessionDurations.length > 0
+      ? sessionDurations.reduce((a, b) => a + b, 0) / sessionDurations.length
+      : 0;
+
+  return {
+    uniqueUsers,
+    totalSessions,
+    totalEvents,
+    averageSessionDuration: Math.round(averageSessionDuration / 1000),
+  };
+}
+
+function calculateEventMetrics(events: AnalyticsEvent[]): {
+  topEvents: { name: EventName; count: number }[];
+  conversionRate: number;
+} {
+  const eventCounts = events.reduce(
+    (acc, event) => {
+      acc[event.name] = (acc[event.name] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+
+  const topEvents = Object.entries(eventCounts)
+    .map(([name, count]) => ({ name: name as EventName, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  const matchCreated = events.filter((e) => e.name === 'match_created').length;
+  const totalSwipes = events.filter(
+    (e) => e.name === 'pet_liked' || e.name === 'pet_passed'
+  ).length;
+  const conversionRate = totalSwipes > 0 ? matchCreated / totalSwipes : 0;
+
+  return { topEvents, conversionRate };
 }
 
 export async function getAnalyticsMetrics(
@@ -280,103 +374,105 @@ export async function getAnalyticsMetrics(
     const err = error instanceof Error ? error : new Error(String(error));
     logger.error('Failed to get metrics from API, computing locally', err);
 
-    // Fallback to local computation
-    const sessions = (await storage.get<UserSession[]>('analytics-sessions')) || [];
-    const events = (await storage.get<AnalyticsEvent[]>('analytics-events')) || [];
+    const sessions = (await storage.get<UserSession[]>('analytics-sessions')) ?? [];
+    const events = (await storage.get<AnalyticsEvent[]>('analytics-events')) ?? [];
 
-    const uniqueUsers = new Set(sessions.filter((s) => s.userId).map((s) => s.userId)).size;
-    const totalSessions = sessions.length;
-    const totalEvents = events.length;
-
-    const sessionDurations = sessions
-      .filter((s) => s.endTime)
-      .map((s) => new Date(s.endTime!).getTime() - new Date(s.startTime).getTime());
-    const averageSessionDuration =
-      sessionDurations.length > 0
-        ? sessionDurations.reduce((a, b) => a + b, 0) / sessionDurations.length
-        : 0;
-
-    const eventCounts = events.reduce(
-      (acc, event) => {
-        acc[event.name] = (acc[event.name] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
-
-    const topEvents = Object.entries(eventCounts)
-      .map(([name, count]) => ({ name: name as EventName, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
-
-    const matchCreated = events.filter((e) => e.name === 'match_created').length;
-    const totalSwipes = events.filter(
-      (e) => e.name === 'pet_liked' || e.name === 'pet_passed'
-    ).length;
-    const conversionRate = totalSwipes > 0 ? matchCreated / totalSwipes : 0;
+    const basicMetrics = calculateBasicMetrics(sessions, events);
+    const eventMetrics = calculateEventMetrics(events);
 
     const now = Date.now();
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
     const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
     const oneMonthAgo = now - 30 * 24 * 60 * 60 * 1000;
 
-    const dailyActiveUsers = new Set(
-      sessions
-        .filter((s) => new Date(s.startTime).getTime() > oneDayAgo)
-        .filter((s) => s.userId)
-        .map((s) => s.userId)
-    ).size;
-
-    const weeklyActiveUsers = new Set(
-      sessions
-        .filter((s) => new Date(s.startTime).getTime() > oneWeekAgo)
-        .filter((s) => s.userId)
-        .map((s) => s.userId)
-    ).size;
-
-    const monthlyActiveUsers = new Set(
-      sessions
-        .filter((s) => new Date(s.startTime).getTime() > oneMonthAgo)
-        .filter((s) => s.userId)
-        .map((s) => s.userId)
-    ).size;
-
-    const usersThisWeek = new Set(
-      sessions
-        .filter((s) => new Date(s.startTime).getTime() > oneWeekAgo)
-        .filter((s) => s.userId)
-        .map((s) => s.userId)
-    );
-
-    const twoWeeksAgo = now - 14 * 24 * 60 * 60 * 1000;
-    const usersLastWeek = new Set(
-      sessions
-        .filter((s) => {
-          const time = new Date(s.startTime).getTime();
-          return time > twoWeeksAgo && time <= oneWeekAgo;
-        })
-        .filter((s) => s.userId)
-        .map((s) => s.userId)
-    );
-
-    const retainedUsers = [...usersThisWeek].filter((u) => usersLastWeek.has(u));
-    const retentionRate = usersLastWeek.size > 0 ? retainedUsers.length / usersLastWeek.size : 0;
+    const retentionRate = calculateRetentionRate(sessions);
 
     return {
-      totalSessions,
-      totalEvents,
-      uniqueUsers,
-      averageSessionDuration: Math.round(averageSessionDuration / 1000),
-      topEvents,
-      conversionRate,
+      totalSessions: basicMetrics.totalSessions,
+      totalEvents: basicMetrics.totalEvents,
+      uniqueUsers: basicMetrics.uniqueUsers,
+      averageSessionDuration: basicMetrics.averageSessionDuration,
+      topEvents: eventMetrics.topEvents,
+      conversionRate: eventMetrics.conversionRate,
       retentionRate,
       activeUsers: {
-        daily: dailyActiveUsers,
-        weekly: weeklyActiveUsers,
-        monthly: monthlyActiveUsers,
+        daily: calculateActiveUsers(sessions, oneDayAgo),
+        weekly: calculateActiveUsers(sessions, oneWeekAgo),
+        monthly: calculateActiveUsers(sessions, oneMonthAgo),
       },
     };
   }
+}
+
+function calculateUserEngagementMetrics(
+  userEvents: AnalyticsEvent[],
+  userSessions: UserSession[]
+): {
+  matchingSuccessRate: number;
+  averageSwipesPerSession: number;
+  averageMessagesPerMatch: number;
+  storyEngagement: { viewRate: number; creationRate: number };
+} {
+  const matches = userEvents.filter((e) => e.name === 'match_created').length;
+  const likes = userEvents.filter((e) => e.name === 'pet_liked').length;
+  const matchingSuccessRate = likes > 0 ? matches / likes : 0;
+
+  const totalSwipes = userEvents.filter(
+    (e) => e.name === 'pet_liked' || e.name === 'pet_passed'
+  ).length;
+  const averageSwipesPerSession = userSessions.length > 0 ? totalSwipes / userSessions.length : 0;
+
+  const messagesSent = userEvents.filter((e) => e.name === 'message_sent').length;
+  const averageMessagesPerMatch = matches > 0 ? messagesSent / matches : 0;
+
+  const storiesCreated = userEvents.filter((e) => e.name === 'story_created').length;
+  const storiesViewed = userEvents.filter((e) => e.name === 'story_viewed').length;
+  const storyCreationRate = userSessions.length > 0 ? storiesCreated / userSessions.length : 0;
+  const storyViewRate = userSessions.length > 0 ? storiesViewed / userSessions.length : 0;
+
+  return {
+    matchingSuccessRate,
+    averageSwipesPerSession: Math.round(averageSwipesPerSession),
+    averageMessagesPerMatch: Math.round(averageMessagesPerMatch),
+    storyEngagement: {
+      viewRate: storyViewRate,
+      creationRate: storyCreationRate,
+    },
+  };
+}
+
+function calculateUserPreferences(userEvents: AnalyticsEvent[]): {
+  mostViewedPets: string[];
+  preferredPetTypes: string[];
+  peakActivityHours: number[];
+} {
+  const viewedPets = userEvents
+    .filter((e) => e.name === 'pet_viewed')
+    .map((e) => e.properties.petId)
+    .filter((petId): petId is string => typeof petId === 'string');
+  const mostViewedPets: string[] = Array.from(new Set(viewedPets)).slice(0, 10);
+
+  const likedPets = userEvents
+    .filter((e) => e.name === 'pet_liked')
+    .map((e) => e.properties.breed)
+    .filter((breed): breed is string => typeof breed === 'string');
+  const preferredPetTypes: string[] = Array.from(new Set(likedPets)).slice(0, 5);
+
+  const activityByHour = userEvents.reduce(
+    (acc, event) => {
+      const hour = new Date(event.timestamp).getHours();
+      acc[hour] = (acc[hour] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<number, number>
+  );
+
+  const peakActivityHours: number[] = Object.entries(activityByHour)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([hour]) => parseInt(hour, 10));
+
+  return { mostViewedPets, preferredPetTypes, peakActivityHours };
 }
 
 export async function getUserBehaviorInsights(userId: string): Promise<UserBehaviorInsights> {
@@ -386,95 +482,51 @@ export async function getUserBehaviorInsights(userId: string): Promise<UserBehav
     const err = error instanceof Error ? error : new Error(String(error));
     logger.error('Failed to get insights from API, computing locally', err, { userId });
 
-    // Fallback to local computation
-    const events = (await storage.get<AnalyticsEvent[]>('analytics-events')) || [];
+    const events = (await storage.get<AnalyticsEvent[]>('analytics-events')) ?? [];
     const userEvents = events.filter((e) => e.userId === userId);
 
-    const viewedPets = userEvents
-      .filter((e) => e.name === 'pet_viewed')
-      .map((e) => e.properties.petId)
-      .filter((petId): petId is string => typeof petId === 'string');
-    const mostViewedPets: string[] = Array.from(new Set(viewedPets)).slice(0, 10);
-
-    const matches = userEvents.filter((e) => e.name === 'match_created').length;
-    const likes = userEvents.filter((e) => e.name === 'pet_liked').length;
-    const matchingSuccessRate = likes > 0 ? matches / likes : 0;
-
-    const sessions = (await storage.get<UserSession[]>('analytics-sessions')) || [];
+    const sessions = (await storage.get<UserSession[]>('analytics-sessions')) ?? [];
     const userSessions = sessions.filter((s) => s.userId === userId);
 
-    const totalSwipes = userEvents.filter(
-      (e) => e.name === 'pet_liked' || e.name === 'pet_passed'
-    ).length;
-    const averageSwipesPerSession = userSessions.length > 0 ? totalSwipes / userSessions.length : 0;
-
-    const likedPets = userEvents
-      .filter((e) => e.name === 'pet_liked')
-      .map((e) => e.properties.breed)
-      .filter((breed): breed is string => typeof breed === 'string');
-    const preferredPetTypes: string[] = Array.from(new Set(likedPets)).slice(0, 5);
-
-    const activityByHour = userEvents.reduce(
-      (acc, event) => {
-        const hour = new Date(event.timestamp).getHours();
-        acc[hour] = (acc[hour] || 0) + 1;
-        return acc;
-      },
-      {} as Record<number, number>
-    );
-
-    const peakActivityHours: number[] = Object.entries(activityByHour)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([hour]) => parseInt(hour, 10));
-
-    const messagesSent = userEvents.filter((e) => e.name === 'message_sent').length;
-    const averageMessagesPerMatch = matches > 0 ? messagesSent / matches : 0;
-
-    const storiesCreated = userEvents.filter((e) => e.name === 'story_created').length;
-    const storiesViewed = userEvents.filter((e) => e.name === 'story_viewed').length;
-    const storyCreationRate = userSessions.length > 0 ? storiesCreated / userSessions.length : 0;
-    const storyViewRate = userSessions.length > 0 ? storiesViewed / userSessions.length : 0;
+    const engagementMetrics = calculateUserEngagementMetrics(userEvents, userSessions);
+    const preferences = calculateUserPreferences(userEvents);
 
     return {
-      mostViewedPets,
-      matchingSuccessRate,
-      averageSwipesPerSession: Math.round(averageSwipesPerSession),
-      preferredPetTypes,
-      peakActivityHours,
-      averageMessagesPerMatch: Math.round(averageMessagesPerMatch),
-      storyEngagement: {
-        viewRate: storyViewRate,
-        creationRate: storyCreationRate,
-      },
+      mostViewedPets: preferences.mostViewedPets,
+      matchingSuccessRate: engagementMetrics.matchingSuccessRate,
+      averageSwipesPerSession: engagementMetrics.averageSwipesPerSession,
+      preferredPetTypes: preferences.preferredPetTypes,
+      peakActivityHours: preferences.peakActivityHours,
+      averageMessagesPerMatch: engagementMetrics.averageMessagesPerMatch,
+      storyEngagement: engagementMetrics.storyEngagement,
     };
   }
 }
 
 export function trackPetView(petId: string, petName: string, breed: string): void {
-  getAnalytics().trackEvent('pet_viewed', { petId, petName, breed });
+  void getAnalytics().trackEvent('pet_viewed', { petId, petName, breed });
 }
 
 export function trackPetLike(petId: string, petName: string, breed: string): void {
-  getAnalytics().trackEvent('pet_liked', { petId, petName, breed });
+  void getAnalytics().trackEvent('pet_liked', { petId, petName, breed });
 }
 
 export function trackPetPass(petId: string, petName: string, breed: string): void {
-  getAnalytics().trackEvent('pet_passed', { petId, petName, breed });
+  void getAnalytics().trackEvent('pet_passed', { petId, petName, breed });
 }
 
 export function trackMatch(matchId: string, petId1: string, petId2: string): void {
-  getAnalytics().trackEvent('match_created', { matchId, petId1, petId2 });
+  void getAnalytics().trackEvent('match_created', { matchId, petId1, petId2 });
 }
 
 export function trackMessageSent(roomId: string, messageType: string): void {
-  getAnalytics().trackEvent('message_sent', { roomId, messageType });
+  void getAnalytics().trackEvent('message_sent', { roomId, messageType });
 }
 
 export function trackStoryCreated(storyId: string, mediaType: string): void {
-  getAnalytics().trackEvent('story_created', { storyId, mediaType });
+  void getAnalytics().trackEvent('story_created', { storyId, mediaType });
 }
 
 export function trackStoryViewed(storyId: string, authorId: string): void {
-  getAnalytics().trackEvent('story_viewed', { storyId, authorId });
+  void getAnalytics().trackEvent('story_viewed', { storyId, authorId });
 }

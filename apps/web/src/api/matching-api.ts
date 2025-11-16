@@ -115,7 +115,7 @@ export class MatchingAPI {
               overall: 0,
             },
             status: 'active',
-            chatRoomId: result.chatRoomId || '',
+            chatRoomId: result.chatRoomId ?? '',
             createdAt: new Date().toISOString(),
             lastInteractionAt: new Date().toISOString(),
           })

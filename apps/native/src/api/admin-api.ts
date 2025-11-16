@@ -218,6 +218,45 @@ class MobileAdminApiImpl {
       throw error;
     }
   }
+
+  /**
+   * Get system configuration
+   */
+  async getSystemConfig(): Promise<Record<string, unknown> | null> {
+    try {
+      const response = await apiClient.get<{ config: Record<string, unknown> | null }>(
+        '/v1/admin/config/system'
+      );
+      return response.config;
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get system config', err, { context: 'getSystemConfig' });
+      return null;
+    }
+  }
+
+  /**
+   * Update system configuration
+   */
+  async updateSystemConfig(
+    config: Record<string, unknown>,
+    updatedBy?: string
+  ): Promise<Record<string, unknown>> {
+    try {
+      const response = await apiClient.put<{ config: Record<string, unknown> }>(
+        '/v1/admin/config/system',
+        {
+          config,
+          ...(updatedBy ? { updatedBy } : {}),
+        }
+      );
+      return response.config;
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to update system config', err, { context: 'updateSystemConfig' });
+      throw error;
+    }
+  }
 }
 
 export const mobileAdminApi = new MobileAdminApiImpl();

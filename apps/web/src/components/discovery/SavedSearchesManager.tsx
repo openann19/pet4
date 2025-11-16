@@ -1,5 +1,6 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { useCallback, useMemo, useState } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import {
@@ -18,11 +19,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SavedSearch } from '@/lib/saved-search-types';
-import type { DiscoveryPreferences } from '@/components/DiscoveryFilters';
+import type { DiscoveryPreferences } from '@/components/discovery-preferences';
 import { toast } from 'sonner';
 import { triggerHaptic } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useExpandCollapse } from '@/effects/reanimated/use-expand-collapse';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
@@ -77,7 +77,7 @@ function SearchItem({
   const isEditing = editingId === search.id;
 
   return (
-    <AnimatedView
+    <MotionView
       style={itemAnimation.animatedStyle}
       className="group p-4 rounded-lg border bg-card hover:shadow-md transition-all"
       onMouseEnter={itemHover.handleEnter}
@@ -92,7 +92,7 @@ function SearchItem({
             autoFocus
           />
           <div className="flex gap-2">
-            <AnimatedView style={itemBounce.animatedStyle}>
+            <MotionView style={itemBounce.animatedStyle}>
               <Button
                 size="sm"
                 onClick={() => {
@@ -104,7 +104,7 @@ function SearchItem({
                 <Check size={16} className="mr-2" />
                 Save
               </Button>
-            </AnimatedView>
+            </MotionView>
             <Button size="sm" variant="outline" onClick={onCancelEdit} className="flex-1">
               Cancel
             </Button>
@@ -126,7 +126,7 @@ function SearchItem({
               </div>
             </div>
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <AnimatedView style={pinBounce.animatedStyle}>
+              <MotionView style={pinBounce.animatedStyle}>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -142,8 +142,8 @@ function SearchItem({
                     className={search.isPinned ? 'text-yellow-500' : ''}
                   />
                 </Button>
-              </AnimatedView>
-              <AnimatedView style={editBounce.animatedStyle}>
+              </MotionView>
+              <MotionView style={editBounce.animatedStyle}>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -155,8 +155,8 @@ function SearchItem({
                 >
                   <Pencil size={16} />
                 </Button>
-              </AnimatedView>
-              <AnimatedView style={deleteBounce.animatedStyle}>
+              </MotionView>
+              <MotionView style={deleteBounce.animatedStyle}>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -168,7 +168,7 @@ function SearchItem({
                 >
                   <Trash size={16} />
                 </Button>
-              </AnimatedView>
+              </MotionView>
             </div>
           </div>
 
@@ -178,7 +178,7 @@ function SearchItem({
                 `Used ${search.useCount} time${search.useCount !== 1 ? 's' : ''}`}
               {search.lastUsed && ` • Last: ${new Date(search.lastUsed).toLocaleDateString()}`}
             </div>
-            <AnimatedView style={applyBounce.animatedStyle}>
+            <MotionView style={applyBounce.animatedStyle}>
               <Button
                 size="sm"
                 onClick={() => {
@@ -188,11 +188,11 @@ function SearchItem({
               >
                 Apply
               </Button>
-            </AnimatedView>
+            </MotionView>
           </div>
         </>
       )}
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -229,7 +229,7 @@ export default function SavedSearchesManager({
         updatedAt: new Date().toISOString(),
       };
 
-      setSavedSearches((current) => [...(current || []), newSearch]);
+      setSavedSearches((current) => [...(current ?? []), newSearch]);
       triggerHaptic('success');
       toast.success('Search saved!', { description: `"${searchName}" has been saved` });
       logger.info('Search saved', { searchId: newSearch.id, searchName: newSearch.name });
@@ -252,7 +252,7 @@ export default function SavedSearchesManager({
         }
 
         setSavedSearches((current) =>
-          (current || []).map((s) =>
+          (current ?? []).map((s) =>
             s.id === id
               ? {
                   ...s,
@@ -282,7 +282,7 @@ export default function SavedSearchesManager({
     (search: SavedSearch): void => {
       try {
         setSavedSearches((current) =>
-          (current || []).map((s) =>
+          (current ?? []).map((s) =>
             s.id === search.id
               ? { ...s, useCount: s.useCount + 1, lastUsed: new Date().toISOString() }
               : s
@@ -310,7 +310,7 @@ export default function SavedSearchesManager({
     (id: string): void => {
       try {
         setSavedSearches((current) =>
-          (current || []).map((s) => (s.id === id ? { ...s, isPinned: !s.isPinned } : s))
+          (current ?? []).map((s) => (s.id === id ? { ...s, isPinned: !s.isPinned } : s))
         );
         triggerHaptic('light');
         logger.info('Search pin toggled', { searchId: id });
@@ -326,7 +326,7 @@ export default function SavedSearchesManager({
   const handleDeleteSearch = useCallback(
     (id: string, name: string): void => {
       try {
-        setSavedSearches((current) => (current || []).filter((s) => s.id !== id));
+        setSavedSearches((current) => (current ?? []).filter((s) => s.id !== id));
         triggerHaptic('light');
         toast.info('Search deleted', { description: `"${name}" has been removed` });
         logger.info('Search deleted', { searchId: id, searchName: name });
@@ -341,7 +341,7 @@ export default function SavedSearchesManager({
   );
 
   const sortedSearches = useMemo(() => {
-    return [...(savedSearches || [])].sort((a, b) => {
+    return [...(savedSearches ?? [])].sort((a, b) => {
       if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
       return b.useCount - a.useCount;
     });
@@ -365,7 +365,7 @@ export default function SavedSearchesManager({
   }, []);
 
   return (
-    <AnimatedView
+    <MotionView
       style={modalAnimation.style}
       className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 overflow-auto"
     >
@@ -392,7 +392,7 @@ export default function SavedSearchesManager({
                 <CardTitle>Current Filters</CardTitle>
                 <CardDescription>Save your current search criteria</CardDescription>
               </div>
-              <AnimatedView
+              <MotionView
                 style={cardHover.animatedStyle}
                 onMouseEnter={cardHover.handleEnter}
                 onMouseLeave={cardHover.handleLeave}
@@ -401,12 +401,12 @@ export default function SavedSearchesManager({
                   <Plus size={16} className="mr-2" />
                   Save Current
                 </Button>
-              </AnimatedView>
+              </MotionView>
             </div>
           </CardHeader>
           <CardContent>
             {showSaveForm && (
-              <AnimatedView style={saveFormExpand.heightStyle} className="mb-4 overflow-hidden">
+              <MotionView style={saveFormExpand.heightStyle} className="mb-4 overflow-hidden">
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <Label htmlFor="search-name" className="sr-only">
@@ -425,14 +425,14 @@ export default function SavedSearchesManager({
                       }}
                     />
                   </div>
-                  <AnimatedView style={saveButtonBounce.animatedStyle}>
+                  <MotionView style={saveButtonBounce.animatedStyle}>
                     <Button onClick={handleSaveCurrentSearch}>
                       <FloppyDisk size={16} className="mr-2" />
                       Save
                     </Button>
-                  </AnimatedView>
+                  </MotionView>
                 </div>
-              </AnimatedView>
+              </MotionView>
             )}
 
             <div className="text-sm text-muted-foreground">
@@ -491,6 +491,6 @@ export default function SavedSearchesManager({
           </CardContent>
         </Card>
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }

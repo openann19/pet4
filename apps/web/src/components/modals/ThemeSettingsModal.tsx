@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * ThemeSettingsModal Component
  *
@@ -7,7 +8,6 @@
 
 import { Suspense } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import LoadingState from '@/components/LoadingState';
 import UltraThemeSettings from '@/components/settings/UltraThemeSettings';
 import type { UseAppAnimationsReturn } from '@/hooks/use-app-animations';
@@ -29,11 +29,11 @@ export function ThemeSettingsModal({
         <Dialog open={isVisible} onOpenChange={onClose}>
             <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto p-0">
                 <DialogTitle className="sr-only">Ultra Theme Settings</DialogTitle>
-                <AnimatedView style={themeContent.style}>
+                <MotionView style={themeContent.style}>
                     <Suspense fallback={<LoadingState />}>
                         <UltraThemeSettings />
                     </Suspense>
-                </AnimatedView>
+                </MotionView>
             </DialogContent>
         </Dialog>
     );

@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   PhoneDisconnect,
@@ -17,11 +16,11 @@ import {
   ChatCircle,
   ShareNetwork,
 } from '@phosphor-icons/react';
+import { isTruthy } from '@petspark/shared';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useBounceOnTap, useHoverLift, useModalAnimation } from '@/effects/reanimated';
 import {
   useSharedValue,
@@ -31,6 +30,7 @@ import {
   withTiming,
   interpolate,
   Extrapolation,
+  MotionView,
 } from '@petspark/motion';
 import type { GroupCallSession, CallParticipant } from '@/lib/call-types';
 import { formatCallDuration } from '@/lib/call-utils';
@@ -90,7 +90,7 @@ function ParticipantVideo({
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={hoverLift.animatedStyle}
       className={cn(
         'relative rounded-2xl overflow-hidden bg-linear-to-br from-primary/20 to-accent/20',
@@ -117,16 +117,14 @@ function ParticipantVideo({
           </Avatar>
         </div>
       )}
-
       <div className="absolute inset-0 bg-linear-to-b from-black/60 via-transparent to-black/80 pointer-events-none" />
-
       <div className="absolute top-3 left-3 flex flex-col gap-2">
         <div className="glass-strong backdrop-blur-xl px-3 py-1.5 rounded-full">
           <p className="text-white font-semibold text-sm">{participant.name}</p>
           {participant.petName && <p className="text-white/70 text-xs">{participant.petName}</p>}
         </div>
         {isRaised && (
-          <AnimatedView
+          <MotionView
             style={pulseStyle}
             className="glass-strong backdrop-blur-xl px-2 py-1 rounded-full flex items-center gap-1"
             role="status"
@@ -134,10 +132,9 @@ function ParticipantVideo({
           >
             <Hand size={16} weight="fill" className="text-yellow-400" aria-hidden="true" />
             <span className="text-white text-xs">Raised hand</span>
-          </AnimatedView>
+          </MotionView>
         )}
       </div>
-
       <div className="absolute bottom-3 right-3 flex items-center gap-2">
         {participant.isMuted && (
           <div
@@ -159,7 +156,7 @@ function ParticipantVideo({
         )}
         {participant.isSpeaking && <SpeakingIndicator />}
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -182,7 +179,7 @@ function SpeakingIndicator(): JSX.Element {
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={animatedStyle}
       className="w-2 h-2 bg-green-400 rounded-full"
       role="status"
@@ -439,7 +436,7 @@ export default function GroupCallInterface({
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={modalAnimation.style}
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',
@@ -449,7 +446,7 @@ export default function GroupCallInterface({
       aria-label="Group call interface"
       aria-modal="true"
     >
-      <AnimatedView
+      <MotionView
         className={cn(
           'relative w-full bg-linear-to-br from-card via-card to-card/80 rounded-3xl overflow-hidden shadow-2xl border border-border/50',
           isFullscreen ? 'h-full' : 'max-w-7xl h-[90vh]'
@@ -614,7 +611,7 @@ export default function GroupCallInterface({
               role="toolbar"
               aria-label="Call controls"
             >
-              <AnimatedView style={muteButton.animatedStyle}>
+              <MotionView style={muteButton.animatedStyle}>
                 <Button
                   onClick={muteButton.handlePress}
                   size="icon"
@@ -640,10 +637,10 @@ export default function GroupCallInterface({
                     <Microphone size={24} weight="fill" className="text-white" aria-hidden="true" />
                   )}
                 </Button>
-              </AnimatedView>
+              </MotionView>
 
               {isVideoCall && (
-                <AnimatedView style={videoButton.animatedStyle}>
+                <MotionView style={videoButton.animatedStyle}>
                   <Button
                     onClick={videoButton.handlePress}
                     size="icon"
@@ -674,10 +671,10 @@ export default function GroupCallInterface({
                       />
                     )}
                   </Button>
-                </AnimatedView>
+                </MotionView>
               )}
 
-              <AnimatedView style={endCallButton.animatedStyle}>
+              <MotionView style={endCallButton.animatedStyle}>
                 <Button
                   onClick={endCallButton.handlePress}
                   size="icon"
@@ -691,9 +688,9 @@ export default function GroupCallInterface({
                     aria-hidden="true"
                   />
                 </Button>
-              </AnimatedView>
+              </MotionView>
 
-              <AnimatedView style={raiseHandButton.animatedStyle}>
+              <MotionView style={raiseHandButton.animatedStyle}>
                 <Button
                   onClick={raiseHandButton.handlePress}
                   size="icon"
@@ -709,9 +706,9 @@ export default function GroupCallInterface({
                     aria-hidden="true"
                   />
                 </Button>
-              </AnimatedView>
+              </MotionView>
 
-              <AnimatedView style={useBounceOnTap({ hapticFeedback: true }).animatedStyle}>
+              <MotionView style={useBounceOnTap({ hapticFeedback: true }).animatedStyle}>
                 <Button
                   size="icon"
                   variant="outline"
@@ -720,18 +717,17 @@ export default function GroupCallInterface({
                 >
                   <ChatCircle size={24} weight="fill" aria-hidden="true" />
                 </Button>
-              </AnimatedView>
+              </MotionView>
             </div>
           </div>
         </div>
-      </AnimatedView>
-
+      </MotionView>
       <style>{`
         .mirror {
           transform: scaleX(-1);
         }
       `}</style>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -856,7 +852,7 @@ function ParticipantsPanel({
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={panelStyle}
       className="absolute top-20 right-0 bottom-24 w-80 glass-strong backdrop-blur-2xl border-l border-border/50 z-30"
       role="complementary"
@@ -920,7 +916,7 @@ function ParticipantsPanel({
           </div>
         </ScrollArea>
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -949,7 +945,7 @@ function ActiveIndicator(): JSX.Element {
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={animatedStyle}
       className="w-2 h-2 bg-green-500 rounded-full"
       role="status"
@@ -976,7 +972,7 @@ function ConnectingIndicator(): JSX.Element {
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={animatedStyle}
       className="w-2 h-2 bg-yellow-500 rounded-full"
       role="status"

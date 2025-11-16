@@ -58,7 +58,7 @@ export function getCompatibilityFactors(userPet: Pet, otherPet: Pet): Compatibil
 }
 
 function calculateSizeMatch(size1: string, size2: string): number {
-  const compatible = SIZE_COMPATIBILITY[size1] || [];
+  const compatible = SIZE_COMPATIBILITY[size1] ?? [];
   return compatible.includes(size2) ? 1 : 0.3;
 }
 
@@ -69,7 +69,7 @@ function calculatePersonalityMatch(traits1: string[], traits2: string[]): number
   let totalComparisons = 0;
 
   traits1.forEach((trait1) => {
-    const compatible = PERSONALITY_COMPATIBILITY[trait1.toLowerCase()] || [];
+    const compatible = PERSONALITY_COMPATIBILITY[trait1.toLowerCase()] ?? [];
     traits2.forEach((trait2) => {
       totalComparisons++;
       if (compatible.includes(trait2.toLowerCase())) {
@@ -142,7 +142,7 @@ Return as JSON with a "reasons" array of 2-3 strings:
   try {
     const result = await llmService.llm(prompt, 'gpt-4o-mini', true);
     const data = JSON.parse(result);
-    return data.reasons || generateFallbackReasoning(userPet, otherPet, factors);
+    return data.reasons ?? generateFallbackReasoning(userPet, otherPet, factors);
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     logger.warn('AI reasoning unavailable, using fallback logic', { error: err });
@@ -160,7 +160,7 @@ function generateFallbackReasoning(
   if (factors.personalityMatch > 0.7) {
     const commonTraits = userPet.personality.filter((t) =>
       otherPet.personality.some((ot) => {
-        const compatible = PERSONALITY_COMPATIBILITY[t.toLowerCase()] || [];
+        const compatible = PERSONALITY_COMPATIBILITY[t.toLowerCase()] ?? [];
         return compatible.includes(ot.toLowerCase());
       })
     );

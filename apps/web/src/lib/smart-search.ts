@@ -1,4 +1,4 @@
-import { isTruthy, isDefined } from '@petspark/shared';
+// Unused imports removed: isTruthy, isDefined
 
 export interface SearchOptions<T> {
   keys: (keyof T)[];
@@ -54,7 +54,7 @@ export class SmartSearch<T> {
     const matches: string[] = [];
 
     for (const key of this.options.keys) {
-      const value = String(item[key] || '');
+      const value = String(item[key] ?? '');
       const normalizedValue = this.options.caseSensitive ? value : value.toLowerCase();
 
       if (normalizedValue.includes(query)) {

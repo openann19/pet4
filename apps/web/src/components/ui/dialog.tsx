@@ -4,14 +4,12 @@ import React, { type ComponentProps } from 'react';
 import { useEffect, useCallback } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring, animate } from '@petspark/motion';
-import type { MotionValue, Transition } from 'framer-motion';
+import {
+  MotionView,
+  useOverlayTransition,
+} from '@petspark/motion';
 
 import { cn } from '@/lib/utils';
-import { AnimatedView, type AnimatedStyle as ViewAnimatedStyle } from '@/effects/reanimated/animated-view';
-import { usePrefersReducedMotion } from '@/utils/reduced-motion';
-import { springConfigs } from '@/effects/reanimated/transitions';
-import { Motion } from '@/core/tokens/motion';
 import { haptics } from '@/lib/haptics';
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
 import { getAriaButtonAttributes } from '@/lib/accessibility';
@@ -61,24 +59,18 @@ function DialogOverlay({
   className,
   ...props
 }: ComponentProps<typeof DialogPrimitive.Overlay>): React.JSX.Element {
+  // Backward compatibility wrapper - overlay is now handled in DialogContent
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
         'fixed inset-0 z-50 bg-background/80 backdrop-blur-md drop-shadow-lg text-foreground',
-        'data-[state=open]:animate-in data-[state=closed]:animate-out',
-        'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         className
       )}
       {...props}
     />
   );
 }
-
-const runAnimation = (
-  value: MotionValue<number>,
-  animation: { target: number; transition?: Transition }
-) => animate(value, animation.target, animation.transition ?? { duration: 0.3 });
 
 function DialogContent({
   className,
@@ -87,39 +79,12 @@ function DialogContent({
   hapticFeedback = true,
   ...props
 }: DialogContentProps): React.JSX.Element {
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const opacity = useSharedValue<number>(0);
-  const scale = useSharedValue<number>(0.95);
-  const y = useSharedValue<number>(20);
-
-  useEffect(() => {
-    if (prefersReducedMotion) {
-      opacity.set(1);
-      scale.set(1);
-      y.set(0);
-      return;
-    }
-    const opacityTransition = withTiming(1, {
-      duration: Motion.components.modal.open.duration,
-    });
-    runAnimation(opacity, opacityTransition);
-    const scaleTransition = withSpring(1, springConfigs.smooth);
-    runAnimation(scale, scaleTransition);
-    const yTransition = withSpring(0, springConfigs.smooth);
-    runAnimation(y, yTransition);
-  }, [opacity, scale, y, prefersReducedMotion]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    const transform = [
-      { scale: scale.get() },
-      { translateY: y.get() },
-    ] as Record<string, number>[];
-
-    return {
-      opacity: opacity.get(),
-      transform,
-    };
-  }) as ViewAnimatedStyle;
+  // Use canonical overlay transition hook
+  // Note: Radix manages open/closed state, so we assume open=true when component renders
+  const overlayTransition = useOverlayTransition({
+    type: 'modal',
+    isOpen: true,
+  });
 
   const handleClose = useCallback((): void => {
     if (hapticFeedback) {
@@ -129,34 +94,38 @@ function DialogContent({
 
   return (
     <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay />
-      <DialogPrimitive.Content
-        data-slot="dialog-content"
-        role="dialog"
-        aria-modal="true"
-        className={cn(
-          'fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)]',
-          'translate-x-[-50%] translate-y-[-50%]',
-          'rounded-2xl border border-border bg-card text-card-foreground shadow-2xl shadow-black/30',
-          'focus:outline-none',
-          'data-[state=open]:animate-in data-[state=closed]:animate-out',
-          'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-          'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
-          'sm:max-w-lg',
-          getSpacingClassesFromConfig({ gap: 'lg', padding: 'xl' }),
-          className
-        )}
-        {...props}
-      >
-        <AnimatedView style={animatedStyle} className="contents">
+      <MotionView {...overlayTransition.backdropProps}>
+        <DialogPrimitive.Overlay
+          data-slot="dialog-overlay"
+          className={cn(
+            'fixed inset-0 z-50 bg-background/80 backdrop-blur-md drop-shadow-lg text-foreground',
+            className
+          )}
+        />
+      </MotionView>
+      <MotionView {...overlayTransition.contentProps}>
+        <DialogPrimitive.Content
+          data-slot="dialog-content"
+          role="dialog"
+          aria-modal="true"
+          className={cn(
+            'fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)]',
+            'translate-x-[-50%] translate-y-[-50%]',
+            'rounded-2xl border border-border bg-card text-card-foreground shadow-2xl shadow-black/30',
+            'focus:outline-none',
+            'sm:max-w-lg',
+            getSpacingClassesFromConfig({ gap: 'lg', padding: 'xl' }),
+            className
+          )}
+          {...props}
+        >
           {children}
-        </AnimatedView>
         {showCloseButton && (
           <DialogPrimitive.Close
             className={cn(
               'absolute rounded-full opacity-70 min-w-[44px] min-h-[44px]',
               'ring-offset-background',
-              prefersReducedMotion ? '' : 'transition-opacity duration-200',
+              'transition-opacity duration-200',
               'hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
               'focus-visible:outline-none disabled:pointer-events-none',
               'text-muted-foreground hover:text-foreground bg-muted/20 backdrop-blur-sm',
@@ -171,7 +140,8 @@ function DialogContent({
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}
-      </DialogPrimitive.Content>
+        </DialogPrimitive.Content>
+      </MotionView>
     </DialogPortal>
   );
 }

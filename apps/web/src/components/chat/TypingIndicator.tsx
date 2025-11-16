@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import { useEffect, useMemo } from 'react';
 import {
   useSharedValue,
@@ -8,10 +7,10 @@ import {
   withSequence,
   withTiming,
   withDelay,
+  MotionView,
 } from '@petspark/motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import type { TypingUser } from '@/lib/chat-types';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -58,7 +57,7 @@ function TypingDot({ index }: TypingDotProps): JSX.Element {
     };
   }) as AnimatedStyle;
 
-  return <AnimatedView style={animatedStyle} className="w-1 h-1 bg-primary rounded-full" />;
+  return <MotionView style={animatedStyle} className="w-1 h-1 bg-primary rounded-full" />;
 }
 
 export default function TypingIndicator({ users }: TypingIndicatorProps): JSX.Element | null {
@@ -83,19 +82,19 @@ export default function TypingIndicator({ users }: TypingIndicatorProps): JSX.El
   const typingText = useMemo(() => {
     if (users.length === 1) {
       const userName = users[0]?.userName?.trim();
-      return `${userName || 'Someone'} is typing`;
+      return `${userName ?? 'Someone'} is typing`;
     }
     if (users.length === 2) {
       const userName1 = users[0]?.userName?.trim();
       const userName2 = users[1]?.userName?.trim();
-      return `${userName1 || 'Someone'} and ${userName2 || 'Someone'} are typing`;
+      return `${userName1 ?? 'Someone'} and ${userName2 ?? 'Someone'} are typing`;
     }
     const firstName = users[0]?.userName?.trim();
-    return `${firstName || 'Someone'} and ${users.length - 1} others are typing`;
+    return `${firstName ?? 'Someone'} and ${users.length - 1} others are typing`;
   }, [users]);
 
   return (
-    <AnimatedView
+    <MotionView
       style={containerStyle}
       className="flex items-center gap-2"
       role="status"
@@ -109,7 +108,6 @@ export default function TypingIndicator({ users }: TypingIndicatorProps): JSX.El
           </Avatar>
         ))}
       </div>
-
       <div className="flex items-center gap-1 text-xs text-primary">
         <span>{typingText}</span>
         <div className="flex gap-0.5" aria-hidden="true">
@@ -118,6 +116,6 @@ export default function TypingIndicator({ users }: TypingIndicatorProps): JSX.El
           ))}
         </div>
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }

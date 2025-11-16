@@ -33,7 +33,7 @@ export class MicroInteractions {
     ripple.style.transform = 'scale(0)';
     ripple.style.transition = `transform ${duration}ms cubic-bezier(0.4, 0, 0.2, 1), opacity ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
 
-    const container = element.querySelector('.ripple-container') || element;
+    const container = element.querySelector('.ripple-container') ?? element;
     if (!element.querySelector('.ripple-container')) {
       element.style.position = 'relative';
       element.style.overflow = 'hidden';
@@ -81,7 +81,7 @@ export class MicroInteractions {
   }
 
   static animateCheckmark(element: HTMLElement): void {
-    const svg = element.querySelector('svg') || element;
+    const svg = element.querySelector('svg') ?? element;
 
     const path = svg.querySelector('path');
     if (path) {

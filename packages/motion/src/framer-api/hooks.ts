@@ -18,19 +18,44 @@ import {
 import { convertTransformToStyle } from './useMotionStyle'
 
 /**
- * Equivalent to useSharedValue from Reanimated
- * Returns a MotionValue that can be animated
+ * SharedValue type for compatibility
+ * Includes .value property for Reanimated-style access
+ * The getter returns T, the setter accepts either a direct value or an animation object from withSpring/withTiming
  */
-export function useSharedValue<T extends number | string>(
-  initial: T
-): MotionValue<T> {
-  return useMotionValue(initial)
+export type SharedValue<T extends number | string> = Omit<MotionValue<T>, 'value'> & {
+  get value(): T
+  set value(newValue: T | { target: T; transition: Transition })
 }
 
 /**
- * SharedValue type for compatibility
+ * Equivalent to useSharedValue from Reanimated
+ * Returns a MotionValue that can be animated
+ * Wraps MotionValue to provide .value getter/setter for Reanimated compatibility                                                                               
  */
-export type SharedValue<T> = MotionValue<T>
+export function useSharedValue<T extends number | string>(
+  initial: T
+): SharedValue<T> {
+  const motionValue = useMotionValue(initial)
+  
+  // Add .value property for Reanimated compatibility
+  Object.defineProperty(motionValue, 'value', {
+    get(): T {
+      return motionValue.get()
+    },
+    set(newValue: T | { target: T; transition: Transition }) {
+      // Handle withSpring/withTiming return values
+      if (typeof newValue === 'object' && newValue !== null && 'target' in newValue && 'transition' in newValue) {                                              
+        animate(motionValue, newValue.target as number, newValue.transition)
+      } else {
+        motionValue.set(newValue as T)
+      }
+    },
+    configurable: true,
+    enumerable: true,
+  })
+  
+  return motionValue as SharedValue<T>
+}
 
 /**
  * Animate a motion value with spring physics

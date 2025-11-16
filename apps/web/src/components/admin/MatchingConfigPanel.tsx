@@ -12,6 +12,7 @@ import {
   WEIGHT_SAFE_RANGES,
   DEFAULT_HARD_GATES,
 } from '@/core/domain/matching-config';
+import { isTruthy } from '@petspark/shared';
 import { matchingAPI } from '@/api/matching-api';
 import type { UpdateMatchingConfigData } from '@/api/types';
 import { toast } from 'sonner';
@@ -241,7 +242,6 @@ export function MatchingConfigPanel() {
           })}
         </CardContent>
       </Card>
-
       <Card>
         <CardHeader>
           <CardTitle>Hard Gates Configuration</CardTitle>
@@ -337,7 +337,6 @@ export function MatchingConfigPanel() {
           </div>
         </CardContent>
       </Card>
-
       <Card>
         <CardHeader>
           <CardTitle>Feature Flags</CardTitle>
@@ -401,7 +400,6 @@ export function MatchingConfigPanel() {
           </div>
         </CardContent>
       </Card>
-
       <div className="flex gap-4">
         <Button
           onClick={() => {
@@ -468,7 +466,6 @@ export function MatchingConfigPanel() {
           Reset to Current
         </Button>
       </div>
-
       {config.updatedAt && (
         <p className="text-sm text-muted-foreground">
           Last updated: {new Date(config.updatedAt).toLocaleString()} by {config.updatedBy}

@@ -11,6 +11,7 @@ import { queryKeys, mutationKeys } from '../lib/query-client'
 import type { ApiResponse, PaginatedResponse } from '../types/api'
 import type { Match, PetProfile } from '../types/pet'
 import { apiClient } from '@/utils/api-client'
+import { isTruthy } from '@petspark/shared'
 
 /**
  * Fetch pets for matching

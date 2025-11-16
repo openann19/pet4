@@ -1,8 +1,6 @@
-'use client';
-
+'use client';;
 import React, { useCallback, useRef, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, animate } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withSpring, animate, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -130,12 +128,12 @@ export function PremiumTabs({
           )}
         >
           {variant === 'underline' && (
-            <AnimatedView
+            <MotionView
               style={indicatorStyle}
               className="absolute bottom-0 h-0.5 bg-primary transition-all"
             >
               <div />
-            </AnimatedView>
+            </MotionView>
           )}
           {tabs.map((tab) => {
             const isActive = tab.value === activeTab;

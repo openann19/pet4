@@ -16,7 +16,7 @@ export class WebSocketManager {
   private url: string;
   private state: ConnectionState = 'disconnected';
   private messageQueue: QueuedMessage[] = [];
-  private eventHandlers: Map<string, Set<EventHandler>> = new Map();
+  private eventHandlers = new Map<string, Set<EventHandler>>();
   private reconnectAttempts = 0;
   private maxReconnectAttempts: number;
   private reconnectInterval: number;
@@ -24,7 +24,7 @@ export class WebSocketManager {
   private messageTimeout: number;
   private heartbeatTimer?: number;
   private reconnectTimer?: number;
-  private pendingAcknowledgments: Map<string, number> = new Map();
+  private pendingAcknowledgments = new Map<string, number>();
   private ws: WebSocket | null = null;
 
   constructor(options: WebSocketManagerOptions) {

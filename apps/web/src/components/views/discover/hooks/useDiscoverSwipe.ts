@@ -68,7 +68,7 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
           timestamp: new Date().toISOString(),
         };
 
-        void setSwipeHistory((prev) => [...(prev || []), newSwipe]).catch((error) => {
+        void setSwipeHistory((prev) => [...(prev ?? []), newSwipe]).catch((error) => {
           const err = error instanceof Error ? error : new Error(String(error));
           logger.error('Failed to save swipe history', err, { petId: currentPet.id, action });
         });
@@ -85,7 +85,7 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
               compatibility: matchResult.compatibility || swipeResult.compatibility,
             };
 
-            void setMatches((prev) => [...(prev || []), match]).catch((error) => {
+            void setMatches((prev) => [...(prev ?? []), match]).catch((error) => {
               const err = error instanceof Error ? error : new Error(String(error));
               logger.error('Failed to save match', err, { petId: currentPet.id });
             });

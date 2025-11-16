@@ -97,7 +97,7 @@ class UserService {
       await storage.set('current-user-id', user.id)
       await storage.set(`user:${String(user.id ?? '')}`, user)
       
-      const allUsers = await storage.get<User[]>('all-users') || []
+      const allUsers = (await storage.get<User[]>('all-users')) ?? []
       const existingIndex = allUsers.findIndex(u => u.id === user.id)
       
       if (existingIndex >= 0) {
@@ -109,7 +109,8 @@ class UserService {
       await storage.set('all-users', allUsers)
       await storage.set('is-authenticated', !user.isGuest)
     } catch (error) {
-      logger.warn('Failed to cache user', { error: error instanceof Error ? error.message : String(error) })
+      const normalized = error instanceof Error ? error : new Error(String(error));
+      log.warn('Failed to cache user', normalized, 'UserService');
     }
   }
 

@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import type { UpdateAdoptionListingData } from '@/api/types';
 import { AdoptionAPIStrict } from '@/api/adoption-api-strict';
 import { MatchingAPIStrict } from '@/api/matching-api-strict';
+import { isTruthy } from '@petspark/shared';
 
 const adoptionAPI = new AdoptionAPIStrict();
 const matchingAPI = new MatchingAPIStrict();

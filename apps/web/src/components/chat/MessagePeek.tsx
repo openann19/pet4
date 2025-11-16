@@ -1,8 +1,6 @@
-'use client';
-
+'use client';;
 import { useEffect, useRef } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { useFeatureFlags } from '@/config/feature-flags';
@@ -148,13 +146,13 @@ export function MessagePeek({ message, visible, onClose, position, triggerRef }:
 
   return (
     <>
-      <AnimatedView
+      <MotionView
         style={backdropStyle}
         className="fixed inset-0 bg-black z-40"
         onClick={onClose}
         aria-hidden="true"
       />
-      <AnimatedView
+      <MotionView
         style={{ ...cardPosition, ...cardStyle }}
         className="fixed z-50 bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-md w-[90vw]"
         role="dialog"
@@ -188,7 +186,7 @@ export function MessagePeek({ message, visible, onClose, position, triggerRef }:
         >
           {message.content}
         </div>
-      </AnimatedView>
+      </MotionView>
     </>
   );
 }

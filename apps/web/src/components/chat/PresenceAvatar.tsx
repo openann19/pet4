@@ -7,10 +7,9 @@
  */
 
 import { useMemo } from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming, withRepeat } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withTiming, withRepeat, MotionView } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -66,14 +65,13 @@ export function PresenceAvatar({
           {(fallback?.[0] ?? '?').toUpperCase()}
         </AvatarFallback>
       </Avatar>
-
       {status !== 'offline' && (
-        <AnimatedView
+        <MotionView
           style={ring}
           className={`pointer-events-none absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] ${String(ringColors ?? '')} blur-[2px] opacity-80`}
         >
           <div />
-        </AnimatedView>
+        </MotionView>
       )}
     </div>
   );

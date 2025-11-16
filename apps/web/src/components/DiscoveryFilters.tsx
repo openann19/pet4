@@ -13,10 +13,10 @@ import {
   DEFAULT_PREFERENCES,
   hasActiveDiscoveryFilters,
   type DiscoveryPreferences,
-} from '@/components/discovery/discovery-preferences';
-import { DiscoveryFiltersBasicTab } from '@/components/discovery/DiscoveryFiltersBasicTab';
-import { DiscoveryFiltersMediaTab } from '@/components/discovery/DiscoveryFiltersMediaTab';
-import { DiscoveryFiltersAdvancedTab } from '@/components/discovery/DiscoveryFiltersAdvancedTab';
+} from '@/components/discovery-preferences';
+import { DiscoveryFiltersBasicTab } from '@/components/DiscoveryFiltersBasicTab';
+import { DiscoveryFiltersMediaTab } from '@/components/DiscoveryFiltersMediaTab';
+import { DiscoveryFiltersAdvancedTab } from '@/components/DiscoveryFiltersAdvancedTab';
 import { getTypographyClasses } from '@/lib/typography';
 
 export default function DiscoveryFilters() {
@@ -87,7 +87,7 @@ export default function DiscoveryFilters() {
 
       <SheetContent className="flex h-full flex-col overflow-hidden sm:max-w-md">
         <SheetHeader className="shrink-0">
-          <SheetTitle className={`flex items-center gap-2 ${getTypographyClasses('heading2')}`}>
+          <SheetTitle className={`flex items-center gap-2 ${getTypographyClasses('h2')}`}>
             <MotionView
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{

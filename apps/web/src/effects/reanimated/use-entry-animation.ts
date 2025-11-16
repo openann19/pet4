@@ -1,8 +1,7 @@
 'use client';
 
-import { useMotionValue, animate, type MotionValue } from 'framer-motion';
+import { useMotionValue, animate, type MotionValue, type Variants } from '@petspark/motion';
 import { useEffect } from 'react';
-import type { Variants } from 'framer-motion';
 import { springConfigs, timingConfigs } from './transitions';
 
 export interface UseEntryAnimationOptions {

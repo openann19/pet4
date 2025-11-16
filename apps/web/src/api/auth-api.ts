@@ -53,11 +53,11 @@ export const authApi = {
   },
 
   async logout(): Promise<void> {
-    await APIClient.post(ENDPOINTS.AUTH.LOGOUT);
+    await APIClient.post(ENDPOINTS.AUTH.LOGOUT, {});
   },
 
   async refresh(): Promise<RefreshResponse> {
-    const response = await APIClient.post<RefreshResponse>(ENDPOINTS.AUTH.REFRESH);
+    const response = await APIClient.post<RefreshResponse>(ENDPOINTS.AUTH.REFRESH, {});
     return response.data;
   },
 

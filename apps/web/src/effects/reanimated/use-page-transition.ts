@@ -1,6 +1,6 @@
 'use client';
 
-import { useSharedValue, useAnimatedStyle, withTiming, withDelay } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, animate } from '@petspark/motion';
 import { useEffect } from 'react';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
@@ -27,21 +27,38 @@ export function usePageTransition(options: UsePageTransitionOptions): UsePageTra
 
   useEffect(() => {
     if (isVisible) {
-      const delayMs = delay * 1000;
-      opacity.value = withDelay(delayMs, withTiming(1, { duration }));
-      translateY.value = withDelay(delayMs, withTiming(0, { duration }));
-      scale.value = withDelay(delayMs, withTiming(1, { duration }));
+      const delaySeconds = delay;
+      const durationSeconds = duration / 1000;
+      animate(opacity, 1, {
+        delay: delaySeconds,
+        duration: durationSeconds,
+      });
+      animate(translateY, 0, {
+        delay: delaySeconds,
+        duration: durationSeconds,
+      });
+      animate(scale, 1, {
+        delay: delaySeconds,
+        duration: durationSeconds,
+      });
     } else {
-      opacity.value = withTiming(0, { duration });
-      translateY.value = withTiming(direction === 'up' ? -30 : 30, { duration });
-      scale.value = withTiming(0.98, { duration });
+      const durationSeconds = duration / 1000;
+      animate(opacity, 0, {
+        duration: durationSeconds,
+      });
+      animate(translateY, direction === 'up' ? -30 : 30, {
+        duration: durationSeconds,
+      });
+      animate(scale, 0.98, {
+        duration: durationSeconds,
+      });
     }
   }, [isVisible, duration, delay, direction, opacity, translateY, scale]);
 
   const style = useAnimatedStyle(() => {
     return {
-      opacity: opacity.value,
-      transform: [{ translateY: translateY.value }, { scale: scale.value }],
+      opacity: opacity.get(),
+      transform: [{ translateY: translateY.get() }, { scale: scale.get() }],
     };
   }) as AnimatedStyle;
 

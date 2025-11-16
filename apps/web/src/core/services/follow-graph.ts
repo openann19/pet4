@@ -22,7 +22,7 @@ const FOLLOW_STORAGE_KEY = 'follow-relationships';
  * Get all follow relationships
  */
 async function getFollowRelationships(): Promise<FollowRelationship[]> {
-  return (await storage.get<FollowRelationship[]>(FOLLOW_STORAGE_KEY)) || [];
+  return (await storage.get<FollowRelationship[]>(FOLLOW_STORAGE_KEY)) ?? [];
 }
 
 /**

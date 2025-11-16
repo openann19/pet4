@@ -2,6 +2,7 @@
 
 import type { MediaInput } from '@/core/types/media-types';
 import { useCallback } from 'react';
+import { isTruthy } from '@petspark/shared';
 
 type PickAny = () => Promise<MediaInput | null>;
 type PickImage = () => Promise<MediaInput | null>;

@@ -46,6 +46,84 @@ let requestCounter = 0;
 const requestLogs: RequestLog[] = [];
 
 /**
+ * Deterministic request ID generator
+ */
+function createRequestIdGenerator() {
+  return (): number => {
+    requestCounter += 1;
+    return requestCounter;
+  };
+}
+
+/**
+ * Deterministic timestamp generator
+ */
+function createTimestampGenerator(initialTimestamp = 1000000000000) {
+  let currentTimestamp = initialTimestamp;
+  return (): number => {
+    const ts = currentTimestamp;
+    currentTimestamp += 1;
+    return ts;
+  };
+}
+
+/**
+ * Deterministic success/failure based on successRate
+ */
+function shouldSucceed(requestId: number, successRate: number): boolean {
+  if (successRate >= 1.0) return true;
+  if (successRate <= 0.0) return false;
+  const threshold = Math.floor(1 / successRate);
+  return requestId % threshold === 0;
+}
+
+/**
+ * Create deterministic mock method for API client
+ */
+function createMockMethod(
+  method: string,
+  defaultStatus: number,
+  delay: number,
+  successRate: number,
+  defaultResponse: unknown,
+  getRequestId: () => number,
+  getTimestamp: () => number
+) {
+  return vi.fn(async (url: string, data?: unknown) => {
+    const requestId = getRequestId();
+    const timestamp = getTimestamp();
+
+    requestLogs.push({
+      method,
+      url,
+      data,
+      timestamp,
+      requestId,
+    });
+
+    if (delay > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+
+    if (!shouldSucceed(requestId, successRate)) {
+      throw createMockAPIError(
+        `API ${method} request failed (deterministic failure)`,
+        500,
+        'DETERMINISTIC_ERROR'
+      );
+    }
+
+    return {
+      data: defaultResponse,
+      status: defaultStatus,
+      headers: {
+        'content-type': 'application/json',
+      },
+    };
+  });
+}
+
+/**
  * Create a deterministic mock API client
  */
 export function createMockAPIClient(config: MockAPIClientConfig = {}): MockAPIClient {
@@ -55,76 +133,16 @@ export function createMockAPIClient(config: MockAPIClientConfig = {}): MockAPICl
     defaultResponse = {},
   } = config;
 
-  // Deterministic request ID generator
-  const getRequestId = (): number => {
-    requestCounter += 1;
-    return requestCounter;
-  };
-
-  // Deterministic timestamp generator
-  let currentTimestamp = 1000000000000;
-  const getTimestamp = (): number => {
-    const ts = currentTimestamp;
-    currentTimestamp += 1;
-    return ts;
-  };
-
-  // Deterministic success/failure based on successRate
-  const shouldSucceed = (requestId: number): boolean => {
-    if (successRate >= 1.0) return true;
-    if (successRate <= 0.0) return false;
-
-    // Deterministic pattern: succeed if (requestId % (1/successRate)) === 0
-    const threshold = Math.floor(1 / successRate);
-    return requestId % threshold === 0;
-  };
-
-  // Create deterministic mock method
-  const createMockMethod = (method: string, defaultStatus: number) => {
-    return vi.fn(async (url: string, data?: unknown) => {
-      const requestId = getRequestId();
-      const timestamp = getTimestamp();
-
-      // Log request for validation
-      requestLogs.push({
-        method,
-        url,
-        data,
-        timestamp,
-        requestId,
-      });
-
-      // Deterministic delay
-      if (delay > 0) {
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
-
-      // Deterministic success/failure
-      if (!shouldSucceed(requestId)) {
-        throw createMockAPIError(
-          `API ${method} request failed (deterministic failure)`,
-          500,
-          'DETERMINISTIC_ERROR'
-        );
-      }
-
-      return {
-        data: defaultResponse,
-        status: defaultStatus,
-        headers: {
-          'content-type': 'application/json',
-        },
-      };
-    });
-  };
+  const getRequestId = createRequestIdGenerator();
+  const getTimestamp = createTimestampGenerator();
 
   return {
-    get: createMockMethod('GET', 200),
-    post: createMockMethod('POST', 201),
-    put: createMockMethod('PUT', 200),
-    patch: createMockMethod('PATCH', 200),
-    delete: createMockMethod('DELETE', 204),
-    request: createMockMethod('REQUEST', 200),
+    get: createMockMethod('GET', 200, delay, successRate, defaultResponse, getRequestId, getTimestamp),
+    post: createMockMethod('POST', 201, delay, successRate, defaultResponse, getRequestId, getTimestamp),
+    put: createMockMethod('PUT', 200, delay, successRate, defaultResponse, getRequestId, getTimestamp),
+    patch: createMockMethod('PATCH', 200, delay, successRate, defaultResponse, getRequestId, getTimestamp),
+    delete: createMockMethod('DELETE', 204, delay, successRate, defaultResponse, getRequestId, getTimestamp),
+    request: createMockMethod('REQUEST', 200, delay, successRate, defaultResponse, getRequestId, getTimestamp),
   };
 }
 

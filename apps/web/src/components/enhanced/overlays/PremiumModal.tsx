@@ -1,8 +1,13 @@
-'use client';
-
+'use client';;
 import { useEffect, useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  animate,
+  MotionView,
+} from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -98,7 +103,7 @@ export function PremiumModal({
       <DialogContent
         className={cn('p-0 overflow-hidden', variants[variant], SIZE_CLASSES[size], className)}
       >
-        <AnimatedView style={contentStyle} className="contents">
+        <MotionView style={contentStyle} className="contents">
           {(title || description) && (
             <DialogHeader className="px-6 pt-6 pb-4">
               {title && <DialogTitle>{title}</DialogTitle>}
@@ -119,7 +124,7 @@ export function PremiumModal({
               <X size={16} />
             </button>
           )}
-        </AnimatedView>
+        </MotionView>
       </DialogContent>
     </Dialog>
   );

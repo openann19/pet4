@@ -1,3 +1,4 @@
+import { MotionView } from "@petspark/motion";
 /**
  * StatsModal Component
  *
@@ -7,7 +8,6 @@
 
 import { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import LoadingState from '@/components/LoadingState';
 import StatsCard from '@/components/StatsCard';
 import type { UseAppAnimationsReturn } from '@/hooks/use-app-animations';
@@ -34,12 +34,12 @@ export function StatsModal({
     const { statsModal, statsContent, closeButtonBounce } = animations;
 
     return (
-        <AnimatedView
+        <MotionView
             style={statsModal.style}
             className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4"
             onClick={onClose}
         >
-            <AnimatedView
+            <MotionView
                 style={statsContent.style}
                 onClick={(e?: React.MouseEvent<Element>) => e?.stopPropagation()}
                 className="max-w-2xl w-full"
@@ -47,12 +47,12 @@ export function StatsModal({
                 <Suspense fallback={<LoadingState />}>
                     <StatsCard totalMatches={totalMatches} totalSwipes={totalSwipes} successRate={successRate} />
                 </Suspense>
-                <AnimatedView style={closeButtonBounce.animatedStyle}>
+                <MotionView style={closeButtonBounce.animatedStyle}>
                     <Button variant="outline" className="w-full mt-4" onClick={onClose}>
                         Close
                     </Button>
-                </AnimatedView>
-            </AnimatedView>
-        </AnimatedView>
+                </MotionView>
+            </MotionView>
+        </MotionView>
     );
 }

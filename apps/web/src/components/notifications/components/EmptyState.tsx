@@ -13,9 +13,9 @@ import {
   withDelay,
   withRepeat,
   withSequence,
+  MotionView,
 } from '@petspark/motion';
 import { Bell } from '@phosphor-icons/react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import type { NotificationFilter } from '../types';
@@ -67,13 +67,13 @@ export function EmptyState({ filter }: EmptyStateProps): JSX.Element {
   })) as AnimatedStyle;
 
   return (
-    <AnimatedView
+    <MotionView
       style={containerStyle}
       className="flex flex-col items-center justify-center py-12 px-4"
     >
-      <AnimatedView style={bellStyle} className="mb-4">
+      <MotionView style={bellStyle} className="mb-4">
         <Bell size={48} className="text-muted-foreground" />
-      </AnimatedView>
+      </MotionView>
       <p className="text-muted-foreground mt-4 text-center text-lg font-medium">
         {filter === 'unread' && 'All caught up!'}
         {filter === 'archived' && 'No archived notifications'}
@@ -84,6 +84,6 @@ export function EmptyState({ filter }: EmptyStateProps): JSX.Element {
         {filter === 'archived' && 'Archived notifications will appear here'}
         {filter === 'all' && "We'll notify you when something important happens"}
       </p>
-    </AnimatedView>
+    </MotionView>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from '@petspark/motion';
 import type { CSSProperties } from 'react';
 
 const isWeb = typeof window !== 'undefined';

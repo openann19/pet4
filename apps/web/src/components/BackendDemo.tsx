@@ -16,6 +16,7 @@ import {
   User,
   XCircle,
 } from '@phosphor-icons/react';
+import { isTruthy } from '@petspark/shared';
 import { MotionView } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';

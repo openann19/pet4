@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  animate,
   type SharedValue,
 } from '@petspark/motion';
 
@@ -47,21 +47,37 @@ export function useHoverTap(options: UseHoverTapOptions = {}): UseHoverTapReturn
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.value }],
+      transform: [{ scale: scale.get() }],
     };
   }) as AnimatedStyle;
 
   const handleMouseEnter = useCallback(() => {
-    scale.value = withSpring(hoverScale, { damping, stiffness });
+    animate(scale, hoverScale, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
   }, [scale, hoverScale, damping, stiffness]);
 
   const handleMouseLeave = useCallback(() => {
-    scale.value = withSpring(1, { damping, stiffness });
+    animate(scale, 1, {
+      type: 'spring',
+      damping,
+      stiffness,
+    });
   }, [scale, damping, stiffness]);
 
   const handlePress = useCallback(() => {
-    scale.value = withSpring(tapScale, { damping, stiffness }, () => {
-      scale.value = withSpring(1, { damping, stiffness });
+    animate(scale, tapScale, {
+      type: 'spring',
+      damping,
+      stiffness,
+    }).then(() => {
+      animate(scale, 1, {
+        type: 'spring',
+        damping,
+        stiffness,
+      });
     });
     onPress?.();
   }, [scale, tapScale, damping, stiffness, onPress]);

@@ -39,8 +39,8 @@ import {
   Extrapolation,
   withRepeat,
   withSequence,
+  MotionView,
 } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
@@ -489,11 +489,11 @@ function CommunityViewContent(): JSX.Element {
       {!isOnline && <OfflineIndicator />}
       <div ref={pullToRefresh.containerRef} className="max-w-6xl mx-auto space-y-6 pb-8 relative">
         {/* Pull-to-Refresh Indicator */}
-        <AnimatedView
+        <MotionView
           className="absolute top-0 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
           style={[pullToRefresh.pullTranslateStyle, pullToRefresh.pullOpacityStyle]}
         >
-          <AnimatedView
+          <MotionView
             className="bg-card/95 backdrop-blur-xl shadow-xl rounded-full p-3 border border-border/50"
             style={[pullToRefresh.pullRotationStyle, pullToRefresh.pullScaleStyle]}
           >
@@ -502,11 +502,11 @@ function CommunityViewContent(): JSX.Element {
               weight="bold"
               className={`${pullToRefresh.isRefreshing ? 'animate-spin' : ''} text-primary`}
             />
-          </AnimatedView>
-        </AnimatedView>
+          </MotionView>
+        </MotionView>
 
         {/* Header */}
-        <AnimatedView style={headerTransition.style} className="flex items-center justify-between">
+        <MotionView style={headerTransition.style} className="flex items-center justify-between">
           <div>
             <h1
               className={cn(
@@ -562,10 +562,10 @@ function CommunityViewContent(): JSX.Element {
               </>
             )}
           </div>
-        </AnimatedView>
+        </MotionView>
 
         {/* Main Tabs - Feed & Adoption */}
-        <AnimatedView style={mainTabsStyle}>
+        <MotionView style={mainTabsStyle}>
           <Tabs value={activeTab} onValueChange={handleMainTabChange}>
             <TabsList className="grid w-full grid-cols-3 bg-card shadow-md">
               <TabsTrigger value="feed" className="gap-2">
@@ -586,7 +586,7 @@ function CommunityViewContent(): JSX.Element {
             <TabsContent value="feed" className="mt-6 space-y-6">
               {/* Trending Tags */}
               {trendingTags.trendingTags.length > 0 && (
-                <AnimatedView
+                <MotionView
                   style={trendingTransition.style}
                   className="bg-linear-to-br from-card via-card to-card/50 rounded-xl p-4 border border-border/50 shadow-lg"
                 >
@@ -609,7 +609,7 @@ function CommunityViewContent(): JSX.Element {
                       </Badge>
                     ))}
                   </div>
-                </AnimatedView>
+                </MotionView>
               )}
 
               {/* Feed Sub-Tabs */}
@@ -629,10 +629,10 @@ function CommunityViewContent(): JSX.Element {
                   {feedManagement.loading && feedManagement.posts.length === 0 ? (
                     <RankingSkeleton count={3} variant="post" />
                   ) : feedManagement.posts.length === 0 ? (
-                    <AnimatedView style={emptyStateTransition.style} className="text-center py-20">
-                      <AnimatedView style={emptyStateStyle} className="text-8xl mb-6">
+                    <MotionView style={emptyStateTransition.style} className="text-center py-20">
+                      <MotionView style={emptyStateStyle} className="text-8xl mb-6">
                         🐾
-                      </AnimatedView>
+                      </MotionView>
                       <h3 className={getTypographyClasses('heading2')}>
                         {t.community?.noPosts ?? 'No posts yet'}
                       </h3>
@@ -647,7 +647,7 @@ function CommunityViewContent(): JSX.Element {
                         <Plus size={20} weight="bold" />
                         {t.community?.createPost ?? 'Create Post'}
                       </Button>
-                    </AnimatedView>
+                    </MotionView>
                   ) : (
                     <>
                       <VirtualList
@@ -664,9 +664,9 @@ function CommunityViewContent(): JSX.Element {
                       {/* Loading indicator */}
                       {feedManagement.loading && feedManagement.posts.length > 0 && (
                         <div className="flex items-center justify-center gap-2 text-muted-foreground py-4">
-                          <AnimatedView style={loadingSpinnerStyle}>
+                          <MotionView style={loadingSpinnerStyle}>
                             <Sparkle size={20} />
-                          </AnimatedView>
+                          </MotionView>
                           <span className="text-sm">{t.common?.loading ?? 'Loading...'}</span>
                         </div>
                       )}
@@ -704,15 +704,15 @@ function CommunityViewContent(): JSX.Element {
                   ))}
                 </div>
               ) : adoptionProfiles.length === 0 ? (
-                <AnimatedView
+                <MotionView
                   style={
                     usePageTransition({ isVisible: true, direction: 'fade', duration: 500 }).style
                   }
                   className="text-center py-20"
                 >
-                  <AnimatedView style={emptyStateStyle} className="text-8xl mb-6">
+                  <MotionView style={emptyStateStyle} className="text-8xl mb-6">
                     🏠
-                  </AnimatedView>
+                  </MotionView>
                   <h3 className={getTypographyClasses('heading2')}>
                     {t.adoption?.noProfiles ?? 'No pets available for adoption'}
                   </h3>
@@ -720,7 +720,7 @@ function CommunityViewContent(): JSX.Element {
                     {t.adoption?.noProfilesDesc ??
                       'Check back soon for pets looking for their forever homes.'}
                   </p>
-                </AnimatedView>
+                </MotionView>
               ) : (
                 <>
                   <VirtualGrid
@@ -739,9 +739,9 @@ function CommunityViewContent(): JSX.Element {
                   {/* Loading indicator */}
                   {adoptionLoading && adoptionProfiles.length > 0 && (
                     <div className="flex items-center justify-center gap-2 text-muted-foreground py-4">
-                      <AnimatedView style={adoptionLoadingSpinnerStyle}>
+                      <MotionView style={adoptionLoadingSpinnerStyle}>
                         <PawPrint size={20} />
-                      </AnimatedView>
+                      </MotionView>
                       <span className="text-sm">{t.common?.loading ?? 'Loading...'}</span>
                     </div>
                   )}
@@ -797,7 +797,7 @@ function CommunityViewContent(): JSX.Element {
               />
             </TabsContent>
           </Tabs>
-        </AnimatedView>
+        </MotionView>
         <PostComposer
           open={showComposer}
           onOpenChange={setShowComposer}

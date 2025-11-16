@@ -1,12 +1,5 @@
-'use client';
-
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+'use client';;
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
@@ -45,7 +38,7 @@ export function DeletedGhostBubble({
   });
 
   return (
-    <AnimatedView
+    <MotionView
       style={animatedStyle}
       className={cn(
         'relative rounded-2xl p-3 max-w-[85%]',
@@ -58,6 +51,6 @@ export function DeletedGhostBubble({
       <p className={cn('text-sm font-medium italic text-center', 'text-muted-foreground/70')}>
         This message was deleted
       </p>
-    </AnimatedView>
+    </MotionView>
   );
 }

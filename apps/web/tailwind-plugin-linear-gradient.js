@@ -1,3 +1,6 @@
+/* eslint-env node */
+ 
+
 /**
  * Tailwind Plugin: Linear Gradient Utilities
  *
@@ -7,7 +10,8 @@
 
 const plugin = require('tailwindcss/plugin');
 
-module.exports = plugin(function ({ addUtilities, theme }) {
+/** @type {import('tailwindcss/types/config').PluginCreator} */
+function linearGradientPlugin({ addUtilities, theme }) {
   const directions = {
     't': 'to top',
     'tr': 'to top right',
@@ -28,4 +32,6 @@ module.exports = plugin(function ({ addUtilities, theme }) {
   }
 
   addUtilities(utilities);
-});
+}
+
+module.exports = linearGradientPlugin;

@@ -1,151 +1,174 @@
-// apps/mobile/src/components/billing/PricingCard.tsx
+/**
+ * Pricing Card (Mobile)
+ *
+ * Mobile plan card component
+ */
+
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
-import type { BillingPlan } from '@petspark/core/billing/billing-types';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Check } from 'lucide-react-native';
+import type { BillingPlan } from '@petspark/core';
+import { colors } from '@/theme/colors';
+import { getTypographyStyle } from '@/theme/typography';
 
 export interface PricingCardProps {
-    plan: BillingPlan;
-    isMostPopular?: boolean;
-    isLoading?: boolean;
-    onPress?: () => void;
+  plan: BillingPlan;
+  isCurrentPlan?: boolean;
+  onSelect: () => void;
 }
 
 export function PricingCard({
-    plan,
-    isMostPopular,
-    isLoading,
-    onPress,
+  plan,
+  isCurrentPlan = false,
+  onSelect,
 }: PricingCardProps): React.JSX.Element {
-    const price = (plan.priceCents / 100).toFixed(2);
+  const price = plan.priceCents
+    ? `$${(plan.priceCents / 100).toFixed(2)}`
+    : 'Free';
+  const interval = plan.interval === 'month' ? '/month' : '/year';
 
-    return (
-        <Pressable
-            onPress={onPress}
-            disabled={isLoading}
-            style={({ pressed }) => [
-                {
-                    borderRadius: 18,
-                    padding: 16,
-                    borderWidth: 1,
-                    borderColor: isMostPopular ? '#3b82f6' : 'rgba(148,163,184,0.6)',
-                    backgroundColor: '#020617',
-                    opacity: pressed || isLoading ? 0.7 : 1,
-                },
-            ]}
-        >
-            {isMostPopular ? (
-                <View
-                    style={{
-                        alignSelf: 'flex-start',
-                        paddingHorizontal: 8,
-                        paddingVertical: 2,
-                        borderRadius: 999,
-                        backgroundColor: 'rgba(59,130,246,0.16)',
-                        marginBottom: 6,
-                    }}
-                >
-                    <Text
-                        style={{
-                            fontSize: 10,
-                            letterSpacing: 1,
-                            fontWeight: '600',
-                            color: '#bfdbfe',
-                            textTransform: 'uppercase',
-                        }}
-                    >
-                        Most popular
-                    </Text>
-                </View>
-            ) : null}
-
-            <Text
-                style={{
-                    fontSize: 16,
-                    fontWeight: '600',
-                    color: '#f9fafb',
-                }}
-            >
-                {plan.name}
+  return (
+    <TouchableOpacity
+      onPress={onSelect}
+      disabled={isCurrentPlan}
+      style={styles.container}
+    >
+      <View style={[styles.card, isCurrentPlan && styles.cardCurrent]}>
+        <View style={styles.header}>
+          <View style={styles.titleContainer}>
+            <Text style={[getTypographyStyle('h3'), styles.title]}>
+              {plan.name}
             </Text>
-            <Text
-                style={{
-                    fontSize: 12,
-                    color: '#9ca3af',
-                    marginTop: 4,
-                }}
-            >
-                {plan.description}
-            </Text>
-
-            <View
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'baseline',
-                    marginTop: 10,
-                }}
-            >
-                <Text
-                    style={{
-                        fontSize: 20,
-                        fontWeight: '700',
-                        color: '#f9fafb',
-                    }}
-                >
-                    {price}
+            {isCurrentPlan && (
+              <View style={styles.badge}>
+                <Text style={[getTypographyStyle('caption'), styles.badgeText]}>
+                  Current
                 </Text>
-                <Text
-                    style={{
-                        marginLeft: 4,
-                        fontSize: 12,
-                        color: '#9ca3af',
-                    }}
-                >
-                    {plan.currency.toUpperCase()}/{plan.interval}
-                </Text>
-            </View>
-
-            <View style={{ marginTop: 8 }}>
-                {plan.features.slice(0, 3).map((feat) => (
-                    <View
-                        key={feat}
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'flex-start',
-                            marginTop: 4,
-                        }}
-                    >
-                        <View
-                            style={{
-                                width: 6,
-                                height: 6,
-                                borderRadius: 999,
-                                marginTop: 4,
-                                marginRight: 6,
-                                backgroundColor: '#22c55e',
-                            }}
-                        />
-                        <Text
-                            style={{
-                                fontSize: 12,
-                                color: '#d1d5db',
-                            }}
-                        >
-                            {feat}
-                        </Text>
-                    </View>
-                ))}
-            </View>
-
-            <Text
-                style={{
-                    marginTop: 12,
-                    fontSize: 12,
-                    fontWeight: '600',
-                    color: '#bfdbfe',
-                }}
-            >
-                {isLoading ? 'Opening…' : 'Select plan'}
+              </View>
+            )}
+          </View>
+          <View style={styles.priceContainer}>
+            <Text style={[getTypographyStyle('h2'), styles.price]}>
+              {price}
             </Text>
-        </Pressable>
-    );
+            <Text style={[getTypographyStyle('caption'), styles.interval]}>
+              {interval}
+            </Text>
+          </View>
+        </View>
+
+        {plan.description && (
+          <Text style={[getTypographyStyle('bodyMuted'), styles.description]}>
+            {plan.description}
+          </Text>
+        )}
+
+        {plan.perks && plan.perks.length > 0 && (
+          <View style={styles.features}>
+            {plan.perks.map((perk, index) => (
+              <View key={perk.id || index} style={styles.feature}>
+                <Check size={16} color={colors.primary} />
+                <Text style={[getTypographyStyle('body'), styles.featureText]}>
+                  {perk.label}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {!isCurrentPlan && (
+          <TouchableOpacity
+            style={styles.button}
+            onPress={onSelect}
+            accessibilityLabel={`Select ${plan.name} plan`}
+            accessibilityRole="button"
+          >
+            <Text style={[getTypographyStyle('body'), styles.buttonText]}>
+              Select Plan
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 16,
+  },
+  card: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  cardCurrent: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  titleContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  title: {
+    color: colors.foreground,
+  },
+  badge: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  badgeText: {
+    color: colors.primaryForeground,
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  priceContainer: {
+    alignItems: 'flex-end',
+  },
+  price: {
+    color: colors.foreground,
+  },
+  interval: {
+    color: colors.mutedForeground,
+  },
+  description: {
+    color: colors.mutedForeground,
+    marginBottom: 16,
+  },
+  features: {
+    gap: 12,
+    marginBottom: 16,
+  },
+  feature: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  featureText: {
+    color: colors.foreground,
+    flex: 1,
+  },
+  button: {
+    backgroundColor: colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: colors.primaryForeground,
+    fontWeight: '600',
+  },
+});

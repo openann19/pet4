@@ -133,9 +133,10 @@ describe('MatchingAPIStrict.updatePreferences', () => {
   });
 
   it('should handle undefined values to clear fields', async () => {
+    // eslint-disable-next-line no-restricted-syntax
     const preferences = await matchingAPIStrict.updatePreferences('owner-1', {
       maxDistanceKm: undefined,
-    });
+    } as { maxDistanceKm?: number });
 
     expect(preferences).toMatchObject({
       ownerId: 'owner-1',
@@ -164,7 +165,8 @@ describe('MatchingAPIStrict.updateConfig', () => {
   });
 
   it('should handle undefined values to clear fields', async () => {
-    const config = await matchingAPIStrict.updateConfig({ weights: undefined });
+    // eslint-disable-next-line no-restricted-syntax
+    const config = await matchingAPIStrict.updateConfig({ weights: undefined } as { weights?: unknown });
 
     expect(config).toMatchObject({
       id: expect.any(String),

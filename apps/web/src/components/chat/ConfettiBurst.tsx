@@ -16,10 +16,10 @@ import {
   Easing,
   runOnJS,
   type SharedValue,
+  MotionView,
 } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ConfettiParticle {
@@ -160,5 +160,5 @@ function ConfettiParticleView({ particle }: { particle: ConfettiParticle }): Rea
     borderRadius: 2,
   }));
 
-  return <AnimatedView style={style} />;
+  return <MotionView style={style} />;
 }

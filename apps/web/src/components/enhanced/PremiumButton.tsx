@@ -1,26 +1,37 @@
 import React, { useEffect } from 'react';
-import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
-import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { motion, useMotionValue, animate, type Variants, MotionView, usePressMotion } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import type { ButtonHTMLAttributes } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
-import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
+import { Button, type buttonVariants } from '@/components/ui/button';
+import type { VariantProps } from 'class-variance-authority';
 import { getAriaButtonAttributes } from '@/lib/accessibility';
 
-interface PremiumButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'gradient';
-  size?: 'sm' | 'md' | 'lg';
+interface PremiumButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {                                                                
+  variant?: 'default' | 'secondary' | 'outline' | 'ghost' | 'gradient';
+  size?: 'sm' | 'default' | 'lg';
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
   loading?: boolean;
   children: React.ReactNode;
 }
 
+/**
+ * PremiumButton - Enhanced button with animations
+ * 
+ * Composes the core Button component and adds:
+ * - Hover lift animation
+ * - Bounce on tap
+ * - Loading spinner
+ * - Icon support
+ * - Gradient variant (optional)
+ * 
+ * Maintains all core Button accessibility and styling standards.
+ */
 export function PremiumButton({
-  variant = 'primary',
-  size = 'md',
+  variant = 'default',
+  size = 'default',
   icon,
   iconPosition = 'left',
   loading = false,
@@ -30,8 +41,10 @@ export function PremiumButton({
   ...props
 }: PremiumButtonProps) {
   const _uiConfig = useUIConfig();
-  const hoverLift = useHoverLift({ scale: 1.05 });
-  const bounceOnTap = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
+  const pressMotion = usePressMotion({
+    scaleOnPress: 0.95,
+    scaleOnHover: 1.05,
+  });
   const rotation = useMotionValue(0);
 
   useEffect(() => {
@@ -49,51 +62,20 @@ export function PremiumButton({
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     haptics.impact('light');
-    bounceOnTap.handlePress();
     onClick?.(e);
   };
 
-  const variants = {
-    primary:
-      'bg-(--btn-primary-bg) text-(--btn-primary-fg) hover:bg-(--btn-primary-hover-bg) hover:text-(--btn-primary-hover-fg) active:bg-(--btn-primary-press-bg) active:text-(--btn-primary-press-fg) disabled:bg-(--btn-primary-disabled-bg) disabled:text-(--btn-primary-disabled-fg) focus-visible:ring-2 focus-visible:ring-[var(--btn-primary-focus-ring)]',
-    secondary:
-      'bg-(--btn-secondary-bg) text-(--btn-secondary-fg) hover:bg-(--btn-secondary-hover-bg) hover:text-(--btn-secondary-hover-fg) active:bg-(--btn-secondary-press-bg) active:text-(--btn-secondary-press-fg) disabled:bg-(--btn-secondary-disabled-bg) disabled:text-(--btn-secondary-disabled-fg) focus-visible:ring-2 focus-visible:ring-[var(--btn-secondary-focus-ring)]',
-    accent:
-      'bg-(--btn-primary-bg) text-(--btn-primary-fg) hover:bg-(--btn-primary-hover-bg) hover:text-(--btn-primary-hover-fg) active:bg-(--btn-primary-press-bg) active:text-(--btn-primary-press-fg) disabled:bg-(--btn-primary-disabled-bg) disabled:text-(--btn-primary-disabled-fg) focus-visible:ring-2 focus-visible:ring-[var(--btn-primary-focus-ring)]',
-    ghost:
-      'bg-(--btn-ghost-bg) text-(--btn-ghost-fg) hover:bg-(--btn-ghost-hover-bg) hover:text-(--btn-ghost-hover-fg) active:bg-(--btn-ghost-press-bg) active:text-(--btn-ghost-press-fg) disabled:bg-(--btn-ghost-disabled-bg) disabled:text-(--btn-ghost-disabled-fg) focus-visible:ring-2 focus-visible:ring-[var(--btn-ghost-focus-ring)]',
-    gradient:
-      'bg-linear-to-r from-[var(--btn-primary-bg)] via-[var(--btn-secondary-bg)] to-[var(--btn-primary-bg)] text-(--btn-primary-fg) hover:from-[var(--btn-primary-hover-bg)] hover:via-[var(--btn-secondary-hover-bg)] hover:to-[var(--btn-primary-hover-bg)] active:from-[var(--btn-primary-press-bg)] active:via-[var(--btn-secondary-press-bg)] active:to-[var(--btn-primary-press-bg)] disabled:from-[var(--btn-primary-disabled-bg)] disabled:via-[var(--btn-secondary-disabled-bg)] disabled:to-[var(--btn-primary-disabled-bg)] disabled:text-(--btn-primary-disabled-fg) focus-visible:ring-2 focus-visible:ring-[var(--btn-primary-focus-ring)]',
-  };
+  // Map size prop to Button size prop
+  const buttonSize: 'sm' | 'default' | 'lg' | 'icon' = size;
 
-  const sizes = {
-    sm: cn(
-      getSpacingClassesFromConfig({ paddingX: 'md', paddingY: 'sm' }),
-      getTypographyClasses('button'),
-      'min-h-11 min-w-11'
-    ),
-    md: cn(
-      getSpacingClassesFromConfig({ paddingX: 'lg', paddingY: 'sm' }),
-      getTypographyClasses('button'),
-      'min-h-11 min-w-11'
-    ),
-    lg: cn(
-      getSpacingClassesFromConfig({ paddingX: 'xl', paddingY: 'md' }),
-      getTypographyClasses('button'),
-      'min-h-11 min-w-11'
-    ),
-  };
+  // Map variant - gradient uses default with gradient overlay
+  const buttonVariant: VariantProps<typeof buttonVariants>['variant'] = 
+    variant === 'gradient' ? 'default' : variant;
 
   const buttonAriaAttrs = getAriaButtonAttributes({
-    label: props['aria-label'] ?? (typeof children === 'string' ? children : undefined),
+    label: props['aria-label'] ?? (typeof children === 'string' ? children : undefined),                                                                        
     disabled: loading ?? props.disabled,
   });
-
-  const buttonVariants: Variants = {
-    rest: { scale: 1, y: 0 },
-    hover: { scale: 1.05, y: -2 },
-    tap: { scale: 0.95 },
-  };
 
   const loadingVariants: Variants = {
     spinning: {
@@ -106,45 +88,41 @@ export function PremiumButton({
     },
   };
 
+  // Wrap Button with motion effects
   return (
-    <motion.button
-      onClick={handleClick}
-      onMouseEnter={hoverLift.handleEnter}
-      onMouseLeave={hoverLift.handleLeave}
-      variants={buttonVariants}
-      initial="rest"
-      animate="rest"
-      whileHover="hover"
-      whileTap="tap"
-      className={cn(
-        'relative overflow-hidden rounded-xl',
-        'shadow-lg transition-all duration-300',
-        'disabled:cursor-not-allowed',
-        'flex items-center justify-center',
-        getSpacingClassesFromConfig({ gap: 'sm' }),
-        variants[variant],
-        sizes[size],
-        className
-      )}
-      disabled={loading}
-      {...buttonAriaAttrs}
-      {...props}
+    <MotionView
+      {...pressMotion.motionProps}
+      className="inline-block"
     >
-      {loading ? (
-        <motion.div
-          variants={loadingVariants}
-          animate="spinning"
-          style={{ rotate: rotation }}
-          className="h-5 w-5 rounded-full border-2 border-current border-t-transparent"
-          aria-hidden="true"
-        />
-      ) : (
-        <>
-          {icon && iconPosition === 'left' && <span aria-hidden="true">{icon}</span>}
-          {children}
-          {icon && iconPosition === 'right' && <span aria-hidden="true">{icon}</span>}
-        </>
-      )}
-    </motion.button>
+        <Button
+          variant={buttonVariant}
+          size={buttonSize}
+          onClick={handleClick}
+          disabled={loading ?? props.disabled}
+          className={cn(
+            'relative overflow-hidden',
+            variant === 'gradient' && 'bg-gradient-to-r from-primary via-secondary to-primary hover:from-primary/90 hover:via-secondary/90 hover:to-primary/90',
+            className
+          )}
+          {...buttonAriaAttrs}
+          {...props}
+        >
+          {loading ? (
+            <motion.div
+              variants={loadingVariants}
+              animate="spinning"
+              style={{ rotate: rotation }}
+              className="h-5 w-5 rounded-full border-2 border-current border-t-transparent"                                                                         
+              aria-hidden="true"
+            />
+          ) : (
+            <>
+              {icon && iconPosition === 'left' && <span aria-hidden="true">{icon}</span>}                                                                           
+              {children}
+              {icon && iconPosition === 'right' && <span aria-hidden="true">{icon}</span>}                                                                          
+            </>
+          )}
+        </Button>
+    </MotionView>
   );
 }

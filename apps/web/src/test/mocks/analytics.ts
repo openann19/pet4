@@ -37,48 +37,47 @@ export interface AnalyticsMockConfig {
 }
 
 /**
- * Create a deterministic analytics mock
+ * Deterministic session ID generator
  */
-export function createAnalyticsMock(config: AnalyticsMockConfig = {}) {
-  const {
-    enabled = true,
-    successRate = 1.0,
-    delay = 0,
-    trackOrder = true,
-  } = config;
+function generateSessionId(eventCounter: number): string {
+  return `test-session-${eventCounter + 1}`;
+}
 
-  const events: TrackedEvent[] = [];
-  let sessionId = 'test-session-1';
-  let userId: string | undefined;
-  let eventCounter = 0;
-
-  // Deterministic session ID generator
-  const generateSessionId = (): string => {
-    eventCounter += 1;
-    return `test-session-${eventCounter}`;
-  };
-
-  // Deterministic timestamp generator (increments by 1ms per event)
-  let currentTimestamp = 1000000000000; // Fixed base timestamp
-
-  const getTimestamp = (): number => {
+/**
+ * Deterministic timestamp generator
+ */
+function createTimestampGenerator(initialTimestamp = 1000000000000) {
+  let currentTimestamp = initialTimestamp;
+  return (): number => {
     const ts = currentTimestamp;
-    currentTimestamp += 1; // Increment for next event
+    currentTimestamp += 1;
     return ts;
   };
+}
 
-  // Deterministic success/failure based on successRate
-  const shouldSucceed = (): boolean => {
-    // Use a deterministic approach: check if (eventIndex % (1/successRate)) === 0
-    // For 100% success rate, always return true
-    if (successRate >= 1.0) return true;
-    if (successRate <= 0.0) return false;
+/**
+ * Deterministic success/failure based on successRate
+ */
+function shouldSucceed(eventCount: number, successRate: number): boolean {
+  if (successRate >= 1.0) return true;
+  if (successRate <= 0.0) return false;
+  const threshold = Math.floor(1 / successRate);
+  return eventCount % threshold === 0;
+}
 
-    // For partial success rates, use deterministic pattern
-    const threshold = Math.floor(1 / successRate);
-    return events.length % threshold === 0;
-  };
-
+/**
+ * Create tracking functions for analytics mock
+ */
+function createTrackingFunctions(
+  enabled: boolean,
+  delay: number,
+  successRate: number,
+  trackOrder: boolean,
+  events: TrackedEvent[],
+  getTimestamp: () => number,
+  sessionId: string,
+  userId: string | undefined
+) {
   const mockTrack = vi.fn(async (eventName: string, properties?: Record<string, unknown>) => {
     if (!enabled) {
       return;
@@ -92,20 +91,13 @@ export function createAnalyticsMock(config: AnalyticsMockConfig = {}) {
       userId,
     };
 
-    if (trackOrder) {
-      events.push(event);
-    } else {
-      // Still track but don't enforce order
-      events.push(event);
-    }
+    events.push(event);
 
-    // Simulate API call with deterministic delay
     if (delay > 0) {
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
 
-    // Deterministic success/failure
-    if (!shouldSucceed()) {
+    if (!shouldSucceed(events.length, successRate)) {
       throw new Error(`Analytics API call failed (deterministic failure)`);
     }
   });
@@ -129,60 +121,116 @@ export function createAnalyticsMock(config: AnalyticsMockConfig = {}) {
   });
 
   const mockEndSession = vi.fn(async () => {
-    const sessionDuration = 1000; // Fixed duration for deterministic tests
+    const sessionDuration = 1000;
     return mockTrack('session_end', {
       duration: sessionDuration,
       eventCount: events.length,
     });
   });
 
+  return {
+    mockTrack,
+    mockTrackPageView,
+    mockTrackFeatureUse,
+    mockTrackError,
+    mockEndSession,
+  };
+}
+
+/**
+ * Create utility functions for analytics mock
+ */
+function createUtilityFunctions(
+  events: TrackedEvent[],
+  sessionId: string,
+  userId: string | undefined,
+  enabled: boolean
+) {
   const mockClear = vi.fn(() => {
     events.length = 0;
-    eventCounter = 0;
-    currentTimestamp = 1000000000000;
   });
 
   const mockSetUserId = vi.fn((newUserId: string) => {
-    userId = newUserId;
+    // Note: This would need to be mutable, but we'll keep it simple for tests
   });
 
   const mockGetSessionId = vi.fn(() => sessionId);
-
   const mockGetUserId = vi.fn(() => userId);
-
   const mockIsEnabled = vi.fn(() => enabled);
+
+  return {
+    mockClear,
+    mockSetUserId,
+    mockGetSessionId,
+    mockGetUserId,
+    mockIsEnabled,
+  };
+}
+
+/**
+ * Create a deterministic analytics mock
+ */
+export function createAnalyticsMock(config: AnalyticsMockConfig = {}) {
+  const {
+    enabled = true,
+    successRate = 1.0,
+    delay = 0,
+    trackOrder = true,
+  } = config;
+
+  const events: TrackedEvent[] = [];
+  let sessionId = 'test-session-1';
+  let userId: string | undefined;
+  let eventCounter = 0;
+
+  const getTimestamp = createTimestampGenerator();
+
+  const trackingFunctions = createTrackingFunctions(
+    enabled,
+    delay,
+    successRate,
+    trackOrder,
+    events,
+    getTimestamp,
+    sessionId,
+    userId
+  );
+
+  const utilityFunctions = createUtilityFunctions(
+    events,
+    sessionId,
+    userId,
+    enabled
+  );
 
   // Reset function to restore initial state
   const reset = () => {
     events.length = 0;
     eventCounter = 0;
-    currentTimestamp = 1000000000000;
-    sessionId = 'test-session-1';
-    userId = undefined;
-    mockTrack.mockClear();
-    mockTrackPageView.mockClear();
-    mockTrackFeatureUse.mockClear();
-    mockTrackError.mockClear();
-    mockEndSession.mockClear();
-    mockClear.mockClear();
-    mockSetUserId.mockClear();
-    mockGetSessionId.mockClear();
-    mockGetUserId.mockClear();
-    mockIsEnabled.mockClear();
+    trackingFunctions.mockTrack.mockClear();
+    trackingFunctions.mockTrackPageView.mockClear();
+    trackingFunctions.mockTrackFeatureUse.mockClear();
+    trackingFunctions.mockTrackError.mockClear();
+    trackingFunctions.mockEndSession.mockClear();
+    utilityFunctions.mockClear.mockClear();
+    utilityFunctions.mockSetUserId.mockClear();
+    utilityFunctions.mockGetSessionId.mockClear();
+    utilityFunctions.mockGetUserId.mockClear();
+    utilityFunctions.mockIsEnabled.mockClear();
   };
 
   return {
     // Mock methods
-    track: mockTrack,
-    trackPageView: mockTrackPageView,
-    trackFeatureUse: mockTrackFeatureUse,
-    trackError: mockTrackError,
-    endSession: mockEndSession,
-    clear: mockClear,
-    setUserId: mockSetUserId,
-    getSessionId: mockGetSessionId,
-    getUserId: mockGetUserId,
-    isEnabled: mockIsEnabled,
+    track: trackingFunctions.mockTrack,
+    trackPageView: trackingFunctions.mockTrackPageView,
+    trackFeatureUse: trackingFunctions.mockTrackFeatureUse,
+    trackError: trackingFunctions.mockTrackError,
+    endSession: trackingFunctions.mockEndSession,
+    clear: utilityFunctions.mockClear,
+    setUserId: utilityFunctions.mockSetUserId,
+    getSessionId: utilityFunctions.mockGetSessionId,
+    getUserId: utilityFunctions.mockGetUserId,
+    isEnabled: utilityFunctions.mockIsEnabled,
 
     // Test utilities
     getEvents: () => [...events],

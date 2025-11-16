@@ -1,11 +1,9 @@
 'use client';
-
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { Button } from '@/components/ui/button';
 import { Bell, BellRinging } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/badge';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -14,7 +12,9 @@ import {
   withSequence,
   interpolate,
   Extrapolation,
+  MotionView,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
@@ -34,7 +34,7 @@ export function PremiumNotificationBell(): JSX.Element {
   const notificationTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const allNotifications = useMemo<PremiumNotification[]>(
-    () => notifications || [],
+    () => notifications ?? [],
     [notifications]
   );
 
@@ -198,21 +198,21 @@ function BellIcon({ hasNewNotification, unreadCount, hasUrgent }: BellIconProps)
 
   if (hasNewNotification && unreadCount > 0) {
     return (
-      <AnimatedView style={animatedStyle}>
+      <MotionView style={animatedStyle}>
         <BellRinging size={20} weight="fill" className={iconClassName} aria-hidden="true" />
-      </AnimatedView>
+      </MotionView>
     );
   }
 
   return (
-    <AnimatedView style={animatedStyle}>
+    <MotionView style={animatedStyle}>
       <Bell
         size={20}
         weight={unreadCount > 0 ? 'fill' : 'regular'}
         className={iconClassName}
         aria-hidden="true"
       />
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -257,8 +257,8 @@ function BadgeAnimation({ unreadCount, hasUrgent }: BadgeAnimationProps): JSX.El
   }) as AnimatedStyle;
 
   return (
-    <AnimatedView style={badgeStyle} className="absolute -top-1 -right-1">
-      <AnimatedView style={pulseStyle}>
+    <MotionView style={badgeStyle} className="absolute -top-1 -right-1">
+      <MotionView style={pulseStyle}>
         <Badge
           variant={hasUrgent ? 'destructive' : 'default'}
           className="h-5 min-w-5 px-1 rounded-full text-xs font-bold flex items-center justify-center shadow-lg"
@@ -266,8 +266,8 @@ function BadgeAnimation({ unreadCount, hasUrgent }: BadgeAnimationProps): JSX.El
         >
           {unreadCount > 99 ? '99+' : unreadCount}
         </Badge>
-      </AnimatedView>
-    </AnimatedView>
+      </MotionView>
+    </MotionView>
   );
 }
 
@@ -306,7 +306,7 @@ function RippleEffect({ hasUrgent }: RippleEffectProps): JSX.Element {
   }) as AnimatedStyle;
 
   return (
-    <AnimatedView
+    <MotionView
       style={rippleStyle}
       className={cn(
         'absolute inset-0 rounded-full border-2 pointer-events-none',
@@ -315,7 +315,7 @@ function RippleEffect({ hasUrgent }: RippleEffectProps): JSX.Element {
       aria-hidden="true"
     >
       <span className="sr-only">Ripple effect</span>
-    </AnimatedView>
+    </MotionView>
   );
 }
 
@@ -345,12 +345,12 @@ function UrgentGlow(): JSX.Element {
   }) as AnimatedStyle;
 
   return (
-    <AnimatedView
+    <MotionView
       style={glowStyle}
       className="absolute inset-0 rounded-full pointer-events-none"
       aria-hidden="true"
     >
       <span className="sr-only">Urgent glow effect</span>
-    </AnimatedView>
+    </MotionView>
   );
 }

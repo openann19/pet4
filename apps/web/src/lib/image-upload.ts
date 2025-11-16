@@ -130,7 +130,7 @@ export async function uploadImage(
     // Validate file
     const validation = validateImageFile(file);
     if (!validation.valid) {
-      throw new Error(validation.error || 'Invalid image file');
+      throw new Error(validation.error ?? 'Invalid image file');
     }
 
     // Get original dimensions
@@ -147,7 +147,7 @@ export async function uploadImage(
       maxSizeMB: options.maxSizeMB ?? DEFAULT_OPTIONS.maxSizeMB ?? 1,
       maxWidthOrHeight: options.maxWidthOrHeight ?? DEFAULT_OPTIONS.maxWidthOrHeight ?? 1920,
       useWebWorker: options.useWebWorker ?? DEFAULT_OPTIONS.useWebWorker ?? true,
-      fileType: options.fileType || file.type,
+      fileType: options.fileType ?? file.type,
       initialQuality: options.initialQuality ?? DEFAULT_OPTIONS.initialQuality ?? 0.85,
     });
 
@@ -156,7 +156,7 @@ export async function uploadImage(
     const strippedFile = await stripExif(compressedFile);
 
     // Generate storage key
-    const key = `images/${generateULID()}.${strippedFile.type.split('/')[1] || 'jpg'}`;
+    const key = `images/${generateULID()}.${strippedFile.type.split('/')[1] ?? 'jpg'}`;
 
     // Convert to ArrayBuffer for storage
     const arrayBuffer = await strippedFile.arrayBuffer();

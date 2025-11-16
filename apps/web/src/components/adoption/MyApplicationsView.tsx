@@ -22,6 +22,7 @@ import {
   Warning,
   XCircle,
 } from '@phosphor-icons/react';
+import { isTruthy } from '@petspark/shared';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -55,7 +56,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
       const userApps = await adoptionService.getUserApplications(user.id);
 
       const appsWithProfiles: ApplicationWithProfile[] = userApps.map((app) => {
-        const profile = (profiles || []).find((p) => p._id === app.adoptionProfileId);
+        const profile = (profiles ?? []).find((p) => p._id === app.adoptionProfileId);
         const result: ApplicationWithProfile = {
           ...app,
         };
@@ -198,7 +199,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
                         <div className="flex items-start justify-between gap-4 mb-2">
                           <div>
                             <CardTitle className="text-2xl">
-                              {application.profile?.petName || 'Unknown Pet'}
+                              {application.profile?.petName ?? 'Unknown Pet'}
                             </CardTitle>
                             <CardDescription>
                               {application.profile?.breed} • {application.profile?.age} years old

@@ -5,6 +5,7 @@ import { springConfigs } from '@/effects/reanimated/transitions';
 import { useUIConfig } from '@/hooks/use-ui-config';
 import { useMemo } from 'react';
 import { useAnimatedStyle, useSharedValue, withSpring } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseMoodThemeOptions {
   text: string;
@@ -72,7 +73,7 @@ export function useMoodTheme(options: UseMoodThemeOptions): UseMoodThemeReturn {
     ];
   }, [text, enabled, theme.adaptiveMood, theme.gradientIntensity]);
 
-  const gradientOpacity = useSharedValue(0);
+  const gradientOpacity = useSharedValue<number>(0);
 
   if (enabled && theme.adaptiveMood) {
     gradientOpacity.value = withSpring(1, springConfigs.smooth);

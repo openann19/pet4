@@ -1,8 +1,13 @@
-'use client';
-
+'use client';;
 import React, { useState, useCallback, useRef, useEffect, useId } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  animate,
+  MotionView,
+} from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
@@ -54,11 +59,11 @@ export function PremiumInput({
   const [hasValue, setHasValue] = useState(Boolean(value));
   const inputRef = useRef<HTMLInputElement>(null);
   const generatedId = useId();
-  const inputId = id || generatedId;
+  const inputId = id ?? generatedId;
   const labelId = `${inputId}-label`;
   const helperTextId = helperText ? `${inputId}-helper` : undefined;
   const errorId = error ? `${inputId}-error` : undefined;
-  const ariaDescribedBy = [helperTextId, errorId].filter(Boolean).join(' ') || undefined;
+  const ariaDescribedBy = [helperTextId, errorId].filter(Boolean).join(' ') || undefined; // Keep || for empty string check
 
   const hoverLift = useHoverLift({ scale: 1.01 });
   const labelScale = useSharedValue(hasValue || isFocused ? 0.85 : 1);
@@ -215,18 +220,18 @@ export function PremiumInput({
         onMouseEnter={hoverLift.handleEnter}
         onMouseLeave={hoverLift.handleLeave}
       >
-        <AnimatedView
+        <MotionView
           style={borderStyle}
           className="absolute inset-0 rounded-xl pointer-events-none"
         />
 
         {leftIcon && (
-          <AnimatedView style={iconStyle} className={cn(
+          <MotionView style={iconStyle} className={cn(
             'shrink-0 text-muted-foreground',
             getSpacingClassesFromConfig({ marginX: 'sm' })
           )} aria-hidden="true">
             {leftIcon}
-          </AnimatedView>
+          </MotionView>
         )}
 
         {label && (
@@ -240,7 +245,7 @@ export function PremiumInput({
         )}
 
         {label && (
-          <AnimatedView
+          <MotionView
             style={labelStyle}
             className={cn(
               'absolute left-4 pointer-events-none transition-colors',
@@ -253,7 +258,7 @@ export function PremiumInput({
             aria-hidden="true"
           >
             {label}
-          </AnimatedView>
+          </MotionView>
         )}
 
         <input
@@ -269,7 +274,7 @@ export function PremiumInput({
             labelledBy: label ? labelId : undefined,
             describedBy: ariaDescribedBy,
             invalid: error ? true : undefined,
-            label: label ? undefined : (props['aria-label'] || props.placeholder || 'Input'),
+            label: label ? undefined : (props['aria-label'] ?? props.placeholder ?? 'Input'),
           })}
           className={cn(
             'flex-1 bg-transparent outline-none placeholder:text-muted-foreground/50',
@@ -326,8 +331,7 @@ export function PremiumInput({
           {rightIcon && <div className="shrink-0 text-muted-foreground" aria-hidden="true">{rightIcon}</div>}
         </div>
       </div>
-
-      {(error || helperText) && (
+      {(error ?? helperText) && (
         <div
           id={error ? errorId : helperTextId}
           className={cn(
@@ -339,7 +343,7 @@ export function PremiumInput({
           {...(error ? getAriaAlertAttributes({ role: 'alert', live: 'polite' }) : {})}
         >
           {error ? <WarningCircle size={12} aria-hidden="true" /> : null}
-          <span>{error || helperText}</span>
+          <span>{error ?? helperText}</span>
         </div>
       )}
     </div>

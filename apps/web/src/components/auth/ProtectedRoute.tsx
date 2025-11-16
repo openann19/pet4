@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Spinner } from '@/components/ui/spinner';
 import { getKYCStatus } from '@/lib/kyc-service';
 import { createLogger } from '@/lib/logger';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('ProtectedRoute');
 

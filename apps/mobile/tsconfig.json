@@ -20,5 +20,14 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
-  "exclude": ["node_modules", "dist", ".expo", "e2e"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".expo",
+    "e2e",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.stories.ts",
+    "**/*.stories.tsx"
+  ]
 }

@@ -95,7 +95,7 @@ try {
     stdio: 'inherit',
     cwd: ROOT 
   })
-} catch (e) {
+} catch (_e) {
   die('Reanimated hooks parity check failed. Run: bash scripts/check_mobile_parity.sh')
   ERROR = 1
 }

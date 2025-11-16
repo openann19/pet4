@@ -3,7 +3,7 @@
  * Captures screenshots across all screens × platforms × themes × fontScales × states
  */
 
-import { device, expect, element, by, waitFor } from 'detox';
+import { device, element, by, waitFor } from 'detox';
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -49,17 +49,17 @@ const traversalLog: Array<{
   success: boolean;
 }> = [];
 
-function loadInventory(): ScreenConfig[] {
+function _loadInventory(): ScreenConfig[] {
   return SCREENS;
 }
 
-async function setTheme(theme: 'light' | 'dark'): Promise<void> {
+async function setTheme(_theme: 'light' | 'dark'): Promise<void> {
   // Navigate to settings if needed, or use system theme
   // For now, we'll rely on system theme detection
   // In a real implementation, you'd toggle theme via UI
 }
 
-async function setFontScale(scale: 'default' | 'large'): Promise<void> {
+async function setFontScale(_scale: 'default' | 'large'): Promise<void> {
   // Set font scale via system settings
   // This would typically require device configuration
   // For now, we'll use default
@@ -142,7 +142,7 @@ async function captureState(
       success: true,
     });
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+    const _err = error instanceof Error ? error : new Error(String(error));
     traversalLog.push({
       screen: screen.name,
       platform,

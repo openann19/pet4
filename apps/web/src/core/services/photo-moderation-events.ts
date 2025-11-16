@@ -27,11 +27,9 @@ export class PhotoModerationEventService {
   private wsManager: WebSocketManager | null = null;
 
   private getWSManager(): WebSocketManager {
-    if (!this.wsManager) {
-      this.wsManager = new WebSocketManager({
-        url: config.current.WS_URL,
-      });
-    }
+    this.wsManager ??= new WebSocketManager({
+      url: config.current.WS_URL,
+    });
     return this.wsManager;
   }
 

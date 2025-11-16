@@ -10,6 +10,7 @@ import { api } from './api';
 import { createLogger } from './logger';
 import type { APIError } from './contracts';
 import type { UserProfile, Session } from './enhanced-auth';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('GDPRService');
 

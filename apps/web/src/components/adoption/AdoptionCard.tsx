@@ -1,5 +1,6 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { memo, useCallback } from 'react';
 import { Heart, MapPin, CheckCircle, PawPrint } from '@phosphor-icons/react';
 import { Card } from '@/components/ui/card';
@@ -8,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import type { AdoptionProfile, AdoptionStatus } from '@/lib/adoption-types';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
 
@@ -93,7 +93,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
       : t.common?.years ?? 'years';
 
   return (
-    <AnimatedView
+    <MotionView
       style={cardAnimation.animatedStyle}
       onMouseEnter={cardAnimation.handleEnter}
       onMouseLeave={cardAnimation.handleLeave}
@@ -125,7 +125,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
               {statusLabel}
             </Badge>
             {onFavorite && (
-              <AnimatedView
+              <MotionView
                 style={favoriteButtonAnimation.animatedStyle}
                 onMouseEnter={favoriteButtonAnimation.handleMouseEnter}
                 onMouseLeave={favoriteButtonAnimation.handleMouseLeave}
@@ -141,7 +141,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
                   weight={isFavorited ? 'fill' : 'regular'}
                   className={isFavorited ? 'text-destructive' : 'text-foreground'}
                 />
-              </AnimatedView>
+              </MotionView>
             )}
           </div>
 
@@ -228,7 +228,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
           </div>
         </div>
       </Card>
-    </AnimatedView>
+    </MotionView>
   );
 }
 

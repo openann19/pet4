@@ -218,7 +218,7 @@ export function useFeatureFlag(flagKey: FeatureFlagKey): boolean {
     }
 
     if (flag.rolloutPercentage < 100) {
-      const userId = localStorage.getItem('user-id') || 'anonymous';
+      const userId = localStorage.getItem('user-id') ?? 'anonymous';
       const hash = hashString(userId + flagKey);
       const userPercentile = hash % 100;
       setIsEnabled(userPercentile < flag.rolloutPercentage);
@@ -241,7 +241,7 @@ export function useFeatureFlags(): Record<FeatureFlagKey, boolean> {
 
     Object.keys(DEFAULT_FLAGS).forEach((key) => {
       const flagKey = key as FeatureFlagKey;
-      const flag = flags?.[flagKey] || DEFAULT_FLAGS[flagKey];
+      const flag = flags?.[flagKey] ?? DEFAULT_FLAGS[flagKey];
 
       if (!flag.enabled) {
         result[flagKey] = false;
@@ -249,7 +249,7 @@ export function useFeatureFlags(): Record<FeatureFlagKey, boolean> {
       }
 
       if (flag.rolloutPercentage < 100) {
-        const userId = localStorage.getItem('user-id') || 'anonymous';
+        const userId = localStorage.getItem('user-id') ?? 'anonymous';
         const hash = hashString(userId + flagKey);
         const userPercentile = hash % 100;
         result[flagKey] = userPercentile < flag.rolloutPercentage;
@@ -274,7 +274,7 @@ export async function updateFeatureFlag(
 
     // Update local cache for immediate UI updates
     const currentFlags =
-      (await storage.get<Record<FeatureFlagKey, FeatureFlag>>('feature-flags')) || DEFAULT_FLAGS;
+      (await storage.get<Record<FeatureFlagKey, FeatureFlag>>('feature-flags')) ?? DEFAULT_FLAGS;
     currentFlags[flagKey] = {
       ...currentFlags[flagKey],
       ...updates,
@@ -285,7 +285,7 @@ export async function updateFeatureFlag(
   } catch {
     // Fallback to local storage if API fails
     const currentFlags =
-      (await storage.get<Record<FeatureFlagKey, FeatureFlag>>('feature-flags')) || DEFAULT_FLAGS;
+      (await storage.get<Record<FeatureFlagKey, FeatureFlag>>('feature-flags')) ?? DEFAULT_FLAGS;
     currentFlags[flagKey] = {
       ...currentFlags[flagKey],
       ...updates,
@@ -304,7 +304,7 @@ export async function getABTestVariant(
     return await featureFlagsApi.getABTestVariant(testId, userId);
   } catch {
     // Fallback to local storage if API fails
-    const tests = (await storage.get<Record<string, ABTest>>('ab-tests')) || {};
+    const tests = (await storage.get<Record<string, ABTest>>('ab-tests')) ?? {};
     const test = tests[testId];
 
     if (!test?.enabled) {
@@ -352,7 +352,7 @@ export async function trackABTestExposure(
           variantId: string;
           timestamp: string;
         }[]
-      >('ab-test-exposures')) || [];
+      >('ab-test-exposures')) ?? [];
 
     exposures.push({
       testId,

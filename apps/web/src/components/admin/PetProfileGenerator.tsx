@@ -93,7 +93,7 @@ JSON format:
 
       setGeneratedCount(data.pets.length);
 
-      const existingIds = new Set((pets || []).map((p: GeneratedPet) => p.id));
+      const existingIds = new Set((pets ?? []).map((p: GeneratedPet) => p.id));
       let newPetsAdded = 0;
 
       const newPets = data.pets.map((pet: GeneratedPet) => {
@@ -127,7 +127,7 @@ JSON format:
         };
       });
 
-      setPets((currentPets) => [...(currentPets || []), ...newPets]);
+      setPets((currentPets) => [...(currentPets ?? []), ...newPets]);
 
       toast.success(`Successfully generated and added ${String(newPetsAdded ?? '')} new pet profiles!`, {
         duration: 5000,

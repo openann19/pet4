@@ -18,6 +18,7 @@ import { moderationTasksRouter } from './moderation-tasks.js';
 import { photosRouter } from './photos.js';
 import { eventsRouter } from './events.js';
 import { syncRouter } from './sync.js';
+import { callsRouter } from './calls.js';
 
 export const apiRouter: Router = Router();
 
@@ -41,6 +42,7 @@ apiRouter.use('/admin/moderation', moderationTasksRouter);
 apiRouter.use('/photos', photosRouter);
 apiRouter.use('/events', eventsRouter);
 apiRouter.use('/sync', syncRouter);
+apiRouter.use('/calls', callsRouter);
 
 // Placeholder endpoint
 apiRouter.get('/', (_req: Request, res: Response) => {

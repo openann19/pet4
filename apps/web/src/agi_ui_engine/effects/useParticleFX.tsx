@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback } from 'react';
-import { useSharedValue, withTiming, useAnimatedStyle, Easing } from '@petspark/motion';
+import { useCallback, useState } from 'react';
+import { useAnimatedStyle } from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from '@/hooks/use-ui-config';
 
@@ -23,10 +23,10 @@ export interface UseParticleFXOptions {
 }
 
 export interface UseParticleFXReturn {
-  particles: ReturnType<typeof useSharedValue<Particle[]>>;
+  particles: { value: Particle[] };
   trigger: (x: number, y: number) => void;
   animatedStyle: AnimatedStyle;
-  isActive: ReturnType<typeof useSharedValue<boolean>>;
+  isActive: { value: boolean };
 }
 
 /**
@@ -51,8 +51,12 @@ export function useParticleFX(options: UseParticleFXOptions = {}): UseParticleFX
 
   const { animation } = useUIConfig();
 
-  const particles = useSharedValue<Particle[]>([]);
-  const isActive = useSharedValue(false);
+  const [particlesState, setParticlesState] = useState<Particle[]>([]);
+  const [isActiveState, setIsActiveState] = useState<boolean>(false);
+  
+  // Create compatible API with .value property
+  const particles = { value: particlesState };
+  const isActive = { value: isActiveState };
 
   const generateParticles = useCallback(
     (x: number, y: number): Particle[] => {
@@ -84,27 +88,17 @@ export function useParticleFX(options: UseParticleFXOptions = {}): UseParticleFX
         return;
       }
 
-      isActive.value = true;
-      particles.value = generateParticles(x, y);
+      setIsActiveState(true);
+      setParticlesState(generateParticles(x, y));
 
-      particles.value = particles.value.map((particle) => ({
-        ...particle,
-        opacity: withTiming(0, {
-          duration,
-          easing: Easing.out(Easing.ease),
-        }),
-        scale: withTiming(0, {
-          duration,
-          easing: Easing.out(Easing.ease),
-        }),
-      }));
-
+      // Note: We can't animate individual particle properties with withTiming in the array
+      // The animation will be handled by the animatedStyle hook
       setTimeout(() => {
-        isActive.value = false;
-        particles.value = [];
+        setIsActiveState(false);
+        setParticlesState([]);
       }, duration);
     },
-    [enabled, animation.showParticles, generateParticles, particles, isActive, duration]
+    [enabled, animation.showParticles, generateParticles, duration]
   );
 
   const animatedStyle = useAnimatedStyle(() => {

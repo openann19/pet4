@@ -26,7 +26,7 @@ export function useReactions(options: UseReactionsOptions): UseReactionsReturn {
       haptics.trigger('selection');
 
       setMessages((current) =>
-        (current || []).map((msg) => {
+        (current ?? []).map((msg) => {
           if (msg.id === messageId) {
             const reactions = Array.isArray(msg.reactions) ? msg.reactions : [];
             const existingReaction = reactions.find((r) => r.userId === currentUserId);

@@ -25,7 +25,7 @@ export interface CDNConfig {
 }
 
 export const CDN_CONFIG: CDNConfig = {
-  baseUrl: import.meta.env.VITE_CDN_URL || 'https://cdn.petspark.com',
+  baseUrl: (import.meta.env.VITE_CDN_URL as string | undefined) ?? 'https://cdn.petspark.com',
   imageOptimization: {
     formats: ['avif', 'webp', 'jpeg'],
     quality: [75, 85, 95],
@@ -68,7 +68,8 @@ export function generateCDNImageUrl(
 
     return `${url.pathname}?${params.toString()}`
   } catch (error) {
-    logger.warn('Failed to generate CDN URL, using original', { path, error })
+    const normalized = error instanceof Error ? error : new Error(String(error));
+    logger.warn('Failed to generate CDN URL, using original', { path, error: normalized.message });
     return path
   }
 }

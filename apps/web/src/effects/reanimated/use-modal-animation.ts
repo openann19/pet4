@@ -1,9 +1,9 @@
 'use client';
 
-import { useMotionValue, animate, type MotionValue } from 'framer-motion';
+import { useMotionValue, animate, type MotionValue, type Variants } from '@petspark/motion';
 import { useEffect } from 'react';
-import type { Variants } from 'framer-motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
+import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 export interface UseModalAnimationOptions {
   isVisible: boolean;
@@ -16,6 +16,7 @@ export interface UseModalAnimationReturn {
   scale: MotionValue<number>;
   y: MotionValue<number>;
   variants: Variants;
+  style: AnimatedStyle;
 }
 
 export function useModalAnimation(options: UseModalAnimationOptions): UseModalAnimationReturn {
@@ -89,10 +90,18 @@ export function useModalAnimation(options: UseModalAnimationOptions): UseModalAn
     },
   };
 
+  // Create style object from motion values for use with MotionView
+  const style: AnimatedStyle = {
+    opacity,
+    scale,
+    y,
+  };
+
   return {
     opacity,
     scale,
     y,
     variants,
+    style,
   };
 }

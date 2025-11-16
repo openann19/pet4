@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
-import { getTypographyClasses } from '@/lib/typography';
+import { getTypographyClasses, type TypographyVariantInput } from '@/lib/typography';
 
 import {
     type CropSize,
@@ -56,11 +56,11 @@ export function DiscoveryFiltersMediaTab({ draft, onDraftChange }: MediaTabProps
             <div className="space-y-6 py-2">
                 {/* Crop size */}
                 <div>
-                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('subheading' as TypographyVariantInput)}`}>
                         <Camera size={18} weight="bold" />
                         Photo Crop Size
                     </Label>
-                    <p className={`mb-3 ${getTypographyClasses('bodySmall')}`}>
+                    <p className={`mb-3 ${getTypographyClasses('bodySmall' as TypographyVariantInput)}`}>
                         Filter profiles by photo aspect ratio
                     </p>
                     <div className="grid grid-cols-2 gap-2">
@@ -82,7 +82,7 @@ export function DiscoveryFiltersMediaTab({ draft, onDraftChange }: MediaTabProps
                                 )}
                             >
                                 <div className="mb-1 text-2xl">{icon}</div>
-                                <div className={getTypographyClasses('bodyMedium')}>{label}</div>
+                                <div className={getTypographyClasses('bodyMedium' as TypographyVariantInput)}>{label}</div>
                             </button>
                         ))}
                     </div>
@@ -92,11 +92,11 @@ export function DiscoveryFiltersMediaTab({ draft, onDraftChange }: MediaTabProps
 
                 {/* Photo quality */}
                 <div>
-                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('subheading' as TypographyVariantInput)}`}>
                         <Sparkle size={18} weight="bold" />
                         Photo Quality
                     </Label>
-                    <p className={`mb-3 ${getTypographyClasses('bodySmall')}`}>
+                    <p className={`mb-3 ${getTypographyClasses('bodySmall' as TypographyVariantInput)}`}>
                         Prefer high-quality or verified photos
                     </p>
                     <div className="flex flex-col gap-2">
@@ -151,7 +151,7 @@ export function DiscoveryFiltersMediaTab({ draft, onDraftChange }: MediaTabProps
 
                 {/* Video content */}
                 <div>
-                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('subheading' as TypographyVariantInput)}`}>
                         <VideoCamera size={18} weight="bold" />
                         Video Content
                     </Label>
@@ -173,11 +173,11 @@ export function DiscoveryFiltersMediaTab({ draft, onDraftChange }: MediaTabProps
 
                 {/* Min photos */}
                 <div>
-                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('subheading' as TypographyVariantInput)}`}>
                         <Camera size={18} weight="bold" />
                         Minimum Photos
                     </Label>
-                    <p className={`mb-3 ${getTypographyClasses('bodySmall')}`}>
+                    <p className={`mb-3 ${getTypographyClasses('bodySmall' as TypographyVariantInput)}`}>
                         Profiles must have at least this many photos
                     </p>
                     <div className="mb-2 flex items-center justify-between">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, animate } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
@@ -31,22 +31,40 @@ export function usePageTransitionWrapper(
 
   useEffect(() => {
     setIsVisible(true);
-    opacity.value = withTiming(1, { duration });
-    translateY.value = withSpring(0, springConfigs.smooth);
-    scale.value = withSpring(1, springConfigs.smooth);
+    const durationSeconds = duration / 1000;
+    animate(opacity, 1, {
+      duration: durationSeconds,
+    });
+    animate(translateY, 0, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
+    animate(scale, 1, {
+      type: 'spring',
+      damping: springConfigs.smooth.damping,
+      stiffness: springConfigs.smooth.stiffness,
+    });
 
     return () => {
-      opacity.value = withTiming(0, { duration: duration * 0.5 });
-      translateY.value = withTiming(direction === 'up' ? -30 : 30, { duration: duration * 0.5 });
-      scale.value = withTiming(0.98, { duration: duration * 0.5 });
+      const exitDurationSeconds = (duration * 0.5) / 1000;
+      animate(opacity, 0, {
+        duration: exitDurationSeconds,
+      });
+      animate(translateY, direction === 'up' ? -30 : 30, {
+        duration: exitDurationSeconds,
+      });
+      animate(scale, 0.98, {
+        duration: exitDurationSeconds,
+      });
       setIsVisible(false);
     };
   }, [key, duration, direction, opacity, translateY, scale]);
 
   const style = useAnimatedStyle(() => {
     return {
-      opacity: opacity.value,
-      transform: [{ translateY: translateY.value }, { scale: scale.value }],
+      opacity: opacity.get(),
+      transform: [{ translateY: translateY.get() }, { scale: scale.get() }],
     };
   }) as AnimatedStyle;
 

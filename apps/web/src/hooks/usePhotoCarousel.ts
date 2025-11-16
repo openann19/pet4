@@ -24,7 +24,7 @@ export function usePhotoCarousel({ photos, initialIndex = 0 }: UsePhotoCarouselO
     setCurrentIndex(index);
   }, []);
 
-  const currentPhoto = photos[currentIndex] || '';
+  const currentPhoto = photos[currentIndex] ?? '';
   const hasMultiplePhotos = photos.length > 1;
 
   return {

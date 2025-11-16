@@ -5,8 +5,7 @@
  * Refactored from 1248 lines to use hooks and component modules
  */
 
-'use client';
-
+'use client';;
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import {
@@ -15,6 +14,7 @@ import {
   withRepeat,
   withSequence,
   withTiming,
+  MotionView,
 } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -36,7 +36,6 @@ import {
   SlidersHorizontal,
   Sparkle,
 } from '@phosphor-icons/react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { haptics } from '@/lib/haptics';
@@ -154,9 +153,9 @@ export function PremiumNotificationCenter({
         <SheetHeader className="px-6 py-4 border-b border-border/50 bg-linear-to-br from-background via-primary/5 to-accent/5 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <AnimatedView style={bellStyle}>
+              <MotionView style={bellStyle}>
                 <BellRinging size={28} weight="fill" className="text-primary" />
-              </AnimatedView>
+              </MotionView>
               <div>
                 <SheetTitle className="text-xl">Notifications</SheetTitle>
                 {notifications.unreadCount > 0 && (
@@ -217,14 +216,14 @@ export function PremiumNotificationCenter({
           </div>
 
           {showSettings && (
-            <AnimatedView style={settingsStyle} className="overflow-hidden">
+            <MotionView style={settingsStyle} className="overflow-hidden">
               <div className="pt-4 space-y-4 border-t border-border/30 mt-4">
                 <NotificationSettings
                   preferences={preferences}
                   onPreferencesChange={setPreferences}
                 />
               </div>
-            </AnimatedView>
+            </MotionView>
           )}
         </SheetHeader>
 

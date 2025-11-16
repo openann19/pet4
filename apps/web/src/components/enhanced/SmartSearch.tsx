@@ -1,6 +1,5 @@
 import { useState, useRef, useMemo } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
-import { Presence } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { MagnifyingGlass, X, Clock, TrendUp, Sparkle } from '@phosphor-icons/react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -94,7 +93,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
 
     if (showHistory) {
       setSearchHistory((prev) => {
-        const updated = [queryText, ...(prev || []).filter((q) => q !== queryText)].slice(0, 10);
+        const updated = [queryText, ...(prev ?? []).filter((q) => q !== queryText)].slice(0, 10);
         return updated;
       });
     }
@@ -167,9 +166,8 @@ export function SmartSearch<T extends Record<string, unknown>>({
           </button>
         )}
       </div>
-
       {presence.shouldRender && (
-        <AnimatedView
+        <MotionView
           style={presence.animatedStyle}
         >
           <Card className="absolute top-full mt-2 w-full max-h-100 overflow-y-auto shadow-xl border z-50 p-2">
@@ -205,7 +203,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
               </>
             ) : (
               <>
-                {showHistory && (searchHistory || []).length > 0 && (
+                {showHistory && (searchHistory ?? []).length > 0 && (
                   <div className="space-y-1 mb-3">
                     <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -221,7 +219,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
                         Clear
                       </Button>
                     </div>
-                    {(searchHistory || []).slice(0, 5).map((historyQuery, index) => (
+                    {(searchHistory ?? []).slice(0, 5).map((historyQuery, index) => (
                       <button
                         key={index}
                         onClick={() => handleHistoryClick(historyQuery)}
@@ -234,14 +232,14 @@ export function SmartSearch<T extends Record<string, unknown>>({
                   </div>
                 )}
 
-                {showTrending && (trendingSearches || []).length > 0 && (
+                {showTrending && (trendingSearches ?? []).length > 0 && (
                   <div className="space-y-1">
                     <div className="px-2 py-1 text-xs font-medium text-muted-foreground flex items-center gap-2">
                       <TrendUp size={14} />
                       Trending
                     </div>
                     <div className="flex flex-wrap gap-2 p-2">
-                      {(trendingSearches || []).map((trending, index) => (
+                      {(trendingSearches ?? []).map((trending, index) => (
                         <Badge
                           key={index}
                           variant="secondary"
@@ -257,7 +255,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
               </>
             )}
           </Card>
-        </AnimatedView>
+        </MotionView>
       )}
     </div>
   );

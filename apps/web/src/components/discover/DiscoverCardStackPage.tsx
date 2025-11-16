@@ -1,8 +1,6 @@
-'use client';
-
+'use client';;
 import React, { useCallback, useRef, useState, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { useDiscoverKeyboard } from '@/hooks/use-discover-keyboard';
@@ -166,7 +164,6 @@ export function DiscoverCardStackPage({
           />
         </section>
       )}
-
       {/* Card Stack Region */}
       <section
         aria-label="Discover pets card stack"
@@ -175,7 +172,7 @@ export function DiscoverCardStackPage({
         <div className="relative w-full max-w-md aspect-[3/4]">
           {/* Next card (underneath) */}
           {nextPet && (
-            <AnimatedView
+            <MotionView
               style={nextCardStyle}
               className="absolute inset-0 rounded-3xl overflow-hidden shadow-xl bg-slate-900"
             >
@@ -186,11 +183,11 @@ export function DiscoverCardStackPage({
                 aria-hidden="true"
               />
               <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
-            </AnimatedView>
+            </MotionView>
           )}
 
           {/* Current card (on top) */}
-          <AnimatedView
+          <MotionView
             style={cardStyle}
             className="relative w-full h-full rounded-3xl overflow-hidden shadow-xl bg-slate-900"
           >
@@ -240,10 +237,9 @@ export function DiscoverCardStackPage({
                 </div>
               </button>
             </article>
-          </AnimatedView>
+          </MotionView>
         </div>
       </section>
-
       {/* Action Buttons */}
       <nav
         aria-label="Match actions"

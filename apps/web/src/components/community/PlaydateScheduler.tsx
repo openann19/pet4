@@ -89,7 +89,7 @@ export default function PlaydateScheduler({
 
     // Memoize filtered playdates to avoid recalculation on every render
     const matchPlaydates = useMemo(
-        () => (playdates || []).filter((p: Playdate) => p.matchId === match.id),
+        () => (playdates ?? []).filter((p: Playdate) => p.matchId === match.id),
         [playdates, match.id]
     );
 
@@ -146,7 +146,7 @@ export default function PlaydateScheduler({
             updatedAt: new Date().toISOString(),
         };
 
-        setPlaydates((current: Playdate[] | undefined) => [...(current || []), newPlaydate]);
+        setPlaydates((current: Playdate[] | undefined) => [...(current ?? []), newPlaydate]);
         haptics.success();
         toast.success('Playdate scheduled!', {
             description: `Invitation sent for ${format(new Date(playdateDate), 'MMM dd, yyyy')}`,
@@ -240,7 +240,7 @@ export default function PlaydateScheduler({
     const handleConfirmPlaydate = useCallback(
         (playdateId: string) => {
             setPlaydates((current: Playdate[] | undefined) =>
-                (current || []).map((p: Playdate) =>
+                (current ?? []).map((p: Playdate) =>
                     p.id === playdateId
                         ? { ...p, status: 'confirmed' as PlaydateStatus, updatedAt: new Date().toISOString() }
                         : p
@@ -255,7 +255,7 @@ export default function PlaydateScheduler({
     const handleCancelPlaydate = useCallback(
         (playdateId: string) => {
             setPlaydates((current: Playdate[] | undefined) =>
-                (current || []).map((p: Playdate) =>
+                (current ?? []).map((p: Playdate) =>
                     p.id === playdateId
                         ? { ...p, status: 'cancelled' as PlaydateStatus, updatedAt: new Date().toISOString() }
                         : p

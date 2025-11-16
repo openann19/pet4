@@ -1,12 +1,12 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import * as React from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { ChatMessage, TypingUser } from '@/lib/chat-types';
 import { groupMessagesByDate } from '@/lib/chat-utils';
 import { MessageItem } from './MessageItem';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import TypingIndicatorComponent from '../TypingIndicator';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { useFeatureFlag } from '@/lib/feature-flags';
@@ -46,7 +46,7 @@ export function VirtualMessageList({
   const useVirtualizedList = useFeatureFlag('chat.virtualization');
   const containerRef = React.useRef<HTMLDivElement>(null);
   const sizeCacheRef = React.useRef<Map<number, number>>(new Map());
-  const groups = React.useMemo(() => groupMessagesByDate(messages || []), [messages]);
+  const groups = React.useMemo(() => groupMessagesByDate(messages ?? []), [messages]);
 
   const flat = React.useMemo((): FlatRow[] => {
     const out: FlatRow[] = [];
@@ -146,11 +146,11 @@ export function VirtualMessageList({
       <div ref={containerRef} className={`flex-1 overflow-y-auto p-4 ${className ?? ''}`}>
         {groups.map((g) => (
           <React.Fragment key={g.date}>
-            <AnimatedView style={headerFx.animatedStyle} className="flex justify-center py-2">
+            <MotionView style={headerFx.animatedStyle} className="flex justify-center py-2">
               <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
                 {g.date}
               </div>
-            </AnimatedView>
+            </MotionView>
             {g.messages.map((m) => (
               <MessageItem
                 key={m.id}
@@ -203,11 +203,11 @@ export function VirtualMessageList({
               }}
             >
               {row.type === 'header' ? (
-                <AnimatedView style={headerFx.animatedStyle} className="flex justify-center py-2">
+                <MotionView style={headerFx.animatedStyle} className="flex justify-center py-2">
                   <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
                     {row.date}
                   </div>
-                </AnimatedView>
+                </MotionView>
               ) : row.type === 'typing' ? (
                 <AnimatePresence>
                   <TypingIndicatorComponent key="typing" users={typingUsers} />

@@ -5,13 +5,12 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Archive } from '@phosphor-icons/react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { formatDistanceToNow } from 'date-fns';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
@@ -81,7 +80,7 @@ export function NotificationGroupItem({
 
   return (
     <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-      <AnimatedView
+      <MotionView
         style={itemStyle}
         onMouseEnter={groupHover.handleMouseEnter}
         onMouseLeave={groupHover.handleMouseLeave}
@@ -92,7 +91,7 @@ export function NotificationGroupItem({
       >
         <div className="p-4">
           <div className="flex items-start gap-3">
-            <AnimatedView
+            <MotionView
               style={iconStyle}
               onMouseEnter={iconHover.handleMouseEnter}
               onMouseLeave={iconHover.handleMouseLeave}
@@ -107,7 +106,7 @@ export function NotificationGroupItem({
                   {group.notifications.length}
                 </Badge>
               )}
-            </AnimatedView>
+            </MotionView>
 
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
@@ -119,12 +118,12 @@ export function NotificationGroupItem({
                 </div>
 
                 {!group.read && (
-                  <AnimatedView
+                  <MotionView
                     style={unreadDotStyle}
                     className="shrink-0 w-2 h-2 rounded-full bg-primary mt-1"
                   >
                     {null}
-                  </AnimatedView>
+                  </MotionView>
                 )}
               </div>
 
@@ -178,7 +177,7 @@ export function NotificationGroupItem({
             </div>
           </CollapsibleContent>
         )}
-      </AnimatedView>
+      </MotionView>
     </Collapsible>
   );
 }

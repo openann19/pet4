@@ -1,5 +1,6 @@
 'use client';
 
+import { MotionView } from "@petspark/motion";
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { haptics } from '@/lib/haptics';
@@ -22,8 +23,8 @@ import { useStorage } from '@/hooks/use-storage';
 import { useScrollFabMagnetic } from '@/effects/chat/ui/use-scroll-fab-magnetic';
 import { Button } from '@/components/ui/button';
 import { PaperPlaneRight } from '@phosphor-icons/react';
-import { chatApi } from '@/api/chat-api';
 
+import { chatApi } from '@/api/chat-api';
 import { ChatHeader } from './ChatHeader';
 import { MessageList } from './MessageList';
 import { VirtualMessageList } from './VirtualMessageList';
@@ -33,7 +34,6 @@ import { ChatErrorBoundary } from './ChatErrorBoundary';
 import { AnnounceNewMessage, AnnounceTyping } from './LiveRegions';
 import { useOutbox } from '@petspark/chat-core';
 import { flags } from '@petspark/config';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { LiquidDots } from '../LiquidDots';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -175,7 +175,7 @@ export default function AdvancedChatWindow({
       ...(metadata ? { metadata } : {}),
     };
 
-    setMessages((cur) => [...(cur || []), msg]);
+    setMessages((cur) => [...(cur ?? []), msg]);
     setInputValue('');
     setShowStickers(false);
     setShowTemplates(false);
@@ -203,7 +203,7 @@ export default function AdvancedChatWindow({
     haptics.trigger('selection');
 
     setMessages((cur) =>
-      (cur || []).map((m) => {
+      (cur ?? []).map((m) => {
         if (m.id !== messageId) {
           return m;
         }
@@ -239,7 +239,7 @@ export default function AdvancedChatWindow({
   };
 
   const onTranslate = async (messageId: string): Promise<void> => {
-    const m = (messages || []).find((x) => x.id === messageId);
+    const m = (messages ?? []).find((x) => x.id === messageId);
     if (!m) {
       return;
     }
@@ -249,7 +249,7 @@ export default function AdvancedChatWindow({
       const translated = await llmService.llm(prompt, 'gpt-4o-mini');
 
       setMessages((cur) =>
-        (cur || []).map((x) =>
+        (cur ?? []).map((x) =>
           x.id === messageId
             ? {
               ...x,
@@ -304,7 +304,7 @@ export default function AdvancedChatWindow({
     onDelete: focusedMessage
       ? () => {
         // Delete focused message
-        setMessages((cur) => (cur || []).filter((m) => m.id !== focusedMessageId));
+        setMessages((cur) => (cur ?? []).filter((m) => m.id !== focusedMessageId));
       }
       : undefined,
     onReact: focusedMessage
@@ -352,7 +352,7 @@ export default function AdvancedChatWindow({
       <ChatErrorBoundary>
         {useVirtualization ? (
           <VirtualMessageList
-            messages={messages || []}
+            messages={messages ?? []}
             currentUserId={currentUserId}
             currentUserName={currentUserName}
             typingUsers={typingUsers}
@@ -361,7 +361,7 @@ export default function AdvancedChatWindow({
           />
         ) : (
           <MessageList
-            messages={messages || []}
+            messages={messages ?? []}
             currentUserId={currentUserId}
             currentUserName={currentUserName}
             typingUsers={typingUsers}
@@ -461,7 +461,7 @@ function TypingIndicator({ typingUsers }: TypingIndicatorProps): JSX.Element {
   const anim = useEntryAnimation({ initialY: 20, delay: 0 });
 
   return (
-    <AnimatedView style={anim.animatedStyle} className="flex items-end gap-2 flex-row">
+    <MotionView style={anim.animatedStyle} className="flex items-end gap-2 flex-row">
       <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
         <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
           {typingUsers[0]?.userName?.[0] || '?'}
@@ -470,6 +470,6 @@ function TypingIndicator({ typingUsers }: TypingIndicatorProps): JSX.Element {
       <div className="rounded-xl px-2.5 py-1.5 bg-white/10 border border-white/10">
         <LiquidDots enabled dotColor="var(--color-neutral-a9)" />
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }

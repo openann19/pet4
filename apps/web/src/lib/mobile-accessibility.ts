@@ -10,6 +10,7 @@
  */
 
 import { createLogger } from './logger';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('mobile-accessibility');
 
@@ -164,7 +165,7 @@ class AccessibilityManager {
    * Set accessible description (aria-describedby)
    */
   setDescription(element: HTMLElement, description: string, descriptionId?: string): void {
-    const id = descriptionId || `desc-${Date.now()}`;
+    const id = descriptionId ?? `desc-${Date.now()}`;
     let descElement = document.getElementById(id);
 
     if (!descElement) {
@@ -371,9 +372,7 @@ let managerInstance: AccessibilityManager | null = null;
 export function getAccessibilityManager(
   config?: Partial<AccessibilityConfig>
 ): AccessibilityManager {
-  if (!managerInstance) {
-    managerInstance = new AccessibilityManager(config);
-  }
+  managerInstance ??= new AccessibilityManager(config);
   return managerInstance;
 }
 

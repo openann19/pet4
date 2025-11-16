@@ -9,23 +9,7 @@ export interface OverlayConfig {
   returnFocusOnClose?: boolean;
 }
 
-export function useOverlayManager(config: OverlayConfig) {
-  const {
-    onDismiss,
-    dismissOnOutsideClick = true,
-    dismissOnEscape = true,
-    trapFocus = true,
-    lockScroll = true,
-    returnFocusOnClose = true,
-  } = config;
-
-  const triggerElementRef = useRef<HTMLElement | null>(null);
-  const overlayRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    triggerElementRef.current = document.activeElement as HTMLElement;
-  }, []);
-
+function useEscapeHandler(dismissOnEscape: boolean, onDismiss: () => void): void {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (dismissOnEscape && e.key === 'Escape') {
@@ -37,6 +21,15 @@ export function useOverlayManager(config: OverlayConfig) {
     [dismissOnEscape, onDismiss]
   );
 
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
+}
+
+function useFocusTrap(trapFocus: boolean, overlayRef: React.RefObject<HTMLElement>): void {
   const handleFocusTrap = useCallback(
     (e: KeyboardEvent) => {
       if (!trapFocus || !overlayRef.current) return;
@@ -56,13 +49,19 @@ export function useOverlayManager(config: OverlayConfig) {
         firstElement?.focus();
       }
     },
-    [trapFocus]
+    [trapFocus, overlayRef]
   );
 
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keydown', handleFocusTrap);
+    return () => {
+      document.removeEventListener('keydown', handleFocusTrap);
+    };
+  }, [handleFocusTrap]);
+}
 
+function useScrollLock(lockScroll: boolean): void {
+  useEffect(() => {
     if (lockScroll) {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = 'hidden';
@@ -70,19 +69,42 @@ export function useOverlayManager(config: OverlayConfig) {
     }
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keydown', handleFocusTrap);
-
       if (lockScroll) {
         document.body.style.overflow = '';
         document.body.style.paddingRight = '';
       }
+    };
+  }, [lockScroll]);
+}
 
+export function useOverlayManager(config: OverlayConfig) {
+  const {
+    onDismiss,
+    dismissOnOutsideClick = true,
+    dismissOnEscape = true,
+    trapFocus = true,
+    lockScroll = true,
+    returnFocusOnClose = true,
+  } = config;
+
+  const triggerElementRef = useRef<HTMLElement | null>(null);
+  const overlayRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    triggerElementRef.current = document.activeElement as HTMLElement;
+  }, []);
+
+  useEscapeHandler(dismissOnEscape, onDismiss);
+  useFocusTrap(trapFocus, overlayRef);
+  useScrollLock(lockScroll);
+
+  useEffect(() => {
+    return () => {
       if (returnFocusOnClose && triggerElementRef.current) {
         triggerElementRef.current.focus();
       }
     };
-  }, [handleKeyDown, handleFocusTrap, lockScroll, returnFocusOnClose]);
+  }, [returnFocusOnClose]);
 
   const handleOutsideClick = useCallback(
     (e: React.MouseEvent) => {

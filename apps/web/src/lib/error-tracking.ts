@@ -4,6 +4,7 @@
  * Global error tracking with user context, error grouping, and performance monitoring
  */
 
+/* eslint-disable max-lines -- error tracking service with comprehensive error handling and web vitals */
 import { createLogger } from './logger'
 import type { Language } from './i18n/core/types'
 
@@ -313,12 +314,7 @@ export function trackPerformance(metricName: string, value: number): void {
 /**
  * Track Core Web Vitals
  */
-export function trackWebVitals(): void {
-  if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
-    return
-  }
-
-  // Track LCP (Largest Contentful Paint)
+function trackLCP(): void {
   try {
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries()
@@ -335,8 +331,9 @@ export function trackWebVitals(): void {
   } catch (error) {
     logger.warn('Failed to track LCP', { error })
   }
+}
 
-  // Track FID (First Input Delay)
+function trackFID(): void {
   try {
     const observer = new PerformanceObserver((list) => {
       const entries = list.getEntries()
@@ -350,8 +347,9 @@ export function trackWebVitals(): void {
   } catch (error) {
     logger.warn('Failed to track FID', { error })
   }
+}
 
-  // Track CLS (Cumulative Layout Shift)
+function trackCLS(): void {
   try {
     let clsValue = 0
     interface LayoutShiftEntry extends PerformanceEntry {
@@ -374,6 +372,16 @@ export function trackWebVitals(): void {
   } catch (error) {
     logger.warn('Failed to track CLS', { error })
   }
+}
+
+export function trackWebVitals(): void {
+  if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
+    return
+  }
+
+  trackLCP()
+  trackFID()
+  trackCLS()
 }
 
 // Auto-track Web Vitals on load

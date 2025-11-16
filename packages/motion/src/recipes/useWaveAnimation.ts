@@ -9,7 +9,7 @@ import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, interpolate, 
 
 // Type helper for transform arrays to avoid React Native type strictness
 type TransformArray = any[]
-import { useReducedMotion } from '../core/hooks'
+import { useReducedMotionSV } from '../reduced-motion'
 
 export interface UseWaveAnimationOptions {
   amplitude?: number
@@ -34,7 +34,7 @@ export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWave
     enabled = true,
   } = options
 
-  const reduced = useReducedMotion()
+  const reduced = useReducedMotionSV()
   const progress = useSharedValue(0)
 
   useEffect(() => {
@@ -70,7 +70,7 @@ export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWave
  */
 export function useMultiWave(waveCount: number = 3) {
   const progress = useSharedValue(0)
-  const reduced = useReducedMotion()
+  const reduced = useReducedMotionSV()
 
   useEffect(() => {
     const linear = (t: number): number => t

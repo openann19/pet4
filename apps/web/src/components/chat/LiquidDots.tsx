@@ -6,10 +6,8 @@
  * - Premium glow + slight blur (web-only)
  */
 
-import React, { useEffect, useMemo } from 'react'
-import type { CSSProperties } from 'react'
-import { useAnimatedStyle, useSharedValue, withRepeat, withTiming, animate } from '@petspark/motion'
-import { AnimatedView } from '@/effects/reanimated/animated-view'
+import React, { useMemo } from 'react'
+import { motion } from '@petspark/motion'
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion'
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng'
 
@@ -36,26 +34,7 @@ export function LiquidDots({
   seed = 'liquid-dots'
 }: LiquidDotsProps) {
   const reduced = useReducedMotion()
-  const sharedTime = useSharedValue(0)
-  const duration = getReducedMotionDuration(1200, reduced)
-
-  useEffect(() => {
-    sharedTime.value = 0
-
-    if (!enabled || reduced) {
-      return () => {
-        sharedTime.value = 0
-      }
-    }
-
-    const timingTransition = withTiming(1, { duration });
-    const repeatTransition = withRepeat(timingTransition, -1, false);
-    animate(sharedTime, repeatTransition.target, repeatTransition.transition);
-
-    return () => {
-      sharedTime.value = 0
-    }
-  }, [duration, enabled, reduced, sharedTime])
+  const duration = getReducedMotionDuration(1200, reduced) / 1000 // Convert to seconds
 
   const dotConfigs = useMemo<DotConfig[]>(() => {
     const rng = createSeededRNG(seed)
@@ -65,7 +44,14 @@ export function LiquidDots({
     }))
   }, [dots, seed])
 
-  const omega = 2 * Math.PI
+  const dotStyle: React.CSSProperties = {
+    width: dotSize,
+    height: dotSize,
+    borderRadius: dotSize / 2,
+    backgroundColor: dotColor,
+    filter: 'blur(0.4px)',
+    boxShadow: `0 0 ${dotSize * 0.6}px ${dotColor}40`,
+  }
 
   return (
     <div
@@ -75,32 +61,35 @@ export function LiquidDots({
       style={{ flexDirection: 'row' }}
     >
       {dotConfigs.map((dot, index) => {
-        const animatedStyle = useAnimatedStyle(() => {
-          const time = sharedTime.get()
-          const translateY = reduced ? 0 : Math.sin(omega * time + dot.phase + index * 0.5) * dot.amplitude
-          const opacity = reduced ? 1 : 0.6 + 0.4 * Math.sin(omega * time + dot.phase + index * 0.5 + Math.PI / 3)
+        const yKeyframes = reduced ? [0] : [
+          -dot.amplitude,
+          dot.amplitude,
+          -dot.amplitude
+        ]
 
-          const style: CSSProperties = {
-            width: dotSize,
-            height: dotSize,
-            borderRadius: dotSize / 2,
-            backgroundColor: dotColor,
-            filter: 'blur(0.4px)',
-            boxShadow: `0 0 ${dotSize * 0.6}px ${dotColor}40`,
-            transform: [{ translateY }],
-            opacity
-          }
-
-          return style
-        }, [dot.amplitude, dot.phase, dotColor, dotSize, index, omega, reduced, sharedTime])
+        const opacityKeyframes = reduced ? [1] : [
+          0.6,
+          1,
+          0.6
+        ]
 
         return (
-          <AnimatedView
+          <motion.div
             key={`${dot.phase}-${index}`}
-            style={animatedStyle}
+            style={dotStyle}
+            animate={{
+              y: yKeyframes,
+              opacity: opacityKeyframes,
+            }}
+            transition={{
+              duration,
+              ease: 'easeInOut',
+              repeat: enabled ? Infinity : 0,
+              delay: (dot.phase + index * 0.2) * duration / (2 * Math.PI),
+            }}
           />
-        )
+        );
       })}
     </div>
-  )
+  );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- A/B testing framework with comprehensive statistical analysis */
 /**
  * A/B Testing Framework (Web)
  *
@@ -238,34 +239,22 @@ export class ABTester {
   /**
    * Get experiment results
    */
-  getResults(experimentId: string): ExperimentResult | null {
-    const experiment = this.experiments.get(experimentId)
-
-    if (!experiment) {
-      logger.warn('Experiment not found', { experimentId })
-      return null
-    }
-
-    const conversions = this.conversions.get(experimentId)
-    const visitors = this.visitors.get(experimentId)
-
-    if (!conversions || !visitors) {
-      return null
-    }
-
-    const variantResults = experiment.variants.map((variant) => {
+  private calculateVariantResults(
+    experiment: Experiment,
+    conversions: Map<string, number>,
+    visitors: Map<string, number>
+  ): ExperimentResult['variantResults'] {
+    return experiment.variants.map((variant) => {
       const variantConversions = conversions.get(variant.id) ?? 0
       const variantVisitors = visitors.get(variant.id) ?? 0
       const conversionRate = variantVisitors > 0 ? (variantConversions / variantVisitors) * 100 : 0
 
-      // Calculate confidence interval (simplified)
       const confidenceInterval = this.calculateConfidenceInterval(
         variantConversions,
         variantVisitors,
         experiment.significanceLevel ?? this.defaultSignificanceLevel
       )
 
-      // Check statistical significance
       const isSignificant = this.isStatisticallySignificant(
         variantConversions,
         variantVisitors,
@@ -281,33 +270,63 @@ export class ABTester {
         isSignificant,
       }
     })
+  }
 
-    // Find winning variant
+  private calculateOverallResult(
+    variantResults: ExperimentResult['variantResults'],
+    experiment: Experiment
+  ): ExperimentResult['overallResult'] {
     if (variantResults.length === 0) {
       throw new Error('No variant results available')
     }
+    
+    const firstResult = variantResults[0];
+    if (!firstResult) {
+      throw new Error('No variant results available')
+    }
+    
     const winningVariant = variantResults.reduce((prev, current) => {
       return current.conversionRate > prev.conversionRate ? current : prev
-    }, variantResults[0]!)
+    }, firstResult)
 
     const totalConversions = variantResults.reduce((sum, result) => sum + result.conversions, 0)
     const totalVisitors = variantResults.reduce((sum, result) => sum + result.visitors, 0)
 
-    // Calculate overall statistical significance
     const statisticalSignificance = this.calculateStatisticalSignificance(
       variantResults,
       experiment.significanceLevel ?? this.defaultSignificanceLevel
     )
 
     return {
+      totalConversions,
+      totalVisitors,
+      winningVariant: winningVariant.variant.id,
+      statisticalSignificance,
+    }
+  }
+
+  getResults(experimentId: string): ExperimentResult | null {
+    const experiment = this.experiments.get(experimentId)
+
+    if (!experiment) {
+      logger.warn('Experiment not found', { experimentId })
+      return null
+    }
+
+    const conversions = this.conversions.get(experimentId)
+    const visitors = this.visitors.get(experimentId)
+
+    if (!conversions || !visitors) {
+      return null
+    }
+
+    const variantResults = this.calculateVariantResults(experiment, conversions, visitors)
+    const overallResult = this.calculateOverallResult(variantResults, experiment)
+
+    return {
       experimentId,
       variantResults,
-      overallResult: {
-        totalConversions,
-        totalVisitors,
-        winningVariant: winningVariant?.variant.id,
-        statisticalSignificance,
-      },
+      overallResult,
     }
   }
 
@@ -444,8 +463,6 @@ export class ABTester {
 let abTesterInstance: ABTester | null = null
 
 export function getABTester(options?: ABTestingOptions): ABTester {
-  if (!abTesterInstance) {
-    abTesterInstance = new ABTester(options)
-  }
+  abTesterInstance ??= new ABTester(options)
   return abTesterInstance
 }

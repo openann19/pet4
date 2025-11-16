@@ -16,9 +16,7 @@ export async function hashPassword(
   salt?: Uint8Array
 ): Promise<{ hash: string; salt: string }> {
   // Generate salt if not provided
-  if (!salt) {
-    salt = crypto.getRandomValues(new Uint8Array(16));
-  }
+  const finalSalt = salt ?? crypto.getRandomValues(new Uint8Array(16));
 
   // Import password as key material
   const encoder = new TextEncoder();
@@ -32,7 +30,7 @@ export async function hashPassword(
   const hashBuffer = await crypto.subtle.deriveBits(
     {
       name: 'PBKDF2',
-      salt: salt as BufferSource,
+      salt: finalSalt as BufferSource,
       iterations: 100000, // High iteration count for security
       hash: 'SHA-256',
     },
@@ -43,7 +41,7 @@ export async function hashPassword(
   // Convert to base64 strings for storage
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashString = btoa(String.fromCharCode(...hashArray));
-  const saltString = btoa(String.fromCharCode(...salt));
+  const saltString = btoa(String.fromCharCode(...finalSalt));
 
   return { hash: hashString, salt: saltString };
 }

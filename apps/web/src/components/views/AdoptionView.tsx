@@ -18,6 +18,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { VirtualGrid } from '@/components/virtual/VirtualGrid';
 
+// Type definition for global spark object
+declare global {
+  // eslint-disable-next-line no-var
+  var spark: {
+    user: () => Promise<{ id: string }>;
+  } | undefined;
+}
+
 const logger = createLogger('AdoptionView');
 
 type ViewMode = 'browse' | 'my-applications' | 'my-listings';
@@ -36,22 +44,17 @@ export default function AdoptionView() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [_cursor, setCursor] = useState<string | undefined>();
 
-  useEffect(() => {
-    void loadListings();
-    void loadUserApplicationsCount();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const loadListings = async () => {
+  const loadListings = useCallback(async () => {
     try {
       setLoading(true);
       // If spark.user is a global, it remains; otherwise inject from context.
-      // @ts-expect-error spark is a global in this app
-      await spark.user();
+      if (typeof spark !== 'undefined') {
+        await spark.user();
+      }
       const result = await adoptionApi.getAdoptionProfiles({ limit: 50 });
       const mappedListings = result.profiles.map(
         (p) =>
-          ({
+          (({
             id: p._id,
             ownerId: p.shelterId,
             ownerName: p.shelterName,
@@ -64,6 +67,7 @@ export default function AdoptionView() {
             petSpecies: 'dog' as const,
             petPhotos: p.photos,
             petDescription: p.description,
+
             status:
               p.status === 'available'
                 ? ('active' as const)
@@ -72,11 +76,13 @@ export default function AdoptionView() {
                   : p.status === 'adopted'
                     ? ('adopted' as const)
                     : ('pending_review' as const),
+
             location: {
               city: p.location.split(', ')[0] || '',
               country: p.location.split(', ')[1] || '',
               privacyRadiusM: 1000,
             },
+
             requirements: [],
             vetDocuments: [],
             vaccinated: p.vaccinated,
@@ -91,8 +97,8 @@ export default function AdoptionView() {
             updatedAt: p.postedDate,
             viewsCount: 0,
             applicationsCount: 0,
-            featured: false,
-          }) as AdoptionListing,
+            featured: false
+          }) as AdoptionListing),
       );
       setListings(mappedListings);
       setCursor(result.nextCursor);
@@ -103,11 +109,13 @@ export default function AdoptionView() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const loadUserApplicationsCount = async () => {
+  const loadUserApplicationsCount = useCallback(async () => {
     try {
-      // @ts-expect-error spark is a global in this app
+      if (typeof spark === 'undefined') {
+        return;
+      }
       const user = await spark.user();
       const applications = await adoptionApi.getUserApplications(user.id);
       setUserApplicationsCount(applications.length);
@@ -117,7 +125,12 @@ export default function AdoptionView() {
         action: 'loadUserApplicationsCount',
       });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    void loadListings();
+    void loadUserApplicationsCount();
+  }, [loadListings, loadUserApplicationsCount]);
 
   const handleToggleFavorite = useCallback(
     (listingId: string) => {

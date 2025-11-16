@@ -27,7 +27,7 @@ beforeEach(() => {
   localStorage.clear();
   vi.spyOn(window, 'matchMedia').mockImplementation(
     (q) =>
-      ({
+      (({
         matches: q.includes('prefers-reduced-motion') ? false : false,
         media: q,
         onchange: null,
@@ -35,8 +35,8 @@ beforeEach(() => {
         removeEventListener: vi.fn(),
         addListener: vi.fn(),
         removeListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      }) as MediaQueryList
+        dispatchEvent: vi.fn()
+      }) as MediaQueryList)
   );
 });
 

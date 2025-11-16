@@ -1,11 +1,9 @@
-'use client';
-
-import { AnimatedView } from '@/effects/reanimated/animated-view';
+'use client';;
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { useSendWarp } from '@/effects/chat/bubbles/use-send-warp';
 import { useReceiveAirCushion } from '@/effects/chat/bubbles/use-receive-air-cushion';
-import { useAnimatedStyle } from '@petspark/motion';
+import { useAnimatedStyle, MotionView } from '@petspark/motion';
 import { MapPin, Translate as TranslateIcon } from '@phosphor-icons/react';
 import MessageReactions from '../MessageReactions';
 import MessageAttachments from '../MessageAttachments';
@@ -95,7 +93,7 @@ export function MessageItem({
   }) as AnimatedStyle;
 
   return (
-    <AnimatedView
+    <MotionView
       style={combined}
       className={`flex items-end gap-2 ${String(isCurrentUser ? 'flex-row-reverse' : 'flex-row' ?? '')}`}
     >
@@ -109,7 +107,6 @@ export function MessageItem({
           className="shrink-0"
         />
       )}
-
       <div ref={bubbleRef} className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}>
         <WebBubbleWrapper
           isIncoming={!isCurrentUser}
@@ -118,7 +115,7 @@ export function MessageItem({
           glowIntensity={isCurrentUser ? sendWarp.bloomIntensity.value : 0}
           className="relative"
         >
-          <AnimatedView
+          <MotionView
             style={hover.animatedStyle}
             onMouseEnter={hover.handleMouseEnter}
             onMouseLeave={hover.handleMouseLeave}
@@ -211,7 +208,7 @@ export function MessageItem({
                 <TranslateIcon size={14} />
               </Button>
             )}
-          </AnimatedView>
+          </MotionView>
         </WebBubbleWrapper>
 
         <span className="text-xs text-muted-foreground mt-1 px-1 flex items-center gap-2">
@@ -223,6 +220,6 @@ export function MessageItem({
           )}
         </span>
       </div>
-    </AnimatedView>
+    </MotionView>
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- central sticker library, data-only file */
 export interface StickerCategory {
   id: string;
   name: string;

@@ -73,7 +73,7 @@ export class PhotoModerationStorageService {
     try {
       const recordKey = `${RECORD_PREFIX}${photoId}`;
       const record = await storage.get<PhotoModerationRecord>(recordKey);
-      return record || null;
+      return record ?? null;
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to get moderation record', err, { photoId });

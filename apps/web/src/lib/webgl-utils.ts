@@ -90,7 +90,7 @@ export class WebGLContextManager {
       if (webgl2Context && webgl2Context instanceof WebGL2RenderingContext) {
         gl = webgl2Context;
       } else {
-        const webglContext = canvas.getContext('webgl', defaultOptions) || canvas.getContext('experimental-webgl', defaultOptions);
+        const webglContext = canvas.getContext('webgl', defaultOptions) ?? canvas.getContext('experimental-webgl', defaultOptions);
         if (webglContext && webglContext instanceof WebGLRenderingContext) {
           gl = webglContext;
         }

@@ -51,7 +51,7 @@ beforeAll(async () => {
 
       if (req.method === 'GET' && url.pathname.includes('/messages')) {
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ data: { messages: [mockMessage], nextCursor: undefined } }));
+        res.end(JSON.stringify({ data: { messages: [mockMessage] } }));
         return;
       }
 

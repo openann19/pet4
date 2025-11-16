@@ -1,4 +1,4 @@
-import { isTruthy, isDefined } from '@petspark/shared';
+// Unused imports removed: isTruthy, isDefined
 
 export interface HapticFeedback {
   light: () => void;
@@ -84,7 +84,7 @@ export const detectDeviceCapabilities = (): DeviceCapabilities => {
     isStandalone: window.matchMedia('(display-mode: standalone)').matches,
     platform: navigator.platform,
     screenSize: { width, height },
-    pixelRatio: window.devicePixelRatio || 1,
+    pixelRatio: window.devicePixelRatio ?? 1,
   };
 };
 

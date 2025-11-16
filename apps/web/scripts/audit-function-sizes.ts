@@ -49,6 +49,7 @@ function countFunctionLines(content: string, startLine: number): { endLine: numb
 
   for (let i = startLine - 1; i < lines.length; i++) {
     const line = lines[i];
+    if (!line) continue;
     const openBraces = (line.match(/{/g) || []).length;
     const closeBraces = (line.match(/}/g) || []).length;
 
@@ -82,6 +83,7 @@ function findFunctionViolations(content: string, filePath: string): FunctionViol
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    if (!line) continue;
     for (const pattern of functionPatterns) {
       const match = line.match(pattern);
       if (match) {

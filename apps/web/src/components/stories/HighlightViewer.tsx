@@ -38,7 +38,7 @@ export default function HighlightViewer({
   const handleTogglePin = () => {
     haptics.trigger('selection');
     setHighlights((current) =>
-      (current || []).map((h) => (h.id === highlight.id ? { ...h, isPinned: !h.isPinned } : h))
+      (current ?? []).map((h) => (h.id === highlight.id ? { ...h, isPinned: !h.isPinned } : h))
     );
     toast.success(highlight.isPinned ? 'Unpinned' : 'Pinned', {
       duration: 1500,
@@ -47,7 +47,7 @@ export default function HighlightViewer({
 
   const handleDelete = () => {
     haptics.trigger('warning');
-    setHighlights((current) => (current || []).filter((h) => h.id !== highlight.id));
+    setHighlights((current) => (current ?? []).filter((h) => h.id !== highlight.id));
     toast.success('Highlight deleted', {
       duration: 2000,
     });

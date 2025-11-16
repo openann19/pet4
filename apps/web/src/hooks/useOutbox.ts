@@ -124,7 +124,7 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
       return;
     }
 
-    const currentQueue = queue || [];
+    const currentQueue = queue ?? [];
     if (currentQueue.length === 0) {
       return;
     }
@@ -227,7 +227,7 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
       return;
     }
 
-    const currentQueue = queue || [];
+    const currentQueue = queue ?? [];
     if (currentQueue.length === 0) {
       return;
     }
@@ -255,7 +255,7 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
     (clientId: string, payload: unknown, idempotencyKey?: string): void => {
       const key = idempotencyKey ?? generateIdempotencyKey();
 
-      const currentQueue = queue || [];
+      const currentQueue = queue ?? [];
       const existingIndex = currentQueue.findIndex(
         (item: OutboxItem) => item.clientId === clientId || item.idempotencyKey === key
       );
@@ -345,7 +345,7 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
 
   return {
     enqueue,
-    queue: queue || [],
+    queue: queue ?? [],
     clear,
     flush,
     isOnline: isOnlineRef.current,

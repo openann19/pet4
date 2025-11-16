@@ -1,10 +1,10 @@
+import { MotionView } from "@petspark/motion";
 /**
  * Ultra Enhanced View Wrapper
  * Wraps any view with ultra animations and effects
  */
 
 import { type ReactNode } from 'react';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { usePageTransition, useParallaxScroll, useBreathingAnimation } from '@/effects/reanimated';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -50,8 +50,8 @@ export function UltraEnhancedView({
   };
 
   return (
-    <AnimatedView style={combinedStyle} className={className}>
+    <MotionView style={combinedStyle} className={className}>
       {children}
-    </AnimatedView>
+    </MotionView>
   );
 }

@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useMapLibreMap, type MapMarker } from '@/lib/maps/useMapLibreMap';
 import type { Location } from '@/lib/maps/types';
 import { useApp } from '@/contexts/AppContext';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 interface MapLibreMapProps {
   center: Location;

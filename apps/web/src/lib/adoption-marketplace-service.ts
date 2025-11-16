@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- adoption marketplace service with comprehensive CRUD operations */
 import type {
   AdoptionListing,
   AdoptionApplication,
@@ -13,19 +14,147 @@ import type {
   AdoptionApplication as APIAdoptionApplication,
 } from './adoption-types';
 import { createLogger } from './logger';
+import { isTruthy } from './utils';
 
 const logger = createLogger('AdoptionMarketplaceService');
 
 class AdoptionMarketplaceService {
+  private applyFilters(
+    listings: AdoptionListing[],
+    filters?: AdoptionListingFilters
+  ): AdoptionListing[] {
+    if (!filters) return listings;
+
+    if (filters.species && filters.species.length > 0) {
+      listings = listings.filter((l) => filters.species!.includes(l.petSpecies));
+    }
+
+    if (filters.goodWithCats) {
+      listings = listings.filter((l) => l.goodWithCats === true);
+    }
+
+    if (filters.goodWithDogs) {
+      listings = listings.filter((l) => l.goodWithDogs === true);
+    }
+
+    if (filters.energyLevel && filters.energyLevel.length > 0) {
+      listings = listings.filter((l) => filters.energyLevel!.includes(l.energyLevel));
+    }
+
+    if (filters.temperament && filters.temperament.length > 0) {
+      listings = listings.filter((l) =>
+        filters.temperament!.some((trait) => l.temperament.includes(trait))
+      );
+    }
+
+    if (filters.vaccinated) {
+      listings = listings.filter((l) => l.vaccinated);
+    }
+
+    if (filters.spayedNeutered) {
+      listings = listings.filter((l) => l.spayedNeutered);
+    }
+
+    if (filters.feeMax !== undefined) {
+      listings = listings.filter((l) => !l.fee || l.fee.amount <= filters.feeMax!);
+    }
+
+    if (filters.featured) {
+      listings = listings.filter((l) => l.featured);
+    }
+
+    return listings;
+  }
+
+  private sortListings(
+    listings: AdoptionListing[],
+    sortBy?: string
+  ): AdoptionListing[] {
+    if (isTruthy(sortBy)) {
+      switch (sortBy) {
+        case 'recent':
+          listings.sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          break;
+        case 'age':
+          listings.sort((a, b) => a.petAge - b.petAge);
+          break;
+        case 'fee_low':
+          listings.sort((a, b) => (a.fee?.amount ?? 0) - (b.fee?.amount ?? 0));
+          break;
+        case 'fee_high':
+          listings.sort((a, b) => (b.fee?.amount ?? 0) - (a.fee?.amount ?? 0));
+          break;
+      }
+    } else {
+      listings.sort((a, b) => {
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+    }
+
+    return listings;
+  }
+
+  private mapApiApplicationToMarketplace(
+    apiApp: APIAdoptionApplication
+  ): AdoptionApplication {
+    return {
+      id: apiApp._id,
+      listingId: apiApp.adoptionProfileId,
+      applicantId: apiApp.applicantId,
+      applicantName: apiApp.applicantName,
+      applicantEmail: apiApp.applicantEmail,
+      applicantPhone: apiApp.applicantPhone,
+      message: apiApp.reason ?? apiApp.experience ?? '',
+      homeType:
+        apiApp.householdType === 'house'
+          ? 'house'
+          : apiApp.householdType === 'apartment'
+            ? 'apartment'
+            : apiApp.householdType === 'condo'
+              ? 'condo'
+              : 'other',
+      hasYard: apiApp.hasYard,
+      yardFenced: undefined,
+      hasOtherPets: apiApp.hasOtherPets,
+      otherPetsDetails: apiApp.otherPetsDetails,
+      previousPetExperience: apiApp.experience ?? '',
+      employmentStatus: 'other',
+      hoursAlonePerDay: undefined,
+      homeCheckConsent: true,
+      veterinarianReference: undefined,
+      personalReferences: undefined,
+      hasChildren: apiApp.hasChildren,
+      childrenAges: apiApp.childrenAges,
+      status:
+        apiApp.status === 'pending'
+          ? 'submitted'
+          : apiApp.status === 'approved'
+            ? 'accepted'
+            : apiApp.status === 'rejected'
+              ? 'rejected'
+              : 'submitted',
+      createdAt: apiApp.submittedAt,
+      updatedAt: apiApp.submittedAt,
+      reviewedAt: apiApp.reviewedAt,
+      reviewedBy: undefined,
+      reviewNotes: apiApp.reviewNotes,
+      ownerNotes: undefined,
+    } satisfies AdoptionApplication;
+  }
+
   async createListing(
     data: CreateAdoptionListingData & { ownerId: string; ownerName: string; ownerAvatar?: string }
   ): Promise<AdoptionListing> {
     try {
       // Map to AdoptionProfile format expected by API
       const profile = await adoptionApi.createAdoptionProfile({
-        petId: data.petId || '',
+        petId: data.petId ?? '',
         petName: data.petName,
-        petPhoto: data.petPhotos?.[0] || '',
+        petPhoto: data.petPhotos?.[0] ?? '',
         breed: data.petBreed,
         age: data.petAge,
         gender: data.petGender,
@@ -42,8 +171,8 @@ class AdoptionMarketplaceService {
         goodWithPets: data.goodWithPets,
         energyLevel: data.energyLevel === 'very-high' ? 'high' : data.energyLevel,
         specialNeeds: data.specialNeeds,
-        adoptionFee: data.fee?.amount || 0,
-        personality: data.temperament || [],
+        adoptionFee: data.fee?.amount ?? 0,
+        personality: data.temperament ?? [],
         photos: data.petPhotos,
         contactEmail: '',
         contactPhone: data.ownerId,
@@ -87,80 +216,8 @@ class AdoptionMarketplaceService {
 
       let listings = response.profiles.map((p: AdoptionProfile) => this.convertProfileToListing(p));
 
-      // Apply additional filters client-side
-      if (filters?.species && filters.species.length > 0) {
-        listings = listings.filter((l: AdoptionListing) => filters.species!.includes(l.petSpecies));
-      }
-
-      if (filters?.goodWithCats) {
-        listings = listings.filter((l: AdoptionListing) => l.goodWithCats === true);
-      }
-
-      if (filters?.goodWithDogs) {
-        listings = listings.filter((l: AdoptionListing) => l.goodWithDogs === true);
-      }
-
-      if (filters?.energyLevel && filters.energyLevel.length > 0) {
-        listings = listings.filter((l: AdoptionListing) =>
-          filters.energyLevel!.includes(l.energyLevel)
-        );
-      }
-
-      if (filters?.temperament && filters.temperament.length > 0) {
-        listings = listings.filter((l: AdoptionListing) =>
-          filters.temperament!.some((trait) => l.temperament.includes(trait))
-        );
-      }
-
-      if (filters?.vaccinated) {
-        listings = listings.filter((l: AdoptionListing) => l.vaccinated);
-      }
-
-      if (filters?.spayedNeutered) {
-        listings = listings.filter((l: AdoptionListing) => l.spayedNeutered);
-      }
-
-      if (filters?.feeMax !== undefined) {
-        listings = listings.filter(
-          (l: AdoptionListing) => !l.fee || l.fee.amount <= filters.feeMax!
-        );
-      }
-
-      if (filters?.featured) {
-        listings = listings.filter((l: AdoptionListing) => l.featured);
-      }
-
-      if (isTruthy(filters?.sortBy)) {
-        switch (filters.sortBy) {
-          case 'recent':
-            listings.sort(
-              (a: AdoptionListing, b: AdoptionListing) =>
-                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            );
-            break;
-          case 'age':
-            listings.sort((a: AdoptionListing, b: AdoptionListing) => a.petAge - b.petAge);
-            break;
-          case 'fee_low':
-            listings.sort(
-              (a: AdoptionListing, b: AdoptionListing) =>
-                (a.fee?.amount || 0) - (b.fee?.amount || 0)
-            );
-            break;
-          case 'fee_high':
-            listings.sort(
-              (a: AdoptionListing, b: AdoptionListing) =>
-                (b.fee?.amount || 0) - (a.fee?.amount || 0)
-            );
-            break;
-        }
-      } else {
-        listings.sort((a: AdoptionListing, b: AdoptionListing) => {
-          if (a.featured && !b.featured) return -1;
-          if (!a.featured && b.featured) return 1;
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-      }
+      listings = this.applyFilters(listings, filters);
+      listings = this.sortListings(listings, filters?.sortBy);
 
       return listings;
     } catch (error) {
@@ -212,77 +269,40 @@ class AdoptionMarketplaceService {
     // This is a no-op as the API handles view tracking
   }
 
+  private mapApplicationDataToApiRequest(
+    data: Omit<AdoptionApplication, 'id' | 'createdAt' | 'updatedAt' | 'status'>
+  ): Parameters<typeof adoptionApi.submitApplication>[0] {
+    return {
+      adoptionProfileId: data.listingId,
+      applicantId: data.applicantId,
+      applicantName: data.applicantName,
+      applicantEmail: data.applicantEmail,
+      applicantPhone: data.applicantPhone ?? '',
+      householdType:
+        data.homeType === 'house'
+          ? 'house'
+          : data.homeType === 'apartment'
+            ? 'apartment'
+            : data.homeType === 'condo'
+              ? 'condo'
+              : 'other',
+      hasYard: data.hasYard,
+      hasOtherPets: data.hasOtherPets,
+      ...(data.otherPetsDetails && { otherPetsDetails: data.otherPetsDetails }),
+      hasChildren: data.hasChildren,
+      ...(data.childrenAges && { childrenAges: data.childrenAges }),
+      experience: data.message ?? '',
+      reason: data.message,
+    };
+  }
+
   async createApplication(
     data: Omit<AdoptionApplication, 'id' | 'createdAt' | 'updatedAt' | 'status'>
   ): Promise<AdoptionApplication> {
     try {
-      const apiApp = await adoptionApi.submitApplication({
-        adoptionProfileId: data.listingId,
-        applicantId: data.applicantId,
-        applicantName: data.applicantName,
-        applicantEmail: data.applicantEmail,
-        applicantPhone: data.applicantPhone || '',
-        householdType:
-          data.homeType === 'house'
-            ? 'house'
-            : data.homeType === 'apartment'
-              ? 'apartment'
-              : data.homeType === 'condo'
-                ? 'condo'
-                : 'other',
-        hasYard: data.hasYard,
-        hasOtherPets: data.hasOtherPets,
-        ...(data.otherPetsDetails && { otherPetsDetails: data.otherPetsDetails }),
-        hasChildren: data.hasChildren,
-        ...(data.childrenAges && { childrenAges: data.childrenAges }),
-        experience: data.message || '',
-        reason: data.message,
-      });
-
-      // Convert API AdoptionApplication to marketplace AdoptionApplication
-      return {
-        id: apiApp._id,
-        listingId: apiApp.adoptionProfileId,
-        applicantId: apiApp.applicantId,
-        applicantName: apiApp.applicantName,
-        applicantEmail: apiApp.applicantEmail,
-        applicantPhone: apiApp.applicantPhone,
-        message: apiApp.reason || apiApp.experience || '',
-        homeType:
-          apiApp.householdType === 'house'
-            ? 'house'
-            : apiApp.householdType === 'apartment'
-              ? 'apartment'
-              : apiApp.householdType === 'condo'
-                ? 'condo'
-                : 'other',
-        hasYard: apiApp.hasYard,
-        yardFenced: undefined,
-        hasOtherPets: apiApp.hasOtherPets,
-        otherPetsDetails: apiApp.otherPetsDetails,
-        previousPetExperience: apiApp.experience || '',
-        employmentStatus: 'other',
-        hoursAlonePerDay: undefined,
-        homeCheckConsent: true,
-        veterinarianReference: undefined,
-        personalReferences: undefined,
-        hasChildren: apiApp.hasChildren,
-        childrenAges: apiApp.childrenAges,
-        status:
-          apiApp.status === 'pending'
-            ? 'submitted'
-            : apiApp.status === 'approved'
-              ? 'accepted'
-              : apiApp.status === 'rejected'
-                ? 'rejected'
-                : 'submitted',
-        createdAt: apiApp.submittedAt,
-        updatedAt: apiApp.submittedAt,
-        reviewedAt: apiApp.reviewedAt,
-        reviewedBy: undefined,
-        reviewNotes: apiApp.reviewNotes,
-        ownerNotes: undefined,
-      } satisfies AdoptionApplication;
+      const requestData = this.mapApplicationDataToApiRequest(data);
+      const apiApp = await adoptionApi.submitApplication(requestData);
+      return this.mapApiApplicationToMarketplace(apiApp);
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to create application', err, { listingId: data.listingId });
@@ -304,7 +324,7 @@ class AdoptionMarketplaceService {
         applicantName: apiApp.applicantName,
         applicantEmail: apiApp.applicantEmail,
         applicantPhone: apiApp.applicantPhone,
-        message: apiApp.reason || apiApp.experience || '',
+        message: apiApp.reason ?? apiApp.experience ?? '',
         homeType:
           apiApp.householdType === 'house'
             ? 'house'
@@ -317,7 +337,7 @@ class AdoptionMarketplaceService {
         yardFenced: undefined,
         hasOtherPets: apiApp.hasOtherPets,
         otherPetsDetails: apiApp.otherPetsDetails,
-        previousPetExperience: apiApp.experience || '',
+        previousPetExperience: apiApp.experience ?? '',
         employmentStatus: 'other',
         hoursAlonePerDay: undefined,
         homeCheckConsent: true,
@@ -359,7 +379,7 @@ class AdoptionMarketplaceService {
             applicantName: apiApp.applicantName,
             applicantEmail: apiApp.applicantEmail,
             applicantPhone: apiApp.applicantPhone,
-            message: apiApp.reason || apiApp.experience || '',
+            message: apiApp.reason ?? apiApp.experience ?? '',
             homeType:
               apiApp.householdType === 'house'
                 ? 'house'
@@ -372,7 +392,7 @@ class AdoptionMarketplaceService {
             yardFenced: undefined,
             hasOtherPets: apiApp.hasOtherPets,
             otherPetsDetails: apiApp.otherPetsDetails,
-            previousPetExperience: apiApp.experience || '',
+            previousPetExperience: apiApp.experience ?? '',
             employmentStatus: 'other' as const,
             hoursAlonePerDay: undefined,
             homeCheckConsent: true,
@@ -415,7 +435,7 @@ class AdoptionMarketplaceService {
             applicantName: apiApp.applicantName,
             applicantEmail: apiApp.applicantEmail,
             applicantPhone: apiApp.applicantPhone,
-            message: apiApp.reason || apiApp.experience || '',
+            message: apiApp.reason ?? apiApp.experience ?? '',
             homeType:
               apiApp.householdType === 'house'
                 ? 'house'
@@ -428,7 +448,7 @@ class AdoptionMarketplaceService {
             yardFenced: undefined,
             hasOtherPets: apiApp.hasOtherPets,
             otherPetsDetails: apiApp.otherPetsDetails,
-            previousPetExperience: apiApp.experience || '',
+            previousPetExperience: apiApp.experience ?? '',
             employmentStatus: 'other' as const,
             hoursAlonePerDay: undefined,
             homeCheckConsent: true,
@@ -520,7 +540,7 @@ class AdoptionMarketplaceService {
             applicantName: apiApp.applicantName,
             applicantEmail: apiApp.applicantEmail,
             applicantPhone: apiApp.applicantPhone,
-            message: apiApp.reason || apiApp.experience || '',
+            message: apiApp.reason ?? apiApp.experience ?? '',
             homeType: (apiApp.householdType === 'house'
               ? 'house'
               : apiApp.householdType === 'apartment'
@@ -534,7 +554,7 @@ class AdoptionMarketplaceService {
             otherPetsDetails: apiApp.otherPetsDetails,
             hasChildren: apiApp.hasChildren,
             childrenAges: apiApp.childrenAges,
-            previousPetExperience: apiApp.experience || '',
+            previousPetExperience: apiApp.experience ?? '',
             employmentStatus: 'other' as const,
             hoursAlonePerDay: undefined,
             homeCheckConsent: true,
@@ -574,8 +594,8 @@ class AdoptionMarketplaceService {
   ): AdoptionListing {
     // Parse location string into object
     const locationParts = profile.location.split(', ');
-    const city = locationParts[0] || '';
-    const country = locationParts[1] || '';
+    const city = locationParts[0] ?? '';
+    const country = locationParts[1] ?? '';
 
     // Map AdoptionStatus to AdoptionListingStatus
     const statusMap: Record<string, AdoptionListingStatus> = {
@@ -596,30 +616,30 @@ class AdoptionMarketplaceService {
       petAge: profile.age,
       petGender: profile.gender,
       petSize: profile.size === 'extra-large' ? 'extra-large' : profile.size,
-      petSpecies: originalData?.petSpecies || 'dog',
-      petColor: originalData?.petColor || '',
+      petSpecies: originalData?.petSpecies ?? 'dog',
+      petColor: originalData?.petColor ?? '',
       petPhotos: profile.photos,
       petDescription: profile.description,
-      status: statusMap[profile.status] || 'pending_review',
+      status: statusMap[profile.status] ?? 'pending_review',
       fee: profile.adoptionFee > 0 ? { amount: profile.adoptionFee, currency: 'USD' } : null,
       location: {
         city,
         country,
         privacyRadiusM: 1000,
       },
-      requirements: originalData?.requirements || [],
-      vetDocuments: originalData?.vetDocuments || [],
+      requirements: originalData?.requirements ?? [],
+      vetDocuments: originalData?.vetDocuments ?? [],
       vaccinated: profile.vaccinated,
       spayedNeutered: profile.spayedNeutered,
-      microchipped: originalData?.microchipped || false,
+      microchipped: originalData?.microchipped ?? false,
       goodWithKids: profile.goodWithKids,
       goodWithPets: profile.goodWithPets,
       ...(originalData?.goodWithCats !== undefined && { goodWithCats: originalData.goodWithCats }),
       ...(originalData?.goodWithDogs !== undefined && { goodWithDogs: originalData.goodWithDogs }),
       energyLevel: profile.energyLevel === 'high' ? 'high' : profile.energyLevel,
-      temperament: profile.personality || [],
+      temperament: profile.personality ?? [],
       ...(profile.specialNeeds !== undefined && { specialNeeds: profile.specialNeeds }),
-      reasonForAdoption: originalData?.reasonForAdoption || '',
+      reasonForAdoption: originalData?.reasonForAdoption ?? '',
       createdAt: profile.postedDate,
       updatedAt: profile.postedDate,
       viewsCount: 0,

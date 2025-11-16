@@ -1,5 +1,4 @@
-'use client';
-
+'use client';;
 import React, { useMemo, useEffect } from 'react';
 import {
   useSharedValue,
@@ -9,8 +8,8 @@ import {
   withSequence,
   interpolate,
   animate,
+  MotionView,
 } from '@petspark/motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { useGlowPulse } from '@/effects/reanimated';
 import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
@@ -127,7 +126,7 @@ export function GlowingBadge({
   }, [badgeStyle, glow, glowPulse.animatedStyle]);
 
   return (
-    <AnimatedView
+    <MotionView
       style={combinedStyle}
       className={cn(
         'inline-flex items-center gap-1 px-3 py-1 rounded-full',
@@ -139,16 +138,16 @@ export function GlowingBadge({
       aria-label={ariaLabel}
     >
       {pulse && (
-        <AnimatedView
+        <MotionView
           style={pulseStyle}
           className="w-2 h-2 rounded-full bg-current"
           role="presentation"
           aria-hidden="true"
         >
           <span className="sr-only">Pulsing indicator</span>
-        </AnimatedView>
+        </MotionView>
       )}
       {children}
-    </AnimatedView>
+    </MotionView>
   );
 }

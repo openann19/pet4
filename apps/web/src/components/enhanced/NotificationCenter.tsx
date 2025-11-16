@@ -31,32 +31,32 @@ export function NotificationCenter() {
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
-  const unreadCount = (notifications || []).filter((n) => !n.read).length;
+  const unreadCount = (notifications ?? []).filter((n) => !n.read).length;
 
   const filteredNotifications =
-    filter === 'unread' ? (notifications || []).filter((n) => !n.read) : notifications || [];
+    filter === 'unread' ? (notifications ?? []).filter((n) => !n.read) : notifications ?? [];
 
   const groupedNotifications = {
-    today: (filteredNotifications || []).filter(
+    today: (filteredNotifications ?? []).filter(
       (n) => Date.now() - n.timestamp < 24 * 60 * 60 * 1000
     ),
-    earlier: (filteredNotifications || []).filter(
+    earlier: (filteredNotifications ?? []).filter(
       (n) => Date.now() - n.timestamp >= 24 * 60 * 60 * 1000
     ),
   };
 
   const markAsRead = (id: string) => {
     setNotifications((current) =>
-      (current || []).map((n) => (n.id === id ? { ...n, read: true } : n))
+      (current ?? []).map((n) => (n.id === id ? { ...n, read: true } : n))
     );
   };
 
   const markAllAsRead = () => {
-    setNotifications((current) => (current || []).map((n) => ({ ...n, read: true })));
+    setNotifications((current) => (current ?? []).map((n) => ({ ...n, read: true })));
   };
 
   const deleteNotification = (id: string) => {
-    setNotifications((current) => (current || []).filter((n) => n.id !== id));
+    setNotifications((current) => (current ?? []).filter((n) => n.id !== id));
   };
 
   const clearAll = () => {
@@ -106,7 +106,7 @@ export function NotificationCenter() {
           className="w-full"
         >
           <TabsList className="w-full grid grid-cols-2 px-4">
-            <TabsTrigger value="all">All ({(notifications || []).length})</TabsTrigger>
+            <TabsTrigger value="all">All ({(notifications ?? []).length})</TabsTrigger>
             <TabsTrigger value="unread">Unread ({unreadCount})</TabsTrigger>
           </TabsList>
 
@@ -158,7 +158,7 @@ export function NotificationCenter() {
           </TabsContent>
         </Tabs>
 
-        {(notifications || []).length > 0 && (
+        {(notifications ?? []).length > 0 && (
           <div className="p-2 border-t">
             <Button
               variant="ghost"

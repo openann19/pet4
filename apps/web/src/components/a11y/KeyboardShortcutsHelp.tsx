@@ -44,7 +44,7 @@ function groupShortcutsByContext(shortcuts: readonly KeyboardShortcut[]): Map<st
   const grouped = new Map<string, KeyboardShortcut[]>();
 
   for (const shortcut of shortcuts) {
-    const context = shortcut.context || 'General';
+    const context = shortcut.context ?? 'General';
     if (!grouped.has(context)) {
       grouped.set(context, []);
     }

@@ -8,9 +8,8 @@
  */
 
 import { useMemo } from 'react';
-import { useSharedValue, withTiming, useAnimatedStyle } from '@petspark/motion';
+import { useSharedValue, withTiming, useAnimatedStyle, MotionView } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { safeHref } from '@/lib/url-safety';
 import { SmartImage } from '@/components/media/SmartImage';
@@ -57,7 +56,7 @@ export function LinkPreview({
       aria-live="polite"
     >
       {/* Skeleton */}
-      <AnimatedView style={skeletonStyle} className="absolute inset-0">
+      <MotionView style={skeletonStyle} className="absolute inset-0">
         <div className="flex gap-3 p-3">
           {image && (
             <div className="w-20 h-20 bg-muted rounded animate-pulse" />
@@ -68,11 +67,10 @@ export function LinkPreview({
             <div className="h-3 bg-muted rounded w-2/3 animate-pulse" />
           </div>
         </div>
-      </AnimatedView>
-
+      </MotionView>
       {/* Content */}
       {showContent && (
-        <AnimatedView style={contentStyle} className="relative">
+        <MotionView style={contentStyle} className="relative">
           <a
             href={safeUrl}
             target="_blank"
@@ -98,7 +96,7 @@ export function LinkPreview({
               <p className="text-xs text-muted-foreground mt-1 truncate">{new URL(url).hostname}</p>
             </div>
           </a>
-        </AnimatedView>
+        </MotionView>
       )}
     </div>
   );
