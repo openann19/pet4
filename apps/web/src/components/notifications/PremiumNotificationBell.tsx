@@ -1,11 +1,10 @@
-'use client';;
+'use client';
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { Button } from '@/components/ui/button';
 import { Bell, BellRinging } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/badge';
 import {
-import { isTruthy } from '@petspark/shared';
   useSharedValue,
   useAnimatedStyle,
   withTiming,
@@ -15,6 +14,7 @@ import { isTruthy } from '@petspark/shared';
   Extrapolation,
   MotionView,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';

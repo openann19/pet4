@@ -4,7 +4,7 @@
  * AI-powered compatibility analysis and matching
  */
 
-import type { Pet } from '../types';
+import type { Pet } from '@petspark/shared';
 
 export interface CompatibilityScore {
   overall: number;

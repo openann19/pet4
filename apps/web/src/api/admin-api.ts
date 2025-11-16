@@ -248,6 +248,45 @@ class AdminApiImpl {
       return [];
     }
   }
+
+  /**
+   * Get system configuration
+   */
+  async getSystemConfig(): Promise<Record<string, unknown> | null> {
+    try {
+      const response = await APIClient.get<{ config: Record<string, unknown> | null }>(
+        ENDPOINTS.ADMIN.CONFIG_SYSTEM
+      );
+      return response.data.config;
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get system config', err);
+      return null;
+    }
+  }
+
+  /**
+   * Update system configuration
+   */
+  async updateSystemConfig(
+    config: Record<string, unknown>,
+    updatedBy?: string
+  ): Promise<Record<string, unknown>> {
+    try {
+      const response = await APIClient.put<{ config: Record<string, unknown> }>(
+        ENDPOINTS.ADMIN.CONFIG_SYSTEM,
+        {
+          config,
+          ...(updatedBy ? { updatedBy } : {}),
+        }
+      );
+      return response.data.config;
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to update system config', err);
+      throw err;
+    }
+  }
 }
 
 export const adminApi = new AdminApiImpl();

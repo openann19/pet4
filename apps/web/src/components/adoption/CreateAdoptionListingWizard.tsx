@@ -183,7 +183,7 @@ export function CreateAdoptionListingWizard({
           formData.petSpecies
         );
       case 'details':
-        return formData.petDescription && (formData.temperament?.length || 0) > 0;
+        return formData.petDescription && (formData.temperament?.length ?? 0) > 0;
       case 'health':
         return true;
       case 'requirements':
@@ -279,7 +279,7 @@ export function CreateAdoptionListingWizard({
                         <Label htmlFor="petName">Pet Name *</Label>
                         <Input
                           id="petName"
-                          value={formData.petName || ''}
+                          value={formData.petName ?? ''}
                           onChange={(e) => { updateField('petName', e.target.value); }}
                           placeholder="e.g., Max"
                         />
@@ -287,7 +287,7 @@ export function CreateAdoptionListingWizard({
                       <div className="space-y-2">
                         <Label htmlFor="petSpecies">Species *</Label>
                         <Select
-                          value={formData.petSpecies || ''}
+                          value={formData.petSpecies ?? ''}
                           onValueChange={(value) =>
                             updateField(
                               'petSpecies',
@@ -316,7 +316,7 @@ export function CreateAdoptionListingWizard({
                         <Label htmlFor="petBreed">Breed *</Label>
                         <Input
                           id="petBreed"
-                          value={formData.petBreed || ''}
+                          value={formData.petBreed ?? ''}
                           onChange={(e) => { updateField('petBreed', e.target.value); }}
                           placeholder="e.g., Golden Retriever"
                         />
@@ -328,7 +328,7 @@ export function CreateAdoptionListingWizard({
                           type="number"
                           min="0"
                           max="30"
-                          value={formData.petAge || ''}
+                          value={formData.petAge ?? ''}
                           onChange={(e) => { updateField('petAge', parseInt(e.target.value) || 0); }}
                           placeholder="3"
                         />
@@ -336,7 +336,7 @@ export function CreateAdoptionListingWizard({
                       <div className="space-y-2">
                         <Label htmlFor="petGender">Gender *</Label>
                         <Select
-                          value={formData.petGender || ''}
+                          value={formData.petGender ?? ''}
                           onValueChange={(value) =>
                             updateField(
                               'petGender',
@@ -359,7 +359,7 @@ export function CreateAdoptionListingWizard({
                       <div className="space-y-2">
                         <Label htmlFor="petSize">Size *</Label>
                         <Select
-                          value={formData.petSize || ''}
+                          value={formData.petSize ?? ''}
                           onValueChange={(value) =>
                             updateField('petSize', value as CreateAdoptionListingData['petSize'])
                           }
@@ -380,7 +380,7 @@ export function CreateAdoptionListingWizard({
                         <Label htmlFor="petColor">Color</Label>
                         <Input
                           id="petColor"
-                          value={formData.petColor || ''}
+                          value={formData.petColor ?? ''}
                           onChange={(e) => { updateField('petColor', e.target.value); }}
                           placeholder="e.g., Golden"
                         />
@@ -406,13 +406,13 @@ export function CreateAdoptionListingWizard({
                       <Label htmlFor="petDescription">Description *</Label>
                       <Textarea
                         id="petDescription"
-                        value={formData.petDescription || ''}
+                        value={formData.petDescription ?? ''}
                         onChange={(e) => { updateField('petDescription', e.target.value); }}
                         placeholder="Tell us about this pet's personality, habits, and what makes them special..."
                         rows={6}
                       />
                       <p className="text-xs text-muted-foreground">
-                        {formData.petDescription?.length || 0} characters
+                        {formData.petDescription?.length ?? 0} characters
                       </p>
                     </div>
 
@@ -438,7 +438,7 @@ export function CreateAdoptionListingWizard({
                     <div className="space-y-2">
                       <Label htmlFor="energyLevel">Energy Level *</Label>
                       <Select
-                        value={formData.energyLevel || 'medium'}
+                        value={formData.energyLevel ?? 'medium'}
                         onValueChange={(value) =>
                           updateField(
                             'energyLevel',
@@ -572,7 +572,7 @@ export function CreateAdoptionListingWizard({
                       <Label htmlFor="specialNeeds">Special Needs (if any)</Label>
                       <Textarea
                         id="specialNeeds"
-                        value={formData.specialNeeds || ''}
+                        value={formData.specialNeeds ?? ''}
                         onChange={(e) => { updateField('specialNeeds', e.target.value); }}
                         placeholder="Any medical conditions, dietary restrictions, or special care requirements..."
                         rows={4}
@@ -600,7 +600,7 @@ export function CreateAdoptionListingWizard({
                       <Label htmlFor="reasonForAdoption">Reason for Adoption *</Label>
                       <Textarea
                         id="reasonForAdoption"
-                        value={formData.reasonForAdoption || ''}
+                        value={formData.reasonForAdoption ?? ''}
                         onChange={(e) => { updateField('reasonForAdoption', e.target.value); }}
                         placeholder="Why are you putting this pet up for adoption?"
                         rows={4}
@@ -633,21 +633,21 @@ export function CreateAdoptionListingWizard({
                           id="adoptionFee"
                           type="number"
                           min="0"
-                          value={formData.fee?.amount || ''}
+                          value={formData.fee?.amount ?? ''}
                           onChange={(e) =>
                             updateField('fee', {
                               amount: parseFloat(e.target.value) || 0,
-                              currency: formData.fee?.currency || 'USD',
+                              currency: formData.fee?.currency ?? 'USD',
                             })
                           }
                           placeholder="0"
                           className="flex-1"
                         />
                         <Select
-                          value={formData.fee?.currency || 'USD'}
+                          value={formData.fee?.currency ?? 'USD'}
                           onValueChange={(value) =>
                             updateField('fee', {
-                              amount: formData.fee?.amount || 0,
+                              amount: formData.fee?.amount ?? 0,
                               currency: value,
                             })
                           }
@@ -677,7 +677,7 @@ export function CreateAdoptionListingWizard({
                         <Label htmlFor="locationCity">City *</Label>
                         <Input
                           id="locationCity"
-                          value={formData.locationCity || ''}
+                          value={formData.locationCity ?? ''}
                           onChange={(e) => { updateField('locationCity', e.target.value); }}
                           placeholder="e.g., San Francisco"
                         />
@@ -686,7 +686,7 @@ export function CreateAdoptionListingWizard({
                         <Label htmlFor="locationCountry">Country *</Label>
                         <Input
                           id="locationCountry"
-                          value={formData.locationCountry || ''}
+                          value={formData.locationCountry ?? ''}
                           onChange={(e) => { updateField('locationCountry', e.target.value); }}
                           placeholder="e.g., USA"
                         />

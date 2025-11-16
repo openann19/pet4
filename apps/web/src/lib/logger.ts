@@ -91,8 +91,11 @@ const parseLogLevel = (level?: string | null): LogLevel | undefined => {
   if (!level) return undefined
   const normalized = level.toString().trim().toUpperCase()
   if (!normalized) return undefined
-  const value = (LogLevel as unknown as Record<string, LogLevel>)[normalized]
-  return typeof value === 'number' ? value : undefined
+  
+  // Use Object.values to safely access enum values
+  const logLevelEntries = Object.entries(LogLevel) as Array<[string, LogLevel]>
+  const entry = logLevelEntries.find(([key]) => key === normalized)
+  return entry ? entry[1] : undefined
 }
 
 const resolveDefaultLevel = (): LogLevel => {

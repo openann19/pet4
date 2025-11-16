@@ -6,7 +6,7 @@
 import * as React from 'react'
 
 const { forwardRef, useCallback, useMemo } = React
-import { motion } from 'framer-motion'
+import { motion } from '@petspark/motion'
 import { cn } from '@/lib/utils'
 import { createLogger } from '@/lib/logger'
 
@@ -139,7 +139,7 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
     ...props
   }, ref) => {
     // Generate unique ID if not provided
-    const checkboxId = id || `checkbox-${Math.random().toString(36).substr(2, 9)}`
+    const checkboxId = id ?? `checkbox-${Math.random().toString(36).substr(2, 9)}`
     const descriptionId = `${checkboxId}-description`
     const errorId = `${checkboxId}-error`
     
@@ -199,8 +199,8 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
     
     // Icon to display
     const displayIcon = indeterminate 
-      ? (customIndeterminateIcon || <IndeterminateIcon className={checkboxSizes[size].icon} />)
-      : (customIcon || <CheckIcon className={checkboxSizes[size].icon} />)
+      ? (customIndeterminateIcon ?? <IndeterminateIcon className={checkboxSizes[size].icon} />)
+      : (customIcon ?? <CheckIcon className={checkboxSizes[size].icon} />)
     
     // Accessibility props
     const accessibilityProps = {

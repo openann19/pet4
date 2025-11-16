@@ -1,7 +1,6 @@
 'use client';
 
 import {
-import { isTruthy } from '@petspark/shared';
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
@@ -12,6 +11,7 @@ import { isTruthy } from '@petspark/shared';
   Extrapolation,
   type SharedValue,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { useEffect } from 'react';
 
 export interface UseAiReplyAnimationOptions {

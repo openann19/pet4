@@ -2,7 +2,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-import { isTruthy } from '@petspark/shared';
   Dialog,
   DialogContent,
   DialogDescription,
@@ -10,6 +9,7 @@ import { isTruthy } from '@petspark/shared';
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { isTruthy } from '@petspark/shared';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -92,10 +92,10 @@ export function SubscriptionAdminPanel() {
 
   const filteredSubscriptions = subscriptions.filter(
     (sub) =>
-      String(sub.userId || '')
+      String(sub.userId ?? '')
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      String(sub.planId || '')
+      String(sub.planId ?? '')
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
   );
@@ -123,7 +123,7 @@ export function SubscriptionAdminPanel() {
       expired: 'outline',
       past_due: 'destructive',
     };
-    return <Badge variant={variants[status] || 'outline'}>{status}</Badge>;
+    return <Badge variant={variants[status] ?? 'outline'}>{status}</Badge>;
   };
 
   if (isTruthy(loading)) {
@@ -156,9 +156,9 @@ export function SubscriptionAdminPanel() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics?.activeSubscriptions || 0}</div>
+            <div className="text-2xl font-bold">{metrics?.activeSubscriptions ?? 0}</div>
             <p className="text-xs text-muted-foreground">
-              +{metrics?.newSubscriptionsThisMonth || 0} this month
+              +{metrics?.newSubscriptionsThisMonth ?? 0} this month
             </p>
           </CardContent>
         </Card>
@@ -186,7 +186,7 @@ export function SubscriptionAdminPanel() {
               {metrics ? metrics.churnRate.toFixed(1) : '0'}%
             </div>
             <p className="text-xs text-muted-foreground">
-              {metrics?.canceledSubscriptionsThisMonth || 0} canceled this month
+              {metrics?.canceledSubscriptionsThisMonth ?? 0} canceled this month
             </p>
           </CardContent>
         </Card>
@@ -233,7 +233,7 @@ export function SubscriptionAdminPanel() {
                   {filteredSubscriptions.map((subscription) => (
                     <TableRow key={subscription.id}>
                       <TableCell className="font-mono text-xs">
-                        {String(subscription.userId || 'unknown').slice(0, 12)}...
+                        {String(subscription.userId ?? 'unknown').slice(0, 12)}...
                       </TableCell>
                       <TableCell>
                         {subscription.planId}
@@ -343,7 +343,7 @@ export function SubscriptionAdminPanel() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>User ID</Label>
-              <Input value={selectedSubscription?.userId || ''} disabled />
+              <Input value={selectedSubscription?.userId ?? ''} disabled />
             </div>
 
             <div className="space-y-2">

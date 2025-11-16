@@ -35,11 +35,11 @@ export function DiscoveryFiltersAdvancedTab({ draft, onDraftChange }: AdvancedTa
         <ScrollArea className="-mx-6 h-full px-6">
             <div className="space-y-4 py-2">
                 <div>
-                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-4 flex items-center gap-2 ${getTypographyClasses('h2')}`}>
                         <Lightning size={18} weight="bold" />
                         Enhanced Filters
                     </Label>
-                    <p className={`mb-4 ${getTypographyClasses('bodySmall')}`}>
+                    <p className={`mb-4 ${getTypographyClasses('body-small')}`}>
                         Find the most active and responsive matches
                     </p>
 
@@ -48,8 +48,8 @@ export function DiscoveryFiltersAdvancedTab({ draft, onDraftChange }: AdvancedTa
                             <div className="flex items-center gap-3">
                                 <CheckCircle size={20} weight="duotone" className="text-primary" />
                                 <div>
-                                    <div className={getTypographyClasses('bodyMedium')}>Verified Profiles</div>
-                                    <div className={`mt-0.5 ${getTypographyClasses('bodySmall')}`}>
+                                    <div className={getTypographyClasses('body')}>Verified Profiles</div>
+                                    <div className={`mt-0.5 ${getTypographyClasses('body-small')}`}>
                                         ID or photo verified accounts
                                     </div>
                                 </div>
@@ -64,8 +64,8 @@ export function DiscoveryFiltersAdvancedTab({ draft, onDraftChange }: AdvancedTa
                             <div className="flex items-center gap-3">
                                 <Clock size={20} weight="duotone" className="text-secondary" />
                                 <div>
-                                    <div className={getTypographyClasses('bodyMedium')}>Active Today</div>
-                                    <div className={`mt-0.5 ${getTypographyClasses('bodySmall')}`}>
+                                    <div className={getTypographyClasses('body')}>Active Today</div>
+                                    <div className={`mt-0.5 ${getTypographyClasses('body-small')}`}>
                                         Online in the last 24 hours
                                     </div>
                                 </div>
@@ -82,8 +82,8 @@ export function DiscoveryFiltersAdvancedTab({ draft, onDraftChange }: AdvancedTa
                             <div className="flex items-center gap-3">
                                 <Sparkle size={20} weight="duotone" className="text-accent" />
                                 <div>
-                                    <div className={getTypographyClasses('bodyMedium')}>Has Stories</div>
-                                    <div className={`mt-0.5 ${getTypographyClasses('bodySmall')}`}>
+                                    <div className={getTypographyClasses('body')}>Has Stories</div>
+                                    <div className={`mt-0.5 ${getTypographyClasses('body-small')}`}>
                                         Posted stories recently
                                     </div>
                                 </div>
@@ -100,8 +100,8 @@ export function DiscoveryFiltersAdvancedTab({ draft, onDraftChange }: AdvancedTa
                             <div className="flex items-center gap-3">
                                 <ChatCircle size={20} weight="duotone" className="text-primary" />
                                 <div>
-                                    <div className={getTypographyClasses('bodyMedium')}>Responds Quickly</div>
-                                    <div className={`mt-0.5 ${getTypographyClasses('bodySmall')}`}>
+                                    <div className={getTypographyClasses('body')}>Responds Quickly</div>
+                                    <div className={`mt-0.5 ${getTypographyClasses('body-small')}`}>
                                         Average response under 1 hour
                                     </div>
                                 </div>
@@ -118,8 +118,8 @@ export function DiscoveryFiltersAdvancedTab({ draft, onDraftChange }: AdvancedTa
                             <div className="flex items-center gap-3">
                                 <Lightning size={20} weight="duotone" className="text-accent" />
                                 <div>
-                                    <div className={getTypographyClasses('bodyMedium')}>Super Likes Only</div>
-                                    <div className={`mt-0.5 ${getTypographyClasses('bodySmall')}`}>
+                                    <div className={getTypographyClasses('body')}>Super Likes Only</div>
+                                    <div className={`mt-0.5 ${getTypographyClasses('body-small')}`}>
                                         Show only profiles that super liked you
                                     </div>
                                 </div>
@@ -144,10 +144,10 @@ export function DiscoveryFiltersAdvancedTab({ draft, onDraftChange }: AdvancedTa
                             className="mt-0.5 shrink-0 text-accent"
                         />
                         <div>
-                            <div className={`mb-1 ${getTypographyClasses('bodyMedium')}`}>
+                            <div className={`mb-1 ${getTypographyClasses('body')}`}>
                                 Premium Filters Active
                             </div>
-                            <div className={getTypographyClasses('bodySmall')}>
+                            <div className={getTypographyClasses('body-small')}>
                                 Advanced filters help you find the most compatible and active matches.
                                 Some filters may reduce the number of available profiles.
                             </div>

@@ -477,6 +477,92 @@ export function createAdminConfigRoutes(config: AdminConfigRoutesConfig): Router
   );
 
   /**
+   * GET /api/v1/admin/config/system
+   * Get system configuration
+   */
+  router.get('/admin/config/system', async (req: Request, res: Response): Promise<void> => {
+    try {
+      const config = await adminConfigService.getConfig('system');
+      if (!config) {
+        res.status(200).json({ config: null });
+        return;
+      }
+
+      res.status(200).json({ config: config.config });
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to get system config', err);
+      throw error;
+    }
+  });
+
+  /**
+   * PUT /api/v1/admin/config/system
+   * Update system configuration
+   */
+  router.put(
+    '/admin/config/system',
+    validate({ body: configUpdateSchema }),
+    async (req: Request, res: Response): Promise<void> => {
+      const startTime = Date.now();
+      type ValidatedBody = z.infer<typeof configUpdateSchema>;
+      const validatedBody = req.body as unknown as ValidatedBody;
+      const userId = req.userId ?? validatedBody.updatedBy ?? 'admin';
+
+      try {
+      const previousConfig = await adminConfigService.getConfig('system');
+      const previousVersion = previousConfig?.version ?? null;
+      const previousConfigData = previousConfig?.config ?? null;
+
+      const updatedConfig = await adminConfigService.updateConfig('system', {
+        config: validatedBody.config,
+        updatedBy: userId,
+      });
+
+      // Create history entry
+      const changes = computeConfigChanges(previousConfigData, updatedConfig.config);
+      await configHistoryService.createHistoryEntry({
+        configId: updatedConfig.id,
+        configType: 'system',
+        version: updatedConfig.version,
+        previousVersion: previousVersion,
+        changedBy: userId,
+        changedByName: (req.user as { name?: string })?.name,
+        changes,
+        previousConfig: previousConfigData,
+        newConfig: updatedConfig.config,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+      });
+
+      // Audit log
+      await adminAuditLogger.log({
+        adminId: userId,
+        adminName: (req.user as { name?: string })?.name,
+        action: 'config_update',
+        targetType: 'system_config',
+        targetId: updatedConfig.id,
+        details: { version: updatedConfig.version, changes },
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+      });
+
+      logger.info('System config updated', {
+        userId,
+        version: updatedConfig.version,
+        duration: Date.now() - startTime,
+      });
+
+      res.status(200).json({ config: updatedConfig.config });
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to update system config', err, { userId });
+      throw error;
+    }
+    }
+  );
+
+  /**
    * GET /api/v1/admin/config/history
    * Get configuration change history
    */

@@ -258,9 +258,8 @@ export default function AdoptionMarketplaceView() {
             {/* Listings */}
             {loading && listings.length === 0 ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  // eslint-disable-next-line react/no-array-index-key
-                  (<div key={i} className="h-96 animate-pulse rounded-2xl bg-muted" />)
+                {Array.from({ length: 6 }, (_, i) => (
+                  <div key={`skeleton-${i}`} className="h-96 animate-pulse rounded-2xl bg-muted" />
                 ))}
               </div>
             ) : filteredListings.length === 0 ? (

@@ -15,12 +15,11 @@ export const MotionText: ForwardRefExoticComponent<
   MotionTextProps & RefAttributes<ComponentRef<typeof Animated.Text>>
 > = forwardRef<ComponentRef<typeof Animated.Text>, MotionTextProps>(
   ({ style, animatedStyle, ...rest }, ref) => {
-    const styleFinal = animatedStyle ? [style, animatedStyle] : (style ?? ({} as TextStyle))
+    const styleFinal: TextStyle | TextStyle[] = animatedStyle 
+      ? [style, animatedStyle].filter(Boolean) as TextStyle[]
+      : (style ?? ({} as TextStyle))
 
-    // Use a typed alias to satisfy ref typing in ambient web stubs
-    const AnimatedText = (Animated.Text as unknown) as React.ComponentType<any>
-
-    return <AnimatedText ref={ref} {...rest} style={styleFinal as any} />
+    return <Animated.Text ref={ref} {...rest} style={styleFinal} />
   }
 )
 MotionText.displayName = 'MotionText'

@@ -14,7 +14,6 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   Easing,
   useAnimatedStyle,
   useSharedValue,
@@ -23,6 +22,7 @@ import { isTruthy } from '@petspark/shared';
   withTiming,
   type SharedValue,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-motion';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { logEffectStart, logEffectEnd } from '../core/telemetry';

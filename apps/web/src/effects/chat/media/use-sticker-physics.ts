@@ -12,7 +12,6 @@
 
 import { useCallback, useRef } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   Easing,
   type SharedValue,
   useAnimatedStyle,
@@ -20,6 +19,7 @@ import { isTruthy } from '@petspark/shared';
   withSequence,
   withTiming,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { createLogger } from '@/lib/logger';
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion';
 import { randomRange } from '../core/seeded-rng';

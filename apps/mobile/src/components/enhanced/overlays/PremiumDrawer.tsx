@@ -1,5 +1,6 @@
 import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
 import * as Haptics from 'expo-haptics'
+import { isTruthy } from '@petspark/shared'
 import React, { useCallback, useEffect } from 'react'
 import {
   Modal,

@@ -70,7 +70,7 @@ function AdoptionListingCardComponent({
           {/* Status Badge - Premium Style */}
           {status === 'pending_review' && (
             <Badge className="absolute top-4 right-4 bg-yellow-500/95 text-white backdrop-blur-md border-0 shadow-xl rounded-xl px-3 py-1.5 font-medium">                                          
-              {t.adoption?.pendingReview || 'Pending Review'}
+              {t.adoption?.pendingReview ?? 'Pending Review'}
             </Badge>
           )}
 
@@ -110,7 +110,7 @@ function AdoptionListingCardComponent({
               </Badge>
             ) : (
               <Badge className="bg-green-500/95 text-white backdrop-blur-md border-0 shadow-xl rounded-xl px-3 py-1.5 font-semibold">                                                                
-                {t.adoption?.noFee || 'Free'}
+                {t.adoption?.noFee ?? 'Free'}
               </Badge>
             )}
           </div>

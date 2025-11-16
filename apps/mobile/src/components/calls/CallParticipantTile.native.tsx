@@ -4,7 +4,7 @@
  * Native video tile for call participants
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { RTCView } from 'react-native-webrtc';
 import { MicOff, VideoOff } from 'lucide-react-native';

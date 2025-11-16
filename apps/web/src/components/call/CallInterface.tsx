@@ -1,7 +1,6 @@
-'use client';;
+'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   PhoneDisconnect,
   Microphone,
   MicrophoneSlash,
@@ -13,6 +12,7 @@ import { isTruthy } from '@petspark/shared';
   ArrowsIn,
   MonitorPlay,
 } from '@phosphor-icons/react';
+import { isTruthy } from '@petspark/shared';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { CallSession } from '@/lib/call-types';
@@ -128,8 +128,8 @@ export default function CallInterface({
   const isVideoCall = session.call.type === 'video';
   const isActive = session.call.status === 'active';
 
-  const containerOpacity = useSharedValue(0);
-  const containerScale = useSharedValue(0.95);
+  const containerOpacity = useSharedValue<number>(0);
+  const containerScale = useSharedValue<number>(0.95);
 
   useEffect(() => {
     containerOpacity.value = withTiming(1, { duration: 300 });
@@ -145,7 +145,7 @@ export default function CallInterface({
 
   return (
     <MotionView
-      style={containerStyle}
+      animatedStyle={containerStyle}
       className={`fixed inset-0 z-50 flex items-center justify-center ${
         String(isFullscreen ? 'bg-black' : 'bg-black/90 backdrop-blur-xl p-4' ?? '')
       }`}
@@ -227,7 +227,7 @@ interface AvatarPulseViewProps {
 }
 
 function AvatarPulseView({ avatar, name, isMuted, isActive, audioWaveform }: AvatarPulseViewProps) {
-  const scale = useSharedValue(1);
+  const scale = useSharedValue<number>(1);
 
   useEffect(() => {
     scale.value = withRepeat(
@@ -245,7 +245,7 @@ function AvatarPulseView({ avatar, name, isMuted, isActive, audioWaveform }: Ava
 
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <MotionView style={avatarStyle} className="flex flex-col items-center">
+      <MotionView animatedStyle={avatarStyle} className="flex flex-col items-center">
         <Avatar className="w-40 h-40 ring-4 ring-white/30 mb-6">
           <AvatarImage src={avatar} alt={name} />
           <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white text-5xl font-bold">
@@ -290,7 +290,7 @@ function WaveformBar({ value }: WaveformBarProps) {
     };
   }) as AnimatedStyle;
 
-  return <MotionView style={barStyle} className="w-1.5 bg-primary rounded-full" />;
+  return <MotionView animatedStyle={barStyle} className="w-1.5 bg-primary rounded-full" />;
 }
 
 interface LocalVideoViewProps {
@@ -298,8 +298,8 @@ interface LocalVideoViewProps {
 }
 
 function LocalVideoView({ videoRef }: LocalVideoViewProps) {
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(0.8);
+  const opacity = useSharedValue<number>(0);
+  const scale = useSharedValue<number>(0.8);
 
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 300 });
@@ -315,7 +315,7 @@ function LocalVideoView({ videoRef }: LocalVideoViewProps) {
 
   return (
     <MotionView
-      style={videoStyle}
+      animatedStyle={videoStyle}
       className="absolute top-6 right-6 w-40 h-28 rounded-2xl overflow-hidden shadow-2xl ring-2 ring-white/30"
     >
       <video
@@ -347,8 +347,8 @@ function CallInfoView({
   quality,
   actualResolution,
 }: CallInfoViewProps) {
-  const opacity = useSharedValue(0);
-  const translateY = useSharedValue(-20);
+  const opacity = useSharedValue<number>(0);
+  const translateY = useSharedValue<number>(-20);
 
   useEffect(() => {
     opacity.value = withTiming(1, { duration: 300 });
@@ -362,8 +362,8 @@ function CallInfoView({
     };
   }) as AnimatedStyle;
 
-  const statusScale = useSharedValue(1);
-  const statusOpacity = useSharedValue(1);
+  const statusScale = useSharedValue<number>(1);
+  const statusOpacity = useSharedValue<number>(1);
 
   useEffect(() => {
     if (isTruthy(isActive)) {
@@ -395,21 +395,21 @@ function CallInfoView({
 
   return (
     <MotionView
-      style={infoStyle}
+      animatedStyle={infoStyle}
       className="glass-strong rounded-2xl px-4 py-3 backdrop-blur-2xl"
     >
       <h3 className="font-bold text-white text-lg mb-1">{name}</h3>
       <div className="flex items-center gap-2">
         {isActive ? (
           <>
-            <MotionView style={statusStyle} className="w-2 h-2 bg-green-500 rounded-full" />
+            <MotionView animatedStyle={statusStyle} className="w-2 h-2 bg-green-500 rounded-full" />
             <span className="text-sm text-white/90 font-medium">
               {formatCallDuration(duration)}
             </span>
           </>
         ) : (
           <>
-            <MotionView style={statusStyle} className="w-2 h-2 bg-yellow-500 rounded-full" />
+            <MotionView animatedStyle={statusStyle} className="w-2 h-2 bg-yellow-500 rounded-full" />
             <span className="text-sm text-white/90">
               {callStatus === 'ringing' ? 'Ringing...' : 'Connecting...'}
             </span>
@@ -466,8 +466,8 @@ function CallControlsView({
   onEndCall,
   onToggleSpeaker,
 }: CallControlsViewProps) {
-  const translateY = useSharedValue(50);
-  const opacity = useSharedValue(0);
+  const translateY = useSharedValue<number>(50);
+  const opacity = useSharedValue<number>(0);
 
   useEffect(() => {
     translateY.value = withTiming(0, { duration: 300 });
@@ -488,8 +488,8 @@ function CallControlsView({
 
   return (
     <div className="absolute bottom-0 left-0 right-0 p-8">
-      <MotionView style={controlsStyle} className="flex items-center justify-center gap-4">
-        <MotionView style={muteAnimation.animatedStyle}>
+      <MotionView animatedStyle={controlsStyle} className="flex items-center justify-center gap-4">
+        <MotionView animatedStyle={muteAnimation.animatedStyle}>
           <Button
             onClick={() => {
               muteAnimation.handlePress();
@@ -511,7 +511,7 @@ function CallControlsView({
         </MotionView>
 
         {isVideoCall && (
-          <MotionView style={videoAnimation.animatedStyle}>
+          <MotionView animatedStyle={videoAnimation.animatedStyle}>
             <Button
               onClick={() => {
                 videoAnimation.handlePress();
@@ -533,7 +533,7 @@ function CallControlsView({
           </MotionView>
         )}
 
-        <MotionView style={endCallAnimation.animatedStyle}>
+        <MotionView animatedStyle={endCallAnimation.animatedStyle}>
           <Button
             onClick={() => {
               endCallAnimation.handlePress();
@@ -546,7 +546,7 @@ function CallControlsView({
           </Button>
         </MotionView>
 
-        <MotionView style={speakerAnimation.animatedStyle}>
+        <MotionView animatedStyle={speakerAnimation.animatedStyle}>
           <Button
             onClick={() => {
               speakerAnimation.handlePress();

@@ -27,17 +27,15 @@ interface UseMapLibreMapProps {
 // Singleton promise to ensure we only load the library & CSS once
 let mapLibreLoadPromise: Promise<typeof import('maplibre-gl')> | null = null;
 function loadMapLibre(): Promise<typeof import('maplibre-gl')> {
-  if (!mapLibreLoadPromise) {
-    mapLibreLoadPromise = import('maplibre-gl').then(async (mod) => {
+  mapLibreLoadPromise ??= import('maplibre-gl').then(async (mod) => {
       // Load CSS side-effect dynamically (ignored in SSR)
       try {
         await import('maplibre-gl/dist/maplibre-gl.css');
       } catch {
         // CSS load failure should not break map usage
       }
-      return mod.default ? mod.default : mod;
+      return mod.default ?? mod;
     });
-  }
   return mapLibreLoadPromise;
 }
 

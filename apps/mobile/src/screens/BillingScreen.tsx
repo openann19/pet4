@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { SubscriptionStatusCard } from '@/components/billing/SubscriptionStatusCard';
+import { SubscriptionStatusCard } from '@/components/billing/SubscriptionStatusCard.native';
 import { PricingCard } from '@/components/billing/PricingCard';
 import { billingClient } from '@petspark/core';
 import type { BillingPlan, SubscriptionInfo } from '@petspark/core';

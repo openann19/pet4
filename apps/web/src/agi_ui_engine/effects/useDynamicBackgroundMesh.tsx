@@ -38,7 +38,7 @@ export function useDynamicBackgroundMesh(
   const { enabled = true, speed = 1 } = options;
   const { theme } = useUIConfig();
 
-  const meshProgress = useSharedValue(0);
+  const meshProgress = useSharedValue<number>(0);
 
   useEffect(() => {
     if (!enabled || !theme.dynamicBackground) {

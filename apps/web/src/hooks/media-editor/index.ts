@@ -37,7 +37,8 @@ export type {
 } from './use-background-removal';
 
 // Filters
-export { useFilters, FILTER_PRESETS } from './use-filters';
+export { useFilters } from './use-filters';
+export { FILTER_PRESETS, getPresetsByCategory, getPresetById } from './filter-presets';
 export type {
   FilterOptions,
   FilterPreset,

@@ -1,6 +1,6 @@
 import NetInfo from '@react-native-community/netinfo'
 import { Platform } from 'react-native'
-export const BG_UPLOAD_TASK = 'bg-upload-task'
+import { createLogger } from '@/utils/logger'
 
 export const BG_UPLOAD_TASK = 'bg-upload-task'
 
@@ -29,7 +29,7 @@ if (Platform.OS !== 'web') {
         void (async () => {
           const net = await NetInfo.fetch()
           if (!net.isConnected) return
-          await flushPendingUploads()
+          await flushQueue()
         })()
       })
     })

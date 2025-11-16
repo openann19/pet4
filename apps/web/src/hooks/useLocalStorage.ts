@@ -24,7 +24,7 @@ export function useLocalStorage<T>(
   // Initialize state with localStorage value or initial value
   const [storedValue, setStoredValue] = useState<T>(() => {
     const item = getStorageItem<T>(key);
-    return item !== null ? item : initialValue;
+    return item ?? initialValue;
   });
 
   // Update localStorage when state changes

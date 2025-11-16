@@ -148,9 +148,9 @@ export function getActualResolution(stream: MediaStream): string {
   if (!videoTrack) return 'No video';
 
   const settings = videoTrack.getSettings();
-  const width = settings.width || 0;
-  const height = settings.height || 0;
-  const frameRate = settings.frameRate || 0;
+  const width = settings.width ?? 0;
+  const height = settings.height ?? 0;
+  const frameRate = settings.frameRate ?? 0;
 
   if (width >= 3840 && height >= 2160) {
     return `4K (${width}x${height} @ ${frameRate}fps)`;

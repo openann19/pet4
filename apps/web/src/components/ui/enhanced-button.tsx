@@ -14,6 +14,7 @@ import {
   MotionView,
   usePressMotion,
 } from '@petspark/motion';
+import type { Transition } from 'framer-motion';
 import { type AnimatedStyle as ViewAnimatedStyle } from '@/effects/reanimated/animated-view';                                                                   
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
@@ -21,21 +22,10 @@ import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
 import { Button, type buttonVariants } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
-import type { MotionValue, Transition } from '@petspark/motion';
 
 const logger = createLogger('EnhancedButton');
 
-const runAnimation = (
-  value: MotionValue<number>,
-  target: number,
-  transition?: Transition
-) => {
-  if (transition) {
-    animate(value, target, transition);
-  } else {
-    animate(value, target);
-  }
-};
+// Removed runAnimation helper - using animate directly
 
 export interface EnhancedButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
@@ -128,13 +118,7 @@ export function EnhancedButton({
         duration: 1000,
         easing: (t) => t,
       });
-      const repeatTransition = withRepeat(timingTransition, -1, false);
-      animate(loadingRotation, 360, {
-        duration: 1,
-        ease: 'linear',
-        repeat: Infinity,
-        repeatType: 'loop',
-      });
+      loadingRotation.value = withRepeat(timingTransition, -1, false) as { target: number; transition: Transition };
     } else {
       loadingRotation.set(0);
     }
@@ -151,13 +135,10 @@ export function EnhancedButton({
         duration: 2000,
         easing: (t) => t,
       });
-      const repeatTransition = withRepeat(timingTransition, -1, true);
-      animate(glowProgress, 1, repeatTransition);
-      const opacityTransition = withSpring(1, springConfigs.smooth);
-      animate(glowOpacity, 1, opacityTransition);
+      glowProgress.value = withRepeat(timingTransition, -1, true) as { target: number; transition: Transition };
+      glowOpacity.value = withSpring(1, springConfigs.smooth) as { target: 1; transition: Transition };
     } else {
-      const opacityTransition = withTiming(0, timingConfigs.fast);
-      animate(glowOpacity, 0, opacityTransition);
+      glowOpacity.value = withTiming(0, timingConfigs.fast) as { target: 0; transition: Transition };
       glowProgress.set(0);
     }
   }, [enableGlow, glowOpacity, glowProgress]);
@@ -175,11 +156,10 @@ export function EnhancedButton({
 
         // Trigger glow pulse on click
         if (enableGlow) {
-          const sequence = withSequence(
-            withSpring(1, springConfigs.bouncy),
-            withSpring(0.6, springConfigs.smooth)
-          );
-          animate(glowOpacity, 1, sequence);
+          glowOpacity.value = withSpring(1, springConfigs.bouncy) as { target: 1; transition: Transition };
+          setTimeout(() => {
+            glowOpacity.value = withSpring(0.6, springConfigs.smooth) as { target: 0.6; transition: Transition };
+          }, 200);
         }
 
         onClick?.(e);
@@ -206,8 +186,7 @@ export function EnhancedButton({
     }
 
     if (enableGlow) {
-      const opacityTransition = withSpring(1, springConfigs.smooth);
-      animate(glowOpacity, 1, opacityTransition);
+      glowOpacity.value = withSpring(1, springConfigs.smooth) as { target: 1; transition: Transition };
     }
   }, [disabled, loading, enableGlow, glowOpacity]);
 
@@ -217,8 +196,7 @@ export function EnhancedButton({
     }
 
     if (enableGlow) {
-      const opacityTransition = withSpring(0.3, springConfigs.smooth);
-      runAnimation(glowOpacity, opacityTransition);
+      glowOpacity.value = withSpring(0.3, springConfigs.smooth) as { target: 0.3; transition: Transition };
     }
   }, [disabled, loading, enableGlow, glowOpacity]);
 
@@ -230,7 +208,7 @@ export function EnhancedButton({
   // Compose core Button with enhanced features
   return (
     <MotionView
-      {...(pressMotion.motionProps as any)}
+      {...(pressMotion.motionProps as { whileHover?: { scale?: number; opacity?: number }; whileTap?: { scale?: number; opacity?: number }; transition?: Transition })}
       className="inline-block"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

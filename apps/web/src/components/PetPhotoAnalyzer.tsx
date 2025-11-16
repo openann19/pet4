@@ -8,6 +8,7 @@ import { createLogger } from '@/lib/logger';
 import { Camera, Check, Image as ImageIcon, Sparkle, Upload, X } from '@phosphor-icons/react';
 import { useRef, useState, useEffect } from 'react';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
+import { useAnimatePresence } from '@/effects/reanimated';
 import {
   useAnimatedStyle,
   useSharedValue,

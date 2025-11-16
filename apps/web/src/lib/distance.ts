@@ -176,7 +176,7 @@ export function getCityCoordinates(cityName: string): Coordinates | null {
     'minneapolis, mn': { latitude: 44.9778, longitude: -93.265 },
   };
 
-  return cityDatabase[normalizedCity] || null;
+  return cityDatabase[normalizedCity] ?? null;
 }
 
 export async function getCurrentUserLocation(): Promise<Coordinates | null> {

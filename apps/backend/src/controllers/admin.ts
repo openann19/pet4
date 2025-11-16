@@ -3,8 +3,10 @@ import { z } from 'zod';
 import { PrismaClient } from '@prisma/client';
 import { asyncHandler } from '../middleware/error-handler.js';
 import type { AuthenticatedRequest } from '../middleware/auth.js';
+import { createLogger } from '../utils/logger.js';
 
 const prisma = new PrismaClient();
+const logger = createLogger('AdminController');
 
 /**
  * GET /admin/dashboard
@@ -316,12 +318,46 @@ export const getSettings: RequestHandler = asyncHandler(async (req: Authenticate
     return;
   }
 
-  // Return default settings
+  // Try to get system config from database
+  try {
+    // Query admin_configs table directly using raw SQL since Prisma doesn't have this model
+    const result = await prisma.$queryRaw<Array<{ config: unknown }>>`
+      SELECT config
+      FROM admin_configs
+      WHERE "configType" = 'system' AND "isActive" = true
+      ORDER BY version DESC
+      LIMIT 1
+    `;
+
+    if (result.length > 0 && result[0]?.config) {
+      const config = result[0].config as Record<string, unknown>;
+      res.json({
+        data: {
+          maintenanceMode: config.maintenanceMode ?? false,
+          registrationEnabled: config.registrationEnabled ?? true,
+          moderationEnabled: config.moderationEnabled ?? true,
+          // Include feature flags and system settings if present
+          featureFlags: config.featureFlags ?? {},
+          systemSettings: config.systemSettings ?? {},
+        },
+      });
+      return;
+    }
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    // Log error but don't fail - return defaults instead
+    // This allows the endpoint to work even if admin_configs table doesn't exist yet
+    logger.debug('Failed to get system config from database, using defaults', err);
+  }
+
+  // Return default settings if config not available
   res.json({
     data: {
       maintenanceMode: false,
       registrationEnabled: true,
       moderationEnabled: true,
+      featureFlags: {},
+      systemSettings: {},
     },
   });
 });

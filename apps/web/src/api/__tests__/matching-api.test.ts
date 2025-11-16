@@ -169,7 +169,6 @@ beforeAll(async () => {
           JSON.stringify({
             data: {
               candidates: [{ pet: mockPet, score: 0.85, distance: 5 }],
-              nextCursor: undefined,
               totalCount: 1,
             },
           })
@@ -211,8 +210,7 @@ beforeAll(async () => {
             data: {
               recorded: true,
               isMatch,
-              matchId: isMatch ? 'match-1' : undefined,
-              chatRoomId: isMatch ? 'room-1' : undefined,
+              ...(isMatch ? { matchId: 'match-1', chatRoomId: 'room-1' } : {}),
             },
           })
         );

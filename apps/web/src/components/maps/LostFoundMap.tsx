@@ -100,7 +100,7 @@ export default function LostFoundMap({
     haptics.trigger('success');
     onReportSighting(selectedAlert.id, userLocation);
     toast.success(
-      (t.lostFound as { sightingReported?: string })?.sightingReported || 'Sighting reported'
+      (t.lostFound as { sightingReported?: string })?.sightingReported ?? 'Sighting reported'
     );
   };
 
@@ -115,7 +115,7 @@ export default function LostFoundMap({
         <div className="text-center space-y-4">
           <MapPin size={64} className="mx-auto text-primary/30" weight="duotone" />
           <p className="text-lg font-semibold text-foreground/70">
-            {t.map?.loading || 'Loading map...'}
+            {t.map?.loading ?? 'Loading map...'}
           </p>
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function LostFoundMap({
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="secondary" className="gap-2">
             <MapPin size={14} />
-            {filteredAlerts.length} {(t.lostFound as { alerts?: string })?.alerts || 'alerts'}
+            {filteredAlerts.length} {(t.lostFound as { alerts?: string })?.alerts ?? 'alerts'}
           </Badge>
           <div className="flex items-center gap-2">
             <Funnel size={16} className="text-muted-foreground" />
@@ -141,16 +141,16 @@ export default function LostFoundMap({
               className="text-sm border rounded px-2 py-1"
             >
               <option value="all">
-                {(t.lostFound as { allTime?: string })?.allTime || 'All time'}
+                {(t.lostFound as { allTime?: string })?.allTime ?? 'All time'}
               </option>
               <option value="24h">
-                {(t.lostFound as { last24h?: string })?.last24h || 'Last 24h'}
+                {(t.lostFound as { last24h?: string })?.last24h ?? 'Last 24h'}
               </option>
               <option value="7d">
-                {(t.lostFound as { last7d?: string })?.last7d || 'Last 7 days'}
+                {(t.lostFound as { last7d?: string })?.last7d ?? 'Last 7 days'}
               </option>
               <option value="30d">
-                {(t.lostFound as { last30d?: string })?.last30d || 'Last 30 days'}
+                {(t.lostFound as { last30d?: string })?.last30d ?? 'Last 30 days'}
               </option>
             </select>
           </div>
@@ -158,7 +158,7 @@ export default function LostFoundMap({
         {onReportLost && (
           <Button onClick={onReportLost} size="sm">
             <Plus size={18} className="mr-2" />
-            {t.lostFound?.reportLost || 'Report Lost Pet'}
+            {t.lostFound?.reportLost ?? 'Report Lost Pet'}
           </Button>
         )}
       </div>
@@ -218,7 +218,7 @@ export default function LostFoundMap({
           {onReportSighting && (
             <Button className="w-full" onClick={handleReportSighting}>
               <MapPin size={18} className="mr-2" />
-              {t.lostFound?.reportSighting || 'Report Sighting'}
+              {t.lostFound?.reportSighting ?? 'Report Sighting'}
             </Button>
           )}
         </MotionView>

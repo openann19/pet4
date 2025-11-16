@@ -162,14 +162,14 @@ export const Extrapolation = {
 export type AnimatedStyle = import('react').CSSProperties
 export type AnimatedProps = Record<string, unknown>
 
-// Animated export for backward compatibility - use MotionView/MotionText instead
+// Animated export for backward compatibility - use MotionView/MotionText instead                                                                               
 // These are deprecated and will be removed in a future version
 export const Animated = {
-  View: MotionView as any,
-  Text: MotionText as any,
+  View: MotionView,
+  Text: MotionText,
   Image: motion.img,
-  ScrollView: MotionScrollView as any,
-}
+  ScrollView: MotionScrollView,
+} as const
 
 // Direct Framer Motion exports for web
 export { motion }

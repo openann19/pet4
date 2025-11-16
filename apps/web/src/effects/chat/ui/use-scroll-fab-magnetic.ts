@@ -11,7 +11,6 @@
 
 import { useEffect } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -21,6 +20,7 @@ import { isTruthy } from '@petspark/shared';
   Easing,
   type SharedValue,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-motion';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';

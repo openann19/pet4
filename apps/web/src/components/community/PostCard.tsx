@@ -1,7 +1,6 @@
-'use client';;
+'use client';
 import { memo, useEffect, useState, useCallback } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -9,6 +8,7 @@ import { isTruthy } from '@petspark/shared';
   withSequence,
   MotionView,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { communityAPI } from '@/api/community-api';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -213,11 +213,11 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
       if (isSaved) {
         await communityService.unsavePost(post.id);
         setIsSaved(false);
-        toast.success(t.community?.unsaved || 'Post removed from saved');
+        toast.success(t.community?.unsaved ?? 'Post removed from saved');
       } else {
         await communityService.savePost(post.id);
         setIsSaved(true);
-        toast.success(t.community?.saved || 'Post saved');
+        toast.success(t.community?.saved ?? 'Post saved');
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -250,7 +250,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
           await navigator.clipboard.writeText(
             `${window.location.origin}/community/post/${post.id}`
           );
-          toast.success(t.community?.linkCopied || 'Link copied to clipboard');
+          toast.success(t.community?.linkCopied ?? 'Link copied to clipboard');
         } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));
           logger.error('PostCard handleShare clipboard.writeText error', err, { postId: post.id });
@@ -446,8 +446,8 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
                   className="text-sm text-primary font-medium mt-1 hover:underline"
                 >
                   {showFullText
-                    ? t.community?.showLess || 'Show less'
-                    : t.community?.showMore || 'Show more'}
+                    ? t.community?.showLess ?? 'Show less'
+                    : t.community?.showMore ?? 'Show more'}
                 </button>
               )}
             </div>

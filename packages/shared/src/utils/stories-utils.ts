@@ -36,7 +36,7 @@ export function groupStoriesByUser(stories: Story[]): Map<string, Story[]> {
   if (!Array.isArray(stories)) return grouped
 
   stories.forEach(story => {
-    const userStories = grouped.get(story.userId) || []
+    const userStories = grouped.get(story.userId) ?? []
     userStories.push(story)
     grouped.set(story.userId, userStories)
   })

@@ -145,12 +145,10 @@ export class AdvancedPerformance {
     return ((...args: Parameters<T>) => {
       lastArgs = args;
 
-      if (rafId === null) {
-        rafId = requestAnimationFrame(() => {
-          fn(...lastArgs);
-          rafId = null;
-        });
-      }
+      rafId ??= requestAnimationFrame(() => {
+        fn(...lastArgs);
+        rafId = null;
+      });
     }) as T;
   }
 

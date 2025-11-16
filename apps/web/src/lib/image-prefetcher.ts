@@ -47,7 +47,7 @@ class ImagePrefetcher {
 
   private loadImage(url: string, options: ImagePrefetchOptions): Promise<PrefetchResult> {
     return new Promise((resolve) => {
-      const timeout = options.timeout || 10000;
+      const timeout = options.timeout ?? 10000;
       const timeoutId = setTimeout(() => {
         resolve({
           success: false,

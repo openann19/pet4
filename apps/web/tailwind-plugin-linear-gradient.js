@@ -1,5 +1,5 @@
 /* eslint-env node */
-/* eslint-disable import/no-cycle, import/no-self-import */
+ 
 
 /**
  * Tailwind Plugin: Linear Gradient Utilities

@@ -71,7 +71,11 @@ export function LocationShareButton({
       }
 
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      onLocationShare({ latitude, longitude, address });
+      onLocationShare({
+        latitude,
+        longitude,
+        ...(address !== undefined ? { address } : {}),
+      });
     } catch (error) {
       Alert.alert('Error', 'Failed to get location. Please try again.');
       console.error('Location error:', error);

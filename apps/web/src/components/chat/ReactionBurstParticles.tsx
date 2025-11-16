@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useMemo, useRef } from 'react';
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng';
 import { useUIConfig } from "@/hooks/use-ui-config";

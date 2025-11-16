@@ -1,5 +1,4 @@
 import React, {
-import { isTruthy } from '@petspark/shared';
   useCallback,
   useEffect,
   useId,
@@ -8,6 +7,7 @@ import { isTruthy } from '@petspark/shared';
   useRef,
   useState,
 } from 'react';
+import { isTruthy } from '@petspark/shared';
 
 type Locale = 'en' | 'bg';
 

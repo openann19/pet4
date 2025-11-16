@@ -78,14 +78,14 @@ export default function StoryViewer({
   const { isFullscreen, toggleFullscreen } = useFullscreen();
 
   const { trackReaction, trackInteraction } = useStoryAnalytics({
-    story: currentStory || null,
+    story: currentStory ?? null,
     currentUserId,
     isActive: !isPaused,
   });
 
   const handleNext = useCallback(() => {
     const viewDuration = (Date.now() - startTimeRef.current) / 1000;
-    const completedView = viewDuration >= (currentStory?.duration || 5) * 0.8;
+    const completedView = viewDuration >= (currentStory?.duration ?? 5) * 0.8;
 
     if (currentStory && !isOwn) {
       const updatedStory = addStoryView(
@@ -94,7 +94,7 @@ export default function StoryViewer({
         currentUserName,
         viewDuration,
         completedView,
-        currentUserAvatar || undefined
+        currentUserAvatar ?? undefined
       );
       onStoryUpdate?.(updatedStory);
     }
@@ -186,7 +186,7 @@ export default function StoryViewer({
       clearInterval(progressIntervalRef.current);
     }
 
-    const duration = currentStory?.duration || 5;
+    const duration = currentStory?.duration ?? 5;
     const interval = 50;
 
     progressIntervalRef.current = window.setInterval(() => {
@@ -339,7 +339,7 @@ export default function StoryViewer({
         navigator
           .share({
             title: `Story by ${currentStory.userName}`,
-            text: currentStory.caption || '',
+            text: currentStory.caption ?? '',
             url: `${window.location.origin}/stories/${currentStory.id}`,
           })
           .catch(() => {
@@ -549,9 +549,9 @@ export default function StoryViewer({
             <MotionView key={currentStory.id} style={imageEntry.animatedStyle}>
               <ProgressiveImage
                 src={currentStory.mediaUrl}
-                alt={currentStory.caption || 'Story'}
+                alt={currentStory.caption ?? 'Story'}
                 className="w-full h-full object-contain select-none"
-                aria-label={currentStory.caption || 'Story image'}
+                aria-label={currentStory.caption ?? 'Story image'}
                 draggable={false}
               />
             </MotionView>

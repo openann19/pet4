@@ -141,7 +141,7 @@ export function useSentimentMoodEngine(
     };
   }, [text, enabled, theme.adaptiveMood]);
 
-  const moodOpacity = useSharedValue(0);
+  const moodOpacity = useSharedValue<number>(0);
 
   if (enabled && theme.adaptiveMood) {
     moodOpacity.value = withSpring(1, springConfigs.smooth);

@@ -11,13 +11,13 @@
 
 import { useCallback, useRef } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
   type SharedValue,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { createLogger } from '@/lib/logger';
 import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-motion';
 import { logEffectEnd, logEffectStart } from '../core/telemetry';

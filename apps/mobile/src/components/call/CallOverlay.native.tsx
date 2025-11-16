@@ -2,7 +2,6 @@ import React from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { colors } from '@/theme/colors'
 import type { CallSession } from '@petspark/core'
 import type { MediaStream } from '@/types/webrtc'
 import { CallParticipantsGrid } from './CallParticipantsGrid.native'
@@ -24,7 +23,7 @@ export function CallOverlay(props: CallOverlayProps): React.ReactElement | null 
 
   const remote = session.remoteParticipant
   const local = session.localParticipant
-  const remoteName = remote.displayName || 'Remote'
+  const remoteName = remote?.displayName ?? 'Remote'
   const statusCopy = statusLabel(status)
   const isMuted = local.microphone === 'muted'
   const isCameraOff = local.camera === 'off'

@@ -13,7 +13,7 @@ import { groupStoriesByUser, filterActiveStories } from '@petspark/shared';
 import { colors } from '@mobile/theme/colors';
 import { useEntryAnimation } from '@mobile/effects/reanimated/use-entry-animation';
 import { useBounceOnTap } from '@mobile/effects/reanimated/use-bounce-on-tap';
-import { Haptics } from 'expo-haptics';
+import * as Haptics from 'expo-haptics';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -87,7 +87,7 @@ export function StoriesBar({
   currentUserPetPhoto,
   onStoryRingPress,
 }: StoriesBarProps): React.JSX.Element {
-  const activeStories = useMemo(() => filterActiveStories(allStories), [allStories]);
+  const activeStories = useMemo(() => filterActiveStories(allStories as unknown as import('@petspark/shared').Story[]), [allStories]);
   const storiesByUser = useMemo(() => groupStoriesByUser(activeStories), [activeStories]);
 
   const ownStories = useMemo(
@@ -108,7 +108,7 @@ export function StoriesBar({
     (userId: string) => {
       const userStories = storiesByUser.get(userId);
       if (userStories && userStories.length > 0) {
-        onStoryRingPress?.(userStories);
+        onStoryRingPress?.(userStories as unknown as Story[]);
       }
     },
     [storiesByUser, onStoryRingPress]
@@ -116,7 +116,7 @@ export function StoriesBar({
 
   const handleOwnStoryClick = useCallback(() => {
     if (ownStories.length > 0) {
-      onStoryRingPress?.(ownStories);
+      onStoryRingPress?.(ownStories as unknown as Story[]);
     } else {
       // Open create story dialog
     }
@@ -139,7 +139,7 @@ export function StoriesBar({
         contentContainerStyle={styles.scrollContent}
       >
         <StoryRing
-          stories={ownStories}
+          stories={ownStories as unknown as Story[]}
           petName={currentUserPetName}
           petPhoto={currentUserPetPhoto}
           isOwn
@@ -157,10 +157,11 @@ export function StoriesBar({
               Array.isArray(s.views) && s.views.some((v) => v.userId === currentUserId)
           );
 
+          if (!firstStory) return null;
           return (
             <StoryRing
               key={userId}
-              stories={userStories}
+              stories={userStories as unknown as Story[]}
               petName={firstStory.petName ?? 'Pet'}
               petPhoto={firstStory.petPhoto ?? ''}
               hasUnviewed={hasUnviewed}

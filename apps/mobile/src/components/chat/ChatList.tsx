@@ -22,7 +22,6 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated'
 import { useLiquidDots } from '../../effects/chat/typing/use-liquid-dots'
-import { MagneticScrollFab } from './MagneticScrollFab'
 import { MessageBubble, type Message } from './MessageBubble'
 import { isTruthy } from '../../utils/shared';
 
@@ -68,7 +67,7 @@ export function ChatList({
   isTyping = false,
   onReact,
   onReply,
-  onLongPress,
+  onLongPress: _onLongPress,
   onScrollToBottom,
 }: ChatListProps): React.ReactElement {
   const [showScrollFab, setShowScrollFab] = useState(false)

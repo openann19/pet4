@@ -91,7 +91,7 @@ export function PremiumButton({
   // Wrap Button with motion effects
   return (
     <MotionView
-      {...(pressMotion.motionProps as any)}
+      {...pressMotion.motionProps}
       className="inline-block"
     >
         <Button

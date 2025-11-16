@@ -1,7 +1,6 @@
 'use client';
 
 import {
-import { isTruthy } from '@petspark/shared';
   useSharedValue,
   useAnimatedStyle,
   withSequence,
@@ -10,6 +9,7 @@ import { isTruthy } from '@petspark/shared';
   runOnUI,
   type SharedValue,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { useCallback } from 'react';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 

@@ -1,7 +1,6 @@
 'use client';
 
 import {
-import { isTruthy } from '@petspark/shared';
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
@@ -10,6 +9,7 @@ import { isTruthy } from '@petspark/shared';
   withDelay,
   Easing,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { useEffect } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 

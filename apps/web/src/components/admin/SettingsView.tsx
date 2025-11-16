@@ -1,18 +1,20 @@
 'use client'
 
 import { MotionView } from "@petspark/motion";
-import { useCallback } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
-import { useStorage } from '@/hooks/use-storage'
 import { toast } from 'sonner'
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
 import { triggerHaptic } from '@/lib/haptics'
 import { createLogger } from '@/lib/logger'
+import { adminApi } from '@/api/admin-api'
+import { useCurrentUser } from '@/contexts/AuthContext'
+import { configBroadcastService } from '@/core/services/config-broadcast-service'
 
 const logger = createLogger('SettingsView')
 
@@ -32,63 +34,117 @@ interface SystemSettings {
   messagingEnabled: boolean
 }
 
-export default function SettingsView() {
-  const [featureFlags, setFeatureFlags] = useStorage<FeatureFlags>('admin-feature-flags', {
-    enableChat: true,
-    enableVisualAnalysis: true,
-    enableMatching: true,
-    enableReporting: true,
-    enableVerification: true
-  })
+interface SystemConfig {
+  featureFlags: FeatureFlags
+  systemSettings: SystemSettings
+  maintenanceMode?: boolean
+  registrationEnabled?: boolean
+  moderationEnabled?: boolean
+}
 
-  const [systemSettings, setSystemSettings] = useStorage<SystemSettings>('admin-system-settings', {
-    maxReportsPerUser: 10,
-    autoModeration: false,
-    requireVerification: false,
-    matchDistanceRadius: 50,
-    messagingEnabled: true
-  })
+const DEFAULT_FEATURE_FLAGS: FeatureFlags = {
+  enableChat: true,
+  enableVisualAnalysis: true,
+  enableMatching: true,
+  enableReporting: true,
+  enableVerification: true
+}
+
+const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
+  maxReportsPerUser: 10,
+  autoModeration: false,
+  requireVerification: false,
+  matchDistanceRadius: 50,
+  messagingEnabled: true
+}
+
+export default function SettingsView() {
+  const currentUser = useCurrentUser()
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [featureFlags, setFeatureFlags] = useState<FeatureFlags>(DEFAULT_FEATURE_FLAGS)
+  const [systemSettings, setSystemSettings] = useState<SystemSettings>(DEFAULT_SYSTEM_SETTINGS)
+
+  // Load config from backend
+  useEffect(() => {
+    const loadConfig = async () => {
+      setLoading(true)
+      try {
+        const config = await adminApi.getSystemConfig()
+        if (config) {
+          const systemConfig = config as unknown as SystemConfig
+          if (systemConfig.featureFlags) {
+            setFeatureFlags({ ...DEFAULT_FEATURE_FLAGS, ...systemConfig.featureFlags })
+          }
+          if (systemConfig.systemSettings) {
+            setSystemSettings({ ...DEFAULT_SYSTEM_SETTINGS, ...systemConfig.systemSettings })
+          }
+        }
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error))
+        logger.error('Failed to load system config', err)
+        toast.error('Failed to load system configuration')
+      } finally {
+        setLoading(false)
+      }
+    }
+    void loadConfig()
+  }, [])
+
+  // Save config to backend
+  const saveConfig = useCallback(async () => {
+    if (!currentUser) {
+      toast.error('User not authenticated')
+      return
+    }
+
+    setSaving(true)
+    try {
+      const config: SystemConfig = {
+        featureFlags,
+        systemSettings,
+        maintenanceMode: false,
+        registrationEnabled: true,
+        moderationEnabled: true,
+      }
+      await adminApi.updateSystemConfig(config as Record<string, unknown>, currentUser.id || 'admin')
+      toast.success('System configuration saved successfully')
+      logger.info('System config saved', { featureFlags, systemSettings })
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to save system config', err)
+      toast.error('Failed to save system configuration')
+    } finally {
+      setSaving(false)
+    }
+  }, [featureFlags, systemSettings, currentUser])
 
   const handleFeatureFlagChange = useCallback((key: keyof FeatureFlags, value: boolean): void => {
     try {
       triggerHaptic('selection')
-      setFeatureFlags((current: FeatureFlags) => {
-        if (!current) {
-          logger.warn('Feature flags is null, using defaults')
-          return {
-            enableChat: true,
-            enableVisualAnalysis: true,
-            enableMatching: true,
-            enableReporting: true,
-            enableVerification: true
-          }
-        }
-        return { ...current, [key]: value }
+      setFeatureFlags((current: FeatureFlags) => ({ ...current, [key]: value }))
+      // Auto-save to backend
+      void saveConfig().catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error))
+        logger.error('Failed to save after feature flag change', err, { key, value })
       })
-      toast.success(`Feature ${String(value ? 'enabled' : 'disabled' ?? '')}`)
+      toast.success(`Feature ${value ? 'enabled' : 'disabled'}`)
       logger.info('Feature flag updated', { key, value })
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error))
       logger.error('Failed to update feature flag', err, { key, value })
       toast.error('Failed to update feature flag')
     }
-  }, [setFeatureFlags])
+  }, [saveConfig])
 
   const handleSystemSettingChange = useCallback((key: keyof SystemSettings, value: number | boolean): void => {
     try {
       triggerHaptic('light')
-      setSystemSettings((current: SystemSettings) => {
-        if (!current) {
-          logger.warn('System settings is null, using defaults')
-          return {
-            maxReportsPerUser: 10,
-            autoModeration: false,
-            requireVerification: false,
-            matchDistanceRadius: 50,
-            messagingEnabled: true
-          }
-        }
-        return { ...current, [key]: value }
+      setSystemSettings((current: SystemSettings) => ({ ...current, [key]: value }))
+      // Auto-save to backend
+      void saveConfig().catch((error) => {
+        const err = error instanceof Error ? error : new Error(String(error))
+        logger.error('Failed to save after system setting change', err, { key, value })
       })
       toast.success('Setting updated')
       logger.info('System setting updated', { key, value })
@@ -97,11 +153,62 @@ export default function SettingsView() {
       logger.error('Failed to update system setting', err, { key, value })
       toast.error('Failed to update system setting')
     }
-  }, [setSystemSettings])
+  }, [saveConfig])
+
+  const handleBroadcast = useCallback(async (): Promise<void> => {
+    if (!currentUser) {
+      toast.error('User not authenticated')
+      return
+    }
+
+    try {
+      setSaving(true)
+      // Save config first
+      await saveConfig()
+
+      const config: SystemConfig = {
+        featureFlags,
+        systemSettings,
+        maintenanceMode: false,
+        registrationEnabled: true,
+        moderationEnabled: true,
+      }
+
+      await configBroadcastService.broadcastConfig(
+        'system',
+        config as Record<string, unknown>,
+        currentUser.id || 'admin'
+      )
+
+      await adminApi.createAuditLog({
+        adminId: currentUser.id || 'admin',
+        action: 'config_broadcast',
+        targetType: 'system_config',
+        targetId: 'system-config',
+        details: JSON.stringify({ configType: 'system' }),
+      })
+
+      toast.success('System configuration saved and broadcasted successfully')
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error))
+      logger.error('Failed to broadcast system config', err)
+      toast.error('Failed to broadcast system configuration')
+    } finally {
+      setSaving(false)
+    }
+  }, [featureFlags, systemSettings, currentUser, saveConfig])
 
   const featureFlagsCardHover = useHoverLift({ intensity: 1.02 })
   const systemSettingsCardHover = useHoverLift({ intensity: 1.02 })
   const systemInfoCardHover = useHoverLift({ intensity: 1.02 })
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <div className="text-muted-foreground">Loading system configuration...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex-1 flex flex-col">
@@ -132,7 +239,7 @@ export default function SettingsView() {
                 <FeatureFlagItem
                   label="Chat System"
                   description="Allow users to send messages to matched pets"
-                  checked={featureFlags?.enableChat ?? true}
+                  checked={featureFlags.enableChat}
                   onCheckedChange={(checked: boolean) => { handleFeatureFlagChange('enableChat', checked); }}
                 />
               </div>
@@ -143,7 +250,7 @@ export default function SettingsView() {
                 <FeatureFlagItem
                   label="AI Visual Analysis"
                   description="Enable AI-powered pet photo analysis and attribute extraction"
-                  checked={featureFlags?.enableVisualAnalysis ?? true}
+                  checked={featureFlags.enableVisualAnalysis}
                   onCheckedChange={(checked: boolean) => { handleFeatureFlagChange('enableVisualAnalysis', checked); }}
                 />
               </div>
@@ -154,7 +261,7 @@ export default function SettingsView() {
                 <FeatureFlagItem
                   label="Matching System"
                   description="Allow users to swipe and match with compatible pets"
-                  checked={featureFlags?.enableMatching ?? true}
+                  checked={featureFlags.enableMatching}
                   onCheckedChange={(checked: boolean) => { handleFeatureFlagChange('enableMatching', checked); }}
                 />
               </div>
@@ -165,7 +272,7 @@ export default function SettingsView() {
                 <FeatureFlagItem
                   label="Reporting System"
                   description="Allow users to report inappropriate content or behavior"
-                  checked={featureFlags?.enableReporting ?? true}
+                  checked={featureFlags.enableReporting}
                   onCheckedChange={(checked: boolean) => { handleFeatureFlagChange('enableReporting', checked); }}
                 />
               </div>
@@ -176,7 +283,7 @@ export default function SettingsView() {
                 <FeatureFlagItem
                   label="Verification System"
                   description="Require users to verify their identity and pet ownership"
-                  checked={featureFlags?.enableVerification ?? true}
+                  checked={featureFlags.enableVerification}
                   onCheckedChange={(checked: boolean) => { handleFeatureFlagChange('enableVerification', checked); }}
                 />
               </div>
@@ -201,7 +308,7 @@ export default function SettingsView() {
                 <Label>Max Reports Per User (Daily)</Label>
                 <div className="flex items-center gap-4">
                   <Slider
-                    value={[systemSettings?.maxReportsPerUser ?? 10]}
+                    value={[systemSettings.maxReportsPerUser]}
                     onValueChange={([value]) => {
                       if (value !== undefined) {
                         handleSystemSettingChange('maxReportsPerUser', value)
@@ -213,7 +320,7 @@ export default function SettingsView() {
                     className="flex-1"
                   />
                   <span className="w-12 text-right font-medium">
-                    {systemSettings?.maxReportsPerUser ?? 10}
+                    {systemSettings.maxReportsPerUser}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -227,7 +334,7 @@ export default function SettingsView() {
                 <Label>Match Distance Radius (km)</Label>
                 <div className="flex items-center gap-4">
                   <Slider
-                    value={[systemSettings?.matchDistanceRadius ?? 50]}
+                    value={[systemSettings.matchDistanceRadius]}
                     onValueChange={([value]) => {
                       if (value !== undefined) {
                         handleSystemSettingChange('matchDistanceRadius', value)
@@ -239,7 +346,7 @@ export default function SettingsView() {
                     className="flex-1"
                   />
                   <span className="w-12 text-right font-medium">
-                    {systemSettings?.matchDistanceRadius ?? 50}
+                    {systemSettings.matchDistanceRadius}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -253,7 +360,7 @@ export default function SettingsView() {
                 <FeatureFlagItem
                   label="Auto Moderation"
                   description="Automatically flag and hide potentially inappropriate content using AI"
-                  checked={systemSettings?.autoModeration ?? false}
+                  checked={systemSettings.autoModeration}
                   onCheckedChange={(checked: boolean) => { handleSystemSettingChange('autoModeration', checked); }}
                 />
               </div>
@@ -264,7 +371,7 @@ export default function SettingsView() {
                 <FeatureFlagItem
                   label="Require Verification"
                   description="Require all users to verify their identity before accessing features"
-                  checked={systemSettings?.requireVerification ?? false}
+                  checked={systemSettings.requireVerification}
                   onCheckedChange={(checked: boolean) => { handleSystemSettingChange('requireVerification', checked); }}
                 />
               </div>
@@ -275,12 +382,41 @@ export default function SettingsView() {
                 <FeatureFlagItem
                   label="Messaging Enabled"
                   description="Allow users to send and receive messages (global toggle)"
-                  checked={systemSettings?.messagingEnabled ?? true}
+                  checked={systemSettings.messagingEnabled}
                   onCheckedChange={(checked: boolean) => { handleSystemSettingChange('messagingEnabled', checked); }}
                 />
               </div>
             </CardContent>
           </Card>
+          </MotionView>
+
+          <MotionView delay={200}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Actions</CardTitle>
+                <CardDescription>
+                  Save and broadcast configuration changes
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => { void saveConfig(); }}
+                    disabled={saving}
+                    className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                  <button
+                    onClick={() => { void handleBroadcast(); }}
+                    disabled={saving}
+                    className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {saving ? 'Broadcasting...' : 'Save & Broadcast'}
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
           </MotionView>
 
           <MotionView

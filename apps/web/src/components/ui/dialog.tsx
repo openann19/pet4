@@ -94,7 +94,7 @@ function DialogContent({
 
   return (
     <DialogPortal data-slot="dialog-portal">
-      <MotionView {...(overlayTransition.backdropProps as any)}>
+      <MotionView {...overlayTransition.backdropProps}>
         <DialogPrimitive.Overlay
           data-slot="dialog-overlay"
           className={cn(
@@ -103,7 +103,7 @@ function DialogContent({
           )}
         />
       </MotionView>
-      <MotionView {...(overlayTransition.contentProps as any)}>
+      <MotionView {...overlayTransition.contentProps}>
         <DialogPrimitive.Content
           data-slot="dialog-content"
           role="dialog"

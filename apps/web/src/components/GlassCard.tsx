@@ -1,8 +1,9 @@
 import { cn } from '@/lib/utils';
 import { MotionView } from '@petspark/motion';
-import { useSharedValue, useAnimatedStyle, withTiming, animate } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion';
 import React from 'react';
 import type { ReactNode } from 'react';
+import type { Transition } from 'framer-motion';
 import { isTruthy } from '@petspark/shared';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 
@@ -27,10 +28,10 @@ export default function GlassCard({
   ...props
 }: GlassCardProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
-  const opacity = useSharedValue(0);
-  const y = useSharedValue(20);
-  const hoverScale = useSharedValue(1);
-  const hoverY = useSharedValue(0);
+  const opacity = useSharedValue<number>(0);
+  const y = useSharedValue<number>(20);
+  const hoverScale = useSharedValue<number>(1);
+  const hoverY = useSharedValue<number>(0);
 
   // Entry animation
   React.useEffect(() => {
@@ -39,37 +40,42 @@ export default function GlassCard({
       y.value = 0;
       return;
     }
-    const opacityTransition = withTiming(1, { duration: 400 });
-    animate(opacity, opacityTransition.target, opacityTransition.transition);
-    const yTransition = withTiming(0, { duration: 400 });
-    animate(y, yTransition.target, yTransition.transition);
+    opacity.value = withTiming(1, { duration: 400 }) as { target: 1; transition: Transition };
+    y.value = withTiming(0, { duration: 400 }) as { target: 0; transition: Transition };
   }, [opacity, y, prefersReducedMotion]);
 
   // Hover animation
   const handleMouseEnter = React.useCallback(() => {
     if (isTruthy(enableHover) && !prefersReducedMotion) {
-      const scaleTransition = withTiming(1.02, { duration: 200 });
-      animate(hoverScale, scaleTransition.target, scaleTransition.transition);
-      const yTransition = withTiming(-6, { duration: 200 });
-      animate(hoverY, yTransition.target, yTransition.transition);
+      hoverScale.value = withTiming(1.02, { duration: 200 }) as { target: 1.02; transition: Transition };
+      hoverY.value = withTiming(-6, { duration: 200 }) as { target: -6; transition: Transition };
     }
   }, [enableHover, hoverScale, hoverY, prefersReducedMotion]);
 
   const handleMouseLeave = React.useCallback(() => {
     if (isTruthy(enableHover) && !prefersReducedMotion) {
-      const scaleTransition = withTiming(1, { duration: 200 });
-      animate(hoverScale, scaleTransition.target, scaleTransition.transition);
-      const yTransition = withTiming(0, { duration: 200 });
-      animate(hoverY, yTransition.target, yTransition.transition);
+      hoverScale.value = withTiming(1, { duration: 200 }) as { target: 1; transition: Transition };
+      hoverY.value = withTiming(0, { duration: 200 }) as { target: 0; transition: Transition };
     }
   }, [enableHover, hoverScale, hoverY, prefersReducedMotion]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.get(),
-    transform: [{ translateY: y.get() + hoverY.get() }, { scale: hoverScale.get() }],
-    boxShadow:
-      enableHover && hoverY.get() < 0 ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : undefined,
-  }));
+  const animatedStyle = useAnimatedStyle(() => {
+    const translateY = y.get() + hoverY.get();
+    const scale = hoverScale.get();
+    const transforms: Record<string, number | string>[] = [];
+    if (translateY !== 0) {
+      transforms.push({ translateY });
+    }
+    if (scale !== 1) {
+      transforms.push({ scale });
+    }
+    return {
+      opacity: opacity.get(),
+      transform: transforms.length > 0 ? transforms : undefined,
+      boxShadow:
+        enableHover && hoverY.get() < 0 ? '0 25px 50px -12px rgba(0, 0, 0, 0.25)' : undefined,
+    };
+  });
 
   return (
     <MotionView

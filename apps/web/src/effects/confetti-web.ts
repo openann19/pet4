@@ -3,6 +3,22 @@
 
 import confetti from 'canvas-confetti'
 
+// Type definitions for toast APIs
+declare global {
+  interface Window {
+    toast?: {
+      success?: (message: string) => void;
+      error?: (message: string) => void;
+      info?: (message: string) => void;
+    };
+    sonner?: {
+      success?: (message: string) => void;
+      error?: (message: string) => void;
+      info?: (message: string) => void;
+    };
+  }
+}
+
 export function toastSuccess(message: string): void {
   confetti({
     particleCount: 80,
@@ -12,7 +28,6 @@ export function toastSuccess(message: string): void {
     scalar: 1.2,
   })
   // Use sonner toast for message
-  // @ts-expect-error
   window.toast?.success?.(message) || window.sonner?.success?.(message)
 }
 
@@ -25,7 +40,6 @@ export function toastError(message: string): void {
     scalar: 1.1,
   })
   // Use sonner toast for message
-  // @ts-expect-error
   window.toast?.error?.(message) || window.sonner?.error?.(message)
 }
 
@@ -38,6 +52,5 @@ export function toastInfo(message: string): void {
     scalar: 1.0,
   })
   // Use sonner toast for message
-  // @ts-expect-error
   window.toast?.info?.(message) || window.sonner?.info?.(message)
 }

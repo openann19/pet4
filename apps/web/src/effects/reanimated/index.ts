@@ -23,6 +23,7 @@ export { useExpandCollapse } from './use-expand-collapse';
 export { useRotation } from './use-rotation';
 export { useStaggeredItem } from './use-staggered-item';
 export { useHoverTap } from './use-hover-tap';
+export { useEntryAnimation } from './use-entry-animation';
 export { useStickerAnimation } from './use-sticker-animation';
 export type {
   UseStickerAnimationOptions,

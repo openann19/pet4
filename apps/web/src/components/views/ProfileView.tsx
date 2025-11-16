@@ -65,28 +65,28 @@ export default function ProfileView() {
   const emptyStateButtonHover = useHoverLift({ scale: 1.05 })
   const emptyStateButtonTap = useBounceOnTap({ scale: 0.95 })
 
-  // Create style objects from MotionValues (framer-motion supports MotionValues in style prop)
+  // Create style objects from MotionValues (framer-motion supports MotionValues in style prop)                                                                 
   const emptyStateIconStyle = useMemo(() => ({
     scale: emptyStateIcon.scale,
     rotate: emptyStateIcon.rotate,
     opacity: emptyStateIcon.opacity,
-  } as unknown as React.CSSProperties), [emptyStateIcon.scale, emptyStateIcon.rotate, emptyStateIcon.opacity])
+  }), [emptyStateIcon.scale, emptyStateIcon.rotate, emptyStateIcon.opacity])                                                  
   const emptyStateTitleStyle = useMemo(() => ({
     opacity: emptyStateTitle.opacity,
     y: emptyStateTitle.translateY,
-  } as unknown as React.CSSProperties), [emptyStateTitle.opacity, emptyStateTitle.translateY])
+  }), [emptyStateTitle.opacity, emptyStateTitle.translateY])                                                                  
   const emptyStateDescStyle = useMemo(() => ({
     opacity: emptyStateDesc.opacity,
     y: emptyStateDesc.translateY,
-  } as unknown as React.CSSProperties), [emptyStateDesc.opacity, emptyStateDesc.translateY])
+  }), [emptyStateDesc.opacity, emptyStateDesc.translateY])                                                                    
   const emptyStateButtonStyle = useMemo(() => ({
     opacity: emptyStateButton.opacity,
     y: emptyStateButton.translateY,
-  } as unknown as React.CSSProperties), [emptyStateButton.opacity, emptyStateButton.translateY])
+  }), [emptyStateButton.opacity, emptyStateButton.translateY])                                                                
   const emptyStateButtonHoverStyle = useMemo(() => ({
     scale: emptyStateButtonHover.scale,
     y: emptyStateButtonHover.translateY,
-  } as unknown as React.CSSProperties), [emptyStateButtonHover.scale, emptyStateButtonHover.translateY])
+  }), [emptyStateButtonHover.scale, emptyStateButtonHover.translateY])
 
   // Animation hooks for pet cards
   const _petCardsContainer = useStaggeredContainer({ delay: 0.08 })
@@ -122,23 +122,23 @@ export default function ProfileView() {
   const themeSectionStyle = useMemo(() => ({
     opacity: themeSection.opacity,
     y: themeSection.translateY,
-  } as unknown as React.CSSProperties), [themeSection.opacity, themeSection.translateY])
+  }), [themeSection.opacity, themeSection.translateY])
   const subscriptionSectionStyle = useMemo(() => ({
     opacity: subscriptionSection.opacity,
     y: subscriptionSection.translateY,
-  } as unknown as React.CSSProperties), [subscriptionSection.opacity, subscriptionSection.translateY])
+  }), [subscriptionSection.opacity, subscriptionSection.translateY])
   const highlightsSectionStyle = useMemo(() => ({
     opacity: highlightsSection.opacity,
     y: highlightsSection.translateY,
-  } as unknown as React.CSSProperties), [highlightsSection.opacity, highlightsSection.translateY])
+  }), [highlightsSection.opacity, highlightsSection.translateY])
   const analysisSectionStyle = useMemo(() => ({
     opacity: analysisSection.opacity,
     y: analysisSection.translateY,
-  } as unknown as React.CSSProperties), [analysisSection.opacity, analysisSection.translateY])
+  }), [analysisSection.opacity, analysisSection.translateY])
   const videoSectionStyle = useMemo(() => ({
     opacity: videoSection.opacity,
     y: videoSection.translateY,
-  } as unknown as React.CSSProperties), [videoSection.opacity, videoSection.translateY])
+  }), [videoSection.opacity, videoSection.translateY])
 
   const handleEdit = (pet: Pet) => {
     setEditingPet(pet)
@@ -283,22 +283,22 @@ export default function ProfileView() {
             opacity: cardEntry.opacity,
             y: cardEntry.translateY,
             scale: cardEntry.scale,
-          } as unknown as React.CSSProperties), [cardEntry.opacity, cardEntry.translateY, cardEntry.scale])
+          }), [cardEntry.opacity, cardEntry.translateY, cardEntry.scale])
           const cardHoverStyle = useMemo(() => ({
             scale: cardHover.scale,
             y: cardHover.translateY,
-          } as unknown as React.CSSProperties), [cardHover.scale, cardHover.translateY])
+          }), [cardHover.scale, cardHover.translateY])
           const imageHoverStyle = useMemo(() => ({
             scale: imageHover.scale,
             y: imageHover.translateY,
-          } as unknown as React.CSSProperties), [imageHover.scale, imageHover.translateY])
+          }), [imageHover.scale, imageHover.translateY])
           const editButtonHoverStyle = useMemo(() => ({
             scale: editButtonHover.scale,
             y: editButtonHover.translateY,
-          } as unknown as React.CSSProperties), [editButtonHover.scale, editButtonHover.translateY])
+          }), [editButtonHover.scale, editButtonHover.translateY])
           const editButtonTapStyle = useMemo(() => ({
             scale: editButtonTap.scale,
-          } as unknown as React.CSSProperties), [editButtonTap.scale])
+          }), [editButtonTap.scale])
           
           return (
             <MotionView

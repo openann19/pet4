@@ -3,7 +3,7 @@
  */
 
 import type { Pet } from '@/lib/types';
-import type { DiscoveryPreferences } from '@/components/DiscoveryFilters';
+import type { DiscoveryPreferences } from '@/components/discovery-preferences';
 
 export interface DiscoverViewState {
   currentIndex: number;

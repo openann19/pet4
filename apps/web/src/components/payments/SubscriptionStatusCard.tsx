@@ -117,10 +117,10 @@ export function SubscriptionStatusCard() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {getPlanIcon(entitlements?.planTier || 'free')}
+              {getPlanIcon(entitlements?.planTier ?? 'free')}
               <div>
-                <CardTitle className="text-2xl">{plan?.name || 'Free'} Plan</CardTitle>
-                <CardDescription>{plan?.description || 'Basic matching features'}</CardDescription>
+                <CardTitle className="text-2xl">{plan?.name ?? 'Free'} Plan</CardTitle>
+                <CardDescription>{plan?.description ?? 'Basic matching features'}</CardDescription>
               </div>
             </div>
             {subscription && (

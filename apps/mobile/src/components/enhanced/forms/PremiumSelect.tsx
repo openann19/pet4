@@ -147,6 +147,12 @@ export function PremiumSelect({
     lg: { height: 56, paddingHorizontal: 20 },
   }
 
+  const textSizeStyles: Record<string, { fontSize: number }> = {
+    sm: { fontSize: 14 },
+    md: { fontSize: 16 },
+    lg: { fontSize: 18 },
+  }
+
   return (
     <View style={[styles.container, style]} testID={testID}>
       {label && <Text style={styles.label}>{label}</Text>}

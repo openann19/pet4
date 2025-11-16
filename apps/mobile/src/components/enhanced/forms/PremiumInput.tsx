@@ -16,6 +16,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
+import { isTruthy } from '@petspark/shared'
 import FeatherIcon from 'react-native-vector-icons/Feather'
 import type { IconProps } from 'react-native-vector-icons/Icon'
 
@@ -44,11 +45,10 @@ export interface PremiumInputProps extends Omit<TextInputProps, 'style'> {
   size?: 'sm' | 'md' | 'lg'
   variant?: 'default' | 'filled' | 'outlined'
   fullWidth?: boolean
-  type?: 'default' | 'password' | 'email' | 'numeric'
   onClear?: () => void
   style?: ViewStyle
   testID?: string
-  type?: 'default' | 'password' | 'email' | 'numeric' | 'phone-pad'
+  type?: TextInputProps['textContentType']
 }
 
 export function PremiumInput({

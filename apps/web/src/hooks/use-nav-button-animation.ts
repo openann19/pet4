@@ -1,6 +1,6 @@
 'use client';
 
-import { useMotionValue, animate, useTransform, type MotionValue, type Variants } from 'framer-motion';
+import { useMotionValue, animate, useTransform, type MotionValue, type Variants } from '@petspark/motion';
 import { useEffect, useCallback } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { isTruthy } from '@petspark/shared';

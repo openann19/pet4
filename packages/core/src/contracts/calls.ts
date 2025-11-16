@@ -4,6 +4,13 @@
  * Shared types and contracts for call signaling and session management
  */
 
+// WebRTC type definitions
+export interface RTCIceCandidateInit {
+  candidate?: string;
+  sdpMLineIndex?: number | null;
+  sdpMid?: string | null;
+}
+
 export type CallStatus = 'idle' | 'ringing' | 'connecting' | 'in-call' | 'ended' | 'failed';
 
 export type CallDirection = 'incoming' | 'outgoing';

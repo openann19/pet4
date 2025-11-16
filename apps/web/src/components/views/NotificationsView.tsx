@@ -21,7 +21,7 @@ import {
   UserPlus,
 } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
-import { MotionView } from '@petspark/motion';
+import { MotionView, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -97,13 +97,13 @@ function _NotificationItemView({
   index: number
   onNotificationClick: (notification: CommunityNotification) => void
 }) {
-  const opacity = useSharedValue(0)
-  const translateX = useSharedValue(-20)
+  const opacity = useSharedValue<number>(0)
+  const translateX = useSharedValue<number>(-20)
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      opacity.value = withSpring(1, springConfigs.smooth)
-      translateX.value = withSpring(0, springConfigs.smooth)
+      opacity.value = withSpring(1, { damping: 25, stiffness: 400 })
+      translateX.value = withSpring(0, { damping: 25, stiffness: 400 })
     }, index * 30)
 
     return () => {

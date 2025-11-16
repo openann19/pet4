@@ -10,15 +10,15 @@ export const LEGAL_URLS = {
   terms:
     (typeof process !== 'undefined' &&
       typeof process.env !== 'undefined' &&
-      process.env.NEXT_PUBLIC_LEGAL_TERMS_URL) ||
+      process.env.NEXT_PUBLIC_LEGAL_TERMS_URL) ??
     (typeof import.meta !== 'undefined' &&
-      (import.meta as ImportMeta & { env?: Record<string, string> })?.env?.VITE_LEGAL_TERMS_URL) ||
+      (import.meta as ImportMeta & { env?: Record<string, string> })?.env?.VITE_LEGAL_TERMS_URL) ??
     'https://pawfectmatch.app/terms',
   privacy:
     (typeof process !== 'undefined' &&
       typeof process.env !== 'undefined' &&
-      process.env.NEXT_PUBLIC_LEGAL_PRIVACY_URL) ||
+      process.env.NEXT_PUBLIC_LEGAL_PRIVACY_URL) ??
     (typeof import.meta !== 'undefined' &&
-      (import.meta as ImportMeta & { env?: Record<string, string> })?.env?.VITE_LEGAL_PRIVACY_URL) ||
+      (import.meta as ImportMeta & { env?: Record<string, string> })?.env?.VITE_LEGAL_PRIVACY_URL) ??
     'https://pawfectmatch.app/privacy',
 } as const;

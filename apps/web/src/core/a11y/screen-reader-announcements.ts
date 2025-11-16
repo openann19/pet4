@@ -59,7 +59,7 @@ class AnnouncementQueue {
     // Check if same message was announced recently
     if (announcement.message === this.lastAnnouncement.message) {
       const timeSinceLastAnnouncement =
-        (announcement.timestamp || Date.now()) - (this.lastAnnouncement.timestamp || 0);
+        (announcement.timestamp ?? Date.now()) - (this.lastAnnouncement.timestamp ?? 0);
       return timeSinceLastAnnouncement < this.debounceMs * 10; // 1 second
     }
 

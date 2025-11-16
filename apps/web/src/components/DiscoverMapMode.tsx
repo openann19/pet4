@@ -1,5 +1,6 @@
 import { MotionView } from "@petspark/motion";
 import { useState, useEffect, useMemo } from 'react';
+import { useAnimatePresence } from '@/effects/reanimated';
 import { MapPin, X, Heart, Info } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -173,7 +174,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
       />
       {selectedPetPresence.shouldRender && selectedPet && (
         <MotionView
-          style={selectedPetPresence.animatedStyle}
+          animatedStyle={selectedPetPresence.animatedStyle}
           className="absolute bottom-0 left-0 right-0 max-h-[70%] bg-background rounded-t-3xl shadow-2xl border-t border-border overflow-y-auto"
         >
           <div className="p-6 space-y-4">

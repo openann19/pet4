@@ -1,8 +1,4 @@
-import type { Environment } from '@/config/env';
-import { ENV } from '@/config/env';
 import { createLogger } from '@/lib/logger';
-import { retry } from '@/lib/retry';
-import { ENDPOINTS } from '@/lib/endpoints';
 
 const logger = createLogger('APIClient');
 
@@ -80,14 +76,14 @@ export interface RequestConfig extends RequestInit {
   idempotent?: boolean;
 }
 
-type RequestHeaders = Record<string, string>;
+type _RequestHeaders = Record<string, string>;
 
-interface StoredTokens {
+interface _StoredTokens {
   accessToken: string;
   refreshToken?: string;
 }
 
-const DEFAULT_RETRY_CONFIG: RetryConfig = {
+const _DEFAULT_RETRY_CONFIG: RetryConfig = {
   attempts: 3,
   delay: 1000,
   exponentialBackoff: true,

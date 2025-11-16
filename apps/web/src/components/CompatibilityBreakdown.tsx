@@ -72,7 +72,7 @@ export default function CompatibilityBreakdown({
       const nextValues: AnimatedValues = {};
 
       for (const key of FACTOR_KEYS) {
-        const raw = (factors as Record<string, number | undefined>)[key];
+        const raw = factors[key];
         nextValues[key] = toPercent(raw);
       }
 

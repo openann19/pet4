@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 
 const logger = createLogger('SavedPostsView');
 
-function EmptyStateView() {
+function _EmptyStateView() {
   const entry = useEntryAnimation({ initialY: 20, initialOpacity: 0 })
 
   return (

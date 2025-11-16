@@ -72,7 +72,7 @@ export function LocationBubble({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-white text-xs font-medium">
                 <MapPin size={14} weight="fill" />
-                <span>{label || (t.map as { location?: string })?.location || 'Location'}</span>
+                <span>{label ?? (t.map as { location?: string })?.location ?? 'Location'}</span>
               </div>
               {timestamp && (
                 <Badge variant="secondary" className="text-xs opacity-80">
@@ -89,7 +89,7 @@ export function LocationBubble({
           <SheetHeader className="p-6 pb-4 border-b">
             <div className="flex items-center justify-between">
               <SheetTitle className="text-xl font-bold">
-                {(t.map as { location?: string })?.location || 'Location'}
+                {(t.map as { location?: string })?.location ?? 'Location'}
               </SheetTitle>
               <Button
                 variant="ghost"
@@ -121,7 +121,7 @@ export function LocationBubble({
           <div className="p-4 border-t space-y-3">
             <div>
               <p className="text-sm font-semibold mb-1">
-                {label || (t.map as { location?: string })?.location || 'Location'}
+                {label ?? (t.map as { location?: string })?.location ?? 'Location'}
               </p>
               <p className="text-xs text-muted-foreground">
                 {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
@@ -129,7 +129,7 @@ export function LocationBubble({
             </div>
             <Button className="w-full" onClick={handleOpenInMaps}>
               <NavigationArrow size={18} className="mr-2" />
-              {t.map?.openInMaps || 'Open in Maps'}
+              {t.map?.openInMaps ?? 'Open in Maps'}
             </Button>
           </div>
         </SheetContent>
@@ -167,7 +167,7 @@ export function LocationPicker({
         } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));
           logger.error('LocationPicker snapToGrid error', err);
-          setSelectedLocation(currentLocation || { lat: 40.7128, lng: -74.006 });
+          setSelectedLocation(currentLocation ?? { lat: 40.7128, lng: -74.006 });
         }
       })
       .catch((error) => {
@@ -193,13 +193,13 @@ export function LocationPicker({
     haptics.trigger('success');
     onSelectLocation(selectedLocation);
     onClose();
-    toast.success(t.map?.locationShared || 'Location shared');
+    toast.success(t.map?.locationShared ?? 'Location shared');
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold">{t.map?.shareLocation || 'Share location'}</p>
+        <p className="text-sm font-semibold">{t.map?.shareLocation ?? 'Share location'}</p>
         <Badge
           variant={sharingPrecise ? 'default' : 'secondary'}
           className="cursor-pointer"
@@ -233,11 +233,11 @@ export function LocationPicker({
 
       <div className="flex gap-2">
         <Button variant="outline" className="flex-1" onClick={onClose}>
-          {t.common.cancel || 'Cancel'}
+          {t.common.cancel ?? 'Cancel'}
         </Button>
         <Button className="flex-1" onClick={handleShare} disabled={!selectedLocation}>
           <MapPin size={18} className="mr-2" />
-          {t.map?.shareLocation || 'Share'}
+          {t.map?.shareLocation ?? 'Share'}
         </Button>
       </div>
     </div>

@@ -1,140 +1,42 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
-import { MagnifyingGlass, Plus, MapPin } from '@phosphor-icons/react';
-import { motion, MotionView } from '@petspark/motion';
+import { Plus, MapPin } from '@phosphor-icons/react';
+import { MotionView } from '@petspark/motion';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import type { LostAlert } from '@/lib/lost-found-types';
-import { LostAlertCard } from '@/components/lost-found/LostAlertCard';
 import { CreateLostAlertDialog } from '@/components/lost-found/CreateLostAlertDialog';
 import { ReportSightingDialog } from '@/components/lost-found/ReportSightingDialog';
-import { lostFoundAPI } from '@/api/lost-found-api';
+import { LostFoundFilters } from '@/components/lost-found/LostFoundFilters';
+import { LostFoundEmptyState } from '@/components/lost-found/LostFoundEmptyState';
+import { LostFoundAlertsGrid } from '@/components/lost-found/LostFoundAlertsGrid';
 import { useApp } from '@/contexts/AppContext';
 import { toast } from 'sonner';
-import { createLogger } from '@/lib/logger';
-import type { LostAlertFilters } from '@/lib/lost-found-types';
-import { isTruthy } from '@petspark/shared';
-
-const logger = createLogger('LostFoundView');
+import { useLostFoundAlerts } from '@/hooks/lost-found/use-lost-found-alerts';
+import { useUserLocation } from '@/hooks/lost-found/use-user-location';
+import { filterAlerts } from '@/components/lost-found/utils/filter-alerts';
 
 type ViewMode = 'browse' | 'mine';
 type FilterTab = 'all' | 'active' | 'found' | 'favorites';
-
-// Animated alert card component
-function AnimatedAlertCard({
-  alert,
-  index,
-  onSelect,
-  onReportSighting,
-  isFavorited,
-  onToggleFavorite,
-}: {
-  alert: LostAlert
-  index: number
-  onSelect: (alert: LostAlert) => void
-  onReportSighting: (alert: LostAlert) => void
-  isFavorited: boolean
-  onToggleFavorite: (alertId: string) => void
-}) {
-  const cardEntry = useEntryAnimation({ 
-    initialY: 20, 
-    delay: index * 50 
-  })
-
-  return (
-    <MotionView style={cardEntry.animatedStyle}>
-      <LostAlertCard
-        alert={alert}
-        onSelect={onSelect}
-        onReportSighting={onReportSighting}
-        isFavorited={isFavorited}
-        onToggleFavorite={onToggleFavorite}
-      />
-    </MotionView>
-  );
-}
 
 export default function LostFoundView() {
   const { t } = useApp();
   const [viewMode, setViewMode] = useState<ViewMode>('browse');
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
-  const [alerts, setAlerts] = useState<LostAlert[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [favorites, setFavorites] = useStorage<string[]>('lost-found-favorites', []);
   const [selectedAlert, setSelectedAlert] = useState<LostAlert | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showSightingDialog, setShowSightingDialog] = useState(false);
-  const [cursor, setCursor] = useState<string | undefined>();
-  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
 
-  const getUserLocation = useCallback(async () => {
-    try {
-      if (isTruthy(navigator.geolocation)) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setUserLocation({
-              lat: position.coords.latitude,
-              lon: position.coords.longitude,
-            });
-          },
-          () => {
-            // User denied or error getting location
-          }
-        );
-      }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to get user location', err, { action: 'getUserLocation' });
-    }
-  }, []);
-
-  const loadAlerts = useCallback(async () => {
-    try {
-      setLoading(true);
-      const filters: LostAlertFilters & { cursor?: string; limit?: number } = {
-        limit: 50,
-        ...(cursor && { cursor }),
-      };
-
-      if (viewMode === 'mine') {
-        const user = await spark.user();
-        const userAlerts = await lostFoundAPI.getUserAlerts(user.id);
-        setAlerts(userAlerts);
-        setLoading(false);
-        return;
-      }
-
-      // For browse mode, optionally filter by location
-      if (userLocation && activeTab === 'all') {
-        filters.location = {
-          lat: userLocation.lat,
-          lon: userLocation.lon,
-          radiusKm: 50, // 50km radius
-        };
-      }
-
-      if (activeTab === 'active') {
-        filters.status = ['active'];
-      } else if (activeTab === 'found') {
-        filters.status = ['found'];
-      }
-
-      const result = await lostFoundAPI.queryAlerts(filters);
-      setAlerts(result.alerts);
-      setCursor(result.nextCursor);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Failed to load alerts', err, { action: 'loadAlerts' });
-      toast.error('Failed to load lost & found alerts');
-    } finally {
-      setLoading(false);
-    }
-  }, [viewMode, cursor, userLocation, activeTab]);
+  const { userLocation, getUserLocation } = useUserLocation();
+  const { alerts, loading, loadAlerts } = useLostFoundAlerts({
+    viewMode,
+    activeTab,
+    userLocation,
+  });
 
   useEffect(() => {
     void loadAlerts();
@@ -162,25 +64,12 @@ export default function LostFoundView() {
     setShowSightingDialog(true);
   };
 
-  const filteredAlerts = () => {
-    let list = alerts;
-
-    if (activeTab === 'favorites') {
-      list = list.filter((a) => Array.isArray(favorites) && favorites.includes(a.id));
-    }
-
-    if (searchQuery) {
-      list = list.filter(
-        (a) =>
-          a.petSummary.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          a.petSummary.breed?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          a.petSummary.species.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          a.lastSeen.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  };
+  const filteredAlertsList = filterAlerts({
+    alerts,
+    activeTab,
+    searchQuery,
+    favorites: Array.isArray(favorites) ? favorites : [],
+  });
 
   if (loading && alerts.length === 0) {
     return (
@@ -193,16 +82,7 @@ export default function LostFoundView() {
     );
   }
 
-  const activeCount = alerts.filter((a) => a.status === 'active').length;
-  const foundCount = alerts.filter((a) => a.status === 'found').length;
-
-  // Animation hooks - must be at top level
-  const filteredAlertsList = filteredAlerts()
-  const isEmpty = filteredAlertsList.length === 0
-  const emptyPresence = useAnimatePresence({ isVisible: isEmpty })
-  const gridPresence = useAnimatePresence({ isVisible: !isEmpty })
-  const emptyEntry = useEntryAnimation({ initialY: 20 })
-  const gridEntry = useEntryAnimation({ initialOpacity: 0 })
+  const isEmpty = filteredAlertsList.length === 0;
 
   return (
     <PageTransitionWrapper key="lost-found-view" direction="up">
@@ -211,10 +91,10 @@ export default function LostFoundView() {
           <div>
             <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-3">
               <MapPin size={32} weight="fill" className="text-primary" />
-              {t.lostFound?.title || 'Lost & Found'}
+              {t.lostFound?.title ?? 'Lost & Found'}
             </h2>
             <p className="text-muted-foreground">
-              {t.lostFound?.subtitle || 'Report lost pets and help reunite families'}
+              {t.lostFound?.subtitle ?? 'Report lost pets and help reunite families'}
             </p>
           </div>
 
@@ -227,100 +107,38 @@ export default function LostFoundView() {
             </Button>
             <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
               <Plus size={20} weight="fill" />
-              {t.lostFound?.reportLost || 'Report Lost Pet'}
+              {t.lostFound?.reportLost ?? 'Report Lost Pet'}
             </Button>
           </div>
         </div>
 
         {viewMode === 'browse' && (
           <>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="flex-1 relative w-full">
-                <MagnifyingGlass
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  size={20}
-                />
-                <Input
-                  placeholder={
-                    t.lostFound?.searchPlaceholder || 'Search by pet name, breed, location...'
-                  }
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  aria-label="Search lost and found alerts"
-                  className="pl-10"
-                />
-              </div>
-
-              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as FilterTab)}>
-                <TabsList>
-                  <TabsTrigger value="all">
-                    All {alerts.length > 0 && `(${alerts.length})`}
-                  </TabsTrigger>
-                  <TabsTrigger value="active">
-                    Active {activeCount > 0 && `(${activeCount})`}
-                  </TabsTrigger>
-                  <TabsTrigger value="found">
-                    Found {foundCount > 0 && `(${foundCount})`}
-                  </TabsTrigger>
-                  <TabsTrigger value="favorites">
-                    Favorites{' '}
-                    {Array.isArray(favorites) && favorites.length > 0 && `(${favorites.length})`}
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
+            <LostFoundFilters
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              alerts={alerts}
+              favorites={Array.isArray(favorites) ? favorites : []}
+              t={t}
+            />
 
             <ScrollArea className="h-[calc(100vh-320px)]">
               <AnimatePresence mode="wait">
-                {filteredAlerts().length === 0 ? (
-                  <MotionView
-                    key="empty"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="flex flex-col items-center justify-center py-16"
-                  >
-                    <MapPin size={64} className="text-muted-foreground mb-4" weight="thin" />
-                    <h3 className="text-xl font-semibold mb-2">
-                      {activeTab === 'favorites'
-                        ? 'No Favorites Yet'
-                        : searchQuery
-                          ? 'No Results Found'
-                          : 'No Active Alerts'}
-                    </h3>
-                    <p className="text-muted-foreground text-center max-w-md">
-                      {activeTab === 'favorites'
-                        ? 'Start adding alerts to your favorites to see them here.'
-                        : searchQuery
-                          ? 'Try adjusting your search terms.'
-                          : 'Check back soon for lost pet alerts in your area.'}
-                    </p>
-                  </MotionView>
+                {isEmpty ? (
+                  <LostFoundEmptyState
+                    activeTab={activeTab}
+                    searchQuery={searchQuery}
+                  />
                 ) : (
-                  <MotionView
-                    key="grid"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6"
-                  >
-                    {filteredAlerts().map((alert, index) => (
-                      <MotionView
-                        key={alert.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                      >
-                        <LostAlertCard
-                          alert={alert}
-                          onSelect={handleSelectAlert}
-                          onReportSighting={handleReportSighting}
-                          isFavorited={Array.isArray(favorites) && favorites.includes(alert.id)}
-                          onToggleFavorite={handleToggleFavorite}
-                        />
-                      </MotionView>
-                    ))}
-                  </MotionView>
+                  <LostFoundAlertsGrid
+                    alerts={filteredAlertsList}
+                    favorites={Array.isArray(favorites) ? favorites : []}
+                    onSelectAlert={handleSelectAlert}
+                    onReportSighting={handleReportSighting}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
                 )}
               </AnimatePresence>
             </ScrollArea>
@@ -329,24 +147,13 @@ export default function LostFoundView() {
 
         {viewMode === 'mine' && (
           <ScrollArea className="h-[calc(100vh-320px)]">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
-              {alerts.map((alert, index) => (
-                <MotionView
-                  key={alert.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <LostAlertCard
-                    alert={alert}
-                    onSelect={handleSelectAlert}
-                    onReportSighting={handleReportSighting}
-                    isFavorited={Array.isArray(favorites) && favorites.includes(alert.id)}
-                    onToggleFavorite={handleToggleFavorite}
-                  />
-                </MotionView>
-              ))}
-            </div>
+            <LostFoundAlertsGrid
+              alerts={alerts}
+              favorites={Array.isArray(favorites) ? favorites : []}
+              onSelectAlert={handleSelectAlert}
+              onReportSighting={handleReportSighting}
+              onToggleFavorite={handleToggleFavorite}
+            />
           </ScrollArea>
         )}
 

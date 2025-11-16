@@ -5,6 +5,7 @@
  */
 
 export * from './api';
+export * from './billing/billing-types';
 export * from './contracts/calls';
 export * from './stories/stories-types';
 export * from './stories/stories-client';

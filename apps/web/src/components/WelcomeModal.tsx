@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useApp } from '@/contexts/AppContext';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import {
   MotionView,
   useSharedValue,
@@ -54,23 +55,23 @@ export default function WelcomeModal(): JSX.Element | null {
   }));
 
   // Animation hooks
-  const containerEntry = useEntryAnimation({ initialOpacity: 0 })
-  const titleEntry = useEntryAnimation({ initialY: 20, delay: 300 })
-  const subtitleEntry = useEntryAnimation({ initialY: 20, delay: 400 })
-  const buttonEntry = useEntryAnimation({ initialY: 20, delay: 1000 })
+  const _containerEntry = useEntryAnimation({ initialOpacity: 0 })
+  const _titleEntry = useEntryAnimation({ initialY: 20, delay: 300 })
+  const _subtitleEntry = useEntryAnimation({ initialY: 20, delay: 400 })
+  const _buttonEntry = useEntryAnimation({ initialY: 20, delay: 1000 })
   const closeButtonHover = useHoverLift({ scale: 1.1 })
   const closeButtonRotate = useSharedValue(0)
-  const closeButtonRotateStyle = useAnimatedStyle(() => ({
+  const _closeButtonRotateStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${closeButtonRotate.value}deg` }],
   }))
-  const closeButtonTap = useBounceOnTap({ scale: 0.9 })
+  const _closeButtonTap = useBounceOnTap({ scale: 0.9 })
   const buttonHover = useHoverLift({ scale: 1.05 })
-  const buttonTap = useBounceOnTap({ scale: 0.95 })
+  const _buttonTap = useBounceOnTap({ scale: 0.95 })
 
   // Background gradient animation
   const bgScale = useSharedValue(1)
   const bgRotate = useSharedValue(0)
-  const bgStyle = useAnimatedStyle(() => ({
+  const _bgStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: bgScale.value },
       { rotate: `${bgRotate.value}deg` },
@@ -79,14 +80,14 @@ export default function WelcomeModal(): JSX.Element | null {
 
   // Heart icon animations
   const heartScale = useSharedValue(1)
-  const heartStyle = useAnimatedStyle(() => ({
+  const _heartStyle = useAnimatedStyle(() => ({
     transform: [{ scale: heartScale.value }],
   }))
 
   // Heart pulse animation
   const heartPulseScale = useSharedValue(1)
   const heartPulseOpacity = useSharedValue(0.5)
-  const heartPulseStyle = useAnimatedStyle(() => ({
+  const _heartPulseStyle = useAnimatedStyle(() => ({
     transform: [{ scale: heartPulseScale.value }],
     opacity: heartPulseOpacity.value,
   }))

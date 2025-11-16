@@ -153,8 +153,9 @@ export function ChatEffectsDemo(): React.JSX.Element {
         <Text style={styles.sectionTitle}>Swipe to Reply</Text>
         <SwipeToReply
           onReply={() => {
-             
-            alert('Reply triggered!')
+            import('react-native').then(({ Alert }) => {
+              Alert.alert('Reply', 'Reply triggered!');
+            });
           }}
         >
           <View style={styles.messageBubble}>

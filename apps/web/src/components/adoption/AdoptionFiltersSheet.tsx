@@ -181,7 +181,7 @@ export function AdoptionFiltersSheet({
                   type="number"
                   min="0"
                   max="30"
-                  value={localFilters.ageMin || ''}
+                  value={localFilters.ageMin ?? ''}
                   onChange={(e) => {
                     updateFilters({
                       ageMin: e.target.value ? Number(e.target.value) : undefined,                                                                              
@@ -200,7 +200,7 @@ export function AdoptionFiltersSheet({
                   type="number"
                   min="0"
                   max="30"
-                  value={localFilters.ageMax || ''}
+                  value={localFilters.ageMax ?? ''}
                   onChange={(e) => {
                     updateFilters({
                       ageMax: e.target.value ? Number(e.target.value) : undefined,                                                                              
@@ -218,10 +218,10 @@ export function AdoptionFiltersSheet({
             <Label htmlFor="location" className={cn(getTypographyClasses('body'), 'font-medium')}>Location</Label>
             <Input
               id="location"
-              value={localFilters.location || ''}
+                  value={localFilters.location ?? ''}
               onChange={(e) => {
                 updateFilters({
-                  location: e.target.value || undefined,
+                  location: e.target.value || undefined, // Keep || for empty string check
                 });
               }}
               placeholder="City or zip code"
@@ -235,7 +235,7 @@ export function AdoptionFiltersSheet({
               <Label className={cn(getTypographyClasses('body'), 'font-medium')}>Max Distance</Label>
               <div className="px-2">
                 <Slider
-                  value={[localFilters.maxDistance || 50]}
+                  value={[localFilters.maxDistance ?? 50]}
                   onValueChange={([value]) => {
                     haptics.impact('light');
                     updateFilters({
@@ -248,7 +248,7 @@ export function AdoptionFiltersSheet({
                 />
                 <div className={cn('flex justify-between mt-2 text-muted-foreground', getTypographyClasses('bodyMuted'))}>                                                                       
                   <span>1 km</span>
-                  <span className="font-medium">{localFilters.maxDistance || 50} km</span>
+                  <span className="font-medium">{localFilters.maxDistance ?? 50} km</span>
                   <span>100 km</span>
                 </div>
               </div>
@@ -366,7 +366,7 @@ export function AdoptionFiltersSheet({
               id="feeMax"
               type="number"
               min="0"
-              value={localFilters.feeMax || ''}
+              value={localFilters.feeMax ?? ''}
               onChange={(e) => {
                 updateFilters({
                   feeMax: e.target.value ? Number(e.target.value) : undefined,
@@ -426,7 +426,7 @@ export function AdoptionFiltersSheet({
           <div className="space-y-4">
             <Label htmlFor="sortBy" className={cn(getTypographyClasses('body'), 'font-medium')}>Sort By</Label>
             <Select
-              value={localFilters.sortBy || 'recent'}
+              value={localFilters.sortBy ?? 'recent'}
               onValueChange={(value) => {
                 haptics.impact('light');
                 updateFilters({

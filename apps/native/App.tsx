@@ -27,6 +27,7 @@ import { BusinessConfigScreen } from './src/screens/admin/BusinessConfigScreen';
 import { MatchingConfigScreen } from './src/screens/admin/MatchingConfigScreen';
 import { MapSettingsScreen } from './src/screens/admin/MapSettingsScreen';
 import { APIConfigScreen } from './src/screens/admin/APIConfigScreen';
+import { SystemConfigScreen } from './src/screens/admin/SystemConfigScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -255,6 +256,13 @@ export default function App(): React.JSX.Element {
               <Stack.Screen
                 name="APIConfig"
                 component={APIConfigScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="SystemConfig"
+                component={SystemConfigScreen}
                 options={{
                   headerShown: false,
                 }}

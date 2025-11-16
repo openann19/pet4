@@ -42,8 +42,8 @@ export function use3DTiltEffect(options: Use3DTiltEffectOptions = {}): Use3DTilt
   const { enabled = true, intensity = 15 } = options;
   const { visual } = useUIConfig();
 
-  const rotateX = useSharedValue(0);
-  const rotateY = useSharedValue(0);
+  const rotateX = useSharedValue<number>(0);
+  const rotateY = useSharedValue<number>(0);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent): void => {
@@ -78,18 +78,20 @@ export function use3DTiltEffect(options: Use3DTiltEffectOptions = {}): Use3DTilt
       return {};
     }
 
+    const transform: Record<string, string | number>[] = [
+      {
+        rotateX: `${rotateX.value}deg`,
+      },
+      {
+        rotateY: `${rotateY.value}deg`,
+      },
+      {
+        perspective: 1000,
+      },
+    ];
+
     return {
-      transform: [
-        {
-          rotateX: `${rotateX.value}deg`,
-        },
-        {
-          rotateY: `${rotateY.value}deg`,
-        },
-        {
-          perspective: 1000,
-        },
-      ],
+      transform,
     };
   }) as AnimatedStyle;
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useRef, useEffect, type ReactNode, type ButtonHTMLAttributes } from 'react';
-import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
+import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useRippleEffect } from '@/effects/reanimated/use-ripple-effect';
 import { useMagneticHover } from '@/effects/reanimated/use-magnetic-hover';

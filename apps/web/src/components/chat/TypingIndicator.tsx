@@ -82,15 +82,15 @@ export default function TypingIndicator({ users }: TypingIndicatorProps): JSX.El
   const typingText = useMemo(() => {
     if (users.length === 1) {
       const userName = users[0]?.userName?.trim();
-      return `${userName || 'Someone'} is typing`;
+      return `${userName ?? 'Someone'} is typing`;
     }
     if (users.length === 2) {
       const userName1 = users[0]?.userName?.trim();
       const userName2 = users[1]?.userName?.trim();
-      return `${userName1 || 'Someone'} and ${userName2 || 'Someone'} are typing`;
+      return `${userName1 ?? 'Someone'} and ${userName2 ?? 'Someone'} are typing`;
     }
     const firstName = users[0]?.userName?.trim();
-    return `${firstName || 'Someone'} and ${users.length - 1} others are typing`;
+    return `${firstName ?? 'Someone'} and ${users.length - 1} others are typing`;
   }, [users]);
 
   return (

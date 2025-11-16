@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -10,6 +9,7 @@ import { isTruthy } from '@petspark/shared';
   interpolate,
   Extrapolation,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { springConfigs, timingConfigs } from './transitions';
 import type { AnimatedStyle } from './animated-view';
 import { useReducedMotion } from '@/hooks/useReducedMotion';

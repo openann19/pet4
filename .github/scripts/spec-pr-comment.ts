@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { readFile } from 'fs/promises'
 import { generateSpecReport, generateAiPrompts } from '@petspark/spec-observability'
 
 async function main(): Promise<void> {

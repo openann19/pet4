@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from 'react';
-import { Presence, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { MagnifyingGlass, X, Clock, TrendUp, Sparkle } from '@phosphor-icons/react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';

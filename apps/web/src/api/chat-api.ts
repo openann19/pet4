@@ -124,10 +124,7 @@ class ChatApiImpl {
    */
   async deleteMessage(messageId: string, forEveryone = false): Promise<void> {
     try {
-      await APIClient.delete(`/api/v1/chat/messages/${messageId}`, {
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ forEveryone }),
-      });
+      await APIClient.post(`/api/v1/chat/messages/${messageId}/delete`, { forEveryone });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to delete message', err, { messageId, forEveryone });

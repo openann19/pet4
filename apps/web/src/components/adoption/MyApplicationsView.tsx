@@ -11,7 +11,6 @@ import { createLogger } from '@/lib/logger';
 import { userService } from '@/lib/user-service';
 import { MotionView } from '@petspark/motion';
 import {
-import { isTruthy } from '@petspark/shared';
   ArrowLeft,
   CheckCircle,
   ClipboardText,
@@ -23,6 +22,7 @@ import { isTruthy } from '@petspark/shared';
   Warning,
   XCircle,
 } from '@phosphor-icons/react';
+import { isTruthy } from '@petspark/shared';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -199,7 +199,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
                         <div className="flex items-start justify-between gap-4 mb-2">
                           <div>
                             <CardTitle className="text-2xl">
-                              {application.profile?.petName || 'Unknown Pet'}
+                              {application.profile?.petName ?? 'Unknown Pet'}
                             </CardTitle>
                             <CardDescription>
                               {application.profile?.breed} • {application.profile?.age} years old

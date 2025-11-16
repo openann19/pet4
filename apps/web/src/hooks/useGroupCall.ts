@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import type {
-import { isTruthy } from '@petspark/shared';
   CallType,
   CallParticipant,
   GroupCallSession,
   CallHistoryItem,
   VideoQuality,
 } from '@/lib/call-types';
+import { isTruthy } from '@petspark/shared';
 import {
   requestMediaPermissions,
   stopMediaStream,

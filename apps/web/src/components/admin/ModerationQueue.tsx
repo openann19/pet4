@@ -23,6 +23,9 @@ import {
   ShieldCheck,
   Warning,
   XCircle,
+  User,
+  Dog,
+  Calendar,
 } from '@phosphor-icons/react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';

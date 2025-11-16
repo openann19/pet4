@@ -44,7 +44,7 @@ beforeAll(async () => {
 
     if (req.method === 'GET' && url.pathname === '/community/posts') {
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ data: { posts: [mockPost], nextCursor: undefined } }));
+      res.end(JSON.stringify({ data: { posts: [mockPost] } }));
       return;
     }
 

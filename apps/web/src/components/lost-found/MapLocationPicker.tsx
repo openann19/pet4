@@ -1,7 +1,6 @@
-'use client';;
+'use client';
 import { useState, useEffect, useCallback } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
@@ -9,6 +8,7 @@ import { isTruthy } from '@petspark/shared';
   withTiming,
   MotionView,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import { timingConfigs } from '@/effects/reanimated/transitions';

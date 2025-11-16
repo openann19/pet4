@@ -231,7 +231,7 @@ export const MotionView: ForwardRefExoticComponent<
                     rotate.value = withSpring(whileHover.rotate, springConfigs.smooth);
                 }
             }
-            onHoverStart?.(e.nativeEvent as unknown as MouseEvent);
+            onHoverStart?.(e as unknown as MouseEvent);
         };
 
         const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
@@ -243,7 +243,7 @@ export const MotionView: ForwardRefExoticComponent<
                 translateY.value = withSpring(0, springConfigs.smooth);
                 rotate.value = withSpring(0, springConfigs.smooth);
             }
-            onHoverEnd?.(e.nativeEvent as unknown as MouseEvent);
+            onHoverEnd?.(e as unknown as MouseEvent);
         };
 
         // Handle tap/press
@@ -257,7 +257,7 @@ export const MotionView: ForwardRefExoticComponent<
                     opacity.value = withSpring(whileTap.opacity, springConfigs.smooth);
                 }
             }
-            onTapStart?.(e.nativeEvent as unknown as MouseEvent | TouchEvent | PointerEvent);
+            onTapStart?.(e as unknown as MouseEvent | TouchEvent | PointerEvent);
         };
 
         const handleMouseUp = (e: React.MouseEvent<HTMLDivElement | HTMLButtonElement>) => {
@@ -267,7 +267,7 @@ export const MotionView: ForwardRefExoticComponent<
                 scale.value = withSpring(targetScale, springConfigs.smooth);
                 opacity.value = withSpring(1, springConfigs.smooth);
             }
-            onTap?.(e.nativeEvent as unknown as MouseEvent | TouchEvent | PointerEvent);
+            onTap?.(e as unknown as MouseEvent | TouchEvent | PointerEvent);
         };
 
         const animatedStyle = useAnimatedStyle(() => {

@@ -67,7 +67,7 @@ class ConfigBroadcastService {
   ): Promise<{ success: boolean; version: number }> {
     try {
       // Get current version and increment
-      const currentVersion = this.configVersions.get(configType) || 0;
+      const currentVersion = this.configVersions.get(configType) ?? 0;
       const newVersion = currentVersion + 1;
       this.configVersions.set(configType, newVersion);
 

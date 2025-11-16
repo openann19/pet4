@@ -13,7 +13,6 @@
  */
 import React, { useCallback, useMemo } from 'react'
 import {
-  View,
   Text,  
   Pressable,
   ScrollView,

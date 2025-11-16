@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { useSharedValue, useAnimatedStyle, interpolateColor, type SharedValue } from 'react-native-reanimated'
 import { createSpringAnimation, createTimingAnimation } from '../core/animations'
-import { useReducedMotion } from '../core/hooks'
+import { useReducedMotionSV } from '../reduced-motion'
 import type { BaseAnimationConfig } from '../core/types'
 import { isTruthy, isDefined } from '../utils/guards';
 
@@ -188,7 +188,7 @@ export function useThreadHighlight(
       springConfig,
     ]
   )
-  const isReducedMotion = useReducedMotion()
+  const isReducedMotion = useReducedMotionSV()
 
   // Animation values
   const highlightProgress: SharedValue<number> = useSharedValue<number>(0)

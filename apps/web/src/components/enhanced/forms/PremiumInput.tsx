@@ -59,11 +59,11 @@ export function PremiumInput({
   const [hasValue, setHasValue] = useState(Boolean(value));
   const inputRef = useRef<HTMLInputElement>(null);
   const generatedId = useId();
-  const inputId = id || generatedId;
+  const inputId = id ?? generatedId;
   const labelId = `${inputId}-label`;
   const helperTextId = helperText ? `${inputId}-helper` : undefined;
   const errorId = error ? `${inputId}-error` : undefined;
-  const ariaDescribedBy = [helperTextId, errorId].filter(Boolean).join(' ') || undefined;
+  const ariaDescribedBy = [helperTextId, errorId].filter(Boolean).join(' ') || undefined; // Keep || for empty string check
 
   const hoverLift = useHoverLift({ scale: 1.01 });
   const labelScale = useSharedValue(hasValue || isFocused ? 0.85 : 1);
@@ -274,7 +274,7 @@ export function PremiumInput({
             labelledBy: label ? labelId : undefined,
             describedBy: ariaDescribedBy,
             invalid: error ? true : undefined,
-            label: label ? undefined : (props['aria-label'] || props.placeholder || 'Input'),
+            label: label ? undefined : (props['aria-label'] ?? props.placeholder ?? 'Input'),
           })}
           className={cn(
             'flex-1 bg-transparent outline-none placeholder:text-muted-foreground/50',
@@ -331,7 +331,7 @@ export function PremiumInput({
           {rightIcon && <div className="shrink-0 text-muted-foreground" aria-hidden="true">{rightIcon}</div>}
         </div>
       </div>
-      {(error || helperText) && (
+      {(error ?? helperText) && (
         <div
           id={error ? errorId : helperTextId}
           className={cn(
@@ -343,7 +343,7 @@ export function PremiumInput({
           {...(error ? getAriaAlertAttributes({ role: 'alert', live: 'polite' }) : {})}
         >
           {error ? <WarningCircle size={12} aria-hidden="true" /> : null}
-          <span>{error || helperText}</span>
+          <span>{error ?? helperText}</span>
         </div>
       )}
     </div>

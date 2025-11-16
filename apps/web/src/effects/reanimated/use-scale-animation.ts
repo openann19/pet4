@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useMotionValue, animate, type MotionValue } from '@petspark/motion';
 import { springConfigs, timingConfigs } from './transitions';
 import type { AnimatedStyle } from './animated-view';
@@ -32,31 +32,31 @@ export function useScaleAnimation(options: UseScaleAnimationOptions = {}): UseSc
 
   const scale = useMotionValue(enabled ? (initial ? 1 : initialScale) : 1);
 
-  const scaleIn = () => {
+  const scaleIn = useCallback(() => {
     if (!enabled) return;
     if (useSpring) {
       animate(scale, 1, { type: 'spring', ...springConfigs.smooth });
     } else {
       animate(scale, 1, { duration: (duration ?? 300) / 1000 });
     }
-  };
+  }, [enabled, useSpring, scale, duration]);
 
-  const scaleOut = () => {
+  const scaleOut = useCallback(() => {
     if (!enabled) return;
     if (useSpring) {
       animate(scale, initialScale, { type: 'spring', ...springConfigs.smooth });
     } else {
       animate(scale, initialScale, { duration: (duration ?? 300) / 1000 });
     }
-  };
+  }, [enabled, useSpring, scale, initialScale, duration]);
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     if (scale.get() > 0.9) {
       scaleOut();
     } else {
       scaleIn();
     }
-  };
+  }, [scale, scaleIn, scaleOut]);
 
   useEffect(() => {
     if (!enabled) {
@@ -68,8 +68,7 @@ export function useScaleAnimation(options: UseScaleAnimationOptions = {}): UseSc
     } else {
       scaleOut();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, initial]);
+  }, [enabled, initial, scaleIn, scaleOut, scale]);
 
   const animatedStyle: AnimatedStyle = {
     transform: [{ scale }],

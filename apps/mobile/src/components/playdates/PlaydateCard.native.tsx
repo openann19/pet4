@@ -11,7 +11,7 @@ import type { Playdate } from '@petspark/core';
 import { colors } from '@mobile/theme/colors';
 import { useEntryAnimation } from '@mobile/effects/reanimated/use-entry-animation';
 import { useBounceOnTap } from '@mobile/effects/reanimated/use-bounce-on-tap';
-import { Haptics } from 'expo-haptics';
+import * as Haptics from 'expo-haptics';
 import { format, formatDistanceToNow } from 'date-fns';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);

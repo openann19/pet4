@@ -83,7 +83,7 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
               className={`w-full text-left p-4 rounded-2xl transition-all relative overflow-hidden ${
                 String(selectedRoomId === room.id
                                     ? 'glass-strong shadow-lg scale-[1.02] border border-primary/30'
-                                    : 'glass-effect hover:glass-strong hover:scale-[1.01]' ?? '')
+                                    : 'glass-effect hover:glass-strong hover:scale-[1.01]')
               }`}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
@@ -105,9 +105,9 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
                     <Avatar
                       className={cn('w-14 h-14 ring-2', hasUnread ? 'ring-primary' : 'ring-border/40')}
                     >
-                      <AvatarImage src={room.matchedPetPhoto} alt={room.matchedPetName || 'Pet'} />
+                      <AvatarImage src={room.matchedPetPhoto} alt={room.matchedPetName ?? 'Pet'} />
                       <AvatarFallback className="bg-linear-to-br from-primary to-accent text-white font-bold">
-                        {room.matchedPetName?.[0] || '?'}
+                        {room.matchedPetName?.[0] ?? '?'}
                       </AvatarFallback>
                     </Avatar>
                   </MotionView>
@@ -132,16 +132,16 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
                     <h3
-                      className={cn('truncate', hasUnread ? 'text-foreground' : 'text-foreground/90', getTypographyClasses('bodyMediumBold'))}
+                      className={cn('truncate', hasUnread ? 'text-foreground' : 'text-foreground/90', getTypographyClasses('body'), 'font-semibold')}
                     >
-                      {room.matchedPetName || 'Unknown Pet'}
+                      {room.matchedPetName ?? 'Unknown Pet'}
                     </h3>
                     {room.lastMessage && (
                       <span
-                        className={cn('shrink-0 ml-2', hasUnread ? 'text-primary' : 'text-muted-foreground', getTypographyClasses('bodySmall'))}
+                        className={cn('shrink-0 ml-2', hasUnread ? 'text-primary' : 'text-muted-foreground', getTypographyClasses('body-small'))}
                       >
                         {formatMessageTime(
-                          room.lastMessage.timestamp || room.lastMessage.createdAt
+                          room.lastMessage.timestamp ?? room.lastMessage.createdAt
                         )}
                       </span>
                     )}
@@ -161,7 +161,7 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
                             </span>
                           )}
                         <p
-                          className={cn('truncate', hasUnread ? 'text-foreground' : 'text-muted-foreground', getTypographyClasses('bodySmall'))}
+                          className={cn('truncate', hasUnread ? 'text-foreground' : 'text-muted-foreground', getTypographyClasses('body-small'))}
                         >
                           {room.lastMessage.type === 'text'
                             ? room.lastMessage.content
@@ -173,7 +173,7 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
                         </p>
                       </div>
                     ) : (
-                      <p className={cn('text-muted-foreground italic flex-1 truncate', getTypographyClasses('bodySmall'))}>
+                      <p className={cn('text-muted-foreground italic flex-1 truncate', getTypographyClasses('body-small'))}>
                         Say hello! 👋
                       </p>
                     )}

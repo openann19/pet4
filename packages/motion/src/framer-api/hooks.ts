@@ -18,13 +18,23 @@ import {
 import { convertTransformToStyle } from './useMotionStyle'
 
 /**
+ * SharedValue type for compatibility
+ * Includes .value property for Reanimated-style access
+ * The getter returns T, the setter accepts either a direct value or an animation object from withSpring/withTiming
+ */
+export type SharedValue<T extends number | string> = Omit<MotionValue<T>, 'value'> & {
+  get value(): T
+  set value(newValue: T | { target: T; transition: Transition })
+}
+
+/**
  * Equivalent to useSharedValue from Reanimated
  * Returns a MotionValue that can be animated
- * Wraps MotionValue to provide .value getter/setter for Reanimated compatibility
+ * Wraps MotionValue to provide .value getter/setter for Reanimated compatibility                                                                               
  */
 export function useSharedValue<T extends number | string>(
   initial: T
-): MotionValue<T> & { value: T } {
+): SharedValue<T> {
   const motionValue = useMotionValue(initial)
   
   // Add .value property for Reanimated compatibility
@@ -34,7 +44,7 @@ export function useSharedValue<T extends number | string>(
     },
     set(newValue: T | { target: T; transition: Transition }) {
       // Handle withSpring/withTiming return values
-      if (typeof newValue === 'object' && newValue !== null && 'target' in newValue && 'transition' in newValue) {
+      if (typeof newValue === 'object' && newValue !== null && 'target' in newValue && 'transition' in newValue) {                                              
         animate(motionValue, newValue.target as number, newValue.transition)
       } else {
         motionValue.set(newValue as T)
@@ -44,14 +54,8 @@ export function useSharedValue<T extends number | string>(
     enumerable: true,
   })
   
-  return motionValue as MotionValue<T> & { value: T }
+  return motionValue as SharedValue<T>
 }
-
-/**
- * SharedValue type for compatibility
- * Includes .value property for Reanimated-style access
- */
-export type SharedValue<T> = MotionValue<T> & { value: T }
 
 /**
  * Animate a motion value with spring physics

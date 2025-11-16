@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SavedSearch } from '@/lib/saved-search-types';
-import type { DiscoveryPreferences } from '@/components/DiscoveryFilters';
+import type { DiscoveryPreferences } from '@/components/discovery-preferences';
 import { toast } from 'sonner';
 import { triggerHaptic } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';

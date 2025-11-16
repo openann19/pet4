@@ -32,7 +32,7 @@ export function useGlassBackground(
   const { enabled = true, intensity = 0.8 } = options;
   const { visual } = useUIConfig();
 
-  const blurIntensity = useSharedValue(0);
+  const blurIntensity = useSharedValue<number>(0);
 
   useEffect(() => {
     if (!enabled || !visual.enableBlur) {

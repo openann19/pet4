@@ -80,7 +80,11 @@ const typographyAliases = {
   button: 'body',
   'body-sm': 'bodyMuted',
   'body-small': 'bodyMuted',
-  'body-muted': 'bodyMuted',
+  'body-medium': 'body',
+  'bodyMedium': 'body',
+  'bodySmall': 'bodyMuted',
+  'bodyMuted': 'bodyMuted',
+  subheading: 'h3',
   hero: 'display',
   heading: 'h1',
   'heading-lg': 'h1',
@@ -171,8 +175,8 @@ export const spacingTailwindClasses = {
 
 export const minTouchTarget = '44px';
 
-type TypographyAliasKey = keyof typeof typographyAliases;
-type TypographyVariantInput = TypographyVariant | TypographyAliasKey;
+export type TypographyAliasKey = keyof typeof typographyAliases;
+export type TypographyVariantInput = TypographyVariant | TypographyAliasKey;
 
 function resolveTypographyVariant(variant: TypographyVariantInput): TypographyVariant {
   if (variant in typographyScale) {

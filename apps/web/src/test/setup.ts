@@ -1,3 +1,5 @@
+ 
+
 import { expect, afterEach, beforeEach, vi } from 'vitest';
 import { cleanup, act } from '@testing-library/react';
 import * as matchers from '@testing-library/jest-dom/matchers';
@@ -743,10 +745,10 @@ if (typeof TouchEvent === 'undefined') {
         this.touches = createTouchList(touchesArray);
         this.targetTouches = createTouchList(targetTouchesArray);
         this.changedTouches = createTouchList(changedTouchesArray);
-        this.altKey = eventInitDict?.altKey || false;
-        this.metaKey = eventInitDict?.metaKey || false;
-        this.ctrlKey = eventInitDict?.ctrlKey || false;
-        this.shiftKey = eventInitDict?.shiftKey || false;
+        this.altKey = eventInitDict?.altKey ?? false;
+        this.metaKey = eventInitDict?.metaKey ?? false;
+        this.ctrlKey = eventInitDict?.ctrlKey ?? false;
+        this.shiftKey = eventInitDict?.shiftKey ?? false;
       }
     } as typeof TouchEvent;
 
@@ -1127,6 +1129,34 @@ vi.mock('@petspark/motion', () => {
       onPressOut: vi.fn(),
       animatedStyle: { transform: [{ scale: scaleOnRelease }] },
     })),
+    useOverlayTransition: vi.fn((options?: { type?: 'modal' | 'sheet' | 'drawer'; drawerSide?: 'left' | 'right' | 'top' | 'bottom'; isOpen: boolean }) => {
+      const isOpen = options?.isOpen ?? false;
+      const type = options?.type ?? 'modal';
+      return {
+        backdropProps: {
+          initial: 'initial',
+          animate: isOpen ? 'animate' : 'exit',
+          exit: 'exit',
+          variants: {
+            initial: { opacity: 0 },
+            animate: { opacity: isOpen ? 1 : 0 },
+            exit: { opacity: 0 },
+          },
+          transition: { duration: 0.2 },
+        },
+        contentProps: {
+          initial: 'initial',
+          animate: isOpen ? 'animate' : 'exit',
+          exit: 'exit',
+          variants: {
+            initial: { opacity: 0, scale: 0.95, y: 20 },
+            animate: { opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.95, y: isOpen ? 0 : 20 },
+            exit: { opacity: 0, scale: 0.95, y: 20 },
+          },
+          transition: { type: 'spring', stiffness: 300, damping: 30 },
+        },
+      };
+    }),
   };
 });
 

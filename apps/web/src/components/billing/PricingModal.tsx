@@ -166,10 +166,9 @@ export function PricingModal({
 
                 <div className="mt-5 grid gap-4 md:grid-cols-3">
                     {isLoading ? (
-                        Array.from({ length: 3 }).map((_, idx) => (
+                        Array.from({ length: 3 }, (_, idx) => (
                             <div
-                                // eslint-disable-next-line react/no-array-index-key
-                                key={idx}
+                                key={`pricing-skeleton-${idx}`}
                                 className="animate-pulse rounded-2xl border border-border/50 bg-muted/40 p-4"
                             >
                                 <div className="h-5 w-24 rounded bg-muted-foreground/20" />

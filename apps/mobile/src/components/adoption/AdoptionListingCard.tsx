@@ -30,9 +30,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
-  interpolate,
-  runOnJS,
   Layout,
   FadeInUp,
 } from 'react-native-reanimated'

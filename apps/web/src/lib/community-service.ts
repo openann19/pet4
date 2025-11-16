@@ -20,6 +20,7 @@ import type {
 } from './community-types';
 import { communityApi } from '@/api/community-api-client';
 import { createLogger } from './logger';
+import { normalizeError } from './error-utils';
 
 const logger = createLogger('CommunityService');
 
@@ -28,11 +29,7 @@ export const communityService = {
     try {
       return await communityApi.getFeed(options);
     } catch (error) {
-      logger.error(
-        'Failed to get feed',
-        error instanceof Error ? error : new Error(String(error)),
-        { options }
-      );
+      logger.error('Failed to get feed', normalizeError(error), { options });
       return { posts: [], hasMore: false };
     }
   },
@@ -40,7 +37,7 @@ export const communityService = {
   async createPost(postData: Partial<CommunityPost>): Promise<CommunityPost> {
     try {
       return await communityApi.createPost({
-        kind: postData.kind || 'photo',
+        kind: postData.kind ?? 'photo',
         ...(postData.petIds ? { petIds: postData.petIds } : {}),
         ...(postData.text ? { text: postData.text } : {}),
         media: Array.isArray(postData.media)
@@ -48,27 +45,20 @@ export const communityService = {
           : [],
         ...(postData.location ? { location: postData.location } : {}),
         ...(postData.tags ? { tags: postData.tags } : {}),
-        visibility: postData.visibility || 'public',
+        visibility: postData.visibility ?? 'public',
       });
     } catch (error) {
-      logger.error(
-        'Failed to create post',
-        error instanceof Error ? error : new Error(String(error))
-      );
-      throw error;
+      logger.error('Failed to create post', normalizeError(error));
+      throw normalizeError(error);
     }
   },
 
   async getPost(postId: string): Promise<CommunityPost | undefined> {
     try {
       const post = await communityApi.getPost(postId);
-      return post || undefined;
+      return post ?? undefined;
     } catch (error) {
-      logger.error(
-        'Failed to get post',
-        error instanceof Error ? error : new Error(String(error)),
-        { postId }
-      );
+      logger.error('Failed to get post', normalizeError(error), { postId });
       return undefined;
     }
   },

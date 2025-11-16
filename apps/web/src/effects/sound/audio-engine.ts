@@ -206,22 +206,22 @@ class AudioEngineImpl {
     const pooledContext = this.getPooledContext();
 
     try {
-      const context = pooledContext?.context || this.audioContext;
+      const context = pooledContext?.context ?? this.audioContext;
 
       // Create oscillator or use buffer
       let source: AudioBufferSourceNode | OscillatorNode;
 
       if (preset.type === 'oscillator') {
         const oscillator = context.createOscillator();
-        oscillator.type = preset.waveform || 'sine';
+        oscillator.type = preset.waveform ?? 'sine';
         oscillator.frequency.setValueAtTime(preset.frequency, context.currentTime);
 
         // Apply frequency envelope
         if (preset.frequencyEnvelope) {
           const env = preset.frequencyEnvelope;
           oscillator.frequency.exponentialRampToValueAtTime(
-            env.target || preset.frequency,
-            context.currentTime + (env.duration || 0.1)
+            env.target ?? preset.frequency,
+            context.currentTime + (env.duration ?? 0.1)
           );
         }
 
@@ -247,20 +247,20 @@ class AudioEngineImpl {
 
         // Attack
         gainNode.gain.linearRampToValueAtTime(
-          (env.attack?.peak || volume) * this.masterVolume,
-          now + (env.attack?.duration || 0.01)
+          (env.attack?.peak ?? volume) * this.masterVolume,
+          now + (env.attack?.duration ?? 0.01)
         );
 
         // Sustain
         if (isTruthy(env.sustain?.duration)) {
           gainNode.gain.linearRampToValueAtTime(
-            (env.sustain?.level || volume * 0.8) * this.masterVolume,
+            (env.sustain?.level ?? volume * 0.8) * this.masterVolume,
             now + env.sustain.duration
           );
         }
 
         // Release
-        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + (preset.duration || 0.2));
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + (preset.duration ?? 0.2));
       } else {
         // Simple fade in/out
         gainNode.gain.linearRampToValueAtTime(
@@ -276,11 +276,11 @@ class AudioEngineImpl {
       // Apply spatial audio if configured
       if (spatial) {
         const panner = context.createPanner();
-        panner.panningModel = spatial.model || 'HRTF';
-        panner.distanceModel = spatial.distanceModel || 'inverse';
-        panner.refDistance = spatial.refDistance || 1;
-        panner.maxDistance = spatial.maxDistance || 10000;
-        panner.rolloffFactor = spatial.rolloffFactor || 1;
+        panner.panningModel = spatial.model ?? 'HRTF';
+        panner.distanceModel = spatial.distanceModel ?? 'inverse';
+        panner.refDistance = spatial.refDistance ?? 1;
+        panner.maxDistance = spatial.maxDistance ?? 10000;
+        panner.rolloffFactor = spatial.rolloffFactor ?? 1;
 
         if (spatial.position) {
           panner.positionX.value = spatial.position.x;
@@ -290,10 +290,10 @@ class AudioEngineImpl {
 
         source.connect(gainNode);
         gainNode.connect(panner);
-        panner.connect(pooledContext?.gainNode || this.compressorNode);
+        panner.connect(pooledContext?.gainNode ?? this.compressorNode);
       } else {
         source.connect(gainNode);
-        gainNode.connect(pooledContext?.gainNode || this.compressorNode);
+        gainNode.connect(pooledContext?.gainNode ?? this.compressorNode);
       }
 
       // Track active sounds
@@ -316,7 +316,7 @@ class AudioEngineImpl {
       // Start playback
       if (source instanceof OscillatorNode) {
         source.start(context.currentTime);
-        source.stop(context.currentTime + (preset.duration || 0.2));
+        source.stop(context.currentTime + (preset.duration ?? 0.2));
       } else {
         source.start(0);
       }

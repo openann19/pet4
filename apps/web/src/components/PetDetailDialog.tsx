@@ -28,6 +28,7 @@ import {
 import { useEffect } from 'react';
 import { ProgressiveImage } from '@/components/enhanced/ProgressiveImage';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { useAnimatePresence } from '@/effects/reanimated';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import {
   useSharedValue,

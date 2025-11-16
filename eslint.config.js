@@ -172,6 +172,7 @@ export default [
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
       '@typescript-eslint/require-await': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',

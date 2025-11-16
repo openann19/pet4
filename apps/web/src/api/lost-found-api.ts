@@ -184,7 +184,7 @@ export class LostFoundAPI {
 
       // Increment view count (fire and forget)
       try {
-        await APIClient.post(ENDPOINTS.LOST_FOUND.INCREMENT_VIEW(id));
+        await APIClient.post(ENDPOINTS.LOST_FOUND.INCREMENT_VIEW(id), {});
       } catch (error) {
         logger.warn('Failed to increment view count', {
           alertId: id,

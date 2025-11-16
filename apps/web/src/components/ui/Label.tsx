@@ -162,13 +162,13 @@ export const Field: React.FC<FieldProps> = ({
       {children}
       
       {/* Error/Success message */}
-      {(error || success) && (
+      {(error ?? success) && (
         <p className={cn(
           "text-sm",
           error && "text-destructive",
           success && "text-green-600"
         )}>
-          {error || success}
+          {error ?? success}
         </p>
       )}
     </div>

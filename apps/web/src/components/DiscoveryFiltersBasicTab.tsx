@@ -16,7 +16,7 @@ import {
     ALL_SIZES,
     type DiscoveryPreferences,
     type PetSize,
-} from '@/components/discovery/discovery-preferences';
+} from '@/components/discovery-preferences';
 
 import { getTypographyClasses } from '@/lib/typography';
 
@@ -63,12 +63,12 @@ export function DiscoveryFiltersBasicTab({ draft, onDraftChange }: BasicTabProps
             <div className="space-y-6 py-2">
                 {/* Age range */}
                 <div>
-                    <Label className={`mb-4 block ${getTypographyClasses('subheading')}`}>Age Range</Label>
+                    <Label className={`mb-4 block ${getTypographyClasses('h2')}`}>Age Range</Label>
                     <div className="space-y-4">
                         <div>
                             <div className="mb-2 flex items-center justify-between">
-                                <span className={`${getTypographyClasses('bodySmall')} text-muted-foreground`}>Minimum Age</span>
-                                <span className={getTypographyClasses('bodyMedium')}>
+                                <span className={`${getTypographyClasses('body-small')} text-muted-foreground`}>Minimum Age</span>
+                                <span className={getTypographyClasses('body')}>
                                     {minAge} {minAge === 1 ? 'year' : 'years'}
                                 </span>
                             </div>
@@ -82,8 +82,8 @@ export function DiscoveryFiltersBasicTab({ draft, onDraftChange }: BasicTabProps
                         </div>
                         <div>
                             <div className="mb-2 flex items-center justify-between">
-                                <span className={`${getTypographyClasses('bodySmall')} text-muted-foreground`}>Maximum Age</span>
-                                <span className={getTypographyClasses('bodyMedium')}>
+                                <span className={`${getTypographyClasses('body-small')} text-muted-foreground`}>Maximum Age</span>
+                                <span className={getTypographyClasses('body')}>
                                     {maxAge} {maxAge === 1 ? 'year' : 'years'}
                                 </span>
                             </div>
@@ -102,7 +102,7 @@ export function DiscoveryFiltersBasicTab({ draft, onDraftChange }: BasicTabProps
 
                 {/* Size */}
                 <div>
-                    <Label className={`mb-3 block ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-3 block ${getTypographyClasses('h2')}`}>
                         Size Preferences
                     </Label>
                     <div className="flex flex-wrap gap-2">
@@ -127,12 +127,12 @@ export function DiscoveryFiltersBasicTab({ draft, onDraftChange }: BasicTabProps
 
                 {/* Distance */}
                 <div>
-                    <Label className={`mb-4 block ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-4 block ${getTypographyClasses('h2')}`}>
                         Maximum Distance
                     </Label>
                     <div className="mb-2 flex items-center justify-between">
-                        <span className={`text-sm ${getTypographyClasses('bodySmall')}`}>Within</span>
-                        <span className={getTypographyClasses('bodyMedium')}>
+                        <span className={`text-sm ${getTypographyClasses('body-small')}`}>Within</span>
+                        <span className={getTypographyClasses('body')}>
                             {maxDistance} miles
                         </span>
                     </div>
@@ -150,15 +150,15 @@ export function DiscoveryFiltersBasicTab({ draft, onDraftChange }: BasicTabProps
 
                 {/* Personality */}
                 <div>
-                    <Label className={`mb-3 block ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-3 block ${getTypographyClasses('h2')}`}>
                         Personality Traits{' '}
                         {personalitiesCount > 0 && (
-                            <span className={`text-xs ${getTypographyClasses('bodySmall')}`}>
+                            <span className={`text-xs ${getTypographyClasses('body-small')}`}>
                                 ({personalitiesCount} selected)
                             </span>
                         )}
                     </Label>
-                    <p className={`mb-3 text-xs ${getTypographyClasses('bodySmall')}`}>
+                    <p className={`mb-3 text-xs ${getTypographyClasses('body-small')}`}>
                         Find pets with these personality traits
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -183,15 +183,15 @@ export function DiscoveryFiltersBasicTab({ draft, onDraftChange }: BasicTabProps
 
                 {/* Interests */}
                 <div>
-                    <Label className={`mb-3 block ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-3 block ${getTypographyClasses('h2')}`}>
                         Interests{' '}
                         {interestsCount > 0 && (
-                            <span className={`text-xs ${getTypographyClasses('bodySmall')}`}>
+                            <span className={`text-xs ${getTypographyClasses('body-small')}`}>
                                 ({interestsCount} selected)
                             </span>
                         )}
                     </Label>
-                    <p className={`mb-3 text-xs ${getTypographyClasses('bodySmall')}`}>
+                    <p className={`mb-3 text-xs ${getTypographyClasses('body-small')}`}>
                         Find pets who enjoy these activities
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -216,15 +216,15 @@ export function DiscoveryFiltersBasicTab({ draft, onDraftChange }: BasicTabProps
 
                 {/* Looking for */}
                 <div>
-                    <Label className={`mb-3 block ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-3 block ${getTypographyClasses('h2')}`}>
                         Looking For{' '}
                         {lookingForCount > 0 && (
-                            <span className={`text-xs ${getTypographyClasses('bodySmall')}`}>
+                            <span className={`text-xs ${getTypographyClasses('body-small')}`}>
                                 ({lookingForCount} selected)
                             </span>
                         )}
                     </Label>
-                    <p className={`mb-3 text-xs ${getTypographyClasses('bodySmall')}`}>
+                    <p className={`mb-3 text-xs ${getTypographyClasses('body-small')}`}>
                         Find pets seeking these connections
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -249,15 +249,15 @@ export function DiscoveryFiltersBasicTab({ draft, onDraftChange }: BasicTabProps
 
                 {/* Min compatibility */}
                 <div>
-                    <Label className={`mb-4 block ${getTypographyClasses('subheading')}`}>
+                    <Label className={`mb-4 block ${getTypographyClasses('h2')}`}>
                         Minimum Compatibility Score
                     </Label>
-                    <p className={`mb-3 text-xs ${getTypographyClasses('bodySmall')}`}>
+                    <p className={`mb-3 text-xs ${getTypographyClasses('body-small')}`}>
                         Only show pets with at least this compatibility
                     </p>
                     <div className="mb-2 flex items-center justify-between">
-                        <span className={`text-sm ${getTypographyClasses('bodySmall')}`}>Minimum Score</span>
-                        <span className={getTypographyClasses('bodyMedium')}>
+                        <span className={`text-sm ${getTypographyClasses('body-small')}`}>Minimum Score</span>
+                        <span className={getTypographyClasses('body')}>
                             {minCompatibility}%
                         </span>
                     </div>

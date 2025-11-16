@@ -31,7 +31,7 @@ interface UseAppAnimationsOptions {
   showThemeSettings: boolean;
 }
 
-interface UseAppAnimationsReturn {
+export interface UseAppAnimationsReturn {
   lostFoundAnimation: ReturnType<typeof useNavButtonAnimation>;
   logoAnimation: ReturnType<typeof useLogoAnimation>;
   logoGlow: ReturnType<typeof useLogoGlow>;

@@ -63,13 +63,13 @@ export function PricingCard({
           </Text>
         )}
 
-        {plan.features && plan.features.length > 0 && (
+        {plan.perks && plan.perks.length > 0 && (
           <View style={styles.features}>
-            {plan.features.map((feature, index) => (
-              <View key={index} style={styles.feature}>
+            {plan.perks.map((perk, index) => (
+              <View key={perk.id || index} style={styles.feature}>
                 <Check size={16} color={colors.primary} />
                 <Text style={[getTypographyStyle('body'), styles.featureText]}>
-                  {feature}
+                  {perk.label}
                 </Text>
               </View>
             ))}

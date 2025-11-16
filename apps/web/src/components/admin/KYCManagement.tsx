@@ -1,4 +1,6 @@
 import { MotionView } from "@petspark/motion";
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { kycApi } from '@/api/kyc-api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -60,7 +62,7 @@ export function KYCManagement() {
   });
 
   // Empty state component
-  function EmptyState() {
+  function _EmptyState() {
     const isEmpty = filteredSessions.length === 0
     const presence = useAnimatePresence({ 
       isVisible: isEmpty,
@@ -79,7 +81,7 @@ export function KYCManagement() {
   }
 
   // Session card component
-  function SessionCard({ session, index }: { session: KYCSubmission; index: number }) {
+  function _SessionCard({ session, index }: { session: KYCSubmission; index: number }) {
     const entry = useEntryAnimation({ 
       initialY: 20, 
       initialOpacity: 0,
@@ -87,7 +89,7 @@ export function KYCManagement() {
     })
     
     return (
-      <MotionView style={entry.animatedStyle}>
+      <MotionView initial="hidden" animate="visible" variants={entry.variants}>
         <Card
           className="p-4 cursor-pointer hover:bg-accent/50 transition-colors"
           onClick={() => { handleSessionClick(session); }}

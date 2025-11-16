@@ -26,18 +26,12 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { realtime } from '@mobile/lib/realtime'
 import { createLogger } from '@mobile/utils/logger'
 
-const logger = createLogger('ChatScreen')
-
-import { ChatList, type Message } from '@mobile/components/chat'
-import HoloBackgroundNative from '@mobile/components/chrome/HoloBackground.native'
 import { useReduceMotion } from '@mobile/effects/chat/ui'
 import {
   ReactionBurst,
   ShimmerOverlay,
   TypingIndicator,
 } from '@mobile/effects/chat/ui/all-in-chat-effects'
-import { colors } from '@mobile/theme/colors'
-import { createLogger } from '@mobile/utils/logger'
 
 const logger = createLogger('ChatScreen')
 

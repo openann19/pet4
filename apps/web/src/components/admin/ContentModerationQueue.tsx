@@ -1,4 +1,6 @@
 import { MotionView } from "@petspark/motion";
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { communityAPI } from '@/api/community-api';
 import { liveStreamingAPI } from '@/api/live-streaming-api';
 import { lostFoundAPI } from '@/api/lost-found-api';
@@ -401,7 +403,7 @@ export function ContentModerationQueue() {
   const filteredItems = items.filter((item) => item.type === selectedType);
 
   // Empty state component with animation
-  function EmptyState() {
+  function _EmptyState() {
     const isEmpty = filteredItems.length === 0 && !loading
     const presence = useAnimatePresence({ 
       isVisible: isEmpty,
@@ -420,7 +422,7 @@ export function ContentModerationQueue() {
   }
 
   // Item component with animation
-  function ModerationItemCard({ item, index }: { item: ModerationItem; index: number }) {
+  function _ModerationItemCard({ item, index }: { item: ModerationItem; index: number }) {
     const entry = useEntryAnimation({ 
       initialY: 20, 
       initialOpacity: 0,
@@ -428,7 +430,7 @@ export function ContentModerationQueue() {
     })
     
     return (
-      <MotionView style={entry.animatedStyle}>
+      <MotionView initial="hidden" animate="visible" variants={entry.variants}>
         <Card
           className="p-4 cursor-pointer hover:bg-accent/50 transition-colors"
           onClick={() => { setSelectedItem(item); }}

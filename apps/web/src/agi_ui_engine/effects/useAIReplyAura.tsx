@@ -33,8 +33,8 @@ export interface UseAIReplyAuraReturn {
 export function useAIReplyAura(): UseAIReplyAuraReturn {
   const { visual } = useUIConfig();
 
-  const glow = useSharedValue(0);
-  const shimmer = useSharedValue(0);
+  const glow = useSharedValue<number>(0);
+  const shimmer = useSharedValue<number>(0);
 
   useEffect(() => {
     if (!visual.enableGlow && !visual.enableShimmer) {

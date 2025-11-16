@@ -33,7 +33,7 @@ export function useParticleBurstOnDelete(
   const { enabled = true } = options;
   const { animation } = useUIConfig();
 
-  const particles = useSharedValue(0);
+  const particles = useSharedValue<number>(0);
 
   const trigger = useCallback(
     (_x: number, _y: number): void => {

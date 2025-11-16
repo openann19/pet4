@@ -3,7 +3,6 @@ import { useStorage } from '@/hooks/use-storage';
 import { motion, MotionView } from '@petspark/motion';
 import { Plus, Check } from '@phosphor-icons/react';
 import {
-import { isTruthy } from '@petspark/shared';
   Dialog,
   DialogContent,
   DialogDescription,
@@ -11,6 +10,7 @@ import { isTruthy } from '@petspark/shared';
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { isTruthy } from '@petspark/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,11 +40,11 @@ export default function CreateHighlightDialog({
   });
   const [, setHighlights] = useStorage<StoryHighlight[]>('story-highlights', []);
 
-  const [title, setTitle] = useState(existingHighlight?.title || '');
+  const [title, setTitle] = useState(existingHighlight?.title ?? '');
   const [selectedStories, setSelectedStories] = useState<Set<string>>(
     new Set(existingHighlight?.stories.map((s) => s.id) ?? [])
   );
-  const [coverImageUrl, setCoverImageUrl] = useState(existingHighlight?.coverImage || '');
+  const [coverImageUrl, setCoverImageUrl] = useState(existingHighlight?.coverImage ?? '');
 
   const myStories = (stories ?? []).filter((s) => s.userId === (currentUser?.id ?? 'user-1'));
 
@@ -54,7 +54,7 @@ export default function CreateHighlightDialog({
     if (selectedStories.size > 0 && !coverImageUrl) {
       const firstSelected = userStories.find((s) => selectedStories.has(s.id));
       if (firstSelected) {
-        setCoverImageUrl(firstSelected.thumbnailUrl || firstSelected.mediaUrl);
+        setCoverImageUrl(firstSelected.thumbnailUrl ?? firstSelected.mediaUrl);
       }
     }
   }, [selectedStories, userStories, coverImageUrl]);
@@ -74,7 +74,7 @@ export default function CreateHighlightDialog({
 
   const handleSetCover = (story: Story) => {
     haptics.trigger('light');
-    setCoverImageUrl(story.thumbnailUrl || story.mediaUrl);
+    setCoverImageUrl(story.thumbnailUrl ?? story.mediaUrl);
     toast.success('Cover image set', { duration: 1500 });
   };
 
@@ -111,8 +111,8 @@ export default function CreateHighlightDialog({
       toast.success('Highlight updated!');
     } else {
       const newHighlight = createStoryHighlight(
-        currentUser?.id || 'user-1',
-        firstPet?.id || 'pet-1',
+        currentUser?.id ?? 'user-1',
+        firstPet?.id ?? 'pet-1',
         title,
         coverImageUrl,
         selectedStoryObjects
@@ -169,7 +169,7 @@ export default function CreateHighlightDialog({
                 <div className="grid grid-cols-3 gap-3">
                   {userStories.map((story, index) => {
                     const isSelected = selectedStories.has(story.id);
-                    const isCover = coverImageUrl === (story.thumbnailUrl || story.mediaUrl);
+                    const isCover = coverImageUrl === (story.thumbnailUrl ?? story.mediaUrl);
 
                     return (
                       <MotionView
@@ -188,8 +188,8 @@ export default function CreateHighlightDialog({
                           }`}
                         >
                           <img
-                            src={story.thumbnailUrl || story.mediaUrl}
-                            alt={story.caption || 'Story'}
+                            src={story.thumbnailUrl ?? story.mediaUrl}
+                            alt={story.caption ?? 'Story'}
                             className="w-full h-full object-cover"
                           />
 

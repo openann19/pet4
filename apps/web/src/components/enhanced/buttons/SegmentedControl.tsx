@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useRef, useEffect } from 'react';
-import { motion, useMotionValue, animate, type Variants } from 'framer-motion';
+import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -82,7 +82,7 @@ export function SegmentedControl({
       resizeObserver.observe(containerRef.current);
     }
     return () => resizeObserver.disconnect();
-  }, [updateIndicator]);
+  }, [updateIndicator, selectedValues]);
 
   const indicatorVariants: Variants = prefersReducedMotion
     ? {
@@ -115,9 +115,8 @@ export function SegmentedControl({
         onChange?.(optionValue);
       }
       haptics.selection();
-      setTimeout(updateIndicator, 0);
     },
-    [multiSelect, selectedValues, onChange, updateIndicator]
+    [multiSelect, selectedValues, onChange]
   );
 
   const sizes = {

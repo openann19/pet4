@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useMotionValue, animate, type MotionValue } from '@petspark/motion';
 import { springConfigs, timingConfigs } from './transitions';
 import type { AnimatedStyle } from './animated-view';
@@ -32,31 +32,31 @@ export function useFadeAnimation(options: UseFadeAnimationOptions = {}): UseFade
 
   const opacity = useMotionValue(enabled ? (initial ? 1 : 0) : 1);
 
-  const fadeIn = () => {
+  const fadeIn = useCallback(() => {
     if (!enabled) return;
     if (useSpring) {
       animate(opacity, 1, { type: 'spring', ...springConfigs.smooth });
     } else {
       animate(opacity, 1, { duration: (duration ?? 300) / 1000 });
     }
-  };
+  }, [enabled, useSpring, opacity, duration]);
 
-  const fadeOut = () => {
+  const fadeOut = useCallback(() => {
     if (!enabled) return;
     if (useSpring) {
       animate(opacity, 0, { type: 'spring', ...springConfigs.smooth });
     } else {
       animate(opacity, 0, { duration: (duration ?? 300) / 1000 });
     }
-  };
+  }, [enabled, useSpring, opacity, duration]);
 
-  const toggle = () => {
+  const toggle = useCallback(() => {
     if (opacity.get() > 0.5) {
       fadeOut();
     } else {
       fadeIn();
     }
-  };
+  }, [opacity, fadeIn, fadeOut]);
 
   useEffect(() => {
     if (!enabled) {
@@ -68,8 +68,7 @@ export function useFadeAnimation(options: UseFadeAnimationOptions = {}): UseFade
     } else {
       fadeOut();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, initial]);
+  }, [enabled, initial, fadeIn, fadeOut, opacity]);
 
   const animatedStyle: AnimatedStyle = {
     opacity,

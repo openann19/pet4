@@ -1,7 +1,6 @@
-'use client';;
+'use client';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -9,6 +8,7 @@ import { isTruthy } from '@petspark/shared';
   withDelay,
   MotionView,
 } from '@petspark/motion';
+import { isTruthy } from '@petspark/shared';
 import { MagnifyingGlass, X, Crown, Clock } from '@phosphor-icons/react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -85,7 +85,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
     setSearchQuery('');
   }, []);
 
-  const recentCount = recentStickerIds?.length || 0;
+  const recentCount = recentStickerIds?.length ?? 0;
 
   useEffect(() => {
     containerOpacity.value = withTiming(1, timingConfigs.smooth);

@@ -1,7 +1,6 @@
-'use client';;
+'use client';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
-import { isTruthy } from '@petspark/shared';
   PhoneDisconnect,
   Microphone,
   MicrophoneSlash,
@@ -17,6 +16,7 @@ import { isTruthy } from '@petspark/shared';
   ChatCircle,
   ShareNetwork,
 } from '@phosphor-icons/react';
+import { isTruthy } from '@petspark/shared';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';

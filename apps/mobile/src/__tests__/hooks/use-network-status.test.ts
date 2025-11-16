@@ -7,7 +7,7 @@ import NetInfo from '@react-native-community/netinfo'
 import { renderHook, waitFor } from '@testing-library/react-native'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useNetworkStatus } from '../../hooks/use-network-status'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 // Mock NetInfo
 vi.mock('@react-native-community/netinfo', () => ({

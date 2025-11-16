@@ -63,6 +63,8 @@ export function FloatingActionButton({
       transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{
         scale: 1.06,
+      }}
+      style={{
         boxShadow: '0 28px 60px rgba(0,0,0,0.45)',
       }}
       whileTap={{ scale: 0.96 }}

@@ -31,7 +31,7 @@ export interface UseTypingTrailReturn {
 export function useTypingTrail(): UseTypingTrailReturn {
   const { visual, animation } = useUIConfig();
 
-  const trailOpacity = useSharedValue(0);
+  const trailOpacity = useSharedValue<number>(0);
 
   useEffect(() => {
     if (!visual.enableShimmer || !animation.showTrails) {

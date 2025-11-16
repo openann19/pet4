@@ -192,6 +192,26 @@ export async function applyImagePipeline(
       setAlphaf: (alpha: number) => void;
     }
 
+    // Type guard for Skia.Paint instances
+    function isSkiaPaint(paint: unknown): paint is SkiaPaint {
+      return (
+        typeof paint === 'object' &&
+        paint !== null &&
+        'setColorFilter' in paint &&
+        'setImageFilter' in paint &&
+        'setAlphaf' in paint
+      );
+    }
+
+    // Helper to create and type-check Skia Paint
+    function createSkiaPaint(): SkiaPaint {
+      const paint = new Skia.Paint();
+      if (!isSkiaPaint(paint)) {
+        throw new Error('Skia.Paint() did not return expected interface');
+      }
+      return paint;
+    }
+
     interface SkiaCanvas {
       clear: (color: ReturnType<typeof Skia.Color>) => void;
       drawImageRect: (...args: unknown[]) => void;
@@ -367,7 +387,7 @@ export async function applyImagePipeline(
           }
 
           run((canvas) => {
-            const paint = new Skia.Paint() as unknown as SkiaPaint;
+            const paint = createSkiaPaint();
             const colorFilter = Skia.ColorFilter.MakeMatrix(matrix);
             paint.setColorFilter(colorFilter);
             canvas.drawImage(current, 0, 0, paint);
@@ -378,7 +398,7 @@ export async function applyImagePipeline(
         case 'blur': {
           const r = Math.max(0, op.radius);
           run((canvas) => {
-            const paint = new Skia.Paint() as unknown as SkiaPaint;
+            const paint = createSkiaPaint();
             const imageFilter = Skia.ImageFilter.MakeBlur(r, r, 'clamp' as never);
             paint.setImageFilter(imageFilter);
             canvas.drawImage(current, 0, 0, paint);
@@ -390,7 +410,7 @@ export async function applyImagePipeline(
           const intensity = op.intensity ?? 1;
           const m = FILTERS[op.name](intensity);
           run((canvas) => {
-            const paint = new Skia.Paint() as unknown as SkiaPaint;
+            const paint = createSkiaPaint();
             const colorFilter = Skia.ColorFilter.MakeMatrix(m);
             paint.setColorFilter(colorFilter);
             canvas.drawImage(current, 0, 0, paint);
@@ -409,7 +429,7 @@ export async function applyImagePipeline(
           const tw = Math.round(wmImg.width() * wmScale);
           const th = Math.round(wmImg.height() * wmScale);
           run((canvas) => {
-            const paint = new Skia.Paint() as unknown as SkiaPaint;
+            const paint = createSkiaPaint();
             if (op.opacity !== undefined) {
               paint.setAlphaf(op.opacity);
             }
@@ -455,7 +475,15 @@ export async function applyImagePipeline(
       throw new Error('FileSystem module is not available');
     }
 
-    const fs = FileSystem as unknown as Record<string, unknown>;
+    // Type guard for FileSystem object properties
+    function isFileSystemRecord(obj: unknown): obj is Record<string, unknown> {
+      return typeof obj === 'object' && obj !== null;
+    }
+
+    const fs = isFileSystemRecord(FileSystem) ? FileSystem : null;
+    if (!fs) {
+      throw new Error('FileSystem module is not available');
+    }
     const cacheDir =
       'cacheDirectory' in fs && typeof fs.cacheDirectory === 'string'
         ? fs.cacheDirectory

@@ -21,7 +21,7 @@ export interface AppState {
   };
 }
 
-interface AppContextType {
+export interface AppContextType {
   // Theme
   theme: Theme;
   toggleTheme: () => void;

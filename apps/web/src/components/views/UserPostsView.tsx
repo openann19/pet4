@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 
 const logger = createLogger('UserPostsView');
 
-function EmptyStateView({ authorName }: { authorName: string }) {
+function _EmptyStateView({ authorName }: { authorName: string }) {
   const entry = useEntryAnimation({ initialY: 20, initialOpacity: 0 })
 
   return (

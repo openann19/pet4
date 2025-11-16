@@ -52,10 +52,15 @@ const getMoodColors = (mode: 'light' | 'dark' = 'light') => ({
  * return <AnimatedView style={[animatedStyle, { backgroundColor: colors.primary }]}>{content}</AnimatedView>
  * ```
  */
-export function useMoodColorTheme(options: UseMoodColorThemeOptions): UseMoodColorThemeReturn {
+export function useMoodColorTheme(options: UseMoodColorThemeOptions): UseMoodColorThemeReturn {                                                                 
   const { text, enabled = true } = options;
   const { theme } = useUIConfig();
-  const themeMode = theme.mode ?? 'light';
+  // Type guard to safely extract theme mode - handle error type from useUIConfig
+  const themeModeValue: unknown = (theme as { mode?: unknown })?.mode;
+  const themeMode: 'light' | 'dark' = 
+    typeof themeModeValue === 'string' && (themeModeValue === 'light' || themeModeValue === 'dark')
+      ? themeModeValue
+      : 'light';
 
   const colors = useMemo(() => {
     const moodColors = getMoodColors(themeMode);
@@ -82,7 +87,7 @@ export function useMoodColorTheme(options: UseMoodColorThemeOptions): UseMoodCol
     return moodColors.NEUTRAL;
   }, [text, enabled, theme.adaptiveMood, themeMode]);
 
-  const colorOpacity = useSharedValue(0);
+  const colorOpacity = useSharedValue<number>(0);
 
   if (enabled && theme.adaptiveMood) {
     colorOpacity.value = withSpring(1, springConfigs.smooth);

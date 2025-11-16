@@ -15,7 +15,6 @@ import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { userService } from '@/lib/user-service';
 import {
-import { isTruthy } from '@petspark/shared';
   ArrowLeft,
   BookmarkSimple,
   ChatCircle,
@@ -25,6 +24,7 @@ import { isTruthy } from '@petspark/shared';
   Share,
   Tag,
 } from '@phosphor-icons/react';
+import { isTruthy } from '@petspark/shared';
 import { formatDistanceToNow } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -75,7 +75,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
       const loadedPost = await communityAPI.getPostById(postId);
       if (loadedPost) {
         setPost(loadedPost);
-        setLikesCount(loadedPost.reactionsCount || 0);
+        setLikesCount(loadedPost.reactionsCount ?? 0);
         // Check if user has reacted/saved by fetching current state
         userService
           .user()
@@ -178,11 +178,11 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
       if (isSaved) {
         await communityService.unsavePost(post.id);
         setIsSaved(false);
-        toast.success(t.community?.unsaved || 'Post removed from saved');
+        toast.success(t.community?.unsaved ?? 'Post removed from saved');
       } else {
         await communityService.savePost(post.id);
         setIsSaved(true);
-        toast.success(t.community?.saved || 'Post saved');
+        toast.success(t.community?.saved ?? 'Post saved');
       }
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -254,7 +254,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
   };
 
   const getReplies = (commentId: string): Comment[] => {
-    return comments.filter((c) => (c.parentCommentId || c.parentId) === commentId);
+    return comments.filter((c) => (c.parentCommentId ?? c.parentId) === commentId);
   };
 
   if (!open) return null;
@@ -419,7 +419,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                     ) : (
                       <div className="space-y-6">
                         {getTopLevelComments().map((comment) => {
-                          const commentId = comment._id || comment.id;
+                          const commentId = comment._id ?? comment.id;
                           const replies = getReplies(commentId);
                           return (
                             <div key={commentId} className="space-y-4">
@@ -449,7 +449,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                               {replies.length > 0 && (
                                 <div className="ml-12 space-y-4 pl-4 border-l-2 border-border/50">
                                   {replies.map((reply) => {
-                                    const replyId = reply._id || reply.id;
+                                    const replyId = reply._id ?? reply.id;
                                     return (
                                       <div key={replyId} className="flex gap-3">
                                         <Avatar className="w-8 h-8">
@@ -525,7 +525,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
             onOpenChange={setShowMediaViewer}
             media={allMedia}
             initialIndex={mediaViewerIndex}
-            authorName={post?.authorName || ''}
+            authorName={post?.authorName ?? ''}
           />
         </Suspense>
       )}
