@@ -26,7 +26,6 @@ import {
 } from '@/lib/sticker-library';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface StickerPickerProps {

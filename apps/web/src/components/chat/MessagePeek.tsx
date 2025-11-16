@@ -4,7 +4,6 @@ import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } 
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { useFeatureFlags } from '@/config/feature-flags';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { X } from '@phosphor-icons/react';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
