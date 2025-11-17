@@ -1,5 +1,11 @@
 declare module 'react-native-reanimated' {
-  import type { ComponentType, ComponentPropsWithoutRef, ForwardRefExoticComponent, RefAttributes } from 'react'
+  import type {
+    ComponentType,
+    ComponentPropsWithoutRef,
+    ForwardRefExoticComponent,
+    RefAttributes,
+  } from 'react'
+  import type { MotionStyle, MotionValue } from 'framer-motion'
 
   // Minimal ambient declarations to satisfy tsc in non-native environments.
   interface AnimatedComponents {
@@ -107,8 +113,8 @@ declare module 'react-native-reanimated' {
     readonly IDENTITY: 'identity'
   }
 
-  export type SharedValue<T> = { value: T }
-  export type AnimatedStyle<T> = T & Record<string, unknown>
+  export type SharedValue<T> = MotionValue<T> & { value: T }
+  export type AnimatedStyle<T> = MotionStyle & T & Record<string, unknown>
   export type AnimatedProps<T> = T & Record<string, unknown>
 }
 
