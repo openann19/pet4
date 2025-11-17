@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import type { VariantProps } from 'class-variance-authority';
-import type { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 
 export function useEnhancedButtonProps(
   variant: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link',

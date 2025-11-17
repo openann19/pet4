@@ -5,7 +5,7 @@ import { MotionView } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
-import type { buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { EnhancedButtonContent } from './enhanced-button-content';
 import type { AnimatedStyle as ViewAnimatedStyle } from '@/effects/reanimated/animated-view';
 

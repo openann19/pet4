@@ -9,7 +9,7 @@
 
 import { MotionView, usePressBounce, useHoverLift, useMagnetic } from '@petspark/motion';                                                                       
 import { cn } from '@/lib/utils';
-import { Button, type buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
 
 interface PremiumButtonProps {

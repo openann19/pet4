@@ -112,8 +112,8 @@ export function PremiumErrorState({
       {onRetry && (
         <PremiumButton
           onClick={handleRetry}
-          variant="primary"
-          size="md"
+          variant="default"
+          size="default"
           icon={<RefreshCw size={16} />}
         >
           {retryLabel}

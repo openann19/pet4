@@ -31,8 +31,8 @@ export interface SplitButtonProps {
     loading?: boolean;
   };
   secondaryActions: SplitButtonAction[];
-  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'gradient';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'secondary' | 'outline' | 'ghost' | 'gradient';
+  size?: 'sm' | 'default' | 'lg';
   disabled?: boolean;
   className?: string;
 }
@@ -40,8 +40,8 @@ export interface SplitButtonProps {
 export function SplitButton({
   mainAction,
   secondaryActions,
-  variant = 'primary',
-  size = 'md',
+  variant = 'default',
+  size = 'default',
   disabled = false,
   className,
 }: SplitButtonProps): React.JSX.Element {
