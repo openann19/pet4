@@ -526,7 +526,7 @@ function CommunityViewContent(): JSX.Element {
             <h1
               className={cn(
                 'bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-transparent',
-                getTypographyClasses('heading1')
+                getTypographyClasses('h1')
               )}
             >
               {t.community?.title ?? 'Community'}
@@ -648,7 +648,7 @@ function CommunityViewContent(): JSX.Element {
                       <MotionView style={emptyStateStyle} className="text-8xl mb-6">
                         🐾
                       </MotionView>
-                      <h3 className={getTypographyClasses('heading2')}>
+                      <h3 className={getTypographyClasses('h2')}>
                         {t.community?.noPosts ?? 'No posts yet'}
                       </h3>
                       <p className={getTypographyClasses('body')}>
@@ -728,7 +728,7 @@ function CommunityViewContent(): JSX.Element {
                   <MotionView style={emptyStateStyle} className="text-8xl mb-6">
                     🏠
                   </MotionView>
-                  <h3 className={getTypographyClasses('heading2')}>
+                  <h3 className={getTypographyClasses('h2')}>
                     {t.adoption?.noProfiles ?? 'No pets available for adoption'}
                   </h3>
                   <p className={getTypographyClasses('body')}>

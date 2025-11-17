@@ -63,6 +63,7 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
         // Save to history
         const newSwipe: SwipeAction = {
           id: `swipe-${Date.now()}`,
+          petId: '', // TODO: Get from user context or options
           targetPetId: currentPet.id,
           action,
           timestamp: new Date().toISOString(),
@@ -80,9 +81,15 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
           if (matchResult.isMatch) {
             const match: Match = {
               id: `match-${Date.now()}`,
-              petId: currentPet.id,
-              matchedAt: new Date().toISOString(),
+              petId: '', // TODO: Get from user context
+              matchedPetId: currentPet.id,
+              matchedPetName: currentPet.name,
+              matchedPetPhoto: currentPet.photo,
+              compatibilityScore: matchResult.compatibility || swipeResult.compatibility,
               compatibility: matchResult.compatibility || swipeResult.compatibility,
+              reasoning: matchResult.reasoning || [],
+              matchedAt: new Date().toISOString(),
+              status: 'active',
             };
 
             void setMatches((prev) => [...(prev ?? []), match]).catch((error) => {
