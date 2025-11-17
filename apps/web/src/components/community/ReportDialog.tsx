@@ -189,7 +189,7 @@ export function ReportDialog({
               <Textarea
                 id="report-details"
                 value={details}
-                onChange={(e) => { setDetails(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setDetails(e.target.value); }}
                 placeholder="Provide any additional information that might help our review..."
                 rows={4}
                 className="resize-none"

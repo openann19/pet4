@@ -174,7 +174,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
       
       if (reactionUsers.includes(currentUserId)) {
         // Remove reaction
-        const newUsers = reactionUsers.filter(id => id !== currentUserId);
+        const newUsers = reactionUsers.filter((id: string) => id !== currentUserId);
         if (newUsers.length === 0) {
           delete reactions[reaction];
         } else {

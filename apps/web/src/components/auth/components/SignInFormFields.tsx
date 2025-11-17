@@ -50,7 +50,7 @@ export function SignInFormFields({
             type="email"
             placeholder={t.auth?.emailPlaceholder || 'you@example.com'}
             value={email}
-            onChange={(e) => onEmailChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onEmailChange(e.target.value)}
             className={cn('pl-10', errors.email ? 'border-destructive' : '')}
             disabled={isLoading}
             autoComplete="email"
@@ -80,7 +80,7 @@ export function SignInFormFields({
             type={showPassword ? 'text' : 'password'}
             placeholder={t.auth?.passwordPlaceholder || '••••••••'}
             value={password}
-            onChange={(e) => onPasswordChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onPasswordChange(e.target.value)}
             className={cn('pl-10 pr-12', errors.password ? 'border-destructive' : '')}
             disabled={isLoading}
             autoComplete="current-password"

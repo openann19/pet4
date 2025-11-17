@@ -150,7 +150,7 @@ export const AdvancedFormDemo: React.FC = () => {
             type="email"
             placeholder="Enter your email"
             value={formData.email}
-            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, email: e.target.value }))}
             leftIcon={<TestIcon />}
             clearable
             onClear={() => setFormData(prev => ({ ...prev, email: '' }))}
@@ -168,7 +168,7 @@ export const AdvancedFormDemo: React.FC = () => {
             type="password"
             placeholder="Enter your password"
             value={formData.password}
-            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, password: e.target.value }))}
             showCounter
             maxLength={100}
           />
@@ -181,7 +181,7 @@ export const AdvancedFormDemo: React.FC = () => {
               <Input
                 placeholder="Choose a username"
                 value={formData.username}
-                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, username: e.target.value }))}
                 leftAddon="@"
               />
             </Field>
@@ -191,7 +191,7 @@ export const AdvancedFormDemo: React.FC = () => {
                 <Input
                   placeholder="First name"
                   value={formData.firstName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                 />
               </Field>
 
@@ -199,7 +199,7 @@ export const AdvancedFormDemo: React.FC = () => {
                 <Input
                   placeholder="Last name"
                   value={formData.lastName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
                 />
               </Field>
             </div>

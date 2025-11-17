@@ -121,7 +121,7 @@ export function DataRectification({ userId, onRectificationComplete }: DataRecti
               type="text"
               placeholder="Field name (e.g., email, name)"
               value={fieldName}
-              onChange={(e) => setFieldName(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldName(e.target.value)}
               disabled={isSubmitting}
               className="flex-1"
             />
@@ -129,7 +129,7 @@ export function DataRectification({ userId, onRectificationComplete }: DataRecti
               type="text"
               placeholder="Correct value"
               value={fieldValue}
-              onChange={(e) => setFieldValue(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFieldValue(e.target.value)}
               disabled={isSubmitting}
               className="flex-1"
             />
@@ -179,7 +179,7 @@ export function DataRectification({ userId, onRectificationComplete }: DataRecti
           <Textarea
             placeholder="Please provide any additional context for these corrections..."
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setReason(e.target.value)}
             disabled={isSubmitting}
             rows={3}
           />

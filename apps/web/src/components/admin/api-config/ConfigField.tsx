@@ -44,7 +44,7 @@ export function ConfigField({
             id={id}
             type={inputType}
             value={value}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               if (type === 'number') {
                 onChange(parseFloat(e.target.value) ?? 0);
               } else {

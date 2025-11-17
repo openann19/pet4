@@ -151,7 +151,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
               type="text"
               placeholder="Search stickers..."
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
               className="pl-10 pr-10"
             />
             {searchQuery && (

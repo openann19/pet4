@@ -253,7 +253,7 @@ export function ChatInputBar({
               id="chat-input"
               ref={inputRef}
               value={inputValue}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 onInputChange(e.target.value)
               }}
               onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {

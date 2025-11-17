@@ -41,7 +41,7 @@ export default function StoryTemplateSelector({
           <Input
             placeholder="Search templates..."
             value={searchQuery}
-            onChange={(e) => { setSearchQuery(e.target.value); }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
             className="pl-10"
           />
         </div>

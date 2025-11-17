@@ -148,7 +148,7 @@ export default function SaveToHighlightDialog({
                 <Input
                   id="new-highlight-title"
                   value={newHighlightTitle}
-                  onChange={(e) => { setNewHighlightTitle(e.target.value); }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setNewHighlightTitle(e.target.value); }}
                   placeholder="e.g., Summer Adventures, Best Moments"
                   maxLength={30}
                   autoFocus

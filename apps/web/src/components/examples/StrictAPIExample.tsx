@@ -61,11 +61,11 @@ export function AdoptionListingUpdateExample() {
     <div className="space-y-4">
       <div>
         <Label htmlFor="listingId">Listing ID</Label>
-        <Input id="listingId" value={listingId} onChange={(e) => setListingId(e.target.value)} />
+        <Input id="listingId" value={listingId} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setListingId(e.target.value)} />
       </div>
       <div>
         <Label htmlFor="petName">Pet Name</Label>
-        <Input id="petName" value={petName} onChange={(e) => setPetName(e.target.value)} />
+        <Input id="petName" value={petName} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPetName(e.target.value)} />
       </div>
       <Button onClick={handleUpdate}>Update Listing</Button>
     </div>
@@ -103,7 +103,7 @@ export function PreferencesUpdateExample() {
           id="maxDistance"
           type="number"
           value={maxDistance ?? ''}
-          onChange={(e) => { setMaxDistance(e.target.value ? Number(e.target.value) : null); }}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setMaxDistance(e.target.value ? Number(e.target.value) : null); }}
         />
       </div>
       <div>
@@ -111,7 +111,7 @@ export function PreferencesUpdateExample() {
           <input
             type="checkbox"
             checked={clearDistance}
-            onChange={(e) => { setClearDistance(e.target.checked); }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setClearDistance(e.target.checked); }}
           />
           Clear distance
         </Label>

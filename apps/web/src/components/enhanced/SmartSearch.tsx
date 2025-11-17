@@ -146,7 +146,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
         <Input
           ref={inputRef}
           value={query}
-          onChange={(e) => { setQuery(e.target.value); }}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setQuery(e.target.value); }}
           onFocus={() => { setIsFocused(true); }}
           onBlur={() => setTimeout(() => { setIsFocused(false); }, 200)}
           placeholder={placeholder}

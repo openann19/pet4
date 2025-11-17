@@ -330,7 +330,7 @@ export function MatchingConfigPanel() {
               min="1"
               max="1000"
               value={config.hardGates.maxDistanceKm}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleHardGateChange('maxDistanceKm', parseInt(e.target.value, 10) || 50)
               }
             />
@@ -393,7 +393,7 @@ export function MatchingConfigPanel() {
               min="1"
               max="1000"
               value={config.featureFlags.MATCH_DISTANCE_MAX_KM}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleFeatureFlagChange('MATCH_DISTANCE_MAX_KM', parseInt(e.target.value, 10) || 50)
               }
             />

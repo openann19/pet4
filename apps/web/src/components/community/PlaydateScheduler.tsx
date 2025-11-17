@@ -361,7 +361,7 @@ export default function PlaydateScheduler({
                                                         <Input
                                                             id="title"
                                                             value={formData.title}
-                                                            onChange={(e) =>
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                                 setFormData((prev) => ({ ...prev, title: e.target.value }))
                                                             }
                                                             placeholder="Playdate at the Park"
@@ -397,7 +397,7 @@ export default function PlaydateScheduler({
                                                                 id="date"
                                                                 type="date"
                                                                 value={formData.date}
-                                                                onChange={(e) =>
+                                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                                     setFormData((prev) => ({ ...prev, date: e.target.value }))
                                                                 }
                                                             />
@@ -408,7 +408,7 @@ export default function PlaydateScheduler({
                                                                 id="startTime"
                                                                 type="time"
                                                                 value={formData.startTime}
-                                                                onChange={(e) =>
+                                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                                     setFormData((prev) => ({ ...prev, startTime: e.target.value }))
                                                                 }
                                                             />
@@ -419,7 +419,7 @@ export default function PlaydateScheduler({
                                                                 id="endTime"
                                                                 type="time"
                                                                 value={formData.endTime}
-                                                                onChange={(e) =>
+                                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                                     setFormData((prev) => ({ ...prev, endTime: e.target.value }))
                                                                 }
                                                             />
@@ -470,7 +470,7 @@ export default function PlaydateScheduler({
                                                         <Textarea
                                                             id="description"
                                                             value={formData.description}
-                                                            onChange={(e) =>
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                                 setFormData((prev) => ({ ...prev, description: e.target.value }))
                                                             }
                                                             placeholder="Let's meet up for some fun!"

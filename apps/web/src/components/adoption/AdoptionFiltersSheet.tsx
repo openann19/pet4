@@ -182,7 +182,7 @@ export function AdoptionFiltersSheet({
                   min="0"
                   max="30"
                   value={localFilters.ageMin ?? ''}
-                  onChange={(e) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     updateFilters({
                       ageMin: e.target.value ? Number(e.target.value) : undefined,                                                                              
                     });
@@ -201,7 +201,7 @@ export function AdoptionFiltersSheet({
                   min="0"
                   max="30"
                   value={localFilters.ageMax ?? ''}
-                  onChange={(e) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     updateFilters({
                       ageMax: e.target.value ? Number(e.target.value) : undefined,                                                                              
                     });
@@ -219,7 +219,7 @@ export function AdoptionFiltersSheet({
             <Input
               id="location"
                   value={localFilters.location ?? ''}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 updateFilters({
                   location: e.target.value || undefined, // Keep || for empty string check
                 });
@@ -367,7 +367,7 @@ export function AdoptionFiltersSheet({
               type="number"
               min="0"
               value={localFilters.feeMax ?? ''}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 updateFilters({
                   feeMax: e.target.value ? Number(e.target.value) : undefined,
                 });

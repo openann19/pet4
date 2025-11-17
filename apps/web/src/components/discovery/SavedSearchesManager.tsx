@@ -87,7 +87,7 @@ function SearchItem({
         <div className="space-y-3">
           <Input
             value={searchName}
-            onChange={(e) => onEdit(search.id, e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onEdit(search.id, e.target.value)}
             placeholder="Search name"
             autoFocus
           />
@@ -416,7 +416,7 @@ export default function SavedSearchesManager({
                       id="search-name"
                       placeholder="e.g., Active dogs under 5"
                       value={searchName}
-                      onChange={(e) => setSearchName(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           saveButtonBounce.handlePress();

@@ -42,7 +42,7 @@ export function LostFoundFilters({
             'Search by pet name, breed, location...'
           }
           value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
           aria-label="Search lost and found alerts"
           className="pl-10"
         />

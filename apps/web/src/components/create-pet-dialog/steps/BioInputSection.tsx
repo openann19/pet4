@@ -15,7 +15,7 @@ export function BioInputSection({ name, bio, actions }: BioInputSectionProps) {
       <Textarea
         id="bio"
         value={bio}
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           actions.setBio(e.target.value);
         }}
         placeholder={`Tell us what makes ${name || 'your pet'} special...`}

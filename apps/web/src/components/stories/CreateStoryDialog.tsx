@@ -264,7 +264,7 @@ export default function CreateStoryDialog({
                     <Textarea
                       id="caption"
                       value={caption}
-                      onChange={(e) => { setCaption(e.target.value); }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setCaption(e.target.value); }}
                       placeholder="Add a caption to your story..."
                       rows={3}
                       maxLength={150}

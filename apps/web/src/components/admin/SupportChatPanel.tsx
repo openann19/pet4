@@ -278,7 +278,7 @@ export default function SupportChatPanel() {
               <Input
                 placeholder="Search tickets..."
                 value={filter.search ?? ''}
-                onChange={(e) => { setFilter({ ...filter, search: e.target.value }); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setFilter({ ...filter, search: e.target.value }); }}
                 className="pl-10"
               />
             </div>
@@ -452,7 +452,7 @@ export default function SupportChatPanel() {
                 <div className="flex gap-2">
                   <Textarea
                     value={newMessage}
-                    onChange={(e) => { setNewMessage(e.target.value); }}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setNewMessage(e.target.value); }}
                     placeholder="Type your message..."
                     className="flex-1 min-h-20"
                     onKeyDown={(e) => {

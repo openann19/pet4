@@ -101,7 +101,7 @@ export function LocationPicker({
           type="text"
           placeholder="Search for a location..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               void handleSearch();

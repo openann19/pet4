@@ -174,7 +174,7 @@ export function EnhancedPetDetailView({
     >
       <MotionView
         className="w-full max-w-4xl max-h-[90vh] bg-card rounded-3xl shadow-2xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
         style={modalStyle}
       >
         <div className="relative h-full flex flex-col">

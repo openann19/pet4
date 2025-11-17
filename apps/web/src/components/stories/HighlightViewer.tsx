@@ -81,7 +81,7 @@ export default function HighlightViewer({
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         className="w-full max-w-2xl bg-background rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex-1 min-w-0">

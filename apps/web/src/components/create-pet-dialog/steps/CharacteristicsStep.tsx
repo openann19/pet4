@@ -44,7 +44,7 @@ export function CharacteristicsStep({
           <Input
             id="location"
             value={location}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               actions.setLocation(e.target.value);
             }}
             placeholder="e.g., San Francisco, CA"

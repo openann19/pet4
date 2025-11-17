@@ -381,7 +381,7 @@ export function AdoptionListingDetailDialog({
                     id="application-message"
                     placeholder={'Tell the owner why you want to adopt...'}
                     value={applicationData.message}
-                    onChange={(e) =>
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setApplicationData({ ...applicationData, message: e.target.value })
                     }
                     rows={4}

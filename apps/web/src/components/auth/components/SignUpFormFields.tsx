@@ -65,7 +65,7 @@ export function SignUpFormFields({
             type="text"
             placeholder={t.auth?.namePlaceholder || 'John Doe'}
             value={name}
-            onChange={(e) => onNameChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onNameChange(e.target.value)}
             className={cn('h-12 pl-10', errors.name ? 'border-destructive' : '')}
             disabled={isLoading}
             autoComplete="name"
@@ -85,7 +85,7 @@ export function SignUpFormFields({
             type="email"
             placeholder={t.auth?.emailPlaceholder || 'you@example.com'}
             value={email}
-            onChange={(e) => onEmailChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onEmailChange(e.target.value)}
             className={cn('h-12 pl-10', errors.email ? 'border-destructive' : '')}
             disabled={isLoading}
             autoComplete="email"
@@ -105,7 +105,7 @@ export function SignUpFormFields({
             type={showPassword ? 'text' : 'password'}
             placeholder={t.auth?.passwordPlaceholder || '••••••••'}
             value={password}
-            onChange={(e) => onPasswordChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onPasswordChange(e.target.value)}
             className={cn('h-12 pl-10 pr-12', errors.password ? 'border-destructive' : '')}
             disabled={isLoading}
             autoComplete="new-password"
@@ -139,7 +139,7 @@ export function SignUpFormFields({
             type={showConfirmPassword ? 'text' : 'password'}
             placeholder={t.auth?.confirmPasswordPlaceholder || '••••••••'}
             value={confirmPassword}
-            onChange={(e) => onConfirmPasswordChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onConfirmPasswordChange(e.target.value)}
             className={cn('h-12 pl-10 pr-12', errors.confirmPassword ? 'border-destructive' : '')}
             disabled={isLoading}
             autoComplete="new-password"
@@ -181,7 +181,7 @@ export function SignUpFormFields({
               target="_blank"
               rel="noopener noreferrer"
               className="rounded text-primary transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              onClick={(e) => { e.stopPropagation(); }}
+              onClick={(e: React.MouseEvent) => { e.stopPropagation(); }}
             >
               {t.auth?.terms || 'Terms of Service'}
             </a>
@@ -191,7 +191,7 @@ export function SignUpFormFields({
               target="_blank"
               rel="noopener noreferrer"
               className="rounded text-primary transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              onClick={(e) => { e.stopPropagation(); }}
+              onClick={(e: React.MouseEvent) => { e.stopPropagation(); }}
             >
               {t.auth?.privacyPolicy || 'Privacy Policy'}
             </a>

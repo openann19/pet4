@@ -241,7 +241,7 @@ export default function AdoptionView() {
               <Input
                 placeholder={'Search by pet name, breed, location...'}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 aria-label="Search adoption listings"
                 className="pl-10"
               />

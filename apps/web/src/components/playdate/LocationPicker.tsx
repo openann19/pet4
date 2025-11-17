@@ -205,7 +205,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
             />
             <Input
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
               placeholder="Search for parks, cafes, or places..."
               className="pl-10 pr-12 h-12 text-base"
             />
@@ -318,7 +318,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                         <Input
                           placeholder="Location name (e.g., My Favorite Park)"
                           value={customLocation.name}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             setCustomLocation((prev) => ({ ...prev, name: e.target.value }))
                           }
                         />
@@ -327,7 +327,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                         <Input
                           placeholder="Address"
                           value={customLocation.address}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             setCustomLocation((prev) => ({ ...prev, address: e.target.value }))
                           }
                         />

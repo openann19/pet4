@@ -408,7 +408,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
             <Textarea
               placeholder={t.community?.postPlaceholder || "Share what's on your mind..."}
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
               className="min-h-30 resize-none text-base"
               maxLength={MAX_CHARS}
             />
@@ -637,7 +637,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                       type="file"
                       accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
                       className="hidden"
-                      onChange={(e) => { void handleImageFileSelect(e); }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => { void handleImageFileSelect(e); }}
                       disabled={isUploadingImage}
                     />
                     <Button onClick={handleImageUpload} className="w-full" disabled={images.length >= MAX_IMAGES}>
@@ -662,7 +662,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                       </div>
                     </div>
 
-                    <input ref={videoInputRef} type="file" accept="video/*" onChange={(e) => { void handleVideoFileSelect(e); }} className="hidden" />
+                    <input ref={videoInputRef} type="file" accept="video/*" onChange={(e: React.ChangeEvent<HTMLInputElement>) => { void handleVideoFileSelect(e); }} className="hidden" />
 
                     <Button onClick={handleVideoUploadClick} className="w-full" disabled={!!videoState.file || videoState.isCompressing}>
                       <VideoCamera size={18} className="mr-2" />
@@ -712,7 +712,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
               <input
                 type="text"
                 value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTagInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();

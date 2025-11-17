@@ -134,7 +134,7 @@ export default function LostFoundMap({
             <Funnel size={16} className="text-muted-foreground" />
             <select
               value={timeFilter}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 haptics.trigger('selection');
                 setTimeFilter(e.target.value as typeof timeFilter);
               }}

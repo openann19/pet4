@@ -14,7 +14,7 @@ export function SizeSelector({ size, onSelect }: SizeSelectorProps) {
       <select
         id="size"
         value={size}
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           const value = e.target.value as 'small' | 'medium' | 'large' | 'extra-large';
           if (['small', 'medium', 'large', 'extra-large'].includes(value)) {
             onSelect(value);

@@ -208,7 +208,7 @@ export function SubscriptionAdminPanel() {
                   <Input
                     placeholder="Search by user ID or plan..."
                     value={searchQuery}
-                    onChange={(e) => { setSearchQuery(e.target.value); }}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
                     className="pl-10"
                   />
                 </div>
@@ -366,7 +366,7 @@ export function SubscriptionAdminPanel() {
               <Textarea
                 placeholder="Why is this subscription being comped?"
                 value={compReason}
-                onChange={(e) => { setCompReason(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setCompReason(e.target.value); }}
                 rows={3}
               />
             </div>

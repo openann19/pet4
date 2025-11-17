@@ -45,7 +45,7 @@ export function MapControls({
           />
           <Input
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
             placeholder={t.map?.searchPlaceholder ?? 'Search places...'}
             aria-label="Search places on map"
             className="pl-10 h-11 bg-background/50 border-border"

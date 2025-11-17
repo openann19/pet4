@@ -365,7 +365,7 @@ function MatchCard({
             </span>
           </MotionView>
           <MotionView
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent) => {
               e.stopPropagation();
               haptics.trigger('selection');
               onBreakdown();
@@ -432,7 +432,7 @@ function MatchCardActions({
   return (
     <div className="flex items-center gap-1.5 shrink-0">
       <MotionView
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent) => {
           e.stopPropagation();
           haptics.trigger('selection');
           onPlaydate();
@@ -453,7 +453,7 @@ function MatchCardActions({
         <Calendar size={18} weight="fill" className="text-white" aria-hidden="true" />
       </MotionView>
       <MotionView
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent) => {
           e.stopPropagation();
           haptics.trigger('medium');
           onVideoCall();
@@ -475,7 +475,7 @@ function MatchCardActions({
       </MotionView>
       {onChat && (
         <MotionView
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent) => {
             e.stopPropagation();
             haptics.trigger('medium');
             onChat();

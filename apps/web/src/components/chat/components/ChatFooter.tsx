@@ -159,7 +159,7 @@ export function ChatFooter({
               <Input
                 ref={inputRef}
                 value={inputValue}
-                onChange={(e) => { onInputChange(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { onInputChange(e.target.value); }}
                 onKeyDown={onInputKeyDown}
                 placeholder="Type a message..."
                 className="pr-12 glass-effect border-white/30 focus:border-primary/50 backdrop-blur-xl"

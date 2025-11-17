@@ -148,7 +148,7 @@ export default function CreateHighlightDialog({
             <Input
               id="highlight-title"
               value={title}
-              onChange={(e) => { setTitle(e.target.value); }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setTitle(e.target.value); }}
               placeholder="e.g., Summer Adventures, Best Moments"
               maxLength={30}
             />

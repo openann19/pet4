@@ -558,7 +558,7 @@ export function VerificationReviewDashboard(): JSX.Element {
                       <label className="text-sm font-medium">Review Notes (Optional)</label>
                       <Textarea
                         value={reviewNotes}
-                        onChange={(e) => { setReviewNotes(e.target.value); }}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setReviewNotes(e.target.value); }}
                         placeholder="Add any notes about this verification review..."
                         rows={3}
                         className="resize-none"
@@ -571,7 +571,7 @@ export function VerificationReviewDashboard(): JSX.Element {
                       </label>
                       <Textarea
                         value={rejectionReason}
-                        onChange={(e) => { setRejectionReason(e.target.value); }}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setRejectionReason(e.target.value); }}
                         placeholder="Provide detailed feedback about why this verification is being rejected..."
                         rows={3}
                         className="resize-none"

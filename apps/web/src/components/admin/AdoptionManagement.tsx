@@ -328,7 +328,7 @@ export default function AdoptionManagement(): JSX.Element {
                   id="adoption-search"
                   placeholder="Search by name, breed, or organization..."
                   value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
                   className="pl-10"
                   aria-label="Search adoption profiles"
                 />

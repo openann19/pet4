@@ -17,7 +17,7 @@ export function PhotoInputSection({ photo, photoPresence, actions }: PhotoInputS
       <Input
         id="photo"
         value={photo}
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           actions.setPhoto(e.target.value);
         }}
         placeholder="https://images.unsplash.com/photo-..."

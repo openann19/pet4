@@ -267,7 +267,7 @@ export default function BackendDemo() {
               <Input
                 id="title"
                 value={title}
-                onChange={(e) => { setTitle(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setTitle(e.target.value); }}
                 placeholder="Enter a title..."
                 disabled={!isAuthenticated}
               />
@@ -277,7 +277,7 @@ export default function BackendDemo() {
               <Input
                 id="content"
                 value={content}
-                onChange={(e) => { setContent(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setContent(e.target.value); }}
                 placeholder="Enter some content..."
                 disabled={!isAuthenticated}
               />

@@ -162,7 +162,7 @@ export default function VenuePicker({
               <Input
                 placeholder={t.map?.searchPlaceholder ?? 'Search places...'}
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="flex-1"
               />

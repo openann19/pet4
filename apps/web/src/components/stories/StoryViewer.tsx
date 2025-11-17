@@ -621,7 +621,7 @@ export default function StoryViewer({
               <div className="flex-1 relative">
                 <Input
                   value={replyText}
-                  onChange={(e) => { setReplyText(e.target.value); }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setReplyText(e.target.value); }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleReply();

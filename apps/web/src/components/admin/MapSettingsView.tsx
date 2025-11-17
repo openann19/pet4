@@ -391,7 +391,7 @@ export default function MapSettingsView() {
                     min={1}
                     max={100}
                     value={mapSettings?.DEFAULT_RADIUS_KM ?? 10}
-                    onChange={(e) =>
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       { handleSettingChange('DEFAULT_RADIUS_KM', parseInt(e.target.value)); }
                     }
                   />
@@ -403,7 +403,7 @@ export default function MapSettingsView() {
                     min={1}
                     max={500}
                     value={mapSettings?.MAX_RADIUS_KM ?? 100}
-                    onChange={(e) => handleSettingChange('MAX_RADIUS_KM', parseInt(e.target.value))}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleSettingChange('MAX_RADIUS_KM', parseInt(e.target.value))}
                   />
                 </div>
               </div>
@@ -438,7 +438,7 @@ export default function MapSettingsView() {
                 <Input
                   placeholder="US, GB, DE, etc."
                   value={mapSettings?.COUNTRY_BIAS ?? 'US'}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleSettingChange('COUNTRY_BIAS', e.target.value.toUpperCase())
                   }
                   maxLength={2}
@@ -622,7 +622,7 @@ export default function MapSettingsView() {
                         <Input
                           placeholder="e.g., dog-park"
                           value={newCategory.id}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             { setNewCategory((prev) => ({ ...prev, id: e.target.value })); }
                           }
                         />
@@ -632,7 +632,7 @@ export default function MapSettingsView() {
                         <Input
                           placeholder="e.g., Dog Parks"
                           value={newCategory.name}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             { setNewCategory((prev) => ({ ...prev, name: e.target.value })); }
                           }
                         />
@@ -644,7 +644,7 @@ export default function MapSettingsView() {
                         <Input
                           placeholder="🐕"
                           value={newCategory.icon}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             { setNewCategory((prev) => ({ ...prev, icon: e.target.value })); }
                           }
                         />
@@ -655,7 +655,7 @@ export default function MapSettingsView() {
                           <Input
                             type="color"
                             value={newCategory.color}
-                            onChange={(e) =>
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                               { setNewCategory((prev) => ({ ...prev, color: e.target.value })); }
                             }
                             className="w-20"
@@ -663,7 +663,7 @@ export default function MapSettingsView() {
                           <Input
                             type="text"
                             value={newCategory.color}
-                            onChange={(e) =>
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                               { setNewCategory((prev) => ({ ...prev, color: e.target.value })); }
                             }
                             className="flex-1"
@@ -692,7 +692,7 @@ export default function MapSettingsView() {
                               <Label>Name</Label>
                               <Input
                                 value={editingCategory.name}
-                                onChange={(e) =>
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                   { setEditingCategory({ ...editingCategory, name: e.target.value }); }
                                 }
                               />
@@ -701,7 +701,7 @@ export default function MapSettingsView() {
                               <Label>Icon</Label>
                               <Input
                                 value={editingCategory.icon}
-                                onChange={(e) =>
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                   { setEditingCategory({ ...editingCategory, icon: e.target.value }); }
                                 }
                               />
@@ -713,7 +713,7 @@ export default function MapSettingsView() {
                               <Input
                                 type="color"
                                 value={editingCategory.color}
-                                onChange={(e) =>
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                   { setEditingCategory({ ...editingCategory, color: e.target.value }); }
                                 }
                                 className="w-20"
@@ -721,7 +721,7 @@ export default function MapSettingsView() {
                               <Input
                                 type="text"
                                 value={editingCategory.color}
-                                onChange={(e) =>
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                   { setEditingCategory({ ...editingCategory, color: e.target.value }); }
                                 }
                                 className="flex-1"
@@ -825,7 +825,7 @@ export default function MapSettingsView() {
                 <Input
                   id="map-style-url"
                   value={providerConfig.MAP_STYLE_URL}
-                  onChange={(e) => updateProviderConfig({ MAP_STYLE_URL: e.target.value })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProviderConfig({ MAP_STYLE_URL: e.target.value })}
                   placeholder="https://api.maptiler.com/maps/streets-v2/style.json?key="
                 />
                 <p className="text-sm text-muted-foreground">
@@ -839,7 +839,7 @@ export default function MapSettingsView() {
                   id="map-tiles-api-key"
                   type="password"
                   value={providerConfig.MAP_TILES_API_KEY}
-                  onChange={(e) => updateProviderConfig({ MAP_TILES_API_KEY: e.target.value })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProviderConfig({ MAP_TILES_API_KEY: e.target.value })}
                   placeholder="Enter your map tiles API key"
                 />
                 <p className="text-sm text-muted-foreground">
@@ -853,7 +853,7 @@ export default function MapSettingsView() {
                   id="geocoding-api-key"
                   type="password"
                   value={providerConfig.GEOCODING_API_KEY}
-                  onChange={(e) => updateProviderConfig({ GEOCODING_API_KEY: e.target.value })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProviderConfig({ GEOCODING_API_KEY: e.target.value })}
                   placeholder="Enter your geocoding API key"
                 />
                 <p className="text-sm text-muted-foreground">
@@ -866,7 +866,7 @@ export default function MapSettingsView() {
                 <Input
                   id="geocoding-endpoint"
                   value={providerConfig.GEOCODING_ENDPOINT}
-                  onChange={(e) => updateProviderConfig({ GEOCODING_ENDPOINT: e.target.value })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateProviderConfig({ GEOCODING_ENDPOINT: e.target.value })}
                   placeholder="https://api.maptiler.com/geocoding"
                 />
                 <p className="text-sm text-muted-foreground">

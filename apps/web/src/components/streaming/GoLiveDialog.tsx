@@ -68,7 +68,7 @@ export function GoLiveDialog({
               <Input
                 id="title"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                 placeholder="e.g., Playing at the dog park"
                 className="mt-1"
               />
@@ -81,7 +81,7 @@ export function GoLiveDialog({
               <Textarea
                 id="description"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
                 placeholder="Tell viewers what you're doing..."
                 className="mt-1"
                 rows={3}
@@ -95,7 +95,7 @@ export function GoLiveDialog({
               <Input
                 id="category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCategory(e.target.value)}
                 placeholder="e.g., Pet Care, Training"
                 className="mt-1"
               />

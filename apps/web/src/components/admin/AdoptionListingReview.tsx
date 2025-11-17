@@ -357,7 +357,7 @@ export function AdoptionListingReview() {
                       <label className="text-sm font-medium">Rejection Reason (if rejecting)</label>
                       <Textarea
                         value={rejectionReason}
-                        onChange={(e) => { setRejectionReason(e.target.value); }}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setRejectionReason(e.target.value); }}
                         placeholder="Explain why this listing is being rejected..."
                         rows={3}
                       />
