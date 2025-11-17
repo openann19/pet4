@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Generator Contract Tests > should snapshot Expo config structure 1`] = `
+{
+  "name": "TestApp",
+  "slug": "test-app",
+  "version": "1.0.0",
+}
+`;
+
+exports[`Generator Contract Tests > should snapshot PWA manifest structure 1`] = `
+{
+  "display": "standalone",
+  "name": "Test App",
+  "short_name": "Test",
+  "start_url": "/",
+}
+`;

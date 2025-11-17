@@ -1,1 +1,60 @@
-node_modules
+### Node dependencies
+node_modules/
+
+### Package manager + tooling caches / logs
+.pnpm-store/
+.pnp.cjs
+.pnp.loader.mjs
+.pnp.
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+*.log
+
+### Environment files
+.env
+.env.*
+*.env.local
+apps/*/.env*
+packages/*/.env*
+!*.env.example
+!**/.env.example
+
+### Build outputs / generated artifacts
+dist/
+build/
+coverage/
+.vite/
+.esbuild/
+.turbo/
+turbo/
+.cache/
+.temp/
+tmp/
+temp/
+out/
+.next/
+.storybook-static/
+*.tsbuildinfo
+
+### App-specific build artifacts
+apps/*/dist/
+apps/*/build/
+apps/**/.expo/
+apps/**/.expo-shared/
+apps/**/web-build/
+apps/**/ios/build/
+apps/**/android/app/build/
+apps/web/.vite/
+apps/web/dist/
+
+### OS / editor junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.orig

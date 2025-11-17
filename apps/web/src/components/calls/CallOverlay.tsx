@@ -1,20 +1,13 @@
 // apps/web/src/components/calls/CallOverlay.tsx
-"use client";
+'use client';
 
-import {
-  PhoneOff,
-  Mic,
-  MicOff,
-  Video,
-  VideoOff,
-  MonitorUp,
-} from "lucide-react";
-import { MotionView } from "@petspark/motion";
-import type { CallSession, CallStatus } from "@petspark/core";
-import { cn } from "@/lib/utils";
-import { getTypographyClasses } from "@/lib/typography";
-import { Button } from "@/components/ui/button";
-import { CallParticipantsGrid } from "./CallParticipantsGrid";
+import { PhoneOff, Mic, MicOff, Video, VideoOff, MonitorUp } from 'lucide-react';
+import { MotionView } from '@petspark/motion';
+import type { CallSession, CallStatus } from '@/lib/call-types';
+import { cn } from '@/lib/utils';
+import { getTypographyClasses } from '@/lib/typography';
+import { Button } from '@/components/ui/button';
+import { CallParticipantsGrid } from './CallParticipantsGrid';
 
 export interface CallOverlayProps {
   open: boolean;
@@ -46,18 +39,13 @@ function TopBar({
       <div className="flex min-w-0 flex-col gap-0.5">
         <span
           className={cn(
-            getTypographyClasses("caption"),
-            "text-xs font-medium uppercase tracking-wide text-emerald-400"
+            getTypographyClasses('caption'),
+            'text-xs font-medium uppercase tracking-wide text-emerald-400'
           )}
         >
           {statusLabel}
         </span>
-        <span
-          className={cn(
-            getTypographyClasses("h2"),
-            "truncate text-base text-slate-50"
-          )}
-        >
+        <span className={cn(getTypographyClasses('h2'), 'truncate text-base text-slate-50')}>
           {remoteName}
         </span>
       </div>
@@ -74,22 +62,17 @@ function TopBar({
   );
 }
 
-const MuteBtn = ({
-  isMuted,
-  onToggleMute,
-}: {
-  isMuted: boolean;
-  onToggleMute: () => void;
-}) => (
+const MuteBtn = ({ isMuted, onToggleMute }: { isMuted: boolean; onToggleMute: () => void }) => (
   <Button
     type="button"
-    size="icon"
+    size="sm"
+    isIconOnly
     variant="outline"
     onClick={onToggleMute}
-    aria-label={isMuted ? "Unmute microphone" : "Mute microphone"}
+    aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
     className={cn(
-      "rounded-full border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800",
-      isMuted && "bg-red-700/70 text-red-50 hover:bg-red-700"
+      'rounded-full border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800',
+      isMuted && 'bg-red-700/70 text-red-50 hover:bg-red-700'
     )}
   >
     {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
@@ -105,20 +88,17 @@ const CameraBtn = ({
 }) => (
   <Button
     type="button"
-    size="icon"
+    size="sm"
+    isIconOnly
     variant="outline"
     onClick={onToggleCamera}
-    aria-label={isCameraOff ? "Turn camera on" : "Turn camera off"}
+    aria-label={isCameraOff ? 'Turn camera on' : 'Turn camera off'}
     className={cn(
-      "rounded-full border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800",
-      isCameraOff && "bg-slate-800 text-slate-300"
+      'rounded-full border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800',
+      isCameraOff && 'bg-slate-800 text-slate-300'
     )}
   >
-    {isCameraOff ? (
-      <VideoOff className="h-4 w-4" />
-    ) : (
-      <Video className="h-4 w-4" />
-    )}
+    {isCameraOff ? <VideoOff className="h-4 w-4" /> : <Video className="h-4 w-4" />}
   </Button>
 );
 
@@ -133,14 +113,15 @@ const ScreenShareBtn = ({
 }) => (
   <Button
     type="button"
-    size="icon"
+    size="sm"
+    isIconOnly
     variant="outline"
     onClick={onToggleScreenShare}
-    aria-label={isScreenSharing ? "Stop screen sharing" : "Share screen"}
+    aria-label={isScreenSharing ? 'Stop screen sharing' : 'Share screen'}
     disabled={!isActive}
     className={cn(
-      "rounded-full border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800 disabled:opacity-40",
-      isScreenSharing && "bg-emerald-600 text-white hover:bg-emerald-500"
+      'rounded-full border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800 disabled:opacity-40',
+      isScreenSharing && 'bg-emerald-600 text-white hover:bg-emerald-500'
     )}
   >
     <MonitorUp className="h-4 w-4" />
@@ -150,7 +131,8 @@ const ScreenShareBtn = ({
 const EndBtn = ({ onEndCall }: { onEndCall: () => void }) => (
   <Button
     type="button"
-    size="icon"
+    size="sm"
+    isIconOnly
     variant="destructive"
     onClick={onEndCall}
     aria-label="End call"
@@ -216,12 +198,12 @@ function MainGrid({
 }
 
 function getStatusLabel(status: CallStatus): string {
-  if (status === "ringing") return "Ringing…";
-  if (status === "connecting") return "Connecting…";
-  if (status === "in-call") return "In call";
-  if (status === "failed") return "Call failed";
-  if (status === "ended") return "Call ended";
-  return "Call";
+  if (status === 'ringing') return 'Ringing…';
+  if (status === 'connecting') return 'Connecting…';
+  if (status === 'active') return 'In call';
+  if (status === 'failed') return 'Call failed';
+  if (status === 'ended') return 'Call ended';
+  return 'Call';
 }
 
 export function CallOverlay({
@@ -241,8 +223,7 @@ export function CallOverlay({
 }: CallOverlayProps): React.JSX.Element | null {
   if (!open || !session) return null;
   const remote = session.remoteParticipant;
-  const isActive =
-    status === "connecting" || status === "ringing" || status === "in-call";
+  const isActive = status === 'connecting' || status === 'ringing' || status === 'active';
   const statusLabel = getStatusLabel(status);
   return (
     <div className="fixed inset-0 z-80 flex items-stretch justify-stretch bg-black/80 backdrop-blur-xl">
@@ -250,24 +231,16 @@ export function CallOverlay({
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 210, damping: 24 }}
+        transition={{ type: 'spring', stiffness: 210, damping: 24 }}
         className={cn(
-          "relative m-2 flex w-full flex-col overflow-hidden rounded-3xl border border-slate-700/60",
-          "bg-[radial-gradient(circle_at_top,rgba(2,6,23,0.98),rgba(2,6,23,0.9),rgba(2,6,23,1))]",
-          "shadow-[0_40px_120px_rgba(0,0,0,0.9)]"
+          'relative m-2 flex w-full flex-col overflow-hidden rounded-3xl border border-slate-700/60',
+          'bg-[radial-gradient(circle_at_top,rgba(2,6,23,0.98),rgba(2,6,23,0.9),rgba(2,6,23,1))]',
+          'shadow-[0_40px_120px_rgba(0,0,0,0.9)]'
         )}
       >
-        <TopBar
-          statusLabel={statusLabel}
-          remoteName={remote.displayName}
-          onClose={onClose}
-        />
+        <TopBar statusLabel={statusLabel} remoteName={remote.name} onClose={onClose} />
 
-        <MainGrid
-          session={session}
-          localStream={localStream}
-          remoteStream={remoteStream}
-        />
+        <MainGrid session={session} localStream={localStream} remoteStream={remoteStream} />
 
         <ControlsBar
           isActive={isActive}

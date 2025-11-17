@@ -1,0 +1,184 @@
+/**
+ * Button Color Tokens CSS Variables
+ *
+ * Replaces opacity/blend hacks with solid, AA-compliant colors
+ * Automatically switches based on theme (dark/light) and locale (en/bg)
+ */
+
+@layer theme {
+  :root {
+    /* Default (Light theme, English) - Coral solid colors */
+    --btn-primary-bg: #FF715B;
+    --btn-primary-bg-solid: #FF715B;
+    --btn-primary-fg: #ffffff;
+    --btn-primary-hover-bg: #FF5A40;
+    --btn-primary-hover-bg-solid: #FF5A40;
+    --btn-primary-hover-fg: #ffffff;
+    --btn-primary-press-bg: #FF4430;
+    --btn-primary-press-bg-solid: #FF4430;
+    --btn-primary-press-fg: #ffffff;
+    --btn-primary-disabled-bg: #f1f5f9;
+    --btn-primary-disabled-fg: #BDBDBD;
+    --btn-primary-focus-ring: rgba(255, 113, 91, 0.4);
+
+    --btn-secondary-bg: #FFE4B2;
+    --btn-secondary-fg: #222222;
+    --btn-secondary-hover-bg: #FFD580;
+    --btn-secondary-hover-fg: #222222;
+    --btn-secondary-press-bg: #FFC966;
+    --btn-secondary-press-fg: #222222;
+    --btn-secondary-disabled-bg: #f1f5f9;
+    --btn-secondary-disabled-fg: #BDBDBD;
+    --btn-secondary-focus-ring: rgba(255, 113, 91, 0.4);
+
+    --btn-destructive-bg: #FF715B;
+    --btn-destructive-fg: #ffffff;
+    --btn-destructive-hover-bg: #FF5A40;
+    --btn-destructive-hover-fg: #ffffff;
+    --btn-destructive-press-bg: #FF4430;
+    --btn-destructive-press-fg: #ffffff;
+    --btn-destructive-disabled-bg: #f1f5f9;
+    --btn-destructive-disabled-fg: #BDBDBD;
+    --btn-destructive-focus-ring: rgba(255, 113, 91, 0.4);
+
+    --btn-outline-border: #FF715B;
+    --btn-outline-bg: transparent;
+    --btn-outline-fg: #FF715B;
+    --btn-outline-hover-border: #FF5A40;
+    --btn-outline-hover-bg: #FFF9F0;
+    --btn-outline-hover-fg: #FF5A40;
+    --btn-outline-press-border: #FF4430;
+    --btn-outline-press-bg: #FFF9F0;
+    --btn-outline-press-fg: #FF4430;
+    --btn-outline-disabled-border: #E5E5E5;
+    --btn-outline-disabled-bg: transparent;
+    --btn-outline-disabled-fg: #BDBDBD;
+    --btn-outline-focus-ring: rgba(255, 113, 91, 0.3);
+
+    /* OAuth button variant - white background with brand-colored icon/text */
+    --btn-oauth-bg: #ffffff;
+    --btn-oauth-fg: #0f172a;
+    --btn-oauth-border: #e2e8f0;
+    --btn-oauth-hover-bg: #f8fafc;
+    --btn-oauth-hover-fg: #020617;
+    --btn-oauth-hover-border: #cbd5e1;
+    --btn-oauth-press-bg: #f1f5f9;
+    --btn-oauth-press-fg: #020617;
+    --btn-oauth-press-border: #cbd5e1;
+    --btn-oauth-disabled-bg: #ffffff;
+    --btn-oauth-disabled-fg: #94a3b8;
+    --btn-oauth-disabled-border: #e2e8f0;
+    --btn-oauth-focus-ring: rgba(255, 107, 107, 0.3);
+
+    --btn-ghost-bg: transparent;
+    --btn-ghost-fg: #222222;
+    --btn-ghost-hover-bg: #FFF9F0;
+    --btn-ghost-hover-fg: #FF715B;
+    --btn-ghost-press-bg: #FFF9F0;
+    --btn-ghost-press-fg: #FF5A40;
+    --btn-ghost-disabled-bg: transparent;
+    --btn-ghost-disabled-fg: #BDBDBD;
+    --btn-ghost-focus-ring: rgba(255, 113, 91, 0.3);
+
+    --btn-link-fg: #FF715B;
+    --btn-link-hover-fg: #FF5A40;
+    --btn-link-disabled-fg: #BDBDBD;
+    --btn-link-focus-ring: rgba(255, 113, 91, 0.3);
+
+    /* Minimum touch target size */
+    --btn-min-size: 44px;
+
+    /* Standardized button dimensions */
+    --btn-height-default: 50px;
+    --btn-height-secondary: 48px;
+    --btn-height-lg: 56px;
+    --btn-padding-x: 24px;
+    --btn-padding-y: 12px;
+    --btn-border-radius: 12px;
+    --btn-font-weight: 600;
+    --btn-font-size-primary: 15px;
+    --btn-font-size-secondary: 14px;
+  }
+
+  .dark-theme {
+    /* Dark theme, English (same as Bulgarian) - Coral solid colors */
+    --btn-primary-bg: #FF715B;
+    --btn-primary-bg-solid: #FF715B;
+    --btn-primary-fg: #ffffff;
+    --btn-primary-hover-bg: #FF5A40;
+    --btn-primary-hover-bg-solid: #FF5A40;
+    --btn-primary-hover-fg: #ffffff;
+    --btn-primary-press-bg: #FF4430;
+    --btn-primary-press-bg-solid: #FF4430;
+    --btn-primary-press-fg: #ffffff;
+    --btn-primary-disabled-bg: #1e293b;
+    --btn-primary-disabled-fg: #BDBDBD;
+    --btn-primary-focus-ring: rgba(255, 113, 91, 0.4);
+
+    --btn-secondary-bg: #475569;
+    --btn-secondary-fg: #ffffff;
+    --btn-secondary-hover-bg: #334155;
+    --btn-secondary-hover-fg: #ffffff;
+    --btn-secondary-press-bg: #1e293b;
+    --btn-secondary-press-fg: #ffffff;
+    --btn-secondary-disabled-bg: #1e293b;
+    --btn-secondary-disabled-fg: #475569;
+    --btn-secondary-focus-ring: #64748b;
+
+    --btn-destructive-bg: #ef4444;
+    --btn-destructive-fg: #ffffff;
+    --btn-destructive-hover-bg: #dc2626;
+    --btn-destructive-hover-fg: #ffffff;
+    --btn-destructive-press-bg: #b91c1c;
+    --btn-destructive-press-fg: #ffffff;
+    --btn-destructive-disabled-bg: #1e293b;
+    --btn-destructive-disabled-fg: #475569;
+    --btn-destructive-focus-ring: #f87171;
+
+    --btn-outline-border: #475569;
+    --btn-outline-bg: transparent;
+    --btn-outline-fg: #f1f5f9;
+    --btn-outline-hover-border: #64748b;
+    --btn-outline-hover-bg: #1e293b;
+    --btn-outline-hover-fg: #ffffff;
+    --btn-outline-press-border: #64748b;
+    --btn-outline-press-bg: #0f172a;
+    --btn-outline-press-fg: #ffffff;
+    --btn-outline-disabled-border: #334155;
+    --btn-outline-disabled-bg: transparent;
+    --btn-outline-disabled-fg: #475569;
+    --btn-outline-focus-ring: rgba(255, 107, 107, 0.3);
+
+    /* OAuth button variant - dark theme */
+    --btn-oauth-bg: #1e293b;
+    --btn-oauth-fg: #f1f5f9;
+    --btn-oauth-border: #475569;
+    --btn-oauth-hover-bg: #334155;
+    --btn-oauth-hover-fg: #ffffff;
+    --btn-oauth-hover-border: #64748b;
+    --btn-oauth-press-bg: #0f172a;
+    --btn-oauth-press-fg: #ffffff;
+    --btn-oauth-press-border: #64748b;
+    --btn-oauth-disabled-bg: #1e293b;
+    --btn-oauth-disabled-fg: #475569;
+    --btn-oauth-disabled-border: #334155;
+    --btn-oauth-focus-ring: rgba(255, 107, 107, 0.3);
+
+    --btn-ghost-bg: transparent;
+    --btn-ghost-fg: #f1f5f9;
+    --btn-ghost-hover-bg: #1e293b;
+    --btn-ghost-hover-fg: #ffffff;
+    --btn-ghost-press-bg: #0f172a;
+    --btn-ghost-press-fg: #ffffff;
+    --btn-ghost-disabled-bg: transparent;
+    --btn-ghost-disabled-fg: #475569;
+    --btn-ghost-focus-ring: #64748b;
+
+    --btn-link-fg: #FF715B;
+    --btn-link-hover-fg: #FF5A40;
+    --btn-link-disabled-fg: #BDBDBD;
+    --btn-link-focus-ring: rgba(255, 113, 91, 0.3);
+  }
+
+  /* Locale-specific overrides can be added here if needed */
+}

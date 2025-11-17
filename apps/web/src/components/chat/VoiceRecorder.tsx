@@ -1,10 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
-import { useMotionValue, animate } from 'framer-motion';
-import { useAnimatedStyle } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+  withSequence,
+  MotionView,
+} from '@petspark/motion';
+import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { Microphone, X, Check } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { AnimatedView } from '@/effects/reanimated/animated-view';
 import { toast } from 'sonner';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -19,8 +25,8 @@ export default function VoiceRecorder({
   onCancel,
   maxDuration = 120,
 }: VoiceRecorderProps) {
-  const _uiConfig = useUIConfig();
-  const [duration, setDuration] = useState(0);
+    const _uiConfig = useUIConfig();
+    const [duration, setDuration] = useState(0);
   const [waveform, setWaveform] = useState<number[]>([]);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -31,23 +37,27 @@ export default function VoiceRecorder({
   const timerRef = useRef<number | undefined>(undefined);
 
   // Animation values
-  const containerOpacity = useMotionValue(0);
-  const containerScale = useMotionValue(0.9);
-  const micScale = useMotionValue(1);
+  const containerOpacity = useSharedValue<number>(0);
+  const containerScale = useSharedValue<number>(0.9);
+  const micScale = useSharedValue<number>(1);
 
   useEffect(() => {
     void startRecording();
 
     // Animate container in
-    void animate(containerOpacity, 1, { duration: 0.3 });
-    void animate(containerScale, 1, { duration: 0.3 });
+    const targetOpacity = 1 as const;
+    const targetScale = 1 as const;
+    containerOpacity.value = withTiming(targetOpacity, { duration: 300 });
+    containerScale.value = withTiming(targetScale, { duration: 300 });
 
     // Animate microphone icon
-    void animate(micScale, [1, 1.2, 1], {
-      duration: 1.5,
-      repeat: Infinity,
-      repeatType: 'reverse',
-    });
+    const micScaleMax = 1.2 as const;
+    const micScaleMin = 1 as const;
+    micScale.value = withRepeat(
+      withSequence(withTiming(micScaleMax, { duration: 750 }), withTiming(micScaleMin, { duration: 750 })),
+      -1,
+      true
+    );
 
     return () => {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
@@ -61,7 +71,7 @@ export default function VoiceRecorder({
         clearInterval(timerRef.current);
       }
       if (audioContextRef.current) {
-        audioContextRef.current.close();
+        void audioContextRef.current.close();
       }
     };
   }, []);
@@ -167,22 +177,25 @@ export default function VoiceRecorder({
   };
 
   const containerStyle = useAnimatedStyle(() => ({
-    opacity: containerOpacity.get(),
-    transform: [{ scale: containerScale.get() }],
+    opacity: containerOpacity.value,
+    transform: [{ scale: containerScale.value }],
   })) as AnimatedStyle;
 
   const micStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: micScale.get() }],
+    transform: [{ scale: micScale.value }],
   })) as AnimatedStyle;
 
+  const containerStyleValue = useAnimatedStyleValue(containerStyle);
+  const micStyleValue = useAnimatedStyleValue(micStyle);
+
   return (
-    <AnimatedView
-      style={containerStyle}
+    <div
+      style={containerStyleValue}
       className="flex-1 flex items-center gap-3 glass-effect rounded-2xl p-3"
     >
-      <AnimatedView style={micStyle} className="shrink-0">
+      <div style={micStyleValue} className="shrink-0">
         <Microphone size={24} weight="fill" className="text-red-500" />
-      </AnimatedView>
+      </div>
 
       <div className="flex-1 space-y-2">
         <div className="flex items-center gap-2">
@@ -203,41 +216,42 @@ export default function VoiceRecorder({
       </div>
 
       <Button
-        size="icon"
+        size="sm"
         variant="ghost"
         onClick={handleCancel}
-        className="shrink-0"
+        className="shrink-0 w-10 h-10 p-0"
         aria-label="Cancel recording"
       >
         <X size={20} />
       </Button>
 
       <Button
-        size="icon"
+        size="sm"
         onClick={handleStopAndSend}
-        className="shrink-0 bg-linear-to-br from-primary to-accent"
+        className="shrink-0 w-10 h-10 p-0 bg-linear-to-br from-primary to-accent"
         aria-label="Stop and send recording"
       >
         <Check size={20} weight="bold" />
       </Button>
-    </AnimatedView>
+    </div>
   );
 }
 
 function WaveformBar({ value }: { value: number }) {
-  const height = useMotionValue(0);
+  const height = useSharedValue<number>(0);
 
   useEffect(() => {
-    void animate(height, value * 100, { duration: 0.1 });
+    const targetHeight = value * 100;
+    height.value = withTiming(targetHeight, { duration: 100 });
   }, [value, height]);
 
   const barStyle = useAnimatedStyle(() => ({
-    height: `${height.get()}%`,
-  })) as AnimatedStyle;
+    height: `${height.value}%`,
+  }));
 
   return (
-    <AnimatedView style={barStyle} className="flex-1 bg-primary rounded-full">
+    <MotionView style={barStyle} className="flex-1 bg-primary rounded-full">
       <div />
-    </AnimatedView>
+    </MotionView>
   );
 }

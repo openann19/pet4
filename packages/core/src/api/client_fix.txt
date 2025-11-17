@@ -1,0 +1,11 @@
+      // Convert Headers to plain object for telemetry
+      const headersObj: Record<string, string> = {};
+      headers.forEach((value, key) => {
+        headersObj[key] = value;
+      });
+
+      this.config.telemetry?.onRequest?.({
+        url,
+        method: options.method ?? 'GET',
+        headers: headersObj,
+      })

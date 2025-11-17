@@ -1,0 +1,43 @@
+{
+  "name": "@petspark/motion",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:run": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native-reanimated": "~3.10.1"
+  },
+  "peerDependenciesMeta": {
+    "react-native-reanimated": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "framer-motion": "^11.11.17"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "^18.3.12",
+    "@types/react-native": "^0.73.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-gesture-handler": "^2.29.1",
+    "typescript": "~5.7.2",
+    "vitest": "^1.0.0"
+  }
+}

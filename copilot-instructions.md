@@ -1,798 +1,317 @@
-OUTPUT & ATTITUDE OVERRIDE
-
-From now on, change how you talk and how you treat “pre-existing” issues:
-
-1. No excuses, only ownership
-- Do NOT say things like:
-  - “pre-existing issue not introduced by my changes”
-  - “this was already failing before”
-  - “not related to my changes”
-- Instead:
-  - If it’s in a file or flow you are working on, TREAT IT AS YOUR PROBLEM.
-  - Either FIX it or EXPLICITLY say “out of scope because <hard boundary>” (for example: “this is an unrelated backend service in another repo I cannot see”).
-
-2. Handle lint/test errors aggressively
-- When lint/tests fail, do this:
-  1) Show the exact error.
-  2) Propose and apply a concrete fix.
-  3) Re-run in your head and confirm it should now pass.
-- Do NOT just label things as “pre-existing” and move on if the failure:
-  - Is in the same file, same feature, or same test suite you touched.
-- Only skip if:
-  - The error is in a completely different area (e.g. another app/package),
-  - AND fixing it would require large speculative changes.
-- Even then, write:
-  - “UNFIXED: <error> — in different package/app; requires separate task.”
-
-3. Stop narrating actions like a play-by-play
-- Do NOT write “Let me now run the tests” / “Bash: Run SignInForm tests”.
-- Instead:
-  - Show what matters:
-    - Command: `pnpm -C apps/web test auth`
-    - Result: `<short error>`
-    - Fix: `<patch or explanation>`
-- Assume the user already knows that tests/lint must be run.
-
-4. Status style
-- Be concise and surgical:
-  - “Fixed: A, B, C.”
-  - “Remaining: D (needs separate task because <reason>).”
-- Only mention “pre-existing” to explain *why you didn’t fully fix it*, never as an excuse:
-  - Good: “Remaining lint: max-lines-per-function on FeatureXView; to fix correctly we must split the component into subviews, which is a larger refactor than this task allows.”
-  - Bad: “This error is pre-existing and not caused by my changes.”
-
-5. Bias toward cleaning touched files
-- If you touch a file and you see:
-  - max-lines-per-function,
-  - too-complex function,
-  - obvious dead code,
-  - trivial type errors,
-  you SHOULD:
-  - Improve it if it doesn’t require rewriting the whole feature.
-- If you intentionally leave it, explain in ONE line:
-  - “Kept max-lines-per-function for now; a clean split requires a dedicated refactor of all sub-views.”
-
-6. Tone
-- Less Jira, more senior engineer:
-  - Don’t defend yourself.
-  - Don’t over-explain.
-  - Own the mess in files you touch, and leave them better than you found them.
-
 # PETSPARK – AI / Copilot Instructions
 
-These rules apply to **all AI-driven edits** (Copilot, Cursor, Windsurf AI, etc.) in this repository.
+These rules apply to **all AI-driven edits** (Copilot, Cursor agents, Windsurf AI, etc.) in this repository.
 
-**Goal:** Production-grade, type-safe, visually **premium** PETSPARK apps (web + mobile + native) with:
-
-- **Zero red squiggles** (no TypeScript errors)
-- **No stubs / TODOs**
-- **Stable performance & UX parity** across platforms
+The goal: **production-grade, type-safe, visually premium PETSPARK apps** (web + mobile + native) with **zero red squiggles**, no stubs, and preserved performance.
 
 ---
 
 ## 0. TL;DR (Golden Rules)
 
-1. **Do not leave broken code**
-   - No TypeScript errors.
-   - No failing lint/tests for the scope you touched.
-
-2. **No stubs, no fake work**
-   - Do **not** add:
-     - `TODO` comments
-     - Dummy implementations
-     - Fake data (outside of clearly marked tests/fixtures)
-     - Huge commented-out blocks as “future work”
-
-3. **Respect architecture & docs**
-   - Before editing an area, scan relevant docs in that app/package:
-     - `ARCHITECTURE*.md`
-     - `MIGRATION_*.md`
-     - `*_SUMMARY.md`, `*_REPORT.md`
-     - `PRODUCTION_READINESS_*.md`, `PERFORMANCE_*`, etc.
-
-4. **Reuse existing pieces**
-   - Prefer:
-     - Hooks in `apps/**/src/hooks`
-     - UI primitives in `apps/web/src/components/ui`
-     - Premium UI in `apps/web/src/components/enhanced`
-     - Motion façade in `packages/motion` (imported as `@petspark/motion`)
-
-5. **Keep UX consistent**
-   - If you change a shared pattern (buttons, tabs, segmented controls, cards, typography, micro-interactions):
-     - Apply the same pattern across **all** relevant screens (or clearly mark follow-ups).
-   - Do not introduce “one-off” styles that only exist in a single corner.
-
-6. **Never weaken quality**
-   - Do not:
-     - Loosen types
-     - Globally disable ESLint rules
-     - Bypass runtime safety, security, or telemetry helpers
-
-7. **Respect the surface you were asked to touch**
-   - “Web only” → do **not** edit `apps/mobile` or `apps/native`.
-   - “Mobile only” → do **not** edit `apps/web`.
-   - Cross-surface edits must be explicit and documented.
+1. **Do not leave broken code.**
+   - No red TypeScript errors.
+   - No failing `pnpm lint` / `pnpm test` for the scope you touched.
+2. **No stubs or placeholders.**
+   - Do **not** add `TODO`, dummy implementations, commented-out blocks, or fake data except in tests/fixtures.
+3. **Follow existing architecture & docs.**
+   - Before editing an area, scan its related docs (e.g. `ARCHITECTURE.md`, `MIGRATION_*.md`, `*_SUMMARY.md` in that app).
+4. **Prefer existing utilities and components.**
+   - Reuse hooks in `apps/**/src/hooks`, UI primitives in `apps/web/src/components/ui`, motion façade in `packages/motion`.
+5. **Keep behavior and UX consistent across screens.**
+   - If you change a pattern (buttons, modals, transitions, typography), apply or at least **plan** the same fix across similar screens.
+6. **Never weaken safety/quality.**
+   - Don't disable ESLint rules, downgrade types, or bypass runtime safety helpers.
 
 ---
 
 ## 1. Monorepo Map (What Lives Where)
 
-Understand the layout before generating code.
+Understand the structure before generating code:
 
-### Root
+- **Root**
+  - Tooling & policy: `eslint.config.js`, `tsconfig.base.json`, `pnpm-workspace.yaml`, `TYPE_AND_LINT_DISCIPLINE.md`, `PRODUCTION_READINESS_*`, etc.
+  - AI / process docs: `copilot-instructions.md` (this file), `FRAMER_MOTION_MIGRATION.md`, multiple `*_SUMMARY.md` and `*_REPORT.md`.
 
-- Tooling & policy
-  - `eslint.config.js`
-  - `tsconfig.base.json`
-  - `pnpm-workspace.yaml`
-  - Discipline & quality:  
-    `TYPE_AND_LINT_DISCIPLINE.md`, `PRODUCTION_READINESS_*.md`, `SECURITY*.md`, `TESTING_*`, etc.
-- AI / process docs
-  - `copilot-instructions.md` (this file)
-  - Motion migration: `FRAMER_MOTION_MIGRATION.md`
-  - Implementation summaries / audits:  
-    `IMPLEMENTATION_SUMMARY.md`, `*_SUMMARY.md`, `*_REPORT.md`, `WHAT_IS_LEFT.md`, etc.
+- **apps/web** – **Vite React web app (primary surface)**
+  - `src/components` – all web UI and views.
+    - `ui/` – canonical design-system primitives (button, input, dialog, sheet, tabs, etc.).
+    - `enhanced/` – premium UI components and effects.
+    - `views/` – high-level feature screens (Discover, Adoption, Chat, Community, etc.).
+    - Feature folders: `adoption/`, `stories/`, `community/`, `media-editor/`, `lost-found/`, etc.
+  - `src/effects` – web effects, animations, chat FX, micro-interactions.
+    - `reanimated/` – **legacy** Reanimated-based helpers being migrated to Framer Motion façade.
+  - `src/hooks` – app-level hooks (discovery, adoption, chat, offline, etc.).
+  - `src/lib` – domain logic, services, utilities, types.
+  - Docs: `ARCHITECTURE.md`, `MIGRATION_*`, `ENHANCED_ANIMATIONS.md`, `UI_AUDIT_*`, `WEB_RUNTIME_AUDIT_REPORT.md`, etc.
 
-### apps/web – Primary Web App (Vite + React)
+- **apps/mobile** – **Expo React Native mobile app** (production-oriented)
+  - `src/components`, `src/screens`, `src/hooks`, `src/lib`, etc.
+  - Multiple mobile-specific docs: `ARCHITECTURE.md`, `MOBILE_*`, `RUNBOOK.md`, `PERFORMANCE_VALIDATION_GUIDE.md`, etc.
+  - Uses **React Native Reanimated** and Expo stack.
 
-- `apps/web/src/components`
-  - `ui/` – design-system primitives  
-    (`button`, `input`, `dialog`, `sheet`, `tabs`, `segmented-control`, `badge`, `scroll-area`, `switch`, `slider`, etc.)
-  - `enhanced/` – premium UI  
-    (enhanced cards, premium buttons, overlays, smart skeletons, toasts, notification center, etc.)
-  - `views/` – page-level screens  
-    (`DiscoverView`, `AdoptionMarketplaceView`, `ChatView`, `CommunityView`, `MatchesView`, `ProfileView`, `NotificationsView`, etc.)
-  - Feature folders:  
-    `adoption/`, `stories/`, `community/`, `media-editor/`, `lost-found/`, `playdate/`, `health/`, `verification/`, etc.
-- `apps/web/src/effects`
-  - Web micro-interactions & FX.
-  - `effects/reanimated/**` → **legacy** layer, being migrated to the Framer façade (see `FRAMER_MOTION_MIGRATION.md`).
-- `apps/web/src/hooks`
-  - App-level hooks: discovery, adoption, chat, offline, stories, media, navigation, performance, etc.
-- `apps/web/src/lib`
-  - Domain logic & utilities:
-    - `adoption-*`, `matching`, `analytics`, `realtime`, `payments-*`, `gdpr-service`, `security`, `offline-*`, `telemetry`, `image-*`, etc.
+- **apps/native** – Secondary RN app (native variant / experiments)
+  - `src/components/*`, `src/screens`, etc.
+  - Use cautiously; prefer `apps/mobile` for primary mobile path.
 
-### apps/mobile – Expo React Native App
+- **apps/backend** – backend integration app(s) (treat as backend / APIs).
 
-- `apps/mobile/src/components`, `src/screens`, `src/hooks`, `src/lib`, `src/theme`, `src/navigation`, etc.
-- Uses **React Native**, **Reanimated**, and Expo.
-- Key docs:
-  - `ARCHITECTURE.md`
-  - `MOBILE_*`
-  - `PERFORMANCE_VALIDATION_GUIDE.md`
-  - `ULTRA_CHATFX_CI_GATES.md`
-  - `RUNBOOK.md`
-  - `MOBILE_RUNTIME_AUDIT_REPORT.md`
+- **packages/**
+  - `packages/motion` – **animation and motion façade** (Framer Motion on web, RN/Reanimated on native/mobile).
+    - `src/framer-api/` – Framer-style API for web.
+    - `src/primitives/` – `MotionView`, `MotionText`, `MotionScrollView` (with `.native` and `.web` variants).
+  - `packages/shared` – shared types, storage, utilities.
+  - `packages/core` – core API client and backing logic.
+  - `packages/chat-core` – shared chat logic.
 
-### apps/native
+- **docs/** – cross-cutting documentation (architecture, audits, mobile parity, production readiness, etc.).
 
-- Alternate RN/native variant for experiments.
-- For core mobile flows, **prefer `apps/mobile`**.
-
-### apps/backend
-
-- Backend / API integration.
-- Don’t sneak UI logic into backend apps.
-
-### packages
-
-- `packages/motion`
-  - Motion façade for all platforms.
-  - `src/primitives/` – `MotionView`, `MotionText`, `MotionScrollView` with `.web` / `.native` variants.
-  - `src/framer-api/` – Framer-style API for web under the hood.
-  - **Rule:** web code imports **only** `@petspark/motion`, not raw `framer-motion`.
-- `packages/shared`
-  - Shared types, guards, storage, logging, utilities.
-- `packages/core`
-  - Core API client, HTTP glue, schemas.
-- `packages/chat-core`
-  - Shared chat domain logic / hooks.
-
-### docs/
-
-- Cross-cutting docs:
-  - Architecture
-  - UX audits
-  - Production readiness checklists
-  - Runtime audit reports
-  - Web/mobile parity guides
-
-When unsure: **copy the closest existing pattern in the same folder** instead of creating a new pattern.
+**When unsure:** mirror existing patterns in the same folder before inventing new structures.
 
 ---
 
-## 2. Core Coding Standards
+## 2. General Coding Standards
 
 ### 2.1 TypeScript & ESLint
 
-- **Strict TS only**
-  - No `any` unless:
-    - Very tightly scoped
-    - Immediately wrapped in a type guard
-- ESLint:
-  - Do **not** add global `eslint-disable`.
-  - If you must disable:
-    - Do it on a **single line**
-    - For **one rule**
-    - With a short justification comment
+- Code must compile under **strict TypeScript**:
+  - No `any` unless explicitly justified and wrapped in a type guard.
+  - Prefer **exact types** and **discriminated unions** over loose records.
+- Respect existing ESLint config:
+  - Do **not** add `// eslint-disable` unless absolutely necessary and local.
+  - If you must, add a comment explaining why and keep the scope tiny.
+- Do not increase file complexity:
+  - The web app has rules like **max 300 lines per file** for components.
+  - If a component crosses the limit, **split it** into smaller components/hooks rather than disabling the rule.
 
-- File size / complexity:
-  - Long view components must be split into:
-    - Subcomponents (`*Header`, `*BasicTab`, `*MediaTab`, `*AdvancedTab`, etc.)
-    - Hooks in `apps/**/src/hooks`
-  - Never relax complexity/length rules; refactor instead.
+### 2.2 Promises & Async
 
-### 2.2 Async & Promises
+- **No unhandled promises**:
+  - Either `await` inside `async` functions, or call as `void someAsync().catch(...)`.
+  - For callbacks (e.g. event handlers), always handle failure with toast/logging or error boundaries.
+- Prefer **typed API clients** (`apps/web/src/lib/api-*`, `packages/core`) rather than ad-hoc `fetch`.
 
-- No unhandled promises:
-  - Use `await`, or `void someAsync().catch(...)`.
-- Event handlers:
-  - On failure, surface via:
-    - Toasts
-    - Logging
-    - Error boundaries
-- Prefer typed API clients:
-  - `apps/web/src/lib/api-*`, `packages/core`, etc.
-  - Avoid ad-hoc `fetch` unless it’s clearly justified.
+### 2.3 UI & Design System
+
+- Use primitives from `apps/web/src/components/ui`:
+  - `Button`, `Input`, `Dialog`, `Sheet`, `Tabs`, `Card`, `Badge`, `ScrollArea`, `Switch`, etc.
+- Do **not** create new raw HTML button/input styles unless:
+  - The existing component cannot express the needed behavior, and
+  - You add a reusable variant or prop instead of bespoke CSS.
+- Respect the design tokens:
+  - Colors, typography and spacing should come from Tailwind classes + existing token utilities.
+  - Do not introduce hard-coded color hex values or random font sizes if a token exists.
+
+### 2.4 Accessibility & ARIA
+
+- Follow `apps/web/src/lib/accessibility.ts` and ARIA guidance in docs:
+  - Provide `aria-label` or descriptive text for icon-only buttons.
+  - Maintain focus outlines and keyboard navigation.
+  - Use semantic elements (`<button>`, `<nav>`, `<main>`, etc.) wrapped by UI primitives where appropriate.
+- When updating modals/dialogs:
+  - Keep focus-trap behavior, escape-to-close, and screen-reader labelling intact.
 
 ---
 
-## 3. Premium UI System – Global Rules (Web)
+## 3. Animation & Motion Rules
 
-This is what separates “student project” from **Telegram X / iMessage-level** polish.
+### 3.1 Web (apps/web)
 
-### 3.1 Buttons – Single Source of Truth
+- **Do not import `react-native-reanimated` directly in web code.**
+- **Do not import `framer-motion` directly in `apps/web` either.**
+- All web animation should go through:
+  - `@petspark/motion` (aliased to `packages/motion`), or
+  - Existing helpers in `apps/web/src/effects/**` that already wrap the façade.
 
-**All buttons must go through** `apps/web/src/components/ui/button.tsx` (or `PremiumButton` where explicitly needed).
+Read `FRAMER_MOTION_MIGRATION.md` for timelines and details.
 
-Rules:
+**Migration state:**
 
-- Variants:
-  - `primary`, `secondary`, `outline`, `ghost`, `destructive`, `link`
-- Radii:
-  - Use a **single radius token** (e.g. `rounded-xl`) for main CTAs.
-- Focus:
-  - Consistent focus ring:
-    - `focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2`
-- Typography:
-  - CTAs use a shared typography scale:
-    - `font-medium text-sm` or `text-base` via typography tokens.
+- `apps/web/src/effects/reanimated/**` is the legacy layer being migrated to the motion façade.
+- New work:
+  - Prefer `MotionView` / façade hooks (`useMotionValue`, `useMotionStyle`, shared transitions).
+  - Do **not** add new Reanimated-specific utilities under `effects/reanimated/**`.
+- When touching older views (e.g. `DiscoverView`, `AdoptionMarketplaceView`, `DiscoveryFilters*`):
+  - Use the motion façade where possible.
+  - If a helper like `useEntryAnimation` exists, prefer updating that helper to the façade rather than adding a parallel one.
 
-**Do not:**
+### 3.2 Mobile / Native (apps/mobile, apps/native)
 
-- Hand-roll random `<button>` styles with their own borders/shadows.
-- Create mini button variants per-screen.
+- Mobile and native continue using **React Native Reanimated**.
+- Maintain 60fps and low jank:
+  - Heavy work goes to JS threads / workers, not layout effects.
+  - Avoid long synchronous reducers or deep object cloning in hot paths.
+- Respect mobile docs:
+  - `MOBILE_ANIMATION_PARITY_COMPLETE.md`
+  - `PERFORMANCE_VALIDATION_GUIDE.md`
+  - `ULTRA_CHATFX_CI_GATES.md`
 
-If an existing variant is slightly off for a use case → **extend the variant system**, don’t bypass it.
+---
 
-### 3.2 SegmentedControl – Top-Level Mode Switching
+## 4. Feature-Level Guidelines (Web)
 
-All **top-level mode switches** in web views must use:
+### 4.1 Views (apps/web/src/components/views)
 
-- `apps/web/src/components/ui/segmented-control.tsx`
+- Views like `DiscoverView`, `AdoptionMarketplaceView`, `ChatView`, `CommunityView` should:
+  - Be **compositional** (wire hooks + component hierarchy).
+  - Keep logic inside hooks (e.g. `useAdoptionMarketplace`, `usePetDiscovery`) or `lib/` services.
+  - Avoid exceeding 300 lines:
+    - Break out subcomponents: `*BasicTab.tsx`, `*MediaTab.tsx`, `*AdvancedTab.tsx`, `*Header.tsx`, etc.
+- When adding animations in views:
+  - Use `PageTransitionWrapper` from `components/ui/page-transition-wrapper.tsx` or motion façade utilities.
+  - For list entries, reuse list animation hooks (`useEntryAnimation` / migrated variants) instead of bespoke inline framer code.
 
-Examples:
+### 4.2 Adoption Marketplace
 
-- Adoption view mode toggles
-- Notifications filter (All / Unread)
-- Top-level view mode switches in Discover, Community, Lost & Found, etc.
+Relevant files:
 
-Rules:
-
-- SegmentedControl is for **primary mode switching**.
-- Deep **configuration tabs inside sheets/dialogs** (like Discovery filter subtabs) still use `Tabs`.
-
-When adding a new top-level mode toggle → use `SegmentedControl`, not raw tabs.
-
-### 3.3 Typography – Shared Scale, No Freelancing
-
-Typography is a **central premium signal**.
-
-Use a shared typography token file (e.g. `packages/core/src/tokens/typography.ts`), something like:
-
-```ts
-export const typography = {
-  display: 'text-4xl font-bold tracking-tight',
-  h1: 'text-3xl font-bold',
-  h2: 'text-2xl font-semibold',
-  h3: 'text-xl font-semibold',
-  body: 'text-base font-normal',
-  bodyMuted: 'text-base text-muted-foreground',
-  caption: 'text-sm text-muted-foreground',
-} as const;
-Mapping guidelines:
-
-View titles → h2
-
-Section headings → h3
-
-Body text → body
-
-Explanatory text → bodyMuted
-
-Metadata, captions → caption
-
-Vertical rhythm (defaults):
-
-Title → subtitle: mt-1
-
-Subtitle → controls: mt-4
-
-Section spacing: consistent mt-6 / mt-8 for bigger blocks.
-
-Do not randomly pick text-[15px], mt-3.5, etc. if the design system already has a proper token/utility.
-
-3.4 Cards – Premium Treatment, Not Flat Admin
-
-Use premium card patterns in:
-
-Adoption cards
-
-Match cards
-
-Story cards
-
-Community / feed cards
+- `apps/web/src/components/views/AdoptionMarketplaceView.tsx`
+- `apps/web/src/components/adoption/*`
+- `apps/web/src/hooks/adoption/use-adoption-filters.ts`
+- `apps/web/src/lib/adoption-marketplace-*`
 
 Rules:
 
-Use a premium card component (e.g. PremiumCard in components/enhanced):
-
-rounded-2xl
-
-Soft gradient / glass surface
-
-Consistent image aspect ratio (3:4 or 4:3)
-
-Clear hierarchy: title → key attributes → tags → CTA
-
-Motion:
-
-Hover lift (scale(1.02), subtle shadow)
-
-Staggered entry for grids via shared motion utilities.
-
-If a grid of cards looks flat / “admin panel”, you’ve broken the rule.
-
-3.5 Micro-Interaction Policy – “If It’s Clickable, It Moves”
-
-Every interactive element must react.
-
-Baseline rules:
-
-Element	Required Interaction
-Primary buttons	Press animation (tap scale)
-Secondary buttons	Hover + focus feedback
-Cards	Hover lift + subtle glow/shadow
-Tabs	Animated indicator / underline
-Icon buttons	Hover scale ~1.05 + focus ring
-Images in cards	Smooth fade/scale on hover/entry
-
-Implementation:
-
-Use hooks and components from @petspark/motion and apps/web/src/effects/**.
-
-Respect prefers-reduced-motion (usePrefersReducedMotion) and disable heavy motion when requested.
-
-No dead, static CTAs.
-
-4. Animation & Motion Rules
-4.1 Web (apps/web)
-
-Imports:
-
-❌ Do NOT import react-native-reanimated in apps/web.
-
-❌ Do NOT import framer-motion directly in apps/web.
-
-✅ All web motion goes through @petspark/motion.
-
-Patterns:
-
-Motion-enabled components
-
-Use MotionView (from @petspark/motion) / motion wrappers.
-
-Their style prop may contain MotionValues.
-
-Plain DOM elements
-
-Must receive plain CSSProperties, not MotionValues.
-
-Use façade helpers like useAnimatedStyle which convert motion values to CSSProperties.
-
-Strict invariants:
-
-No .value usage in web components.
-
-No direct Reanimated APIs on web.
-
-If you see style={{ transform: ..., something: motionValue }} on a plain <div> → fix it:
-
-Either wrap with MotionView, or
-
-Use façade to map motion values → plain style.
-
-4.2 Legacy effects/reanimated/**
-
-This folder is a compatibility layer.
-
-Do not add new Reanimated-specific helpers.
-
-When you touch it:
-
-Incrementally migrate logic to the façade (@petspark/motion).
-
-Keep its public API stable for existing consumers until the migration doc says otherwise.
-
-4.3 Mobile / Native (apps/mobile, apps/native)
-
-Continue using React Native Reanimated where appropriate.
-
-Performance constraints:
-
-60fps target on scrolls, swipes, chat.
-
-Keep heavy work off the UI thread.
-
-Respect:
-
-MOBILE_ANIMATION_PARITY_COMPLETE.md
-
-PERFORMANCE_VALIDATION_GUIDE.md
-
-ULTRA_CHATFX_CI_GATES.md
-
-Web and mobile animation should feel like the same design language, not different universes.
-
-5. Feature-Level Guidelines (Web)
-5.1 Views (apps/web/src/components/views)
-
-Examples: DiscoverView, AdoptionMarketplaceView, ChatView, CommunityView, ProfileView, NotificationsView, etc.
-
-Responsibilities:
-
-Orchestrate hooks + services.
-
-Compose feature components.
-
-Keep view files small and readable.
-
-Patterns:
-
-Extract:
-
-Headers
-
-Tabs (*BasicTab, *AdvancedTab, *MediaTab)
-
-List items / cards
-
-Use:
-
-PageTransitionWrapper for full-page transitions.
-
-Shared motion hooks for list/card animations.
-
-5.2 Adoption Marketplace
-
-Key files:
-
-apps/web/src/components/views/AdoptionMarketplaceView.tsx
-
-apps/web/src/components/adoption/*
-
-apps/web/src/hooks/adoption/use-adoption-filters.ts
-
-apps/web/src/lib/adoption-marketplace-*
+- UI state and filtering logic should live in hooks/services:
+  - `useAdoptionMarketplace` handles data loading and derived filters.
+  - The view handles **layout, wiring and interactions**.
+- Use existing cards/dialogs:
+  - `AdoptionListingCard`, `AdoptionListingDetailDialog`, `AdoptionFiltersSheet`, `CreateAdoptionListingDialog`.
+- For animations of listing cards:
+  - Use a dedicated animated item (e.g. `AdoptionListingItem`) that uses the shared motion helpers.
+  - Do not duplicate animation logic inline in every map call.
+- When adding/removing filters:
+  - Update `use-adoption-filters.ts`, filter types in `lib/adoption-marketplace-types.ts`, and corresponding tests in `hooks/__tests__/use-adoption-filters.test.ts`.
+
+### 4.3 Discovery Filters
+
+Relevant files:
+
+- `DiscoveryFilters.tsx`
+- `DiscoveryFiltersBasicTab.tsx`
+- `DiscoveryFiltersMediaTab.tsx`
+- `DiscoveryFiltersAdvancedTab.tsx`
+- `discovery-preferences.ts`
+- `hooks/use-storage.ts`
 
 Rules:
 
-View:
+- `DiscoveryFilters.tsx` should be a **thin orchestrator**:
+  - Handles Sheet open/close state.
+  - Owns `DiscoveryPreferences` state and persists via `useStorage`.
+  - Delegates tabs to separate components for Basic, Media, Advanced.
+- Each tab (`*Tab.tsx`) manages only its subset of fields via props:
+  - Receive `preferences` slice and `onChange` handlers.
+  - No direct local persistence.
+- Keep `DiscoveryPreferences` type and `DEFAULT_PREFERENCES` in a single canonical file (`discovery-preferences.ts`) and reuse them on web/mobile where appropriate.
+- Respect file size / complexity limits by pushing repeated UI patterns into small subcomponents (e.g. `ToggleBadgeList`, `LabeledSlider`, `FilterCard` components).
 
-Uses SegmentedControl for top-level mode switching.
+### 4.4 Chat & Community
 
-Uses a glassy control bar for search + filters (not a raw form).
+- Use `packages/chat-core` hooks where possible instead of duplicating chat logic in `apps/web`.
+- Community components (`components/community/**`) must:
+  - Use consistent animation and presence patterns (see `PlaydateScheduler`, `PostComposer`, `NotificationCenter`).
+  - Maintain keyboard and screen-reader accessibility in sheet/modal flows.
 
-Uses premium cards (image-first, consistent aspect ratios).
+---
 
-Logic:
+## 5. Mobile Guidelines (apps/mobile)
 
-Data loading & filters live in hooks/services:
+When you are explicitly asked to touch mobile:
 
-useAdoptionMarketplace, use-adoption-filters, adoption-marketplace-service.
+- Read `apps/mobile/ARCHITECTURE.md`, `MOBILE_*` docs, and `PRODUCTION_READINESS.md` first.
+- Keep navigation and auth flows in sync with web where appropriate:
+  - Terminology (labels, error texts).
+  - Button hierarchy and states (primary/secondary/ghost).
+- Reuse shared logic from `packages/shared` and `packages/core` instead of duplicating in `apps/mobile`.
 
-View is responsible for composition, not business rules.
+---
 
-Filters:
+## 6. Testing & Commands
 
-Changes to filters must update:
+### 6.1 Web
 
-Filter types in lib/adoption-marketplace-types.ts
+For any changes under `apps/web`:
 
-use-adoption-filters.ts
+1. **Typecheck & lint** (at minimum):
+   - `pnpm -C apps/web test --runTestsByPath src/components/views/ChatView.test.tsx` (if touching chat)
+   - or use the project's existing scripts:
+     - `pnpm lint:web`
+     - `pnpm test --filter apps/web` (or the correct workspace filter name)
+2. **Optional but recommended:**
+   - `pnpm -C apps/web test` (Jest/Vitest unit tests).
+   - `pnpm -C apps/web playwright test` or `pnpm -C apps/web test:e2e` if you touched critical flows.
+3. **CI parity:**
+   - Do not add tests that rely on timers or random values without seeding (`seeded-rng` already exists for chat effects).
 
-Tests in hooks/__tests__/use-adoption-filters.test.ts
+### 6.2 Mobile
 
-5.3 Discovery Filters
+For changes under `apps/mobile`:
 
-Key files:
+- Run the configured scripts (check `apps/mobile/package.json`):
+  - `pnpm -C apps/mobile lint`
+  - `pnpm -C apps/mobile test`
+  - `pnpm -C apps/mobile test:e2e` / Detox if relevant.
 
-DiscoveryFilters.tsx
+### 6.3 Shared Packages
 
-DiscoveryFiltersBasicTab.tsx
+For `packages/*`:
 
-DiscoveryFiltersMediaTab.tsx
+- Use the package-local scripts:
+  - `pnpm -C packages/motion test`
+  - `pnpm -C packages/shared test`
+  - `pnpm -C packages/core test`
 
-DiscoveryFiltersAdvancedTab.tsx
+---
 
-discovery-preferences.ts
+## 7. Process for AI-Driven Changes
 
-hooks/use-storage.ts
+Whenever an AI/agent is asked to modify something, follow this loop:
 
-Rules:
+1. **Locate & read context**
+   - Find the relevant files: component, hook, service, and any `*_SUMMARY.md` or `*_GUIDE.md` in the same app.
+   - Understand existing patterns (naming, file layout, design tokens, motion usage).
 
-DiscoveryFilters.tsx:
+2. **Plan minimal, high-quality changes**
+   - Prefer **surgical edits** that fix issues or add features without rewriting large subsystems.
+   - If refactor is necessary (e.g. file too long, duplicated logic), define clear boundaries:
+     - New subcomponents.
+     - New hooks in `apps/**/src/hooks`.
+     - Shared utilities in `apps/**/src/lib` or `packages/*`.
 
-Owns DiscoveryPreferences state.
+3. **Implement with safety**
+   - Keep types tight; do not introduce `any` / `unknown` unless guarded.
+   - Avoid regressions across pages (navigation, shared state).
+   - Preserve analytics, telemetry, and haptics hooks where present.
 
-Persists to storage via useStorage.
+4. **Run checks**
+   - Run the relevant `pnpm` scripts for the app/package you touched.
+   - Fix all lints and type errors produced by your changes.
 
-Controls the Sheet open/close state.
+5. **Document if behavior changed**
+   - If you alter a major flow or pattern (auth, matching, adoption marketplace, media editor, motion stack):
+     - Update or add a short note to the nearest `*_SUMMARY.md` / `*_GUIDE.md`.
+     - Keep docs accurate; do not leave outdated guidance.
 
-Tab components:
+6. **Summarize**
+   - Summarize what changed, why, and any follow-ups needed (e.g. "apply same button fix to SavedPostsView later").
 
-Receive slices of preferences + onChange handlers.
+---
 
-No direct persistence, no direct global reads.
+## 8. Things You Must Not Do
 
-Types:
+- Do **not**:
+  - Introduce new libraries or heavy dependencies without explicit instruction.
+  - Disable important tooling (`eslint`, `tsc`, `vitest`, `playwright`) to "make it pass".
+  - Remove analytics, telemetry, or haptics calls silently.
+  - Downgrade security or privacy checks (`gdpr-service`, `rate-limit`, `security` docs).
+  - Bypass motion façade by importing `framer-motion` / `react-native-reanimated` directly in web code.
 
-DiscoveryPreferences & DEFAULT_PREFERENCES live in a single canonical location.
+---
 
-Reuse between web and mobile where possible.
+Following these instructions, an AI assistant should be able to safely:
 
-5.4 Chat & Community
-
-Locations:
-
-Chat:
-
-apps/web/src/components/chat/**
-
-apps/web/src/components/views/ChatView.tsx
-
-packages/chat-core
-
-Community:
-
-apps/web/src/components/community/**
-
-CommunityView.tsx
-
-Rules:
-
-Use packages/chat-core:
-
-Do not reimplement chat logic in apps/web if it exists in chat-core.
-
-Community & chat visuals:
-
-Use shared micro-interactions (presence, typing indicators, bubble entry, etc.).
-
-Keep overlays (modals, sheets) fully accessible.
-
-6. Mobile Guidelines (apps/mobile)
-
-When you’re explicitly modifying mobile:
-
-Read:
-
-apps/mobile/ARCHITECTURE.md
-
-MOBILE_* docs
-
-RUNBOOK.md
-
-PERFORMANCE_VALIDATION_GUIDE.md
-
-MOBILE_RUNTIME_AUDIT_REPORT.md
-
-Align with web where sensible:
-
-Use same wording for auth errors, helper texts.
-
-Align button variants (primary vs secondary).
-
-Match key layout hierarchy (title → content → CTA).
-
-Reuse code:
-
-packages/shared and packages/core instead of duplicating logic.
-
-Performance:
-
-Use Reanimated idioms and existing motion hooks.
-
-Avoid heavy synchronous work in render or gesture handlers.
-
-7. Testing & Commands
-
-Use the actual scripts defined in each package.json. The examples below are typical, adjust to match the repo.
-
-7.1 Web (apps/web)
-
-For any change under apps/web:
-
-Minimum:
-
-pnpm -C apps/web lint
-
-pnpm -C apps/web test
-
-Feature-specific tests:
-
-If they exist (e.g. for adoption, discovery, chat), run those explicitly.
-
-Critical flows (auth, onboarding, payments, adoption applications):
-
-Run configured E2E (e.g. Playwright):
-
-pnpm -C apps/web test:e2e or equivalent.
-
-7.2 Mobile (apps/mobile)
-
-pnpm -C apps/mobile lint
-
-pnpm -C apps/mobile test
-
-Detox / E2E scripts when you modify navigation or core flows.
-
-7.3 Shared Packages (packages/*)
-
-pnpm -C packages/motion test
-
-pnpm -C packages/shared test
-
-pnpm -C packages/core test
-
-Do not break existing tests without either:
-
-Fixing them, or
-
-Updating docs to reflect an intentional, agreed behavior change.
-
-8. Process for AI-Driven Changes
-
-Any AI agent (including Copilot-like tools) must follow this loop:
-
-Locate & read context
-
-Find all relevant files:
-
-Components, hooks, services, types.
-
-Read local docs:
-
-ARCHITECTURE*.md, *_SUMMARY.md, *_GUIDE.md, *_REPORT.md, relevant MIGRATION_*.md.
-
-Plan minimal, high-quality edits
-
-Prioritize small, tightly scoped changes:
-
-Fix type errors, runtime bugs, layout glitches.
-
-Extract subcomponents/hooks to reduce complexity.
-
-Avoid large rewrites unless explicitly asked in docs/tasks.
-
-Implement safely
-
-Keep types strict.
-
-Preserve:
-
-Haptics
-
-Analytics
-
-Telemetry
-
-Feature flags
-
-Security/privacy checks
-
-Do not break cross-page flows (auth, navigation, shared filters, chat sessions, etc.).
-
-Run checks
-
-Run the correct pnpm scripts for whatever you touched.
-
-Fix all lint/type/test failures before considering work “done”.
-
-Document behavior changes
-
-If you change:
-
-Auth
-
-Matching
-
-Adoption marketplace
-
-Media editor
-
-Motion stack
-
-Payments, verification, trust & safety
-
-Then:
-
-Add a short note to the closest *_SUMMARY.md / *_GUIDE.md / MIGRATION_*.md.
-
-Summarize & capture visuals
-
-Summarize:
-
-What changed
-
-Why
-
-Follow-ups needed (e.g. “Apply this button style to X and Y views next”)
-
-For UI changes:
-
-Capture updated screenshots for the affected screens and attach to PR / summary.
-
-9. Hard “No” List
-
-Do not:
-
-Introduce new libraries / heavy dependencies without explicit instruction.
-
-Disable:
-
-ESLint
-
-TypeScript checks
-
-Unit tests
-
-E2E tests
-
-Remove or “forget”:
-
-Analytics
-
-Telemetry
-
-Haptics
-
-Downgrade:
-
-Security checks
-
-Privacy / GDPR helpers
-
-Rate limiting
-
-Verification / KYC flows
-
-Bypass the motion façade on web:
-
-No direct framer-motion imports under apps/web.
-
-No react-native-reanimated in web.
-
-By following this document, an AI assistant (or human dev in “AI assist” mode) can:
-
-Fix type and lint issues without collateral damage.
-
-Upgrade and modularize oversized views while keeping UX intact.
-
-Migrate animations to the motion façade cleanly.
-
-Maintain button / typography / interaction consistency across the entire product.
-
-Keep PETSPARK stable, fast, and visually premium across web, mobile, and native.
+- Fix type errors and lint violations.
+- Modularize oversized view files (e.g. Discovery/Adoption views) without breaking behavior.
+- Migrate animations on web toward the Framer Motion façade.
+- Maintain parity between web and mobile UX.
+- Keep PETSPARK production-ready and visually premium.

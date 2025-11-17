@@ -1,0 +1,271 @@
+/**
+ * Business Config Panel
+ *
+ * Admin panel for managing prices, limits, and experiments.
+ */
+
+import { CheckCircle, CurrencyDollar, Flask, Gear, Radio } from '@phosphor-icons/react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useApp } from '@/contexts/AppContext';
+import { useBusinessConfig } from '@/hooks/use-business-config';
+
+export default function BusinessConfigPanel() {
+  useApp();
+  const {
+    config,
+    loading,
+    saving,
+    broadcasting,
+    saveConfig,
+    saveAndBroadcastConfig,
+    updatePrice,
+    updateLimit,
+  } = useBusinessConfig();
+
+  if (loading || !config) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-muted-foreground">Loading config...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Business Configuration</h2>
+          <p className="text-muted-foreground">Manage prices, limits, and experiments</p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              void saveConfig();
+            }}
+            disabled={saving || broadcasting}
+            variant="outline"
+          >
+            <CheckCircle size={20} className="mr-2" />
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
+          <Button
+            onClick={() => {
+              void saveAndBroadcastConfig();
+            }}
+            disabled={saving || broadcasting}
+          >
+            <Radio size={20} className="mr-2" />
+            {broadcasting ? 'Broadcasting...' : 'Save & Broadcast'}
+          </Button>
+        </div>
+      </div>
+
+      <Tabs defaultValue="prices" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="prices">
+            <CurrencyDollar size={16} className="mr-2" />
+            Prices
+          </TabsTrigger>
+          <TabsTrigger value="limits">
+            <Gear size={16} className="mr-2" />
+            Limits
+          </TabsTrigger>
+          <TabsTrigger value="experiments">
+            <Flask size={16} className="mr-2" />
+            Experiments
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="prices" className="space-y-4">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Premium Plan</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Monthly Price (USD)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={config.prices.premium.monthly}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'premium', 'monthly'], parseFloat(e.target.value) || 0)
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Yearly Price (USD)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={config.prices.premium.yearly}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'premium', 'yearly'], parseFloat(e.target.value) || 0)
+                  }
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Elite Plan</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Monthly Price (USD)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={config.prices.elite.monthly}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'elite', 'monthly'], parseFloat(e.target.value) || 0)
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Yearly Price (USD)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={config.prices.elite.yearly}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'elite', 'yearly'], parseFloat(e.target.value) || 0)
+                  }
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Consumables</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Boost Price (USD)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={config.prices.boost.price}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'boost', 'price'], parseFloat(e.target.value) || 0)
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Super Like Price (USD)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={config.prices.superLike.price}
+                  onChange={(e) =>
+                    updatePrice(['prices', 'superLike', 'price'], parseFloat(e.target.value) || 0)
+                  }
+                />
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="limits" className="space-y-4">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Free Plan Limits</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Daily Swipe Cap</Label>
+                <Input
+                  type="number"
+                  value={config.limits.free.swipeDailyCap}
+                  onChange={(e) =>
+                    updateLimit(['limits', 'free', 'swipeDailyCap'], parseInt(e.target.value) || 0)
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Adoption Listing Limit</Label>
+                <Input
+                  type="number"
+                  value={config.limits.free.adoptionListingLimit}
+                  onChange={(e) =>
+                    updateLimit(
+                      ['limits', 'free', 'adoptionListingLimit'],
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Premium Plan Limits</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Boosts Per Week</Label>
+                <Input
+                  type="number"
+                  value={config.limits.premium.boostsPerWeek}
+                  onChange={(e) =>
+                    updateLimit(
+                      ['limits', 'premium', 'boostsPerWeek'],
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Super Likes Per Day</Label>
+                <Input
+                  type="number"
+                  value={config.limits.premium.superLikesPerDay}
+                  onChange={(e) =>
+                    updateLimit(
+                      ['limits', 'premium', 'superLikesPerDay'],
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                />
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Elite Plan Limits</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Boosts Per Week</Label>
+                <Input
+                  type="number"
+                  value={config.limits.elite.boostsPerWeek}
+                  onChange={(e) =>
+                    updateLimit(['limits', 'elite', 'boostsPerWeek'], parseInt(e.target.value) || 0)
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Super Likes Per Day</Label>
+                <Input
+                  type="number"
+                  value={config.limits.elite.superLikesPerDay}
+                  onChange={(e) =>
+                    updateLimit(
+                      ['limits', 'elite', 'superLikesPerDay'],
+                      parseInt(e.target.value) || 0
+                    )
+                  }
+                />
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="experiments" className="space-y-4">
+          <Card className="p-6">
+            <p className="text-muted-foreground">
+              Experiment configuration UI coming soon. For now, experiments can be managed via API.
+            </p>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}

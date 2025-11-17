@@ -1,0 +1,57 @@
+import { MotionView } from "@petspark/motion";
+/**
+ * Ultra Enhanced View Wrapper
+ * Wraps any view with ultra animations and effects
+ */
+
+import { type ReactNode } from 'react';
+import { usePageTransition, useParallaxScroll, useBreathingAnimation } from '@/effects/reanimated';
+import { useUIConfig } from "@/hooks/use-ui-config";
+
+export interface UltraEnhancedViewProps {
+  children: ReactNode;
+  enableParallax?: boolean;
+  enableBreathing?: boolean;
+  enableTransition?: boolean;
+  className?: string;
+}
+
+export function UltraEnhancedView({
+  children,
+  enableParallax = false,
+  enableBreathing = false,
+  enableTransition = true,
+  className = '',
+}: UltraEnhancedViewProps) {
+    const _uiConfig = useUIConfig();
+    const pageTransition = usePageTransition({
+        isVisible: true,
+        direction: 'up',
+        duration: 400,
+      });
+
+  const parallax = useParallaxScroll({
+    speed: 0.3,
+    direction: 'vertical',
+    enabled: enableParallax,
+  });
+
+  const breathing = useBreathingAnimation({
+    enabled: enableBreathing,
+    duration: 4000,
+    minScale: 0.995,
+    maxScale: 1.005,
+  });
+
+  const combinedStyle = {
+    ...(enableTransition ? pageTransition.style : {}),
+    ...(enableParallax ? parallax.animatedStyle : {}),
+    ...(enableBreathing ? breathing.animatedStyle : {}),
+  };
+
+  return (
+    <MotionView style={combinedStyle} className={className}>
+      {children}
+    </MotionView>
+  );
+}

@@ -1,0 +1,884 @@
+{
+  "timestamp": "2025-11-06T21:09:12.779Z",
+  "summary": {
+    "docsToRemove": 48,
+    "sourceFilesToReview": 1111,
+    "workspacesWithUnusedDeps": 1
+  },
+  "docs": [
+    {
+      "path": "apps/web/docs/MIGRATION_CHECKLIST.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/docs/MIGRATION_CHECKLIST.md",
+      "reason": "Similar content and size",
+      "duplicateOf": "packages/shared/README.md"
+    },
+    {
+      "path": "PRODUCTION_CONSOLE_ELIMINATION_COMPLETE.md",
+      "fullPath": "/home/ben/Public/PETSPARK/PRODUCTION_CONSOLE_ELIMINATION_COMPLETE.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "PRODUCTION_READINESS_STATUS.md",
+      "fullPath": "/home/ben/Public/PETSPARK/PRODUCTION_READINESS_STATUS.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/PRODUCTION_FIXES_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/PRODUCTION_FIXES_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/mobile/EXPO_FIXES.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/mobile/EXPO_FIXES.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/mobile/IMPLEMENTATION_COMPLETE.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/mobile/IMPLEMENTATION_COMPLETE.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/mobile/MICRO_INTERACTIONS_IMPLEMENTATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/mobile/MICRO_INTERACTIONS_IMPLEMENTATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/mobile/ULTRA_ENHANCED_IMPLEMENTATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/mobile/ULTRA_ENHANCED_IMPLEMENTATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/mobile/ULTRA_ENHANCED_IMPLEMENTATION_STATUS.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/mobile/ULTRA_ENHANCED_IMPLEMENTATION_STATUS.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/AUDIT_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/AUDIT_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/BUSINESS_CORE_IMPLEMENTATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/BUSINESS_CORE_IMPLEMENTATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/BUTTON_VISIBILITY_COMPLETE.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/BUTTON_VISIBILITY_COMPLETE.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/BUTTON_VISIBILITY_FIXES.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/BUTTON_VISIBILITY_FIXES.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/COMMUNITY_FEATURES_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/COMMUNITY_FEATURES_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/COMMUNITY_IMPLEMENTATION_STATUS.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/COMMUNITY_IMPLEMENTATION_STATUS.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/CONSOLIDATION_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/CONSOLIDATION_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/CONTINUATION_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/CONTINUATION_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/DESIGN_SYSTEM_IMPLEMENTATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/DESIGN_SYSTEM_IMPLEMENTATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/EFFECTS_MIGRATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/EFFECTS_MIGRATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/ENHANCEMENT_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/ENHANCEMENT_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/FEATURE_IMPLEMENTATION_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/FEATURE_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/FEATURE_PACK_IMPLEMENTATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/FEATURE_PACK_IMPLEMENTATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/FINAL_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/FINAL_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/IMPLEMENTATION_COMPLETE.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/IMPLEMENTATION_COMPLETE.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/IMPLEMENTATION_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/ITERATION_134_COMPLETE.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/ITERATION_134_COMPLETE.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/ITERATION_134_STATUS.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/ITERATION_134_STATUS.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/ITERATION_135_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/ITERATION_135_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/ITERATION_25_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/ITERATION_25_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/ITERATION_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/ITERATION_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/MIGRATION_PROGRESS.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/MIGRATION_PROGRESS.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/MIGRATION_PROGRESS_REANIMATED.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/MIGRATION_PROGRESS_REANIMATED.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/MIGRATION_VERIFICATION_REPORT.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/MIGRATION_VERIFICATION_REPORT.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/MOBILE_POLISH_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/MOBILE_POLISH_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/MOBILE_STORE_READINESS_IMPLEMENTATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/MOBILE_STORE_READINESS_IMPLEMENTATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/OPTIMIZATION_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/OPTIMIZATION_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/REAL_IMPLEMENTATION_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/REAL_IMPLEMENTATION_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/REFACTORING_COMPLETE.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/REFACTORING_COMPLETE.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/REFACTORING_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/REFACTORING_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/STRICT_OPTIONALS_MIGRATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/STRICT_OPTIONALS_MIGRATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/TYPING_INDICATOR_IMPLEMENTATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/TYPING_INDICATOR_IMPLEMENTATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/UI_UPSCALE_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/UI_UPSCALE_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/VISUAL_FIXES_UPSCALE.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/VISUAL_FIXES_UPSCALE.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/android-design-tokens/COMPLETE.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/android-design-tokens/COMPLETE.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/android-design-tokens/COMPONENTS_IMPLEMENTATION.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/android-design-tokens/COMPONENTS_IMPLEMENTATION.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/android-design-tokens/DELIVERABLES_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/android-design-tokens/DELIVERABLES_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/android-design-tokens/FINAL_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/android-design-tokens/FINAL_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    },
+    {
+      "path": "apps/web/android-design-tokens/IMPLEMENTATION_SUMMARY.md",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/android-design-tokens/IMPLEMENTATION_SUMMARY.md",
+      "reason": "Status/migration doc in non-docs directory or outdated date"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "design-system/ThemeProvider.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/design-system/ThemeProvider.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "design-system/themes.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/design-system/themes.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "scripts/e2e-walkthrough.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/scripts/e2e-walkthrough.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/ErrorFallback.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/ErrorFallback.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/admin-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/admin-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/adoption-api-strict.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/adoption-api-strict.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/adoption-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/adoption-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/analytics-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/analytics-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/api-config-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/api-config-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/auth-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/auth-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/chat-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/chat-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/community-api-client.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/community-api-client.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/community-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/community-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/feature-flags-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/feature-flags-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/image-upload-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/image-upload-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/kyc-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/kyc-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/live-streaming-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/live-streaming-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/llm-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/llm-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/lost-found-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/lost-found-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/matching-api-strict.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/matching-api-strict.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/matching-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/matching-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/notifications-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/notifications-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/payments-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/payments-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/photo-moderation-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/photo-moderation-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/rate-limiting-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/rate-limiting-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/streaming-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/streaming-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/support-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/support-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/types.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/types.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/api/verification-api.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/api/verification-api.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/AdminConsole.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/AdminConsole.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/AdvancedCard.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/AdvancedCard.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/AnimatedBackground.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/AnimatedBackground.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/AuthScreen.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/AuthScreen.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/BackendDemo.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/BackendDemo.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/ChatRoomsList.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/ChatRoomsList.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/ChatWindowNew.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/ChatWindowNew.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/CompatibilityBreakdown.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/CompatibilityBreakdown.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/CreatePetDialog.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/CreatePetDialog.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/DiscoverMapMode.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/DiscoverMapMode.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/DiscoveryFilters.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/DiscoveryFilters.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/DismissibleOverlay.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/DismissibleOverlay.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/EnhancedCard.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/EnhancedCard.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/EnhancedErrorBoundary.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/EnhancedErrorBoundary.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/EnhancedVisuals.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/EnhancedVisuals.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/GenerateProfilesButton.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/GenerateProfilesButton.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/GlassCard.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/GlassCard.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/LoadingState.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/LoadingState.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/MatchCelebration.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/MatchCelebration.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/OptimizedImage.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/OptimizedImage.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/PetDetailDialog.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/PetDetailDialog.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/PetPhotoAnalyzer.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/PetPhotoAnalyzer.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/PetProfileTemplatesDialog.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/PetProfileTemplatesDialog.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/PetRatings.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/PetRatings.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/QueryProvider.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/QueryProvider.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/QuickActionsMenu.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/QuickActionsMenu.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/SeedDataInitializer.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/SeedDataInitializer.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/StatsCard.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/StatsCard.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/SyncStatusIndicator.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/SyncStatusIndicator.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/ThemePresetSelector.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/ThemePresetSelector.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/TrustBadges.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/TrustBadges.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/VerificationBadge.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/VerificationBadge.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/VisualAnalysisDemo.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/VisualAnalysisDemo.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/WelcomeModal.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/WelcomeModal.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/components/WelcomeScreen.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/components/WelcomeScreen.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/contexts/AppContext.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/contexts/AppContext.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/contexts/AuthContext.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/contexts/AuthContext.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/contexts/UIContext.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/contexts/UIContext.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/core/types.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/core/types.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/core/utils.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/core/utils.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-ai-typing-reveal.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-ai-typing-reveal.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-bubble-hover-tilt.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-bubble-hover-tilt.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-bubble-variant.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-bubble-variant.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-delete-bubble-animation.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-delete-bubble-animation.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-fullscreen.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-fullscreen.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-local-storage.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-local-storage.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-message-bubble-animation.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-message-bubble-animation.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-message-delivery-transition.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-message-delivery-transition.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-mobile.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-mobile.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-native-swipe.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-native-swipe.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-nav-button-animation.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-nav-button-animation.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-new-message-drop.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-new-message-drop.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-particle-explosion-delete.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-particle-explosion-delete.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-reaction-animation.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-reaction-animation.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-scroll-to-new-enhanced.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-scroll-to-new-enhanced.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-scroll-to-new.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-scroll-to-new.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-smart-highlight.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-smart-highlight.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-story-analytics.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-story-analytics.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-story-gestures.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-story-gestures.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-swipe-gesture.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-swipe-gesture.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-swipe-to-reply.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-swipe-to-reply.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-typing-manager.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-typing-manager.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-typing-placeholder.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-typing-placeholder.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-undo-send-animation.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-undo-send-animation.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-user-data.native.tsx",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-user-data.native.tsx",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-user-data.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-user-data.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/use-voice-waveform.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/use-voice-waveform.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/useApiCache.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useApiCache.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/useAuth.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useAuth.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/useCall.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useCall.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    },
+    {
+      "path": "src/hooks/useChatMessages.ts",
+      "fullPath": "/home/ben/Public/PETSPARK/apps/web/src/hooks/useChatMessages.ts",
+      "workspace": "apps/web",
+      "reason": "No imports found"
+    }
+  ],
+  "dependencies": [
+    {
+      "workspace": "web",
+      "dependencies": [
+        "@ffmpeg/ffmpeg",
+        "@heroicons/react",
+        "@hookform/resolvers",
+        "@radix-ui/colors",
+        "@sentry/tracing",
+        "@tailwindcss/container-queries",
+        "@tensorflow/tfjs",
+        "d3",
+        "marked",
+        "nsfwjs"
+      ],
+      "devDependencies": [
+        "@size-limit/file",
+        "@tailwindcss/postcss",
+        "@types/lodash",
+        "@vitest/coverage-v8",
+        "c8",
+        "fast-check",
+        "postcss",
+        "postcss-safe-parser",
+        "pyright",
+        "react-native-web",
+        "stylelint-config-standard",
+        "tailwindcss"
+      ]
+    }
+  ]
+}

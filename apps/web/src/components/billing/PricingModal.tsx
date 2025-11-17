@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { getTypographyClasses } from '@/lib/typography';
+import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
 import { createLogger } from '@/lib/logger';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
@@ -88,7 +88,7 @@ export function PricingModal({
 
     const mostPopularPlanId = useMemo(
         () =>
-            filteredPlans.find((p) => p.isMostPopular)?.id ?? null,
+            filteredPlans.find((p) => p.mostPopular)?.id ?? null,
         [filteredPlans],
     );
 
@@ -98,11 +98,11 @@ export function PricingModal({
                 setIsCheckoutLoading(planId);
                 setError(null);
                 onCheckoutStarted?.(planId);
-                const { checkoutUrl } = await billingClient.createCheckoutSession(
+                const { url } = await billingClient.createCheckoutSession(
                     planId,
                     window.location.href,
                 );
-                window.location.assign(checkoutUrl);
+                window.location.assign(url);
             } catch (err) {
                 const e = err as Error;
                 logger.error('Failed to start checkout', e);
@@ -133,7 +133,10 @@ export function PricingModal({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="mt-4 flex items-center justify-between gap-3">
+                <div className={cn(
+                    'flex items-center justify-between',
+                    getSpacingClassesFromConfig({ marginY: 'lg', gap: 'md' })
+                )}>
                     <ToggleGroup
                         type="single"
                         value={intervalFilter}
@@ -142,16 +145,19 @@ export function PricingModal({
                             setIntervalFilter(value as BillingIntervalFilter);
                         }}
                         className="inline-flex items-center justify-center rounded-full bg-muted/70 p-1 text-xs"
+                        aria-label="Billing interval selection"
                     >
                         <ToggleGroupItem
                             value="month"
                             className="rounded-full px-3 py-1 data-[state=on]:bg-background data-[state=on]:shadow-sm"
+                            aria-label="Monthly billing"
                         >
                             Monthly
                         </ToggleGroupItem>
                         <ToggleGroupItem
                             value="year"
                             className="rounded-full px-3 py-1 data-[state=on]:bg-background data-[state=on]:shadow-sm"
+                            aria-label="Yearly billing"
                         >
                             Yearly
                         </ToggleGroupItem>
@@ -164,13 +170,20 @@ export function PricingModal({
                     ) : null}
                 </div>
 
-                <div className="mt-5 grid gap-4 md:grid-cols-3">
+                <div className={cn(
+                    'grid md:grid-cols-3',
+                    getSpacingClassesFromConfig({ marginY: 'lg', gap: 'lg' })
+                )} role="list" aria-label="Pricing plans">
                     {isLoading ? (
-                        Array.from({ length: 3 }).map((_, idx) => (
+                        Array.from({ length: 3 }, (_, idx) => (
                             <div
-                                // eslint-disable-next-line react/no-array-index-key
-                                key={idx}
-                                className="animate-pulse rounded-2xl border border-border/50 bg-muted/40 p-4"
+                                key={`pricing-skeleton-${idx}`}
+                                className={cn(
+                                    'animate-pulse rounded-2xl border border-border/50 bg-muted/40',
+                                    getSpacingClassesFromConfig({ padding: 'lg' })
+                                )}
+                                role="listitem"
+                                aria-label="Loading pricing plan"
                             >
                                 <div className="h-5 w-24 rounded bg-muted-foreground/20" />
                                 <div className="mt-2 h-4 w-32 rounded bg-muted-foreground/15" />
@@ -191,20 +204,26 @@ export function PricingModal({
                             const isPopular = plan.id === mostPopularPlanId;
 
                             return (
-                                <div
+                                <article
                                     key={plan.id}
                                     className={cn(
-                                        'relative flex flex-col rounded-2xl border border-border/60 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.06),transparent_55%),linear-gradient(145deg,_rgba(15,15,30,0.96),_rgba(5,10,25,0.98))] p-4 shadow-[0_20px_40px_rgba(0,0,0,0.55)]',
+                                        'relative flex flex-col rounded-2xl border border-border/60 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.06),transparent_55%),linear-gradient(145deg,_rgba(15,15,30,0.96),_rgba(5,10,25,0.98))] shadow-[0_20px_40px_rgba(0,0,0,0.55)]',
+                                        getSpacingClassesFromConfig({ padding: 'lg' }),
                                         isPopular &&
                                         'border-primary/70 shadow-[0_24px_55px_rgba(37,99,235,0.4)]',
                                     )}
+                                    role="listitem"
+                                    aria-label={`${plan.name} plan - ${price} ${plan.currency.toUpperCase()} per ${plan.interval}`}
                                 >
                                     {isPopular ? (
-                                        <div className="absolute right-3 top-3 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground backdrop-blur">
+                                        <div 
+                                            className="absolute right-3 top-3 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground backdrop-blur"
+                                            aria-label="Most popular plan"
+                                        >
                                             Most popular
                                         </div>
                                     ) : null}
-                                    <div className="space-y-1">
+                                    <header className={getSpacingClassesFromConfig({ spaceY: 'xs' })}>
                                         <h3
                                             className={cn(
                                                 getTypographyClasses('h3'),
@@ -213,12 +232,18 @@ export function PricingModal({
                                         >
                                             {plan.name}
                                         </h3>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className={cn(
+                                            getTypographyClasses('caption'),
+                                            'text-muted-foreground'
+                                        )}>
                                             {plan.description}
                                         </p>
-                                    </div>
+                                    </header>
 
-                                    <div className="mt-3 flex items-baseline gap-1">
+                                    <div className={cn(
+                                        'flex items-baseline',
+                                        getSpacingClassesFromConfig({ marginY: 'md', gap: 'xs' })
+                                    )}>
                                         <span className="text-2xl font-semibold text-foreground">
                                             {price}
                                         </span>
@@ -227,11 +252,17 @@ export function PricingModal({
                                         </span>
                                     </div>
 
-                                    <ul className="mt-3 flex-1 space-y-1 text-xs text-muted-foreground">
-                                        {plan.features.map((feature) => (
-                                            <li key={feature} className="flex items-start gap-1.5">
-                                                <span className="mt-0.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                                                <span>{feature}</span>
+                                    <ul 
+                                        className="mt-3 flex-1 space-y-1 text-xs text-muted-foreground"
+                                        aria-label={`Features included in ${plan.name} plan`}
+                                    >
+                                        {plan.perks.map((perk) => (
+                                            <li key={perk.id} className="flex items-start gap-1.5">
+                                                <span 
+                                                    className="mt-0.5 h-1.5 w-1.5 rounded-full bg-primary" 
+                                                    aria-hidden="true"
+                                                />
+                                                <span>{perk.label}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -243,21 +274,34 @@ export function PricingModal({
                                         onClick={() => {
                                             void handleCheckout(plan.id);
                                         }}
+                                        aria-label={`Subscribe to ${plan.name} plan`}
+                                        aria-busy={isCheckoutLoading === plan.id}
                                     >
                                         {isCheckoutLoading === plan.id
                                             ? 'Redirecting...'
                                             : 'Continue'}
                                     </Button>
-                                </div>
+                                </article>
                             );
                         })
                     )}
                 </div>
 
                 {error ? (
-                    <p className="mt-3 text-xs text-destructive">
-                        {error}
-                    </p>
+                    <div 
+                        className={cn(
+                            getSpacingClassesFromConfig({ marginY: 'md' })
+                        )}
+                        role="alert"
+                        aria-live="polite"
+                    >
+                        <p className={cn(
+                            getTypographyClasses('caption'),
+                            'text-destructive'
+                        )}>
+                            {error}
+                        </p>
+                    </div>
                 ) : null}
             </DialogContent>
         </Dialog>

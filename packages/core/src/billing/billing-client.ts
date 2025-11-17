@@ -2,10 +2,10 @@
 
 import {
   BillingClientError,
-  BillingPlan,
-  BillingPortalSession,
-  CheckoutSession,
-  SubscriptionInfo,
+  type BillingPlan,
+  type BillingPortalSession,
+  type CheckoutSession,
+  type SubscriptionInfo,
 } from './billing-types'
 
 export interface BillingClientOptions {

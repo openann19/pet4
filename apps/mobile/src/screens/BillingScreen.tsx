@@ -1,181 +1,118 @@
-// apps/mobile/src/screens/BillingScreen.tsx
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-    ActivityIndicator,
-    Alert,
-    SafeAreaView,
-    ScrollView,
-    Text,
-    View,
-} from 'react-native';
-import {
-    BillingClient,
-    billingClient as sharedBillingClient,
-} from '@petspark/core/billing/billing-client';
-import type {
-    BillingPlan,
-    SubscriptionInfo,
-} from '@petspark/core/billing/billing-types';
-import { PricingCard } from '../components/billing/PricingCard';
-import * as Linking from 'expo-linking';
+/**
+ * Billing Screen
+ *
+ * Mobile billing interface for subscription management
+ */
 
-const client: BillingClient = sharedBillingClient;
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { SubscriptionStatusCard } from '@/components/billing/SubscriptionStatusCard.native';
+import { PricingCard } from '@/components/billing/PricingCard';
+import { billingClient } from '@petspark/core';
+import type { BillingPlan, SubscriptionInfo } from '@petspark/core';
+import { colors } from '@/theme/colors';
+import { getTypographyStyle } from '@/theme/typography';
+import { createLogger } from '@/utils/logger';
+
+const logger = createLogger('BillingScreen');
 
 export function BillingScreen(): React.JSX.Element {
-    const [plans, setPlans] = useState<BillingPlan[]>([]);
-    const [subscription, setSubscription] = useState<SubscriptionInfo | null>(
-        null,
-    );
-    const [loadingPlans, setLoadingPlans] = useState(true);
-    const [checkoutLoadingPlanId, setCheckoutLoadingPlanId] = useState<
-        string | null
-    >(null);
-    const [error, setError] = useState<string | null>(null);
+  const [plans, setPlans] = useState<BillingPlan[]>([]);
+  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [intervalFilter, setIntervalFilter] = useState<'month' | 'year'>('month');
 
-    useEffect(() => {
-        const abortController = new AbortController();
+  useEffect(() => {
+    void loadData();
+  }, []);
 
-        async function load() {
-            try {
-                setLoadingPlans(true);
-                setError(null);
-                const [plansData, subData] = await Promise.all([
-                    client.getPlans(abortController.signal),
-                    client.getSubscription(abortController.signal),
-                ]);
-                setPlans(plansData);
-                setSubscription(subData);
-            } catch (err) {
-                const e = err as Error;
-                setError(e.message);
-            } finally {
-                setLoadingPlans(false);
-            }
-        }
+  const loadData = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const [plansData, subscriptionData] = await Promise.all([
+        billingClient.getPlans(),
+        billingClient.getSubscription().catch(() => null),
+      ]);
+      setPlans(plansData);
+      setSubscription(subscriptionData);
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to load billing data', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        void load();
+  const handleManageBilling = async (): Promise<void> => {
+    try {
+      const portal = await billingClient.createBillingPortalSession();
+      // In a real app, open the portal URL in a web view
+      logger.info('Billing portal session created', { url: portal.url });
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      logger.error('Failed to open billing portal', err);
+    }
+  };
 
-        return () => {
-            abortController.abort();
-        };
-    }, []);
+  const filteredPlans = plans.filter((plan) => plan.interval === intervalFilter);
 
-    const mostPopularId = useMemo(
-        () => plans.find((p) => p.isMostPopular)?.id ?? null,
-        [plans],
-    );
+  return (
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
+        <Text style={[getTypographyStyle('h1'), styles.title]}>Billing</Text>
 
-    const handleCheckout = async (planId: string) => {
-        try {
-            setCheckoutLoadingPlanId(planId);
-            setError(null);
-            const { checkoutUrl } = await client.createCheckoutSession(
-                planId,
-                Linking.createURL('/billing-return'),
-            );
-            const supported = await Linking.canOpenURL(checkoutUrl);
-            if (supported) {
-                await Linking.openURL(checkoutUrl);
-            } else {
-                throw new Error('Cannot open checkout URL');
-            }
-        } catch (err) {
-            const e = err as Error;
-            setError(e.message);
-            Alert.alert('Billing error', e.message);
-        } finally {
-            setCheckoutLoadingPlanId(null);
-        }
-    };
+        <SubscriptionStatusCard
+          subscription={subscription}
+          onManageBilling={handleManageBilling}
+        />
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#020617' }}>
-            <ScrollView
-                contentContainerStyle={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 20,
-                }}
-            >
-                <View style={{ marginBottom: 16 }}>
-                    <Text
-                        style={{
-                            fontSize: 22,
-                            fontWeight: '700',
-                            color: '#f9fafb',
-                        }}
-                    >
-                        PETSPARK Premium
-                    </Text>
-                    <Text
-                        style={{
-                            fontSize: 13,
-                            color: '#9ca3af',
-                            marginTop: 4,
-                        }}
-                    >
-                        Unlock enhanced matching, video calls, and exclusive features for
-                        you and your pets.
-                    </Text>
-                    {subscription ? (
-                        <Text
-                            style={{
-                                marginTop: 6,
-                                fontSize: 12,
-                                color: '#e5e7eb',
-                            }}
-                        >
-                            Current plan: {subscription.tier.toUpperCase()} (
-                            {subscription.status})
-                        </Text>
-                    ) : null}
-                </View>
-
-                {loadingPlans ? (
-                    <View
-                        style={{
-                            marginTop: 24,
-                            alignItems: 'center',
-                        }}
-                    >
-                        <ActivityIndicator color="#3b82f6" />
-                        <Text
-                            style={{
-                                marginTop: 8,
-                                fontSize: 12,
-                                color: '#9ca3af',
-                            }}
-                        >
-                            Loading plans…
-                        </Text>
-                    </View>
-                ) : (
-                    <View style={{ gap: 12 }}>
-                        {plans.map((plan) => (
-                            <PricingCard
-                                key={plan.id}
-                                plan={plan}
-                                isMostPopular={plan.id === mostPopularId}
-                                isLoading={checkoutLoadingPlanId === plan.id}
-                                onPress={() => {
-                                    void handleCheckout(plan.id);
-                                }}
-                            />
-                        ))}
-                    </View>
-                )}
-
-                {error ? (
-                    <Text
-                        style={{
-                            marginTop: 12,
-                            fontSize: 12,
-                            color: '#ef4444',
-                        }}
-                    >
-                        {error}
-                    </Text>
-                ) : null}
-            </ScrollView>
-        </SafeAreaView>
-    );
+        <View style={styles.plansSection}>
+          <Text style={[getTypographyStyle('h2'), styles.sectionTitle]}>Plans</Text>
+          {filteredPlans.map((plan) => (
+            <PricingCard
+              key={plan.id}
+              plan={plan}
+              isCurrentPlan={subscription?.planId === plan.id}
+              onSelect={async () => {
+                try {
+                  const checkout = await billingClient.createCheckoutSession(plan.id);
+                  // In a real app, open checkout URL in a web view
+                  logger.info('Checkout session created', { url: checkout.url });
+                } catch (error) {
+                  const err = error instanceof Error ? error : new Error(String(error));
+                  logger.error('Failed to create checkout session', err);
+                }
+              }}
+            />
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    padding: 16,
+    gap: 24,
+  },
+  title: {
+    color: colors.foreground,
+    marginBottom: 8,
+  },
+  plansSection: {
+    gap: 16,
+  },
+  sectionTitle: {
+    color: colors.foreground,
+    marginBottom: 8,
+  },
+});

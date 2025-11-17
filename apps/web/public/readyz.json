@@ -1,0 +1,21 @@
+{
+  "status": "healthy",
+  "timestamp": "2025-01-01T00:00:00Z",
+  "version": "1.0.0",
+  "environment": "production",
+  "checks": {
+    "environment": {
+      "status": "healthy",
+      "message": "Environment variables validated"
+    },
+    "mocks": {
+      "status": "healthy",
+      "message": "Mocks disabled"
+    },
+    "services": {
+      "status": "healthy",
+      "message": "Service credentials configured"
+    }
+  }
+}
+

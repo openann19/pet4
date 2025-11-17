@@ -1,0 +1,1011 @@
+{
+  "metadata": {
+    "lastUpdated": "2024-12-19T00:00:00Z",
+    "version": "1.0.0",
+    "totalFiles": 113,
+    "migratedFiles": 25,
+    "pendingFiles": 88,
+    "progressPercentage": 22
+  },
+  "categories": {
+    "Core Views": {
+      "priority": 1,
+      "total": 8,
+      "migrated": 4,
+      "pending": 4,
+      "files": [
+        {
+          "path": "apps/web/src/components/views/DiscoverView.tsx",
+          "status": "migrated",
+          "imports": [],
+          "usageCount": 0,
+          "migratedDate": "2024-12-15"
+        },
+        {
+          "path": "apps/web/src/components/views/CommunityView.tsx",
+          "status": "migrated",
+          "imports": [],
+          "usageCount": 0,
+          "migratedDate": "2024-12-15"
+        },
+        {
+          "path": "apps/web/src/components/views/ProfileView.tsx",
+          "status": "migrated",
+          "imports": [],
+          "usageCount": 0,
+          "migratedDate": "2024-12-15"
+        },
+        {
+          "path": "apps/web/src/components/views/MatchesView.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 15,
+          "priority": 1,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/views/AdoptionView.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 20,
+          "priority": 1,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/views/AdoptionMarketplaceView.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 25,
+          "priority": 1,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/views/LostFoundView.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 18,
+          "priority": 1,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/views/MapView.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 15,
+          "priority": 1,
+          "complexity": "low"
+        }
+      ]
+    },
+    "Chat Components": {
+      "priority": 2,
+      "total": 3,
+      "migrated": 2,
+      "pending": 1,
+      "files": [
+        {
+          "path": "apps/web/src/components/chat/AdvancedChatWindow.tsx",
+          "status": "migrated",
+          "imports": [],
+          "usageCount": 0,
+          "migratedDate": "2024-12-15"
+        },
+        {
+          "path": "apps/web/src/components/chat/components/ChatFooter.tsx",
+          "status": "migrated",
+          "imports": [],
+          "usageCount": 0,
+          "migratedDate": "2024-12-15"
+        },
+        {
+          "path": "apps/web/src/components/ChatWindowNew.tsx",
+          "status": "pending",
+          "imports": ["Presence", "MotionView", "MotionText"],
+          "usageCount": 50,
+          "priority": 2,
+          "complexity": "high"
+        }
+      ]
+    },
+    "Enhanced Components": {
+      "priority": 3,
+      "total": 15,
+      "migrated": 2,
+      "pending": 13,
+      "files": [
+        {
+          "path": "apps/web/src/components/enhanced/ProgressiveImage.tsx",
+          "status": "migrated",
+          "imports": [],
+          "usageCount": 0,
+          "migratedDate": "2024-12-15"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/EnhancedPetDetailView.tsx",
+          "status": "pending",
+          "imports": ["MotionView", "usePressBounce", "haptic"],
+          "usageCount": 30,
+          "priority": 3,
+          "complexity": "high"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/EnhancedCarousel.tsx",
+          "status": "pending",
+          "imports": ["Presence"],
+          "usageCount": 10,
+          "priority": 3,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/EnhancedButton.native.tsx",
+          "status": "pending",
+          "imports": ["MotionView", "usePressBounce", "haptic"],
+          "usageCount": 5,
+          "priority": 3,
+          "complexity": "low",
+          "note": "Needs web version migration"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/UltraButton.native.tsx",
+          "status": "pending",
+          "imports": ["MotionView", "usePressBounce", "haptic"],
+          "usageCount": 5,
+          "priority": 3,
+          "complexity": "low",
+          "note": "Needs web version migration"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/SmartSearch.tsx",
+          "status": "pending",
+          "imports": ["Presence"],
+          "usageCount": 3,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/NotificationCenter.tsx",
+          "status": "pending",
+          "imports": ["MotionView"],
+          "usageCount": 5,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/DetailedPetAnalytics.tsx",
+          "status": "pending",
+          "imports": ["MotionView"],
+          "usageCount": 8,
+          "priority": 3,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/AnimatedBadge.tsx",
+          "status": "pending",
+          "imports": ["Presence"],
+          "usageCount": 5,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/SmartToast.tsx",
+          "status": "pending",
+          "imports": ["Presence"],
+          "usageCount": 4,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/enhanced/TrustBadges.tsx",
+          "status": "pending",
+          "imports": ["MotionView"],
+          "usageCount": 6,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/EnhancedCard.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 15,
+          "priority": 3,
+          "complexity": "medium",
+          "note": "Uses direct framer-motion"
+        },
+        {
+          "path": "apps/web/src/components/AdvancedCard.tsx",
+          "status": "pending",
+          "imports": ["motion", "HTMLMotionProps"],
+          "usageCount": 12,
+          "priority": 3,
+          "complexity": "medium",
+          "note": "Uses direct framer-motion"
+        },
+        {
+          "path": "apps/web/src/components/GlassCard.tsx",
+          "status": "pending",
+          "imports": ["motion", "HTMLMotionProps"],
+          "usageCount": 8,
+          "priority": 3,
+          "complexity": "low",
+          "note": "Uses direct framer-motion"
+        }
+      ]
+    },
+    "Admin Panels": {
+      "priority": 4,
+      "total": 11,
+      "migrated": 0,
+      "pending": 11,
+      "files": [
+        {
+          "path": "apps/web/src/components/admin/DashboardView.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 4,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/admin/UsersView.tsx",
+          "status": "pending",
+          "imports": ["Presence", "MotionView"],
+          "usageCount": 20,
+          "priority": 4,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/admin/AuditLogView.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 15,
+          "priority": 4,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/admin/ContentView.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 12,
+          "priority": 4,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/admin/ModerationQueue.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 18,
+          "priority": 4,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/admin/ReportsView.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 14,
+          "priority": 4,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/admin/KYCManagement.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 16,
+          "priority": 4,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/admin/PerformanceMonitoring.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 4,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/admin/VerificationReviewDashboard.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 22,
+          "priority": 4,
+          "complexity": "high"
+        },
+        {
+          "path": "apps/web/src/components/admin/ContentModerationQueue.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 20,
+          "priority": 4,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/admin/ChatModerationPanel.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 12,
+          "priority": 4,
+          "complexity": "medium"
+        }
+      ]
+    },
+    "Stories": {
+      "priority": 5,
+      "total": 10,
+      "migrated": 1,
+      "pending": 9,
+      "files": [
+        {
+          "path": "apps/web/src/components/stories/StoryViewer.tsx",
+          "status": "migrated",
+          "imports": [],
+          "usageCount": 0,
+          "migratedDate": "2024-12-15"
+        },
+        {
+          "path": "apps/web/src/components/stories/CreateStoryDialog.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 12,
+          "priority": 5,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/stories/StoriesBar.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 15,
+          "priority": 5,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/stories/HighlightsBar.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 5,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/stories/StoryRing.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 5,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/stories/HighlightViewer.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 14,
+          "priority": 5,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/stories/CreateHighlightDialog.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 5,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/stories/SaveToHighlightDialog.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 5,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/stories/StoryFilterSelector.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 12,
+          "priority": 5,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/stories/StoryTemplateSelector.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 10,
+          "priority": 5,
+          "complexity": "medium"
+        }
+      ]
+    },
+    "Adoption": {
+      "priority": 6,
+      "total": 6,
+      "migrated": 0,
+      "pending": 6,
+      "files": [
+        {
+          "path": "apps/web/src/components/adoption/AdoptionDetailDialog.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 15,
+          "priority": 6,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/adoption/AdoptionListingCard.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 12,
+          "priority": 6,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/adoption/AdoptionListingDetailDialog.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 14,
+          "priority": 6,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/adoption/CreateAdoptionListingWizard.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 20,
+          "priority": 6,
+          "complexity": "high"
+        },
+        {
+          "path": "apps/web/src/components/adoption/MyApplicationsView.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 18,
+          "priority": 6,
+          "complexity": "medium"
+        }
+      ]
+    },
+    "Verification": {
+      "priority": 7,
+      "total": 5,
+      "migrated": 0,
+      "pending": 5,
+      "files": [
+        {
+          "path": "apps/web/src/components/verification/VerificationDialog.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 16,
+          "priority": 7,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/verification/VerificationButton.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 7,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/verification/DocumentUploadCard.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 7,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/verification/VerificationLevelSelector.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 6,
+          "priority": 7,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/VerificationBadge.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 5,
+          "priority": 7,
+          "complexity": "low"
+        }
+      ]
+    },
+    "Auth": {
+      "priority": 8,
+      "total": 5,
+      "migrated": 0,
+      "pending": 5,
+      "files": [
+        {
+          "path": "apps/web/src/components/AuthScreen.tsx",
+          "status": "pending",
+          "imports": ["MotionView", "Presence"],
+          "usageCount": 12,
+          "priority": 8,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/auth/SignInForm.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 8,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/auth/SignUpForm.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 8,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/auth/OAuthButtons.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 8,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/auth/AgeGateModal.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 10,
+          "priority": 8,
+          "complexity": "low"
+        }
+      ]
+    },
+    "Community": {
+      "priority": 9,
+      "total": 4,
+      "migrated": 0,
+      "pending": 4,
+      "files": [
+        {
+          "path": "apps/web/src/components/community/PostComposer.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 18,
+          "priority": 9,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/community/CommentsSheet.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 15,
+          "priority": 9,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/community/ReportDialog.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 12,
+          "priority": 9,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/community/RankingSkeleton.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 9,
+          "complexity": "low",
+          "note": "Uses direct framer-motion"
+        }
+      ]
+    },
+    "Maps": {
+      "priority": 10,
+      "total": 3,
+      "migrated": 0,
+      "pending": 3,
+      "files": [
+        {
+          "path": "apps/web/src/components/maps/LostFoundMap.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 10,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/maps/VenuePicker.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 10,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/maps/LocationSharing.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 6,
+          "priority": 10,
+          "complexity": "low"
+        }
+      ]
+    },
+    "Playdate": {
+      "priority": 11,
+      "total": 3,
+      "migrated": 0,
+      "pending": 3,
+      "files": [
+        {
+          "path": "apps/web/src/components/playdate/PlaydateMap.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 11,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/playdate/PlaydateScheduler.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 20,
+          "priority": 11,
+          "complexity": "high"
+        },
+        {
+          "path": "apps/web/src/components/playdate/LocationPicker.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 12,
+          "priority": 11,
+          "complexity": "medium"
+        }
+      ]
+    },
+    "Effects/Utils": {
+      "priority": 12,
+      "total": 3,
+      "migrated": 0,
+      "pending": 3,
+      "files": [
+        {
+          "path": "apps/web/src/effects/animations/transitions.ts",
+          "status": "pending",
+          "imports": ["Transition"],
+          "usageCount": 5,
+          "priority": 12,
+          "complexity": "low",
+          "note": "Type import only"
+        },
+        {
+          "path": "apps/web/src/effects/visual/particle-effect.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 15,
+          "priority": 12,
+          "complexity": "medium"
+        }
+      ]
+    },
+    "Other Components": {
+      "priority": 13,
+      "total": 38,
+      "migrated": 0,
+      "pending": 38,
+      "files": [
+        {
+          "path": "apps/web/src/components/CreatePetDialog.tsx",
+          "status": "pending",
+          "imports": ["MotionView", "MotionText", "Presence"],
+          "usageCount": 80,
+          "priority": 1,
+          "complexity": "high",
+          "note": "HIGH PRIORITY - Complex multi-step form"
+        },
+        {
+          "path": "apps/web/src/components/PetDetailDialog.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 25,
+          "priority": 1,
+          "complexity": "high",
+          "note": "HIGH PRIORITY - Pet detail view"
+        },
+        {
+          "path": "apps/web/src/components/MatchCelebration.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 20,
+          "priority": 1,
+          "complexity": "high",
+          "note": "HIGH PRIORITY - Match celebration"
+        },
+        {
+          "path": "apps/web/src/components/WelcomeScreen.tsx",
+          "status": "pending",
+          "imports": ["motion", "useReducedMotion", "Variants"],
+          "usageCount": 30,
+          "priority": 1,
+          "complexity": "high",
+          "note": "HIGH PRIORITY - Welcome screen"
+        },
+        {
+          "path": "apps/web/src/components/LoadingState.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 2,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/WelcomeModal.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 2,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/views/NotificationsView.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 12,
+          "priority": 2,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/views/SavedPostsView.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 2,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/views/UserPostsView.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 12,
+          "priority": 2,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/DiscoveryFilters.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 20,
+          "priority": 3,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/CompatibilityBreakdown.tsx",
+          "status": "pending",
+          "imports": ["MotionView", "MotionText"],
+          "usageCount": 15,
+          "priority": 3,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/TrustBadges.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 12,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/ChatRoomsList.tsx",
+          "status": "pending",
+          "imports": ["MotionView"],
+          "usageCount": 25,
+          "priority": 3,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/QuickActionsMenu.tsx",
+          "status": "pending",
+          "imports": ["motion", "AnimatePresence"],
+          "usageCount": 10,
+          "priority": 3,
+          "complexity": "low",
+          "note": "Uses direct framer-motion"
+        },
+        {
+          "path": "apps/web/src/components/StatsCard.tsx",
+          "status": "pending",
+          "imports": ["motion", "useSpring", "useTransform", "useMotionValue"],
+          "usageCount": 15,
+          "priority": 3,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/PetRatings.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/ThemePresetSelector.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 6,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/PetPhotoAnalyzer.tsx",
+          "status": "pending",
+          "imports": ["Presence", "motion"],
+          "usageCount": 18,
+          "priority": 3,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/PetProfileTemplatesDialog.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/DismissibleOverlay.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 8,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/DiscoverMapMode.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 10,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/GenerateProfilesButton.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 8,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/SyncStatusIndicator.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 6,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/VisualAnalysisDemo.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 12,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/BackendDemo.tsx",
+          "status": "pending",
+          "imports": ["MotionView"],
+          "usageCount": 8,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/EnhancedVisuals.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 25,
+          "priority": 3,
+          "complexity": "medium",
+          "note": "Uses direct framer-motion"
+        },
+        {
+          "path": "apps/web/src/components/notifications/NotificationCenter.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 12,
+          "priority": 3,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/lost-found/LostAlertCard.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 10,
+          "priority": 3,
+          "complexity": "low"
+        },
+        {
+          "path": "apps/web/src/components/streaming/LiveStreamRoom.tsx",
+          "status": "pending",
+          "imports": ["motion", "Presence"],
+          "usageCount": 18,
+          "priority": 3,
+          "complexity": "medium"
+        },
+        {
+          "path": "apps/web/src/components/ui/slider.tsx",
+          "status": "pending",
+          "imports": ["motion"],
+          "usageCount": 12,
+          "priority": 3,
+          "complexity": "low"
+        }
+      ]
+    }
+  },
+  "highPriorityFiles": [
+    "apps/web/src/components/CreatePetDialog.tsx",
+    "apps/web/src/components/PetDetailDialog.tsx",
+    "apps/web/src/components/MatchCelebration.tsx",
+    "apps/web/src/components/WelcomeScreen.tsx",
+    "apps/web/src/components/views/MatchesView.tsx",
+    "apps/web/src/components/views/AdoptionView.tsx",
+    "apps/web/src/components/ChatWindowNew.tsx",
+    "apps/web/src/components/enhanced/EnhancedPetDetailView.tsx"
+  ],
+  "directFramerMotionFiles": [
+    "apps/web/src/components/EnhancedCard.tsx",
+    "apps/web/src/components/AdvancedCard.tsx",
+    "apps/web/src/components/GlassCard.tsx",
+    "apps/web/src/components/QuickActionsMenu.tsx",
+    "apps/web/src/components/community/RankingSkeleton.tsx",
+    "apps/web/src/components/EnhancedVisuals.tsx"
+  ],
+  "migrationPhases": {
+    "phase1": {
+      "name": "Core Infrastructure",
+      "status": "complete",
+      "files": [
+        "apps/web/src/effects/reanimated/animate-presence.tsx",
+        "apps/web/src/effects/reanimated/use-animate-presence.ts",
+        "apps/web/src/effects/reanimated/animated-view.tsx"
+      ]
+    },
+    "phase2": {
+      "name": "High-Traffic Views",
+      "status": "in-progress",
+      "files": [
+        "apps/web/src/components/views/MatchesView.tsx",
+        "apps/web/src/components/views/AdoptionView.tsx",
+        "apps/web/src/components/ChatWindowNew.tsx",
+        "apps/web/src/components/CreatePetDialog.tsx"
+      ]
+    },
+    "phase3": {
+      "name": "Enhanced Components",
+      "status": "pending",
+      "files": [
+        "apps/web/src/components/enhanced/EnhancedPetDetailView.tsx",
+        "apps/web/src/components/enhanced/EnhancedCarousel.tsx",
+        "apps/web/src/components/EnhancedCard.tsx",
+        "apps/web/src/components/AdvancedCard.tsx",
+        "apps/web/src/components/GlassCard.tsx"
+      ]
+    },
+    "phase4": {
+      "name": "Feature Modules",
+      "status": "pending",
+      "files": [
+        "apps/web/src/components/stories/*",
+        "apps/web/src/components/adoption/*",
+        "apps/web/src/components/verification/*",
+        "apps/web/src/components/admin/*"
+      ]
+    },
+    "phase5": {
+      "name": "Utility Components",
+      "status": "pending",
+      "files": ["apps/web/src/components/*", "apps/web/src/effects/*"]
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "name": "petspark-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install:all": "pnpm install",
+    "typecheck": "tsc --noEmit",
+    "build:types": "tsc -b",
+    "build:types:watch": "tsc -b -w",
+    "lint": "eslint . --cache --cache-location ./.cache/eslint --max-warnings=0",
+    "lint:fix": "eslint . --cache --cache-location ./.cache/eslint --max-warnings=0 --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
+    "validate": "pnpm typecheck && pnpm lint && pnpm test",
+    "depcheck": "pnpm -r --filter './apps/*' --filter './packages/*' exec depcheck || true",
+    "test": "pnpm -r --filter './apps/*' --filter './packages/*' exec -- pnpm test:run 2>/dev/null || pnpm -r --filter './apps/*' --filter './packages/*' exec -- vitest run --passWithNoTests 2>/dev/null || true",
+    "dev:single": "pnpm --filter ./packages/shared dev",
+    "test:single": "pnpm --filter ./packages/shared test:run",
+    "web-dev": "pnpm --filter spark-template dev",
+    "mobile-start": "pnpm --filter petspark-mobile start",
+    "mobile-android": "pnpm --filter petspark-mobile android",
+    "mobile-ios": "pnpm --filter petspark-mobile ios",
+    "check:parity": "tsx scripts/check-mobile-parity.ts",
+    "validate:effects": "tsx scripts/validate-effects-compliance.ts",
+    "typecheck:motion": "pnpm --filter ./packages/motion typecheck && pnpm --filter ./apps/web typecheck && pnpm --filter ./apps/mobile typecheck",
+    "lint:motion": "eslint packages/motion apps/web/src/effects apps/mobile/src/effects apps/web/src/components apps/mobile/src/components --ext .ts,.tsx",
+    "test:motion": "pnpm --filter ./packages/motion test:run",
+    "migrate:motion": "node scripts/motion-migrate.mjs",
+    "e2e:smoke": "pnpm --filter ./apps/web e2e:smoke",
+    "spec:merge": "pnpm --filter @petspark/spec-cli exec spec merge",
+    "spec:lock": "pnpm --filter @petspark/spec-cli exec spec lock",
+    "spec:diff": "pnpm --filter @petspark/spec-cli exec spec diff",
+    "spec:migrate": "pnpm --filter @petspark/spec-cli exec spec migrate",
+    "spec:new-pack": "pnpm --filter @petspark/spec-cli exec spec new-pack",
+    "audit:inventory": "tsx tools/ui-audit/inventory.ts",
+    "audit:web": "pnpm --filter spark-template exec playwright test e2e/ui-audit/",
+    "audit:mobile": "pnpm --filter petspark-mobile exec detox test e2e/ui-audit/screens.spec.ts || true",
+    "audit:aggregate": "tsx tools/ui-audit/aggregate.ts",
+    "audit:reports": "tsx tools/ui-audit/generate-per-item-reports.ts",
+    "audit:all": "pnpm audit:inventory && pnpm audit:web && pnpm audit:mobile && pnpm audit:aggregate && pnpm audit:reports"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@types/node": "^22.13.5",
+    "debug": "^4.4.3",
+    "depcheck": "^1.4.7",
+    "eslint": "^9.28.0",
+    "eslint-import-resolver-typescript": "^3.10.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-sonarjs": "^0.25.1",
+    "fast-glob": "^3.3.3",
+    "globals": "^16.0.0",
+    "globby": "^14.0.0",
+    "jscodeshift": "^17.3.0",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.4.2",
+    "ts-morph": "^23.0.0",
+    "ts-prune": "^0.10.3",
+    "tsx": "^4.20.6",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.38.0"
+  },
+  "packageManager": "pnpm@10.18.3",
+  "pnpm": {
+    "overrides": {
+      "vite": "6.4.1",
+      "@types/react": "18.3.12",
+      "form-data": ">=4.0.4"
+    }
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  }
+}

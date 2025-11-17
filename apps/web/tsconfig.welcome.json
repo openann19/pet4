@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@petspark/shared": ["../../packages/shared/src"],
+      "@petspark/motion": ["../../packages/motion/src"]
+    }
+  },
+  "include": [
+    "./src/env.d.ts",
+    "./src/components/WelcomeScreen.tsx",
+    "./src/lib/haptics.ts",
+    "./src/lib/analytics.ts",
+    "./src/lib/typography.ts",
+    "./src/lib/accessibility.ts",
+    "./src/lib/utils.ts",
+    "./src/contexts/AppContext.tsx",
+    "./src/hooks/useReducedMotion.ts",
+    "./src/components/ui/button.tsx"
+  ]
+}

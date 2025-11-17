@@ -1,0 +1,159 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+*-dist/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.vite/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Test coverage
+coverage/
+.nyc_output/
+*.coverage
+*.lcov
+
+# Test reports
+*.csv
+i18n-length-report.*
+
+# Package manager files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+.temp/
+
+# Spark-specific
+.spark-workbench-id
+**/agent-eval-report*
+
+# Large media files (uncomment if needed)
+# *.mp4
+# *.mov
+# *.avi
+# *.mkv
+
+# Documentation markdown files (optional - uncomment if you want to exclude docs)
+# *.md
+
+# Large build artifacts and audit dumps
+apps/**/storybook-static/
+*.tsbuildinfo
+migration-tracking.json
+framer-motion*.json
+
+# Config files
+*.config.js.backup
+*.config.ts.backup
+*.config.mjs.backup
+*.config.cjs.backup
+*.config.json.backup
+*.config.js.complex
+*.config.ts.complex
+*.config.mjs.complex
+*.config.cjs.complex
+*.config.json.complex
+*.config.js.old
+*.config.ts.old
+*.config.mjs.old
+*.config.cjs.old
+*.config.json.old
+*.config.js.tmp
+*.config.ts.tmp
+*.config.mjs.tmp
+*.config.cjs.tmp
+*.config.json.tmp
+*.config.js.temp
+*.config.ts.temp
+*.config.mjs.temp
+*.config.cjs.temp
+*.config.json.temp
+eslint.config.js.backup
+eslint.config.js.complex
+eslint.config.*.backup
+eslint.config.*.complex
+eslint.config.*.old
+tsconfig.*.backup
+tsconfig.*.complex
+tsconfig.*.old
+tsconfig.*.tmp
+jest.config.*.backup
+jest.config.*.complex
+jest.config.*.old
+vite.config.*.backup
+vite.config.*.complex
+vite.config.*.old
+next.config.*.backup
+next.config.*.complex
+next.config.*.old
+metro.config.*.backup
+metro.config.*.complex
+metro.config.*.old
+babel.config.*.backup
+babel.config.*.complex
+babel.config.*.old
+tailwind.config.*.backup
+tailwind.config.*.complex
+tailwind.config.*.old
+postcss.config.*.backup
+postcss.config.*.complex
+postcss.config.*.old
+playwright.config.*.backup
+playwright.config.*.complex
+playwright.config.*.old
+vitest.config.*.backup
+vitest.config.*.complex
+vitest.config.*.old
+stylelint.config.*.backup
+stylelint.config.*.complex
+stylelint.config.*.old
+app.config.*.backup
+app.config.*.complex
+app.config.*.old
+prettier.config.*.backup
+prettier.config.*.complex
+prettier.config.*.old
+*.config.backup
+*.config.complex
+*.config.old
+*.config.tmp
+*.config.temp
+
