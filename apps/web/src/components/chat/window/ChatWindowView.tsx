@@ -7,7 +7,7 @@ import { ChatWindowContent } from '@/components/chat/window/ChatWindowContent';
 import type { ChatRoom, ChatMessage } from '@/lib/chat-types';
 import type { Call, CallSession } from '@/lib/call-types';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-import type { InputRef } from '@/components/ui/Input';
+import type { InputRef } from '@/components/ui/input';
 
 interface ChatWindowViewProps {
   room: ChatRoom;

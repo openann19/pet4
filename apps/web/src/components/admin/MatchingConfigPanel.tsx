@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import type { MatchingConfig } from '@/core/domain/matching-config';
 import {

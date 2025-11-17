@@ -32,7 +32,7 @@ import { APIConfigSection } from './api-config/APIConfigSection';
 import { ConfigField } from './api-config/ConfigField';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 
 export default function APIConfigView() {

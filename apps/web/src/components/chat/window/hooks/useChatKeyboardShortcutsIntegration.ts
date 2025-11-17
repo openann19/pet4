@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useChatKeyboardShortcuts } from '@/hooks/chat/use-chat-keyboard-shortcuts';
 import type { ChatMessage } from '@/lib/chat-types';
-import type { InputRef } from '@/components/ui/Input';
+import type { InputRef } from '@/components/ui/input';
 
 interface UseChatKeyboardShortcutsIntegrationProps {
   inputValue: string;

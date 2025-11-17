@@ -12,7 +12,7 @@ import {
   VideoCamera,
 } from '@phosphor-icons/react';
 import { APIConfigSection } from './APIConfigSection';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

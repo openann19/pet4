@@ -5,7 +5,7 @@ import { chatApi } from '@/api/chat-api';
 import { useOutbox, type UseOutboxReturn } from '@petspark/chat-core';
 import type { ChatMessage, ChatRoom } from '@/lib/chat-types';
 import { generateMessageId } from '@/lib/chat-utils';
-import type { InputRef } from '@/components/ui/Input';
+import type { InputRef } from '@/components/ui/input';
 
 const logger = createLogger('useChatMessageSending');
 

@@ -1,5 +1,5 @@
 import { MotionView } from '@petspark/motion';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GenderSelector } from './GenderSelector';
 import { SizeSelector } from './SizeSelector';
