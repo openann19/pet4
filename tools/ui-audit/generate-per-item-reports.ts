@@ -5,12 +5,10 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
-import { globby } from 'globby';
 import type { Finding, Summary } from './aggregate';
 
 const INVENTORY_DIR = join(process.cwd(), 'audit/inventory');
 const REPORTS_DIR = join(process.cwd(), 'audit/reports');
-const ARTIFACTS_DIR = join(process.cwd(), 'audit/artifacts');
 const CI_DIR = join(process.cwd(), 'ci');
 
 function ensureDir(dir: string): void {
@@ -158,7 +156,7 @@ ${generateChecklist(findings)}
 }
 
 async function generatePerItemReports(): Promise<void> {
-  console.log('Generating per-item reports...\n');
+  console.warn('Generating per-item reports...\n');
 
   const summary = loadSummary();
   if (!summary) {
@@ -188,7 +186,7 @@ async function generatePerItemReports(): Promise<void> {
       const report = generateWebReport(page, summary);
       writeFileSync(join(webReportsDir, `${page.slug}.md`), report, 'utf-8');
     }
-    console.log(`✓ Generated ${pagesList.length} web reports`);
+    console.warn(`✓ Generated ${pagesList.length} web reports`);
   }
 
   // Generate mobile reports
@@ -200,7 +198,7 @@ async function generatePerItemReports(): Promise<void> {
       const report = generateMobileReport(screen, summary);
       writeFileSync(join(mobileReportsDir, `${screen.slug}.md`), report, 'utf-8');
     }
-    console.log(`✓ Generated ${screensList.length} mobile reports`);
+    console.warn(`✓ Generated ${screensList.length} mobile reports`);
   }
 
   // Generate module reports
@@ -213,10 +211,10 @@ async function generatePerItemReports(): Promise<void> {
       const moduleSlug = module.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
       writeFileSync(join(pkgReportsDir, `${moduleSlug}.md`), report, 'utf-8');
     }
-    console.log(`✓ Generated ${modulesList.length} module reports`);
+    console.warn(`✓ Generated ${modulesList.length} module reports`);
   }
 
-  console.log('\nPer-item reports generated successfully');
+  console.warn('\nPer-item reports generated successfully');
 }
 
 if (require.main === module) {

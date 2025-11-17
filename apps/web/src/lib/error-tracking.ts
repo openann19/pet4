@@ -1,14 +1,44 @@
 /**
  * Enhanced Error Tracking
- * 
+ *
  * Global error tracking with user context, error grouping, and performance monitoring
  */
 
-/* eslint-disable max-lines -- error tracking service with comprehensive error handling and web vitals */
+import { ENV } from '@/config/env'
 import { createLogger } from './logger'
 import type { Language } from './i18n/core/types'
 
+const API_BASE_URL = ENV.VITE_API_URL
+const ANALYTICS_PATH = '/api/analytics/performance'
+const IS_DEV = import.meta.env.DEV === true
+
 const logger = createLogger('ErrorTracking')
+
+function getAnalyticsEndpoint(): string | null {
+  if (typeof window === 'undefined') {
+    return API_BASE_URL ? new URL(ANALYTICS_PATH, API_BASE_URL).toString() : ANALYTICS_PATH
+  }
+
+  if (!API_BASE_URL) {
+    return ANALYTICS_PATH
+  }
+
+  try {
+    const target = new URL(ANALYTICS_PATH, API_BASE_URL)
+
+    if (window.location.protocol === 'https:' && target.protocol === 'http:') {
+      logger.debug('Falling back to same-origin analytics endpoint due to protocol mismatch', {
+        blockedEndpoint: target.toString(),
+      })
+      return ANALYTICS_PATH
+    }
+
+    return target.toString()
+  } catch (error) {
+    logger.warn('Failed to resolve analytics endpoint; skipping metrics', { error })
+    return null
+  }
+}
 
 export interface ErrorContext {
   userId?: string
@@ -68,7 +98,7 @@ class ErrorTrackingService {
     
     const browserLang = navigator.language.split('-')[0]
     const supportedLanguages: Language[] = [
-      'en', 'bg', 'es', 'fr', 'de', 'ja', 'zh', 'ar', 'hi', 'pt', 'ru', 'ko'
+      'en', 'bg'
     ]
     
     return (supportedLanguages.includes(browserLang as Language) 
@@ -232,6 +262,13 @@ class ErrorTrackingService {
   }
 
   private async sendToBackend(report: ErrorReport): Promise<void> {
+    if (IS_DEV) {
+      logger.debug('Skipping error backend send in dev environment', {
+        message: report.message,
+      })
+      return
+    }
+
     try {
       const response = await fetch('/api/errors', {
         method: 'POST',
@@ -291,6 +328,16 @@ export const errorTracking = new ErrorTrackingService()
  */
 export function trackPerformance(metricName: string, value: number): void {
   if (typeof window === 'undefined') return
+  if (IS_DEV) {
+    logger.debug('Skipping performance metric in dev', { metricName, value })
+    return
+  }
+
+  const analyticsEndpoint = getAnalyticsEndpoint()
+  if (!analyticsEndpoint) {
+    logger.debug('Skipping performance metric (no analytics endpoint)', { metricName })
+    return
+  }
 
   const perfData = {
     name: metricName,
@@ -302,12 +349,12 @@ export function trackPerformance(metricName: string, value: number): void {
   logger.debug('Performance metric', perfData)
 
   // Send to analytics
-  void fetch('/api/analytics/performance', {
+  void fetch(analyticsEndpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(perfData)
   }).catch(() => {
-    // Silently fail
+    logger.debug('Performance metric send failed', { metricName })
   })
 }
 

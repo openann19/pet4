@@ -1,6 +1,14 @@
-import { createLogger } from '@/lib/logger';
+import { ENV } from '@/config/env'
 
-const logger = createLogger('APIClient');
+const BASE_URL = ENV.VITE_API_URL?.replace(/\/$/, '') ?? ''
+
+function buildUrl(path: string): string {
+  if (/^https?:/u.test(path)) {
+    return path
+  }
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  return `${BASE_URL}${normalizedPath}`
+}
 
 export interface PaginatedResponse {
   page: number;
@@ -121,11 +129,33 @@ async function handleJsonResponse<T>(response: Response): Promise<ApiResponse<T>
 }
 
 export class APIClient {
+	private static accessToken: string | undefined;
+	private static refreshToken: string | undefined;
+
+	static setTokens(accessToken: string, refreshToken?: string): void {
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
+	}
+
+	static logout(): void {
+		this.accessToken = undefined;
+		this.refreshToken = undefined;
+	}
+
+	private static getAuthHeaders(): Record<string, string> {
+		const headers: Record<string, string> = {};
+		if (this.accessToken) {
+			headers.Authorization = `Bearer ${this.accessToken}`;
+		}
+		return headers;
+	}
+
 	static async get<T>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(url, {
+		const response = await fetch(buildUrl(url), {
 			method: 'GET',
 			headers: {
 				'Accept': 'application/json',
+				...this.getAuthHeaders(),
 				...options.headers,
 			},
 			credentials: options.credentials ?? 'same-origin',
@@ -134,11 +164,12 @@ export class APIClient {
 	}
 
 	static async post<T>(url: string, body: unknown, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(url, {
+		const response = await fetch(buildUrl(url), {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',
+				...this.getAuthHeaders(),
 				...options.headers,
 			},
 			body: JSON.stringify(body),
@@ -148,11 +179,12 @@ export class APIClient {
 	}
 
 	static async patch<T>(url: string, body: unknown, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(url, {
+		const response = await fetch(buildUrl(url), {
 			method: 'PATCH',
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',
+				...this.getAuthHeaders(),
 				...options.headers,
 			},
 			body: JSON.stringify(body),
@@ -162,11 +194,12 @@ export class APIClient {
 	}
 
 	static async put<T>(url: string, body: unknown, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(url, {
+		const response = await fetch(buildUrl(url), {
 			method: 'PUT',
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',
+				...this.getAuthHeaders(),
 				...options.headers,
 			},
 			body: JSON.stringify(body),
@@ -176,10 +209,11 @@ export class APIClient {
 	}
 
 	static async delete<T>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
-		const response = await fetch(url, {
+		const response = await fetch(buildUrl(url), {
 			method: 'DELETE',
 			headers: {
 				'Accept': 'application/json',
+				...this.getAuthHeaders(),
 				...options.headers,
 			},
 			credentials: options.credentials ?? 'same-origin',

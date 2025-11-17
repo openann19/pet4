@@ -10,7 +10,6 @@
  * - Offline-first support with queue management
  */
 
-import type { APIClientImpl } from '@/lib/api-client';
 import { APIClient } from '@/lib/api-client';
 import { createLogger } from '@/lib/logger';
 import type { z } from 'zod';
@@ -51,13 +50,13 @@ export interface TelemetryEvent {
  * Base class for all service implementations
  */
 export abstract class BaseService {
-  protected readonly apiClient: APIClientImpl;
+  protected readonly apiClient: typeof APIClient;
   protected readonly serviceName: string;
   private readonly cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>();
   private readonly telemetryEvents: TelemetryEvent[] = [];
   private readonly maxTelemetryEvents = 100;
 
-  constructor(serviceName: string, apiClient?: APIClientImpl) {
+  constructor(serviceName: string, apiClient?: typeof APIClient) {
     this.serviceName = serviceName;
     this.apiClient = apiClient || APIClient;
   }

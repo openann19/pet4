@@ -25,7 +25,7 @@ import { createLogger } from '../../../utils/logger'
 import { useReducedMotionSV } from '../core/reduced-motion'
 import { getBloomImageFilter } from '../shaders/bloom'
 import { getCachedBlurFilter } from '../shaders/blur'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('liquid-dots')
 

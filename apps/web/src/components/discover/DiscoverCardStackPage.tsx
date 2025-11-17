@@ -109,12 +109,12 @@ export function DiscoverCardStackPage({
     }
   }, [currentIndex, prefersReducedMotion, cardOpacity, cardScale, cardY, nextCardOpacity, nextCardScale]);
 
-  const cardStyle = useAnimatedStyle(() => ({
+  const cardStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: cardOpacity.value,
     transform: [{ scale: cardScale.value }, { translateY: cardY.value }],
   }));
 
-  const nextCardStyle = useAnimatedStyle(() => ({
+  const nextCardStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: nextCardOpacity.value,
     transform: [{ scale: nextCardScale.value }],
   }));

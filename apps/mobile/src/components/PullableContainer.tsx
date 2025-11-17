@@ -6,7 +6,7 @@
 import React, { type ReactNode } from 'react'
 import { StyleSheet, type ViewStyle } from 'react-native'
 import { GestureDetector } from 'react-native-gesture-handler'
-import Animated, { type AnimatedStyle } from 'react-native-reanimated'
+import { Animated, type AnimatedStyle } from '@petspark/motion'
 import type { UsePullToRefreshOptions } from '../hooks/use-pull-to-refresh'
 import { usePullToRefresh } from '../hooks/use-pull-to-refresh'
 import { RefreshControl } from './RefreshControl'

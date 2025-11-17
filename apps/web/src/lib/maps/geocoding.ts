@@ -24,7 +24,7 @@ export interface GeocodingMetrics {
 let requestIdCounter = 0;
 
 function generateRequestId(): string {
-  return `geocoding_${String(Date.now() ?? '')}_${String(++requestIdCounter ?? '')}`;
+  return `geocoding_${Date.now()}_${++requestIdCounter}`;
 }
 
 export async function forwardGeocode(

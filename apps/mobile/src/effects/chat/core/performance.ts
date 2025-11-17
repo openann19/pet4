@@ -10,7 +10,6 @@
 import { useEffect, useRef } from 'react'
 import { useSharedValue, type SharedValue } from 'react-native-reanimated'
 import { createLogger } from '../../../utils/logger'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 const logger = createLogger('performance')
 

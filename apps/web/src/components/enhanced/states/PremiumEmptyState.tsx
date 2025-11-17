@@ -83,7 +83,7 @@ export function PremiumEmptyState({
         </p>
       )}
       {action && (
-        <PremiumButton onClick={handleAction} variant="primary" size="md">
+        <PremiumButton onClick={handleAction} variant="default" size="default">
           {action.label}
         </PremiumButton>
       )}

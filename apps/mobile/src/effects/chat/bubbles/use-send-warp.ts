@@ -23,7 +23,7 @@ import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-mo
 import { logEffectEnd, logEffectStart } from '../core/telemetry'
 import { createAberrationShader } from '../shaders/aberration'
 import { createBloomShader, getBloomImageFilter } from '../shaders/bloom'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('send-warp')
 

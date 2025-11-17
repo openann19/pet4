@@ -1,7 +1,7 @@
 import type { Notification, NotificationOptions } from '@mobile/components/notifications'
 import { useNotifications } from '@mobile/components/notifications'
 import { useCallback } from 'react'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 /**
  * Convenience hook for showing notifications

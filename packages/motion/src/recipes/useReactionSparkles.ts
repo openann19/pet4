@@ -133,14 +133,14 @@ export function useReactionSparkles(
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: emojiScale.value }],
+      scale: emojiScale.value,
       opacity: emojiOpacity.value
     }
   })
 
   const pulseStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: pulseScale.value }]
+      scale: pulseScale.value
     }
   })
 

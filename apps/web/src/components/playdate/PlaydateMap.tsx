@@ -41,7 +41,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
         if (error instanceof Error && error.name !== 'NotAllowedError') {
           // Only handle unexpected errors, permission denials are expected
           const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('PlaydateMap getCurrentLocation error', err);
+          console.error('PlaydateMap getCurrentLocation error', err);
         }
       });
   }, []);
@@ -182,7 +182,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                             className={`p-3 cursor-pointer hover:shadow-lg transition-all ${
                               String(selectedPlaydate?.id === playdate.id
                                                                       ? 'ring-2 ring-primary bg-primary/5'
-                                                                      : 'hover:bg-accent/5' ?? '')
+                                                                      : 'hover:bg-accent/5')
                             }`}
                             onClick={() => { handleSelectPlaydate(playdate); }}
                           >
@@ -254,7 +254,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
                     className={`p-4 cursor-pointer hover:shadow-lg transition-all ${
                       String(selectedPlaydate?.id === playdate.id
                                                       ? 'ring-2 ring-primary bg-primary/5'
-                                                      : 'hover:bg-accent/5' ?? '')
+                                                      : 'hover:bg-accent/5')
                     }`}
                     onClick={() => { handleSelectPlaydate(playdate); }}
                   >

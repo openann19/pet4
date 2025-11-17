@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import type { Message, ReactionType } from '@/lib/chat-types';
 
 function renderArrayReactions(
-  reactions: Array<{ emoji: string }>,
+  reactions: { emoji: string }[],
   isOwn: boolean,
   onReact: (reaction: ReactionType) => void
 ) {

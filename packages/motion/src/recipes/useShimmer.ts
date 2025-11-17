@@ -39,7 +39,7 @@ export function useShimmer(width = 240, cycle = 1400): UseShimmerReturn {
     if (reducedMotion.value) {
       return { opacity: opacity.value }
     }
-    return { transform: [{ translateX: x.value }] }
+    return { x: x.value }
   })
 
   return { animatedStyle }

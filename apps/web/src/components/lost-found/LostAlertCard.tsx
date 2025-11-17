@@ -60,7 +60,7 @@ export function LostAlertCard({
                 size="icon"
                 variant="ghost"
                 className="h-8 w-8 bg-background/80 backdrop-blur-sm"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
                   onToggleFavorite(alert.id);
                 }}
@@ -157,7 +157,7 @@ export function LostAlertCard({
             <Button
               variant="outline"
               className="flex-1"
-              onClick={(e) => {
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
                 onSelect(alert);
               }}
@@ -168,7 +168,7 @@ export function LostAlertCard({
               <Button
                 variant="default"
                 className="flex-1"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.stopPropagation();
                   onReportSighting(alert);
                 }}

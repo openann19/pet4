@@ -151,13 +151,13 @@ export function PremiumInput({
     haptics.impact('light');
   }, [showPassword]);
 
-  const labelStyle = useAnimatedStyle(() => ({
+  const labelStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ scale: labelScale.get() }, { translateY: labelY.get() }],
   }));
 
   // Use design token colors for animated styles
   // Note: For static styles, CSS variables are used in className
-  const themeMode = _uiConfig.theme.mode || 'light';
+  const themeMode = 'light';
   const THEME_COLORS = {
     primary: getColorToken('accent', themeMode),
     error: getColorToken('destructive', themeMode),

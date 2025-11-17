@@ -4,10 +4,10 @@ import { WebBubbleWrapper } from '@/components/chat/WebBubbleWrapper';
 import { Pause, Play, Checks, Check } from '@phosphor-icons/react';
 import type { ChatMessage } from '@/lib/chat-types';
 import { formatChatTime } from '@/lib/chat-utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 interface ChatMessageRendererProps {
-  messageGroups: Array<{ date: string; messages: ChatMessage[] }>;
+  messageGroups: { date: string; messages: ChatMessage[] }[];
   currentUserId: string;
   voiceMessages: Record<string, { blob: string; duration: number; waveform: number[] }> | undefined;
   playingVoice: string | null;
@@ -25,7 +25,7 @@ interface ChatMessageRendererProps {
   dateGroupStyle: AnimatedStyle;
   messageItemStyle: AnimatedStyle;
   typingIndicatorStyle: AnimatedStyle;
-  typingUsers: Array<{ userId: string; userName?: string }>;
+  typingUsers: { userId: string; userName?: string }[];
   onToggleVoicePlayback: (messageId: string) => void;
 }
 
@@ -53,7 +53,7 @@ export function ChatMessageRenderer({
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {messageGroups.map((group: { date: string; messages: ChatMessage[] }) => (
           <div key={group.date} className="space-y-4">
-            <MotionView className="flex justify-center" animatedStyle={dateGroupStyle}>
+            <MotionView className="flex justify-center" style={dateGroupStyle}>
               <div className="glass-effect px-4 py-1.5 rounded-full text-xs font-medium text-muted-foreground shadow-sm">
                 {group.date}
               </div>
@@ -64,7 +64,7 @@ export function ChatMessageRenderer({
                 <MotionView
                   key={message.id}
                   className={`flex items-end gap-2 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'}`}
-                  animatedStyle={messageItemStyle}
+                  style={messageItemStyle}
                 >
                   {!isCurrentUser && (
                     <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
@@ -81,7 +81,7 @@ export function ChatMessageRenderer({
                     className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}
                   >
                     <MotionView
-                      animatedStyle={messageBubbleHoverStyle}
+                      style={messageBubbleHoverStyle}
                       onMouseEnter={messageBubbleHover.handleEnter}
                       onMouseLeave={messageBubbleHover.handleLeave}
                       className={`relative group ${message.type === 'sticker' ? 'p-0' : 'p-3'} rounded-2xl shadow-lg ${
@@ -98,14 +98,14 @@ export function ChatMessageRenderer({
                       )}
                       {message.type === 'voice' && voiceMessages?.[message.id] && (
                         <MotionView
-                          animatedStyle={voiceButtonTapStyle}
+                          style={voiceButtonTapStyle}
                           onClick={() => onToggleVoicePlayback(message.id)}
                           className="flex items-center gap-2 min-w-50 cursor-pointer"
                           onMouseEnter={voiceButtonHover.handleEnter}
                           onMouseLeave={voiceButtonHover.handleLeave}
                         >
                           <MotionView
-                            animatedStyle={voiceButtonHoverStyle}
+                            style={voiceButtonHoverStyle}
                             className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"
                           >
                             {playingVoice === message.id ? (
@@ -158,7 +158,7 @@ export function ChatMessageRenderer({
         <MotionView
           key="typing-indicators"
           className="flex items-end gap-2 flex-row p-4"
-          animatedStyle={typingIndicatorStyle}
+          style={typingIndicatorStyle}
         >
           <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
             <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">

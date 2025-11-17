@@ -21,7 +21,7 @@ import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-mo
 import { triggerHaptic } from '../core/haptic-manager'
 import { logEffectStart, logEffectEnd } from '../core/telemetry'
 import { randomRange } from '../core/seeded-rng'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 /**
  * Spring configuration for air-cushion effect

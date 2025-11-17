@@ -213,9 +213,10 @@ export function useParticleExplosionDelete(
   // Components should use ParticleView component instead which properly handles useAnimatedStyle
   // This returns a static style object (not reactive) - use ParticleView for reactive animations
   const getParticleStyle = useCallback(
-    (particle: Particle): ReturnType<typeof useAnimatedStyle> => {
+    (particle: Particle): React.CSSProperties => {
       // Return a static style object that references current SharedValue values
       // Note: This is not reactive - use ParticleView component for reactive animations
+      const transform = `translateX(${particle.x.value}px) translateY(${particle.y.value}px) scale(${particle.scale.value}) rotate(${particle.rotation.value}deg)`;
       return {
         position: 'absolute' as const,
         left: particle.x.value,
@@ -225,15 +226,10 @@ export function useParticleExplosionDelete(
         backgroundColor: particle.color,
         borderRadius: particle.size / 2,
         opacity: particle.opacity.value,
-        transform: [
-          { translateX: particle.x.value },
-          { translateY: particle.y.value },
-          { scale: particle.scale.value },
-          { rotate: `${particle.rotation.value}deg` },
-        ],
+        transform,
         pointerEvents: 'none' as const,
         zIndex: 9999,
-      } as ReturnType<typeof useAnimatedStyle>;
+      };
     },
     []
   );

@@ -20,7 +20,6 @@ import React, { useMemo, useState } from 'react'
 import type { SharedValue } from 'react-native-reanimated'
 import { useAnimatedReaction } from 'react-native-reanimated'
 import { createLogger } from '../../../utils/logger'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 const logger = createLogger('ribbon-shader')
 

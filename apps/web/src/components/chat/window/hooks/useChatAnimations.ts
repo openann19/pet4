@@ -7,7 +7,7 @@ import {
   withRepeat,
   withSequence,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 
@@ -24,7 +24,7 @@ export function useChatHeaderAnimations() {
   }, [headerY, headerOpacity]);
 
   const headerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: headerY.value }],
+    y: headerY.value,
     opacity: headerOpacity.value,
   })) as AnimatedStyle;
 
@@ -66,7 +66,7 @@ export function useTypingIndicatorAnimations(typingUsersCount: number) {
   })) as AnimatedStyle;
 
   const typingDotsStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: typingDotsScale.value }],
+    scale: typingDotsScale.value,
   })) as AnimatedStyle;
 
   return { typingContainerStyle, typingTextStyle, typingDotsStyle };
@@ -103,102 +103,102 @@ export function useTemplatesPanelAnimations(showTemplates: boolean) {
 export function useButtonAnimations() {
   const messageBubbleHover = useHoverLift();
   const messageBubbleHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
     const scaleVal = messageBubbleHover.scale.get();
     const translateYVal = messageBubbleHover.translateY.get();
-    if (scaleVal !== 1) transforms.push({ scale: scaleVal });
-    if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
-    return { transform: transforms.length > 0 ? transforms : undefined };
+    return {
+      scale: scaleVal,
+      y: translateYVal,
+    };
   }) as AnimatedStyle;
 
   const voiceButtonHover = useHoverLift();
   const voiceButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
     const scaleVal = voiceButtonHover.scale.get();
     const translateYVal = voiceButtonHover.translateY.get();
-    if (scaleVal !== 1) transforms.push({ scale: scaleVal });
-    if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
-    return { transform: transforms.length > 0 ? transforms : undefined };
+    return {
+      scale: scaleVal,
+      y: translateYVal,
+    };
   }) as AnimatedStyle;
   const voiceButtonTap = useBounceOnTap();
   const voiceButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = voiceButtonTap.scale.get();
-    return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
+    return { scale: scaleVal };
   }) as AnimatedStyle;
 
   const reactionButtonHover = useHoverLift();
   const reactionButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
     const scaleVal = reactionButtonHover.scale.get();
     const translateYVal = reactionButtonHover.translateY.get();
-    if (scaleVal !== 1) transforms.push({ scale: scaleVal });
-    if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
-    return { transform: transforms.length > 0 ? transforms : undefined };
+    return {
+      scale: scaleVal,
+      y: translateYVal,
+    };
   }) as AnimatedStyle;
   const reactionButtonTap = useBounceOnTap();
   const reactionButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = reactionButtonTap.scale.get();
-    return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
+    return { scale: scaleVal };
   }) as AnimatedStyle;
 
   const templateButtonHover = useHoverLift();
   const templateButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
     const scaleVal = templateButtonHover.scale.get();
     const translateYVal = templateButtonHover.translateY.get();
-    if (scaleVal !== 1) transforms.push({ scale: scaleVal });
-    if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
-    return { transform: transforms.length > 0 ? transforms : undefined };
+    return {
+      scale: scaleVal,
+      y: translateYVal,
+    };
   }) as AnimatedStyle;
   const templateButtonTap = useBounceOnTap();
   const templateButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = templateButtonTap.scale.get();
-    return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
+    return { scale: scaleVal };
   }) as AnimatedStyle;
 
   const stickerButtonHover = useHoverLift();
   const stickerButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
     const scaleVal = stickerButtonHover.scale.get();
     const translateYVal = stickerButtonHover.translateY.get();
-    if (scaleVal !== 1) transforms.push({ scale: scaleVal });
-    if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
-    return { transform: transforms.length > 0 ? transforms : undefined };
+    return {
+      scale: scaleVal,
+      y: translateYVal,
+    };
   }) as AnimatedStyle;
   const stickerButtonTap = useBounceOnTap();
   const stickerButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = stickerButtonTap.scale.get();
-    return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
+    return { scale: scaleVal };
   }) as AnimatedStyle;
 
   const emojiButtonHover = useHoverLift();
   const emojiButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
     const scaleVal = emojiButtonHover.scale.get();
     const translateYVal = emojiButtonHover.translateY.get();
-    if (scaleVal !== 1) transforms.push({ scale: scaleVal });
-    if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
-    return { transform: transforms.length > 0 ? transforms : undefined };
+    return {
+      scale: scaleVal,
+      y: translateYVal,
+    };
   }) as AnimatedStyle;
   const emojiButtonTap = useBounceOnTap();
   const emojiButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = emojiButtonTap.scale.get();
-    return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
+    return { scale: scaleVal };
   }) as AnimatedStyle;
 
   const sendButtonHover = useHoverLift();
   const sendButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
     const scaleVal = sendButtonHover.scale.get();
     const translateYVal = sendButtonHover.translateY.get();
-    if (scaleVal !== 1) transforms.push({ scale: scaleVal });
-    if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
-    return { transform: transforms.length > 0 ? transforms : undefined };
+    return {
+      scale: scaleVal,
+      y: translateYVal,
+    };
   }) as AnimatedStyle;
   const sendButtonTap = useBounceOnTap();
   const sendButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = sendButtonTap.scale.get();
-    return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
+    return { scale: scaleVal };
   }) as AnimatedStyle;
 
   const videoButtonHover = useHoverLift();

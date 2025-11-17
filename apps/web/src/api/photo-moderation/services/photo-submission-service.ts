@@ -76,10 +76,10 @@ export class PhotoSubmissionService {
       await photoModerationQueue.updateStatus(photoId, 'scanning');
 
       // Perform scan
-      const scanResult = (await photoScanningService.scanPhoto({
+      const scanResult = await photoScanningService.scanPhoto({
         photoUrl,
         metadata: record.metadata,
-      })) as PhotoScanResult;
+      });
 
       // Determine next status
       const nextStatus = this.determineNextStatus(scanResult, record.kycRequired);

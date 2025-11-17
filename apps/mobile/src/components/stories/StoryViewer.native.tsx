@@ -28,7 +28,6 @@ import Animated, {
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import type { Story } from '@petspark/core';
-import { colors } from '@mobile/theme/colors';
 import { ProgressiveImage } from '@mobile/components/enhanced/ProgressiveImage';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -48,16 +47,16 @@ interface StoryViewerProps {
 export function StoryViewer({
   stories,
   initialIndex = 0,
-  currentUserId,
+  currentUserId: _currentUserId,
   onClose,
   onComplete,
-  onStoryUpdate,
+  onStoryUpdate: _onStoryUpdate,
 }: StoryViewerProps): React.JSX.Element {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isPaused, setIsPaused] = useState(false);
   const progress = useSharedValue(0);
   const translateX = useSharedValue(0);
-  const opacity = useSharedValue(1);
+  const _opacity = useSharedValue(1);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentStory = stories[currentIndex];

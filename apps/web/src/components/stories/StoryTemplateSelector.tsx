@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, Presence, MotionView } from '@petspark/motion';
 import { Check, MagnifyingGlass } from '@phosphor-icons/react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -71,8 +71,8 @@ export default function StoryTemplateSelector({
         <div className="grid grid-cols-3 gap-3 pr-4">
           <Presence mode="popLayout">
             {filteredTemplates.map((template, index) => (
-              <MotionView
-                as="button"
+                            <motion.button
+                type="button"
                 key={template.id}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -117,13 +117,13 @@ export default function StoryTemplateSelector({
                 )}
 
                 {selectedTemplate.id === template.id && (
-                  <MotionView
+                                <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-lg"
                   >
                     <Check size={12} weight="bold" className="text-white" />
-                  </MotionView>
+                  </motion.div>
                 )}
 
                 {template.animationStyle && (
@@ -136,7 +136,7 @@ export default function StoryTemplateSelector({
                     </Badge>
                   </div>
                 )}
-              </MotionView>
+              </motion.button>
             ))}
           </Presence>
         </div>

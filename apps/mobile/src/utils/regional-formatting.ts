@@ -4,10 +4,11 @@
  * Provides locale-aware formatting for dates, numbers, currency, and more
  */
 
-import type { Language } from '@petspark/shared'
 import { createLogger } from './logger'
 
 const logger = createLogger('RegionalFormatting')
+
+export type Language = 'en' | 'es' | 'fr' | 'de' | 'it' | 'pt' | 'ja' | 'zh' | 'ko'
 
 export interface RegionalSettings {
   language: Language
@@ -25,7 +26,7 @@ export interface RegionalSettings {
 /**
  * Regional settings per language
  */
-const REGIONAL_SETTINGS: Record<string, RegionalSettings> = {
+const REGIONAL_SETTINGS = {
   en: {
     language: 'en' as Language,
     locale: 'en-US',
@@ -170,13 +171,17 @@ const REGIONAL_SETTINGS: Record<string, RegionalSettings> = {
     },
     rtl: false
   }
-}
+} as const satisfies Record<string, RegionalSettings>
 
 /**
  * Get regional settings for a language
  */
-export function getRegionalSettings(language: string = 'en'): RegionalSettings {
-  return REGIONAL_SETTINGS[language] ?? REGIONAL_SETTINGS.en
+export function getRegionalSettings(language = 'en'): RegionalSettings {
+  const settings = REGIONAL_SETTINGS[language as keyof typeof REGIONAL_SETTINGS]
+  if (!settings) {
+    return REGIONAL_SETTINGS.en
+  }
+  return settings
 }
 
 /**

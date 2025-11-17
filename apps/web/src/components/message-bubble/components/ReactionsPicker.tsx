@@ -1,6 +1,6 @@
 import { MotionView } from '@petspark/motion';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { REACTIONS } from '../message-bubble-constants';
 import type { ReactionType } from '@/lib/chat-types';
 
@@ -17,7 +17,7 @@ export function ReactionsPicker({
 }: ReactionsPickerProps) {
   return (
     <MotionView
-      animatedStyle={reactionsPickerStyle}
+      style={reactionsPickerStyle}
       className={cn(
         'absolute z-50 bg-card border border-border rounded-full shadow-lg p-2',
         'flex items-center gap-2',

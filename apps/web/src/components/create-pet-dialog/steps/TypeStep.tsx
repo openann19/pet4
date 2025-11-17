@@ -1,6 +1,6 @@
 import { Check } from '@phosphor-icons/react';
 import { MotionView } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { PET_TYPES } from '../create-pet-constants';
 import type { PetType } from '@/lib/pet-profile-templates';
 import type { CreatePetFormActions } from '../create-pet-types';
@@ -25,7 +25,7 @@ export function TypeStep({
   onNext,
 }: TypeStepProps) {
   return (
-    <MotionView key="type" animatedStyle={stepStyle} className="space-y-6">
+    <MotionView key="type" style={stepStyle} className="space-y-6">
       <div className="text-center mb-6">
         <h3 className="text-2xl font-bold mb-2">What type of pet do you have?</h3>
         <p className="text-muted-foreground">Choose the option that best describes your companion</p>
@@ -60,7 +60,7 @@ export function TypeStep({
               </MotionView>
               {petType === type.value && (
                 <MotionView
-                  animatedStyle={petTypeIndicatorStyle}
+                  style={petTypeIndicatorStyle}
                   className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1"
                 >
                   <Check size={16} weight="bold" />

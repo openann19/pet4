@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { MotionView } from "@petspark/motion";
 import { useCallback, useMemo, useState } from 'react';
 import { useStorage } from '@/hooks/use-storage';
@@ -15,7 +16,7 @@ import {
 } from '@phosphor-icons/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SavedSearch } from '@/lib/saved-search-types';
@@ -392,8 +393,11 @@ export default function SavedSearchesManager({
                 <CardTitle>Current Filters</CardTitle>
                 <CardDescription>Save your current search criteria</CardDescription>
               </div>
-              <MotionView
-                style={cardHover.animatedStyle}
+              <motion.div
+                style={{
+                  scale: cardHover.scale,
+                  y: cardHover.translateY,
+                }}
                 onMouseEnter={cardHover.handleEnter}
                 onMouseLeave={cardHover.handleLeave}
               >
@@ -401,7 +405,7 @@ export default function SavedSearchesManager({
                   <Plus size={16} className="mr-2" />
                   Save Current
                 </Button>
-              </MotionView>
+              </motion.div>
             </div>
           </CardHeader>
           <CardContent>
@@ -447,7 +451,7 @@ export default function SavedSearchesManager({
             <CardDescription>
               {sortedSearches.length === 0
                 ? 'No saved searches yet'
-                : `${String(sortedSearches.length ?? '')} saved search${String(sortedSearches.length !== 1 ? 'es' : '' ?? '')}`}
+                : `${String(sortedSearches.length)} saved search${String(sortedSearches.length !== 1 ? 'es' : '')}`}
             </CardDescription>
           </CardHeader>
           <CardContent>

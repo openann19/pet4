@@ -4,7 +4,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 interface DialogHeaderSectionProps {
   emojiStyle: AnimatedStyle;
@@ -15,7 +15,7 @@ export function DialogHeaderSection({ emojiStyle, editingPet }: DialogHeaderSect
   return (
     <DialogHeader>
       <DialogTitle className="text-xl flex items-center gap-2">
-        <MotionView animatedStyle={emojiStyle}>🐾</MotionView>
+        <MotionView style={emojiStyle}>🐾</MotionView>
         {editingPet ? 'Edit Pet Profile' : 'Create Pet Profile'}
       </DialogTitle>
       <DialogDescription>

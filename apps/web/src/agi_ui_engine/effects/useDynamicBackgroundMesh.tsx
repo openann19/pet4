@@ -1,6 +1,6 @@
 'use client';
 
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { useUIConfig } from '@/hooks/use-ui-config';
 import { useEffect } from 'react';
 import {

@@ -40,29 +40,30 @@ export function setupFileAPIMocks(): void {
   })) as typeof File;
 
   // Mock FileReader
-  const MockFileReader = vi.fn().mockImplementation((): MockFileReaderInstance => ({
-    readAsDataURL: vi.fn(),
-    readAsText: vi.fn(),
-    readAsArrayBuffer: vi.fn(),
-    result: null,
-    error: null,
-    onload: null,
-    onerror: null,
-    onabort: null,
-    onloadstart: null,
-    onloadend: null,
-    onprogress: null,
-    abort: vi.fn(),
-    EMPTY: 0,
-    LOADING: 1,
-    DONE: 2,
-    readyState: 0,
-  }));
+  class MockFileReaderClass implements Partial<FileReader> {
+    static readonly EMPTY = 0;
+    static readonly LOADING = 1;
+    static readonly DONE = 2;
+    
+    readAsDataURL = vi.fn();
+    readAsText = vi.fn();
+    readAsArrayBuffer = vi.fn();
+    result: string | ArrayBuffer | null = null;
+    error: DOMException | null = null;
+    onload: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
+    onerror: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
+    onabort: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
+    onloadstart: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
+    onloadend: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
+    onprogress: ((this: FileReader, ev: ProgressEvent<FileReader>) => any) | null = null;
+    abort = vi.fn();
+    readyState: 0 | 1 | 2 = 0;
+    
+    readonly EMPTY = 0;
+    readonly LOADING = 1;
+    readonly DONE = 2;
+  }
 
-  MockFileReader.EMPTY = 0;
-  MockFileReader.LOADING = 1;
-  MockFileReader.DONE = 2;
-
-  global.FileReader = MockFileReader;
+  global.FileReader = MockFileReaderClass as any;
 }
 

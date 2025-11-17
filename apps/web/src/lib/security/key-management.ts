@@ -167,7 +167,7 @@ export class KeyManager {
   /**
    * Rotate key pair
    */
-  async rotateKeyPair(keyId: string, newPublicKey: JsonWebKey): Promise<KeyPairMetadata | null> {
+  rotateKeyPair(keyId: string, newPublicKey: JsonWebKey): KeyPairMetadata | null {
     const existingKey = this.keyPairs.get(keyId)
 
     if (!existingKey) {
@@ -285,7 +285,7 @@ export class KeyManager {
     publicKey: JsonWebKey
   ): string {
     const requestId = `exchange-${fromUserId}-${toUserId}-${Date.now()}`
-    const request: KeyExchangeRequest = {
+    const request = {
       requestId,
       fromUserId,
       toUserId,
@@ -381,8 +381,6 @@ export class KeyManager {
 let keyManagerInstance: KeyManager | null = null
 
 export function getKeyManager(options?: KeyManagementOptions): KeyManager {
-  if (!keyManagerInstance) {
-    keyManagerInstance = new KeyManager(options)
-  }
+  keyManagerInstance ??= new KeyManager(options)
   return keyManagerInstance
 }

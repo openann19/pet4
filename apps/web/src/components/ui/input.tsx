@@ -6,7 +6,8 @@
 import * as React from 'react'
 
 const { forwardRef, useCallback, useMemo, useState, useImperativeHandle, useRef } = React
-import { motion, AnimatePresence } from '@petspark/motion'
+import { motion } from '@petspark/motion'
+import { AnimatePresence } from '@/effects/reanimated/animate-presence'
 import { cn } from '@/lib/utils'
 import { createLogger } from '@/lib/logger'
 

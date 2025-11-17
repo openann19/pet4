@@ -23,7 +23,7 @@ import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-mo
 import { logEffectEnd, logEffectStart } from '../core/telemetry';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 /**
  * Cubic bezier easing: (0.17, 0.84, 0.44, 1)
@@ -118,37 +118,33 @@ export function useSendWarp(options: UseSendWarpOptions = {}): UseSendWarpReturn
       const bloomPulseDuration = scaleDuration(60);
       const bloomDecayDuration = scaleDuration(160);
 
-      glowOpacity.value = withTiming(
-        1,
-        {
-          duration: glowFadeInDuration,
-          easing: Easing.out(Easing.ease),
-        },
-        () => {
-          // Fade out after peak
-          glowOpacity.value = withTiming(0, {
-            duration: glowDecayDuration,
-            easing: Easing.in(Easing.ease),
-          });
-        }
-      );
+      glowOpacity.value = withTiming(1, {
+        duration: glowFadeInDuration,
+        easing: Easing.out(Easing.ease),
+      });
+      
+      // Fade out after peak
+      setTimeout(() => {
+        glowOpacity.value = withTiming(0, {
+          duration: glowDecayDuration,
+          easing: Easing.in(Easing.ease),
+        });
+      }, glowFadeInDuration);
 
       // Bloom animation - quick pulse then decay (only if particles enabled)
       if (animation.showParticles) {
-        bloomIntensity.value = withTiming(
-          0.9,
-          {
-            duration: bloomPulseDuration,
-            easing: Easing.out(Easing.ease),
-          },
-          () => {
-            // Decay
-            bloomIntensity.value = withTiming(0, {
-              duration: bloomDecayDuration,
-              easing: Easing.in(Easing.ease),
-            });
-          }
-        );
+        bloomIntensity.value = withTiming(0.9, {
+          duration: bloomPulseDuration,
+          easing: Easing.out(Easing.ease),
+        });
+        
+        // Decay
+        setTimeout(() => {
+          bloomIntensity.value = withTiming(0, {
+            duration: bloomDecayDuration,
+            easing: Easing.in(Easing.ease),
+          });
+        }, bloomPulseDuration);
       }
     }
 

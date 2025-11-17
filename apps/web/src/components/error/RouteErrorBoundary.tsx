@@ -69,14 +69,14 @@ class RouteErrorBoundaryClass extends Component<
             fromPath,
             toPath,
             timestamp: new Date().toISOString(),
-            componentStack: errorInfo.componentStack,
+            componentStack: errorInfo.componentStack ?? undefined,
         };
 
         logger.error('Route navigation error', error, {
             errorType,
             fromPath,
             toPath,
-            componentStack: errorInfo.componentStack,
+            componentStack: errorInfo.componentStack ?? undefined,
             navigationError,
         });
 

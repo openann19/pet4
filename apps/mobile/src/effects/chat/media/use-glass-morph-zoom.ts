@@ -24,7 +24,7 @@ import { randomRange } from '../core/seeded-rng'
 import { logEffectEnd, logEffectStart } from '../core/telemetry'
 import { getBloomImageFilter } from '../shaders/bloom'
 import { getCachedBlurFilter } from '../shaders/blur'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 /**
  * Custom easing: (0.2, 0.8, 0.2, 1)

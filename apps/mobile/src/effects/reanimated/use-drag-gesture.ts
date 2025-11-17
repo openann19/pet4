@@ -15,7 +15,7 @@ import { Gesture } from 'react-native-gesture-handler'
 import { springConfigs, timingConfigs } from './transitions'
 import { haptic } from '@petspark/motion'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseDragGestureOptions {
   enabled?: boolean

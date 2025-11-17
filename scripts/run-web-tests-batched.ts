@@ -47,11 +47,226 @@ function chunkArray<T>(array: T[], chunkSize: number): T[][] {
   return chunks;
 }
 
-function runTestBatch(testFiles: string[], batchNumber: number): TestFailure[] {
+function convertToRelativePaths(testFiles: string[]): string[] {
+  return testFiles.map((f) => f.replace(webAppRoot + '/', ''));
+}
+
+function runVitestCommand(relativeTestFiles: string[], tempJsonFile: string): string {
+  const filesPattern = relativeTestFiles.join(' ');
+  const command = `cd ${webAppRoot} && pnpm vitest run --reporter=json --reporter=verbose --outputFile="${tempJsonFile}" ${filesPattern} 2>&1 || true`;
+  return execSync(command, {
+    encoding: 'utf-8',
+    cwd: projectRoot,
+    maxBuffer: 50 * 1024 * 1024, // 50MB buffer for large test outputs
+  });
+}
+
+function parseJsonResults(tempJsonFile: string, batchNumber: number): TestFailure[] {
   const failures: TestFailure[] = [];
 
-  // Convert absolute paths to relative paths from webAppRoot
-  const relativeTestFiles = testFiles.map((f) => f.replace(webAppRoot + '/', ''));
+  try {
+    if (existsSync(tempJsonFile)) {
+      const jsonContent = readFileSync(tempJsonFile, 'utf-8');
+      const results = JSON.parse(jsonContent);
+
+      if (results.testFiles) {
+        results.testFiles.forEach((testFile: { file: string; result?: { state?: string; errors?: unknown[] } }) => {
+          if (testFile.result?.state === 'fail' || (testFile.result?.errors && testFile.result.errors.length > 0)) {
+            const errorMessages = testFile.result?.errors
+              ? JSON.stringify(testFile.result.errors, null, 2)
+              : 'Test failed';
+
+            failures.push({
+              testFile: testFile.file,
+              error: errorMessages,
+              batch: batchNumber,
+            });
+          }
+        });
+      }
+
+      // Clean up temp file
+      try {
+        unlinkSync(tempJsonFile);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+  } catch {
+    // If JSON parsing fails, fall back to parsing text output
+  }
+
+  return failures;
+}
+
+function hasFailuresInOutput(output: string): boolean {
+  return output.includes('FAIL') ||
+         (output.includes('Test Files') && output.match(/\d+\s+failed/i)) ||
+         (output.includes('Tests') && output.match(/\d+\s+failed/i)) ||
+         output.includes('✖') ||
+         output.includes('AssertionError') ||
+         output.includes('Error:');
+}
+
+function parseTextOutputForFailures(output: string, testFiles: string[], batchNumber: number): TestFailure[] {
+  const failures: TestFailure[] = [];
+  const failedFiles = new Set<string>();
+
+  // Pattern 1: Look for FAIL markers with file paths
+  const failPattern = /FAIL\s+.*?([^\s]+\.(test|spec)\.(ts|tsx))/gi;
+  let failMatch: RegExpExecArray | null;
+  while ((failMatch = failPattern.exec(output)) !== null) {
+    if (failMatch[1]) {
+      const filePath = failMatch[1].trim();
+      // Resolve to absolute path if relative
+      const absolutePath = filePath.startsWith('/')
+        ? filePath
+        : join(webAppRoot, filePath);
+      failedFiles.add(absolutePath);
+    }
+  }
+
+  // Pattern 2: Look for test file names near error indicators
+  testFiles.forEach((file) => {
+    const relativePath = file.replace(webAppRoot + '/', '');
+    const fileName = file.split('/').pop() || '';
+
+    // Check if this file appears in error context
+    const fileIndex = output.indexOf(relativePath);
+    if (fileIndex !== -1) {
+      // Look for error indicators near this file
+      const contextStart = Math.max(0, fileIndex - 500);
+      const contextEnd = Math.min(output.length, fileIndex + 2000);
+      const context = output.slice(contextStart, contextEnd);
+
+      if (context.match(/FAIL|Error:|✖|AssertionError|TypeError|ReferenceError/i)) {
+        failedFiles.add(file);
+      }
+    }
+
+    // Also check for file name alone in error context
+    if (output.includes(fileName)) {
+      const fileNameIndex = output.indexOf(fileName);
+      const contextStart = Math.max(0, fileNameIndex - 200);
+      const contextEnd = Math.min(output.length, fileNameIndex + 1000);
+      const context = output.slice(contextStart, contextEnd);
+
+      if ((context.match(/FAIL|Error:|✖|failed/i)) && (context.includes('.test.') || context.includes('.spec.'))) {
+        failedFiles.add(file);
+      }
+    }
+  });
+
+  // Extract error details for each failed file
+  failedFiles.forEach((file) => {
+    const relativePath = file.replace(webAppRoot + '/', '');
+    const lines = output.split('\n');
+    let errorLines: string[] = [];
+    let inErrorBlock = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      if (line.includes(relativePath) && (line.includes('FAIL') || line.includes('Error:'))) {
+        inErrorBlock = true;
+        errorLines = [line];
+        continue;
+      }
+
+      if (inErrorBlock) {
+        errorLines.push(line);
+        // Stop collecting if we hit another test file or empty line followed by non-error content
+        if (
+          (line.trim() === '' && i < lines.length - 1 && !lines[i + 1].includes('Error') && !lines[i + 1].includes('at ')) ||
+          (line.match(/^\s*PASS|^\s*RUN|^\s*✓/) && !line.includes(relativePath))
+        ) {
+          // Check if we have enough error context (at least 5 lines or until next test)
+          if (errorLines.length > 5) {
+            inErrorBlock = false;
+            break;
+          }
+        }
+
+        // Limit error collection to 50 lines per failure
+        if (errorLines.length > 50) {
+          inErrorBlock = false;
+          break;
+        }
+      }
+    }
+
+    const errorText = errorLines.length > 0
+      ? errorLines.slice(0, 100).join('\n')
+      : output.slice(output.indexOf(relativePath), output.indexOf(relativePath) + 1000);
+
+    failures.push({
+      testFile: file,
+      error: errorText,
+      batch: batchNumber,
+    });
+  });
+
+  return failures;
+}
+
+function handleExecutionError(error: unknown, testFiles: string[], batchNumber: number): TestFailure[] {
+  const failures: TestFailure[] = [];
+  const errorOutput =
+    error instanceof Error && 'stdout' in error
+      ? (error as { stdout: string; stderr?: string }).stdout +
+        ((error as { stderr?: string }).stderr || '')
+      : error instanceof Error
+      ? error.message
+      : String(error);
+
+  const errorStr = errorOutput.toString();
+
+  // Try to extract which files failed
+  testFiles.forEach((file) => {
+    const relativePath = file.replace(webAppRoot + '/', '');
+    if (errorStr.includes(relativePath) || errorStr.includes('Error:')) {
+      failures.push({
+        testFile: file,
+        error: errorStr.slice(0, 5000),
+        batch: batchNumber,
+      });
+    }
+  });
+
+  // If no specific files identified, mark all as failed
+  if (failures.length === 0) {
+    process.stdout.write(
+      `[Batch ${batchNumber}] Execution error - marking all tests as failed\n`
+    );
+    testFiles.forEach((file) => {
+      failures.push({
+        testFile: file,
+        error: errorStr.slice(0, 5000),
+        batch: batchNumber,
+      });
+    });
+  }
+
+  process.stdout.write(
+    `[Batch ${batchNumber}] Error occurred: ${failures.length} files marked as failed\n`
+  );
+
+  return failures;
+}
+
+function cleanupTempFile(tempJsonFile: string): void {
+  try {
+    if (existsSync(tempJsonFile)) {
+      unlinkSync(tempJsonFile);
+    }
+  } catch {
+    // Ignore cleanup errors
+  }
+}
+
+function runTestBatch(testFiles: string[], batchNumber: number): TestFailure[] {
+  const failures: TestFailure[] = [];
+  const relativeTestFiles = convertToRelativePaths(testFiles);
 
   process.stdout.write(
     `\n[Batch ${batchNumber}] Running ${testFiles.length} test files...\n`
@@ -60,222 +275,34 @@ function runTestBatch(testFiles: string[], batchNumber: number): TestFailure[] {
   const tempJsonFile = join(projectRoot, `temp-batch-${batchNumber}-results.json`);
 
   try {
-    // Run vitest with JSON reporter - pass files as separate arguments
-    // Vitest accepts multiple file patterns/globs
-    const filesPattern = relativeTestFiles.join(' ');
-    const command = `cd ${webAppRoot} && pnpm vitest run --reporter=json --reporter=verbose --outputFile="${tempJsonFile}" ${filesPattern} 2>&1 || true`;
-    const output = execSync(command, {
-      encoding: 'utf-8',
-      cwd: projectRoot,
-      maxBuffer: 50 * 1024 * 1024, // 50MB buffer for large test outputs
-    });
+    const output = runVitestCommand(relativeTestFiles, tempJsonFile);
 
-    // Try to parse JSON results if available
-    try {
-      if (existsSync(tempJsonFile)) {
-        const jsonContent = readFileSync(tempJsonFile, 'utf-8');
-        const results = JSON.parse(jsonContent);
+    // Try to parse JSON results first
+    const jsonFailures = parseJsonResults(tempJsonFile, batchNumber);
+    failures.push(...jsonFailures);
 
-        if (results.testFiles) {
-          results.testFiles.forEach((testFile: { file: string; result?: { state?: string; errors?: unknown[] } }) => {
-            if (testFile.result?.state === 'fail' || (testFile.result?.errors && testFile.result.errors.length > 0)) {
-              const errorMessages = testFile.result?.errors
-                ? JSON.stringify(testFile.result.errors, null, 2)
-                : 'Test failed';
-
-              failures.push({
-                testFile: testFile.file,
-                error: errorMessages,
-                batch: batchNumber,
-              });
-            }
-          });
-        }
-
-        // Clean up temp file
-        try {
-          unlinkSync(tempJsonFile);
-        } catch {
-          // Ignore cleanup errors
-        }
-      }
-    } catch {
-      // If JSON parsing fails, fall back to parsing text output
-    }
-
-    // If we didn't get failures from JSON, parse text output
-    // Also parse text output to supplement JSON results with better error messages
-    const hasFailuresInOutput = output.includes('FAIL') ||
-                                 (output.includes('Test Files') && output.match(/\d+\s+failed/i)) ||
-                                 (output.includes('Tests') && output.match(/\d+\s+failed/i)) ||
-                                 output.includes('✖') ||
-                                 output.includes('AssertionError') ||
-                                 output.includes('Error:');
-
-    // Parse text output if we have failures indicated but no JSON results, or to get better error details
-    if (hasFailuresInOutput && failures.length === 0) {
-      const failedFiles = new Set<string>();
-
-      // Pattern 1: Look for FAIL markers with file paths
-      const failPattern = /FAIL\s+.*?([^\s]+\.(test|spec)\.(ts|tsx))/gi;
-      let failMatch: RegExpExecArray | null;
-      while ((failMatch = failPattern.exec(output)) !== null) {
-        if (failMatch[1]) {
-          const filePath = failMatch[1].trim();
-          // Resolve to absolute path if relative
-          const absolutePath = filePath.startsWith('/')
-            ? filePath
-            : join(webAppRoot, filePath);
-          failedFiles.add(absolutePath);
-        }
-      }
-
-      // Pattern 2: Look for test file names near error indicators
-      testFiles.forEach((file) => {
-        const relativePath = file.replace(webAppRoot + '/', '');
-        const fileName = file.split('/').pop() || '';
-
-        // Check if this file appears in error context
-        const fileIndex = output.indexOf(relativePath);
-        if (fileIndex !== -1) {
-          // Look for error indicators near this file
-          const contextStart = Math.max(0, fileIndex - 500);
-          const contextEnd = Math.min(output.length, fileIndex + 2000);
-          const context = output.slice(contextStart, contextEnd);
-
-          if (context.match(/FAIL|Error:|✖|AssertionError|TypeError|ReferenceError/i)) {
-            failedFiles.add(file);
-          }
-        }
-
-        // Also check for file name alone in error context
-        if (output.includes(fileName)) {
-          const fileNameIndex = output.indexOf(fileName);
-          const contextStart = Math.max(0, fileNameIndex - 200);
-          const contextEnd = Math.min(output.length, fileNameIndex + 1000);
-          const context = output.slice(contextStart, contextEnd);
-
-          if ((context.match(/FAIL|Error:|✖|failed/i)) && (context.includes('.test.') || context.includes('.spec.'))) {
-            failedFiles.add(file);
-          }
+    // If we didn't get failures from JSON or to get better error details, parse text output
+    if (hasFailuresInOutput(output) && failures.length === 0) {
+      const textFailures = parseTextOutputForFailures(output, testFiles, batchNumber);
+      failures.push(...textFailures);
+    } else if (hasFailuresInOutput(output) && failures.length > 0) {
+      // Supplement JSON results with better error messages from text output
+      failures.forEach((failure) => {
+        const betterError = parseTextOutputForFailures(output, [failure.testFile], batchNumber);
+        if (betterError.length > 0) {
+          failure.error = betterError[0].error;
         }
       });
-
-      // If we found failed files, extract their error details
-      if (failedFiles.size > 0) {
-        // Clear any existing failures since we're parsing from text
-        failures.length = 0;
-
-        // Extract error details for each failed file
-        failedFiles.forEach((file) => {
-          const relativePath = file.replace(webAppRoot + '/', '');
-          const lines = output.split('\n');
-          let errorLines: string[] = [];
-          let inErrorBlock = false;
-
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-
-            if (line.includes(relativePath) && (line.includes('FAIL') || line.includes('Error:'))) {
-              inErrorBlock = true;
-              errorLines = [line];
-              continue;
-            }
-
-            if (inErrorBlock) {
-              errorLines.push(line);
-              // Stop collecting if we hit another test file or empty line followed by non-error content
-              if (
-                (line.trim() === '' && i < lines.length - 1 && !lines[i + 1].includes('Error') && !lines[i + 1].includes('at ')) ||
-                (line.match(/^\s*PASS|^\s*RUN|^\s*✓/) && !line.includes(relativePath))
-              ) {
-                // Check if we have enough error context (at least 5 lines or until next test)
-                if (errorLines.length > 5) {
-                  inErrorBlock = false;
-                  break;
-                }
-              }
-
-              // Limit error collection to 50 lines per failure
-              if (errorLines.length > 50) {
-                inErrorBlock = false;
-                break;
-              }
-            }
-          }
-
-          const errorText = errorLines.length > 0
-            ? errorLines.slice(0, 100).join('\n')
-            : output.slice(output.indexOf(relativePath), output.indexOf(relativePath) + 1000);
-
-          failures.push({
-            testFile: file,
-            error: errorText,
-            batch: batchNumber,
-          });
-        });
-      } else if (hasFailuresInOutput) {
-        // If we detected failures but couldn't identify specific files,
-        // include a summary of the output
-        failures.push({
-          testFile: `Batch ${batchNumber} - Unknown test files`,
-          error: output.slice(-5000), // Last 5000 chars of output
-          batch: batchNumber,
-        });
-      }
     }
 
     process.stdout.write(
       `[Batch ${batchNumber}] Completed: ${testFiles.length} files, ${failures.length} failures\n`
     );
   } catch (error) {
-    const errorOutput =
-      error instanceof Error && 'stdout' in error
-        ? (error as { stdout: string; stderr?: string }).stdout +
-          ((error as { stderr?: string }).stderr || '')
-        : error instanceof Error
-          ? error.message
-          : String(error);
-
-    // If we got an error, try to extract which files failed
-    const errorStr = errorOutput.toString();
-    testFiles.forEach((file) => {
-      const relativePath = file.replace(webAppRoot + '/', '');
-      if (errorStr.includes(relativePath) || errorStr.includes('Error:')) {
-        failures.push({
-          testFile: file,
-          error: errorStr.slice(0, 5000),
-          batch: batchNumber,
-        });
-      }
-    });
-
-    // If no specific files identified, mark all as failed
-    if (failures.length === 0) {
-      process.stdout.write(
-        `[Batch ${batchNumber}] Execution error - marking all tests as failed\n`
-      );
-      testFiles.forEach((file) => {
-        failures.push({
-          testFile: file,
-          error: errorStr.slice(0, 5000),
-          batch: batchNumber,
-        });
-      });
-    }
-
-    process.stdout.write(
-      `[Batch ${batchNumber}] Error occurred: ${failures.length} files marked as failed\n`
-    );
+    const errorFailures = handleExecutionError(error, testFiles, batchNumber);
+    failures.push(...errorFailures);
   } finally {
-    // Clean up temp file
-    try {
-      if (existsSync(tempJsonFile)) {
-        unlinkSync(tempJsonFile);
-      }
-    } catch {
-      // Ignore cleanup errors
-    }
+    cleanupTempFile(tempJsonFile);
   }
 
   return failures;

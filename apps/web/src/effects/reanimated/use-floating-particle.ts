@@ -9,7 +9,7 @@ import {
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { makeRng } from '@petspark/shared';
 
 export interface UseFloatingParticleOptions {
@@ -42,6 +42,8 @@ export function useFloatingParticle(
     height = 1080,
     duration = 15,
     opacity = 0.6,
+    initialX = 0,
+    initialY = 0,
   } = options;
 
   const x = useSharedValue(initialX);

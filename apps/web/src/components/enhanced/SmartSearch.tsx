@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo } from 'react';
 import { MotionView } from '@petspark/motion';
 import { MagnifyingGlass, X, Clock, TrendUp, Sparkle } from '@phosphor-icons/react';
-import { Input } from '@/components/ui/Input';
+import { Input, type InputRef } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -41,7 +41,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
     'Small dogs',
     'Near me',
   ]);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<InputRef>(null);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -166,10 +166,8 @@ export function SmartSearch<T extends Record<string, unknown>>({
           </button>
         )}
       </div>
-      {presence.shouldRender && (
-        <MotionView
-          style={presence.animatedStyle}
-        >
+      {isFocused && (query.trim() || (showHistory && searchHistory.length > 0)) && (
+        <MotionView>
           <Card className="absolute top-full mt-2 w-full max-h-100 overflow-y-auto shadow-xl border z-50 p-2">
             {query.trim() ? (
               <>

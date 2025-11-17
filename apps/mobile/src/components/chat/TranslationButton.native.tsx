@@ -20,10 +20,10 @@ interface TranslationButtonProps {
 }
 
 export function TranslationButton({
-  messageId,
+  messageId: _messageId,
   originalText,
-  originalLanguage,
-  targetLanguage = 'en',
+  originalLanguage: _originalLanguage,
+  targetLanguage: _targetLanguage = 'en',
   onTranslate,
   disabled = false,
 }: TranslationButtonProps): React.JSX.Element {

@@ -41,7 +41,7 @@ import {
   withSequence,
   MotionView,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
@@ -115,6 +115,21 @@ function CommunityViewContent(): JSX.Element {
     activeTab,
   });
 
+  // Combined pull to refresh styles
+  const combinedPullIndicatorStyle = useMemo(() => {
+    return {
+      ...pullToRefresh.pullTranslateStyle,
+      ...pullToRefresh.pullOpacityStyle,
+    };
+  }, [pullToRefresh.pullTranslateStyle, pullToRefresh.pullOpacityStyle]);
+
+  const combinedPullIconStyle = useMemo(() => {
+    return {
+      ...pullToRefresh.pullRotationStyle,
+      ...pullToRefresh.pullScaleStyle,
+    };
+  }, [pullToRefresh.pullRotationStyle, pullToRefresh.pullScaleStyle]);
+
   // Post actions hook
   const postActions = usePostActions({
     onPostCreated: () => {
@@ -132,7 +147,7 @@ function CommunityViewContent(): JSX.Element {
     mainTabsTranslateY.value = withTiming(0, timingConfigs.smooth);
   }, [mainTabsOpacity, mainTabsTranslateY]);
 
-  const mainTabsStyle = useAnimatedStyle(() => {
+  const mainTabsStyle = useAnimatedStyle((): Record<string, unknown> => {
     return {
       opacity: mainTabsOpacity.value,
       transform: [{ translateY: mainTabsTranslateY.value }],
@@ -364,11 +379,11 @@ function CommunityViewContent(): JSX.Element {
     }
   }, [feedManagement.loading, adoptionLoading, loadingRotation]);
 
-  const loadingSpinnerStyle = useAnimatedStyle(() => ({
+  const loadingSpinnerStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ rotate: `${loadingRotation.value}deg` }],
   })) as AnimatedStyle;
 
-  const emptyStateStyle = useAnimatedStyle(() => ({
+  const emptyStateStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ scale: emptyScale.value }, { rotate: `${emptyRotation.value}deg` }],
   })) as AnimatedStyle;
 
@@ -433,7 +448,7 @@ function CommunityViewContent(): JSX.Element {
     }
   }, [adoptionLoading, adoptionLoadingRotation]);
 
-  const adoptionLoadingSpinnerStyle = useAnimatedStyle(() => ({
+  const adoptionLoadingSpinnerStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ rotate: `${adoptionLoadingRotation.value}deg` }],
   })) as AnimatedStyle;
 
@@ -491,11 +506,11 @@ function CommunityViewContent(): JSX.Element {
         {/* Pull-to-Refresh Indicator */}
         <MotionView
           className="absolute top-0 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
-          style={[pullToRefresh.pullTranslateStyle, pullToRefresh.pullOpacityStyle]}
+          style={combinedPullIndicatorStyle}
         >
           <MotionView
             className="bg-card/95 backdrop-blur-xl shadow-xl rounded-full p-3 border border-border/50"
-            style={[pullToRefresh.pullRotationStyle, pullToRefresh.pullScaleStyle]}
+            style={combinedPullIconStyle}
           >
             <ArrowsClockwise
               size={24}
@@ -511,7 +526,7 @@ function CommunityViewContent(): JSX.Element {
             <h1
               className={cn(
                 'bg-linear-to-r from-primary via-accent to-secondary bg-clip-text text-transparent',
-                getTypographyClasses('heading1')
+                getTypographyClasses('h1')
               )}
             >
               {t.community?.title ?? 'Community'}
@@ -633,7 +648,7 @@ function CommunityViewContent(): JSX.Element {
                       <MotionView style={emptyStateStyle} className="text-8xl mb-6">
                         🐾
                       </MotionView>
-                      <h3 className={getTypographyClasses('heading2')}>
+                      <h3 className={getTypographyClasses('h2')}>
                         {t.community?.noPosts ?? 'No posts yet'}
                       </h3>
                       <p className={getTypographyClasses('body')}>
@@ -713,7 +728,7 @@ function CommunityViewContent(): JSX.Element {
                   <MotionView style={emptyStateStyle} className="text-8xl mb-6">
                     🏠
                   </MotionView>
-                  <h3 className={getTypographyClasses('heading2')}>
+                  <h3 className={getTypographyClasses('h2')}>
                     {t.adoption?.noProfiles ?? 'No pets available for adoption'}
                   </h3>
                   <p className={getTypographyClasses('body')}>

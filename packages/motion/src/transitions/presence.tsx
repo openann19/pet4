@@ -39,12 +39,13 @@ export function Presence({ visible = true, children }: PresenceProps): JSX.Eleme
       // Minimal transform for reduced motion
       return {
         opacity: a.value,
-        transform: [{ scale: 0.99 + a.value * 0.01 }], // Very subtle scale
+        scale: 0.99 + a.value * 0.01, // Very subtle scale
       }
     }
     return {
       opacity: a.value,
-      transform: [{ translateY: (1 - a.value) * 12 }, { scale: 0.98 + a.value * 0.02 }],
+      y: (1 - a.value) * 12,
+      scale: 0.98 + a.value * 0.02,
     }
   })
 
@@ -86,7 +87,7 @@ export function usePageTransitions(): UsePageTransitionsReturn {
       return { opacity: t.value }
     }
     return {
-      transform: [{ translateX: (1 - t.value) * 20 }],
+      x: (1 - t.value) * 20,
       opacity: t.value,
     }
   })

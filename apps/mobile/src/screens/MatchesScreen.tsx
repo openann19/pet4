@@ -137,7 +137,7 @@ function MatchesScreenContent(): React.ReactElement {
     >
       {!networkStatus.isConnected && (
         <Animated.View entering={FadeIn.duration(300)}>
-          <OfflineIndicator message={t.chat.offlineMessage} />
+          <OfflineIndicator />
         </Animated.View>
       )}
       <View style={styles.container}>

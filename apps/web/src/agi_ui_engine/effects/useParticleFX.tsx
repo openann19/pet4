@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { useAnimatedStyle } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { useUIConfig } from '@/hooks/use-ui-config';
 
 export interface Particle {

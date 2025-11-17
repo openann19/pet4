@@ -26,13 +26,14 @@ import {
   type NativeSyntheticEvent,
   type NativeScrollEvent,
 } from 'react-native'
-import Animated, {
+import {
+  Animated,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   Layout,
   FadeInUp,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 
 import type { AdoptionListing } from '@/hooks/api/use-adoption-marketplace'

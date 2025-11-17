@@ -7,7 +7,7 @@ import { useSharedValue, useAnimatedStyle, withDecay, cancelAnimation, type Shar
 import { useCallback, useState, useRef } from 'react'
 import { Gesture } from 'react-native-gesture-handler'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseKineticScrollOptions {
   damping?: number

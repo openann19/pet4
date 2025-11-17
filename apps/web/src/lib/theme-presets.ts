@@ -1,4 +1,4 @@
-/* eslint-disable max-lines -- centralized theme preset registry, data-only */
+ 
 export type ThemePreset =
   | 'default-light'
   | 'default-dark'

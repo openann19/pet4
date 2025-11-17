@@ -15,6 +15,7 @@ export interface UseStaggeredItemReturn {
   opacity: ReturnType<typeof useSharedValue<number>>;
   y: ReturnType<typeof useSharedValue<number>>;
   itemStyle: AnimatedStyle;
+  animatedStyle: AnimatedStyle;
 }
 
 /**
@@ -46,5 +47,6 @@ export function useStaggeredItem(options: UseStaggeredItemOptions): UseStaggered
     opacity,
     y,
     itemStyle,
+    animatedStyle: itemStyle,
   };
 }

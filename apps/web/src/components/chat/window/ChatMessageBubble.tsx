@@ -10,8 +10,7 @@ import { Check, Checks, Heart, Pause, Play } from '@phosphor-icons/react';
 import type { ChatMessage, MessageReaction } from '@/lib/chat-types';
 import { REACTION_EMOJIS } from '@/lib/chat-types';
 import { formatChatTime, getReactionsArray } from '@/lib/chat-utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export interface ChatMessageBubbleProps {
   message: ChatMessage;
@@ -66,19 +65,11 @@ export function ChatMessageBubble({
   onToggleVoicePlayback,
   onShowReactions,
 }: ChatMessageBubbleProps) {
-  const messageItemStyleValue = useAnimatedStyleValue(messageItemStyle);
-  const messageBubbleHoverStyleValue = useAnimatedStyleValue(messageBubbleHover.animatedStyle);
-  const voiceButtonHoverStyleValue = useAnimatedStyleValue(voiceButtonHover.animatedStyle);
-  const voiceButtonTapStyleValue = useAnimatedStyleValue(voiceButtonTap.animatedStyle);
-  const reactionButtonHoverStyleValue = useAnimatedStyleValue(reactionButtonHover.animatedStyle);
-  const reactionButtonTapStyleValue = useAnimatedStyleValue(reactionButtonTap.animatedStyle);
-  const reactionContainerStyleValue = useAnimatedStyleValue(reactionContainerStyle);
-
   return (
     <MotionView
       key={message.id}
       className={`flex items-end gap-2 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'}`}
-      style={messageItemStyleValue}
+      style={messageItemStyle}
     >
       {!isCurrentUser && (
         <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
@@ -95,7 +86,7 @@ export function ChatMessageBubble({
         className={`flex flex-col max-w-[75%] ${isCurrentUser ? 'items-end' : 'items-start'}`}
       >
         <MotionView
-          style={messageBubbleHoverStyleValue}
+          style={messageBubbleHover.animatedStyle}
           onMouseEnter={messageBubbleHover.handleEnter}
           onMouseLeave={messageBubbleHover.handleLeave}
           className={`relative group ${message.type === 'sticker' ? 'p-0' : 'p-3'
@@ -114,14 +105,14 @@ export function ChatMessageBubble({
 
           {message.type === 'voice' && voiceMessages?.[message.id] && (
             <MotionView
-              style={voiceButtonTapStyleValue}
+              style={voiceButtonTap.animatedStyle}
               onClick={() => onToggleVoicePlayback(message.id)}
               className="flex items-center gap-2 min-w-50 cursor-pointer"
               onMouseEnter={voiceButtonHover.handleEnter}
               onMouseLeave={voiceButtonHover.handleLeave}
             >
               <MotionView
-                style={voiceButtonHoverStyleValue}
+                style={voiceButtonHover.animatedStyle}
                 className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"
               >
                 {playingVoice === message.id ? (
@@ -157,7 +148,7 @@ export function ChatMessageBubble({
           >
             <PopoverTrigger asChild>
               <MotionView
-                style={reactionButtonTapStyleValue}
+                style={reactionButtonTap.animatedStyle}
                 onClick={() => { }}
                 className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-white shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                 onMouseEnter={reactionButtonHover.handleEnter}
@@ -174,7 +165,7 @@ export function ChatMessageBubble({
                 {REACTION_EMOJIS.slice(0, 6).map((emoji) => (
                   <MotionView
                     key={emoji}
-                    style={reactionButtonTapStyleValue}
+                    style={reactionButtonTap.animatedStyle}
                     onClick={() => onReaction(message.id, emoji)}
                     className="text-2xl p-2 rounded-lg hover:bg-white/20 transition-colors cursor-pointer"
                     onMouseEnter={reactionButtonHover.handleEnter}
@@ -193,12 +184,12 @@ export function ChatMessageBubble({
           return (reactionsArray.length > 0 && (
             <MotionView
               className="flex gap-1 mt-1 px-2"
-              style={reactionContainerStyleValue}
+              style={reactionContainerStyle}
             >
               {reactionsArray.map((reaction: MessageReaction, idx: number) => (
                 <MotionView
                   key={idx}
-                  style={reactionButtonHoverStyleValue}
+                  style={reactionButtonHover.animatedStyle}
                   onMouseEnter={reactionButtonHover.handleEnter}
                   onMouseLeave={reactionButtonHover.handleLeave}
                   className="text-lg bg-white/80 rounded-full px-2 py-0.5 shadow-sm cursor-pointer"

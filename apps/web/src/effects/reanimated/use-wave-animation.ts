@@ -18,6 +18,7 @@ export interface UseWaveAnimationReturn {
   x: MotionValue<number>;
   y: MotionValue<number>;
   progress: MotionValue<number>;
+  animatedStyle: { x: MotionValue<number>; y: MotionValue<number> };
 }
 
 export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWaveAnimationReturn {
@@ -61,6 +62,7 @@ export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWave
     x,
     y,
     progress,
+    animatedStyle: { x, y },
   };
 }
 

@@ -9,7 +9,7 @@ import {
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export interface UseHeaderButtonAnimationOptions {
   delay?: number;
@@ -76,15 +76,22 @@ export function useHeaderButtonAnimation(
   };
 
   const buttonStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+    
+    const scaleValue = scale.get() * hoverScale.get();
+    if (scaleValue !== 1) transforms.push({ scale: scaleValue });
+    
+    const translateYValue = translateY.get() + hoverY.get();
+    if (translateYValue !== 0) transforms.push({ translateY: translateYValue });
+    
+    const rotationValue = rotation.get() + hoverRotation.get();
+    if (rotationValue !== 0) transforms.push({ rotate: `${rotationValue}deg` });
+
     return {
-      opacity: opacity.value,
-      transform: [
-        { scale: scale.value * hoverScale.value },
-        { translateY: translateY.value + hoverY.value },
-        { rotate: `${rotation.value + hoverRotation.value}deg` },
-      ],
+      opacity: opacity.get(),
+      transform: transforms,
     };
-  }) as AnimatedStyle;
+  });
 
   return {
     opacity,

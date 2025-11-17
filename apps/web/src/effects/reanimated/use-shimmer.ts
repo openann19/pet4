@@ -17,6 +17,7 @@ export interface UseShimmerReturn {
   opacity: MotionValue<number>;
   start: () => void;
   stop: () => void;
+  animatedStyle: { translateX: MotionValue<number>; opacity: MotionValue<number> };
 }
 
 const DEFAULT_DURATION = 2000;
@@ -96,5 +97,6 @@ export function useShimmer(options: UseShimmerOptions = {}): UseShimmerReturn {
     opacity,
     start,
     stop,
+    animatedStyle: { translateX, opacity },
   };
 }

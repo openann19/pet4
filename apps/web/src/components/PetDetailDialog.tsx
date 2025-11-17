@@ -36,9 +36,8 @@ import {
   withSpring,
   withTiming,
   MotionView,
-  Presence,
+  type MotionValue,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 interface PetDetailDialogProps {
   pet: Pet | null;
@@ -48,7 +47,7 @@ interface PetDetailDialogProps {
 
 export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDialogProps) {
   // All hooks must be called unconditionally at the top level
-  const photos = Array.isArray(pet?.photos)
+  const photos = pet && Array.isArray(pet.photos)
     ? pet.photos.filter((photo): photo is string => typeof photo === 'string' && photo.length > 0)
     : pet?.photo && typeof pet.photo === 'string'
       ? [pet.photo]
@@ -74,6 +73,27 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
   const closeButtonHover = useHoverLift();
   const closeButtonTap = useBounceOnTap();
 
+  // Create animated styles for close button
+  const closeButtonHoverStyle = useAnimatedStyle(() => {
+    const scale = closeButtonHover.scale.get();
+    const translateY = closeButtonHover.translateY.get();
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
+    transforms.push({ scale });
+    transforms.push({ translateY });
+    return {
+      transform: transforms,
+    };
+  });
+
+  const _closeButtonTapStyle = useAnimatedStyle(() => {
+    const scale = closeButtonTap.scale.get();
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
+    transforms.push({ scale });
+    return {
+      transform: transforms,
+    };
+  });
+
   // Presence hooks
   const dialogPresence = useAnimatePresence({ isVisible: open });
 
@@ -90,10 +110,18 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
     }
   }, [open, dialogOpacity, dialogScale, dialogY]);
 
-  const dialogStyle = useAnimatedStyle(() => ({
-    opacity: dialogOpacity.value,
-    transform: [{ scale: dialogScale.value }, { translateY: dialogY.value }],
-  })) as AnimatedStyle;
+  // Dialog style no longer needed—animatedStyle from presence hook is used instead
+  const _dialogStyle = useAnimatedStyle(() => {
+    const scale = dialogScale.value;
+    const translateY = dialogY.value;
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
+    transforms.push({ scale });
+    transforms.push({ translateY });
+    return {
+      opacity: dialogOpacity.value,
+      transform: transforms,
+    };
+  });
 
   // Animate photo transition when the current photo index changes
   useEffect(() => {
@@ -109,7 +137,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
   const photoStyle = useAnimatedStyle(() => ({
     opacity: photoOpacity.value,
     transform: [{ scale: photoScale.value }],
-  })) as AnimatedStyle;
+  }));
 
   const sizeMap: Record<string, string> = {
     small: 'Small (< 20 lbs)',
@@ -130,11 +158,11 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
         </DialogDescription>
         {open && dialogPresence.shouldRender ? (
           <MotionView
-            style={[dialogStyle, dialogPresence.animatedStyle]}
+            style={dialogPresence.animatedStyle}
             className="relative bg-card rounded-3xl overflow-hidden shadow-2xl"
           >
             <MotionView
-              style={[closeButtonHover.animatedStyle, closeButtonTap.animatedStyle]}
+              style={closeButtonHoverStyle}
               onClick={() => {
                 try {
                   haptics.trigger('light');
@@ -310,7 +338,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                             <Ruler size={18} weight="fill" className="text-accent" />
                             Size
                           </span>
-                          <span className="font-semibold">{sizeMap[pet.size] || pet.size}</span>
+                          <span className="font-semibold">{sizeMap[pet.size] ?? pet.size}</span>
                         </MotionView>
                       )}
                       {pet.location && (

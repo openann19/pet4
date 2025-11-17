@@ -9,6 +9,9 @@ import { useState } from 'react';
 import { getDefaultView } from '@/lib/routes';
 import type { View } from '@/lib/routes';
 
+// Re-export View type for consumers
+export type { View };
+
 interface UseAppNavigationReturn {
   currentView: View;
   setCurrentView: (view: View) => void;

@@ -11,7 +11,7 @@ import { Check, Trash, Archive } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import type { PremiumNotification, NotificationPreferences } from '../types';
 
@@ -50,7 +50,7 @@ function NotificationItemComponent({
     itemTranslateY.value = withSpring(0, springConfigs.smooth);
   }, [itemOpacity, itemTranslateY]);
 
-  const itemStyle = useAnimatedStyle(() => ({
+  const itemStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: itemOpacity.value,
     transform: [{ translateY: itemTranslateY.value }, { scale: hover.scale.value }],
   })) as AnimatedStyle;

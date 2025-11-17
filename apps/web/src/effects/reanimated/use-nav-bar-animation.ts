@@ -11,7 +11,7 @@ import {
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export interface UseNavBarAnimationOptions {
   delay?: number;
@@ -62,18 +62,31 @@ export function useNavBarAnimation(
   }, [delay, opacity, translateY, scale, shimmerTranslateX, shimmerOpacity]);
 
   const navStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+    
+    const translateYValue = translateY.get();
+    if (translateYValue !== 0) transforms.push({ translateY: translateYValue });
+    
+    const scaleValue = scale.get();
+    if (scaleValue !== 1) transforms.push({ scale: scaleValue });
+
     return {
-      opacity: opacity.value,
-      transform: [{ translateY: translateY.value }, { scale: scale.value }],
+      opacity: opacity.get(),
+      transform: transforms,
     };
-  }) as AnimatedStyle;
+  });
 
   const shimmerStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+    
+    const translateXValue = shimmerTranslateX.get();
+    if (translateXValue != null) transforms.push({ translateX: `${translateXValue}%` });
+
     return {
-      transform: [{ translateX: `${String(shimmerTranslateX.value ?? '')}%` }],
-      opacity: shimmerOpacity.value,
+      transform: transforms,
+      opacity: shimmerOpacity.get(),
     };
-  }) as AnimatedStyle;
+  });
 
   return {
     opacity,

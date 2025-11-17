@@ -24,7 +24,7 @@ export interface SubmitApplicationData {
  */
 export function useAdoptionProfiles(
   filters?: Record<string, unknown>
-): ReturnType<typeof useInfiniteQuery<AdoptionProfile[]>> {
+) {
   return useInfiniteQuery({
     queryKey: [...queryKeys.adoption.listings, filters],
     queryFn: async ({ pageParam }) => {
@@ -38,6 +38,7 @@ export function useAdoptionProfiles(
       // Return cursor for next page if available
       return undefined;
     },
+    initialPageParam: undefined,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });

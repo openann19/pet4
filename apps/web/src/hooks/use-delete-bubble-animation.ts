@@ -6,8 +6,8 @@ import {
   withSpring,
   withSequence,
   withTiming,
+  animateWithTiming,
   runOnUI,
-  runOnJS,
   type SharedValue,
 } from '@petspark/motion';
 import { useCallback } from 'react';
@@ -75,9 +75,9 @@ export function useDeleteBubbleAnimation(
             ...timingConfigs.smooth,
             duration,
           });
-          height.value = withTiming(0, { duration }, (finished) => {
-            if (finished && onFinish) {
-              runOnJS(onFinish)();
+          void animateWithTiming(height, 0, { duration }).then(() => {
+            if (onFinish) {
+              onFinish();
             }
           });
           break;
@@ -99,9 +99,9 @@ export function useDeleteBubbleAnimation(
             withTiming(0.7, { duration: duration * 0.2 }),
             withTiming(0, { duration: duration * 0.8 })
           );
-          height.value = withTiming(0, { duration }, (finished) => {
-            if (finished && onFinish) {
-              runOnJS(onFinish)();
+          void animateWithTiming(height, 0, { duration }).then(() => {
+            if (onFinish) {
+              onFinish();
             }
           });
           rotation.value = withSequence(
@@ -121,9 +121,9 @@ export function useDeleteBubbleAnimation(
             withTiming(0.8, { duration: duration * 0.2 }),
             withTiming(0, { duration: duration * 0.8 })
           );
-          height.value = withTiming(0, { duration }, (finished) => {
-            if (finished && onFinish) {
-              runOnJS(onFinish)();
+          void animateWithTiming(height, 0, { duration }).then(() => {
+            if (onFinish) {
+              onFinish();
             }
           });
           rotation.value = withTiming(Math.random() > 0.5 ? 15 : -15, { duration });
@@ -136,9 +136,9 @@ export function useDeleteBubbleAnimation(
             withTiming(0.5, { duration: duration * 0.3 }),
             withTiming(0, { duration: duration * 0.7 })
           );
-          height.value = withTiming(0, { duration }, (finished) => {
-            if (finished && onFinish) {
-              runOnJS(onFinish)();
+          void animateWithTiming(height, 0, { duration }).then(() => {
+            if (onFinish) {
+              onFinish();
             }
           });
           break;
@@ -147,9 +147,9 @@ export function useDeleteBubbleAnimation(
         default: {
           scale.value = withTiming(0, { duration });
           opacity.value = withTiming(0, { duration });
-          height.value = withTiming(0, { duration }, (finished) => {
-            if (finished && onFinish) {
-              runOnJS(onFinish)();
+          void animateWithTiming(height, 0, { duration }).then(() => {
+            if (onFinish) {
+              onFinish();
             }
           });
         }
@@ -180,15 +180,24 @@ export function useDeleteBubbleAnimation(
   }, [opacity, scale, translateY, translateX, height, rotation]);
 
   const animatedStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+    
+    const scaleValue = scale.get();
+    if (scaleValue !== 1) transforms.push({ scale: scaleValue });
+    
+    const translateYValue = translateY.get();
+    if (translateYValue !== 0) transforms.push({ translateY: translateYValue });
+    
+    const translateXValue = translateX.get();
+    if (translateXValue !== 0) transforms.push({ translateX: translateXValue });
+    
+    const rotationValue = rotation.get();
+    if (rotationValue !== 0) transforms.push({ rotate: `${rotationValue}deg` });
+
     return {
-      opacity: opacity.value,
-      transform: [
-        { scale: scale.value },
-        { translateY: translateY.value },
-        { translateX: translateX.value },
-        { rotate: `${rotation.value}deg` },
-      ],
-      height: height.value,
+      opacity: opacity.get(),
+      transform: transforms,
+      height: height.get(),
       overflow: 'hidden' as const,
     };
   });

@@ -6,7 +6,7 @@
 import { useSharedValue, useAnimatedStyle, withSpring, interpolate } from 'react-native-reanimated'
 import { useCallback, useState } from 'react'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseSpringCarouselOptions {
   itemCount: number

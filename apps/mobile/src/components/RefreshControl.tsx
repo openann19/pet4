@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { ActivityIndicator, StyleSheet, Text } from 'react-native'
-import Animated, { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated'
+import { Animated, Extrapolation, interpolate, useAnimatedStyle } from '@petspark/motion'
 import type { UsePullToRefreshReturn } from '../hooks/use-pull-to-refresh'
 import { colors } from '../theme/colors'
 

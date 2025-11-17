@@ -4,6 +4,7 @@
  */
 
 import { Suspense, lazy } from 'react'
+import type { useSharedValue } from '@petspark/motion';
 import { MotionView } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
@@ -29,48 +30,48 @@ interface AppModalsProps {
   setShowThemeSettings: (show: boolean) => void
   animations: {
     generateProfilesModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     generateProfilesContent: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     statsModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     statsContent: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     mapModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     mapContent: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     adminModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     adminContent: {
-      style: unknown
+      style: React.CSSProperties
     }
     themeContent: {
-      style: unknown
+      style: React.CSSProperties
     }
     closeButtonBounce: {
-      scale: unknown
+      scale: number | ReturnType<typeof useSharedValue<number>>
     }
   }
   totalMatches: number
@@ -100,7 +101,7 @@ export function AppModals({
     <>
       {showGenerateProfiles && (
         <MotionView
-          animatedStyle={{
+          style={{
             opacity: animations.generateProfilesModal.opacity,
             scale: animations.generateProfilesModal.scale,
             y: animations.generateProfilesModal.y,
@@ -111,7 +112,7 @@ export function AppModals({
           }}
         >
           <MotionView
-            animatedStyle={{
+            style={{
               opacity: animations.generateProfilesContent.opacity,
               scale: animations.generateProfilesContent.scale,
               y: animations.generateProfilesContent.y,
@@ -122,7 +123,7 @@ export function AppModals({
             <Suspense fallback={<LoadingState />}>
               <GenerateProfilesButton />
             </Suspense>
-            <MotionView animatedStyle={{ scale: animations.closeButtonBounce.scale }}>
+            <MotionView style={{ scale: animations.closeButtonBounce.scale }}>
               <Button variant="outline" className="w-full mt-4" onClick={() => { setShowGenerateProfiles(false) }}>
                 Close
               </Button>
@@ -133,7 +134,7 @@ export function AppModals({
 
       {showStats && totalSwipes > 0 && (
         <MotionView
-          animatedStyle={{
+          style={{
             opacity: animations.statsModal.opacity,
             scale: animations.statsModal.scale,
             y: animations.statsModal.y,
@@ -144,7 +145,7 @@ export function AppModals({
           }}
         >
           <MotionView
-            animatedStyle={{
+            style={{
               opacity: animations.statsContent.opacity,
               scale: animations.statsContent.scale,
               y: animations.statsContent.y,
@@ -155,7 +156,7 @@ export function AppModals({
             <Suspense fallback={<LoadingState />}>
               <StatsCard totalMatches={totalMatches} totalSwipes={totalSwipes} successRate={successRate} />
             </Suspense>
-            <MotionView animatedStyle={{ scale: animations.closeButtonBounce.scale }}>
+            <MotionView style={{ scale: animations.closeButtonBounce.scale }}>
               <Button variant="outline" className="w-full mt-4" onClick={() => { setShowStats(false) }}>
                 Close
               </Button>
@@ -166,7 +167,7 @@ export function AppModals({
 
       {showMap && (
         <MotionView
-          animatedStyle={{
+          style={{
             opacity: animations.mapModal.opacity,
             scale: animations.mapModal.scale,
             y: animations.mapModal.y,
@@ -175,7 +176,7 @@ export function AppModals({
         >
           <Suspense fallback={<LoadingState />}>
             <MotionView
-              animatedStyle={{
+              style={{
                 opacity: animations.mapContent.opacity,
                 scale: animations.mapContent.scale,
                 y: animations.mapContent.y,
@@ -190,14 +191,14 @@ export function AppModals({
 
       {showAdminConsole && (
         <MotionView
-          animatedStyle={{
+          style={{
             opacity: animations.adminModal.opacity,
             scale: animations.adminModal.scale,
             y: animations.adminModal.y,
           }}
           className="fixed inset-0 z-50 bg-background"
         >
-          <MotionView animatedStyle={animations.adminContent.style} className="h-full w-full">
+          <MotionView style={animations.adminContent.style} className="h-full w-full">
             <Suspense fallback={<LoadingState />}>
               <AdminConsole onClose={() => { setShowAdminConsole(false) }} />
             </Suspense>
@@ -209,7 +210,7 @@ export function AppModals({
         <Dialog open={showThemeSettings} onOpenChange={setShowThemeSettings}>
           <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto p-0">
             <DialogTitle className="sr-only">Ultra Theme Settings</DialogTitle>
-            <MotionView animatedStyle={animations.themeContent.style}>
+            <MotionView style={animations.themeContent.style}>
               <Suspense fallback={<LoadingState />}>
                 <UltraThemeSettings />
               </Suspense>

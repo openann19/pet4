@@ -164,7 +164,7 @@ export function DismissibleOverlay({
     <div className={cn('fixed inset-0 z-50 flex items-center justify-center', className)}>
       {overlayPresence.shouldRender && (
         <MotionView
-          style={overlayPresence.animatedStyle as React.CSSProperties}
+          style={overlayPresence.animatedStyle}
           className={cn('absolute inset-0 bg-background/80 backdrop-blur-sm', overlayClassName)}
           aria-hidden="true"
           onClick={closeOnOutsideClick ? onClose : undefined}
@@ -181,8 +181,8 @@ export function DismissibleOverlay({
           aria-modal="true"
           aria-labelledby={title ? 'overlay-title' : undefined}
         >
-          <MotionView style={contentPresence.animatedStyle as React.CSSProperties} className="h-full w-full">
-            {((title ?? '') || showCloseButton) && (
+          <MotionView style={contentPresence.animatedStyle} className="h-full w-full">
+            {(title || showCloseButton) && (
               <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                 {title && (
                   <h2 id="overlay-title" className="text-xl font-semibold text-foreground">

@@ -19,7 +19,7 @@ import type { ChatRoom } from '@/lib/chat-types';
 import { createChatRoom } from '@/lib/chat-utils';
 import { createLogger } from '@/lib/logger';
 import type { Match, Pet } from '@/lib/types';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';

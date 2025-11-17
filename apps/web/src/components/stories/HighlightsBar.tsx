@@ -44,8 +44,7 @@ export default function HighlightsBar({ petId, userId, onlyOwn = false }: Highli
       <div className="w-full overflow-x-auto">
         <div className="flex gap-4 pb-2 min-w-min">
           {onlyOwn && (
-            <MotionView
-              as="button"
+            <motion.button
               onClick={() => {
                 haptics.trigger('selection');
                 setShowCreateDialog(true);
@@ -66,12 +65,11 @@ export default function HighlightsBar({ petId, userId, onlyOwn = false }: Highli
               <span className="text-xs font-medium text-muted-foreground max-w-20 truncate">
                 New
               </span>
-            </MotionView>
+            </motion.button>
           )}
 
           {sortedHighlights.map((highlight, index) => (
-            <MotionView
-              as="button"
+            <motion.button
               key={highlight.id}
               onClick={() => {
                 haptics.trigger('light');
@@ -118,7 +116,7 @@ export default function HighlightsBar({ petId, userId, onlyOwn = false }: Highli
               <span className="text-xs font-medium text-foreground max-w-20 truncate text-center leading-tight">
                 {highlight.title}
               </span>
-            </MotionView>
+            </motion.button>
           ))}
         </div>
       </div>

@@ -36,12 +36,13 @@ export function updateStreak(
   activityDate: string = new Date().toISOString()
 ): Streak {
   if (!streak) {
+    const nextMilestone = getNextMilestone(1);
     return {
       type: 'login',
       current: 1,
       longest: 1,
       lastActivityDate: activityDate,
-      nextMilestone: getNextMilestone(1),
+      ...(nextMilestone !== undefined && { nextMilestone }),
     };
   }
 
@@ -59,21 +60,23 @@ export function updateStreak(
   if (daysDiff === 1) {
     // Consecutive day, increment streak
     const newCurrent = streak.current + 1;
+    const nextMilestone = getNextMilestone(newCurrent);
     return {
       ...streak,
       current: newCurrent,
       longest: Math.max(streak.longest, newCurrent),
       lastActivityDate: activityDate,
-      nextMilestone: getNextMilestone(newCurrent),
+      ...(nextMilestone !== undefined && { nextMilestone }),
     };
   }
 
   // Streak broken, reset
+  const nextMilestone = getNextMilestone(1);
   return {
     ...streak,
     current: 1,
     lastActivityDate: activityDate,
-    nextMilestone: getNextMilestone(1),
+    ...(nextMilestone !== undefined && { nextMilestone }),
   };
 }
 

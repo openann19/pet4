@@ -403,9 +403,10 @@ const resolveReactNativePlugin = (): PluginOption => {
   };
 };
 
-// Plugin to resolve @petspark/shared workspace package
+// Plugin to resolve @petspark workspace packages
 const resolveWorkspacePackagePlugin = (): PluginOption => {
   const sharedPackagePath = path.resolve(projectRoot, '../../packages/shared/src');
+  const corePackagePath = path.resolve(projectRoot, '../../packages/core/src');
 
   return {
     name: 'resolve-workspace-package',
@@ -419,6 +420,22 @@ const resolveWorkspacePackagePlugin = (): PluginOption => {
       if (id.startsWith('@petspark/shared/')) {
         const subPath = id.replace('@petspark/shared/', '');
         return path.resolve(sharedPackagePath, `${String(subPath ?? '')}.ts`);
+      }
+      // Resolve @petspark/core to its index.ts
+      if (id === '@petspark/core') {
+        return path.resolve(corePackagePath, 'index.ts');
+      }
+      // Resolve sub-imports like @petspark/core/gamification/types
+      if (id.startsWith('@petspark/core/')) {
+        const subPath = id.replace('@petspark/core/', '');
+        const fullPath = path.resolve(corePackagePath, `${String(subPath ?? '')}.ts`);
+        if (existsSync(fullPath)) {
+          return fullPath;
+        }
+        // Try without .ts extension if file exists
+        if (existsSync(path.resolve(corePackagePath, subPath))) {
+          return path.resolve(corePackagePath, subPath);
+        }
       }
       // Handle relative imports from within the shared package
       // When importer is from shared package, resolve relative imports to .ts files
@@ -494,6 +511,7 @@ export default defineConfig(async (): Promise<UserConfig> => {
   return {
     plugins,
     define: {
+      __DEV__: process.env.NODE_ENV !== 'production',
       'process.version': JSON.stringify(''),
       'process.platform': JSON.stringify('browser'),
       'process.browser': 'true',

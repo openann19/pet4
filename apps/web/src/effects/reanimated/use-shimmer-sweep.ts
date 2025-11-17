@@ -28,6 +28,7 @@ export interface UseShimmerSweepReturn {
       opacity: number;
     };
   };
+  animatedStyle: { x: MotionValue<number>; opacity: MotionValue<number> };
 }
 
 export function useShimmerSweep({
@@ -138,6 +139,7 @@ export function useShimmerSweep({
     progress,
     isAnimating,
     variants,
+    animatedStyle: { x, opacity },
   };
 }
 

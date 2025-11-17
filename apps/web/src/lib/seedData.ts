@@ -1,4 +1,4 @@
-/* eslint-disable max-lines -- Pet generation service with comprehensive LLM prompts and data transformation logic */
+ 
 import { buildLLMPrompt } from './llm-prompt';
 import { llmService } from './llm-service';
 import { parseLLMError } from './llm-utils';
@@ -145,8 +145,8 @@ Return ONLY valid JSON in this exact structure:
   }
 }
 
-function getFallbackPets(): Pet[] {
-  const fallbackPetsData: Omit<Pet, 'trustProfile' | 'ratings'>[] = [
+function getFallbackPetsDataPart1(): Omit<Pet, 'trustProfile' | 'ratings'>[] {
+  return [
     {
       id: 'sample-pet-1',
       name: 'Luna',
@@ -245,6 +245,11 @@ function getFallbackPets(): Pet[] {
       verified: false,
       createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
     },
+  ];
+}
+
+function getFallbackPetsDataPart2(): Omit<Pet, 'trustProfile' | 'ratings'>[] {
+  return [
     {
       id: 'sample-pet-6',
       name: 'Daisy',
@@ -436,6 +441,17 @@ function getFallbackPets(): Pet[] {
       createdAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
     },
   ];
+}
+
+function getFallbackPetsData(): Omit<Pet, 'trustProfile' | 'ratings'>[] {
+  return [
+    ...getFallbackPetsDataPart1(),
+    ...getFallbackPetsDataPart2(),
+  ];
+}
+
+function getFallbackPets(): Pet[] {
+  const fallbackPetsData = getFallbackPetsData();
 
   return fallbackPetsData.map((pet) => {
     const badges = generateTrustBadges(pet.id, pet.verified);

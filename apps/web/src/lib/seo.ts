@@ -74,7 +74,7 @@ export function updateSEO(config: SEOConfig): void {
 function updateMetaTag(attribute: 'name' | 'property', key: string, value: string): void {
   if (typeof document === 'undefined') return;
 
-  let meta = document.querySelector(`meta[${attribute}="${key}"]`)!;
+  let meta = document.querySelector(`meta[${attribute}="${key}"]`);
   
   if (!meta) {
     meta = document.createElement('meta');
@@ -91,7 +91,7 @@ function updateMetaTag(attribute: 'name' | 'property', key: string, value: strin
 function updateLinkTag(rel: string, href: string): void {
   if (typeof document === 'undefined') return;
 
-  let link = document.querySelector(`link[rel="${rel}"]`)!;
+  let link = document.querySelector(`link[rel="${rel}"]`);
   
   if (!link) {
     link = document.createElement('link');

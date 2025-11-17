@@ -22,14 +22,12 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
     const _uiConfig = useUIConfig();
     const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const scale = animation.scale.get();
-    const translateY = animation.translateY.get();
-    return {
+    const animatedStyle = useAnimatedStyle(() => ({
       opacity: animation.opacity.get(),
-      transform: [{ scale, translateY }],
-    };
-  });
+      transform: [
+        { translateY: animation.translateY.get(), scale: animation.scale.get() },
+      ],
+    }));
 
   return (
     <MotionView
@@ -40,9 +38,9 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
         <h3 className="font-semibold text-foreground">Message Templates</h3>
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={onClose}
-          className="h-6 w-6 p-0"
+          className="h-6 w-6"
           aria-label="Close message templates"
         >
           <X size={16} />

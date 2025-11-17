@@ -56,13 +56,13 @@ export function useMapPlaces(
       };
 
       places.push({
-        id: `place-${String(i ?? '')}`,
-        name: `${String(category.name ?? '')} ${String(i + 1 ?? '')}`,
-        description: `Great ${String(category.name.toLowerCase() ?? '')} in your area`,
+        id: `place-${String(i)}`,
+        name: `${String(category.name)} ${String(i + 1)}`,
+        description: `Great ${String(category.name.toLowerCase())} in your area`,
         category: category.id,
         location,
-        address: `${String(Math.floor(Math.random() * 999) ?? '')} Main St, City`,
-        phone: `+1-555-${String(Math.floor(Math.random() * 9000) + 1000 ?? '')}`,
+        address: `${String(Math.floor(Math.random() * 999))} Main St, City`,
+        phone: `+1-555-${String(Math.floor(Math.random() * 9000) + 1000)}`,
         hours: '9:00 AM - 6:00 PM',
         photos: [`https://images.unsplash.com/photo-${String(1560807700000 + i * 1000000 ?? '')}?w=400&q=80`],
         verified: Math.random() > 0.3,

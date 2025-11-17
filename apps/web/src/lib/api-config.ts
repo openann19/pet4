@@ -70,7 +70,10 @@ export async function getLiveKitConfig() {
 
 export function isServiceEnabled(service: keyof APIConfig, config: APIConfig | null): boolean {
   if (!config) return false;
-  return config[service]?.enabled ?? false;
+  const serviceConfig = config[service];
+  return (serviceConfig && typeof serviceConfig === 'object' && 'enabled' in serviceConfig) 
+    ? Boolean(serviceConfig.enabled) 
+    : false;
 }
 
 export function getAPIKey(service: keyof APIConfig, config: APIConfig | null): string {

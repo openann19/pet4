@@ -6,7 +6,7 @@
 import { useSharedValue, useAnimatedStyle, withSpring, withDelay, withSequence, interpolate } from 'react-native-reanimated'
 import { useEffect } from 'react'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseUltraCardRevealOptions {
   delay?: number

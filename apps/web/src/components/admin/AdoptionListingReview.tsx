@@ -1,6 +1,6 @@
 'use client';
 
-import { MotionView, useAnimatedStyle } from "@petspark/motion";
+import { MotionView } from "@petspark/motion";
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,16 +53,11 @@ function ListingItem({ listing, isSelected, onSelect, animation }: ListingItemPr
     onSelect();
   }, [animation, onSelect]);
 
-  const bounceStyle = useAnimatedStyle(() => {
-    const scale = animation.scale.get();
-    return {
-      transform: [{ scale }],
-    };
-  });
-
   return (
     <MotionView
-      style={bounceStyle}
+      variants={animation.variants}
+      initial="rest"
+      whileTap="tap"
       onClick={handleClick}
       className={`w-full text-left p-4 rounded-lg border-2 transition-all cursor-pointer ${
         isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'

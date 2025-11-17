@@ -38,6 +38,7 @@ const schema = z
     VITE_APP_VERSION: z.string().min(1).default('0.0.0'),
     VITE_ENVIRONMENT: z.enum(['development', 'staging', 'production']).default('development'),
     VITE_SENTRY_DSN: z.string().url('Invalid Sentry DSN').optional(),
+    VITE_STRIPE_PUBLIC_KEY: z.string().optional(), // public Stripe key; optional for development
   })
   .superRefine((vals, ctx) => {
     if (isProd && vals.VITE_ENABLE_MAPS && !vals.VITE_MAPBOX_TOKEN) {

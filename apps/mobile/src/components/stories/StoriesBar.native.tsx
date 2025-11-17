@@ -4,9 +4,9 @@
  * Mobile stories bar with Reanimated animations
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { useSharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import Animated from 'react-native-reanimated';
 import type { Story } from '@petspark/core';
 import { groupStoriesByUser, filterActiveStories } from '@petspark/shared';
@@ -15,7 +15,6 @@ import { useEntryAnimation } from '@mobile/effects/reanimated/use-entry-animatio
 import { useBounceOnTap } from '@mobile/effects/reanimated/use-bounce-on-tap';
 import * as Haptics from 'expo-haptics';
 
-const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface StoriesBarProps {
@@ -41,7 +40,7 @@ interface StoryRingProps {
   index: number;
 }
 
-function StoryRing({ stories, petName, petPhoto, isOwn, hasUnviewed, onPress, index }: StoryRingProps) {
+function StoryRing({ stories: _stories, petName, petPhoto, isOwn, hasUnviewed, onPress, index }: StoryRingProps) {
   const entry = useEntryAnimation({ delay: index * 50 });
   const bounce = useBounceOnTap({ scale: 0.95 });
   const scale = useSharedValue(1);
@@ -82,7 +81,7 @@ function StoryRing({ stories, petName, petPhoto, isOwn, hasUnviewed, onPress, in
 export function StoriesBar({
   allStories,
   currentUserId,
-  currentUserPetId,
+  currentUserPetId: _currentUserPetId,
   currentUserPetName,
   currentUserPetPhoto,
   onStoryRingPress,

@@ -1,7 +1,6 @@
 import { MotionView } from "@petspark/motion";
 import { verificationApi } from '@/api/verification-api';
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -303,7 +302,7 @@ export function VerificationReviewDashboard(): JSX.Element {
         <TabsContent value={selectedTab} className="mt-6">
           <ScrollArea className="h-125 sm:h-150 pr-2 sm:pr-4">
             {loadingPresence.shouldRender && initialLoading && (
-              <MotionView style={useAnimatedStyleValue(loadingPresence.animatedStyle)}>
+              <MotionView style={loadingPresence.animatedStyle}>
                 <div className="text-center py-16">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
                   <p className="mt-4 text-muted-foreground">Loading verification requests...</p>
@@ -311,7 +310,7 @@ export function VerificationReviewDashboard(): JSX.Element {
               </MotionView>
             )}
             {emptyPresence.shouldRender && !initialLoading && filteredRequests.length === 0 && (
-              <MotionView style={useAnimatedStyleValue(emptyPresence.animatedStyle)} className="text-center py-16">
+              <MotionView style={emptyPresence.animatedStyle} className="text-center py-16">
                 <ShieldCheck size={64} className="mx-auto text-muted-foreground mb-4 opacity-50" />
                 <p className="text-muted-foreground text-lg font-medium">
                   No requests in this category
@@ -580,7 +579,7 @@ export function VerificationReviewDashboard(): JSX.Element {
 
                     <div className="grid grid-cols-2 gap-3">
                       <Button
-                        onClick={() => { void handleApprove(); }}
+                        onClick={() => void handleApprove()}
                         disabled={loading}
                         className="bg-linear-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg"
                         size="lg"
@@ -589,7 +588,7 @@ export function VerificationReviewDashboard(): JSX.Element {
                         Approve & Verify
                       </Button>
                       <Button
-                        onClick={() => { void handleReject(); }}
+                        onClick={() => void handleReject()}
                         disabled={loading || !rejectionReason}
                         variant="destructive"
                         className="shadow-lg"

@@ -49,7 +49,7 @@ function MapController({
   }, [map, center.lat, center.lng, zoom]);
 
   useMapEvents({
-    click: (e) => {
+    click: (e: L.LeafletMouseEvent) => {
       if (isTruthy(onMapClick)) {
         onMapClick({
           lat: e.latlng.lat,

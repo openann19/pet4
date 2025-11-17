@@ -37,7 +37,7 @@ export function useAdoptionMarketplace(): UseAdoptionMarketplaceReturn {
   const loadCurrentUser = useCallback(async () => {
     try {
       const user = await spark.user();
-      setCurrentUser({ id: user.id, name: user.login });
+      setCurrentUser({ id: user.id, name: user.login ?? '' });
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to load user', err, { action: 'loadUser' });

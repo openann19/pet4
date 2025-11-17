@@ -6,7 +6,6 @@ import {
   animate,
   MotionView,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -62,13 +61,13 @@ function TypingDot({
 
   useEffect(() => {
     setTimeout(() => {
-      animate(scale, [1, 1.4, 1], {
+      animate(scale, 1.4, {
         duration: animationDuration,
         repeat: Infinity,
         repeatType: 'reverse',
         ease: 'easeInOut',
       });
-      animate(opacity, [0.5, 1, 0.5], {
+      animate(opacity, 1, {
         duration: animationDuration,
         repeat: Infinity,
         repeatType: 'reverse',

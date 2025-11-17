@@ -6,8 +6,8 @@ import {
   withTiming,
   animate,
   MotionView,
+  Presence,
 } from '@petspark/motion';
-import { Presence, MotionView } from '@petspark/motion';
 import { X, CheckCircle, Warning, Info, XCircle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -120,7 +120,7 @@ export function SmartToast({
     return undefined;
   }, [duration, handleDismiss]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const animatedStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: opacity.get(),
     transform: [
       { translateY: translateY.get() },

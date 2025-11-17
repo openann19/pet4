@@ -86,7 +86,6 @@ export function UltraButton({
   const prefersReducedMotion = usePrefersReducedMotion();
   const magnetic = useMagneticEffect({
     strength: 0.4,
-    maxDistance: 40,
     enabled: enableMagnetic && !prefersReducedMotion,
   });
 

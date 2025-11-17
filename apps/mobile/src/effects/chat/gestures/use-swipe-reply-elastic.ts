@@ -24,7 +24,6 @@ import { createLogger } from '../../../utils/logger'
 import { triggerHaptic } from '../core/haptic-manager'
 import { useReducedMotionSV } from '../core/reduced-motion'
 import { createAnimatedRibbonPath, getRibbonConfig } from '../shaders/ribbon-fx'
-import { isTruthy, isDefined } from '@petspark/shared';
 
 const logger = createLogger('swipe-reply-elastic')
 

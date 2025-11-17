@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MotionView, Presence } from '@petspark/motion';
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from '@petspark/motion';
+import { useSharedValue, useAnimatedStyle, withTiming, withSpring, type MotionValue } from '@petspark/motion';
 import React from 'react';
 import {
   Plus,
@@ -57,13 +57,17 @@ function QuickActionItem({ icon, label, onClick, color, index }: QuickActionItem
     hoverX.value = withTiming(0, { duration: 200 });
   }, [hoverScale, hoverX]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: itemOpacity.value,
-    transform: [
-      { translateX: itemX.value + hoverX.value },
-      { scale: itemScale.value * hoverScale.value },
-    ],
-  }));
+  const animatedStyle = useAnimatedStyle(() => {
+    const translateX = itemX.value + hoverX.value;
+    const scale = itemScale.value * hoverScale.value;
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
+    transforms.push({ translateX });
+    transforms.push({ scale });
+    return {
+      opacity: itemOpacity.value,
+      transform: transforms,
+    };
+  });
 
   const handleClick = React.useCallback(() => {
     try {
@@ -77,7 +81,7 @@ function QuickActionItem({ icon, label, onClick, color, index }: QuickActionItem
 
   return (
     <MotionView
-      animatedStyle={animatedStyle}
+      style={animatedStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}

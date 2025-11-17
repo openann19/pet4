@@ -106,16 +106,16 @@ export function SearchBar({
       [colors.border, colors.primary]
     ),
     shadowOpacity: focusState.value * 0.1,
-  }), [focusState])
+  }))
 
   const clearAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: clearScale.value }],
     opacity: value.length > 0 ? 1 : 0,
-  }), [clearScale, value.length])
+  }))
 
   const filterAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: filterScale.value }],
-  }), [filterScale])
+  }))
 
   return (
     <Animated.View style={[styles.container, containerAnimatedStyle]}>

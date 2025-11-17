@@ -1,12 +1,13 @@
 import React, { memo, useCallback, useEffect } from 'react'
 import { TouchableOpacity, StyleSheet, Text, View } from 'react-native'
-import Animated, {
+import {
+  Animated,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
   withSequence,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavBarAnimation, useNavButtonAnimation } from '../effects/reanimated'
 import { colors } from '../theme/colors'
@@ -34,7 +35,9 @@ export function BottomNavBar({ active, items, onChange }: BottomNavBarProps): Re
   const handlePress = useCallback(
     (key: TabKey): void => {
       if (key !== active) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch((_error) => {
+          // Ignore haptic errors - not critical for UX
+        })
         onChange(key)
       }
     },

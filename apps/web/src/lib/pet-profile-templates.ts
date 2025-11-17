@@ -1,4 +1,4 @@
-/* eslint-disable max-lines -- central pet profile template library, data-only file */
+ 
 import type { Pet } from './types';
 
 export type PetType = 'dog' | 'cat' | 'bird' | 'rabbit' | 'fish' | 'other';

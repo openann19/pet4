@@ -1,6 +1,6 @@
 import { Clock, Check, Checks, X } from '@phosphor-icons/react';
 import { MotionView } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import type { Message } from '@/lib/chat-types';
 
 interface MessageStatusIconProps {
@@ -12,7 +12,7 @@ interface MessageStatusIconProps {
 export function MessageStatusIcon({ status, statusStyle, onRetry }: MessageStatusIconProps) {
   if (status === 'sending') {
     return (
-      <MotionView animatedStyle={statusStyle}>
+      <MotionView style={statusStyle}>
         <Clock size={12} className="text-muted-foreground" />
       </MotionView>
     );
@@ -32,7 +32,7 @@ export function MessageStatusIcon({ status, statusStyle, onRetry }: MessageStatu
 
   if (status === 'read') {
     return (
-      <MotionView animatedStyle={statusStyle}>
+      <MotionView style={statusStyle}>
         <Checks size={12} className="text-primary" />
       </MotionView>
     );
@@ -40,14 +40,14 @@ export function MessageStatusIcon({ status, statusStyle, onRetry }: MessageStatu
 
   if (status === 'delivered') {
     return (
-      <MotionView animatedStyle={statusStyle}>
+      <MotionView style={statusStyle}>
         <Checks size={12} className="text-muted-foreground" />
       </MotionView>
     );
   }
 
   return (
-    <MotionView animatedStyle={statusStyle}>
+    <MotionView style={statusStyle}>
       <Check size={12} className="text-muted-foreground" />
     </MotionView>
   );

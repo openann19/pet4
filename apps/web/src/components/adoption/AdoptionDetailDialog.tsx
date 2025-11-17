@@ -1,8 +1,7 @@
 import { MotionView } from "@petspark/motion";
 import { useState } from 'react';
+import { useAnimatePresence } from '@/effects/reanimated';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -77,7 +76,7 @@ export function AdoptionDetailDialog({
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
           <div className="relative h-80 bg-muted">
             {photoPresence.shouldRender && (
-              <MotionView key={currentPhotoIndex} style={useAnimatedStyleValue(photoPresence.animatedStyle)}>
+              <MotionView key={currentPhotoIndex} style={photoPresence.animatedStyle}>
                 <img
                   src={photos[currentPhotoIndex]}
                   alt={`${profile.petName} - Photo ${currentPhotoIndex + 1}`}
@@ -89,6 +88,7 @@ export function AdoptionDetailDialog({
             {photos.length > 1 && (
               <>
                 <MotionView
+                  style={prevButtonHover.animatedStyle}
                   onMouseEnter={prevButtonHover.handleMouseEnter}
                   onMouseLeave={prevButtonHover.handleMouseLeave}
                   onClick={() => {
@@ -104,6 +104,7 @@ export function AdoptionDetailDialog({
                   </button>
                 </MotionView>
                 <MotionView
+                  style={nextButtonHover.animatedStyle}
                   onMouseEnter={nextButtonHover.handleMouseEnter}
                   onMouseLeave={nextButtonHover.handleMouseLeave}
                   onClick={() => {

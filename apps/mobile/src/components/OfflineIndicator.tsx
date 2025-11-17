@@ -5,7 +5,7 @@
 
 import React from 'react'
 import { StyleSheet, Text } from 'react-native'
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated'
+import { Animated, FadeIn, FadeOut } from '@petspark/motion'
 import { useNetworkStatus } from '../hooks/use-network-status'
 import { isTruthy } from '@petspark/shared';
 

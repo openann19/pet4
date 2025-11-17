@@ -3,7 +3,7 @@
 import { useSharedValue, useAnimatedStyle, animate } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export interface UsePageTransitionWrapperOptions {
   key: string;

@@ -71,6 +71,8 @@ export function createMockIDBRequest<T = unknown>(result?: T): MockIDBRequest<T>
     readyState: 'done' as IDBRequestReadyState,
     onsuccess: null,
     onerror: null,
+    source: null as any, // Mock source
+    transaction: null as any, // Mock transaction
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(() => true),
@@ -79,7 +81,7 @@ export function createMockIDBRequest<T = unknown>(result?: T): MockIDBRequest<T>
   // Simulate success
   setTimeout(() => {
     if (request.onsuccess) {
-      request.onsuccess(new Event('success'));
+      request.onsuccess.call(request as any, new Event('success') as any);
     }
   }, 0);
 
@@ -89,12 +91,12 @@ export function createMockIDBRequest<T = unknown>(result?: T): MockIDBRequest<T>
 export function createMockIDBDatabase(): MockIDBDatabase {
   const stores: Record<string, Record<string, unknown>> = {};
 
-  const createObjectStore = (name: string) => {
+  const createObjectStore = vi.fn((name: string) => {
     stores[name] = {};
     return {
       createIndex: vi.fn(),
     };
-  };
+  });
 
   const objectStore = (name: string): MockIDBObjectStore => {
     if (!stores[name]) {

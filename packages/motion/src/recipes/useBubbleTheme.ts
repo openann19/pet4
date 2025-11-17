@@ -131,18 +131,18 @@ export function useBubbleTheme(
     const primaryMatch = themeColor.primary.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
     const secondaryMatch = themeColor.secondary.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
 
-    const primaryR = primaryMatch ? parseInt(primaryMatch[1], 10) : 59
-    const primaryG = primaryMatch ? parseInt(primaryMatch[2], 10) : 130
-    const primaryB = primaryMatch ? parseInt(primaryMatch[3], 10) : 246
+    const primaryR = primaryMatch?.[1] ? parseInt(primaryMatch[1], 10) : 59
+    const primaryG = primaryMatch?.[2] ? parseInt(primaryMatch[2], 10) : 130
+    const primaryB = primaryMatch?.[3] ? parseInt(primaryMatch[3], 10) : 246
 
-    const secondaryR = secondaryMatch ? parseInt(secondaryMatch[1], 10) : 139
-    const secondaryG = secondaryMatch ? parseInt(secondaryMatch[2], 10) : 92
-    const secondaryB = secondaryMatch ? parseInt(secondaryMatch[3], 10) : 246
+    const secondaryR = secondaryMatch?.[1] ? parseInt(secondaryMatch[1], 10) : 139
+    const secondaryG = secondaryMatch?.[2] ? parseInt(secondaryMatch[2], 10) : 92
+    const secondaryB = secondaryMatch?.[3] ? parseInt(secondaryMatch[3], 10) : 246
 
     // Return platform-agnostic style (platform adapters will convert)
     return {
-      primaryColor: `rgba(${String(primaryR ?? '')}, ${String(primaryG ?? '')}, ${String(primaryB ?? '')}, ${String(intensity ?? '')})`,
-      secondaryColor: `rgba(${String(secondaryR ?? '')}, ${String(secondaryG ?? '')}, ${String(secondaryB ?? '')}, ${String(intensity * 0.8)})`,
+      primaryColor: `rgba(${primaryR}, ${primaryG}, ${primaryB}, ${intensity})`,
+      secondaryColor: `rgba(${secondaryR}, ${secondaryG}, ${secondaryB}, ${intensity * 0.8})`,
       shadowColor: themeColor.shadow,
       shadowBlur,
       shadowOpacity,

@@ -11,7 +11,6 @@ import Animated, {
 } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import { useReducedMotionSV } from '@/effects/core/use-reduced-motion-sv'
-import { isTruthy } from '@petspark/shared';
 
 const AnimatedView = Animated.View
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)

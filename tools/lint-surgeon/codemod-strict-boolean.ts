@@ -1,6 +1,6 @@
 import { SyntaxKind } from 'ts-morph';
 import { loadProject, ensureGuardsImport, saveAll } from './shared';
-import { isTruthy, isDefined } from '@/core/guards';
+import { isTruthy } from '../../src/core/guards';
 
 const project = loadProject();
 const files = project.getSourceFiles([

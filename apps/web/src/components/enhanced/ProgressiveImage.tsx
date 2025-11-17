@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, useMotionValue, AnimatePresence, animate, type Variants } from '@petspark/motion';
+import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
+import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { cn } from '@/lib/utils';
 import { supportsWebP, supportsAVIF } from '@/lib/image-loader';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -18,6 +19,7 @@ interface ProgressiveImageProps {
   height?: number;
   quality?: number;
   format?: 'webp' | 'avif' | 'auto';
+  draggable?: boolean;
   onLoad?: () => void;
   onError?: (error: Error) => void;
 }
@@ -36,6 +38,7 @@ export function ProgressiveImage({
   height,
   quality = 85,
   format = 'auto',
+  draggable = true,
   onLoad,
   onError,
 }: ProgressiveImageProps) {
@@ -70,6 +73,7 @@ export function ProgressiveImage({
       };
     } else {
       setBestFormat(format);
+      return undefined;
     }
   }, [format]);
 
@@ -238,6 +242,7 @@ export function ProgressiveImage({
           height={height}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
+          draggable={draggable}
         />
       </motion.div>
 

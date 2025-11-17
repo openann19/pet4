@@ -3,6 +3,9 @@ import type { VideoMetadata } from './video-metadata';
 import { formatFileSize, formatDuration } from './video-utils';
 import { calculateDimensions } from './video-dimensions';
 
+// Re-export VideoMetadata for consumers
+export type { VideoMetadata };
+
 interface HTMLVideoElementWithCaptureStream extends HTMLVideoElement {
   captureStream?: () => MediaStream;
 }

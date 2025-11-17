@@ -93,8 +93,9 @@ function FormItem({ className, ...props }: ComponentProps<"div">) {
 
 function FormLabel({
   className,
+  children,
   ...props
-}: ComponentProps<typeof LabelPrimitive.Root>) {
+}: React.LabelHTMLAttributes<HTMLLabelElement>) {
   const { error, formItemId } = useFormField()
 
   return (
@@ -103,8 +104,10 @@ function FormLabel({
       data-error={!!error}
       className={cn("data-[error=true]:text-destructive", className)}
       htmlFor={formItemId}
-      {...props}
-    />
+      {...(props as any)}
+    >
+      {children}
+    </Label>
   )
 }
 

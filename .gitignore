@@ -1,189 +1,60 @@
-# Dependencies
+### Node dependencies
 node_modules/
+
+### Package manager + tooling caches / logs
+.pnpm-store/
+.pnp.cjs
+.pnp.loader.mjs
+.pnp.
+pnpm-debug.log*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 lerna-debug.log*
-.pnp
-.pnp.js
+*.log
 
-# Build outputs
+### Environment files
+.env
+.env.*
+*.env.local
+apps/*/.env*
+packages/*/.env*
+!*.env.example
+!**/.env.example
+
+### Build outputs / generated artifacts
 dist/
 build/
+coverage/
+.vite/
+.esbuild/
+.turbo/
+turbo/
+.cache/
+.temp/
+tmp/
+temp/
 out/
 .next/
-.nuxt/
-.cache/
-.parcel-cache/
+.storybook-static/
 *.tsbuildinfo
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env*.local
+### App-specific build artifacts
+apps/*/dist/
+apps/*/build/
+apps/**/.expo/
+apps/**/.expo-shared/
+apps/**/web-build/
+apps/**/ios/build/
+apps/**/android/app/build/
+apps/web/.vite/
+apps/web/dist/
 
-# IDE and editor files
-.vscode/
+### OS / editor junk
+.DS_Store
+Thumbs.db
 .idea/
+.vscode/
 *.swp
 *.swo
-*~
-.DS_Store
-*.sublime-project
-*.sublime-workspace
-
-# Cursor IDE
-.cursor/
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Testing
-coverage/
-.nyc_output/
-*.lcov
-.vitest/
-
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-desktop.ini
-
-# Temporary files
-tmp/
-*.tmp
-*.temp
-*.bak
-*.backup
-*.old
-
-# Lock files (optional - some teams commit these, some don't)
-# Uncomment if you don't want to commit lock files
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
-
-# Husky
-.husky/_/
-
-# TypeScript
-*.tsbuildinfo
-
-# Semgrep
-.semgrep/
-
-# Misc
-*.local
-.turbo
-
-# Expo and React Native
-.expo/
-.expo-shared/
-web-build/
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.ipa
-*.aab
-*.apk
-.metro-health-check*
-
-# Config files
-*.config.js.backup
-*.config.ts.backup
-*.config.mjs.backup
-*.config.cjs.backup
-*.config.json.backup
-*.config.js.complex
-*.config.ts.complex
-*.config.mjs.complex
-*.config.cjs.complex
-*.config.json.complex
-*.config.js.old
-*.config.ts.old
-*.config.mjs.old
-*.config.cjs.old
-*.config.json.old
-*.config.js.tmp
-*.config.ts.tmp
-*.config.mjs.tmp
-*.config.cjs.tmp
-*.config.json.tmp
-*.config.js.temp
-*.config.ts.temp
-*.config.mjs.temp
-*.config.cjs.temp
-*.config.json.temp
-eslint.config.js.backup
-eslint.config.js.complex
-eslint.config.*.backup
-eslint.config.*.complex
-eslint.config.*.old
-tsconfig.*.backup
-tsconfig.*.complex
-tsconfig.*.old
-tsconfig.*.tmp
-jest.config.*.backup
-jest.config.*.complex
-jest.config.*.old
-vite.config.*.backup
-vite.config.*.complex
-vite.config.*.old
-next.config.*.backup
-next.config.*.complex
-next.config.*.old
-metro.config.*.backup
-metro.config.*.complex
-metro.config.*.old
-babel.config.*.backup
-babel.config.*.complex
-babel.config.*.old
-tailwind.config.*.backup
-tailwind.config.*.complex
-tailwind.config.*.old
-postcss.config.*.backup
-postcss.config.*.complex
-postcss.config.*.old
-playwright.config.*.backup
-playwright.config.*.complex
-playwright.config.*.old
-vitest.config.*.backup
-vitest.config.*.complex
-vitest.config.*.old
-stylelint.config.*.backup
-stylelint.config.*.complex
-stylelint.config.*.old
-app.config.*.backup
-app.config.*.complex
-app.config.*.old
-prettier.config.*.backup
-prettier.config.*.complex
-prettier.config.*.old
-*.config.backup
-*.config.complex
-*.config.old
-*.config.tmp
-*.config.temp
-.cache/
-
-# UI Audit artifacts (screenshots, large JSON files)
-# Keep inventory and reports for documentation
-audit/artifacts/
-ci/summary.json
+*.orig

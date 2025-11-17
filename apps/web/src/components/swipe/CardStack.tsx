@@ -4,7 +4,7 @@ import { useSharedValue, withSpring, useAnimatedStyle, MotionView } from '@petsp
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { imagePrefetcher } from '@/lib/image-prefetcher';
 import { useNativeSwipe } from '@/hooks/use-native-swipe';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('CardStack');

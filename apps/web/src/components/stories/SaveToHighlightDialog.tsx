@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -138,7 +138,7 @@ export default function SaveToHighlightDialog({
 
         <div className="flex-1 overflow-hidden">
           {showNewHighlight ? (
-            <MotionView
+                                  <motion.button
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-4 py-4"
@@ -165,7 +165,7 @@ export default function SaveToHighlightDialog({
                   className="w-full h-full object-cover"
                 />
               </div>
-            </MotionView>
+                                  </motion.button>
           ) : (
             <ScrollArea className="h-100 pr-4">
               <div className="space-y-3 py-4">
@@ -183,8 +183,8 @@ export default function SaveToHighlightDialog({
                     const isSelected = selectedHighlightId === highlight.id;
 
                     return (
-                      <MotionView
-                        as="button"
+                                            <motion.button
+                        type="button"
                         key={highlight.id}
                         onClick={() => !alreadyInHighlight && handleSelectHighlight(highlight.id)}
                         disabled={alreadyInHighlight}
@@ -226,7 +226,7 @@ export default function SaveToHighlightDialog({
                             📌
                           </div>
                         )}
-                      </MotionView>
+                                            </motion.button>
                     );
                   })
                 )}

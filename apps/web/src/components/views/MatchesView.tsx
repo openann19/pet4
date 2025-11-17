@@ -25,6 +25,7 @@ import {
   VideoCamera,
 } from '@phosphor-icons/react';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import {
   useSharedValue,
@@ -36,7 +37,7 @@ import {
   MotionView,
   Presence,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 interface MatchesViewProps {
@@ -125,16 +126,16 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
     }
   }, [matchedPets.length, isLoading]);
 
-  const emptyHeartStyle = useAnimatedStyle(() => ({
+  const emptyHeartStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ scale: emptyHeartScale.value }, { rotate: `${emptyHeartRotate.value}deg` }],
   })) as AnimatedStyle;
 
-  const emptyPulseStyle = useAnimatedStyle(() => ({
+  const emptyPulseStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ scale: emptyPulseScale.value }],
     opacity: emptyPulseOpacity.value,
   })) as AnimatedStyle;
 
-  const emptyTextStyle = useAnimatedStyle(() => ({
+  const emptyTextStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: emptyTextOpacity.value,
     transform: [{ translateY: emptyTextY.value }],
   })) as AnimatedStyle;
@@ -149,12 +150,12 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
           {emptyStatePresence.shouldRender && (
             <MotionView
-              style={[emptyHeartStyle, emptyStatePresence.animatedStyle]}
+              style={emptyHeartStyle}
               className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
             >
               <MotionView
                 style={
-                  useAnimatedStyle(() => ({
+                  useAnimatedStyle((): Record<string, unknown> => ({
                     transform: [
                       {
                         scale: withRepeat(

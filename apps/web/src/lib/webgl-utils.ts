@@ -86,15 +86,10 @@ export class WebGLContextManager {
     let gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
 
     if (canvas instanceof HTMLCanvasElement) {
-      const webgl2Context = canvas.getContext('webgl2', defaultOptions);
-      if (webgl2Context && webgl2Context instanceof WebGL2RenderingContext) {
-        gl = webgl2Context;
-      } else {
-        const webglContext = canvas.getContext('webgl', defaultOptions) ?? canvas.getContext('experimental-webgl', defaultOptions);
-        if (webglContext && webglContext instanceof WebGLRenderingContext) {
-          gl = webglContext;
-        }
-      }
+      gl = this.tryCreateContext(canvas, 'webgl2', defaultOptions);
+      gl ??= this.tryCreateContext(canvas, 'webgl', defaultOptions);
+    } else {
+      gl = this.tryCreateOffscreenContext(canvas, defaultOptions);
     }
 
     if (!gl) {
@@ -104,12 +99,48 @@ export class WebGLContextManager {
     this.gl = gl;
     this.isWebGL2 = gl instanceof WebGL2RenderingContext;
 
+    const vendor = this.gl.getParameter(this.gl.VENDOR) as string;
+    const renderer = this.gl.getParameter(this.gl.RENDERER) as string;
+    const version = this.gl.getParameter(this.gl.VERSION) as string;
+
     logger.info('WebGL context initialized', {
       isWebGL2: this.isWebGL2,
-      vendor: gl.getParameter(gl.VENDOR),
-      renderer: gl.getParameter(gl.RENDERER),
-      version: gl.getParameter(gl.VERSION),
+      vendor,
+      renderer,
+      version,
     });
+  }
+
+  private tryCreateContext(
+    canvas: HTMLCanvasElement,
+    type: 'webgl' | 'webgl2',
+    opts: WebGLContextOptions
+  ): WebGLRenderingContext | WebGL2RenderingContext | null {
+    const context = canvas.getContext(type, opts);
+    if (!context) {
+      if (type === 'webgl') {
+        return canvas.getContext('experimental-webgl', opts) as WebGLRenderingContext | null;
+      }
+      return null;
+    }
+    if (type === 'webgl2') {
+      return context instanceof WebGL2RenderingContext ? context : null;
+    }
+    return context instanceof WebGLRenderingContext ? context : null;
+  }
+
+  private tryCreateOffscreenContext(
+    canvas: OffscreenCanvas,
+    opts: WebGLContextOptions
+  ): WebGLRenderingContext | WebGL2RenderingContext | null {
+    const context = canvas.getContext('webgl2', opts) ?? canvas.getContext('webgl', opts);
+    if (!context) {
+      return null;
+    }
+    if (context instanceof WebGL2RenderingContext || context instanceof WebGLRenderingContext) {
+      return context;
+    }
+    return null;
   }
 
   getGL(): WebGLRenderingContext | WebGL2RenderingContext {
@@ -193,9 +224,8 @@ export class WebGLContextManager {
     const uniforms = new Map<string, WebGLUniformLocation>();
     const attributes = new Map<string, number>();
 
-    const uniformCount = this.gl.getProgramParameter(
-      program,
-      this.gl.ACTIVE_UNIFORMS
+    const uniformCount = Number(
+      this.gl.getProgramParameter(program, this.gl.ACTIVE_UNIFORMS)
     );
     for (let i = 0; i < uniformCount; i++) {
       const info = this.gl.getActiveUniform(program, i);
@@ -207,9 +237,8 @@ export class WebGLContextManager {
       }
     }
 
-    const attributeCount = this.gl.getProgramParameter(
-      program,
-      this.gl.ACTIVE_ATTRIBUTES
+    const attributeCount = Number(
+      this.gl.getProgramParameter(program, this.gl.ACTIVE_ATTRIBUTES)
     );
     for (let i = 0; i < attributeCount; i++) {
       const info = this.gl.getActiveAttrib(program, i);
@@ -472,27 +501,31 @@ export class WebGLContextManager {
 
     let renderbuffer: WebGLRenderbuffer | undefined;
     if (options.depth || options.stencil) {
-      renderbuffer = this.gl.createRenderbuffer();
-      if (renderbuffer) {
-        this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, renderbuffer);
-        const format =
-          options.depth && options.stencil
-            ? this.gl.DEPTH_STENCIL
-            : options.depth
-              ? this.gl.DEPTH_COMPONENT16
-              : this.gl.STENCIL_INDEX8;
-        this.gl.renderbufferStorage(this.gl.RENDERBUFFER, format, width, height);
-        this.gl.framebufferRenderbuffer(
-          this.gl.FRAMEBUFFER,
-          options.depth && options.stencil
-            ? this.gl.DEPTH_STENCIL_ATTACHMENT
-            : options.depth
-              ? this.gl.DEPTH_ATTACHMENT
-              : this.gl.STENCIL_ATTACHMENT,
-          this.gl.RENDERBUFFER,
-          renderbuffer
-        );
+      const createdRenderbuffer = this.gl.createRenderbuffer();
+      if (!createdRenderbuffer) {
+        this.gl.deleteFramebuffer(framebuffer);
+        this.gl.deleteTexture(texture);
+        throw new Error('Failed to create renderbuffer');
       }
+      renderbuffer = createdRenderbuffer;
+      this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, renderbuffer);
+      const format =
+        options.depth && options.stencil
+          ? this.gl.DEPTH_STENCIL
+          : options.depth
+            ? this.gl.DEPTH_COMPONENT16
+            : this.gl.STENCIL_INDEX8;
+      this.gl.renderbufferStorage(this.gl.RENDERBUFFER, format, width, height);
+      this.gl.framebufferRenderbuffer(
+        this.gl.FRAMEBUFFER,
+        options.depth && options.stencil
+          ? this.gl.DEPTH_STENCIL_ATTACHMENT
+          : options.depth
+            ? this.gl.DEPTH_ATTACHMENT
+            : this.gl.STENCIL_ATTACHMENT,
+        this.gl.RENDERBUFFER,
+        renderbuffer
+      );
     }
 
     const status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);

@@ -1,4 +1,4 @@
-import { MotionView, useAnimatedStyle } from "@petspark/motion";
+import { MotionView } from "@petspark/motion";
 /**
  * Typing Indicator Component
  *
@@ -19,17 +19,8 @@ export function TypingIndicator({ users }: TypingIndicatorProps): JSX.Element {
     const _uiConfig = useUIConfig();
     const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const scale = animation.scale.get();
-    const translateY = animation.translateY.get();
-    return {
-      opacity: animation.opacity.get(),
-      transform: [{ scale, translateY }],
-    };
-  });
-
   return (
-    <MotionView style={animatedStyle} className="flex items-end gap-2 flex-row">
+    <MotionView style={animation.animatedStyle} className="flex items-end gap-2 flex-row">
       <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
         <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
           {users[0]?.userName?.[0] || '?'}

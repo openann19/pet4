@@ -1,6 +1,6 @@
 'use client';
 
-import { MotionView, useAnimatedStyle } from "@petspark/motion";
+import { MotionView } from "@petspark/motion";
 import { memo, useCallback } from 'react';
 import { Heart, MapPin, CheckCircle, PawPrint } from '@phosphor-icons/react';
 import { Card } from '@/components/ui/card';
@@ -92,17 +92,11 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
       ? t.common?.year_singular ?? 'year'
       : t.common?.years ?? 'years';
 
-  const cardStyle = useAnimatedStyle(() => {
-    const scale = cardAnimation.scale.get();
-    const translateY = cardAnimation.translateY.get();
-    return {
-      transform: [{ scale, translateY }],
-    };
-  });
-
   return (
     <MotionView
-      style={cardStyle}
+      variants={cardAnimation.variants}
+      initial="rest"
+      whileHover="hover"
       onMouseEnter={cardAnimation.handleEnter}
       onMouseLeave={cardAnimation.handleLeave}
     >
@@ -134,6 +128,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
             </Badge>
             {onFavorite && (
               <MotionView
+                style={favoriteButtonAnimation.animatedStyle}
                 onMouseEnter={favoriteButtonAnimation.handleMouseEnter}
                 onMouseLeave={favoriteButtonAnimation.handleMouseLeave}
                 onClick={handleFavoriteClick}

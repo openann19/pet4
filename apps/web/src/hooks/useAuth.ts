@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { enhancedAuth, type UserProfile } from '@/lib/enhanced-auth';
+import { enhancedAuth, type UserProfile, type UserRole } from '@/lib/enhanced-auth';
 
 export function useAuth(): {
   user: UserProfile | null;
   isLoading: boolean;
   error: Error | null;
   isAuthenticated: boolean;
-  hasRole: (role: string) => boolean;
+  hasRole: (role: UserRole) => boolean;
   isOwner: (userId: string) => boolean;
   updateProfile: (
     updates: Partial<Omit<UserProfile, 'id' | 'createdAt' | 'githubId' | 'githubLogin'>>
@@ -76,7 +76,7 @@ export function useAuth(): {
     isLoading,
     error,
     isAuthenticated: enhancedAuth.isAuthenticated(),
-    hasRole: enhancedAuth.hasRole.bind(enhancedAuth),
+    hasRole: (role: UserRole) => enhancedAuth.hasRole(role),
     isOwner: enhancedAuth.isOwner.bind(enhancedAuth),
     updateProfile,
     updatePreferences,

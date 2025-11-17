@@ -28,7 +28,7 @@ import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { logEffectStart, logEffectEnd } from '../core/telemetry';
 import { createLogger } from '@/lib/logger';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 const logger = createLogger('aurora-ring');
 

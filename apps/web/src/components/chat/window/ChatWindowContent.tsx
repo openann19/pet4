@@ -6,9 +6,9 @@ import { ChatMessageListSection } from '@/components/chat/window/ChatMessageList
 import type { ChatRoom, ChatMessage } from '@/lib/chat-types';
 import type { Call, CallSession } from '@/lib/call-types';
 import { haptics } from '@/lib/haptics';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
-import type { InputRef } from '@/components/ui/Input';
+import type { InputRef } from '@/components/ui/input';
 import type { SharedValue } from '@petspark/motion';
 
 interface ChatWindowContentProps {
@@ -27,8 +27,8 @@ interface ChatWindowContentProps {
   typingContainerStyle: AnimatedStyle;
   typingTextStyle: AnimatedStyle;
   typingDotsStyle: AnimatedStyle;
-  videoButtonHover: { scale: unknown; translateY: unknown; handleEnter: () => void; handleLeave: () => void };
-  voiceButtonHover: { scale: unknown; translateY: unknown; handleEnter: () => void; handleLeave: () => void };
+  videoButtonHover: { scale: number | SharedValue<number>; translateY: number | SharedValue<number>; handleEnter: () => void; handleLeave: () => void };
+  voiceButtonHover: { scale: number | SharedValue<number>; translateY: number | SharedValue<number>; handleEnter: () => void; handleLeave: () => void };
   messageBubbleHover: { handleEnter: () => void; handleLeave: () => void };
   messageBubbleHoverStyle: AnimatedStyle;
   voiceButtonHoverStyle: AnimatedStyle;

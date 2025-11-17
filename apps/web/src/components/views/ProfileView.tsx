@@ -165,7 +165,7 @@ export default function ProfileView() {
             style={emptyStateIconStyle}
             className="w-24 h-24 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-2xl relative"
           >
-            <MotionView animatedStyle={emptyStatePulse.animatedStyle}>
+            <MotionView style={emptyStatePulse.animatedStyle}>
               <PawPrint size={48} className="text-white" weight="fill" />
             </MotionView>
             <div className="absolute inset-0 rounded-full bg-linear-to-br from-primary to-accent animate-pulse opacity-50" />
@@ -324,8 +324,7 @@ export default function ProfileView() {
                   </MotionView>
                   <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <MotionView
-                    animatedStyle={editButtonRotation.style}
-                    style={{ ...editButtonHoverStyle, ...editButtonTapStyle }}
+                    style={{ ...editButtonRotation.style, ...editButtonHoverStyle, ...editButtonTapStyle }}
                     onMouseEnter={() => {
                       editButtonHover.handleEnter()
                     }}

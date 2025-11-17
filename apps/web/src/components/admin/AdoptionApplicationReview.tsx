@@ -1,6 +1,6 @@
 'use client';
 
-import { MotionView } from "@petspark/motion";
+import { MotionView, type MotionStyle } from "@petspark/motion";
 import { adoptionApi } from '@/api/adoption-api';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { isTruthy } from '@petspark/shared';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -57,7 +57,7 @@ function LoadingSpinner() {
 
   return (
     <>
-      <MotionView animatedStyle={rotationAnimation.rotationStyle} className="mr-2 inline-block">
+      <MotionView style={rotationAnimation.rotationStyle as unknown as MotionStyle} className="mr-2 inline-block">
         <Clock size={16} />
       </MotionView>
       Processing...
@@ -96,7 +96,7 @@ function ApplicationCard({
   });
 
   return (
-    <MotionView key={application._id} animatedStyle={staggeredAnimation.itemStyle}>
+    <MotionView key={application._id} style={staggeredAnimation.itemStyle as unknown as MotionStyle}>
       <Card
         className={`overflow-hidden transition-all duration-300 ${
           application.status === 'pending' ? 'border-amber-500/30 shadow-lg shadow-amber-500/5' : ''
@@ -174,7 +174,7 @@ function ApplicationCard({
           </div>
 
           {isExpanded && (
-            <MotionView animatedStyle={expandAnimation.heightStyle} className="overflow-hidden">
+            <MotionView style={expandAnimation.heightStyle as unknown as MotionStyle} className="overflow-hidden">
               <Separator className="my-3" />
 
               <div className="space-y-3">

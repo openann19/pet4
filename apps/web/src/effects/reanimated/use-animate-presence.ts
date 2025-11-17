@@ -9,7 +9,7 @@ import {
   type SharedValue,
 } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export interface UseAnimatePresenceOptions {
   isVisible: boolean;
@@ -179,7 +179,7 @@ export function useAnimatePresence(options: UseAnimatePresenceOptions): UseAnima
       opacity: opacity.value,
       transform: transforms.length > 0 ? transforms : undefined,
     };
-  }) as AnimatedStyle;
+  });
 
   return {
     opacity,

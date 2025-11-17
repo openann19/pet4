@@ -72,7 +72,7 @@ function ParticleAnimated({ particle }: { particle: Particle }) {
     animate(translateY, translateYDelay.target, translateYDelay.transition);
   }, [particle, opacity, scale, translateX, translateY]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const animatedStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: opacity.get(),
     transform: [
       { translateX: translateX.get() },

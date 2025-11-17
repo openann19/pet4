@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
+import { Animated } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { apiClient } from '@/utils/api-client'
 import { createLogger } from '@/utils/logger'
@@ -108,7 +108,7 @@ const validateEmail = (email: string): boolean => {
 
 export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): React.JSX.Element {
   const { t } = useApp()
-  const reducedMotion = useReducedMotionSV()
+  const _reducedMotion = useReducedMotionSV()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -230,22 +230,18 @@ export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): Re
     onSwitchToSignIn()
   }, [onSwitchToSignIn])
 
-  // Compute animation durations based on reduced motion
-  const titleDelay = reducedMotion.value ? 0 : 100
-  const formDelay = reducedMotion.value ? 0 : 200
-
   return (
     <KeyboardAvoidingView
       style={styles.keyboardAvoider}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <Animated.View entering={FadeInUp.duration(reducedMotion.value ? 0 : 400).delay(titleDelay)} style={styles.container}>
+        <Animated.View style={styles.container}>
           <Text style={styles.title}>{t.auth.signUpTitle}</Text>
           <Text style={styles.subtitle}>{t.auth.signUpSubtitle}</Text>
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.duration(reducedMotion.value ? 0 : 400).delay(formDelay)} style={styles.container}>
+        <Animated.View style={styles.container}>
 
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t.auth.email}</Text>

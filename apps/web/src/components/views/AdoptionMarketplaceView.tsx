@@ -9,7 +9,7 @@ import { MyAdoptionListings } from '@/components/adoption/MyAdoptionListings';
 import { AdoptionListingItem } from '@/components/adoption/AdoptionListingItem';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SegmentedControl } from '@/components/enhanced/buttons/SegmentedControl';
 import { Card } from '@/components/ui/card';

@@ -1,11 +1,10 @@
 'use client';;
 import { useEffect, useMemo } from 'react';
 import {
-  useMotionValue,
   useAnimatedStyle,
-  animate,
   MotionView,
 } from '@petspark/motion';
+import { useMotionValue, animate } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import type { TypingUser } from '@/lib/chat-types';
 import { timingConfigs } from '@/effects/reanimated/transitions';
@@ -28,12 +27,12 @@ function TypingDot({ index }: TypingDotProps): JSX.Element {
     const delay = index * 200;
 
     setTimeout(() => {
-      animate(opacity, [0.3, 1, 0.3], {
+      animate(opacity, 1, {
         duration: 600,
         repeat: Infinity,
         ease: 'easeInOut',
       });
-      animate(translateY, [0, -3, 0], {
+      animate(translateY, -3, {
         duration: 600,
         repeat: Infinity,
         ease: 'easeInOut',
@@ -59,8 +58,9 @@ export default function TypingIndicator({ users }: TypingIndicatorProps): JSX.El
   const containerTranslateY = useMotionValue(-5);
 
   useEffect(() => {
-    animate(containerOpacity, 1, { duration: timingConfigs.smooth.duration ?? 300 });
-    animate(containerTranslateY, 0, { duration: timingConfigs.smooth.duration ?? 300 });
+    const duration = timingConfigs.smooth.duration ?? 300;
+    animate(containerOpacity, 1, { duration });
+    animate(containerTranslateY, 0, { duration });
   }, [containerOpacity, containerTranslateY]);
 
   const containerStyle = useAnimatedStyle(() => {

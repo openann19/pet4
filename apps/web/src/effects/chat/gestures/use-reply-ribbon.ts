@@ -46,9 +46,9 @@ export interface UseReplyRibbonOptions {
  * Reply ribbon effect return type
  */
 export interface UseReplyRibbonReturn {
-  ribbonP0: SharedValue<{ x: number; y: number }>
-  ribbonP1: SharedValue<{ x: number; y: number }>
-  ribbonP2: SharedValue<{ x: number; y: number }>
+  ribbonP0: React.MutableRefObject<{ x: number; y: number }>
+  ribbonP1: React.MutableRefObject<{ x: number; y: number }>
+  ribbonP2: React.MutableRefObject<{ x: number; y: number }>
   ribbonThickness: SharedValue<number>
   ribbonOpacity: SharedValue<number>
   ribbonProgress: SharedValue<number>
@@ -78,10 +78,10 @@ export function useReplyRibbon(
   const { hz, scaleDuration } = useDeviceRefreshRate()
   const { visual, feedback, animation } = useUIConfig()
 
-  // Ribbon control points
-  const ribbonP0 = useSharedValue({ x: 0, y: 0 }) // Start point (bubble)
-  const ribbonP1 = useSharedValue({ x: 0, y: 0 }) // Middle point (control)
-  const ribbonP2 = useSharedValue({ x: 0, y: 0 }) // End point (composer)
+  // Ribbon control points (use refs for objects since SharedValue only supports string|number)
+  const ribbonP0 = useRef({ x: 0, y: 0 }) // Start point (bubble)
+  const ribbonP1 = useRef({ x: 0, y: 0 }) // Middle point (control)
+  const ribbonP2 = useRef({ x: 0, y: 0 }) // End point (composer)
 
   // Ribbon properties
   const ribbonThickness = useSharedValue(DEFAULT_THICKNESS)
@@ -109,16 +109,16 @@ export function useReplyRibbon(
 
       // Set initial point
       if (bubbleRect) {
-        ribbonP0.value = {
+        ribbonP0.current = {
           x: bubbleRect.left + bubbleRect.width / 2,
           y: bubbleRect.top + bubbleRect.height / 2,
         }
       } else {
-        ribbonP0.value = startPoint
+        ribbonP0.current = startPoint
       }
 
-      ribbonP1.value = startPoint
-      ribbonP2.value = startPoint
+      ribbonP1.current = startPoint
+      ribbonP2.current = startPoint
 
       // Fade in ribbon - use adaptive duration
       const baseDuration = getReducedMotionDuration(RIBBON_DURATION, false)
@@ -166,7 +166,7 @@ export function useReplyRibbon(
       const elasticity = 0.3 // How much the ribbon springs back (0-1)
 
       // Calculate distance from previous point for tension simulation
-      const prevP1 = ribbonP1.value
+      const prevP1 = ribbonP1.current
       const dx = point.x - prevP1.x
       const dy = point.y - prevP1.y
       const distance = Math.sqrt(dx * dx + dy * dy)
@@ -179,7 +179,7 @@ export function useReplyRibbon(
       }
 
       // Update middle point with physics simulation
-      ribbonP1.value = newP1
+      ribbonP1.current = newP1
 
       // Update end point towards composer with elasticity
       if (composerRect) {
@@ -192,14 +192,14 @@ export function useReplyRibbon(
 
         // Apply elasticity: The end point springs toward the composer
         const elasticityFactor = progress * elasticity
-        ribbonP2.value = {
+        ribbonP2.current = {
           x: point.x + dx2 * elasticityFactor,
           y: point.y + dy2 * elasticityFactor,
         }
 
         ribbonProgress.value = progress
       } else {
-        ribbonP2.value = point
+        ribbonP2.current = point
         ribbonProgress.value = 1
       }
     },
@@ -219,7 +219,7 @@ export function useReplyRibbon(
 
     // Animate to composer
     if (composerRect) {
-      ribbonP2.value = withTiming(
+      ribbonP2.current = withTiming(
         {
           x: composerRect.left + composerRect.width / 2,
           y: composerRect.top + composerRect.height / 2,
@@ -269,9 +269,9 @@ export function useReplyRibbon(
 
     // Reset after animation
     setTimeout(() => {
-      ribbonP0.value = { x: 0, y: 0 }
-      ribbonP1.value = { x: 0, y: 0 }
-      ribbonP2.value = { x: 0, y: 0 }
+      ribbonP0.current = { x: 0, y: 0 }
+      ribbonP1.current = { x: 0, y: 0 }
+      ribbonP2.current = { x: 0, y: 0 }
       ribbonProgress.value = 0
       startPointRef.current = null
     }, duration)
@@ -313,9 +313,9 @@ export function useReplyRibbon(
 
     // Reset after animation
     setTimeout(() => {
-      ribbonP0.value = { x: 0, y: 0 }
-      ribbonP1.value = { x: 0, y: 0 }
-      ribbonP2.value = { x: 0, y: 0 }
+      ribbonP0.current = { x: 0, y: 0 }
+      ribbonP1.current = { x: 0, y: 0 }
+      ribbonP2.current = { x: 0, y: 0 }
       ribbonProgress.value = 0
       startPointRef.current = null
     }, duration)

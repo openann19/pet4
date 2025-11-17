@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
@@ -28,7 +28,6 @@ import {
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { useStaggeredItem } from '@/effects/reanimated';
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { adoptionApi } from '@/api/adoption-api';
 import { createLogger } from '@/lib/logger';
 import type { AdoptionProfile } from '@/lib/adoption-types';
@@ -56,11 +55,10 @@ function AdoptionProfileCard({
   onDelete,
 }: AdoptionProfileCardProps): JSX.Element {
   const animation = useStaggeredItem({ index, staggerDelay: 50 });
-  const style = useAnimatedStyleValue(animation.itemStyle);
 
   return (
     <MotionView
-      style={style}
+      style={animation.itemStyle as React.CSSProperties}
       className="relative"
       role="article"
       aria-label={`Adoption profile for ${String(profile.petName ?? '')}`}
@@ -99,9 +97,13 @@ function AdoptionProfileCard({
       </div>
       <AdoptionCard
         profile={profile}
-        onFavorite={() => { }}
+        onFavorite={() => {
+          // No-op: favorite functionality not implemented
+        }}
         isFavorited={false}
-        onSelect={() => { }}
+        onSelect={() => {
+          // No-op: select functionality not implemented
+        }}
       />
     </MotionView>
   );
@@ -171,12 +173,12 @@ export default function AdoptionManagement(): JSX.Element {
           }
           return [...current, profileId];
         });
-        toast.success('Adoption profile hidden');
-        logger.info('Profile hidden', { profileId });
+        void toast.success('Adoption profile hidden');
+        void logger.info('Profile hidden', { profileId });
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to hide profile', err, { profileId });
-        toast.error('Failed to hide profile');
+        void logger.error('Failed to hide profile', err, { profileId });
+        void toast.error('Failed to hide profile');
       }
     },
     [setHiddenProfiles]
@@ -186,12 +188,12 @@ export default function AdoptionManagement(): JSX.Element {
     (profileId: string): void => {
       try {
         setHiddenProfiles((prev) => (prev ?? []).filter((id) => id !== profileId));
-        toast.success('Adoption profile restored');
-        logger.info('Profile unhidden', { profileId });
+        void toast.success('Adoption profile restored');
+        void logger.info('Profile unhidden', { profileId });
       } catch (error) {
         const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Failed to unhide profile', err, { profileId });
-        toast.error('Failed to unhide profile');
+        void logger.error('Failed to unhide profile', err, { profileId });
+        void toast.error('Failed to unhide profile');
       }
     },
     [setHiddenProfiles]
@@ -205,8 +207,8 @@ export default function AdoptionManagement(): JSX.Element {
     setIsDeleting(true);
     try {
       await adoptionApi.deleteProfile(selectedProfile._id);
-      toast.success('Adoption profile deleted successfully');
-      logger.info('Profile deleted', { profileId: selectedProfile._id });
+      void toast.success('Adoption profile deleted successfully');
+      void logger.info('Profile deleted', { profileId: selectedProfile._id });
       setShowDeleteDialog(false);
       setSelectedProfile(null);
     } catch (error) {

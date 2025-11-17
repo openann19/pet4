@@ -16,7 +16,6 @@ import {
   withTiming,
   withSpring,
   MotionView,
-  Presence,
 } from '@petspark/motion';
 import { toast } from 'sonner';
 
@@ -51,19 +50,19 @@ export default function PetPhotoAnalyzer({ onAnalysisComplete }: PetPhotoAnalyze
   const entryStyle = useAnimatedStyle(() => ({
     opacity: entryOpacity.value,
     transform: [{ translateY: entryY.value }],
-  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+  }));
 
   // Glow animation
   const glowOpacity = useSharedValue(0.5);
   const glowStyle = useAnimatedStyle(() => ({
     opacity: glowOpacity.value,
-  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+  }));
 
   // Rotate animation
   const rotateValue = useSharedValue(0);
   const rotateStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotateValue.value}deg` }],
-  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+  }));
 
   useEffect(() => {
     entryOpacity.value = withTiming(1, { duration: 300 });
@@ -142,7 +141,7 @@ export default function PetPhotoAnalyzer({ onAnalysisComplete }: PetPhotoAnalyze
       const isDataUrl = photo.startsWith('data:');
       const prompt = buildLLMPrompt`You are an expert veterinarian and animal behaviorist. Analyze this pet photo and extract the following information. Be specific but realistic.
 
-${String(isDataUrl ? 'This is an uploaded/captured photo of a pet.' : `Photo URL: ${String(photo ?? '')}` ?? '')}
+${String(isDataUrl ? 'This is an uploaded/captured photo of a pet.' : `Photo URL: ${String(photo ?? '')}`)}
 
 Based on typical characteristics of pets in photos, provide:
 1. The most likely breed (be specific, e.g., "Golden Retriever" not just "Dog")
@@ -337,7 +336,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                   />
                   <Button
                     type="button"
-                    onClick={analyzePhoto}
+                    onClick={() => void analyzePhoto()}
                     disabled={!photo || analyzing}
                     className="bg-linear-to-r from-primary to-accent hover:opacity-90"
                   >
@@ -365,7 +364,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                   </div>
                   <Button
                     type="button"
-                    onClick={analyzePhoto}
+                    onClick={() => void analyzePhoto()}
                     disabled={analyzing}
                     className="bg-linear-to-r from-primary to-accent hover:opacity-90"
                   >
@@ -398,7 +397,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
         </MotionView>
       )}
       {analyzingPresence.shouldRender && analyzing && (
-        <MotionView style={analyzingPresence.animatedStyle}>
+        <MotionView style={analyzingPresence.animatedStyle as React.CSSProperties}>
           <Card className="p-6 bg-linear-to-br from-background to-muted/30">
             <div className="flex items-center gap-3 mb-4">
               <MotionView style={rotateStyle}>
@@ -427,7 +426,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
         </MotionView>
       )}
       {resultPresence.shouldRender && result && (
-        <MotionView style={resultPresence.animatedStyle}>
+        <MotionView style={resultPresence.animatedStyle as React.CSSProperties}>
           <Card className="p-6 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border-green-200 dark:border-green-800">
             <div className="flex items-start gap-4 mb-4">
               <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center shrink-0">

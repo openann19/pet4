@@ -174,7 +174,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
       />
       {selectedPetPresence.shouldRender && selectedPet && (
         <MotionView
-          animatedStyle={selectedPetPresence.animatedStyle}
+          style={selectedPetPresence.animatedStyle}
           className="absolute bottom-0 left-0 right-0 max-h-[70%] bg-background rounded-t-3xl shadow-2xl border-t border-border overflow-y-auto"
         >
           <div className="p-6 space-y-4">

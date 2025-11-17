@@ -15,6 +15,7 @@ import {
   photoRecordSchema,
   kycSessionSchema,
   paginatedResponseSchema,
+  messageReportSchema,
 } from './api-schemas';
 
 export const petAPI = {

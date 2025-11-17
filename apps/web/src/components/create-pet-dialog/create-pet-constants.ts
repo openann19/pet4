@@ -212,7 +212,7 @@ export const LOOKING_FOR: Record<PetType, string[]> = {
   other: ['Companion', 'Playmate', 'Friend', 'Social Buddy', 'Activity Partner', 'Best Friend'],
 };
 
-export const STEPS: Array<{ value: Step; label: string }> = [
+export const STEPS: { value: Step; label: string }[] = [
   { value: 'type', label: 'Type' },
   { value: 'template', label: 'Template' },
   { value: 'basics', label: 'Basics' },

@@ -5,7 +5,7 @@ import { chatApi } from '@/api/chat-api';
 import { useOutbox, type UseOutboxReturn } from '@petspark/chat-core';
 import type { ChatMessage, ChatRoom } from '@/lib/chat-types';
 import { generateMessageId } from '@/lib/chat-utils';
-import type { InputRef } from '@/components/ui/Input';
+import type { InputRef } from '@/components/ui/input';
 
 const logger = createLogger('useChatMessageSending');
 
@@ -40,7 +40,7 @@ export function useChatMessageSending({
   inputRef,
 }: UseChatMessageSendingProps) {
   // TypeScript may show error type warnings here, but useOutbox is properly typed
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+   
   const outbox = useOutbox({
     sendFn: async (payload: unknown): Promise<void> => {
       try {
@@ -63,8 +63,8 @@ export function useChatMessageSending({
     },
   });
   // TypeScript may show error type warnings here, but outbox is properly typed
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const { enqueue } = outbox as UseOutboxReturn;
+   
+  const { enqueue } = outbox;
 
   const sendMessage = (
     content: string,
@@ -100,7 +100,7 @@ export function useChatMessageSending({
     setShowTemplates(false);
     void typingSend();
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+     
     void enqueue(msg.id, {
       messageId: msg.id,
       roomId: room.id,

@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 import { useSharedValue, useAnimatedStyle, withRepeat, withTiming, interpolate, type SharedValue } from 'react-native-reanimated'
 
 // Type helper for transform arrays to avoid React Native type strictness
-type TransformArray = any[]
+// Using Framer Motion transforms now
 import { useReducedMotionSV } from '../reduced-motion'
 
 export interface UseWaveAnimationOptions {
@@ -58,8 +58,8 @@ export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWave
     const wave = Math.sin(phase) * amp
 
     return direction === 'horizontal'
-      ? { transform: [{ translateX: wave }] as TransformArray }
-      : { transform: [{ translateY: wave }] as TransformArray }
+      ? { x: wave }
+      : { y: wave }
   })
 
   return { animatedStyle, progress }
@@ -90,7 +90,8 @@ export function useMultiWave(waveCount: number = 3) {
       const opacity = interpolate(progress.value, [0, 0.5, 1], [0.3, 0.6, 0.3])
 
       return {
-        transform: [{ translateY: wave }, { translateX: wave * 0.5 }] as TransformArray,
+        y: wave,
+        x: wave * 0.5,
         opacity,
       }
     })

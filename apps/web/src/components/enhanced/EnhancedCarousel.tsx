@@ -220,7 +220,7 @@ export function EnhancedCarousel({
                   ? 'w-8 bg-primary shadow-lg shadow-primary/50'
                   : 'w-2 bg-background/60 hover:bg-background/80 backdrop-blur-sm'
               )}
-              aria-label={`Go to slide ${String(index + 1 ?? '')}`}
+              aria-label={`Go to slide ${String(index + 1)}`}
             />
           ))}
         </div>

@@ -26,8 +26,8 @@ function StoryRingComponent({
   const hasActiveStories = activeStories.length > 0;
 
   return (
-    <MotionView
-      as="button"
+        <motion.button
+      type="button"
       onClick={onClick}
       className="flex flex-col items-center gap-2 shrink-0"
       whileHover={{ scale: 1.05 }}
@@ -64,7 +64,7 @@ function StoryRingComponent({
       <span className="text-xs font-medium truncate w-16 text-center">
         {isOwn ? 'Your Story' : petName}
       </span>
-    </MotionView>
+    </motion.button>
   );
 }
 

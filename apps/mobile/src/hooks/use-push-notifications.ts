@@ -9,7 +9,7 @@ import * as Notifications from 'expo-notifications'
 import { useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 import { createLogger } from '../utils/logger'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('usePushNotifications')
 

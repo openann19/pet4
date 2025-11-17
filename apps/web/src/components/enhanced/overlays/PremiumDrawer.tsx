@@ -92,7 +92,7 @@ export function PremiumDrawer({
     }
   }, [open, side, translateX, translateY, opacity]);
 
-  const contentStyle = useAnimatedStyle(() => ({
+  const contentStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ translateX: translateX.get() }, { translateY: translateY.get() }],
     opacity: opacity.get(),
   }));

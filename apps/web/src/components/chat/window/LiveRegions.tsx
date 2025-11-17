@@ -147,7 +147,7 @@ export function LiveRegions({ children, className }: LiveRegionsProps): JSX.Elem
             '[aria-label*="close" i], [aria-label*="Close" i], button[aria-label*="close" i]'
           );
           if (closeButton) {
-            closeButton.click();
+            (closeButton as HTMLElement).click();
             e.preventDefault();
             e.stopPropagation();
           }

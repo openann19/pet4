@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export function useReactionsPickerAnimations(showReactions: boolean) {
   const reactionsPickerOpacity = useSharedValue(0);
@@ -25,7 +25,7 @@ export function useReactionsPickerAnimations(showReactions: boolean) {
     reactionsPickerTranslateY,
   ]);
 
-  const reactionsPickerStyle = useAnimatedStyle(() => ({
+  const reactionsPickerStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: reactionsPickerOpacity.value,
     transform: [
       { scale: reactionsPickerScale.value },

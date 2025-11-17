@@ -160,7 +160,7 @@ export function useChatMessages({
   );
 
   const addReaction = useCallback(
-    (messageId: string, emoji: ReactionType) => {
+    async (messageId: string, emoji: ReactionType) => {
       queryClient.setQueryData(
         queryKeys.chat.messages(roomId),
         (old: { pages: ChatMessage[][] } | undefined) => {
@@ -236,7 +236,7 @@ export function useChatMessages({
     [currentUserId, queryClient, roomId]
   );
 
-  const markAsRead = useCallback(() => {
+  const markAsRead = useCallback(async (messageId: string) => {
     queryClient.setQueryData(
       queryKeys.chat.messages(roomId),
       (old: { pages: ChatMessage[][] } | undefined) => {

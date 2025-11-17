@@ -239,7 +239,7 @@ export class WebSocketManager {
   }
 
   private onWebSocketError(event: Event): void {
-    const candidateError = (event as ErrorEvent).error ?? new Error('Unknown WebSocket error');
+    const candidateError = event instanceof ErrorEvent && event.error ? event.error as unknown : event;
     const normalizedError = extractError(candidateError);
     logger.error('WebSocket connection error', {
       message: normalizedError.message,

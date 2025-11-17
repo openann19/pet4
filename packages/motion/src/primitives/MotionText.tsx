@@ -1,25 +1,14 @@
-import { forwardRef } from 'react'
-import type { ComponentRef, ForwardRefExoticComponent, RefAttributes } from 'react'
-import Animated, { type AnimatedStyle } from 'react-native-reanimated'
-import type { TextProps, TextStyle } from 'react-native'
+/**
+ * MotionText - Web Implementation
+ * Uses Framer Motion for web platform
+ */
 
-interface MotionTextProps extends TextProps {
-  animatedStyle?: AnimatedStyle<TextStyle>
-}
+import { motion } from 'framer-motion'
+import type { ComponentProps } from 'react'
+
+export type MotionTextProps = ComponentProps<typeof motion.span>
 
 /**
- * Unified animated Text component.
- * Accepts animated style fragments and provides web performance optimizations.
+ * Web-compatible MotionText using Framer Motion
  */
-export const MotionText: ForwardRefExoticComponent<
-  MotionTextProps & RefAttributes<ComponentRef<typeof Animated.Text>>
-> = forwardRef<ComponentRef<typeof Animated.Text>, MotionTextProps>(
-  ({ style, animatedStyle, ...rest }, ref) => {
-    const styleFinal: TextStyle | TextStyle[] = animatedStyle 
-      ? [style, animatedStyle].filter(Boolean) as TextStyle[]
-      : (style ?? ({} as TextStyle))
-
-    return <Animated.Text ref={ref} {...rest} style={styleFinal} />
-  }
-)
-MotionText.displayName = 'MotionText'
+export const MotionText = motion.span

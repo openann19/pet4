@@ -31,6 +31,11 @@ export class RealtimeClient {
     this.setupWebSocketHandlers()
   }
 
+  private setupWebSocketHandlers(): void {
+    // WebSocket event handlers will be implemented when WebSocket is integrated
+    // For now, this is a placeholder
+  }
+
   setAccessToken(token: string | null) {
     this.accessToken = token;
   }

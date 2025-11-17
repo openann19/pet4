@@ -39,7 +39,11 @@ class StripeServiceImpl {
   async init(): Promise<Stripe> {
     if (this.stripe) return this.stripe;
 
-    this.stripe = await loadStripe(ENV.VITE_STRIPE_PUBLIC_KEY);
+    const publicKey = ENV.VITE_STRIPE_PUBLIC_KEY;
+    if (!publicKey) {
+      throw new Error('Stripe public key is not configured');
+    }
+    this.stripe = await loadStripe(publicKey);
     if (!this.stripe) {
       throw new Error('Failed to load Stripe');
     }

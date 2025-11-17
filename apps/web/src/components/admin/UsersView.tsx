@@ -12,12 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useStorage } from '@/hooks/use-storage';
 import type { Pet } from '@/lib/types';
 import { createLogger } from '@/lib/logger';
+import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import type { Icon } from '@phosphor-icons/react';
 import {
   Calendar,
@@ -31,10 +32,9 @@ import {
   Warning,
 } from '@phosphor-icons/react';
 import type { VariantProps } from 'class-variance-authority';
-import { MotionView, useAnimatedStyle } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 
 const logger = createLogger('UsersView');
 
@@ -260,23 +260,14 @@ export default function UsersView() {
       <ScrollArea className="flex-1 px-6 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredUsers.map((user, index) => {
-            const entry = useEntryAnimation({
+            const entryAnimation = useEntryAnimation({
               initialScale: 0.95,
               initialOpacity: 0,
               delay: index * 30
             })
             
-            const entryStyle = useAnimatedStyle(() => {
-              const scale = entry.scale.get();
-              const translateY = entry.translateY.get();
-              return {
-                opacity: entry.opacity.get(),
-                transform: [{ scale, translateY }] as Record<string, number>[],
-              };
-            })
-            
             return (
-              <MotionView key={user.id} style={entryStyle}>
+              <MotionView key={user.id} initial="hidden" animate="visible" variants={entryAnimation.variants}>
                 <Card className="hover:shadow-lg transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
@@ -441,7 +432,7 @@ export default function UsersView() {
             )}
             {(selectedUser?.status === 'suspended' || selectedUser?.status === 'banned') && (
               <Button
-                variant="secondary"
+                variant="default"
                 onClick={() => {
                   if (!selectedUser) return;
                   void handleReactivateUser(selectedUser.id).catch((error) => {
@@ -477,14 +468,14 @@ export default function UsersView() {
           <div className="space-y-4">
             <div className="flex gap-2">
               <Button
-                variant={resetPasswordMode === 'email' ? 'secondary' : 'outline'}
+                variant={resetPasswordMode === 'email' ? 'default' : 'outline'}
                 onClick={() => { setResetPasswordMode('email'); }}
                 className="flex-1"
               >
                 Send Reset Email
               </Button>
               <Button
-                variant={resetPasswordMode === 'manual' ? 'secondary' : 'outline'}
+                variant={resetPasswordMode === 'manual' ? 'default' : 'outline'}
                 onClick={() => { setResetPasswordMode('manual'); }}
                 className="flex-1"
               >

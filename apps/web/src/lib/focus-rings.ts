@@ -41,7 +41,8 @@ export const removeDefaultOutline = 'outline-none focus:outline-none';
  * Get focus ring classes based on surface type
  */
 export function getFocusRingClasses(surface: 'default' | 'dark' | 'input' | 'link' = 'default'): string {
-  return `${focusRingClasses[surface]} ${removeDefaultOutline}`;
+  const key = surface === 'default' ? 'standard' : surface;
+  return `${focusRingClasses[key]} ${removeDefaultOutline}`;
 }
 
 /**

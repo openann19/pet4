@@ -9,7 +9,7 @@ import {
   withDelay,
 } from '@petspark/motion';
 import { useEffect } from 'react';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export interface UseHeaderAnimationOptions {
   delay?: number;

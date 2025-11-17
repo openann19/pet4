@@ -26,6 +26,7 @@ export function DetailedPetAnalytics({
   matchReasons,
 }: DetailedPetAnalyticsProps) {
     const _uiConfig = useUIConfig();
+    const prefersReducedMotion = usePrefersReducedMotion();
     const stats = [
         {
           icon: Heart,
@@ -262,7 +263,7 @@ function AnimatedCard({ children, prefersReducedMotion = false }: { children: Re
     transform: [{ translateY: translateY.get() }],
   }));
 
-  return <MotionView animatedStyle={animatedStyle}>{children}</MotionView>;
+  return <MotionView style={animatedStyle}>{children}</MotionView>;
 }
 
 function AnimatedListItem({ index, children }: { index: number; children: React.ReactNode }) {
@@ -284,7 +285,7 @@ function AnimatedListItem({ index, children }: { index: number; children: React.
     transform: [{ translateX: translateX.get() }],
   }));
 
-  return <MotionView animatedStyle={animatedStyle}>{children}</MotionView>;
+  return <MotionView style={animatedStyle}>{children}</MotionView>;
 }
 
 function AnimatedStatCard({ index, children, prefersReducedMotion = false }: { index: number; children: React.ReactNode; prefersReducedMotion?: boolean }) {
@@ -311,7 +312,7 @@ function AnimatedStatCard({ index, children, prefersReducedMotion = false }: { i
     transform: [{ scale: scale.get() }],
   }));
 
-  return <MotionView animatedStyle={animatedStyle}>{children}</MotionView>;
+  return <MotionView style={animatedStyle}>{children}</MotionView>;
 }
 
 function AnimatedBadge({ index, children, prefersReducedMotion = false }: { index: number; children: React.ReactNode; prefersReducedMotion?: boolean }) {
@@ -338,5 +339,5 @@ function AnimatedBadge({ index, children, prefersReducedMotion = false }: { inde
     transform: [{ scale: scale.get() }],
   }));
 
-  return <MotionView animatedStyle={animatedStyle}>{children}</MotionView>;
+  return <MotionView style={animatedStyle}>{children}</MotionView>;
 }

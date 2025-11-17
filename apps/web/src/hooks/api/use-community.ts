@@ -37,6 +37,7 @@ export function useCommunityFeed(options?: {
       });
       return response.items;
     },
+    initialPageParam: undefined,
     getNextPageParam: (lastPage, allPages) => {
       // Return cursor for next page if available
       return undefined;

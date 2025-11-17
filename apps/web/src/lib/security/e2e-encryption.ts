@@ -14,7 +14,7 @@
  */
 
 import { createLogger } from '../logger'
-import { getKeyManager, type KeyManager, type DeviceInfo } from './key-management'
+import { getKeyManager, type KeyManager } from './key-management'
 
 const logger = createLogger('e2e-encryption')
 
@@ -41,6 +41,7 @@ export interface ForwardSecrecySession {
   readonly userId: string
   readonly deviceId: string
   readonly ephemeralKey: CryptoKey
+  readonly ephemeralPublicKey: JsonWebKey
   readonly sharedSecret: ArrayBuffer
   readonly createdAt: number
   readonly expiresAt: number
@@ -138,6 +139,7 @@ export class E2EEncryptionService {
       userId,
       deviceId,
       ephemeralKey: ephemeralKeyPair.privateKey,
+      ephemeralPublicKey,
       sharedSecret,
       createdAt: Date.now(),
       expiresAt: Date.now() + this.sessionTimeout,
@@ -329,11 +331,8 @@ export class E2EEncryptionService {
   private arrayBufferToBase64(buffer: ArrayBuffer): string {
     const bytes = new Uint8Array(buffer)
     let binary = ''
-    for (let i = 0; i < bytes.length; i++) {
-      const byte = bytes[i]
-      if (byte !== undefined) {
-        binary += String.fromCharCode(byte)
-      }
+    for (const byte of bytes) {
+      binary += String.fromCharCode(byte)
     }
     return btoa(binary)
   }
@@ -344,8 +343,10 @@ export class E2EEncryptionService {
   private base64ToArrayBuffer(base64: string): ArrayBuffer {
     const binary = atob(base64)
     const bytes = new Uint8Array(binary.length)
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i)
+    let index = 0
+    for (const char of binary) {
+      bytes[index] = char.charCodeAt(0)
+      index += 1
     }
     return bytes.buffer
   }
@@ -372,8 +373,6 @@ export class E2EEncryptionService {
 let e2eServiceInstance: E2EEncryptionService | null = null
 
 export function getE2EEncryptionService(options?: E2EEncryptionOptions): E2EEncryptionService {
-  if (!e2eServiceInstance) {
-    e2eServiceInstance = new E2EEncryptionService(options)
-  }
+  e2eServiceInstance ??= new E2EEncryptionService(options)
   return e2eServiceInstance
 }

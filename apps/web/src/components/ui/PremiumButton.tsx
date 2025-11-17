@@ -7,9 +7,12 @@
  * Composes the core Button component and adds motion effects.
  */
 
-import { MotionView, usePressBounce, useHoverLift, useMagnetic } from '@petspark/motion';                                                                       
+import { motion } from 'framer-motion';
+import { MotionView, usePressBounce, useMagnetic } from '@petspark/motion';
+import { useHoverLift } from '@/effects/reanimated/use-hover-lift';                                                                       
 import { cn } from '@/lib/utils';
-import { Button, type buttonVariants } from '@/components/ui/button';
+import type { buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
 
 interface PremiumButtonProps {
@@ -33,7 +36,7 @@ export function PremiumButton({
 }: PremiumButtonProps) {
   // Motion hooks - combine for premium feel
   const pressBounce = usePressBounce(0.94);
-  const hoverLift = useHoverLift(size === 'lg' ? 8 : size === 'sm' ? 4 : 6);
+  const hoverLift = useHoverLift({ translateY: size === 'lg' ? -8 : size === 'sm' ? -4 : -6 });
   const magneticEffect = useMagnetic(magnetic ? 80 : 0);
 
   // Combine all animated styles
@@ -47,7 +50,7 @@ export function PremiumButton({
   const buttonSize: 'sm' | 'default' | 'lg' | 'icon' = size;
 
   // Map variant to Button variant
-  const buttonVariant: VariantProps<typeof buttonVariants>['variant'] = variant;
+  const buttonVariant: keyof typeof buttonVariants = variant;
 
   return (
     <div
@@ -78,12 +81,17 @@ export function PremiumButton({
           className
         )}
       >
-        <MotionView
-          animatedStyle={combinedAnimatedStyles}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}                                                                             
+        <motion.div
+          style={{
+            scale: pressBounce.scale,
+            y: hoverLift.translateY,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
           {label}
-        </MotionView>
+        </motion.div>
       </Button>
     </div>
   );

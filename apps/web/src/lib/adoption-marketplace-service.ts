@@ -1,4 +1,4 @@
-/* eslint-disable max-lines -- adoption marketplace service with comprehensive CRUD operations */
+ 
 import type {
   AdoptionListing,
   AdoptionApplication,

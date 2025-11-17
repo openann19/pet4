@@ -1,19 +1,9 @@
 import type { APIConfig } from '@/api/api-config-api';
-import type { ReactNode } from 'react';
 import {
   MapPin,
   Robot,
-  ShieldCheck,
-  Image as ImageIcon,
-  Bell,
-  Envelope,
-  Database,
-  ChartBar,
-  VideoCamera,
-  Warning,
 } from '@phosphor-icons/react';
 import { APIConfigSection } from './APIConfigSection';
-import type { UseAPIConfigReturn } from '@/hooks/admin/use-api-config';
 
 interface SectionConfigProps {
   config: APIConfig;

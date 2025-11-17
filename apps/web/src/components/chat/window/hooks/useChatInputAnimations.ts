@@ -1,5 +1,4 @@
 import { useAnimatedStyle } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import {
   useButtonAnimations,
   useTemplatesPanelAnimations,

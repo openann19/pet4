@@ -76,7 +76,7 @@ class PermissionsManager {
     }
   }
 
-  private async checkNotificationPermission(): Promise<PermissionStatus> {
+  private checkNotificationPermission(): PermissionStatus {
     if (!('Notification' in window)) {
       return { granted: false, denied: true, prompt: false, permanent: true };
     }

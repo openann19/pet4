@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { Sparkle, X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
@@ -22,8 +22,8 @@ export default function SmartSuggestionsPanel({ onSelect, onDismiss }: SmartSugg
     { id: '3', category: 'question', text: 'What does your pet love to do?', icon: '❓' },
   ]);
 
-  const y = useSharedValue<number>(20);
-  const opacity = useSharedValue<number>(0);
+  const y = useSharedValue(20);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
     y.value = withSpring(0, { damping: 20, stiffness: 300 });
@@ -47,8 +47,8 @@ export default function SmartSuggestionsPanel({ onSelect, onDismiss }: SmartSugg
           </div>
           <Button
             variant="ghost"
-            size="sm"
-            className="w-6 h-6 p-0"
+            size="icon"
+            className="h-6 w-6"
             onClick={onDismiss}
             aria-label="Dismiss smart suggestions"
           >
@@ -76,13 +76,10 @@ function SuggestionButton({
   const hoverLift = useHoverLift({ scale: 1.02 });
   const bounceOnTap = useBounceOnTap({ scale: 0.98 });
 
-  const buttonStyle = useAnimatedStyle(() => {
-    const hoverScale = hoverLift.scale.get();
-    const bounceScale = bounceOnTap.scale.get();
-    return {
-      transform: [{ scale: hoverScale * bounceScale }],
-    };
-  }) as AnimatedStyle;
+  // Use variants instead of accessing scale.value directly
+  const buttonStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 }],
+  })) as AnimatedStyle;
 
   const buttonStyleValue = useAnimatedStyleValue(buttonStyle);
 

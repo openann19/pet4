@@ -28,15 +28,13 @@ export function AchievementBadge({
 
   return (
     <MotionView
-      style={[
-        animatedStyle,
-        {
-          width: size,
-          height: size,
-          borderRadius: size / 2,
-          backgroundColor: color,
-        },
-      ]}
+      style={{
+        ...animatedStyle,
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        backgroundColor: color,
+      }}
       className={cn('bg-primary rounded-full', className)}
     />
   );

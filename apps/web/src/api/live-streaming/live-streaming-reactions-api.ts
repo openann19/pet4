@@ -23,7 +23,7 @@ export class LiveStreamingReactionsApi {
         userId,
         userName,
         ...(userAvatar !== undefined && { userAvatar }),
-        emoji: emoji as '❤️' | '👏' | '🔥' | '😊' | '🎉',
+        emoji,
       };
 
       const response = await APIClient.post<SendReactionResponse>(

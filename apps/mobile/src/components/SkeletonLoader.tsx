@@ -6,13 +6,14 @@
 import React from 'react'
 import type { ViewStyle } from 'react-native'
 import { StyleSheet } from 'react-native'
-import Animated, {
+import {
+  Animated,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 
 export interface SkeletonLoaderProps {
   width?: number

@@ -6,12 +6,13 @@
 import React, { useEffect } from 'react'
 import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, {
+import {
+  Animated,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useModalAnimation } from '@mobile/effects/reanimated'
 import { colors } from '../theme/colors'

@@ -5,7 +5,7 @@ import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { useStorage } from '@/hooks/use-storage';
 import { createLogger } from '@/lib/logger';
 import { Badge } from '@/components/ui/badge';
@@ -130,7 +130,7 @@ function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.E
     <MotionView
       style={staggeredAnimation.itemStyle}
       className={`flex items-start gap-3 p-4 rounded-lg border bg-card hover:shadow-md transition-shadow ${
-        String(reminder.completed ? 'opacity-50' : '' ?? '')
+        String(reminder.completed ? 'opacity-50' : '')
       }`}
     >
       <div

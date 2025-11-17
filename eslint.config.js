@@ -66,14 +66,15 @@ export default [
       parserOptions: {
         tsconfigRootDir: rootDir,
       },
-    },
-    plugins: {
-      react: react,
-      'react-hooks': reactHooks,
-      'jsx-a11y': jsxA11y,
-      sonarjs: sonarjs,
-    },
-    rules: {
+      },
+      plugins: {
+        react: react,
+        'react-hooks': reactHooks,
+        'jsx-a11y': jsxA11y,
+        sonarjs: sonarjs,
+      },
+      rules: {
+        'no-unused-vars': 'off',
       // Reasonable safety without killing dev speed
       'no-console': ['error', { allow: ['warn', 'error'] }],
       'react/react-in-jsx-scope': 'off',
@@ -85,18 +86,8 @@ export default [
       'max-lines': ['error', { max: 300, skipComments: true, skipBlankLines: true }],
       'max-lines-per-function': ['error', { max: 60, skipComments: true, skipBlankLines: true }],
       'sonarjs/no-duplicate-string': 'warn',
-      // Block legacy imports and enforce architecture
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: 'react-native-reanimated',
-              message: 'Use @petspark/motion façade instead of direct Reanimated imports',
-            },
-          ],
-        },
-      ],
+      // Note: react-native-reanimated restriction is web-only (see web-specific config below)
+      // Mobile apps should use react-native-reanimated directly for performance
       // Ban dangerouslySetInnerHTML and eslint-disable comments
       'no-restricted-syntax': [
         'error',
@@ -183,6 +174,7 @@ export default [
       '**/setup.tsx',
       'apps/web/android-design-tokens-rn/**',
       'packages/core/**', // Exclude core from type-aware to avoid tsconfig conflicts
+      'packages/motion/src/**/*.native.tsx', // Excluded from motion tsconfig
     ],
     languageOptions: {
       parser: tseslint.parser,
@@ -252,6 +244,33 @@ export default [
     },
   },
 
+  // Motion package: allow direct react-native-reanimated imports (façade implementation)
+  {
+    files: ['packages/motion/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': 'off', // Allow direct imports for façade implementation
+    },
+  },
+
+  // Mobile app: allow react-native-reanimated (mobile uses Reanimated directly for 60fps performance)
+  {
+    files: ['apps/mobile/**/*.{ts,tsx}', 'apps/native/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          // Only restrict framer-motion in mobile (should use Reanimated instead)
+          paths: [
+            {
+              name: 'framer-motion',
+              message: 'Mobile should use react-native-reanimated, not framer-motion',
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   // Scripts/configs: allow console for CLIs/build tools, Node.js globals
   // This must come after other configs to override base rules
   {
@@ -261,16 +280,17 @@ export default [
       '**/.eslintrc.{js,cjs}',
       'apps/**/scripts/**/*.{ts,tsx,js,jsx,mjs}',
       'packages/**/scripts/**/*.{ts,tsx,js,jsx,mjs}',
-    ],
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.es2021,
+      ],
+      languageOptions: {
+        globals: {
+          ...globals.node,
+          ...globals.es2021,
+        },
+        ecmaVersion: 'latest',
+        sourceType: 'module',
       },
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-    },
-    rules: {
+      rules: {
+        'no-unused-vars': 'off',
       'no-console': 'off',
       // Don't disable no-undef - instead provide globals above
       '@typescript-eslint/no-unused-vars': [

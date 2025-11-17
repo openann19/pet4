@@ -81,7 +81,7 @@ export function PlacesListSidebar({
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 shrink-0"
-                          onClick={(e) => {
+                          onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                             e.stopPropagation();
                             onSavePlace(place.id);
                           }}

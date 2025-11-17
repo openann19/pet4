@@ -1,6 +1,6 @@
 import type { CreatePetFormState, CreatePetFormActions } from './create-pet-types';
 import type { PetProfileTemplate } from '@/lib/pet-profile-templates';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import {
   TypeStep,
   TemplateStep,

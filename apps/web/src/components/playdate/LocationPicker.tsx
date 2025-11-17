@@ -15,7 +15,7 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -258,7 +258,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                           className={`p-4 mb-3 cursor-pointer transition-all hover:shadow-lg ${
                             String(selectedPlace?.id === place.id
                                                                   ? 'ring-2 ring-primary bg-primary/5'
-                                                                  : 'hover:bg-accent/5' ?? '')
+                                                                  : 'hover:bg-accent/5')
                           }`}
                           onClick={() => { handleSelectPlace(place); }}
                         >

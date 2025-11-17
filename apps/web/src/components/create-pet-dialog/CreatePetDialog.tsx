@@ -27,13 +27,13 @@ export default function CreatePetDialog(props: CreatePetDialogProps) {
         <div className="w-full h-2 bg-muted rounded-full overflow-hidden mb-6">
           <MotionView
             className="h-full bg-linear-to-r from-primary to-accent"
-            animatedStyle={progressStyle}
+            style={progressStyle}
           />
         </div>
 
         {formState.currentStep !== 'complete' ? (
           completeStepPresence.shouldRender && (
-            <MotionView animatedStyle={completeStepPresence.animatedStyle}>
+            <MotionView style={completeStepPresence.animatedStyle}>
               {stepContent}
             </MotionView>
           )

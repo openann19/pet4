@@ -10,8 +10,7 @@
 import { useCallback } from 'react'
 import { useSharedValue, useAnimatedStyle, withSpring, interpolate, Extrapolation, type SharedValue } from 'react-native-reanimated'
 
-// Type helper for transform arrays to avoid React Native type strictness
-type TransformArray = any[]
+// Type helper removed - using Framer Motion transforms now
 import { springConfigs } from '../shared-transitions'
 import { useReducedMotionSV } from '../reduced-motion'
 
@@ -110,11 +109,9 @@ export function useBubbleTilt(
   const animatedStyle = useAnimatedStyle(() => {
     if (!enabled || isReducedMotion.value) {
       return {
-        transform: [
-          { perspective },
-          { rotateX: '0deg' },
-          { rotateY: '0deg' }
-        ] as TransformArray
+        perspective,
+        rotateX: '0deg',
+        rotateY: '0deg'
       }
     }
 
@@ -139,11 +136,9 @@ export function useBubbleTilt(
 
     // Return platform-agnostic style (platform adapters will convert)
     return {
-      transform: [
-        { perspective },
-        { rotateX: `${String(rotateX.value ?? '')}deg` },
-        { rotateY: `${String(rotateY.value ?? '')}deg` }
-      ] as TransformArray,
+      perspective,
+      rotateX: `${rotateX.value}deg`,
+      rotateY: `${rotateY.value}deg`,
       shadowBlur,
       shadowSpread,
       shadowOpacity,

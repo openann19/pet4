@@ -18,11 +18,11 @@ export interface NotificationOptions {
   position?: NotificationPosition;
   action?: {
     label: string;
-    onClick: () => void;
+    onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   };
   cancel?: {
     label: string;
-    onClick?: () => void;
+    onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   };
   onDismiss?: () => void;
   onAutoClose?: () => void;
@@ -86,9 +86,7 @@ class NotificationManager {
         ...(cancel.onClick ? { onClick: cancel.onClick } : {}),
       };
     }
-    if (important !== undefined) {
-      toastOptions.important = important;
-    }
+    // Note: 'important' is not a standard sonner property, removing it
 
     // Build the complete options with description
     const completeOptions: ExternalToast = {

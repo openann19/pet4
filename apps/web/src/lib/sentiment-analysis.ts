@@ -10,9 +10,6 @@
  * Location: apps/web/src/lib/sentiment-analysis.ts
  */
 
-import { createLogger } from './logger';
-
-const logger = createLogger('sentiment-analysis');
 
 /**
  * Sentiment type
@@ -388,9 +385,7 @@ let sentimentService: SentimentAnalysisService | null = null;
  * Get sentiment analysis service instance
  */
 export function getSentimentAnalysisService(): SentimentAnalysisService {
-  if (!sentimentService) {
-    sentimentService = new SentimentAnalysisService();
-  }
+  sentimentService ??= new SentimentAnalysisService();
   return sentimentService;
 }
 

@@ -25,21 +25,21 @@ export default function GenerateProfilesButton({
   const [isGenerating, setIsGenerating] = useState(false);
 
   const buttonHover = useHoverTap({ hoverScale: 1.02, tapScale: 0.98 });
-  const shimmerX = useSharedValue(-100);
-  const iconRotate = useSharedValue(0);
+  const shimmerX = useSharedValue<number>(-100);
+  const iconRotate = useSharedValue<number>(0);
 
   const shimmerStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: shimmerX.value }],
-  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+  }));
 
   const iconStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${iconRotate.value}deg` }],
-  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+  }));
 
   useEffect(() => {
     if (isGenerating) {
-      shimmerX.value = withRepeat(withTiming(200 as const, { duration: 1500 }), -1, false) as { target: 200; transition: import('@petspark/motion').Transition };
-      iconRotate.value = withRepeat(withTiming(360 as const, { duration: 2000 }), -1, false) as { target: 360; transition: import('@petspark/motion').Transition };
+      shimmerX.value = withRepeat(withTiming(200, { duration: 1500 }), -1, false);
+      iconRotate.value = withRepeat(withTiming(360, { duration: 2000 }), -1, false);
     } else {
       shimmerX.value = -100;
       iconRotate.value = 0;
@@ -81,7 +81,7 @@ export default function GenerateProfilesButton({
   return (
     <div className={showLabel ? 'w-full' : ''}>
       <MotionView
-        style={buttonHover.animatedStyle as React.CSSProperties}
+        style={buttonHover.animatedStyle}
         onMouseEnter={buttonHover.handleMouseEnter}
         onMouseLeave={buttonHover.handleMouseLeave}
       >
@@ -100,11 +100,11 @@ export default function GenerateProfilesButton({
         >
           {showLabel && (
             <MotionView
-              style={shimmerStyle as React.CSSProperties}
-              className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"                                                          
+              style={shimmerStyle}
+              className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"
             />
           )}
-          <MotionView style={iconStyle as React.CSSProperties} className={showLabel ? 'mr-2' : ''}>
+          <MotionView style={iconStyle} className={showLabel ? 'mr-2' : ''}>
             {isGenerating ? <Sparkle size={20} weight="fill" /> : <Plus size={20} weight="bold" />}
           </MotionView>
           {showLabel && (

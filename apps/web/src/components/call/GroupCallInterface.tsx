@@ -22,11 +22,14 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useBounceOnTap, useHoverLift, useModalAnimation } from '@/effects/reanimated';
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import {
+  useSharedValue,
   useAnimatedStyle,
-  useMotionValue,
-  animate,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolate,
+  Extrapolation,
   MotionView,
 } from '@petspark/motion';
 import type { GroupCallSession, CallParticipant } from '@/lib/call-types';
@@ -66,39 +69,31 @@ function ParticipantVideo({
   onVideoRef,
 }: ParticipantVideoProps): JSX.Element {
   const hoverLift = useHoverLift();
-  const pulseScale = useMotionValue(1);
+  const pulseScale = useSharedValue(1);
 
   useEffect(() => {
     if (isTruthy(isRaised)) {
-      void animate(pulseScale, 1.1, { duration: 500 }).then(() => {
-        void animate(pulseScale, 1, { duration: 500 }).then(() => {
-          if (isTruthy(isRaised)) {
-            void animate(pulseScale, 1.1, { duration: 500, repeat: Infinity, repeatType: 'reverse' });
-          }
-        });
-      });
+      pulseScale.value = withRepeat(
+        withSequence(withTiming(1.1, { duration: 500 }), withTiming(1, { duration: 500 })),
+        -1,
+        true
+      );
     } else {
-      void animate(pulseScale, 1, { duration: 200 });
+      pulseScale.value = withTiming(1, { duration: 200 });
     }
   }, [isRaised, pulseScale]);
 
   const pulseStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: pulseScale.get() }],
-    };
-  });
-
-  const hoverLiftStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { scale: hoverLift.scale.get(), translateY: hoverLift.translateY.get() },
-      ],
+      transform: [{ scale: pulseScale.value }],
     };
   });
 
   return (
     <MotionView
-      style={hoverLiftStyle}
+      variants={hoverLift.variants}
+      initial="rest"
+      whileHover="hover"
       className={cn(
         'relative rounded-2xl overflow-hidden bg-linear-to-br from-primary/20 to-accent/20',
         isSpotlight ? 'col-span-full row-span-2' : ''
@@ -168,17 +163,20 @@ function ParticipantVideo({
 }
 
 function SpeakingIndicator(): JSX.Element {
-  const scale = useMotionValue(1);
+  const scale = useSharedValue(1);
 
   useEffect(() => {
-    void animate(scale, 1.2, { duration: 500 }).then(() => {
-      void animate(scale, 1, { duration: 500, repeat: Infinity, repeatType: 'reverse' });
-    });
+    scale.value = withRepeat(
+      withSequence(withTiming(1.2, { duration: 500 }), withTiming(1, { duration: 500 })),
+      -1,
+      true
+    );
   }, [scale]);
 
   const animatedStyle = useAnimatedStyle(() => {
+    const scaleValue = interpolate(scale.value, [1, 1.2], [1, 1.2], Extrapolation.CLAMP);
     return {
-      transform: [{ scale: scale.get() }],
+      transform: [{ scale: scaleValue }],
     };
   });
 
@@ -435,39 +433,17 @@ export default function GroupCallInterface({
   });
 
   const raiseHandButton = useBounceOnTap({
+    scale: 0.95,
+    hapticFeedback: false,
+  });
+  const chatButton = useBounceOnTap({
     onPress: handleRaiseHand,
     hapticFeedback: true,
   });
 
-  const modalStyle = useAnimatedStyleValue(modalAnimation.style);
-
-  const muteButtonStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: muteButton.scale.get() }],
-    };
-  });
-
-  const videoButtonStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: videoButton.scale.get() }],
-    };
-  });
-
-  const endCallButtonStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: endCallButton.scale.get() }],
-    };
-  });
-
-  const raiseHandButtonStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: raiseHandButton.scale.get() }],
-    };
-  });
-
   return (
     <MotionView
-      style={modalStyle}
+      style={modalAnimation.style}
       className={cn(
         'fixed inset-0 z-50 flex items-center justify-center',
         isFullscreen ? 'bg-background' : 'bg-background/95 backdrop-blur-xl p-4'
@@ -489,7 +465,7 @@ export default function GroupCallInterface({
                 <Users size={24} weight="fill" className="text-primary" aria-hidden="true" />
                 <div>
                   <h1 className="font-bold text-foreground text-lg">
-                    {session.call.title ?? 'Playdate Video Call'}
+                    {session.call.title || 'Playdate Video Call'}
                   </h1>
                   <div className="flex items-center gap-2 text-sm" role="status" aria-live="polite">
                     {statusIndicator}
@@ -525,10 +501,9 @@ export default function GroupCallInterface({
               {isVideoCall && (
                 <Button
                   onClick={handleToggleLayout}
-                  size="sm"
-                  isIconOnly
+                  size="icon"
                   variant="ghost"
-                  className="rounded-full w-10 h-10 p-0"
+                  className="rounded-full"
                   aria-label={`Toggle layout: ${String(session.layout ?? '')}`}
                 >
                   {session.layout === 'grid' ? (
@@ -543,10 +518,9 @@ export default function GroupCallInterface({
 
               <Button
                 onClick={handleToggleParticipants}
-                size="sm"
-                isIconOnly
+                size="icon"
                 variant="ghost"
-                className="rounded-full w-10 h-10 p-0"
+                className="rounded-full"
                 aria-label={showParticipants ? 'Hide participants' : 'Show participants'}
                 aria-expanded={showParticipants}
               >
@@ -555,10 +529,9 @@ export default function GroupCallInterface({
 
               <Button
                 onClick={handleToggleFullscreen}
-                size="sm"
-                isIconOnly
+                size="icon"
                 variant="ghost"
-                className="rounded-full w-10 h-10 p-0"
+                className="rounded-full"
                 aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
               >
                 {isFullscreen ? (
@@ -644,13 +617,12 @@ export default function GroupCallInterface({
               role="toolbar"
               aria-label="Call controls"
             >
-              <MotionView style={muteButtonStyle}>
+              <MotionView variants={muteButton.variants} initial="rest" animate="rest" whileTap="tap">
                 <Button
                   onClick={muteButton.handlePress}
-                  size="sm"
-                  isIconOnly
+                  size="icon"
                   className={cn(
-                    'w-14 h-14 rounded-full shadow-xl p-0',
+                    'w-14 h-14 rounded-full shadow-xl',
                     session.localParticipant.isMuted
                       ? 'bg-red-500 hover:bg-red-600'
                       : 'bg-primary hover:bg-primary/90'
@@ -674,17 +646,16 @@ export default function GroupCallInterface({
               </MotionView>
 
               {isVideoCall && (
-                <MotionView style={videoButtonStyle}>
+                <MotionView variants={videoButton.variants} initial="rest" animate="rest" whileTap="tap">
                   <Button
                     onClick={videoButton.handlePress}
-                  size="sm"
-                  isIconOnly
-                  className={cn(
-                    'w-14 h-14 rounded-full shadow-xl p-0',
-                    !session.localParticipant.isVideoEnabled
-                      ? 'bg-red-500 hover:bg-red-600'
-                      : 'bg-primary hover:bg-primary/90'
-                  )}
+                    size="icon"
+                    className={cn(
+                      'w-14 h-14 rounded-full shadow-xl',
+                      !session.localParticipant.isVideoEnabled
+                        ? 'bg-red-500 hover:bg-red-600'
+                        : 'bg-primary hover:bg-primary/90'
+                    )}
                     aria-label={
                       session.localParticipant.isVideoEnabled ? 'Disable video' : 'Enable video'
                     }
@@ -709,12 +680,11 @@ export default function GroupCallInterface({
                 </MotionView>
               )}
 
-              <MotionView style={endCallButtonStyle}>
+              <MotionView variants={endCallButton.variants} initial="rest" animate="rest" whileTap="tap">
                 <Button
                   onClick={endCallButton.handlePress}
-                  size="sm"
-                  isIconOnly
-                  className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-2xl p-0"
+                  size="icon"
+                  className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-2xl"
                   aria-label="End call"
                 >
                   <PhoneDisconnect
@@ -726,13 +696,12 @@ export default function GroupCallInterface({
                 </Button>
               </MotionView>
 
-              <MotionView style={raiseHandButtonStyle}>
+              <MotionView variants={raiseHandButton.variants} initial="rest" animate="rest" whileTap="tap">
                 <Button
                   onClick={raiseHandButton.handlePress}
-                  size="sm"
-                  isIconOnly
-                  variant={isLocalHandRaised ? 'primary' : 'outline'}
-                  className="w-14 h-14 rounded-full shadow-xl p-0"
+                  size="icon"
+                  variant={isLocalHandRaised ? 'default' : 'outline'}
+                  className="w-14 h-14 rounded-full shadow-xl"
                   aria-label={isLocalHandRaised ? 'Lower hand' : 'Raise hand'}
                   aria-pressed={isLocalHandRaised}
                 >
@@ -745,28 +714,16 @@ export default function GroupCallInterface({
                 </Button>
               </MotionView>
 
-              {(() => {
-                const chatButton = useBounceOnTap({ hapticFeedback: true });
-                const chatButtonStyle = useAnimatedStyle(() => {
-                  return {
-                    transform: [{ scale: chatButton.scale.get() }],
-                  };
-                });
-                return (
-                  <MotionView style={chatButtonStyle}>
-                    <Button
-                      onClick={chatButton.handlePress}
-                      size="sm"
-                      isIconOnly
-                      variant="outline"
-                      className="w-14 h-14 rounded-full shadow-xl p-0"
-                      aria-label="Open chat"
-                    >
-                      <ChatCircle size={24} weight="fill" aria-hidden="true" />
-                    </Button>
-                  </MotionView>
-                );
-              })()}
+              <MotionView variants={chatButton.variants} initial="rest" animate="rest" whileTap="tap">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="w-14 h-14 rounded-full shadow-xl"
+                  aria-label="Open chat"
+                >
+                  <ChatCircle size={24} weight="fill" aria-hidden="true" />
+                </Button>
+              </MotionView>
             </div>
           </div>
         </div>
@@ -885,18 +842,18 @@ function ParticipantsPanel({
   onInvite,
   onClose: _onClose,
 }: ParticipantsPanelProps): JSX.Element {
-  const slideX = useMotionValue(400);
-  const opacity = useMotionValue(0);
+  const slideX = useSharedValue(400);
+  const opacity = useSharedValue(0);
 
   useEffect(() => {
-    void animate(slideX, 0, { duration: 300 });
-    void animate(opacity, 1, { duration: 300 });
+    slideX.value = withTiming(0, { duration: 300 });
+    opacity.value = withTiming(1, { duration: 300 });
   }, [slideX, opacity]);
 
   const panelStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: slideX.get() }],
-      opacity: opacity.get(),
+      transform: [{ translateX: slideX.value }],
+      opacity: opacity.value,
     };
   });
 
@@ -970,18 +927,26 @@ function ParticipantsPanel({
 }
 
 function ActiveIndicator(): JSX.Element {
-  const scale = useMotionValue(1);
-  const opacity = useMotionValue(1);
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
 
   useEffect(() => {
-    void animate(scale, 1.2, { duration: 1000, repeat: Infinity, repeatType: 'reverse' });
-    void animate(opacity, 0.5, { duration: 1000, repeat: Infinity, repeatType: 'reverse' });
+    scale.value = withRepeat(
+      withSequence(withTiming(1.2, { duration: 1000 }), withTiming(1, { duration: 1000 })),
+      -1,
+      true
+    );
+    opacity.value = withRepeat(
+      withSequence(withTiming(0.5, { duration: 1000 }), withTiming(1, { duration: 1000 })),
+      -1,
+      true
+    );
   }, [scale, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.get() }],
-      opacity: opacity.get(),
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value,
     };
   });
 
@@ -996,15 +961,19 @@ function ActiveIndicator(): JSX.Element {
 }
 
 function ConnectingIndicator(): JSX.Element {
-  const scale = useMotionValue(1);
+  const scale = useSharedValue(1);
 
   useEffect(() => {
-    void animate(scale, 1.2, { duration: 750, repeat: Infinity, repeatType: 'reverse' });
+    scale.value = withRepeat(
+      withSequence(withTiming(1.2, { duration: 750 }), withTiming(1, { duration: 750 })),
+      -1,
+      true
+    );
   }, [scale]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ scale: scale.get() }],
+      transform: [{ scale: scale.value }],
     };
   });
 

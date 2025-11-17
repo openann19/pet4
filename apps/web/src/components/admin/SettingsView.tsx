@@ -10,7 +10,6 @@ import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift'
-import { useAnimatedStyle } from '@petspark/motion'
 import { triggerHaptic } from '@/lib/haptics'
 import { createLogger } from '@/lib/logger'
 import { adminApi } from '@/api/admin-api'
@@ -199,31 +198,9 @@ export default function SettingsView() {
     }
   }, [featureFlags, systemSettings, currentUser, saveConfig])
 
-  const featureFlagsCardHover = useHoverLift({ scale: 1.02 })
-  const systemSettingsCardHover = useHoverLift({ scale: 1.02 })
-  const systemInfoCardHover = useHoverLift({ scale: 1.02 })
-
-  const featureFlagsCardStyle = useAnimatedStyle(() => {
-    const scale = featureFlagsCardHover.scale.get();
-    const translateY = featureFlagsCardHover.translateY.get();
-    return {
-      transform: [{ scale, translateY }],
-    };
-  })
-  const systemSettingsCardStyle = useAnimatedStyle(() => {
-    const scale = systemSettingsCardHover.scale.get();
-    const translateY = systemSettingsCardHover.translateY.get();
-    return {
-      transform: [{ scale, translateY }],
-    };
-  })
-  const systemInfoCardStyle = useAnimatedStyle(() => {
-    const scale = systemInfoCardHover.scale.get();
-    const translateY = systemInfoCardHover.translateY.get();
-    return {
-      transform: [{ scale, translateY }],
-    };
-  })
+  const featureFlagsCardHover = useHoverLift({ scale: 1.02, translateY: -8 })
+  const systemSettingsCardHover = useHoverLift({ scale: 1.02, translateY: -8 })
+  const systemInfoCardHover = useHoverLift({ scale: 1.02, translateY: -8 })
 
   if (loading) {
     return (
@@ -246,7 +223,9 @@ export default function SettingsView() {
       <ScrollArea className="flex-1">
         <div className="p-6 space-y-6 max-w-4xl">
           <MotionView
-            style={featureFlagsCardStyle}
+            variants={featureFlagsCardHover.variants}
+            initial="rest"
+            whileHover="hover"
             onMouseEnter={featureFlagsCardHover.handleEnter}
             onMouseLeave={featureFlagsCardHover.handleLeave}
           >
@@ -315,7 +294,9 @@ export default function SettingsView() {
           </MotionView>
 
           <MotionView
-            style={systemSettingsCardStyle}
+            variants={systemSettingsCardHover.variants}
+            initial="rest"
+            whileHover="hover"
             onMouseEnter={systemSettingsCardHover.handleEnter}
             onMouseLeave={systemSettingsCardHover.handleLeave}
           >
@@ -413,7 +394,7 @@ export default function SettingsView() {
           </Card>
           </MotionView>
 
-          <MotionView>
+          <MotionView transition={{ delay: 0.2 }}>
             <Card>
               <CardHeader>
                 <CardTitle>Actions</CardTitle>
@@ -443,7 +424,9 @@ export default function SettingsView() {
           </MotionView>
 
           <MotionView
-            style={systemInfoCardStyle}
+            variants={systemInfoCardHover.variants}
+            initial="rest"
+            whileHover="hover"
             onMouseEnter={systemInfoCardHover.handleEnter}
             onMouseLeave={systemInfoCardHover.handleLeave}
           >

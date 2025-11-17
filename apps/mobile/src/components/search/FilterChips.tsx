@@ -27,7 +27,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
   Layout,
   FadeInRight,
   FadeOutLeft,

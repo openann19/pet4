@@ -1,4 +1,4 @@
-/* eslint-disable max-lines -- A/B testing framework with comprehensive statistical analysis */
+ 
 /**
  * A/B Testing Framework (Web)
  *

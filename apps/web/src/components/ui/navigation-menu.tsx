@@ -1,3 +1,4 @@
+import * as React from 'react';
 import type { ComponentProps } from 'react';
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import { cva } from 'class-variance-authority';
@@ -41,13 +42,13 @@ function NavigationMenuList({
   showInkBar = true,
   ...props
 }: NavigationMenuListProps) {
-  const listRef = useRef<HTMLUListElement | null>(null)
+  const listRef = React.useRef<HTMLUListElement | null>(null)
 
-  const handleListRef = useCallback((node: HTMLUListElement | null) => {
+  const handleListRef = React.useCallback((node: HTMLUListElement | null) => {
     listRef.current = node
   }, [])
 
-  const clampedIndex = useMemo(() => {
+  const clampedIndex = React.useMemo(() => {
     if (!Number.isFinite(activeIndex)) {
       return 0
     }

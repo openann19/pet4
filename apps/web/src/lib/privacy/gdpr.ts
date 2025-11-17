@@ -96,7 +96,7 @@ export class GDPRService {
       await gdprApi.grantConsent(userId, {
         type,
         granted: true,
-        grantedAt: consent.grantedAt,
+        grantedAt: consent.grantedAt ?? Date.now(),
         purpose,
         legalBasis,
       })
@@ -391,7 +391,7 @@ export class GDPRService {
    */
   async exportUserData(userId: string, format: DataPortabilityFormat = 'json'): Promise<Blob> {
     try {
-      const response = await gdprApi.exportUserData({ userId, format })
+      const response = await gdprApi.exportUserData({ userId, format: format === 'json' ? 'json' : undefined })
       const jsonString = JSON.stringify(response, null, 2)
       const blob = new Blob([jsonString], { type: 'application/json' })
       logger.debug('User data exported', { userId, format })

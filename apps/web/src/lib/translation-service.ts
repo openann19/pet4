@@ -10,9 +10,6 @@
  * Location: apps/web/src/lib/translation-service.ts
  */
 
-import { createLogger } from './logger';
-
-const logger = createLogger('translation-service');
 
 /**
  * Supported language code
@@ -234,7 +231,6 @@ export class TranslationService {
     const cacheKey = `${text}-${targetLanguage}-${sourceLanguage ?? 'auto'}`;
     const cached = this.cache.get(cacheKey);
     if (cached) {
-      logger.debug('Translation cache hit', { cacheKey });
       return cached;
     }
 
@@ -278,22 +274,16 @@ export class TranslationService {
   /**
    * Perform translation (placeholder - would integrate with translation API)
    */
-  private async performTranslation(
+  private performTranslation(
     text: string,
     sourceLanguage: LanguageCode,
     targetLanguage: LanguageCode
   ): Promise<string> {
     // In production, this would call a translation API (Google Translate, DeepL, etc.)
     // For now, return a placeholder
-    logger.debug('Translating text', {
-      sourceLanguage,
-      targetLanguage,
-      textLength: text.length,
-    });
-
     // Placeholder: return text with translation marker
     // In production, replace with actual API call
-    return `[Translated from ${sourceLanguage} to ${targetLanguage}] ${text}`;
+    return Promise.resolve(`[Translated from ${sourceLanguage} to ${targetLanguage}] ${text}`);
   }
 
   /**
@@ -340,9 +330,7 @@ let translationService: TranslationService | null = null;
  * Get translation service instance
  */
 export function getTranslationService(): TranslationService {
-  if (!translationService) {
-    translationService = new TranslationService();
-  }
+  translationService ??= new TranslationService();
   return translationService;
 }
 

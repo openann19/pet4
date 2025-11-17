@@ -25,10 +25,10 @@ interface AppMainContentProps {
   }
   animations: {
     loadingTransition: {
-      style: unknown
+      style: React.CSSProperties
     }
     pageTransition: {
-      style: unknown
+      style: React.CSSProperties
     }
   }
 }
@@ -51,12 +51,12 @@ export function AppMainContent({ currentView, navigation, animations }: AppMainC
     >
       <Suspense
         fallback={
-          <MotionView animatedStyle={animations.loadingTransition.style}>
+          <MotionView style={animations.loadingTransition.style}>
             <LoadingState />
           </MotionView>
         }
       >
-        <MotionView key={currentView} animatedStyle={animations.pageTransition.style}>
+        <MotionView key={currentView} style={animations.pageTransition.style}>
           {currentView === 'discover' && <DiscoverView />}
           {currentView === 'matches' && (
             <MatchesView onNavigateToChat={() => { navigation.navigateToView('chat') }} />

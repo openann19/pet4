@@ -38,7 +38,7 @@ export function PlaydatesScreen(): React.JSX.Element {
         onPress={() => handlePlaydatePress(item)}
         onJoin={() => handleJoin(item)}
         onCheckIn={() => handleCheckIn(item)}
-        isParticipant={item.participants?.some((p) => p.userId === 'current-user')}
+        isParticipant={item.participants?.some((p) => p.id === 'current-user')}
       />
     ),
     [handlePlaydatePress, handleJoin, handleCheckIn]
@@ -63,13 +63,13 @@ export function PlaydatesScreen(): React.JSX.Element {
           }}
         >
           {playdates.map((playdate) => {
-            if (!playdate.location?.coordinates) return null;
+            if (!playdate.location?.latitude || !playdate.location?.longitude) return null;
             return (
               <Marker
                 key={playdate.id}
                 coordinate={{
-                  latitude: playdate.location.coordinates.latitude,
-                  longitude: playdate.location.coordinates.longitude,
+                  latitude: playdate.location.latitude,
+                  longitude: playdate.location.longitude,
                 }}
                 title={playdate.title}
               />

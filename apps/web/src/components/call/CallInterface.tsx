@@ -27,7 +27,7 @@ import {
   withSequence,
   MotionView,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 interface CallInterfaceProps {
   session: CallSession;
@@ -145,15 +145,15 @@ export default function CallInterface({
 
   return (
     <MotionView
-      animatedStyle={containerStyle}
+      style={containerStyle}
       className={`fixed inset-0 z-50 flex items-center justify-center ${
         isFullscreen ? 'bg-black' : 'bg-black/90 backdrop-blur-xl p-4'
       }`}
     >
       <div
         className={`relative w-full ${
-          isFullscreen ? 'h-full' : 'max-w-2xl h-[80vh]'
-        } bg-linear-to-br from-primary/20 via-background/95 to-accent/20 rounded-3xl overflow-hidden shadow-2xl`}
+          String(isFullscreen ? 'h-full' : 'max-w-2xl h-[80vh]')
+        } bg-gradient-to-br from-primary/20 via-background/95 to-accent/20 rounded-3xl overflow-hidden shadow-2xl`}
       >
         {isVideoCall && session.remoteParticipant.isVideoEnabled ? (
           <div className="absolute inset-0">
@@ -163,7 +163,7 @@ export default function CallInterface({
               playsInline
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/60" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
           </div>
         ) : (
           <AvatarPulseView
@@ -194,10 +194,9 @@ export default function CallInterface({
           {isVideoCall && (
             <Button
               onClick={handleToggleFullscreen}
-              size="sm"
-              isIconOnly
+              size="icon"
               variant="ghost"
-              className="glass-strong backdrop-blur-2xl text-white hover:bg-white/20 w-10 h-10 p-0"
+              className="glass-strong backdrop-blur-2xl text-white hover:bg-white/20"
             >
               {isFullscreen ? <ArrowsIn size={20} /> : <ArrowsOut size={20} />}
             </Button>
@@ -246,10 +245,10 @@ function AvatarPulseView({ avatar, name, isMuted, isActive, audioWaveform }: Ava
 
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <MotionView animatedStyle={avatarStyle} className="flex flex-col items-center">
+      <MotionView style={avatarStyle} className="flex flex-col items-center">
         <Avatar className="w-40 h-40 ring-4 ring-white/30 mb-6">
           <AvatarImage src={avatar} alt={name} />
-          <AvatarFallback className="bg-linear-to-br from-primary to-accent text-white text-5xl font-bold">
+          <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white text-5xl font-bold">
             {name[0]}
           </AvatarFallback>
         </Avatar>
@@ -291,7 +290,7 @@ function WaveformBar({ value }: WaveformBarProps) {
     };
   }) as AnimatedStyle;
 
-  return <MotionView animatedStyle={barStyle} className="w-1.5 bg-primary rounded-full" />;
+  return <MotionView style={barStyle} className="w-1.5 bg-primary rounded-full" />;
 }
 
 interface LocalVideoViewProps {
@@ -316,7 +315,7 @@ function LocalVideoView({ videoRef }: LocalVideoViewProps) {
 
   return (
     <MotionView
-      animatedStyle={videoStyle}
+      style={videoStyle}
       className="absolute top-6 right-6 w-40 h-28 rounded-2xl overflow-hidden shadow-2xl ring-2 ring-white/30"
     >
       <video
@@ -396,21 +395,21 @@ function CallInfoView({
 
   return (
     <MotionView
-      animatedStyle={infoStyle}
+      style={infoStyle}
       className="glass-strong rounded-2xl px-4 py-3 backdrop-blur-2xl"
     >
       <h3 className="font-bold text-white text-lg mb-1">{name}</h3>
       <div className="flex items-center gap-2">
         {isActive ? (
           <>
-            <MotionView animatedStyle={statusStyle} className="w-2 h-2 bg-green-500 rounded-full" />
+            <MotionView style={statusStyle} className="w-2 h-2 bg-green-500 rounded-full" />
             <span className="text-sm text-white/90 font-medium">
               {formatCallDuration(duration)}
             </span>
           </>
         ) : (
           <>
-            <MotionView animatedStyle={statusStyle} className="w-2 h-2 bg-yellow-500 rounded-full" />
+            <MotionView style={statusStyle} className="w-2 h-2 bg-yellow-500 rounded-full" />
             <span className="text-sm text-white/90">
               {callStatus === 'ringing' ? 'Ringing...' : 'Connecting...'}
             </span>
@@ -487,45 +486,20 @@ function CallControlsView({
   const endCallAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
   const speakerAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
 
-  const muteBounceStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: muteAnimation.scale.get() }],
-    };
-  }) as AnimatedStyle;
-
-  const videoBounceStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: videoAnimation.scale.get() }],
-    };
-  }) as AnimatedStyle;
-
-  const endCallBounceStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: endCallAnimation.scale.get() }],
-    };
-  }) as AnimatedStyle;
-
-  const speakerBounceStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: speakerAnimation.scale.get() }],
-    };
-  }) as AnimatedStyle;
-
   return (
     <div className="absolute bottom-0 left-0 right-0 p-8">
-      <MotionView animatedStyle={controlsStyle} className="flex items-center justify-center gap-4">
-        <MotionView animatedStyle={muteBounceStyle}>
+      <MotionView style={controlsStyle} className="flex items-center justify-center gap-4">
+        <MotionView variants={muteAnimation.variants} initial="rest" animate="rest" whileTap="tap">
           <Button
             onClick={() => {
               muteAnimation.handlePress();
               onToggleMute();
             }}
-            size="sm"
-            isIconOnly
-            className={`w-14 h-14 rounded-full shadow-xl p-0 ${
-              isMuted
-                ? 'bg-red-500 hover:bg-red-600'
-                : 'glass-strong backdrop-blur-2xl hover:bg-white/20'
+            size="icon"
+            className={`w-14 h-14 rounded-full shadow-xl ${
+              String(isMuted
+                                ? 'bg-red-500 hover:bg-red-600'
+                                : 'glass-strong backdrop-blur-2xl hover:bg-white/20')
             }`}
           >
             {isMuted ? (
@@ -537,18 +511,17 @@ function CallControlsView({
         </MotionView>
 
         {isVideoCall && (
-          <MotionView animatedStyle={videoBounceStyle}>
+          <MotionView variants={videoAnimation.variants} initial="rest" animate="rest" whileTap="tap">
             <Button
               onClick={() => {
                 videoAnimation.handlePress();
                 onToggleVideo();
               }}
-              size="sm"
-              isIconOnly
-              className={`w-14 h-14 rounded-full shadow-xl p-0 ${
-                !isVideoEnabled
-                  ? 'bg-red-500 hover:bg-red-600'
-                  : 'glass-strong backdrop-blur-2xl hover:bg-white/20'
+              size="icon"
+              className={`w-14 h-14 rounded-full shadow-xl ${
+                String(!isVideoEnabled
+                                    ? 'bg-red-500 hover:bg-red-600'
+                                    : 'glass-strong backdrop-blur-2xl hover:bg-white/20')
               }`}
             >
               {isVideoEnabled ? (
@@ -560,32 +533,30 @@ function CallControlsView({
           </MotionView>
         )}
 
-        <MotionView animatedStyle={endCallBounceStyle}>
+        <MotionView variants={endCallAnimation.variants} initial="rest" animate="rest" whileTap="tap">
           <Button
             onClick={() => {
               endCallAnimation.handlePress();
               onEndCall();
             }}
-            size="sm"
-            isIconOnly
-            className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-2xl p-0"
+            size="icon"
+            className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 shadow-2xl"
           >
             <PhoneDisconnect size={28} weight="fill" className="text-white" />
           </Button>
         </MotionView>
 
-        <MotionView animatedStyle={speakerBounceStyle}>
+        <MotionView variants={speakerAnimation.variants} initial="rest" animate="rest" whileTap="tap">
           <Button
             onClick={() => {
               speakerAnimation.handlePress();
               onToggleSpeaker();
             }}
-            size="sm"
-            isIconOnly
-            className={`w-14 h-14 rounded-full shadow-xl p-0 ${
-              !isSpeakerOn
-                ? 'bg-yellow-500 hover:bg-yellow-600'
-                : 'glass-strong backdrop-blur-2xl hover:bg-white/20'
+            size="icon"
+            className={`w-14 h-14 rounded-full shadow-xl ${
+              String(!isSpeakerOn
+                                ? 'bg-yellow-500 hover:bg-yellow-600'
+                                : 'glass-strong backdrop-blur-2xl hover:bg-white/20')
             }`}
           >
             {isSpeakerOn ? (

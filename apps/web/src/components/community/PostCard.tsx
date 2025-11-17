@@ -39,7 +39,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { Suspense } from 'react';
 import { CommentsSheet } from './CommentsSheet';
 import { MediaViewer, type MediaItem } from '@/components/lazy-exports';
@@ -92,7 +92,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
   });
   const authorButtonTranslateX = useSharedValue(0);
 
-  const authorButtonStyle = useAnimatedStyle(() => {
+  const authorButtonStyle = useAnimatedStyle((): Record<string, unknown> => {
     return {
       transform: [
         { translateX: authorButtonTranslateX.value },

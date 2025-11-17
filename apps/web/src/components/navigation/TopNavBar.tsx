@@ -66,11 +66,11 @@ export default function TopNavBar({
         stiffness: springConfigs.smooth.stiffness,
       });
       animate(blurIntensity, 30, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: (timingConfigs.smooth.duration ?? 300) / 1000,
         ease: 'easeInOut',
       });
       animate(glowOpacity, 0.5, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: (timingConfigs.smooth.duration ?? 300) / 1000,
         ease: 'easeInOut',
       });
     } else {
@@ -80,11 +80,11 @@ export default function TopNavBar({
         stiffness: springConfigs.smooth.stiffness,
       });
       animate(blurIntensity, 20, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: (timingConfigs.smooth.duration ?? 300) / 1000,
         ease: 'easeInOut',
       });
       animate(glowOpacity, 0.3, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: (timingConfigs.smooth.duration ?? 300) / 1000,
         ease: 'easeInOut',
       });
     }
@@ -92,12 +92,25 @@ export default function TopNavBar({
 
   // Holographic shimmer effect
   useEffect(() => {
-    animate(shimmerX, [200, -100], {
-      duration: 3,
-      ease: 'linear',
-      repeat: Infinity,
-      repeatType: 'loop',
-    });
+    // Animate from current value to 200, then to -100 in a loop
+    const sequence = async () => {
+      await animate(shimmerX, 200, {
+        duration: 1.5,
+        ease: 'linear',
+      });
+      await animate(shimmerX, -100, {
+        duration: 1.5,
+        ease: 'linear',
+      });
+    };
+    
+    const runAnimation = async () => {
+      while (true) {
+        await sequence();
+      }
+    };
+    
+    void runAnimation();
   }, [shimmerX]);
 
   const barVariants: Variants = {

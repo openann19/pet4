@@ -2,7 +2,7 @@ import { Sparkle } from '@phosphor-icons/react';
 import { MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { getTemplatesByType, type PetType, type PetProfileTemplate } from '@/lib/pet-profile-templates';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import type { CreatePetFormActions } from '../create-pet-types';
 import { TemplateCard } from './TemplateCard';
 
@@ -28,7 +28,7 @@ export function TemplateStep({
   const templates = getTemplatesByType(petType);
 
   return (
-    <MotionView key="template" animatedStyle={stepStyle} className="space-y-6">
+    <MotionView key="template" style={stepStyle} className="space-y-6">
       <div className="text-center mb-6">
         <h3 className="text-2xl font-bold mb-2">Choose a profile template</h3>
         <p className="text-muted-foreground">

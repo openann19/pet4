@@ -21,7 +21,7 @@ import { CommunityClientOtherApi } from './community-client/community-client-oth
 import { CommunityClientPostsApi } from './community-client/community-client-posts-api';
 import { CommunityClientSocialApi } from './community-client/community-client-social-api';
 
-const logger = createLogger('CommunityApi');
+const _logger = createLogger('CommunityApi');
 
 /**
  * Community API Implementation

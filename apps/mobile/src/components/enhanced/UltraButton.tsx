@@ -16,7 +16,6 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import * as Haptics from 'expo-haptics'
 import { usePressBounce } from '@petspark/motion'
 import { springConfigs } from '@/effects/reanimated/transitions'
-import { isTruthy } from '@petspark/shared';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 

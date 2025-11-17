@@ -1,7 +1,8 @@
 'use client';;
-import { MotionView } from "@petspark/motion";
+import { MotionView, type MotionStyle } from "@petspark/motion";
 
 import { useReactionAnimation } from '@/hooks/use-reaction-animation';
+import { type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { isTruthy } from '@petspark/shared';
@@ -22,6 +23,8 @@ export function AnimatedReaction({
         hapticFeedback: true,
       });
 
+  const animatedStyle = rawAnimatedStyle as AnimatedStyle;
+
   const handleAnimationComplete = (): void => {
     if (isTruthy(onAnimationComplete)) {
       setTimeout(() => {
@@ -37,7 +40,7 @@ export function AnimatedReaction({
 
   return (
     <MotionView
-      style={rawAnimatedStyle}
+      style={animatedStyle as unknown as MotionStyle}
       onClick={handleClick}
       className={cn('text-2xl cursor-pointer select-none', className)}
     >

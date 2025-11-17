@@ -1,7 +1,7 @@
 import { VirtualMessageList } from '@/components/chat/window/VirtualMessageList';
 import { ChatMessageRenderer } from '@/components/chat/window/ChatMessageRenderer';
 import type { ChatMessage, TypingUser } from '@/lib/chat-types';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 interface ChatMessageListSectionProps {
   useVirtualizedList: boolean;

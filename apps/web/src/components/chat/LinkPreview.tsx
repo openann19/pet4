@@ -10,6 +10,7 @@
 import { useMemo } from 'react';
 import { useSharedValue, withTiming, useAnimatedStyle, MotionView } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
+import type { AnimatedStyle } from '@petspark/motion';
 import { safeHref } from '@/lib/url-safety';
 import { SmartImage } from '@/components/media/SmartImage';
 import { useUIConfig } from "@/hooks/use-ui-config";
@@ -23,45 +24,6 @@ export interface LinkPreviewProps {
   className?: string;
 }
 
-function LinkPreviewSkeleton({ image }: { image?: string }): React.JSX.Element {
-  return (
-    <div className="flex gap-3 p-3">
-      {image && <div className="w-20 h-20 bg-muted rounded animate-pulse" />}
-      <div className="flex-1 space-y-2">
-        <div className="h-4 bg-muted rounded w-3/4 animate-pulse" />
-        <div className="h-3 bg-muted rounded w-full animate-pulse" />
-        <div className="h-3 bg-muted rounded w-2/3 animate-pulse" />
-      </div>
-    </div>
-  );
-}
-
-function LinkPreviewContent({ url, title, description, image }: { url: string; title?: string; description?: string; image?: string }): React.JSX.Element {
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer nofollow ugc"
-      className="flex gap-3 p-3 hover:bg-muted/50 transition-colors rounded-lg"
-    >
-      {image && (
-        <SmartImage
-          src={image}
-          alt={title ?? new URL(url).hostname}
-          className="w-20 h-20 object-cover rounded"
-          width={80}
-          height={80}
-        />
-      )}
-      <div className="flex-1 min-w-0">
-        {title && <h4 className="text-sm font-semibold text-foreground line-clamp-1">{title}</h4>}
-        {description && <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{description}</p>}
-        <p className="text-xs text-muted-foreground mt-1 truncate">{new URL(url).hostname}</p>
-      </div>
-    </a>
-  );
-}
-
 export function LinkPreview({
   url,
   title,
@@ -70,20 +32,20 @@ export function LinkPreview({
   isLoading = false,
   className,
 }: LinkPreviewProps) {
-  const _uiConfig = useUIConfig();
-  const reduced = useReducedMotion();
+    const _uiConfig = useUIConfig();
+    const reduced = useReducedMotion();
   const safeUrl = useMemo(() => safeHref(url), [url]);
   const showContent = !isLoading && (!!title || !!image) && safeUrl !== null;
 
-  const s = useSharedValue<number>(showContent ? 1 : 0);
+  const s = useSharedValue(showContent ? 1 : 0);
   const dur = getReducedMotionDuration(360, reduced);
 
   useMemo(() => {
     s.value = withTiming(showContent ? 1 : 0, { duration: dur });
   }, [showContent, dur, s]);
 
-  const skeletonStyle = useAnimatedStyle(() => ({ opacity: 1 - s.value }));
-  const contentStyle = useAnimatedStyle(() => ({ opacity: s.value }));
+  const skeletonStyle = useAnimatedStyle(() => ({ opacity: 1 - s.value })) as AnimatedStyle;
+  const contentStyle = useAnimatedStyle(() => ({ opacity: s.value })) as AnimatedStyle;
 
   if (!safeUrl) return null;
 
@@ -93,12 +55,47 @@ export function LinkPreview({
       aria-busy={isLoading}
       aria-live="polite"
     >
+      {/* Skeleton */}
       <MotionView style={skeletonStyle} className="absolute inset-0">
-        <LinkPreviewSkeleton image={image} />
+        <div className="flex gap-3 p-3">
+          {image && (
+            <div className="w-20 h-20 bg-muted rounded animate-pulse" />
+          )}
+          <div className="flex-1 space-y-2">
+            <div className="h-4 bg-muted rounded w-3/4 animate-pulse" />
+            <div className="h-3 bg-muted rounded w-full animate-pulse" />
+            <div className="h-3 bg-muted rounded w-2/3 animate-pulse" />
+          </div>
+        </div>
       </MotionView>
+      {/* Content */}
       {showContent && (
         <MotionView style={contentStyle} className="relative">
-          <LinkPreviewContent url={safeUrl} title={title} description={description} image={image} />
+          <a
+            href={safeUrl}
+            target="_blank"
+            rel="noopener noreferrer nofollow ugc"
+            className="flex gap-3 p-3 hover:bg-muted/50 transition-colors rounded-lg"
+          >
+            {image && (
+              <SmartImage
+                src={image}
+                alt={title ?? new URL(url).hostname}
+                className="w-20 h-20 object-cover rounded"
+                width={80}
+                height={80}
+              />
+            )}
+            <div className="flex-1 min-w-0">
+              {title && (
+                <h4 className="text-sm font-semibold text-foreground line-clamp-1">{title}</h4>
+              )}
+              {description && (
+                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{description}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1 truncate">{new URL(url).hostname}</p>
+            </div>
+          </a>
         </MotionView>
       )}
     </div>

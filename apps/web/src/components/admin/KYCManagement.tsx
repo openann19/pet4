@@ -1,4 +1,4 @@
-import { MotionView, useAnimatedStyle } from "@petspark/motion";
+import { MotionView, type Variants } from "@petspark/motion";
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { kycApi } from '@/api/kyc-api';
@@ -72,18 +72,8 @@ export function KYCManagement() {
     
     if (!presence.shouldRender) return null
     
-    const style = useAnimatedStyle(() => {
-      const opacity = presence.opacity.get();
-      const scale = presence.scale.get();
-      const translateY = presence.translateY.get();
-      return {
-        opacity,
-        transform: [{ scale, translateY }],
-      };
-    });
-    
     return (
-      <MotionView style={style} className="text-center py-12">
+      <MotionView style={presence.animatedStyle} className="text-center py-12">
         <ShieldCheck size={48} className="mx-auto text-muted-foreground mb-4" />
         <p className="text-muted-foreground">No sessions in this category</p>
       </MotionView>
@@ -98,17 +88,8 @@ export function KYCManagement() {
       delay: index * 50 
     })
     
-    const entryStyle = useAnimatedStyle(() => {
-      const scale = entry.scale.get();
-      const translateY = entry.translateY.get();
-      return {
-        opacity: entry.opacity.get(),
-        transform: [{ scale, translateY }] as Record<string, number>[],
-      };
-    });
-
     return (
-      <MotionView style={entryStyle}>
+      <MotionView initial="hidden" animate="visible" variants={entry.variants}>
         <Card
           className="p-4 cursor-pointer hover:bg-accent/50 transition-colors"
           onClick={() => { handleSessionClick(session); }}
@@ -538,7 +519,7 @@ export function KYCManagement() {
 
                   <div className="grid grid-cols-2 gap-2">
                     <Button
-                      onClick={() => { void handleVerify(); }}
+                      onClick={handleVerify}
                       disabled={loading}
                       className="bg-green-600 hover:bg-green-700"
                     >
@@ -546,7 +527,7 @@ export function KYCManagement() {
                       Verify & Approve
                     </Button>
                     <Button
-                      onClick={() => { void handleReject(); }}
+                      onClick={handleReject}
                       disabled={loading || !rejectText}
                       variant="destructive"
                     >

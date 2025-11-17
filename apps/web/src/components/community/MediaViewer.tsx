@@ -32,7 +32,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { toast } from 'sonner';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 const logger = createLogger('MediaViewer');
 
@@ -635,7 +635,7 @@ export function MediaViewer({
             <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
               <SlideTransition direction={direction} isVisible={true}>
                 <MotionView
-                  style={[mediaContainerStyle, dragOpacity]}
+                  style={{ ...mediaContainerStyle, ...dragOpacity }}
                   className="absolute inset-0 flex items-center justify-center"
                 >
                   {isVideo ? (

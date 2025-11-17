@@ -6,9 +6,8 @@ import {
   withTiming,
   withSequence,
   MotionView,
-  Presence,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { useAnimatePresence } from '@/effects/reanimated';
 import { Sparkle, Eye, ArrowRight } from '@phosphor-icons/react';
 import { Card } from '@/components/ui/card';

@@ -50,7 +50,7 @@ class RateLimitManager {
   /**
    * Get client IP address
    */
-  private getClientIP(): string {
+  getClientIP(): string {
     // In a real implementation, this would get the IP from headers or connection
     // For now, use a placeholder
     return 'client-ip';
@@ -59,7 +59,7 @@ class RateLimitManager {
   /**
    * Check abuse detection
    */
-  private checkAbuse(ip: string, userId?: string): boolean {
+  checkAbuse(ip: string, userId?: string): boolean {
     if (!this.enableAbuseDetection) {
       return false
     }
@@ -88,7 +88,7 @@ class RateLimitManager {
   /**
    * Record abuse violation
    */
-  private recordViolation(ip: string, userId?: string): void {
+  recordViolation(ip: string, userId?: string): void {
     if (!this.enableAbuseDetection) {
       return
     }
@@ -123,7 +123,7 @@ class RateLimitManager {
   /**
    * Check IP-based rate limit
    */
-  async checkIPRateLimit(ip: string, config: RateLimitConfig): Promise<RateLimitResult> {
+  checkIPRateLimit(ip: string, config: RateLimitConfig): RateLimitResult {
     const now = Date.now()
     const key = `ip-rate-limit:${config.action}:${ip}`
     const attempts = this.ipThrottles.get(key) ?? []
@@ -235,7 +235,7 @@ export async function checkRateLimit(
   }
 
   // Check IP-based rate limit
-  const ipResult = await rateLimitManager.checkIPRateLimit(ip, config)
+  const ipResult = rateLimitManager.checkIPRateLimit(ip, config)
   if (!ipResult.allowed) {
     rateLimitManager.recordViolation(ip, userId)
     const responseTime = performance.now() - startTime
@@ -306,7 +306,7 @@ export async function checkRateLimit(
 /**
  * Rate limit check for comments (max 50 per hour)
  */
-export async function checkCommentRateLimit(userId: string): Promise<RateLimitResult> {
+export function checkCommentRateLimit(userId: string): Promise<RateLimitResult> {
   return checkRateLimit(userId, {
     maxRequests: 50,
     windowMs: 60 * 60 * 1000, // 1 hour
@@ -346,10 +346,10 @@ export function getAbuseDetection(ip: string, userId?: string): AbuseDetection |
 /**
  * Check IP-based rate limit
  */
-export async function checkIPRateLimit(
+export function checkIPRateLimit(
   ip: string,
   config: RateLimitConfig
-): Promise<RateLimitResult> {
+): RateLimitResult {
   return rateLimitManager.checkIPRateLimit(ip, config)
 }
 

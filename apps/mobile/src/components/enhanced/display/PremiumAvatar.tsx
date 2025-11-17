@@ -11,7 +11,6 @@ import {
 import Animated, { useSharedValue, useAnimatedStyle } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import type { ReactNode } from 'react'
-import { isTruthy } from '@petspark/shared';
 
 export interface PremiumAvatarProps {
   src?: string

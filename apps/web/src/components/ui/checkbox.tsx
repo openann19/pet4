@@ -341,11 +341,11 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
           const itemValue = child.props.value || String(index)
           const isChecked = currentValue.includes(itemValue)
           
-          return React.cloneElement(child, {
+          return React.cloneElement(child as React.ReactElement<CheckboxProps>, {
             checked: isChecked,
             disabled: disabled || child.props.disabled,
             onCheckedChange: (checked: boolean) => {
-              child.props.onCheckedChange?.(checked)
+              (child.props as CheckboxProps).onCheckedChange?.(checked)
               handleValueChange(itemValue, checked)
             }
           })

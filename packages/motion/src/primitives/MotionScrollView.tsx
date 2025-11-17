@@ -1,33 +1,14 @@
-import Animated, { type AnimatedStyle } from 'react-native-reanimated'
-import type { ViewStyle } from 'react-native'
+/**
+ * MotionScrollView - Web Implementation
+ * Uses Framer Motion for web platform
+ */
 
-// Reanimated exports AnimatedComponent types conditionally
-type AnimatedComponents = typeof Animated & {
-  View: typeof Animated.View;
-  Text: typeof Animated.Text;
-  ScrollView?: typeof Animated.View;
-}
+import { motion } from 'framer-motion'
+import type { ComponentProps } from 'react'
 
-// Type guard for Animated.ScrollView availability
-const AnimatedScrollView = ('ScrollView' in Animated
-  ? (Animated as AnimatedComponents).ScrollView
-  : (Animated as AnimatedComponents).View) as typeof Animated.View
+export type MotionScrollViewProps = ComponentProps<typeof motion.div>
 
 /**
- * Unified animated ScrollView component.
- * Accepts animated style fragments and provides web performance optimizations.
- * Falls back to View on web where ScrollView may not be available.
+ * Web-compatible MotionScrollView using Framer Motion
  */
-export function MotionScrollView(
-  props: React.ComponentProps<typeof AnimatedScrollView> & {
-    animatedStyle?: AnimatedStyle<ViewStyle>
-  }
-): JSX.Element {
-  const { style, animatedStyle, ...rest } = props
-
-  const styleFinal = animatedStyle ? [style, animatedStyle] : style
-
-  // Note: Web performance hints are handled by Reanimated automatically
-
-  return <AnimatedScrollView {...rest} style={styleFinal} />
-}
+export const MotionScrollView = motion.div

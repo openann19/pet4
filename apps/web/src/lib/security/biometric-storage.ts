@@ -42,8 +42,18 @@ export interface BiometricSession {
 }
 
 /**
- * Biometric storage options
+ * Persisted credential data (from localStorage)
  */
+interface PersistedCredentialData {
+  readonly credentialId: string
+  readonly userId: string
+  readonly deviceId: string
+  readonly registeredAt: number
+  readonly lastUsedAt: number
+  readonly expiresAt?: number
+  readonly authenticatorType: 'platform' | 'cross-platform'
+  readonly publicKey: number[]
+}
 export interface BiometricStorageOptions {
   readonly sessionTimeout?: number
   readonly enableReAuth?: boolean
@@ -79,11 +89,7 @@ export class BiometricSecureStorage {
     this.credentials.set(key, credential)
 
     // Also store in IndexedDB for persistence
-    this.persistCredential(credential).catch((error) => {
-      logger.error('Failed to persist credential', {
-        error: error instanceof Error ? error : new Error(String(error)),
-      })
-    })
+    this.persistCredential(credential)
 
     logger.debug('Credential stored', {
       userId: credential.userId,
@@ -247,7 +253,7 @@ export class BiometricSecureStorage {
   /**
    * Persist credential to IndexedDB
    */
-  private async persistCredential(credential: StoredCredential): Promise<void> {
+  private persistCredential(credential: StoredCredential): void {
     // In a real implementation, this would store in IndexedDB with encryption
     // For now, we'll use a simplified version
     const key = `biometric-credential-${credential.userId}-${credential.deviceId}`
@@ -274,15 +280,15 @@ export class BiometricSecureStorage {
   /**
    * Load persisted credentials
    */
-  async loadPersistedCredentials(userId: string): Promise<StoredCredential[]> {
+  loadPersistedCredentials(userId: string): StoredCredential[] {
     const credentials: StoredCredential[] = []
 
     try {
       // Load from localStorage
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i)
-        if (key && key.startsWith(`biometric-credential-${userId}-`)) {
-          const data = JSON.parse(localStorage.getItem(key) ?? '{}')
+        if (key?.startsWith(`biometric-credential-${userId}-`)) {
+          const data = JSON.parse(localStorage.getItem(key) ?? '{}') as PersistedCredentialData
           const credential: StoredCredential = {
             credentialId: data.credentialId,
             userId: data.userId,
@@ -313,8 +319,6 @@ export class BiometricSecureStorage {
 let storageInstance: BiometricSecureStorage | null = null
 
 export function getBiometricStorage(options?: BiometricStorageOptions): BiometricSecureStorage {
-  if (!storageInstance) {
-    storageInstance = new BiometricSecureStorage(options)
-  }
+  storageInstance ??= new BiometricSecureStorage(options)
   return storageInstance
 }

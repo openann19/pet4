@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { MotionView } from '@petspark/motion';
 import { MapPin, NavigationArrow, X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +16,7 @@ import { openInMaps } from '@/lib/maps/deep-links';
 import { useMapConfig } from '@/lib/maps/useMapConfig';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 interface LocationBubbleProps {
   location: Location;

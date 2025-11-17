@@ -4,26 +4,13 @@ import React, { useEffect, useState } from 'react';
 import type { CSSProperties, ReactNode, MouseEventHandler } from 'react';
 import { motion, type HTMLMotionProps, convertReanimatedStyleToCSS } from '@petspark/motion';
 
-// Accept any style object that could come from useAnimatedStyle or be used as CSS
-// Using a permissive type since we convert to CSS at runtime anyway
+// Use MotionStyle from Framer Motion for full compatibility
+import type { MotionStyle } from 'framer-motion';
+
+// Accept MotionStyle or functions that return style objects
 export type AnimatedStyle =
-  | {
-      // Match React Native style properties that useAnimatedStyle might return
-      opacity?: number;
-      transform?: Record<string, number | string>[];
-      backgroundColor?: string | number;
-      color?: string | number;
-      height?: number | string;
-      width?: number | string;
-    } & Record<string, unknown>
-  | (() => {
-      opacity?: number;
-      transform?: Record<string, number | string>[];
-      backgroundColor?: string | number;
-      color?: string | number;
-      height?: number | string;
-      width?: number | string;
-    } & Record<string, unknown>)
+  | MotionStyle
+  | (() => MotionStyle)
   | (() => Record<string, unknown>)
   | ((...args: unknown[]) => Record<string, unknown>)
   | Record<string, unknown>
@@ -36,9 +23,9 @@ interface AnimatedViewProps {
   onMouseEnter?: MouseEventHandler<HTMLDivElement> | undefined;
   onMouseLeave?: MouseEventHandler<HTMLDivElement> | undefined;
   onClick?: MouseEventHandler<HTMLDivElement> | undefined;
-  initial?: boolean | string | number | Record<string, unknown>;
-  animate?: string | number | boolean | Record<string, unknown>;
-  exit?: string | number | Record<string, unknown>;
+  initial?: HTMLMotionProps<'div'>['initial'];
+  animate?: HTMLMotionProps<'div'>['animate'];
+  exit?: HTMLMotionProps<'div'>['exit'];
   transition?: HTMLMotionProps<'div'>['transition'];
   layout?: boolean | 'position' | 'size';
   layoutId?: string;
@@ -89,6 +76,9 @@ export function useAnimatedStyleValue(animatedStyle: AnimatedStyle): CSSProperti
       const rafId = requestAnimationFrame(updateStyle);
       return () => cancelAnimationFrame(rafId);
     }
+    
+    // No cleanup needed for static styles
+    return undefined;
   }, [animatedStyle]);
 
   return style;

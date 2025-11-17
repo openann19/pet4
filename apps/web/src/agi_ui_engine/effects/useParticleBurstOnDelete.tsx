@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { useSharedValue, useAnimatedStyle, withTiming, Easing } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { useUIConfig } from '@/hooks/use-ui-config';
 
 export interface UseParticleBurstOnDeleteOptions {

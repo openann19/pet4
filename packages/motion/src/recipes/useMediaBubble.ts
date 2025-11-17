@@ -136,14 +136,14 @@ export function useMediaBubble(
   const imageStyle = useAnimatedStyle(() => {
     return {
       opacity: imageOpacity.value,
-      transform: [{ scale: imageScale.value }]
+      scale: imageScale.value
     }
   })
 
   const zoomModalStyle = useAnimatedStyle(() => {
     return {
       opacity: zoomModalOpacity.value,
-      transform: [{ scale: zoomModalScale.value }]
+      scale: zoomModalScale.value
     }
   })
 
@@ -158,7 +158,7 @@ export function useMediaBubble(
 
       return {
         height,
-        transform: [{ scaleY: scale.value }]
+        scaleY: scale.value
       }
     })
   })

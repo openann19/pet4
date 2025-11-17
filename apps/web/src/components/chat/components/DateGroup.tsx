@@ -1,4 +1,4 @@
-import { MotionView, useAnimatedStyle } from "@petspark/motion";
+import { MotionView } from "@petspark/motion";
 /**
  * Date Group Component
  *
@@ -18,17 +18,8 @@ export function DateGroup({ date, delay }: DateGroupProps): JSX.Element {
     const _uiConfig = useUIConfig();
     const animation = useEntryAnimation({ initialY: -10, delay });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const scale = animation.scale.get();
-    const translateY = animation.translateY.get();
-    return {
-      opacity: animation.opacity.get(),
-      transform: [{ scale, translateY }],
-    };
-  });
-
   return (
-    <MotionView style={animatedStyle} className="flex items-center justify-center my-4">
+    <MotionView style={animation.animatedStyle} className="flex items-center justify-center my-4">
       <Badge variant="secondary" className="text-xs px-3 py-1">
         {date}
       </Badge>

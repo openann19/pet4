@@ -7,7 +7,7 @@ import { MotionView, useAnimatedStyle } from "@petspark/motion";
 
 import { MapPin, Microphone, Smiley, Sparkle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { Input, type InputRef } from '@/components/ui/Input';
+import { Input, type InputRef } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
@@ -65,16 +65,14 @@ export function ChatFooter({
   setShowStickers,
 }: ChatFooterProps): JSX.Element {
     const _uiConfig = useUIConfig();
-    const animation = useEntryAnimation({ initialY: 20, delay: 0 });
+  const animation = useEntryAnimation({ initialY: 20, delay: 0 });
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const scale = animation.scale.get();
-    const translateY = animation.translateY.get();
-    return {
-      opacity: animation.opacity.get(),
-      transform: [{ scale, translateY }],
-    };
-  });
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: animation.opacity.get(),
+    transform: [
+      { translateY: animation.translateY.get(), scale: animation.scale.get() },
+    ],
+  }));
 
   return (
     <MotionView
@@ -118,8 +116,8 @@ export function ChatFooter({
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              size="sm"
-              className="shrink-0 w-10 h-10 p-0"
+              size="icon"
+              className="shrink-0"
               aria-label={showStickers ? 'Close stickers and emojis' : 'Open stickers and emojis'}
               aria-expanded={showStickers}
             >
@@ -168,9 +166,9 @@ export function ChatFooter({
 
             <Button
               onMouseDown={onStartRecording}
-              size="sm"
+              size="icon"
               variant="ghost"
-              className="shrink-0 w-10 h-10 p-0"
+              className="shrink-0"
               aria-label="Record voice message"
             >
               <Microphone size={24} />
@@ -179,8 +177,8 @@ export function ChatFooter({
             <Button
               onClick={onSend}
               disabled={!inputValue.trim()}
-              size="sm"
-              className="shrink-0 w-10 h-10 p-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all"
+              size="icon"
+              className="shrink-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all"
               aria-label="Send message"
             >
               <SendButtonIcon isActive={!!inputValue.trim()} />

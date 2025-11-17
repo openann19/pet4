@@ -3,7 +3,7 @@
 import { useMotionValue, animate, type MotionValue, type Variants } from '@petspark/motion';
 import { useEffect } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export interface UseModalAnimationOptions {
   isVisible: boolean;

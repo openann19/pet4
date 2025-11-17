@@ -14,7 +14,7 @@ import {
   withSequence,
   MotionView,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
@@ -95,7 +95,7 @@ function BellIconView({ hasNewNotification, unreadCount }: BellIconViewProps) {
     }
   }, [hasNewNotification, unreadCount, rotate, scale, opacity]);
 
-  const iconStyle = useAnimatedStyle(() => {
+  const iconStyle = useAnimatedStyle((): Record<string, unknown> => {
     return {
       transform: [{ rotate: `${rotate.value}deg` }, { scale: scale.value }],
       opacity: opacity.value,

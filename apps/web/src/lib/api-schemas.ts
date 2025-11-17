@@ -1,4 +1,7 @@
 import { z } from 'zod';
+// Re-use canonical chat schemas from shared package to avoid duplication
+export { messageReportSchema } from '@petspark/shared';
+import type { MessageReport as SharedMessageReport } from '@petspark/shared';
 
 export const locationSchema = z.object({
   latitude: z.number().min(-90).max(90),
@@ -589,3 +592,4 @@ export type DiscoverResponse = z.infer<typeof discoverResponseSchema>;
 export type SwipeResponse = z.infer<typeof swipeResponseSchema>;
 export type PhotoRecord = z.infer<typeof photoRecordSchema>;
 export type KYCSession = z.infer<typeof kycSessionSchema>;
+export type MessageReport = SharedMessageReport;

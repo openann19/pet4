@@ -1,9 +1,9 @@
 declare module 'react-native-reanimated' {
-  export interface SharedValue<T> {
-    value: T;
-  }
+  import type { MotionStyle, MotionValue } from 'framer-motion';
 
-  export type AnimatedStyle<T extends object = Record<string, unknown>> = T;
+  export type SharedValue<T> = MotionValue<T> & { value: T };
+
+  export type AnimatedStyle<T extends object = Record<string, unknown>> = MotionStyle & T;
 
   export function useSharedValue<T>(initialValue: T): SharedValue<T>;
 

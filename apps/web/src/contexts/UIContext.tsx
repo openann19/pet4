@@ -42,8 +42,8 @@ function deepMerge(
   const result = { ...target };
 
   for (const key in source) {
-    if (source[key] !== undefined) {
-      const sourceValue = source[key];
+    if (source[key as keyof AbsoluteMaxUIModeConfig] !== undefined) {
+      const sourceValue = source[key as keyof AbsoluteMaxUIModeConfig];
       const targetValue = target[key as keyof AbsoluteMaxUIModeConfig];
 
       if (
@@ -55,8 +55,8 @@ function deepMerge(
         !Array.isArray(targetValue)
       ) {
         (result as Record<string, unknown>)[key] = deepMerge(
-          targetValue as AbsoluteMaxUIModeConfig,
-          sourceValue as Partial<AbsoluteMaxUIModeConfig>
+          targetValue as unknown as AbsoluteMaxUIModeConfig,
+          sourceValue as unknown as Partial<AbsoluteMaxUIModeConfig>
         );
       } else if (sourceValue !== undefined) {
         (result as Record<string, unknown>)[key] = sourceValue;

@@ -125,6 +125,8 @@ class PerformanceMonitorImpl {
             this.recordMetric({
               name: 'resource_large_size',
               value: resourceEntry.transferSize,
+              unit: 'bytes',
+              timestamp: Date.now(),
               tags: {
                 resource_type: resourceEntry.initiatorType,
                 resource_name: resourceEntry.name.split('/').pop() ?? 'unknown',

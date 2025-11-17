@@ -15,7 +15,7 @@ import {
 } from 'react-native-reanimated'
 import { springConfigs, timingConfigs, type SpringConfig, type TimingConfig } from './transitions'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface VariantDefinition {
   opacity?: number

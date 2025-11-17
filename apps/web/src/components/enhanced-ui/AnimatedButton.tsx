@@ -81,19 +81,18 @@ export function AnimatedButton({
     try {
       haptics.impact('light');
 
-      scale.value = withSpring(
-        0.95,
-        {
+      scale.value = withSpring(0.95, {
+        damping: 15,
+        stiffness: 400,
+      });
+      
+      // Chain back to 1 after delay
+      setTimeout(() => {
+        scale.value = withSpring(1, {
           damping: 15,
           stiffness: 400,
-        },
-        () => {
-          scale.value = withSpring(1, {
-            damping: 15,
-            stiffness: 400,
-          });
-        }
-      );
+        });
+      }, 100);
 
       onClick?.();
     } catch (error) {

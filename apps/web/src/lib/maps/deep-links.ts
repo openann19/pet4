@@ -34,8 +34,8 @@ export function generateMapDeepLink(
 
   return {
     appleMaps: `maps://maps.apple.com/?daddr=${String(lat ?? '')},${String(lng ?? '')}&dirflg=d`,
-    googleMaps: `https://www.google.com/maps/dir/?api=1&destination=${String(lat ?? '')},${String(lng ?? '')}${String(labelParam ? `&destination_place_id=${String(labelParam ?? '')}` : '' ?? '')}`,
-    universal: `geo:${String(lat ?? '')},${String(lng ?? '')}${String(labelParam ? `?q=${String(labelParam ?? '')}` : '' ?? '')}`,
+    googleMaps: `https://www.google.com/maps/dir/?api=1&destination=${String(lat ?? '')},${String(lng ?? '')}${String(labelParam ? `&destination_place_id=${String(labelParam)}` : '')}`,
+    universal: `geo:${String(lat ?? '')},${String(lng ?? '')}${String(labelParam ? `?q=${String(labelParam)}` : '')}`,
   };
 }
 

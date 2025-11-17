@@ -97,7 +97,7 @@ export function FloatingActionButton({
     animate(shimmerX, repeatTransition.target, repeatTransition.transition);
   }, [shimmerX, reducedMotion]);
 
-  const buttonStyle = useAnimatedStyle(() => {
+  const buttonStyle = useAnimatedStyle((): Record<string, unknown> => {
     return {
       transform: [
         { scale: scale.get() * hoverScale.get() },

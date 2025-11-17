@@ -2,7 +2,6 @@
 import { MotionView } from "@petspark/motion";
 
 import { useTypingPlaceholder } from '@/hooks/use-typing-placeholder';
-import { type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils';
 import { useUIConfig } from "@/hooks/use-ui-config";
 

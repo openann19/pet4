@@ -9,6 +9,7 @@ import { config } from './config';
 import { generateCorrelationId } from './utils';
 import { createLogger } from './logger';
 import type { APIError } from './contracts';
+import { ENV } from '@/config/env';
 
 const logger = createLogger('HealthService');
 
@@ -189,7 +190,7 @@ export class HealthService {
     return {
       status: 'healthy',
       version: ENV.VITE_APP_VERSION,
-      commitSha: import.meta.env.VITE_COMMIT_SHA || 'unknown',
+      commitSha: (import.meta.env.VITE_COMMIT_SHA as string | undefined) ?? 'unknown',
       timestamp: new Date().toISOString(),
       uptime: Date.now() - this.startTime,
       checks,

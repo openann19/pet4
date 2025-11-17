@@ -39,10 +39,12 @@ export function GoLiveScreen({ onGoLive, onCancel }: GoLiveScreenProps): React.J
     }
 
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    
+    const trimmedDescription = description.trim();
     onGoLive({
       title: title.trim(),
-      description: description.trim() || undefined,
-      category: category || undefined,
+      ...(trimmedDescription && { description: trimmedDescription }),
+      ...(category && { category }),
     });
   }, [title, description, category, onGoLive]);
 

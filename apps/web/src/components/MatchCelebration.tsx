@@ -9,10 +9,10 @@ import {
   withDelay,
   MotionView,
 } from '@petspark/motion';
-import type { FramerTransition as Transition } from '@petspark/motion';
+import type { Transition } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useAnimatePresence } from '@/effects/reanimated';
+import type { AnimatedStyle } from '@petspark/motion';
 import { Heart, Sparkle } from '@phosphor-icons/react';
 
 interface MatchCelebrationProps {
@@ -66,7 +66,7 @@ function Particle({ index, total }: ParticleProps) {
   }) as AnimatedStyle;
 
   return (
-    <MotionView className="absolute" animatedStyle={particleStyle}>
+    <MotionView className="absolute" style={particleStyle}>
       {index % 2 === 0 ? (
         <Heart size={24} weight="fill" className="text-primary drop-shadow-2xl" />
       ) : (
@@ -222,12 +222,12 @@ export default function MatchCelebration({
     <>
       {presence.shouldRender && show && (
         <MotionView
-          animatedStyle={containerStyle}
+          style={containerStyle}
           className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
         >
           <MotionView
             className="absolute inset-0 glass-strong backdrop-blur-2xl"
-            animatedStyle={backdropStyle}
+            style={backdropStyle}
           />
 
           {particles.map((i) => (
@@ -236,28 +236,28 @@ export default function MatchCelebration({
 
           <MotionView
             className="relative z-10 rounded-3xl glass-strong premium-shadow border-2 border-white/40 p-10 max-w-md mx-4 backdrop-blur-2xl overflow-hidden"
-            animatedStyle={modalStyle}
+            style={modalStyle}
           >
             <MotionView
               className="absolute inset-0 bg-linear-to-br from-primary/30 via-accent/30 to-secondary/30"
-              animatedStyle={gradientStyle}
+              style={gradientStyle}
             />
 
-            <MotionView animatedStyle={heartStyle} className="text-center mb-6 relative z-10">
+            <MotionView style={heartStyle} className="text-center mb-6 relative z-10">
               <div className="inline-block p-4 rounded-full glass-strong border-2 border-white/50 shadow-2xl">
                 <Heart size={72} weight="fill" className="text-white drop-shadow-2xl" />
               </div>
             </MotionView>
 
             <MotionView
-              animatedStyle={titleStyle}
+              style={titleStyle}
               className="text-4xl font-bold text-white text-center mb-3 drop-shadow-2xl relative z-10"
             >
               It's a Match! 🎉
             </MotionView>
 
             <MotionView
-              animatedStyle={subtitleStyle}
+              style={subtitleStyle}
               className="text-white/95 text-center text-xl font-medium drop-shadow-lg relative z-10"
             >
               {petName1} and {petName2} are now connected!
@@ -265,13 +265,13 @@ export default function MatchCelebration({
 
             <MotionView
               className="mt-8 flex items-center justify-center gap-5 relative z-10"
-              animatedStyle={footerStyle}
+              style={footerStyle}
             >
-              <MotionView animatedStyle={sparkle1Style}>
+              <MotionView style={sparkle1Style}>
                 <Sparkle size={32} weight="fill" className="text-white drop-shadow-2xl" />
               </MotionView>
               <div className="text-white font-bold text-lg drop-shadow-lg">Perfect Companions!</div>
-              <MotionView animatedStyle={sparkle2Style}>
+              <MotionView style={sparkle2Style}>
                 <Sparkle size={32} weight="fill" className="text-white drop-shadow-2xl" />
               </MotionView>
             </MotionView>

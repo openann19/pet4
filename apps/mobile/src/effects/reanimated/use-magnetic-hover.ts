@@ -8,7 +8,7 @@ import { Gesture } from 'react-native-gesture-handler'
 import { useCallback, useRef } from 'react'
 import { haptic } from '@petspark/motion'
 import { useReducedMotionSV } from '../../effects/core/use-reduced-motion-sv'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseMagneticHoverOptions {
   strength?: number

@@ -42,12 +42,12 @@ export function AppNavBar({
 
   return (
     <MotionView
-      animatedStyle={navBarAnimation.navStyle}
+      style={navBarAnimation.navStyle}
       className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-2xl border-t border-border/50 z-40 shadow-2xl shadow-primary/20 safe-area-inset-bottom"
     >
       <div className="absolute inset-0 bg-linear-to-t from-primary/8 via-accent/4 to-transparent pointer-events-none" />
       <MotionView
-        animatedStyle={navBarAnimation.shimmerStyle}
+        style={navBarAnimation.shimmerStyle}
         className="absolute inset-0 bg-linear-to-r from-transparent via-accent/5 to-transparent pointer-events-none"
       >
         <div />

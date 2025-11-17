@@ -12,7 +12,7 @@
  * - Accessibility features and ARIA attributes
  * - Multiple animation layers and effects
  */
-/* eslint-disable max-lines -- Complex component with multiple media types, reactions, animations, and accessibility features */
+ 
 
 import { useApp } from '@/contexts/AppContext';
 import { isTruthy } from '@petspark/shared';
@@ -181,7 +181,7 @@ function MessageBubble({
   // Ensure focus appearance on bubble container
   useEffect(() => {
     if (bubbleRef.current) {
-      const bubbleElement = bubbleRef.current.querySelector('[class*="rounded-2xl"]') as HTMLElement;
+      const bubbleElement = bubbleRef.current.querySelector('[class*="rounded-2xl"]')!;
       if (bubbleElement) {
         bubbleElement.setAttribute('id', stableReference.stableId);
         bubbleElement.setAttribute('tabIndex', '0');
@@ -193,7 +193,7 @@ function MessageBubble({
             `${stableReference.stableId}-description`
           );
         }
-        ensureFocusAppearance(bubbleElement);
+        ensureFocusAppearance(bubbleElement as HTMLElement);
       }
     }
   }, [stableReference, bubbleRef]);

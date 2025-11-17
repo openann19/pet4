@@ -3,7 +3,7 @@ import { MotionView } from '@petspark/motion';
 import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion';
 import React from 'react';
 import type { ReactNode } from 'react';
-import type { FramerTransition as Transition } from '@petspark/motion';
+import type { Transition } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 
@@ -79,7 +79,7 @@ export default function GlassCard({
 
   return (
     <MotionView
-      animatedStyle={animatedStyle}
+      style={animatedStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(

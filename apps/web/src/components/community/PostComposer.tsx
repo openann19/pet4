@@ -19,7 +19,7 @@ import {
   type CompressionProgress,
   type VideoMetadata,
 } from '@/lib/video-compression';
-import { MotionView, Presence } from '@petspark/motion';
+import { MotionView, Presence, motion } from '@petspark/motion';
 import type { Icon } from '@phosphor-icons/react';
 import {
   Camera,
@@ -528,8 +528,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                   />
 
                   {/* Center Play/Pause control */}
-                  <MotionView
-                    as="button"
+                  <motion.button
                     type="button"
                     onClick={toggleVideoPlayback}
                     whileHover={{ scale: 1.05 }}
@@ -542,7 +541,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                     ) : (
                       <Play size={32} weight="fill" className="text-white" />
                     )}
-                  </MotionView>
+                  </motion.button>
 
                   {/* Remove video */}
                   <button
@@ -612,8 +611,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                           { value: 'portrait', label: 'Portrait', icon: '📱', desc: '3:4' },
                           { value: 'landscape', label: 'Landscape', icon: '🖼️', desc: '4:3' },
                         ].map(({ value, label, icon, desc }) => (
-                          <MotionView
-                            as="button"
+                          <motion.button
                             key={value}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -628,7 +626,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                             <div className="text-xl mb-0.5">{icon}</div>
                             <div className="text-xs font-medium">{label}</div>
                             {desc && <div className="text-xs text-muted-foreground">{desc}</div>}
-                          </MotionView>
+                          </motion.button>
                         ))}
                       </div>
                     </div>

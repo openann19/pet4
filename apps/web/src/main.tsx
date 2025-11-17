@@ -1,22 +1,43 @@
 // Polyfill for react-native-reanimated on web (backup - primary polyfill is in index.html)
 // Fixes "Cannot read properties of undefined (reading 'JEST_WORKER_ID')" error
-// This is a safety check in case the index.html polyfill didn't run
+type ProcessEnvPolyfill = Partial<NodeJS.ProcessEnv> & Record<string, string | undefined>;
+
+type ProcessPolyfill = NodeJS.Process & {
+  env: ProcessEnvPolyfill;
+};
+
+type GlobalWithProcess = typeof globalThis & {
+  process?: NodeJS.Process;
+};
+
+const globalWithProcess = globalThis as GlobalWithProcess;
+
+const ensureProcessPolyfill = (): ProcessPolyfill => {
+  const existing = globalWithProcess.process as ProcessPolyfill | undefined;
+  if (existing) {
+    if (!existing.env) {
+      existing.env = {} as ProcessEnvPolyfill;
+    }
+    return existing;
+  }
+
+  const polyfill = {
+    env: {} as ProcessEnvPolyfill,
+  } as ProcessPolyfill;
+
+  globalWithProcess.process = polyfill;
+  return polyfill;
+};
+
 if (typeof window !== 'undefined') {
-  // Ensure process exists (should already be set by index.html, but check anyway)
-  if (typeof process === 'undefined') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).process = {};
+  const polyfillProcess = ensureProcessPolyfill();
+
+  if (!polyfillProcess.env) {
+    polyfillProcess.env = {};
   }
-  
-  // Ensure process.env exists
-  if (typeof process !== 'undefined' && !process.env) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (process as any).env = {};
-  }
-  
-  // Ensure JEST_WORKER_ID exists (even if undefined) to prevent errors
-  if (typeof process !== 'undefined' && process.env && !('JEST_WORKER_ID' in process.env)) {
-    process.env.JEST_WORKER_ID = undefined;
+
+  if (!('JEST_WORKER_ID' in polyfillProcess.env)) {
+    polyfillProcess.env.JEST_WORKER_ID = undefined;
   }
 }
 

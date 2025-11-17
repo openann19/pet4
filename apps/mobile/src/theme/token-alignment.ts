@@ -42,10 +42,14 @@ function parseOklch(input: string): ParsedOklch | null {
   const inner = trimmed.slice('oklch('.length, -1)
   const [main, alphaPart] = inner.split('/').map((p) => p.trim())
 
+  if (!main) {
+    return null
+  }
+
   const parts = main.split(/\s+/).filter(Boolean)
   if (parts.length < 3) return null
 
-  const [lRaw, cRaw, hRaw] = parts
+  const [lRaw, cRaw, hRaw] = parts as [string, string, string]
 
   const L0 = parseFloat(lRaw)
   const C = parseFloat(cRaw)
@@ -66,7 +70,13 @@ function parseOklch(input: string): ParsedOklch | null {
     }
   }
 
-  return { L, C, h, alpha }
+  const result: ParsedOklch = { L, C, h }
+
+  if (alpha !== undefined) {
+    result.alpha = alpha
+  }
+
+  return result
 }
 
 /**
@@ -181,26 +191,46 @@ export function getMobileThemeFromTokens(
   const fallback: ThemeColors = {
     background: mode === 'light' ? '#FFF9F0' : '#0D1117',
     foreground: mode === 'light' ? '#FFFFFF' : '#161B22',
+    mutedForeground: mode === 'light' ? '#E5D5C5' : '#21262D',
     primary: mode === 'light' ? '#FF715B' : '#58A6FF',
+    primaryForeground: '#FFFFFF',
     secondary: mode === 'light' ? '#FFE4B2' : '#388BFD',
     accent: mode === 'light' ? '#FFD580' : '#79C0FF',
     card: mode === 'light' ? '#FFFFFF' : '#161B22',
+    surface: mode === 'light' ? '#FFFFFF' : '#161B22',
     textPrimary: mode === 'light' ? '#1F2933' : '#F0F6FC',
     textSecondary: mode === 'light' ? '#6B7280' : '#8B949E',
     border: mode === 'light' ? '#E5E5E5' : '#30363D',
     success: mode === 'light' ? '#22C55E' : '#3FB950',
     danger: mode === 'light' ? '#EF4444' : '#F85149',
+    destructive: mode === 'light' ? '#EF4444' : '#F85149',
+    destructiveForeground: '#FFFFFF',
     warning: mode === 'light' ? '#F59E0B' : '#D29922',
     info: mode === 'light' ? '#0EA5E9' : '#58A6FF',
+  }
+
+  if (!themeColors) {
+    return fallback
   }
 
   return {
     background: getTokenColor(themeColors, 'background', fallback.background),
     foreground: getTokenColor(themeColors, 'foreground', fallback.foreground),
+    mutedForeground: getTokenColor(
+      themeColors,
+      'mutedForeground',
+      fallback.mutedForeground
+    ),
     primary: getTokenColor(themeColors, 'primary', fallback.primary),
+    primaryForeground: getTokenColor(
+      themeColors,
+      'primaryForeground',
+      fallback.primaryForeground
+    ),
     secondary: getTokenColor(themeColors, 'secondary', fallback.secondary),
     accent: getTokenColor(themeColors, 'accent', fallback.accent),
     card: getTokenColor(themeColors, 'card', fallback.card),
+    surface: getTokenColor(themeColors, 'surface', fallback.surface),
     textPrimary: getTokenColor(
       themeColors,
       'textPrimary',
@@ -217,6 +247,16 @@ export function getMobileThemeFromTokens(
     border: getTokenColor(themeColors, 'border', fallback.border),
     success: getTokenColor(themeColors, 'success', fallback.success),
     danger: getTokenColor(themeColors, 'destructive', fallback.danger),
+    destructive: getTokenColor(
+      themeColors,
+      'destructive',
+      fallback.destructive
+    ),
+    destructiveForeground: getTokenColor(
+      themeColors,
+      'destructiveForeground',
+      fallback.destructiveForeground
+    ),
     warning: getTokenColor(themeColors, 'warning', fallback.warning),
     info: getTokenColor(themeColors, 'info', fallback.info),
   }

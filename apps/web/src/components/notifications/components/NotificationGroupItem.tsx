@@ -13,7 +13,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { formatDistanceToNow } from 'date-fns';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import type { NotificationGroup, PremiumNotification, NotificationPreferences } from '../types';
 import type { GetIconFunction, GetPriorityStylesFunction } from './NotificationItem';
@@ -59,12 +59,12 @@ export function NotificationGroupItem({
     itemTranslateY.value = withSpring(0, springConfigs.smooth);
   }, [itemOpacity, itemTranslateY]);
 
-  const itemStyle = useAnimatedStyle(() => ({
+  const itemStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: itemOpacity.value,
     transform: [{ translateY: itemTranslateY.value }, { scale: groupHover.scale.value }],
   })) as AnimatedStyle;
 
-  const iconStyle = useAnimatedStyle(() => ({
+  const iconStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ scale: iconHover.scale.value }],
   })) as AnimatedStyle;
 

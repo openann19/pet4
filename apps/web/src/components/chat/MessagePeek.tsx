@@ -4,7 +4,6 @@ import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } 
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { useFeatureFlags } from '@/config/feature-flags';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { X } from '@phosphor-icons/react';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -140,9 +139,10 @@ export function MessagePeek({ message, visible, onClose, position, triggerRef }:
     return null;
   }
 
-  const cardPosition = position
-    ? { left: `${position.x}px`, top: `${position.y}px`, transform: 'translate(-50%, -50%)' }
-    : { left: '50%', top: '50%', transform: 'translate(-50%, -50%)' };
+  // Position style no longer needed—cardStyle now includes positioning
+  // const cardPosition = position
+  //   ? { left: `${position.x}px`, top: `${position.y}px`, transform: 'translate(-50%, -50%)' }
+  //   : { left: '50%', top: '50%', transform: 'translate(-50%, -50%)' };
 
   return (
     <>
@@ -153,7 +153,7 @@ export function MessagePeek({ message, visible, onClose, position, triggerRef }:
         aria-hidden="true"
       />
       <MotionView
-        style={{ ...cardPosition, ...cardStyle }}
+        style={cardStyle}
         className="fixed z-50 bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-md w-[90vw]"
         role="dialog"
         aria-modal="true"

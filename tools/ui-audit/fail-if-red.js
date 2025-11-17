@@ -3,8 +3,8 @@
  * Reads ci/summary.json and exits with code 1 if Critical findings are present
  */
 
-const { readFileSync, existsSync } = require('fs');
-const { join } = require('path');
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
 
 const SUMMARY_PATH = join(process.cwd(), 'ci/summary.json');
 
@@ -32,7 +32,7 @@ function checkCriticalFindings() {
       console.warn('Consider fixing high-severity issues before merging.');
     }
 
-    console.log('✅ No critical findings. CI gate passed.');
+    console.warn('✅ No critical findings. CI gate passed.');
     process.exit(0);
   } catch (error) {
     console.error('❌ Failed to read CI summary:', error);

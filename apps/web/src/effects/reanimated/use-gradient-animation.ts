@@ -8,7 +8,7 @@ import {
   withTiming,
 } from '@petspark/motion';
 import { useEffect } from 'react';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export interface UseGradientAnimationOptions {
   type?: 'scale' | 'rotate' | 'translate' | 'combined';

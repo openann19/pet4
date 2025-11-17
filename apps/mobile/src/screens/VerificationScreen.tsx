@@ -52,7 +52,7 @@ export function VerificationScreen(): React.JSX.Element {
           copyToCacheDirectory: true,
         });
 
-        if (!result.canceled && result.assets[0]) {
+        if (!result.canceled && result.assets?.[0]) {
           const newDoc: VerificationDocument = {
             id: `doc-${Date.now()}`,
             type,
@@ -106,20 +106,23 @@ export function VerificationScreen(): React.JSX.Element {
 
         <View style={styles.documentsSection}>
           <Text style={styles.sectionTitle}>Required Documents</Text>
-          {requiredDocs.map((docType) => (
-            <DocumentUploadCard
-              key={docType}
-              documentType={docType}
-              existingDocument={documents.find((d) => d.type === docType)}
-              onUpload={() => handleDocumentUpload(docType)}
-              onDelete={(docId) => handleDeleteDocument(docId)}
-            />
-          ))}
+          {requiredDocs.map((docType) => {
+            const existingDoc = documents.find((d) => d.type === docType);
+            return (
+              <DocumentUploadCard
+                key={docType}
+                documentType={docType}
+                {...(existingDoc && { existingDocument: existingDoc })}
+                onUpload={() => void handleDocumentUpload(docType)}
+                onDelete={(docId) => handleDeleteDocument(docId)}
+              />
+            );
+          })}
         </View>
 
         <TouchableOpacity
           style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
-          onPress={handleSubmit}
+          onPress={() => void handleSubmit()}
           disabled={isSubmitting}
         >
           <Text style={styles.submitButtonText}>

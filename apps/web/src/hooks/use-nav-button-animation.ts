@@ -25,6 +25,9 @@ export interface UseNavButtonAnimationReturn {
   variants: Variants;
   iconVariants: Variants;
   indicatorVariants: Variants;
+  buttonStyle: { scale: MotionValue<number>; translateY: MotionValue<number>; rotation: MotionValue<number> };
+  iconStyle: { scale: MotionValue<number>; rotation: MotionValue<number> };
+  indicatorStyle: { opacity: MotionValue<number>; width: MotionValue<number> };
   handlePress: () => void;
   handleHover: () => void;
   handleLeave: () => void;
@@ -54,7 +57,7 @@ export function useNavButtonAnimation(
     if (isTruthy(isActive)) {
       // Active state animations
       if (isTruthy(enablePulse)) {
-        animate(iconScale, [pulseScale, 1], {
+        animate(iconScale, pulseScale, {
           type: 'spring',
           damping: springConfigs.bouncy.damping,
           stiffness: springConfigs.bouncy.stiffness,
@@ -70,9 +73,9 @@ export function useNavButtonAnimation(
       }
 
       if (isTruthy(enableRotation)) {
-        animate(iconRotation, [0, rotationAmplitude], {
+        animate(iconRotation, rotationAmplitude, {
           duration: 1.2,
-          ease: (t) => Math.sin(t * Math.PI * 2) * 0.5 + 0.5,
+          ease: (t: number) => Math.sin(t * Math.PI * 2) * 0.5 + 0.5,
           repeat: Infinity,
           repeatType: 'reverse',
         });
@@ -132,7 +135,7 @@ export function useNavButtonAnimation(
       }
     }
 
-    animate(scale, 0.92, {
+    void animate(scale, 0.92, {
       type: 'spring',
       damping: 15,
       stiffness: 600,
@@ -144,7 +147,7 @@ export function useNavButtonAnimation(
       });
     });
 
-    animate(translateY, 2, {
+    void animate(translateY, 2, {
       type: 'spring',
       damping: 15,
       stiffness: 600,
@@ -276,6 +279,9 @@ export function useNavButtonAnimation(
     variants,
     iconVariants,
     indicatorVariants,
+    buttonStyle: { scale, translateY, rotation },
+    iconStyle: { scale: iconScale, rotation: iconRotation },
+    indicatorStyle: { opacity: indicatorOpacity, width: indicatorWidth },
     handlePress,
     handleHover,
     handleLeave,

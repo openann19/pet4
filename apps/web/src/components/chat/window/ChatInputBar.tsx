@@ -5,7 +5,7 @@
 
 import { MotionView } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
-import { Input, type InputRef } from '@/components/ui/Input'
+import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import VoiceRecorder from '@/components/chat/VoiceRecorder'
@@ -21,7 +21,8 @@ import { MESSAGE_TEMPLATES, REACTION_EMOJIS } from '@/lib/chat-types'
 import { CHAT_STICKERS } from '@/lib/chat-utils'
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
 import { useAnimatedStyle } from '@petspark/motion'
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view'
+import { useMemo } from 'react'
+import type { InputRef } from '@/components/ui/input'
 
 export interface ChatInputBarProps {
   inputValue: string
@@ -99,27 +100,16 @@ export function ChatInputBar({
 }: ChatInputBarProps) {
   const inputBarStyle = useAnimatedStyle(() => ({
     opacity: 1,
-    transform: [{ translateY: 0 }],
+    y: 0,
   })) as AnimatedStyle
-  const inputBarStyleValue = useAnimatedStyleValue(inputBarStyle)
-  
-  const templatesStyleValue = useAnimatedStyleValue(templatesStyle)
-  const templateButtonHoverStyleValue = useAnimatedStyleValue(templateButtonHover.animatedStyle)
-  const templateButtonTapStyleValue = useAnimatedStyleValue(templateButtonTap.animatedStyle)
-  const stickerButtonTapStyleValue = useAnimatedStyleValue(stickerButtonTap.animatedStyle)
-  const stickerButtonHoverStyleValue = useAnimatedStyleValue(stickerButtonHover.animatedStyle)
-  const emojiButtonTapStyleValue = useAnimatedStyleValue(emojiButtonTap.animatedStyle)
-  const emojiButtonHoverStyleValue = useAnimatedStyleValue(emojiButtonHover.animatedStyle)
-  const sendButtonHoverStyleValue = useAnimatedStyleValue(sendButtonHover.animatedStyle)
-  const sendButtonTapStyleValue = useAnimatedStyleValue(sendButtonTap.animatedStyle)
 
   return (
     <MotionView
       className="glass-strong border-t border-white/20 p-4 shadow-2xl backdrop-blur-2xl"
-      style={inputBarStyleValue}
+      style={inputBarStyle}
     >
       {showTemplates && (
-        <MotionView style={templatesStyleValue} className="mb-3 overflow-hidden">
+        <MotionView style={templatesStyle} className="mb-3 overflow-hidden">
           <div className="glass-effect rounded-2xl p-3 space-y-2">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-semibold flex items-center gap-2">
@@ -131,10 +121,20 @@ export function ChatInputBar({
               </Button>
             </div>
             <div className="grid grid-cols-1 gap-2">
-              {MESSAGE_TEMPLATES.slice(0, 4).map((template) => (
+              {MESSAGE_TEMPLATES.slice(0, 4).map((template) => {
+                const mergedStyle = useMemo(() => {
+                  const hoverStyle = typeof templateButtonHover.animatedStyle === 'function' 
+                    ? templateButtonHover.animatedStyle() 
+                    : templateButtonHover.animatedStyle;
+                  const tapStyle = typeof templateButtonTap.animatedStyle === 'function'
+                    ? templateButtonTap.animatedStyle()
+                    : templateButtonTap.animatedStyle;
+                  return { ...hoverStyle, ...tapStyle } as AnimatedStyle;
+                }, [templateButtonHover.animatedStyle, templateButtonTap.animatedStyle]);
+                return (
                 <MotionView
                   key={template.id}
-                  style={{ ...templateButtonHoverStyleValue, ...templateButtonTapStyleValue }}
+                  style={mergedStyle}
                   onClick={() => onUseTemplate(template.text)}
                   onMouseEnter={templateButtonHover.handleEnter}
                   onMouseLeave={templateButtonHover.handleLeave}
@@ -144,7 +144,8 @@ export function ChatInputBar({
                   <span className="mr-2">{template.icon}</span>
                   {template.title}
                 </MotionView>
-              ))}
+                );
+              })}
             </div>
           </div>
         </MotionView>
@@ -160,12 +161,11 @@ export function ChatInputBar({
         <div className="flex items-end gap-2">
           <Button
             variant="ghost"
-            size="sm"
-            isIconOnly
-            className="shrink-0 w-10 h-10 p-0"
+            size="icon"
             onClick={() => {
               setShowTemplates(!showTemplates)
             }}
+            className="shrink-0"
             aria-label={showTemplates ? 'Close message templates' : 'Open message templates'}
             aria-expanded={showTemplates}
           >
@@ -176,9 +176,8 @@ export function ChatInputBar({
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
-                size="sm"
-                isIconOnly
-                className="shrink-0 w-10 h-10 p-0"
+                size="icon"
+                className="shrink-0"
                 aria-label={showStickers ? 'Close stickers and emojis' : 'Open stickers and emojis'}
                 aria-expanded={showStickers}
               >
@@ -193,10 +192,20 @@ export function ChatInputBar({
                 </TabsList>
                 <TabsContent value="stickers" className="mt-3">
                   <div className="grid grid-cols-6 gap-2">
-                    {CHAT_STICKERS.map((sticker) => (
+                    {CHAT_STICKERS.map((sticker) => {
+                      const mergedStickerStyle = useMemo(() => {
+                        const tapStyle = typeof stickerButtonTap.animatedStyle === 'function'
+                          ? stickerButtonTap.animatedStyle()
+                          : stickerButtonTap.animatedStyle;
+                        const hoverStyle = typeof stickerButtonHover.animatedStyle === 'function'
+                          ? stickerButtonHover.animatedStyle()
+                          : stickerButtonHover.animatedStyle;
+                        return { ...tapStyle, ...hoverStyle } as AnimatedStyle;
+                      }, [stickerButtonTap.animatedStyle, stickerButtonHover.animatedStyle]);
+                      return (
                       <MotionView
                         key={sticker.id}
-                        style={{ ...stickerButtonTapStyleValue, ...stickerButtonHoverStyleValue }}
+                        style={mergedStickerStyle}
                         onClick={() => onSendMessage(sticker.emoji, 'sticker')}
                         onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                           if (e.key === 'Enter' || e.key === ' ') {
@@ -214,15 +223,26 @@ export function ChatInputBar({
                       >
                         {sticker.emoji}
                       </MotionView>
-                    ))}
+                      );
+                    })}
                   </div>
                 </TabsContent>
                 <TabsContent value="emojis" className="mt-3">
                   <div className="grid grid-cols-6 gap-2">
-                    {REACTION_EMOJIS.map((emoji) => (
+                    {REACTION_EMOJIS.map((emoji) => {
+                      const mergedEmojiStyle = useMemo(() => {
+                        const tapStyle = typeof emojiButtonTap.animatedStyle === 'function'
+                          ? emojiButtonTap.animatedStyle()
+                          : emojiButtonTap.animatedStyle;
+                        const hoverStyle = typeof emojiButtonHover.animatedStyle === 'function'
+                          ? emojiButtonHover.animatedStyle()
+                          : emojiButtonHover.animatedStyle;
+                        return { ...tapStyle, ...hoverStyle } as AnimatedStyle;
+                      }, [emojiButtonTap.animatedStyle, emojiButtonHover.animatedStyle]);
+                      return (
                       <MotionView
                         key={emoji}
-                        style={{ ...emojiButtonTapStyleValue, ...emojiButtonHoverStyleValue }}
+                        style={mergedEmojiStyle}
                         onClick={() => {
                           onSendMessage(emoji, 'text')
                         }}
@@ -241,7 +261,8 @@ export function ChatInputBar({
                       >
                         {emoji}
                       </MotionView>
-                    ))}
+                      );
+                    })}
                   </div>
                 </TabsContent>
               </Tabs>
@@ -272,23 +293,22 @@ export function ChatInputBar({
             onClick={() => {
               onStartRecording()
             }}
-            size="sm"
+            size="icon"
             variant="ghost"
-            className="shrink-0 w-10 h-10 p-0"
+            className="shrink-0"
             aria-label="Record voice message"
           >
             <Microphone size={20} weight="regular" />
           </Button>
 
-          <MotionView style={{ ...sendButtonHoverStyleValue, ...sendButtonTapStyleValue }}>
+          <MotionView style={sendButtonHover.animatedStyle}>
             <Button
               onClick={() => {
                 onSendMessage(inputValue, 'text')
               }}
               disabled={!inputValue.trim()}
-              size="sm"
-              isIconOnly
-              className="shrink-0 w-10 h-10 p-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all disabled:opacity-50"
+              size="icon"
+              className="shrink-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all disabled:opacity-50"
               onMouseEnter={sendButtonHover.handleEnter}
               onMouseLeave={sendButtonHover.handleLeave}
               aria-label="Send message"

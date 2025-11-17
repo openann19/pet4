@@ -2,7 +2,7 @@ import { toast } from 'sonner';
 import { flags } from '@petspark/config';
 import { Button } from '@/components/ui/button';
 import { PaperPlaneRight } from '@phosphor-icons/react';
-import type { ChatRoom } from '@/lib/chat-types';
+import type { ChatRoom, TypingUser } from '@/lib/chat-types';
 import { ChatHeader } from './ChatHeader';
 import { MessageList } from './MessageList';
 import { VirtualMessageList } from './VirtualMessageList';
@@ -11,22 +11,22 @@ import { Overlays } from './Overlays';
 import { ChatErrorBoundary } from './ChatErrorBoundary';
 import { AnnounceNewMessage, AnnounceTyping } from './LiveRegions';
 import type { ChatMessage } from '@/lib/chat-types';
-import type { InputRef } from '@/components/ui/Input';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { InputRef } from '@/components/ui/input';
+import type { AnimatedStyle } from '@petspark/motion';
 
 interface AdvancedChatWindowContentProps {
   room: ChatRoom;
   currentUserId: string;
   currentUserName: string;
   messages: ChatMessage[] | undefined;
-  typingUsers: Array<{ userName?: string | null }>;
+  typingUsers: TypingUser[];
   inputValue: string;
   inputRef: React.RefObject<InputRef>;
   showTemplates: boolean;
   showStickers: boolean;
   isRecordingVoice: boolean;
   scrollFabVisible: boolean;
-  scrollFabStyleValue: unknown;
+  scrollFabStyleValue: React.CSSProperties;
   lastIncomingText: string | null;
   burstSeed: number;
   confettiSeed: number;
@@ -37,14 +37,14 @@ interface AdvancedChatWindowContentProps {
     typingTextStyle: React.CSSProperties;
     typingDotsStyle: React.CSSProperties;
     videoButtonHover: {
-      scale: unknown;
-      translateY: unknown;
+      scale: import('@petspark/motion').MotionValue<number>;
+      translateY: import('@petspark/motion').MotionValue<number>;
       handleEnter: () => void;
       handleLeave: () => void;
     };
     voiceButtonHover: {
-      scale: unknown;
-      translateY: unknown;
+      scale: import('@petspark/motion').MotionValue<number>;
+      translateY: import('@petspark/motion').MotionValue<number>;
       handleEnter: () => void;
       handleLeave: () => void;
     };
@@ -143,8 +143,8 @@ export function AdvancedChatWindowContent({
           typingContainerStyle={headerAnimations.typingContainerStyle}
           typingTextStyle={headerAnimations.typingTextStyle}
           typingDotsStyle={headerAnimations.typingDotsStyle}
-          videoButtonHover={headerAnimations.videoButtonHover}
-          voiceButtonHover={headerAnimations.voiceButtonHover}
+          videoButtonHover={headerAnimations.videoButtonHover as any}
+          voiceButtonHover={headerAnimations.voiceButtonHover as any}
           onBack={onBack}
           onVideoCall={(): void => {
             toast.info('Video call feature coming soon');

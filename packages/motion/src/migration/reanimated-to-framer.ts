@@ -73,6 +73,9 @@ export function convertWithSequence(
 
   // Return the first transition with its delay
   const first = transitions[0]
+  if (!first) {
+    return { type: 'tween', duration: 0.3 }
+  }
   return {
     ...first.transition,
     delay: (first.delay ?? 0) / 1000,

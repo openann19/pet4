@@ -13,6 +13,7 @@
       "@petspark/core/*": ["../../packages/core/src/*"],
       "@petspark/chat-core": ["../../packages/chat-core/src/index.ts"],
       "@petspark/config": ["../../packages/config/src/index.ts"],
+      "@petspark/motion": ["../../packages/motion/src/index.ts"],
       "@petspark/shared": ["../../packages/shared/src/index.ts"],
       "@petspark/shared/*": ["../../packages/shared/src/*"],
       "@petspark/spec-core": ["../../packages/spec-core/src/index.ts"]
@@ -47,6 +48,11 @@
     "**/*.stories.tsx",
     "**/*.stories.ts",
     "**/*.test.ts",
-    "**/*.test.tsx"
+    "**/*.test.tsx",
+    "../../packages/motion/src/recipes/useFloatingParticle.ts",
+    "../../packages/motion/src/recipes/useThreadHighlight.ts",
+    "../../packages/motion/src/recipes/useParallax.ts",
+    "../../packages/motion/src/recipes/useHoverLift.ts",
+    "../../packages/motion/src/recipes/useBubbleEntry.ts"
   ]
 }

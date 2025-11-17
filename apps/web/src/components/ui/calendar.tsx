@@ -22,7 +22,7 @@ function Calendar({
         caption_label: 'text-sm font-medium',
         nav: 'flex items-center gap-1',
         nav_button: cn(
-          buttonVariants({ variant: 'outline' }),
+          buttonVariants.outline,
           'size-7 bg-transparent p-0 opacity-50 hover:opacity-100'
         ),
         nav_button_previous: 'absolute left-1',
@@ -38,7 +38,7 @@ function Calendar({
             : '[&:has([aria-selected])]:rounded-md'
         ),
         day: cn(
-          buttonVariants({ variant: 'ghost' }),
+          buttonVariants.ghost,
           'size-8 p-0 font-normal aria-selected:opacity-100'
         ),
         day_range_start:
@@ -55,11 +55,11 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        PreviousMonthButton: ({ className }) => {
+        PreviousMonthButton: ({ className }: { className?: string }) => {
           const iconProps: { className?: string } = { className: cn('size-4', className) };
           return <ChevronLeft {...iconProps} />;
         },
-        NextMonthButton: ({ className }) => {
+        NextMonthButton: ({ className }: { className?: string }) => {
           const iconProps: { className?: string } = { className: cn('size-4', className) };
           return <ChevronRight {...iconProps} />;
         },

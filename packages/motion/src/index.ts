@@ -35,10 +35,22 @@ export {
 } from './framer-api/hooks'
 
 // Type exports for compatibility
-export type { MotionValue } from 'framer-motion'
-// Re-export animate from framer-motion for direct use
-export { animate } from 'framer-motion'
-import type { CSSProperties } from 'react'
+export type { MotionValue, AnimationPlaybackControls, MotionStyle } from 'framer-motion'
+// Import needed for the custom animate function
+import { animate as framerAnimate } from 'framer-motion'
+import type { MotionValue, AnimationPlaybackControls, MotionStyle } from 'framer-motion'
+
+
+// Custom animate function for compatibility with both signatures
+export function animate<T extends number | string>(
+  motionValue: MotionValue<T>,
+  target: T,
+  _transition?: unknown
+): AnimationPlaybackControls {
+  // If transition is provided, ignore it for now (Framer Motion doesn't support 3-param in this way)
+  // Use the two-parameter form which is what Framer Motion actually supports
+  return framerAnimate(motionValue, target)
+}
 
 // Stub exports for Reanimated APIs not yet implemented
 // These can be implemented as needed
@@ -49,6 +61,57 @@ export const useAnimatedRef = <T,>() => ({ current: null as T | null })
 export const cancelAnimation = () => {}
 export const runOnJS = <T extends (...args: unknown[]) => unknown>(fn: T): T => fn
 export const runOnUI = <T extends (...args: unknown[]) => unknown>(fn: T): T => fn
+
+// Transition/animation presets
+export const FadeIn = {
+  duration: (ms: number) => ({
+    keyframes: [{ opacity: 0 }, { opacity: 1 }],
+    duration: ms,
+  }),
+}
+
+export const FadeOut = {
+  duration: (ms: number) => ({
+    keyframes: [{ opacity: 1 }, { opacity: 0 }],
+    duration: ms,
+  }),
+}
+
+export const FadeInUp = {
+  duration: (ms: number) => ({
+    keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+    duration: ms,
+    delay: (delayMs: number) => ({
+      keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+      duration: ms,
+      delay: delayMs,
+      springify: () => ({
+        keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+        type: 'spring',
+        damping: (d: number) => ({ damping: d, stiffness: (s: number) => ({ stiffness: s }) }),
+      }),
+    }),
+    springify: () => ({
+      keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+      type: 'spring',
+      damping: (d: number) => ({ damping: d, stiffness: (s: number) => ({ stiffness: s }) }),
+    }),
+  }),
+  delay: (delayMs: number) => ({
+    keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+    delay: delayMs,
+    duration: (ms: number) => ({
+      keyframes: [{ opacity: 0, y: 20 }, { opacity: 1, y: 0 }],
+      duration: ms,
+      delay: delayMs,
+    }),
+  }),
+}
+
+export const Layout = {
+  springify: () => ({ type: 'spring' }),
+}
+
 export const Easing = {
   linear: (t: number) => t,
   ease: (t: number) => t * (2 - t),
@@ -87,9 +150,19 @@ export const interpolate = (
   value: number,
   inputRange: number[],
   outputRange: number[],
-  options?: { extrapolateLeft?: string; extrapolateRight?: string }
+  options?: { extrapolateLeft?: string; extrapolateRight?: string } | string
 ): number => {
-  const { extrapolateLeft = 'extend', extrapolateRight = 'extend' } = options ?? {}
+  // Handle both object and string forms of extrapolation
+  let extrapolateLeft: string, extrapolateRight: string
+  if (typeof options === 'string') {
+    // Reanimated-style: interpolate(value, input, output, 'clamp')
+    extrapolateLeft = extrapolateRight = options
+  } else {
+    // Framer Motion style: interpolate(value, input, output, { extrapolateLeft: 'clamp' })
+    const opts = options ?? {}
+    extrapolateLeft = opts.extrapolateLeft ?? 'extend'
+    extrapolateRight = opts.extrapolateRight ?? 'extend'
+  }
   
   if (inputRange.length === 0 || outputRange.length === 0) {
     return 0
@@ -159,16 +232,78 @@ export const Extrapolation = {
   EXTEND: 'extend',
 } as const
 
-export type AnimatedStyle = import('react').CSSProperties
+/**
+ * Interpolate between colors
+ * Supports hex colors (#RRGGBB format)
+ */
+export function interpolateColor(
+  value: number,
+  inputRange: number[],
+  outputRange: string[]
+): string {
+  if (inputRange.length === 0 || outputRange.length === 0 || inputRange.length !== outputRange.length) {
+    return outputRange[0] ?? '#000000'
+  }
+
+  // Find which segment we're in
+  let segmentIndex = 0
+  for (let i = 1; i < inputRange.length; i++) {
+    const inputVal = inputRange[i]
+    if (inputVal !== undefined && value <= inputVal) {
+      segmentIndex = i - 1
+      break
+    }
+    if (i === inputRange.length - 1) {
+      segmentIndex = i - 1
+    }
+  }
+
+  const inputMin = inputRange[segmentIndex]
+  const inputMax = inputRange[segmentIndex + 1]
+  const outputMin = outputRange[segmentIndex]
+  const outputMax = outputRange[segmentIndex + 1]
+
+  if (inputMin === undefined || inputMax === undefined || outputMin === undefined || outputMax === undefined) {
+    return outputRange[0] ?? '#000000'
+  }
+
+  // Clamp to segment bounds
+  const clampedValue = Math.max(inputMin, Math.min(inputMax, value))
+  const ratio = (clampedValue - inputMin) / (inputMax - inputMin)
+
+  // Parse hex colors
+  const parseHex = (hex: string): [number, number, number] => {
+    const clean = hex.replace('#', '')
+    return [
+      parseInt(clean.slice(0, 2), 16),
+      parseInt(clean.slice(2, 4), 16),
+      parseInt(clean.slice(4, 6), 16),
+    ]
+  }
+
+  const [r1, g1, b1] = parseHex(outputMin)
+  const [r2, g2, b2] = parseHex(outputMax)
+
+  // Interpolate each channel
+  const r = Math.round(r1 + (r2 - r1) * ratio)
+  const g = Math.round(g1 + (g2 - g1) * ratio)
+  const b = Math.round(b1 + (b2 - b1) * ratio)
+
+  // Convert back to hex
+  const toHex = (n: number) => n.toString(16).padStart(2, '0')
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}
+
+// Define AnimatedStyle as MotionStyle for compatibility
+export type AnimatedStyle = MotionStyle
 export type AnimatedProps = Record<string, unknown>
 
-// Animated export for backward compatibility - use MotionView/MotionText instead                                                                               
-// These are deprecated and will be removed in a future version
+// Animated export for backward compatibility
 export const Animated = {
   View: MotionView,
   Text: MotionText,
-  Image: motion.img,
   ScrollView: MotionScrollView,
+  Image: motion.img,
 } as const
 
 // Direct Framer Motion exports for web
@@ -189,27 +324,22 @@ export type PetSparkTransition =
       ease?: number[] | string;
     };
 
-// Import and re-export custom primitives
+// Import and re-export motion primitives
 import { MotionView } from './primitives/MotionView'
 import { MotionText } from './primitives/MotionText'
 import { MotionScrollView } from './primitives/MotionScrollView'
 
 export { MotionView, MotionText, MotionScrollView }
+
 import { motion } from 'framer-motion'
 
 // Re-export custom hooks/recipes
 export { usePressBounce } from './recipes/usePressBounce'
-export { useHoverLift } from './recipes/useHoverLift'
+// Note: useHoverLift, useParallax, useBubbleEntry are mobile-only (.native.ts)
 export { useMagnetic } from './recipes/useMagnetic'
-export { useParallax } from './recipes/useParallax'
+// Note: useFloatingParticle, useThreadHighlight are mobile-only (.native.ts)
 export { useShimmer } from './recipes/useShimmer'
 export { useRipple } from './recipes/useRipple'
-export { useFloatingParticle } from './recipes/useFloatingParticle'
-export type { UseFloatingParticleOptions, UseFloatingParticleReturn } from './recipes/useFloatingParticle'
-export { useThreadHighlight } from './recipes/useThreadHighlight'
-export type { UseThreadHighlightOptions, UseThreadHighlightReturn } from './recipes/useThreadHighlight'
-export { useBubbleEntry } from './recipes/useBubbleEntry'
-export type { UseBubbleEntryOptions, UseBubbleEntryReturn } from './recipes/useBubbleEntry'
 export { useBubbleTheme } from './recipes/useBubbleTheme'
 export type { UseBubbleThemeOptions, UseBubbleThemeReturn, SenderType, MessageType, ChatTheme, THEME_COLORS, SENDER_INTENSITY, MESSAGE_INTENSITY } from './recipes/useBubbleTheme'
 export { useBubbleTilt } from './recipes/useBubbleTilt'

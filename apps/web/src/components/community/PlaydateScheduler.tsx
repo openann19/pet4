@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -47,7 +47,7 @@ import { toast } from 'sonner';
 import { useKV } from '@/hooks/use-storage';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 
-const LocationPicker = lazy(() => import('./LocationPicker'));
+const LocationPicker = lazy(() => import('../playdates/LocationPicker'));
 
 interface PlaydateSchedulerProps {
     match: Match;

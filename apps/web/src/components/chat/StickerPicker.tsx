@@ -1,14 +1,16 @@
 'use client';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
-  useMotionValue,
+  useSharedValue,
   useAnimatedStyle,
-  animate,
+  withSpring,
+  withTiming,
+  withDelay,
   MotionView,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { MagnifyingGlass, X, Crown, Clock } from '@phosphor-icons/react';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +28,7 @@ import {
 } from '@/lib/sticker-library';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface StickerPickerProps {
@@ -41,9 +43,9 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
   const [recentStickerIds, setRecentStickerIds] = useStorage<string[]>('recent-stickers', []);
   const [hoveredSticker, setHoveredSticker] = useState<string | null>(null);
 
-  const containerOpacity = useMotionValue(0);
-  const containerY = useMotionValue(20);
-  const contentOpacity = useMotionValue(0);
+  const containerOpacity = useSharedValue(0);
+  const containerY = useSharedValue(20);
+  const contentOpacity = useSharedValue(0);
 
   const displayedStickers = useMemo(() => {
     if (searchQuery.trim()) {
@@ -86,33 +88,31 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
   const recentCount = recentStickerIds?.length ?? 0;
 
   useEffect(() => {
-    animate(containerOpacity, 1, { duration: timingConfigs.smooth.duration ?? 300 });
-    animate(containerY, 0, { type: 'spring', ...springConfigs.smooth });
-    setTimeout(() => {
-      animate(contentOpacity, 1, { duration: timingConfigs.smooth.duration ?? 300 });
-    }, 100);
+    containerOpacity.value = withTiming(1, timingConfigs.smooth);
+    containerY.value = withSpring(0, springConfigs.smooth);
+    contentOpacity.value = withDelay(100, withTiming(1, timingConfigs.smooth));
   }, [containerOpacity, containerY, contentOpacity]);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
-      opacity: containerOpacity.get(),
-      transform: [{ translateY: containerY.get() }],
+      opacity: containerOpacity.value,
+      transform: [{ translateY: containerY.value }],
     };
   });
 
   const contentStyle = useAnimatedStyle(() => {
     return {
-      opacity: contentOpacity.get(),
+      opacity: contentOpacity.value,
     };
   });
 
   const handleClose = useCallback(() => {
     haptics.impact('light');
-    animate(containerOpacity, 0, { duration: timingConfigs.fast.duration ?? 200 });
-    animate(containerY, 20, { duration: timingConfigs.fast.duration ?? 200 });
+    containerOpacity.value = withTiming(0, timingConfigs.fast);
+    containerY.value = withTiming(20, timingConfigs.fast);
     setTimeout(() => {
       onClose();
-    }, timingConfigs.fast.duration ?? 200);
+    }, 150);
   }, [containerOpacity, containerY, onClose]);
 
   return (
@@ -132,9 +132,9 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
           </div>
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={handleClose}
-            className="rounded-full w-8 h-8 p-0"
+            className="rounded-full"
             aria-label="Close sticker picker"
           >
             <X size={20} />
@@ -170,7 +170,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
             <ScrollArea className="w-full">
               <div className="flex gap-2 pb-2">
                 <Button
-                  variant={selectedCategory === 'all' ? 'primary' : 'outline'}
+                  variant={selectedCategory === 'all' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => { handleCategoryChange('all'); }}
                   className="whitespace-nowrap rounded-full"
@@ -179,7 +179,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
                 </Button>
                 {recentCount > 0 && (
                   <Button
-                    variant={selectedCategory === 'recent' ? 'primary' : 'outline'}
+                    variant={selectedCategory === 'recent' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => { handleCategoryChange('recent'); }}
                     className="whitespace-nowrap rounded-full gap-1.5"
@@ -189,7 +189,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
                   </Button>
                 )}
                 <Button
-                  variant={selectedCategory === 'premium' ? 'primary' : 'outline'}
+                  variant={selectedCategory === 'premium' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => { handleCategoryChange('premium'); }}
                   className="whitespace-nowrap rounded-full gap-1.5"
@@ -200,7 +200,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
                 {STICKER_CATEGORIES.map((category) => (
                   <Button
                     key={category.id}
-                    variant={selectedCategory === category.id ? 'primary' : 'outline'}
+                    variant={selectedCategory === category.id ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => { handleCategoryChange(category.id); }}
                     className="whitespace-nowrap rounded-full gap-1.5"
@@ -262,9 +262,9 @@ function StickerButton({
   onLeave,
   onClick,
 }: StickerButtonProps) {
-  const opacity = useMotionValue(0);
-  const scale = useMotionValue(0.8);
-  const hoverScale = useMotionValue(1);
+  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.8);
+  const hoverScale = useSharedValue(1);
 
   const bounceAnimation = useBounceOnTap({
     onPress: onClick,
@@ -274,27 +274,22 @@ function StickerButton({
 
   useEffect(() => {
     const delay = index * 10;
-    setTimeout(() => {
-      animate(opacity, 1, { duration: timingConfigs.smooth.duration ?? 300 });
-      animate(scale, 1, { type: 'spring', ...springConfigs.smooth });
-    }, delay);
+    opacity.value = withDelay(delay, withTiming(1, timingConfigs.smooth));
+    scale.value = withDelay(delay, withSpring(1, springConfigs.smooth));
   }, [index, opacity, scale]);
 
   useEffect(() => {
     if (isTruthy(isHovered)) {
-      animate(hoverScale, 1.2, { type: 'spring', ...springConfigs.bouncy });
-      setTimeout(() => {
-        animate(hoverScale, 1, { type: 'spring', ...springConfigs.smooth });
-      }, 200);
+      hoverScale.value = withSpring(1.2, springConfigs.bouncy);
     } else {
-      animate(hoverScale, 1, { type: 'spring', ...springConfigs.smooth });
+      hoverScale.value = withSpring(1, springConfigs.smooth);
     }
   }, [isHovered, hoverScale]);
 
   const buttonStyle = useAnimatedStyle(() => {
-    const combinedScale = scale.get() * hoverScale.get() * bounceAnimation.scale.get();
+    const combinedScale = scale.value * hoverScale.value;
     return {
-      opacity: opacity.get(),
+      opacity: opacity.value,
       transform: [{ scale: combinedScale }],
     };
   });

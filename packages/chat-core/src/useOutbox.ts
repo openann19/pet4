@@ -1,5 +1,10 @@
 import { useEffect, useRef, useCallback, useState } from 'react'
 
+// Type guard utility
+function isTruthy<T>(value: T): value is NonNullable<T> {
+  return Boolean(value)
+}
+
 export interface OutboxItem {
   clientId: string
   payload: unknown
@@ -39,7 +44,7 @@ export interface UseOutboxReturn {
  * not cryptographic security or determinism
  */
 function generateIdempotencyKey(): string {
-  return `${String(Date.now() ?? '')}-${String(Math.random().toString(36).substring(2, 15) ?? '')}`
+  return `${String(Date.now())}-${String(Math.random().toString(36).substring(2, 15))}`
 }
 
 function calculateExponentialBackoff(

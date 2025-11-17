@@ -324,23 +324,25 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
       isOnlineRef.current = false;
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('online', handleOnline);
-      window.addEventListener('offline', handleOffline);
-      isOnlineRef.current = navigator.onLine;
-
-      if (isOnlineRef.current && queue.length > 0) {
-        scheduleNext();
-      }
-
-      return () => {
-        window.removeEventListener('online', handleOnline);
-        window.removeEventListener('offline', handleOffline);
-        if (timerRef.current != null) {
-          window.clearTimeout(timerRef.current);
-        }
-      };
+    if (typeof window === 'undefined') {
+      return undefined;
     }
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    isOnlineRef.current = navigator.onLine;
+
+    if (isOnlineRef.current && queue.length > 0) {
+      scheduleNext();
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      if (timerRef.current != null) {
+        window.clearTimeout(timerRef.current);
+      }
+    };
   }, [processQueue, scheduleNext, queue.length]);
 
   return {

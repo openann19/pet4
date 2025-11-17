@@ -2,7 +2,6 @@
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
 import { useSharedValue, useAnimatedStyle, withSpring, MotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { PaperPlaneRight } from '@phosphor-icons/react';
 
 export interface StickerButtonProps {

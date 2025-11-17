@@ -94,7 +94,14 @@ export default function AdvancedCard({
 
   return (
     <MotionView
-      animatedStyle={animatedStyle}
+      style={{
+        ...animatedStyle,
+        ...(enableGlow
+          ? {
+              boxShadow: `0 0 40px ${glowColor}, 0 20px 25px -5px rgba(0, 0, 0, 0.1)`,
+            }
+          : {}),
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
@@ -103,13 +110,6 @@ export default function AdvancedCard({
         sizeClasses[size],
         className
       )}
-      {...(enableGlow
-        ? {
-            style: {
-              boxShadow: `0 0 40px ${glowColor}, 0 20px 25px -5px rgba(0, 0, 0, 0.1)`,
-            },
-          }
-        : {})}
       {...props}
     >
       {variant === 'holographic' && (

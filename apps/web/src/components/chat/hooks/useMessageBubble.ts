@@ -9,7 +9,7 @@
  * - Multiple event handlers with side effects
  * - Delete context computation and particle effects
  */
-/* eslint-disable max-lines -- Consolidated hook managing all MessageBubble logic, animations, and state */
+ 
 import { useRef, useEffect, useState, useMemo } from 'react';
 import { useSharedValue, withSpring, withTiming } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';

@@ -1,8 +1,7 @@
 import { MotionView } from "@petspark/motion";
 import { useState } from 'react';
+import { useAnimatePresence } from '@/effects/reanimated';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
-import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -184,7 +183,7 @@ export function AdoptionListingDetailDialog({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
         <div className="relative h-80 bg-muted">
           {photoPresence.shouldRender && (
-            <MotionView key={currentPhotoIndex} style={useAnimatedStyleValue(photoPresence.animatedStyle)}>
+            <MotionView key={currentPhotoIndex} style={photoPresence.animatedStyle}>
               <img
                 src={photos[currentPhotoIndex]}
                 alt={`${listing.petName} - Photo ${currentPhotoIndex + 1}`}
@@ -358,16 +357,15 @@ export function AdoptionListingDetailDialog({
 
           {applicationFormPresence.shouldRender && showApplicationForm && (
             <MotionView
-              style={useAnimatedStyleValue(applicationFormPresence.animatedStyle) as React.CSSProperties}
+              style={applicationFormPresence.animatedStyle}
               className="space-y-4 p-4 border rounded-lg bg-muted/50"
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold">{'Apply to Adopt'}</h3>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={() => setShowApplicationForm(false)}
-                  className="w-10 h-10 p-0"
                   aria-label="Close application form"
                 >
                   <X size={20} />

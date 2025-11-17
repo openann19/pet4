@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState, type ReactNode } from 'react';
-import { motion, AnimatePresence as FramerAnimatePresence, useMotionValue, animate, type Variants } from '@petspark/motion';
+import { AnimatePresence as FramerAnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
 import { timingConfigs, springConfigs } from './transitions';
 import { useUIConfig } from "@/hooks/use-ui-config";
 

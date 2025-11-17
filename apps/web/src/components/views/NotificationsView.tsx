@@ -21,7 +21,8 @@ import {
   UserPlus,
 } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
-import { MotionView, useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
+import { MotionView, useSharedValue, useAnimatedStyle, withSpring, type AnimatedStyle } from '@petspark/motion';
+import { useEntryAnimation } from '@/effects/reanimated';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';

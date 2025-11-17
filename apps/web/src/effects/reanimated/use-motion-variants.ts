@@ -56,6 +56,7 @@ export interface UseMotionVariantsReturn {
   variants: FramerVariants;
   setVariant: (variant: string) => void;
   setCustomVariant: (variant: VariantDefinition) => void;
+  animatedStyle: { opacity: MotionValue<number>; scale: MotionValue<number>; translateX: MotionValue<number>; translateY: MotionValue<number> };
 }
 
 function getVariantValue(
@@ -271,5 +272,6 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
     variants: framerVariants,
     setVariant,
     setCustomVariant,
+    animatedStyle: { opacity, scale, translateX, translateY },
   };
 }

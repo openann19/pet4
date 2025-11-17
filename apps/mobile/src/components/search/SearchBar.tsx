@@ -32,7 +32,6 @@ import Animated, {
   withSpring,
   withTiming,
   interpolateColor,
-  runOnJS,
 } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 
@@ -70,7 +69,7 @@ export function SearchBar({
   disabled = false,
   ...textInputProps
 }: SearchBarProps): React.JSX.Element {
-  const [isFocused, setIsFocused] = useState(false)
+  const [_isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<TextInput>(null)
   
   // Animation values

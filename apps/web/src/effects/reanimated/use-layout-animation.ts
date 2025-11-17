@@ -8,7 +8,7 @@ import {
   type SharedValue,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 
 export interface UseLayoutAnimationOptions {
   enabled?: boolean;
@@ -101,12 +101,20 @@ export function useLayoutAnimation(
   }, [enabled]);
 
   const animatedStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+    
+    const translateXValue = x.get();
+    if (translateXValue !== 0) transforms.push({ translateX: translateXValue });
+    
+    const translateYValue = y.get();
+    if (translateYValue !== 0) transforms.push({ translateY: translateYValue });
+
     return {
-      transform: [{ translateX: x.value }, { translateY: y.value }],
-      width: width.value,
-      height: height.value,
+      transform: transforms,
+      width: width.get(),
+      height: height.get(),
     };
-  }) as AnimatedStyle;
+  });
 
   return {
     x,

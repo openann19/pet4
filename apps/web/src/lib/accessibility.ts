@@ -213,3 +213,33 @@ export function getIconButtonAriaLabel(iconName: string, action?: string): strin
   }
   return iconName;
 }
+
+/**
+ * Announce a message to screen readers using ARIA live regions
+ * @param message - The message to announce
+ * @param priority - The priority level ('polite' or 'assertive')
+ */
+export function announceToScreenReader(message: string, priority: 'polite' | 'assertive' = 'polite'): void {
+  // Create a temporary live region for the announcement
+  const liveRegion = document.createElement('div');
+  liveRegion.setAttribute('role', priority === 'assertive' ? 'alert' : 'status');
+  liveRegion.setAttribute('aria-live', priority);
+  liveRegion.setAttribute('aria-atomic', 'true');
+  liveRegion.style.position = 'absolute';
+  liveRegion.style.left = '-10000px';
+  liveRegion.style.width = '1px';
+  liveRegion.style.height = '1px';
+  liveRegion.style.overflow = 'hidden';
+  
+  document.body.appendChild(liveRegion);
+  
+  // Add the message after a small delay to ensure it's announced
+  setTimeout(() => {
+    liveRegion.textContent = message;
+    
+    // Remove the live region after announcement
+    setTimeout(() => {
+      document.body.removeChild(liveRegion);
+    }, 1000);
+  }, 100);
+}

@@ -26,7 +26,9 @@ import {
   withRepeat,
   withSequence,
   MotionView,
+  type MotionValue,
 } from '@petspark/motion';
+import type { AnimatedStyle } from '@petspark/motion';
 
 interface PetProfileTemplatesDialogProps {
   open: boolean;
@@ -60,14 +62,19 @@ export default function PetProfileTemplatesDialog({
   const progressWidth = useSharedValue(0);
   const progressStyle = useAnimatedStyle(() => ({
     width: `${progressWidth.value}%`,
-  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+  })) as AnimatedStyle;
 
   // Sparkle rotation
   const sparkleRotate = useSharedValue(0);
   const sparkleScale = useSharedValue(1);
-  const sparkleStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${sparkleRotate.value}deg` }, { scale: sparkleScale.value }],
-  })) as import('@/effects/reanimated/animated-view').AnimatedStyle;
+  const sparkleStyle = useAnimatedStyle(() => {
+    const rotate = sparkleRotate.value;
+    const scale = sparkleScale.value;
+    const transforms: Record<string, number | string | MotionValue<number>>[] = [];
+    transforms.push({ rotate: `${rotate}deg` });
+    transforms.push({ scale });
+    return { transform: transforms };
+  }) as AnimatedStyle;
 
   useEffect(() => {
     progressWidth.value = withTiming((CURRENT_STEP / TOTAL_STEPS) * 100, { duration: 600 });
@@ -244,7 +251,7 @@ export default function PetProfileTemplatesDialog({
           <DialogHeader className="px-8 pt-8 pb-5 border-b border-border/40">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <MotionView style={sparkleStyle}>
+                <MotionView style={sparkleStyle as React.CSSProperties}>
                   <Sparkle size={28} weight="fill" className="text-primary" />
                 </MotionView>
                 <div>
@@ -264,7 +271,7 @@ export default function PetProfileTemplatesDialog({
 
               <div className="h-2 w-32 bg-muted/50 rounded-full overflow-hidden">
                 <MotionView
-                  style={progressStyle}
+                  style={progressStyle as React.CSSProperties}
                   className="h-full bg-gradient-to-r from-primary to-accent"
                 />
               </div>

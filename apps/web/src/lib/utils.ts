@@ -41,7 +41,11 @@ export function getErrorMessage(error: unknown): string {
  */
 export function toErrorLike(err: unknown): { message: string; stack?: string } {
   if (err instanceof Error) {
-    return { message: err.message, stack: err.stack ?? undefined };
+    const result: { message: string; stack?: string } = { message: err.message };
+    if (err.stack) {
+      result.stack = err.stack;
+    }
+    return result;
   }
   if (typeof err === 'string') {
     return { message: err };

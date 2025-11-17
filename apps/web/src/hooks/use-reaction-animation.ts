@@ -38,13 +38,20 @@ export function useReactionAnimation(
   const rotation = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+    
+    const scaleValue = scale.get();
+    if (scaleValue !== 1) transforms.push({ scale: scaleValue });
+    
+    const translateYValue = translateY.get();
+    if (translateYValue !== 0) transforms.push({ translateY: translateYValue });
+    
+    const rotationValue = rotation.get();
+    if (rotationValue !== 0) transforms.push({ rotate: `${rotationValue}deg` });
+
     return {
-      transform: [
-        { scale: scale.value },
-        { translateY: translateY.value },
-        { rotate: `${rotation.value}deg` },
-      ],
-      opacity: opacity.value,
+      transform: transforms,
+      opacity: opacity.get(),
     };
   });
 

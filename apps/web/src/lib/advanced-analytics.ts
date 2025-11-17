@@ -1,4 +1,4 @@
-/* eslint-disable max-lines -- advanced analytics service with comprehensive metrics computation */
+ 
 import { useEffect } from 'react';
 import { generateCorrelationId } from './utils';
 import { createLogger } from './logger';

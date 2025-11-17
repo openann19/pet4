@@ -103,7 +103,7 @@ function AlertDialogAction({
   className,
   ...props
 }: ComponentProps<typeof AlertDialogPrimitive.Action>) {
-  return <AlertDialogPrimitive.Action className={cn(buttonVariants(), className)} {...props} />;
+  return <AlertDialogPrimitive.Action className={cn(buttonVariants.default, className)} {...props} />;
 }
 
 function AlertDialogCancel({
@@ -112,7 +112,7 @@ function AlertDialogCancel({
 }: ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
   return (
     <AlertDialogPrimitive.Cancel
-      className={cn(buttonVariants({ variant: 'outline' }), className)}
+      className={cn(buttonVariants.outline, className)}
       {...props}
     />
   );

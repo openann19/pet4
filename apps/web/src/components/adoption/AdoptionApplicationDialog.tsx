@@ -10,13 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { useApp } from '@/contexts/AppContext';
 import { useRotation } from '@/effects/reanimated/use-rotation';
-import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { adoptionService } from '@/lib/adoption-service';
 import type { AdoptionProfile, HouseholdType } from '@/lib/adoption-types';
 import { haptics } from '@/lib/haptics';
@@ -43,10 +42,8 @@ function LoadingSpinner() {
     repeat: true,
   });
 
-  const style = useAnimatedStyleValue(rotationAnimation.rotationStyle);
-
   return (
-    <MotionView style={style} className="inline-block">
+    <MotionView style={rotationAnimation.rotationStyle as React.CSSProperties} className="inline-block">
       <PaperPlaneRight size={18} />
     </MotionView>
   );

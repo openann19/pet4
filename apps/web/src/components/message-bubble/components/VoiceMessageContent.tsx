@@ -1,6 +1,6 @@
 import { MotionView } from '@petspark/motion';
 import { Waveform } from '@phosphor-icons/react';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import type { Message } from '@/lib/chat-types';
 import type { useVoiceWaveform } from '@/hooks/use-voice-waveform';
 
@@ -21,7 +21,7 @@ export function VoiceMessageContent({ message, voiceWaveform }: VoiceMessageCont
         {voiceWaveform.animatedStyles.map((style, index) => (
           <MotionView
             key={index}
-            animatedStyle={style as AnimatedStyle}
+            style={style as AnimatedStyle}
             className="bg-primary w-1 rounded-full"
           >
             <div />

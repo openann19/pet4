@@ -92,9 +92,10 @@ export function AnimatedCard({
 
   const handleClick = useCallback(() => {
     if (isTruthy(isClickable)) {
-      scale.value = withSpring(0.98, { damping: 15, stiffness: 400 }, () => {
+      scale.value = withSpring(0.98, { damping: 15, stiffness: 400 });
+      setTimeout(() => {
         scale.value = withSpring(1, { damping: 15, stiffness: 400 });
-      });
+      }, 100);
       onClick?.();
     }
   }, [isClickable, onClick, scale]);

@@ -37,7 +37,7 @@ export function ChatCallNotifications({
   return (
     <>
       {incomingCallPresence.shouldRender && incomingCall && room.matchedPetName && (
-        <MotionView animatedStyle={incomingCallPresence.animatedStyle}>
+        <MotionView style={incomingCallPresence.animatedStyle}>
           <IncomingCallNotification
             call={incomingCall}
             callerName={room.matchedPetName ?? ''}
@@ -48,7 +48,7 @@ export function ChatCallNotifications({
         </MotionView>
       )}
       {activeCallPresence.shouldRender && activeCall && (
-        <MotionView animatedStyle={activeCallPresence.animatedStyle}>
+        <MotionView style={activeCallPresence.animatedStyle}>
           <CallInterface
             session={activeCall}
             onEndCall={endCall}

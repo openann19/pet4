@@ -201,7 +201,7 @@ class Logger {
 
     // Execute handlers in parallel
     await Promise.all(
-      this.handlers.map(handler => {
+      Array.from(this.handlers).map((handler: LogHandler) => {
         try {
           return handler(entry)
         } catch {

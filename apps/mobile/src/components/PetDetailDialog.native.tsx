@@ -8,7 +8,7 @@ import {
   Dimensions,
   Image,
 } from 'react-native'
-import Animated from 'react-native-reanimated'
+import { Animated } from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 import { Dialog } from './ui/Dialog.native'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card.native'
@@ -122,6 +122,357 @@ function Separator(): React.JSX.Element {
   return <View style={styles.separator} />
 }
 
+function PetBio({ pet }: { pet: Pet }): React.JSX.Element | null {
+  if (!pet.bio) return null
+
+  return (
+    <Card style={styles.sectionCard}>
+      <CardHeader>
+        <CardTitle style={styles.sectionTitle}>
+          <ChatCircle size={16} weight="fill" color="#6366f1" />
+          <Text style={styles.sectionTitleText}>About {pet.name}</Text>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Text style={styles.bioText}>{pet.bio}</Text>
+      </CardContent>
+    </Card>
+  )
+}
+
+function PetDetails({ pet }: { pet: Pet }): React.JSX.Element {
+  const sizeMap: Record<string, string> = {
+    'small': 'Small (< 20 lbs)',
+    'medium': 'Medium (20-50 lbs)',
+    'large': 'Large (50-100 lbs)',
+    'extra-large': 'Extra Large (> 100 lbs)',
+  }
+
+  return (
+    <Card style={styles.detailCard}>
+      <CardHeader>
+        <CardTitle style={styles.detailTitle}>
+          <PawPrint size={16} weight="fill" color="#6366f1" />
+          <Text style={styles.detailTitleText}>Details</Text>
+        </CardTitle>
+      </CardHeader>
+      <CardContent style={styles.detailContent}>
+        <View style={styles.detailRow}>
+          <View style={styles.detailLabel}>
+            <Calendar size={16} weight="fill" color="#f59e0b" />
+            <Text style={styles.detailLabelText}>Age</Text>
+          </View>
+          <Text style={styles.detailValue}>{pet.age} years old</Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <View style={styles.detailLabel}>
+            {pet.gender === 'male' ? (
+              <GenderMale size={16} weight="fill" color="#f59e0b" />
+            ) : (
+              <GenderFemale size={16} weight="fill" color="#f59e0b" />
+            )}
+            <Text style={styles.detailLabelText}>Gender</Text>
+          </View>
+          <Text style={styles.detailValue}>
+            {pet.gender.toUpperCase()}
+          </Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <View style={styles.detailLabel}>
+            <Ruler size={16} weight="fill" color="#f59e0b" />
+            <Text style={styles.detailLabelText}>Size</Text>
+          </View>
+          <Text style={styles.detailValue}>
+            {sizeMap[pet.size] || pet.size}
+          </Text>
+        </View>
+
+        <View style={styles.detailRow}>
+          <View style={styles.detailLabel}>
+            <MapPin size={16} weight="fill" color="#f59e0b" />
+            <Text style={styles.detailLabelText}>Location</Text>
+          </View>
+          <Text style={styles.detailValue}>{pet.location}</Text>
+        </View>
+      </CardContent>
+    </Card>
+  )
+}
+
+function OwnerInfo({ pet }: { pet: Pet }): React.JSX.Element {
+  return (
+    <Card style={styles.ownerCard}>
+      <CardHeader>
+        <CardTitle style={styles.ownerTitle}>
+          <Heart size={16} weight="fill" color="#6366f1" />
+          <Text style={styles.ownerTitleText}>Owner</Text>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <View style={styles.ownerInfo}>
+          <View style={styles.ownerAvatar}>
+            <Text style={styles.ownerInitial}>
+              {pet.ownerName?.[0]?.toUpperCase() ?? ''}
+            </Text>
+          </View>
+          <View style={styles.ownerDetails}>
+            <Text style={styles.ownerName}>{pet.ownerName}</Text>
+            <View style={styles.ownerLocation}>
+              <MapPin size={12} weight="fill" color="#6b7280" />
+              <Text style={styles.ownerLocationText}>{pet.location}</Text>
+            </View>
+          </View>
+        </View>
+
+        {pet.trustProfile && (
+          <View style={styles.ownerRating}>
+            <View style={styles.ratingStars}>
+              {Array.from({ length: 5 }, (_, i) => (
+                <Star
+                  key={i}
+                  size={14}
+                  weight={i < Math.floor(pet.trustProfile!.overallRating ?? 0) ? 'fill' : 'regular'}
+                  color={i < Math.floor(pet.trustProfile!.overallRating ?? 0) ? '#fbbf24' : '#d1d5db'}
+                />
+              ))}
+            </View>
+            <Text style={styles.ownerRatingText}>
+              {(pet.trustProfile.overallRating ?? 0).toFixed(1)} ({pet.trustProfile.totalReviews ?? 0} reviews)
+            </Text>
+            {pet.trustProfile.responseRate && pet.trustProfile.responseRate > 0 && (
+              <Text style={styles.responseRate}>
+                {pet.trustProfile.responseRate}% response rate
+              </Text>
+            )}
+          </View>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function TrustBadges({ badges }: { badges: string[] }): React.JSX.Element {
+  return (
+    <View style={styles.badgesContainer}>
+      {badges.map((badge, index) => (
+        <Badge key={index} style={styles.badge}>
+          <Text style={styles.badgeText}>{badge}</Text>
+        </Badge>
+      ))}
+    </View>
+  )
+}
+
+function PetPhotoSection({ pet, currentPhotoIndex, hasMultiplePhotos, handlePrevPhoto, handleNextPhoto }: {
+  pet: Pet;
+  currentPhotoIndex: number;
+  hasMultiplePhotos: boolean;
+  handlePrevPhoto: () => void;
+  handleNextPhoto: () => void;
+}): React.JSX.Element {
+  const photos = pet.photos || [pet.photo];
+  const currentPhoto = photos[currentPhotoIndex] || pet.photo;
+
+  return (
+    <View style={styles.photoContainer}>
+      <Image
+        source={{ uri: currentPhoto }}
+        style={styles.photo}
+        resizeMode="cover"
+        accessible
+        accessibilityLabel={`Photo of ${pet.name ?? ''}, ${currentPhotoIndex + 1} of ${photos.length}`}
+      />
+
+      {/* Photo Overlay */}
+      <View style={styles.photoOverlay} />
+
+      {/* Navigation Buttons */}
+      {hasMultiplePhotos && (
+        <>
+          <AnimatedTouchableOpacity
+            style={styles.navButtonLeft}
+            onPress={handlePrevPhoto}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Previous photo"
+          >
+            <CaretLeft size={24} weight="bold" color="#ffffff" />
+          </AnimatedTouchableOpacity>
+
+          <AnimatedTouchableOpacity
+            style={styles.navButtonRight}
+            onPress={handleNextPhoto}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Next photo"
+          >
+            <CaretRight size={24} weight="bold" color="#ffffff" />
+          </AnimatedTouchableOpacity>
+        </>
+      )}
+
+      {/* Photo Indicator Dots */}
+      {hasMultiplePhotos && (
+        <View style={styles.photoIndicator}>
+          {photos.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.indicatorDot,
+                index === currentPhotoIndex && styles.indicatorDotActive,
+              ]}
+            />
+          ))}
+        </View>
+      )}
+
+      {/* Pet Info Overlay */}
+      <View style={styles.petInfoOverlay}>
+        <View style={styles.petNameRow}>
+          <Text style={styles.petName}>{pet.name ?? ''}</Text>
+          {pet.verified === true && (
+            <ShieldCheck size={24} weight="fill" color="#10b981" />
+          )}
+        </View>
+
+        <View style={styles.petDetailsRow}>
+          <View style={styles.petDetail}>
+            {pet.gender === 'male' ? (
+              <GenderMale size={16} weight="fill" color="#ffffff" />
+            ) : (
+              <GenderFemale size={16} weight="fill" color="#ffffff" />
+            )}
+            <Text style={styles.petDetailText}>{pet.age} years</Text>
+          </View>
+
+          <View style={styles.petDetailSeparator} />
+
+          <Text style={styles.petBreed}>{pet.breed}</Text>
+        </View>
+
+        {hasMultiplePhotos && (
+          <Text style={styles.photoCounter}>
+            Photo {currentPhotoIndex + 1} of {photos.length}
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+}
+
+function PetContentSection({ pet }: { pet: Pet }): React.JSX.Element {
+  return (
+    <ScrollView
+      style={styles.contentScroll}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+      accessible
+    >
+      {/* Trust Profile */}
+      {pet.trustProfile && (
+        <PetRatings trustProfile={pet.trustProfile} />
+      )}
+
+      {/* Bio */}
+      <PetBio pet={pet} />
+
+      <Separator />
+
+      {/* Details Grid */}
+      <View style={styles.detailsGrid}>
+        {/* Pet Details */}
+        <PetDetails pet={pet} />
+
+        {/* Owner Info */}
+        <OwnerInfo pet={pet} />
+      </View>
+
+      {/* Personality Traits */}
+      {pet.personality && Array.isArray(pet.personality) && pet.personality.length > 0 && (
+        <>
+          <Separator />
+          <Card style={styles.traitsCard}>
+            <CardHeader>
+              <CardTitle style={styles.traitsTitle}>Personality Traits</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <View style={styles.traitsContainer}>
+                {pet.personality.map((trait, index) => (
+                  <Badge key={index} variant="secondary" style={styles.traitBadge}>
+                    <Text style={styles.traitText}>{trait}</Text>
+                  </Badge>
+                ))}
+              </View>
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {/* Interests */}
+      {pet.interests && Array.isArray(pet.interests) && pet.interests.length > 0 && (
+        <>
+          <Separator />
+          <Card style={styles.interestsCard}>
+            <CardHeader>
+              <CardTitle style={styles.interestsTitle}>Interests & Activities</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <View style={styles.interestsContainer}>
+                {pet.interests.map((interest, index) => (
+                  <Badge key={index} variant="outline" style={styles.interestBadge}>
+                    <Text style={styles.interestText}>{interest}</Text>
+                  </Badge>
+                ))}
+              </View>
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {/* Looking For */}
+      {pet.lookingFor && Array.isArray(pet.lookingFor) && pet.lookingFor.length > 0 && (
+        <>
+          <Separator />
+          <Card style={styles.lookingForCard}>
+            <CardHeader>
+              <CardTitle style={styles.lookingForTitle}>Looking For</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <View style={styles.lookingForContainer}>
+                {pet.lookingFor.map((item, index) => (
+                  <Badge key={index} style={styles.lookingForBadge}>
+                    <Text style={styles.lookingForText}>{item}</Text>
+                  </Badge>
+                ))}
+              </View>
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {/* Trust Badges */}
+      {pet.trustProfile?.badges && Array.isArray(pet.trustProfile.badges) && pet.trustProfile.badges.length > 0 && (
+        <>
+          <Separator />
+          <Card style={styles.trustBadgesCard}>
+            <CardHeader>
+              <CardTitle style={styles.trustBadgesTitle}>
+                <ShieldCheck size={16} weight="fill" color="#6366f1" />
+                <Text style={styles.trustBadgesTitleText}>Trust & Verification</Text>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <TrustBadges badges={pet.trustProfile.badges.map(badge => badge.label)} />
+            </CardContent>
+          </Card>
+        </>
+      )}
+    </ScrollView>
+  );
+}
+
 export default function PetDetailDialog({
   pet,
   visible,
@@ -132,15 +483,7 @@ export default function PetDetailDialog({
   if (!pet) return null
 
   const photos = pet.photos || [pet.photo]
-  const currentPhoto = photos[currentPhotoIndex] || pet.photo
   const hasMultiplePhotos = photos.length > 1
-
-  const sizeMap: Record<string, string> = {
-    'small': 'Small (< 20 lbs)',
-    'medium': 'Medium (20-50 lbs)',
-    'large': 'Large (50-100 lbs)',
-    'extra-large': 'Extra Large (> 100 lbs)',
-  }
 
   const handlePrevPhoto = (): void => {
     if (isTruthy(hasMultiplePhotos)) {
@@ -169,306 +512,15 @@ export default function PetDetailDialog({
       accessibilityHint="Shows detailed information about this pet"
     >
       <View style={styles.container}>
-        {/* Photo Section */}
-        <View style={styles.photoContainer}>
-          <Image
-            source={{ uri: currentPhoto }}
-            style={styles.photo}
-            resizeMode="cover"
-            accessible
-            accessibilityLabel={`Photo of ${pet.name ?? ''}, ${currentPhotoIndex + 1} of ${photos.length}`}
-          />
+        <PetPhotoSection
+          pet={pet}
+          currentPhotoIndex={currentPhotoIndex}
+          hasMultiplePhotos={hasMultiplePhotos}
+          handlePrevPhoto={handlePrevPhoto}
+          handleNextPhoto={handleNextPhoto}
+        />
 
-          {/* Photo Overlay */}
-          <View style={styles.photoOverlay} />
-
-          {/* Navigation Buttons */}
-          {hasMultiplePhotos && (
-            <>
-              <AnimatedTouchableOpacity
-                style={styles.navButtonLeft}
-                onPress={handlePrevPhoto}
-                accessible
-                accessibilityRole="button"
-                accessibilityLabel="Previous photo"
-              >
-                <CaretLeft size={24} weight="bold" color="#ffffff" />
-              </AnimatedTouchableOpacity>
-
-              <AnimatedTouchableOpacity
-                style={styles.navButtonRight}
-                onPress={handleNextPhoto}
-                accessible
-                accessibilityRole="button"
-                accessibilityLabel="Next photo"
-              >
-                <CaretRight size={24} weight="bold" color="#ffffff" />
-              </AnimatedTouchableOpacity>
-            </>
-          )}
-
-          {/* Photo Indicator Dots */}
-          {hasMultiplePhotos && (
-            <View style={styles.photoIndicator}>
-              {photos.map((_, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.indicatorDot,
-                    index === currentPhotoIndex && styles.indicatorDotActive,
-                  ]}
-                />
-              ))}
-            </View>
-          )}
-
-          {/* Pet Info Overlay */}
-          <View style={styles.petInfoOverlay}>
-            <View style={styles.petNameRow}>
-              <Text style={styles.petName}>{pet.name ?? ''}</Text>
-              {pet.verified === true && (
-                <ShieldCheck size={24} weight="fill" color="#10b981" />
-              )}
-            </View>
-
-            <View style={styles.petDetailsRow}>
-              <View style={styles.petDetail}>
-                {pet.gender === 'male' ? (
-                  <GenderMale size={16} weight="fill" color="#ffffff" />
-                ) : (
-                  <GenderFemale size={16} weight="fill" color="#ffffff" />
-                )}
-                <Text style={styles.petDetailText}>{pet.age} years</Text>
-              </View>
-
-              <View style={styles.petDetailSeparator} />
-
-              <Text style={styles.petBreed}>{pet.breed}</Text>
-            </View>
-
-            {hasMultiplePhotos && (
-              <Text style={styles.photoCounter}>
-                Photo {currentPhotoIndex + 1} of {photos.length}
-              </Text>
-            )}
-          </View>
-        </View>
-
-        {/* Content Section */}
-        <ScrollView
-          style={styles.contentScroll}
-          contentContainerStyle={styles.contentContainer}
-          showsVerticalScrollIndicator={false}
-          accessible
-        >
-          {/* Trust Profile */}
-          {pet.trustProfile && (
-            <PetRatings
-              trustProfile={pet.trustProfile}
-            />
-          )}
-
-          {/* Bio */}
-          {pet.bio && (
-            <Card style={styles.sectionCard}>
-              <CardHeader>
-                <CardTitle style={styles.sectionTitle}>
-                  <ChatCircle size={16} weight="fill" color="#6366f1" />
-                  <Text style={styles.sectionTitleText}>About {pet.name}</Text>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Text style={styles.bioText}>{pet.bio}</Text>
-              </CardContent>
-            </Card>
-          )}
-
-          <Separator />
-
-          {/* Details Grid */}
-          <View style={styles.detailsGrid}>
-            {/* Pet Details */}
-            <Card style={styles.detailCard}>
-              <CardHeader>
-                <CardTitle style={styles.detailTitle}>
-                  <PawPrint size={16} weight="fill" color="#6366f1" />
-                  <Text style={styles.detailTitleText}>Details</Text>
-                </CardTitle>
-              </CardHeader>
-              <CardContent style={styles.detailContent}>
-                <View style={styles.detailRow}>
-                  <View style={styles.detailLabel}>
-                    <Calendar size={16} weight="fill" color="#f59e0b" />
-                    <Text style={styles.detailLabelText}>Age</Text>
-                  </View>
-                  <Text style={styles.detailValue}>{pet.age} years old</Text>
-                </View>
-
-                <View style={styles.detailRow}>
-                  <View style={styles.detailLabel}>
-                    {pet.gender === 'male' ? (
-                      <GenderMale size={16} weight="fill" color="#f59e0b" />
-                    ) : (
-                      <GenderFemale size={16} weight="fill" color="#f59e0b" />
-                    )}
-                    <Text style={styles.detailLabelText}>Gender</Text>
-                  </View>
-                  <Text style={styles.detailValue}>
-                    {pet.gender.toUpperCase()}
-                  </Text>
-                </View>
-
-                <View style={styles.detailRow}>
-                  <View style={styles.detailLabel}>
-                    <Ruler size={16} weight="fill" color="#f59e0b" />
-                    <Text style={styles.detailLabelText}>Size</Text>
-                  </View>
-                  <Text style={styles.detailValue}>
-                    {sizeMap[pet.size] || pet.size}
-                  </Text>
-                </View>
-
-                <View style={styles.detailRow}>
-                  <View style={styles.detailLabel}>
-                    <MapPin size={16} weight="fill" color="#f59e0b" />
-                    <Text style={styles.detailLabelText}>Location</Text>
-                  </View>
-                  <Text style={styles.detailValue}>{pet.location}</Text>
-                </View>
-              </CardContent>
-            </Card>
-
-            {/* Owner Info */}
-            <Card style={styles.ownerCard}>
-              <CardHeader>
-                <CardTitle style={styles.ownerTitle}>
-                  <Heart size={16} weight="fill" color="#6366f1" />
-                  <Text style={styles.ownerTitleText}>Owner</Text>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <View style={styles.ownerInfo}>
-                  <View style={styles.ownerAvatar}>
-                    <Text style={styles.ownerInitial}>
-                      {pet.ownerName?.[0]?.toUpperCase() ?? ''}
-                    </Text>
-                  </View>
-                  <View style={styles.ownerDetails}>
-                    <Text style={styles.ownerName}>{pet.ownerName}</Text>
-                    <View style={styles.ownerLocation}>
-                      <MapPin size={12} weight="fill" color="#6b7280" />
-                      <Text style={styles.ownerLocationText}>{pet.location}</Text>
-                    </View>
-                  </View>
-                </View>
-
-                {pet.trustProfile && (
-                  <View style={styles.ownerRating}>
-                    <View style={styles.ratingStars}>
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <Star
-                          key={i}
-                          size={14}
-                          weight={i < Math.floor(pet.trustProfile!.overallRating || 0) ? 'fill' : 'regular'}
-                          color={i < Math.floor(pet.trustProfile!.overallRating || 0) ? '#fbbf24' : '#d1d5db'}
-                        />
-                      ))}
-                    </View>
-                    <Text style={styles.ownerRatingText}>
-                      {(pet.trustProfile.overallRating || 0).toFixed(1)} ({pet.trustProfile.totalReviews || 0} reviews)
-                    </Text>
-                    {pet.trustProfile.responseRate && pet.trustProfile.responseRate > 0 && (
-                      <Text style={styles.responseRate}>
-                        {pet.trustProfile.responseRate}% response rate
-                      </Text>
-                    )}
-                  </View>
-                )}
-              </CardContent>
-            </Card>
-          </View>
-
-          {/* Personality Traits */}
-          {pet.personality && Array.isArray(pet.personality) && pet.personality.length > 0 && (
-            <>
-              <Separator />
-              <Card style={styles.traitsCard}>
-                <CardHeader>
-                  <CardTitle style={styles.traitsTitle}>Personality Traits</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <View style={styles.traitsContainer}>
-                    {pet.personality.map((trait, index) => (
-                      <Badge key={index} variant="secondary" style={styles.traitBadge}>
-                        <Text style={styles.traitText}>{trait}</Text>
-                      </Badge>
-                    ))}
-                  </View>
-                </CardContent>
-              </Card>
-            </>
-          )}
-
-          {/* Interests */}
-          {pet.interests && Array.isArray(pet.interests) && pet.interests.length > 0 && (
-            <>
-              <Separator />
-              <Card style={styles.interestsCard}>
-                <CardHeader>
-                  <CardTitle style={styles.interestsTitle}>Interests & Activities</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <View style={styles.interestsContainer}>
-                    {pet.interests.map((interest, index) => (
-                      <Badge key={index} variant="outline" style={styles.interestBadge}>
-                        <Text style={styles.interestText}>{interest}</Text>
-                      </Badge>
-                    ))}
-                  </View>
-                </CardContent>
-              </Card>
-            </>
-          )}
-
-          {/* Looking For */}
-          {pet.lookingFor && Array.isArray(pet.lookingFor) && pet.lookingFor.length > 0 && (
-            <>
-              <Separator />
-              <Card style={styles.lookingForCard}>
-                <CardHeader>
-                  <CardTitle style={styles.lookingForTitle}>Looking For</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <View style={styles.lookingForContainer}>
-                    {pet.lookingFor.map((item, index) => (
-                      <Badge key={index} style={styles.lookingForBadge}>
-                        <Text style={styles.lookingForText}>{item}</Text>
-                      </Badge>
-                    ))}
-                  </View>
-                </CardContent>
-              </Card>
-            </>
-          )}
-
-          {/* Trust Badges */}
-          {pet.trustProfile?.badges && Array.isArray(pet.trustProfile.badges) && pet.trustProfile.badges.length > 0 && (
-            <>
-              <Separator />
-              <Card style={styles.trustBadgesCard}>
-                <CardHeader>
-                  <CardTitle style={styles.trustBadgesTitle}>
-                    <ShieldCheck size={16} weight="fill" color="#6366f1" />
-                    <Text style={styles.trustBadgesTitleText}>Trust & Verification</Text>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <TrustBadges badges={pet.trustProfile.badges.map(badge => badge.label)} />
-                </CardContent>
-              </Card>
-            </>
-          )}
-        </ScrollView>
+        <PetContentSection pet={pet} />
       </View>
     </Dialog>
   )

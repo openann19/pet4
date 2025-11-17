@@ -327,12 +327,10 @@ function PhotoIndicator({ index, isActive, onClick }: PhotoIndicatorProps): Reac
     >
       <MotionView
         className="h-full rounded-full bg-white"
-        style={
-          useAnimatedStyle(() => ({
-            width: isActive ? 24 : 8,
-            opacity: isActive ? 1 : 0.5,
-          })) as AnimatedStyle
-        }
+        style={{
+          width: isActive ? 24 : 8,
+          opacity: isActive ? 1 : 0.5,
+        }}
       />
     </button>
   );

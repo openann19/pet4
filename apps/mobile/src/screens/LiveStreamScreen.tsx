@@ -45,7 +45,7 @@ export function LiveStreamScreen({
     remoteUserId: 'host', // Placeholder - should be actual host user ID
     isCaller: !isHost,
     onRemoteStream: (stream) => {
-      setRemoteStream(stream);
+      setRemoteStream(stream as any);
     },
     onConnectionStateChange: (state) => {
       // Handle connection state changes
@@ -60,10 +60,10 @@ export function LiveStreamScreen({
   // Update remote stream from callState
   useEffect(() => {
     if (callState.remoteStream) {
-      setRemoteStream(callState.remoteStream);
+      setRemoteStream(callState.remoteStream as any);
     }
     if (callState.localStream) {
-      setLocalStream(callState.localStream);
+      setLocalStream(callState.localStream as any);
     }
   }, [callState.remoteStream, callState.localStream]);
 

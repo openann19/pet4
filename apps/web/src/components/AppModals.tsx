@@ -51,19 +51,19 @@ export function AppModals({
     <>
       {showGenerateProfiles && (
         <MotionView
-          animatedStyle={{ opacity: animations.generateProfilesModal.opacity, scale: animations.generateProfilesModal.scale, y: animations.generateProfilesModal.y }}
+          style={{ opacity: animations.generateProfilesModal.opacity, scale: animations.generateProfilesModal.scale, y: animations.generateProfilesModal.y }}
           className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4"
           onClick={onCloseGenerateProfiles}
         >
           <MotionView
-            animatedStyle={{ opacity: animations.generateProfilesContent.opacity, scale: animations.generateProfilesContent.scale, y: animations.generateProfilesContent.y }}
+            style={{ opacity: animations.generateProfilesContent.opacity, scale: animations.generateProfilesContent.scale, y: animations.generateProfilesContent.y }}
             onClick={(e?: React.MouseEvent) => e?.stopPropagation()}
             className="bg-card p-6 rounded-2xl shadow-2xl max-w-md w-full border border-border/50"
           >
             <Suspense fallback={<LoadingState />}>
               <GenerateProfilesButton />
             </Suspense>
-            <MotionView animatedStyle={{ scale: animations.closeButtonBounce.scale }}>
+            <MotionView style={{ scale: animations.closeButtonBounce.scale }}>
               <Button
                 variant="outline"
                 className="w-full mt-4"
@@ -77,12 +77,12 @@ export function AppModals({
       )}
       {showStats && totalSwipes > 0 && (
         <MotionView
-          animatedStyle={{ opacity: animations.statsModal.opacity, scale: animations.statsModal.scale, y: animations.statsModal.y }}
+          style={{ opacity: animations.statsModal.opacity, scale: animations.statsModal.scale, y: animations.statsModal.y }}
           className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4"
           onClick={onCloseStats}
         >
           <MotionView
-            animatedStyle={{ opacity: animations.statsContent.opacity, scale: animations.statsContent.scale, y: animations.statsContent.y }}
+            style={{ opacity: animations.statsContent.opacity, scale: animations.statsContent.scale, y: animations.statsContent.y }}
             onClick={(e?: React.MouseEvent) => e?.stopPropagation()}
             className="max-w-2xl w-full"
           >
@@ -93,7 +93,7 @@ export function AppModals({
                 successRate={successRate}
               />
             </Suspense>
-            <MotionView animatedStyle={{ scale: animations.closeButtonBounce.scale }}>
+            <MotionView style={{ scale: animations.closeButtonBounce.scale }}>
               <Button
                 variant="outline"
                 className="w-full mt-4"
@@ -108,12 +108,12 @@ export function AppModals({
 
       {showMap && (
         <MotionView
-          animatedStyle={{ opacity: animations.mapModal.opacity, scale: animations.mapModal.scale, y: animations.mapModal.y }}
+          style={{ opacity: animations.mapModal.opacity, scale: animations.mapModal.scale, y: animations.mapModal.y }}
           className="fixed inset-0 z-50"
         >
           <Suspense fallback={<LoadingState />}>
             <MotionView
-              animatedStyle={{ opacity: animations.mapContent.opacity, scale: animations.mapContent.scale, y: animations.mapContent.y }}
+              style={{ opacity: animations.mapContent.opacity, scale: animations.mapContent.scale, y: animations.mapContent.y }}
               className="h-full w-full"
             >
               <PlaydateMap
@@ -127,11 +127,11 @@ export function AppModals({
 
       {showAdminConsole && (
         <MotionView
-          animatedStyle={{ opacity: animations.adminModal.opacity, scale: animations.adminModal.scale, y: animations.adminModal.y }}
+          style={{ opacity: animations.adminModal.opacity, scale: animations.adminModal.scale, y: animations.adminModal.y }}
           className="fixed inset-0 z-50 bg-background"
         >
           <MotionView
-            animatedStyle={animations.adminContent.style}
+            style={animations.adminContent.style}
             className="h-full w-full"
           >
             <Suspense fallback={<LoadingState />}>
@@ -145,7 +145,7 @@ export function AppModals({
         <Dialog open={showThemeSettings} onOpenChange={onCloseThemeSettings}>
           <DialogContent className="max-w-[95vw] max-h-[90vh] overflow-y-auto p-0">
             <DialogTitle className="sr-only">Ultra Theme Settings</DialogTitle>
-            <MotionView animatedStyle={animations.themeContent.style}>
+            <MotionView style={animations.themeContent.style}>
               <Suspense fallback={<LoadingState />}>
                 <UltraThemeSettings />
               </Suspense>

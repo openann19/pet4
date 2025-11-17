@@ -16,7 +16,7 @@ import { useBounceOnTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
 import { getAriaNavigationAttributes } from '@/lib/accessibility';
 import { isTruthy } from '@petspark/shared';
@@ -196,10 +196,10 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
     }
   }, [isHovered, isActive, iconScale]);
 
-  const iconStyle = useAnimatedStyle(() => {
+  const iconStyle = useAnimatedStyle((): Record<string, unknown> => {
     return {
       transform: [
-        { scale: iconScale.value * animation.iconScale.value },
+        { scale: iconScale.value },
         { translateY: iconY.value },
       ],
     };
@@ -314,9 +314,10 @@ function Badge({ count, isActive }: BadgeProps) {
 
   useEffect(() => {
     if (isTruthy(isActive)) {
-      pulseScale.value = withSpring(1.2, springConfigs.bouncy, () => {
+      pulseScale.value = withSpring(1.2, springConfigs.bouncy);
+      setTimeout(() => {
         pulseScale.value = withSpring(1, springConfigs.smooth);
-      });
+      }, 200);
     }
   }, [isActive, pulseScale]);
 

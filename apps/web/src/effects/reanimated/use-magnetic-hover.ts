@@ -15,6 +15,17 @@ export interface UseMagneticHoverOptions {
   enabled?: boolean;
 }
 
+export interface UseMagneticHoverReturn {
+  animatedStyle: ReturnType<typeof useAnimatedStyle>;
+  translateX: ReturnType<typeof useSharedValue<number>>;
+  translateY: ReturnType<typeof useSharedValue<number>>;
+  variants: any;
+  handleMouseEnter: () => void;
+  handleMouseLeave: () => void;
+  handleMouseMove: (event: React.MouseEvent<HTMLElement>) => void;
+  handleRef: (element: HTMLElement | null) => void;
+}
+
 export function useMagneticHover(options: UseMagneticHoverOptions = {}) {
   const {
     strength = 0.3,
@@ -71,7 +82,7 @@ export function useMagneticHover(options: UseMagneticHoverOptions = {}) {
     }
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const animatedStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [
       { translateX: translateX.value },
       { translateY: translateY.value },
@@ -81,6 +92,9 @@ export function useMagneticHover(options: UseMagneticHoverOptions = {}) {
 
   return {
     animatedStyle,
+    translateX,
+    translateY,
+    variants: undefined,
     handleMouseEnter,
     handleMouseLeave,
     handleMouseMove,

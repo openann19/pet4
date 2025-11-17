@@ -190,7 +190,7 @@ function NotificationItem({
 
   return (
     <MotionView
-      animatedStyle={staggered.itemStyle}
+      style={staggered.itemStyle}
       className={cn(
         'group relative p-4 hover:bg-muted/50 transition-colors',
         !notification.read && 'bg-primary/5'

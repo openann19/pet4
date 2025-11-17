@@ -140,9 +140,9 @@ export function useTypingShimmer(options: UseTypingShimmerOptions = {}): UseTypi
       opacity: shimmerOpacity.value,
       background: `linear-gradient(90deg, 
         transparent 0%, 
-        rgba(255, 255, 255, ${String(shimmerOpacity.value * 0.5 ?? '')}) ${String(gradientStart ?? '')}px, 
-        rgba(255, 255, 255, ${String(shimmerOpacity.value ?? '')}) ${String((gradientStart + gradientEnd) / 2 ?? '')}px, 
-        rgba(255, 255, 255, ${String(shimmerOpacity.value * 0.5 ?? '')}) ${String(gradientEnd ?? '')}px, 
+        rgba(255, 255, 255, ${String(shimmerOpacity.value * 0.5)}) ${String(gradientStart)}px, 
+        rgba(255, 255, 255, ${String(shimmerOpacity.value)}) ${String((gradientStart + gradientEnd) / 2)}px, 
+        rgba(255, 255, 255, ${String(shimmerOpacity.value * 0.5)}) ${String(gradientEnd)}px, 
         transparent 100%
       )`,
     };

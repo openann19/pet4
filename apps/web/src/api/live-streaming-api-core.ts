@@ -6,14 +6,13 @@ import type {
   LiveStreamReaction,
   LiveStreamViewer,
 } from '@/lib/live-streaming-types';
-import { normalizeError } from '@/lib/error-utils';
 import { createLogger } from '@/lib/logger';
 import { LiveStreamingChatApi } from './live-streaming/live-streaming-chat-api';
-import { LiveStreamingParticipationApi } from './live-streaming/live-streaming-participation-api';
-import { LiveStreamingReactionsApi } from './live-streaming/live-streaming-reactions-api';
-import { LiveStreamingStreamsApi } from './live-streaming/live-streaming-streams-api';
+import { LiveStreamingParticipationApi } from './live-streaming/live-streaming-participation-api';                                                              
+import { LiveStreamingReactionsApi } from './live-streaming/live-streaming-reactions-api';                                                                      
+import { LiveStreamingStreamsApi } from './live-streaming/live-streaming-streams-api';                                                                          
 
-const logger = createLogger('LiveStreamingAPI');
+const _logger = createLogger('LiveStreamingAPI');
 
 /**
  * Go Live (Streaming) API Service

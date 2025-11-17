@@ -199,7 +199,7 @@ ${Object.entries(bySeverity)
 }
 
 async function aggregate(): Promise<void> {
-  console.log('Aggregating UI audit findings...\n');
+  console.warn('Aggregating UI audit findings...\n');
 
   const findings: Finding[] = [];
 
@@ -237,10 +237,10 @@ async function aggregate(): Promise<void> {
     'utf-8'
   );
 
-  console.log(`✓ Aggregated ${findings.length} findings`);
-  console.log(`✓ Totals: ${JSON.stringify(totals)}`);
-  console.log(`✓ Global report: ${join(GLOBAL_REPORT_DIR, 'ALL_UI_AUDIT.md')}`);
-  console.log(`✓ CI summary: ${join(CI_DIR, 'summary.json')}`);
+  console.warn(`✓ Aggregated ${findings.length} findings`);
+  console.warn(`✓ Totals: ${JSON.stringify(totals)}`);
+  console.warn(`✓ Global report: ${join(GLOBAL_REPORT_DIR, 'ALL_UI_AUDIT.md')}`);
+  console.warn(`✓ CI summary: ${join(CI_DIR, 'summary.json')}`);
 }
 
 if (require.main === module) {

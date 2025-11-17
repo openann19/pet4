@@ -78,8 +78,6 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
             transition={{ delay: idx * 0.05, type: 'spring', stiffness: 300, damping: 30 }}
           >
             <MotionView
-              as="button"
-              onClick={() => onSelectRoom(room)}
               className={`w-full text-left p-4 rounded-2xl transition-all relative overflow-hidden ${
                 String(selectedRoomId === room.id
                                     ? 'glass-strong shadow-lg scale-[1.02] border border-primary/30'
@@ -88,6 +86,11 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
+              <button
+                type="button"
+                onClick={() => onSelectRoom(room)}
+                className="w-full text-left"
+              >
               {hasUnread && (
                 <MotionView
                   className="absolute inset-0 bg-linear-to-r from-primary/5 to-accent/5"
@@ -200,6 +203,7 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
                   )}
                 </div>
               </div>
+              </button>
             </MotionView>
           </MotionView>
         );

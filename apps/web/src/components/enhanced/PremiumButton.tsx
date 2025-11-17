@@ -4,7 +4,8 @@ import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import type { ButtonHTMLAttributes } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
-import { Button, type buttonVariants } from '@/components/ui/button';
+import type { buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
 import { getAriaButtonAttributes } from '@/lib/accessibility';
 
@@ -69,7 +70,7 @@ export function PremiumButton({
   const buttonSize: 'sm' | 'default' | 'lg' | 'icon' = size;
 
   // Map variant - gradient uses default with gradient overlay
-  const buttonVariant: VariantProps<typeof buttonVariants>['variant'] = 
+  const buttonVariant: keyof typeof buttonVariants = 
     variant === 'gradient' ? 'default' : variant;
 
   const buttonAriaAttrs = getAriaButtonAttributes({

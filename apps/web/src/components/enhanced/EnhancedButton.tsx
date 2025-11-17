@@ -2,8 +2,7 @@
 
 import type { ComponentProps, MouseEvent } from 'react';
 import { forwardRef, useRef, useCallback } from 'react';
-import type { buttonVariants } from '@/components/ui/button';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
@@ -22,9 +21,9 @@ import { springConfigs } from '@/effects/reanimated/transitions';
 
 const logger = createLogger('EnhancedButton');
 
-export interface EnhancedButtonProps
-  extends ComponentProps<'button'>,
-    VariantProps<typeof buttonVariants> {
+export interface EnhancedButtonProps extends Omit<ComponentProps<'button'>, 'size'> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link' | 'default';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'icon' | 'default';
   ripple?: boolean;
   hapticFeedback?: boolean;
   successAnimation?: boolean;
@@ -133,9 +132,9 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
     );
 
     return (
-      <MotionView animatedStyle={successAnimatedStyle} className="relative">
-        <MotionView animatedStyle={errorAnimatedStyle} className="relative">
-          <MotionView animatedStyle={bounceAnimation.animatedStyle} className="relative">
+      <MotionView style={successAnimatedStyle} className="relative">
+        <MotionView style={errorAnimatedStyle} className="relative">
+          <MotionView style={bounceAnimation.animatedStyle} className="relative">
             <div className="relative overflow-hidden">
               <Button
                 ref={ref || buttonRef}

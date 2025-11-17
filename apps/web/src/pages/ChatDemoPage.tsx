@@ -5,10 +5,13 @@
  * Provides controlled environment with mock data and testing APIs.
  */
 
+/* eslint-disable max-lines-per-function */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import MessageBubble from '@/components/chat/MessageBubble';
+import TypingIndicator from '@/components/chat/TypingIndicator';
 import { Button } from '@/components/ui/button';
-import type { Message, MessageStatus, ReactionType } from '@/lib/chat-types';
+import type { Message, MessageStatus, ReactionType, TypingUser } from '@/lib/chat-types';
 import { cn } from '@/lib/utils';
 
 // Type definitions for testing APIs exposed to window
@@ -23,6 +26,50 @@ declare global {
   }
 }
 
+type ReactionMap = Partial<Record<ReactionType, string[]>>;
+
+const toReactionMap = (source: Message['reactions']): ReactionMap => {
+  if (!source) {
+    return {};
+  }
+
+  if (Array.isArray(source)) {
+    return source.reduce<ReactionMap>((acc, reaction) => {
+      if (reaction.userIds?.length) {
+        acc[reaction.emoji as ReactionType] = [...reaction.userIds];
+      }
+      return acc;
+    }, {});
+  }
+
+  return Object.entries(source).reduce<ReactionMap>((acc, [emoji, users]) => {
+    acc[emoji as ReactionType] = [...users];
+    return acc;
+  }, {});
+};
+
+const toMessageReactions = (
+  reactionMap: ReactionMap
+): Record<ReactionType, string[]> | undefined => {
+  const resultEntries: [ReactionType, string[]][] = [];
+
+  for (const [emoji, users] of Object.entries(reactionMap)) {
+    if (!users?.length) {
+      continue;
+    }
+    resultEntries.push([emoji as ReactionType, [...users]]);
+  }
+
+  if (resultEntries.length === 0) {
+    return undefined;
+  }
+
+  return resultEntries.reduce<Record<ReactionType, string[]>>((acc, [emoji, users]) => {
+    acc[emoji] = users;
+    return acc;
+  }, {} as Record<ReactionType, string[]>);
+};
+
 // Mock message data for testing
 const initialMessages: Message[] = [
   {
@@ -32,8 +79,12 @@ const initialMessages: Message[] = [
     senderId: 'user1',
     type: 'text',
     timestamp: new Date(Date.now() - 300000).toISOString(),
+    createdAt: new Date(Date.now() - 300000).toISOString(),
     status: 'read',
-    reactions: { '❤️': ['user2'], '😂': ['user2', 'user3'] } as Record<ReactionType, string[]>,
+    reactions: toMessageReactions({
+      '❤️': ['user2'],
+      '😂': ['user2', 'user3'],
+    }),
   },
   {
     id: '2',
@@ -42,6 +93,7 @@ const initialMessages: Message[] = [
     senderId: 'currentUser',
     type: 'text',
     timestamp: new Date(Date.now() - 240000).toISOString(),
+    createdAt: new Date(Date.now() - 240000).toISOString(),
     status: 'delivered',
   },
   {
@@ -51,6 +103,7 @@ const initialMessages: Message[] = [
     senderId: 'user1',
     type: 'text',
     timestamp: new Date(Date.now() - 180000).toISOString(),
+    createdAt: new Date(Date.now() - 180000).toISOString(),
     status: 'sent',
   },
   {
@@ -60,8 +113,12 @@ const initialMessages: Message[] = [
     senderId: 'currentUser',
     type: 'text',
     timestamp: new Date(Date.now() - 120000).toISOString(),
+    createdAt: new Date(Date.now() - 120000).toISOString(),
     status: 'read',
-    reactions: { '👍': ['user1'], '🔥': ['user1', 'user2', 'user3'] } as Record<ReactionType, string[]>,
+    reactions: toMessageReactions({
+      '👍': ['user1'],
+      '🔥': ['user1', 'user2', 'user3'],
+    }),
   },
   {
     id: '5',
@@ -70,6 +127,7 @@ const initialMessages: Message[] = [
     senderId: 'currentUser',
     type: 'text',
     timestamp: new Date(Date.now() - 5000).toISOString(),
+    createdAt: new Date(Date.now() - 5000).toISOString(),
     status: 'sending',
   },
 ];
@@ -80,8 +138,7 @@ interface ChatDemoPageProps {
 
 export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
   const [messages, setMessages] = useState<Message[]>(variant === 'empty' ? [] : initialMessages);
-  const [isTyping, setIsTyping] = useState(false);
-  const [typingUser, setTypingUser] = useState<string>('');
+  const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
   const [isOnline, setIsOnline] = useState(true);
   const currentUserId = 'currentUser';
 
@@ -94,9 +151,12 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
     window.__sendMessage = (content: string) => {
       const newMessage: Message = {
         id: `msg-${Date.now()}`,
+        roomId: 'test-room',
         content,
         senderId: currentUserId,
-        timestamp: Date.now(),
+        type: 'text',
+        timestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         status: 'sending',
       };
       setMessages(prev => [...prev, newMessage]);
@@ -122,13 +182,11 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
     };
 
     window.__showTypingIndicator = (user: string) => {
-      setTypingUser(user);
-      setIsTyping(true);
+      setTypingUsers([{ userId: 'user1', userName: user, startedAt: new Date().toISOString() }]);
     };
 
     window.__hideTypingIndicator = () => {
-      setIsTyping(false);
-      setTypingUser('');
+      setTypingUsers([]);
     };
 
     window.__setConnectionStatus = (status: 'online' | 'offline') => {
@@ -169,7 +227,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
     setMessages(prev => prev.map(msg => {
       if (msg.id !== messageId) return msg;
       
-      const reactions = { ...msg.reactions };
+      const reactions = toReactionMap(msg.reactions);
       const reactionUsers = reactions[reaction] ?? [];
       
       if (reactionUsers.includes(currentUserId)) {
@@ -185,7 +243,10 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
         reactions[reaction] = [...reactionUsers, currentUserId];
       }
       
-      return { ...msg, reactions };
+      return {
+        ...msg,
+        reactions: toMessageReactions(reactions),
+      };
     }));
   }, [currentUserId]);
 
@@ -197,8 +258,8 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
   const handleCopy = useCallback((messageId: string) => {
     const message = messages.find(m => m.id === messageId);
     if (message) {
-      void navigator.clipboard.writeText(message.content).catch(() => {
-        // Clipboard write failed - silently ignore for demo page
+      void navigator.clipboard.writeText(message.content).catch((_error: unknown) => {
+        // Clipboard access can fail in tests; swallow to keep demo deterministic
       });
     }
   }, [messages]);
@@ -210,9 +271,12 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
   const handleSendMessage = useCallback((content: string) => {
     const newMessage: Message = {
       id: `msg-${Date.now()}`,
+      roomId: 'test-room',
       content,
       senderId: currentUserId,
-      timestamp: Date.now(),
+      type: 'text',
+      timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       status: 'sending',
     };
     
@@ -226,36 +290,156 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
     }, 500);
   }, [currentUserId]);
 
-  if (variant === 'empty') {
-    return (
-      <div className="flex h-screen flex-col">
+  const renderEmptyState = () => (
+    <div className="flex h-screen flex-col">
+      <div 
+        className="flex-1 flex items-center justify-center p-8"
+        data-testid="chat-container"
+      >
         <div 
-          className="flex-1 flex items-center justify-center p-8"
-          data-testid="chat-container"
+          className="text-center space-y-4"
+          data-testid="empty-chat-state"
         >
-          <div 
-            className="text-center space-y-4"
-            data-testid="empty-chat-state"
-          >
-            <div className="text-6xl mb-4">💬</div>
-            <h2 className="text-2xl font-semibold text-muted-foreground">
-              No messages yet
-            </h2>
-            <p className="text-muted-foreground max-w-md">
-              Start a conversation by sending your first message.
-            </p>
+          <div className="text-6xl mb-4">💬</div>
+          <h2 className="text-2xl font-semibold text-muted-foreground">
+            No messages yet
+          </h2>
+          <p className="text-muted-foreground max-w-md">
+            Start a conversation by sending your first message.
+          </p>
+          <div className="flex justify-start">
+            <TypingIndicator data-testid="typing-indicator" users={typingUsers} />
           </div>
         </div>
-        
-        <div className="border-t bg-background p-4">
-          <ChatInputBar 
-            onSend={handleSendMessage}
+      </div>
+      
+      <div className="border-t bg-background p-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const input = e.currentTarget.elements.namedItem('message') as HTMLInputElement;
+            if (input.value.trim()) {
+              handleSendMessage(input.value);
+              input.value = '';
+            }
+          }}
+          data-testid="chat-input-bar"
+        >
+          <input
+            name="message"
+            type="text"
             placeholder="Type your first message..."
-            data-testid="chat-input-bar"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          />
+        </form>
+      </div>
+    </div>
+  );
+
+  const renderHeader = () => (
+    <div className="border-b bg-background p-4">
+      <h1 className="text-lg font-semibold">Chat Demo - Visual Regression Testing</h1>
+      <div className="flex gap-2 mt-2">
+        <Button 
+          size="sm" 
+          variant="outline" 
+          onClick={() => {
+            if (typingUsers.length > 0) {
+              setTypingUsers([]);
+            } else {
+              setTypingUsers([
+                { userId: 'user1', userName: 'Someone', startedAt: new Date().toISOString() }
+              ]);
+            }
+          }}
+        >
+          {typingUsers.length > 0 ? 'Hide' : 'Show'} Typing
+        </Button>
+        <Button 
+          size="sm" 
+          variant="outline" 
+          onClick={() => setIsOnline(!isOnline)}
+        >
+          Go {isOnline ? 'Offline' : 'Online'}
+        </Button>
+      </div>
+    </div>
+  );
+
+  const renderMessages = () => (
+    <div 
+      className="flex-1 overflow-y-auto p-4 space-y-2"
+      data-testid="messages-container"
+    >
+      {messages.map((message, index) => {
+        const { isClusterStart, isClusterEnd } = getClusteringInfo(messages, index);
+        const isOwn = isOwnMessage(message);
+        
+        return (
+          <div
+            key={message.id}
+            className={cn(
+              'flex',
+              isOwn ? 'justify-end' : 'justify-start'
+            )}
+          >
+            <MessageBubble
+              data-testid="message-bubble"
+              data-status={message.status}
+              message={message}
+              isOwn={isOwn}
+              isClusterStart={isClusterStart}
+              isClusterEnd={isClusterEnd}
+              index={index}
+              isNew={index === messages.length - 1}
+              onReact={handleReact}
+              onReply={handleReply}
+              onCopy={handleCopy}
+              onDelete={handleDelete}
+              showTimestamp={isClusterEnd}
+            />
+          </div>
+        );
+      })}
+      
+      {/* Typing Indicator */}
+      {typingUsers.length > 0 && (
+        <div className="flex justify-start">
+          <TypingIndicator 
+            data-testid="typing-indicator"
+            users={typingUsers}
           />
         </div>
-      </div>
-    );
+      )}
+    </div>
+  );
+
+  const renderInput = () => (
+    <div className="border-t bg-background p-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const input = e.currentTarget.elements.namedItem('message') as HTMLInputElement;
+          if (input.value.trim()) {
+            handleSendMessage(input.value);
+            input.value = '';
+          }
+        }}
+        data-testid="chat-input-bar"
+      >
+        <input
+          name="message"
+          type="text"
+          placeholder="Type a message..."
+          data-testid="message-input"
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        />
+      </form>
+    </div>
+  );
+
+  if (variant === 'empty') {
+    return renderEmptyState();
   }
 
   return (
@@ -270,84 +454,11 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
         </div>
       )}
 
-      {/* Chat Header */}
-      <div className="border-b bg-background p-4">
-        <h1 className="text-lg font-semibold">Chat Demo - Visual Regression Testing</h1>
-        <div className="flex gap-2 mt-2">
-          <Button 
-            size="sm" 
-            variant="outline" 
-            onClick={() => setIsTyping(!isTyping)}
-          >
-            {isTyping ? 'Hide' : 'Show'} Typing
-          </Button>
-          <Button 
-            size="sm" 
-            variant="outline" 
-            onClick={() => setIsOnline(!isOnline)}
-          >
-            Go {isOnline ? 'Offline' : 'Online'}
-          </Button>
-        </div>
-      </div>
+      {renderHeader()}
 
-      {/* Messages Container */}
-      <div 
-        className="flex-1 overflow-y-auto p-4 space-y-2"
-        data-testid="messages-container"
-      >
-        {messages.map((message, index) => {
-          const { isClusterStart, isClusterEnd } = getClusteringInfo(messages, index);
-          const isOwn = isOwnMessage(message);
-          
-          return (
-            <div
-              key={message.id}
-              className={cn(
-                'flex',
-                isOwn ? 'justify-end' : 'justify-start'
-              )}
-            >
-              <MessageBubble
-                data-testid="message-bubble"
-                data-status={message.status}
-                message={message}
-                isOwn={isOwn}
-                isClusterStart={isClusterStart}
-                isClusterEnd={isClusterEnd}
-                index={index}
-                isNew={index === messages.length - 1}
-                onReact={handleReact}
-                onReply={handleReply}
-                onCopy={handleCopy}
-                onDelete={handleDelete}
-                showTimestamp={isClusterEnd}
-              />
-            </div>
-          );
-        })}
-        
-        {/* Typing Indicator */}
-        {isTyping && (
-          <div className="flex justify-start">
-            <TypingIndicator 
-              data-testid="typing-indicator"
-              isVisible={isTyping}
-              userName={typingUser ?? 'Someone'}
-            />
-          </div>
-        )}
-      </div>
+      {renderMessages()}
 
-      {/* Chat Input */}
-      <div className="border-t bg-background p-4">
-        <ChatInputBar 
-          onSend={handleSendMessage}
-          placeholder="Type a message..."
-          data-testid="chat-input-bar"
-          inputProps={{ 'data-testid': 'message-input' }}
-        />
-      </div>
+      {renderInput()}
     </div>
   );
 }

@@ -144,7 +144,7 @@ export class CommunityAPI {
     postId: string,
     status: PostStatus,
     adminId: string,
-    reason?: string
+    _reason?: string
   ): Promise<Post> {
     try {
       const currentPost = await this.getPostById(postId);

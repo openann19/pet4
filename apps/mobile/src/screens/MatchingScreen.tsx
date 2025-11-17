@@ -137,7 +137,7 @@ function MatchingScreenContent(): React.JSX.Element {
     >
       {!networkStatus.isConnected && (
         <Animated.View entering={FadeIn.duration(300)}>
-          <OfflineIndicator message={t.chat.offlineMessage} />
+          <OfflineIndicator />
         </Animated.View>
       )}
       <PullableContainer onRefresh={handleRefresh} refreshOptions={{ threshold: 100 }}>

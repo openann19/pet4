@@ -18,8 +18,9 @@ import { isTruthy } from '@petspark/shared';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
-import { PremiumNotificationCenter, type PremiumNotification } from './PremiumNotificationCenter';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import { PremiumNotificationCenter } from './PremiumNotificationCenter';
+import type { PremiumNotification } from './types';
+import type { AnimatedStyle } from '@petspark/motion';
 
 const logger = createLogger('PremiumNotificationBell');
 
@@ -183,7 +184,7 @@ function BellIcon({ hasNewNotification, unreadCount, hasUrgent }: BellIconProps)
     }
   }, [hasNewNotification, unreadCount, rotation, scale]);
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedStyle = useAnimatedStyle((): Record<string, unknown> => {
     return {
       transform: [{ rotate: `${rotation.value}deg` }, { scale: scale.value }],
       opacity: opacity.value,

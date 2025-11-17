@@ -15,7 +15,6 @@ import React, { memo, useCallback, useState } from 'react'
 import { 
   View, 
   Text, 
-  TouchableOpacity, 
   StyleSheet,
   Pressable,
   AccessibilityInfo,
@@ -91,9 +90,9 @@ export const MessageBubble = memo<MessageBubbleProps>(({
   index = 0,
   isNew = false,
   isHighlighted = false,
-  variant = 'default',
-  previousStatus,
-  roomType = 'direct',
+  variant: _variant = 'default',
+  previousStatus: _previousStatus,
+  roomType: _roomType = 'direct',
   onReact,
   onReply,
   onCopy,
@@ -107,7 +106,7 @@ export const MessageBubble = memo<MessageBubbleProps>(({
   
   // State for interactions
   const [showReactions, setShowReactions] = useState(false)
-  const [isLongPressing, setIsLongPressing] = useState(false)
+  const [_isLongPressing, setIsLongPressing] = useState(false)
 
   // Format timestamp
   const formatTime = useCallback((timestamp: string): string => {

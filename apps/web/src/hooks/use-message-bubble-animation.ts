@@ -10,6 +10,7 @@ import {
   interpolate,
   Extrapolation,
   Easing,
+  animateWithTiming,
   type SharedValue,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
@@ -90,7 +91,7 @@ export function useMessageBubbleAnimation(
     if (isNew) {
       const isReducedMotion = reducedMotion.value;
       const delay = isReducedMotion ? 0 : index * staggerDelay;
-      const duration = getReducedMotionDuration(300, isReducedMotion);
+      const duration = getReducedMotionDuration(300, Boolean(isReducedMotion));
 
       if (isReducedMotion) {
         // Reduced motion: instant state change
@@ -129,8 +130,8 @@ export function useMessageBubbleAnimation(
   // Highlight animation effect
   useEffect(() => {
     const isReducedMotion = reducedMotion.value;
-    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
-    const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+    const fastDuration = getReducedMotionDuration(150, Boolean(isReducedMotion));
+    const smoothDuration = getReducedMotionDuration(300, Boolean(isReducedMotion));
 
     if (isHighlighted) {
       if (isReducedMotion) {
@@ -164,9 +165,17 @@ export function useMessageBubbleAnimation(
   }, [isHighlighted, backgroundOpacity, reducedMotion]);
 
   const animatedStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+    
+    const translateYValue = translateY.get();
+    if (translateYValue !== 0) transforms.push({ translateY: translateYValue });
+    
+    const scaleValue = scale.get();
+    if (scaleValue !== 1) transforms.push({ scale: scaleValue });
+
     return {
-      opacity: opacity.value,
-      transform: [{ translateY: translateY.value }, { scale: scale.value }],
+      opacity: opacity.get(),
+      transform: transforms,
     };
   });
 
@@ -189,9 +198,17 @@ export function useMessageBubbleAnimation(
   });
 
   const reactionStyle = useAnimatedStyle(() => {
+    const transforms: Record<string, string | number>[] = [];
+    
+    const scaleValue = reactionScale.get();
+    if (scaleValue !== 1) transforms.push({ scale: scaleValue });
+    
+    const translateYValue = reactionTranslateY.get();
+    if (translateYValue !== 0) transforms.push({ translateY: translateYValue });
+
     return {
-      transform: [{ scale: reactionScale.value }, { translateY: reactionTranslateY.value }],
-      opacity: reactionOpacity.value,
+      transform: transforms,
+      opacity: reactionOpacity.get(),
     };
   });
 
@@ -252,7 +269,7 @@ export function useMessageBubbleAnimation(
     }
 
     const isReducedMotion = reducedMotion.value;
-    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+    const fastDuration = getReducedMotionDuration(150, Boolean(isReducedMotion));
 
     if (isReducedMotion) {
       scale.value = withTiming(1, {
@@ -287,19 +304,15 @@ export function useMessageBubbleAnimation(
 
     if (isReducedMotion) {
       const duration = getReducedMotionDuration(120, true);
-      scale.value = withTiming(
-        0.94,
-        {
+      void animateWithTiming(scale, 0.94, {
+        duration: duration,
+        easing: Easing.linear,
+      }).then(() => {
+        scale.value = withTiming(1, {
           duration: duration,
           easing: Easing.linear,
-        },
-        () => {
-          scale.value = withTiming(1, {
-            duration: duration,
-            easing: Easing.linear,
-          });
-        }
-      );
+        });
+      });
     } else {
       scale.value = withSequence(
         withSpring(0.94, {
@@ -324,8 +337,8 @@ export function useMessageBubbleAnimation(
   const animateReaction = useCallback(
     (_emoji: string) => {
       const isReducedMotion = reducedMotion.value;
-      const fastDuration = getReducedMotionDuration(150, isReducedMotion);
-      const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+      const fastDuration = getReducedMotionDuration(150, Boolean(isReducedMotion));
+      const smoothDuration = getReducedMotionDuration(300, Boolean(isReducedMotion));
 
       reactionScale.value = 1;
       reactionTranslateY.value = 0;
@@ -333,19 +346,15 @@ export function useMessageBubbleAnimation(
 
       if (isReducedMotion) {
         // Reduced motion: simplified animation
-        reactionScale.value = withTiming(
-          1.2,
-          {
-            duration: fastDuration,
+        void animateWithTiming(reactionScale, 1.2, {
+          duration: fastDuration,
+          easing: Easing.linear,
+        }).then(() => {
+          reactionScale.value = withTiming(1, {
+            duration: smoothDuration,
             easing: Easing.linear,
-          },
-          () => {
-            reactionScale.value = withTiming(1, {
-              duration: smoothDuration,
-              easing: Easing.linear,
-            });
-          }
-        );
+          });
+        });
         reactionTranslateY.value = withTiming(-15, {
           duration: fastDuration,
           easing: Easing.linear,
@@ -390,8 +399,8 @@ export function useMessageBubbleAnimation(
 
   const animateHighlight = useCallback(() => {
     const isReducedMotion = reducedMotion.value;
-    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
-    const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+    const fastDuration = getReducedMotionDuration(150, Boolean(isReducedMotion));
+    const smoothDuration = getReducedMotionDuration(300, Boolean(isReducedMotion));
 
     if (isReducedMotion) {
       backgroundOpacity.value = withSequence(

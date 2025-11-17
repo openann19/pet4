@@ -1,7 +1,7 @@
 import { Smiley, ArrowUUpLeft, Copy, Flag, Trash } from '@phosphor-icons/react';
 import { MotionView } from '@petspark/motion';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
+import type { AnimatedStyle } from '@petspark/motion';
 import { ContextMenuItem } from './ContextMenuItem';
 
 interface MenuItemsProps {
@@ -95,7 +95,7 @@ export function MessageContextMenu({
 }: MessageContextMenuProps) {
   return (
     <MotionView
-      animatedStyle={contextMenuStyle}
+      style={contextMenuStyle}
       className={cn(
         'absolute z-50 bg-card border border-border rounded-lg shadow-lg p-1',
         'flex flex-col gap-1 min-w-40',

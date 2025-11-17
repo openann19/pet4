@@ -18,28 +18,17 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native'
-import Animated, {
+import {
+  Animated,
   FadeInRight,
   FadeOutLeft,
   Layout,
-} from 'react-native-reanimated'
+} from '@petspark/motion'
 import * as Haptics from 'expo-haptics'
 
-// Type definition for adoption filters
-interface AdoptionFilters {
-  readonly petType?: string
-  readonly breed?: readonly string[]
-  readonly size?: readonly string[]
-  readonly age?: { readonly min?: number; readonly max?: number }
-  readonly location?: string
-  readonly maxDistance?: number
-  readonly gender?: string
-  readonly goodWithKids?: boolean
-  readonly goodWithPets?: boolean
-  readonly vaccinated?: boolean
-  readonly spayedNeutered?: boolean
-  readonly sortBy?: string
-}
+// Import the correct type from the hook
+import type { AdoptionListingFilters } from '@mobile/hooks/api/use-adoption-marketplace'
+
 import { colors } from '@mobile/theme/colors'
 import { typography, spacing } from '@mobile/theme/typography'
 import { createLogger } from '@mobile/utils/logger'
@@ -49,8 +38,8 @@ const logger = createLogger('FilterChips')
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
 export interface FilterChipsProps {
-  readonly filters: AdoptionFilters
-  readonly onRemoveFilter: (filterKey: keyof AdoptionFilters, value?: string | number | boolean) => void
+  readonly filters: AdoptionListingFilters
+  readonly onRemoveFilter: (filterKey: keyof AdoptionListingFilters, value?: string | number | boolean) => void
   readonly onClearAll: () => void
 }
 
@@ -58,7 +47,7 @@ interface FilterChip {
   readonly key: string
   readonly label: string
   readonly value: string | number | boolean
-  readonly filterKey: keyof AdoptionFilters
+  readonly filterKey: keyof AdoptionListingFilters
 }
 
 export function FilterChips({
@@ -70,25 +59,27 @@ export function FilterChips({
     const chips: FilterChip[] = []
 
     Object.entries(filters).forEach(([key, value]) => {
-      const filterKey = key as keyof AdoptionFilters
+      const filterKey = key as keyof AdoptionListingFilters
 
       if (value === undefined || value === null) return
 
       switch (filterKey) {
-        case 'petType':
-          if (typeof value === 'string') {
-            chips.push({
-              key: `${filterKey}-${value}`,
-              label: value.charAt(0).toUpperCase() + value.slice(1),
-              value,
-              filterKey,
+        case 'species':
+          if (Array.isArray(value) && value.length > 0) {
+            value.forEach((species: string) => {
+              chips.push({
+                key: `${filterKey}-${species}`,
+                label: species.charAt(0).toUpperCase() + species.slice(1),
+                value: species,
+                filterKey,
+              })
             })
           }
           break
 
         case 'breed':
           if (Array.isArray(value) && value.length > 0) {
-            value.forEach((breed) => {
+            value.forEach((breed: string) => {
               chips.push({
                 key: `${filterKey}-${breed}`,
                 label: breed,
@@ -101,7 +92,7 @@ export function FilterChips({
 
         case 'size':
           if (Array.isArray(value) && value.length > 0) {
-            value.forEach((size) => {
+            value.forEach((size: string) => {
               chips.push({
                 key: `${filterKey}-${size}`,
                 label: size.charAt(0).toUpperCase() + size.slice(1),
@@ -112,23 +103,15 @@ export function FilterChips({
           }
           break
 
-        case 'age':
-          if (typeof value === 'object' && value !== null) {
-            const ageRange = value as { min?: number; max?: number }
-            if (ageRange.min !== undefined || ageRange.max !== undefined) {
-              const minLabel = ageRange.min !== undefined ? `${ageRange.min}+` : ''
-              const maxLabel = ageRange.max !== undefined ? `≤${ageRange.max}` : ''
-              const label = minLabel && maxLabel 
-                ? `${ageRange.min}-${ageRange.max} years`
-                : minLabel ? `${minLabel} years` : `${maxLabel} years`
-              
-              chips.push({
-                key: `${filterKey}-range`,
-                label,
-                value: JSON.stringify(ageRange),
-                filterKey,
-              })
-            }
+        case 'ageMin':
+        case 'ageMax':
+          if (typeof value === 'number') {
+            chips.push({
+              key: `${filterKey}-${value}`,
+              label: filterKey === 'ageMin' ? `${value}+ years` : `≤${value} years`,
+              value,
+              filterKey,
+            })
           }
           break
 
@@ -154,34 +137,30 @@ export function FilterChips({
           }
           break
 
-        case 'gender':
-          if (typeof value === 'string') {
-            chips.push({
-              key: `${filterKey}-${value}`,
-              label: value === 'male' ? '♂ Male' : '♀ Female',
-              value,
-              filterKey,
-            })
-          }
-          break
-
         case 'goodWithKids':
         case 'goodWithPets':
+        case 'goodWithCats':
+        case 'goodWithDogs':
         case 'vaccinated':
         case 'spayedNeutered':
           if (value === true) {
-            const labels = {
+            const labels: Record<string, string> = {
               goodWithKids: '👶 Good with kids',
-              goodWithPets: '🐕 Good with pets', 
+              goodWithPets: '🐕 Good with pets',
+              goodWithCats: '🐱 Good with cats',
+              goodWithDogs: '🐕 Good with dogs',
               vaccinated: '💉 Vaccinated',
               spayedNeutered: '✂️ Spayed/Neutered',
             }
-            chips.push({
-              key: `${filterKey}-true`,
-              label: labels[filterKey],
-              value: true,
-              filterKey,
-            })
+            const label = labels[filterKey]
+            if (label !== undefined) {
+              chips.push({
+                key: `${filterKey}-true`,
+                label,
+                value: true,
+                filterKey,
+              })
+            }
           }
           break
 

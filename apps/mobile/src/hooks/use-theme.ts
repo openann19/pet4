@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useColorScheme } from 'react-native'
 import { defaultThemeId, themes, type Theme } from '../theme/themes'
 import { createLogger } from '../utils/logger'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 const logger = createLogger('useTheme')
 

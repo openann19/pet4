@@ -94,9 +94,9 @@ class OfflineQueueManager {
     this.listeners.forEach((callback) => callback(online));
   }
 
-  async enqueue(
+  enqueue(
     action: Omit<QueuedAction, 'id' | 'timestamp' | 'retries' | 'status'>
-  ): Promise<string> {
+  ): string {
     const id = `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const queuedAction: QueuedAction = {
       ...action,
@@ -189,7 +189,7 @@ class OfflineQueueManager {
     this.saveQueue(queue);
   }
 
-  private async executeAction(action: QueuedAction): Promise<void> {
+  private executeAction(action: QueuedAction): Promise<void> {
     return new Promise((resolve, _reject) => {
       setTimeout(() => {
         logger.debug(`Executing action: ${action.type}`, { actionId: action.id });
@@ -237,11 +237,11 @@ export function destroyOfflineQueue(): void {
 export const useOfflineQueue = () => {
   const [isOnline, _setIsOnline] = useStorage<boolean>('app-online-status', navigator.onLine);
 
-  const enqueueAction = async (
+  const enqueueAction = (
     type: QueuedAction['type'],
     payload: unknown,
     maxRetries = 3
-  ): Promise<string> => {
+  ): string => {
     return offlineQueue.enqueue({ type, payload, maxRetries });
   };
 
