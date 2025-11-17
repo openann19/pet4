@@ -93,7 +93,7 @@ export function UltraCard({
       onMouseMove={enableMagnetic ? magnetic.handleMouseMove : undefined}
       className="inline-block"
     >
-      <motion.div style={{ opacity: reveal.opacity.get() }}>
+      <motion.div style={{ opacity: reveal.progress.get() }}>
         <div
           onMouseMove={enableTilt ? handleTiltMove : undefined}
           onMouseLeave={enableTilt ? tilt.handleLeave : undefined}
