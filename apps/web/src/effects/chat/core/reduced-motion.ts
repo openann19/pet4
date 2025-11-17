@@ -103,13 +103,13 @@ export function useReducedMotion(): boolean {
   return reduced;
 }
 
-/** SharedValue version for use in worklets. */
-export function useReducedMotionSV(): SharedValue<boolean> {
-  const sv = useSharedValue<boolean>(isReduceMotionEnabled());
+/** SharedValue version for use in worklets (0 = false, 1 = true). */
+export function useReducedMotionSV(): SharedValue<number> {
+  const sv = useSharedValue<number>(isReduceMotionEnabled() ? 1 : 0);
   const reduced = useReducedMotion();
 
   useEffect(() => {
-    sv.value = reduced;
+    sv.value = reduced ? 1 : 0;
   }, [reduced, sv]);
 
   return sv;
