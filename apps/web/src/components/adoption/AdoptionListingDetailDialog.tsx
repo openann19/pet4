@@ -358,7 +358,7 @@ export function AdoptionListingDetailDialog({
 
           {applicationFormPresence.shouldRender && showApplicationForm && (
             <MotionView
-              style={useAnimatedStyleValue(applicationFormPresence.animatedStyle) as React.CSSProperties}
+              style={useAnimatedStyleValue(applicationFormPresence.animatedStyle)}
               className="space-y-4 p-4 border rounded-lg bg-muted/50"
             >
               <div className="flex items-center justify-between">

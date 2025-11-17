@@ -181,7 +181,7 @@ function MessageBubble({
   // Ensure focus appearance on bubble container
   useEffect(() => {
     if (bubbleRef.current) {
-      const bubbleElement = bubbleRef.current.querySelector('[class*="rounded-2xl"]') as HTMLElement;
+      const bubbleElement = bubbleRef.current.querySelector('[class*="rounded-2xl"]')!;
       if (bubbleElement) {
         bubbleElement.setAttribute('id', stableReference.stableId);
         bubbleElement.setAttribute('tabIndex', '0');

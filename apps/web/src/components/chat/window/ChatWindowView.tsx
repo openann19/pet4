@@ -19,9 +19,9 @@ interface ChatWindowViewProps {
     lastMessageSender: string | null;
     typingUser: string | null;
     multipleTypingUsers: boolean;
-    typingUsers: Array<{ userId: string; userName?: string }>;
+    typingUsers: { userId: string; userName?: string }[];
     messages: ChatMessage[] | undefined;
-    messageGroups: Array<{ date: string; messages: ChatMessage[] }>;
+    messageGroups: { date: string; messages: ChatMessage[] }[];
     voiceMessages: Record<string, { blob: string; duration: number; waveform: number[] }> | undefined;
     playingVoice: string | null;
     useVirtualizedList: boolean;

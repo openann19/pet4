@@ -19,7 +19,7 @@ interface AdvancedChatWindowContentProps {
   currentUserId: string;
   currentUserName: string;
   messages: ChatMessage[] | undefined;
-  typingUsers: Array<{ userName?: string | null }>;
+  typingUsers: { userName?: string | null }[];
   inputValue: string;
   inputRef: React.RefObject<InputRef>;
   showTemplates: boolean;

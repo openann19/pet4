@@ -103,7 +103,7 @@ export function useTemplatesPanelAnimations(showTemplates: boolean) {
 export function useButtonAnimations() {
   const messageBubbleHover = useHoverLift();
   const messageBubbleHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
+    const transforms: Record<string, number | string>[] = [];
     const scaleVal = messageBubbleHover.scale.get();
     const translateYVal = messageBubbleHover.translateY.get();
     if (scaleVal !== 1) transforms.push({ scale: scaleVal });
@@ -113,7 +113,7 @@ export function useButtonAnimations() {
 
   const voiceButtonHover = useHoverLift();
   const voiceButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
+    const transforms: Record<string, number | string>[] = [];
     const scaleVal = voiceButtonHover.scale.get();
     const translateYVal = voiceButtonHover.translateY.get();
     if (scaleVal !== 1) transforms.push({ scale: scaleVal });
@@ -128,7 +128,7 @@ export function useButtonAnimations() {
 
   const reactionButtonHover = useHoverLift();
   const reactionButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
+    const transforms: Record<string, number | string>[] = [];
     const scaleVal = reactionButtonHover.scale.get();
     const translateYVal = reactionButtonHover.translateY.get();
     if (scaleVal !== 1) transforms.push({ scale: scaleVal });
@@ -143,7 +143,7 @@ export function useButtonAnimations() {
 
   const templateButtonHover = useHoverLift();
   const templateButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
+    const transforms: Record<string, number | string>[] = [];
     const scaleVal = templateButtonHover.scale.get();
     const translateYVal = templateButtonHover.translateY.get();
     if (scaleVal !== 1) transforms.push({ scale: scaleVal });
@@ -158,7 +158,7 @@ export function useButtonAnimations() {
 
   const stickerButtonHover = useHoverLift();
   const stickerButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
+    const transforms: Record<string, number | string>[] = [];
     const scaleVal = stickerButtonHover.scale.get();
     const translateYVal = stickerButtonHover.translateY.get();
     if (scaleVal !== 1) transforms.push({ scale: scaleVal });
@@ -173,7 +173,7 @@ export function useButtonAnimations() {
 
   const emojiButtonHover = useHoverLift();
   const emojiButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
+    const transforms: Record<string, number | string>[] = [];
     const scaleVal = emojiButtonHover.scale.get();
     const translateYVal = emojiButtonHover.translateY.get();
     if (scaleVal !== 1) transforms.push({ scale: scaleVal });
@@ -188,7 +188,7 @@ export function useButtonAnimations() {
 
   const sendButtonHover = useHoverLift();
   const sendButtonHoverStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number | string>> = [];
+    const transforms: Record<string, number | string>[] = [];
     const scaleVal = sendButtonHover.scale.get();
     const translateYVal = sendButtonHover.translateY.get();
     if (scaleVal !== 1) transforms.push({ scale: scaleVal });

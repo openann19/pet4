@@ -7,7 +7,7 @@ import { formatChatTime } from '@/lib/chat-utils';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 interface ChatMessageRendererProps {
-  messageGroups: Array<{ date: string; messages: ChatMessage[] }>;
+  messageGroups: { date: string; messages: ChatMessage[] }[];
   currentUserId: string;
   voiceMessages: Record<string, { blob: string; duration: number; waveform: number[] }> | undefined;
   playingVoice: string | null;
@@ -25,7 +25,7 @@ interface ChatMessageRendererProps {
   dateGroupStyle: AnimatedStyle;
   messageItemStyle: AnimatedStyle;
   typingIndicatorStyle: AnimatedStyle;
-  typingUsers: Array<{ userId: string; userName?: string }>;
+  typingUsers: { userId: string; userName?: string }[];
   onToggleVoicePlayback: (messageId: string) => void;
 }
 
