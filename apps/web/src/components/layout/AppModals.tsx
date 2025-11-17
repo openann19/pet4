@@ -4,7 +4,7 @@
  */
 
 import { Suspense, lazy } from 'react'
-import { MotionView } from '@petspark/motion'
+import { MotionView, useSharedValue } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import LoadingState from '@/components/LoadingState'
@@ -29,48 +29,48 @@ interface AppModalsProps {
   setShowThemeSettings: (show: boolean) => void
   animations: {
     generateProfilesModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     generateProfilesContent: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     statsModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     statsContent: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     mapModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     mapContent: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     adminModal: {
-      opacity: unknown
-      scale: unknown
-      y: unknown
+      opacity: number | ReturnType<typeof useSharedValue<number>>
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      y: number | ReturnType<typeof useSharedValue<number>>
     }
     adminContent: {
-      style: unknown
+      style: React.CSSProperties
     }
     themeContent: {
-      style: unknown
+      style: React.CSSProperties
     }
     closeButtonBounce: {
-      scale: unknown
+      scale: number | ReturnType<typeof useSharedValue<number>>
     }
   }
   totalMatches: number

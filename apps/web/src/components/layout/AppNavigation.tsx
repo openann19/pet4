@@ -3,7 +3,7 @@
  * Bottom navigation bar with view switching
  */
 
-import { MotionView } from '@petspark/motion'
+import { MotionView, useSharedValue } from '@petspark/motion'
 import { NavButton } from '@/components/navigation/NavButton'
 import {
   Sparkle,
@@ -21,16 +21,16 @@ interface AppNavigationProps {
   setCurrentView: (view: View) => void
   animations: {
     navBarAnimation: {
-      navStyle: unknown
-      shimmerStyle: unknown
+      navStyle: React.CSSProperties
+      shimmerStyle: React.CSSProperties
     }
     lostFoundAnimation: {
-      scale: unknown
-      translateY: unknown
-      iconScale: unknown
-      iconRotation: unknown
-      indicatorOpacity: unknown
-      indicatorWidth: unknown
+      scale: number | ReturnType<typeof useSharedValue<number>>
+      translateY: number | ReturnType<typeof useSharedValue<number>>
+      iconScale: number | ReturnType<typeof useSharedValue<number>>
+      iconRotation: number | ReturnType<typeof useSharedValue<number>>
+      indicatorOpacity: number | ReturnType<typeof useSharedValue<number>>
+      indicatorWidth: number | ReturnType<typeof useSharedValue<number>>
       handleHover: () => void
       handleLeave: () => void
       handlePress: () => void

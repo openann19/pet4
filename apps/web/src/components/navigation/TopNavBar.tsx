@@ -66,11 +66,11 @@ export default function TopNavBar({
         stiffness: springConfigs.smooth.stiffness,
       });
       animate(blurIntensity, 30, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: (timingConfigs.smooth.duration ?? 300) / 1000,
         ease: 'easeInOut',
       });
       animate(glowOpacity, 0.5, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: (timingConfigs.smooth.duration ?? 300) / 1000,
         ease: 'easeInOut',
       });
     } else {
@@ -80,11 +80,11 @@ export default function TopNavBar({
         stiffness: springConfigs.smooth.stiffness,
       });
       animate(blurIntensity, 20, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: (timingConfigs.smooth.duration ?? 300) / 1000,
         ease: 'easeInOut',
       });
       animate(glowOpacity, 0.3, {
-        duration: timingConfigs.smooth.duration / 1000,
+        duration: (timingConfigs.smooth.duration ?? 300) / 1000,
         ease: 'easeInOut',
       });
     }

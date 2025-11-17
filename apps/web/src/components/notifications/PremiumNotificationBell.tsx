@@ -183,7 +183,7 @@ function BellIcon({ hasNewNotification, unreadCount, hasUrgent }: BellIconProps)
     }
   }, [hasNewNotification, unreadCount, rotation, scale]);
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedStyle = useAnimatedStyle((): Record<string, unknown> => {
     return {
       transform: [{ rotate: `${rotation.value}deg` }, { scale: scale.value }],
       opacity: opacity.value,

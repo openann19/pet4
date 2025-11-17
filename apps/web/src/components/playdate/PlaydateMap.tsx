@@ -41,7 +41,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
         if (error instanceof Error && error.name !== 'NotAllowedError') {
           // Only handle unexpected errors, permission denials are expected
           const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('PlaydateMap getCurrentLocation error', err);
+          console.error('PlaydateMap getCurrentLocation error', err);
         }
       });
   }, []);

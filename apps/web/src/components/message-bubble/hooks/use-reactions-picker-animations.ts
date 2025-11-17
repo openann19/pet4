@@ -25,7 +25,7 @@ export function useReactionsPickerAnimations(showReactions: boolean) {
     reactionsPickerTranslateY,
   ]);
 
-  const reactionsPickerStyle = useAnimatedStyle(() => ({
+  const reactionsPickerStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: reactionsPickerOpacity.value,
     transform: [
       { scale: reactionsPickerScale.value },
