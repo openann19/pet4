@@ -66,14 +66,15 @@ export default [
       parserOptions: {
         tsconfigRootDir: rootDir,
       },
-    },
-    plugins: {
-      react: react,
-      'react-hooks': reactHooks,
-      'jsx-a11y': jsxA11y,
-      sonarjs: sonarjs,
-    },
-    rules: {
+      },
+      plugins: {
+        react: react,
+        'react-hooks': reactHooks,
+        'jsx-a11y': jsxA11y,
+        sonarjs: sonarjs,
+      },
+      rules: {
+        'no-unused-vars': 'off',
       // Reasonable safety without killing dev speed
       'no-console': ['error', { allow: ['warn', 'error'] }],
       'react/react-in-jsx-scope': 'off',
@@ -279,16 +280,17 @@ export default [
       '**/.eslintrc.{js,cjs}',
       'apps/**/scripts/**/*.{ts,tsx,js,jsx,mjs}',
       'packages/**/scripts/**/*.{ts,tsx,js,jsx,mjs}',
-    ],
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.es2021,
+      ],
+      languageOptions: {
+        globals: {
+          ...globals.node,
+          ...globals.es2021,
+        },
+        ecmaVersion: 'latest',
+        sourceType: 'module',
       },
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-    },
-    rules: {
+      rules: {
+        'no-unused-vars': 'off',
       'no-console': 'off',
       // Don't disable no-undef - instead provide globals above
       '@typescript-eslint/no-unused-vars': [
