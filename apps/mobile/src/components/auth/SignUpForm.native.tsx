@@ -108,7 +108,7 @@ const validateEmail = (email: string): boolean => {
 
 export function SignUpForm({ onSuccess, onSwitchToSignIn }: SignUpFormProps): React.JSX.Element {
   const { t } = useApp()
-  const reducedMotion = useReducedMotionSV()
+  const _reducedMotion = useReducedMotionSV()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')

@@ -24,9 +24,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  withTiming,
   FadeInUp,
-  FadeOutDown,
   SlideInDown,
   SlideOutDown,
 } from 'react-native-reanimated'

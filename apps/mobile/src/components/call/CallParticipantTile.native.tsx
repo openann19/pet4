@@ -1,16 +1,8 @@
 import React, { memo, useMemo } from 'react'
 import { View, Text, StyleSheet, Image } from 'react-native'
+import { RTCView } from 'react-native-webrtc'
 import type { MediaStream } from '@/types/webrtc'
 import { colors } from '@/theme/colors'
-
-let RTCViewImpl: React.ComponentType<{ streamURL: string; style?: object }>
-try {
-  // Lazy require to avoid SSR issues
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  RTCViewImpl = require('react-native-webrtc').RTCView
-} catch {
-  RTCViewImpl = (() => null) as unknown as typeof RTCViewImpl
-}
 
 export interface CallParticipantTileProps {
   readonly stream?: MediaStream | null
@@ -38,10 +30,11 @@ export function CallParticipantTile({
   isCameraOff = false,
   emphasis = 'primary',
 }: CallParticipantTileProps): React.ReactElement {
-  const streamURL = useMemo(
-    () => (stream && typeof (stream as any).toURL === 'function' ? (stream as any).toURL() : ''),
-    [stream]
-  )
+  const streamURL = useMemo(() => {
+    if (!stream) return ''
+    // MediaStream interface defines toURL() method
+    return stream.toURL()
+  }, [stream])
   const initials = useMemo(
     () =>
       displayName
@@ -65,7 +58,7 @@ export function CallParticipantTile({
   return (
     <View style={containerStyles} accessibilityRole="image" accessibilityLabel={`${displayName} video`}>
       {showVideo ? (
-        <RTCViewImpl streamURL={streamURL} style={[styles.video, isLocal && styles.mirroredVideo]} />
+        <RTCView streamURL={streamURL} style={[styles.video, isLocal && styles.mirroredVideo]} />
       ) : (
         <View style={styles.placeholderSurface}>
           {avatarUrl ? (
