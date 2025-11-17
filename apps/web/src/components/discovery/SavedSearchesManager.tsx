@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { MotionView } from "@petspark/motion";
 import { useCallback, useMemo, useState } from 'react';
 import { useStorage } from '@/hooks/use-storage';
@@ -392,8 +393,11 @@ export default function SavedSearchesManager({
                 <CardTitle>Current Filters</CardTitle>
                 <CardDescription>Save your current search criteria</CardDescription>
               </div>
-              <MotionView
-                style={cardHover.animatedStyle}
+              <motion.div
+                style={{
+                  scale: cardHover.scale,
+                  y: cardHover.translateY,
+                }}
                 onMouseEnter={cardHover.handleEnter}
                 onMouseLeave={cardHover.handleLeave}
               >
@@ -401,7 +405,7 @@ export default function SavedSearchesManager({
                   <Plus size={16} className="mr-2" />
                   Save Current
                 </Button>
-              </MotionView>
+              </motion.div>
             </div>
           </CardHeader>
           <CardContent>

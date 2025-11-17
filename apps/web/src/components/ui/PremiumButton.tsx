@@ -7,6 +7,7 @@
  * Composes the core Button component and adds motion effects.
  */
 
+import { motion } from 'framer-motion';
 import { MotionView, usePressBounce, useMagnetic } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';                                                                       
 import { cn } from '@/lib/utils';
@@ -80,16 +81,17 @@ export function PremiumButton({
           className
         )}
       >
-        <MotionView
+        <motion.div
           style={{
-            ...combinedAnimatedStyles,
+            scale: pressBounce.scale,
+            y: hoverLift.translateY,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
           {label}
-        </MotionView>
+        </motion.div>
       </Button>
     </div>
   );
