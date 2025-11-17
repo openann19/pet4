@@ -25,6 +25,7 @@ import {
   VideoCamera,
 } from '@phosphor-icons/react';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
+import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import {
   useSharedValue,

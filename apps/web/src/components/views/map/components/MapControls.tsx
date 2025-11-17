@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { haptics } from '@/lib/haptics';
 import { useApp } from '@/contexts/AppContext';
+import { useMapConfig } from '@/lib/maps/useMapConfig';
 import { CategoryFilters } from './CategoryFilters';
 
 export interface MapControlsProps {
