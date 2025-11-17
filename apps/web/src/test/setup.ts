@@ -10,6 +10,10 @@ import { createMockResizeObserver } from './mocks/resize-observer';
 import { setupStorageMocks } from './mocks/storage';
 import { setupWebRTCMocks } from './mocks/webrtc';
 import { cleanupTestState, resetAllMocks } from './utilities/test-helpers';
+import type {
+  UseOverlayTransitionOptions,
+  UseOverlayTransitionReturn,
+} from '@petspark/motion';
 
 // Suppress React act() warnings for Radix UI components during testing
 const originalError = console.error;
@@ -1129,7 +1133,7 @@ vi.mock('@petspark/motion', () => {
       onPressOut: vi.fn(),
       animatedStyle: { transform: [{ scale: scaleOnRelease }] },
     })),
-    useOverlayTransition: vi.fn((options: { type?: 'modal' | 'sheet' | 'drawer'; drawerSide?: 'left' | 'right' | 'top' | 'bottom'; isOpen: boolean }) => {
+    useOverlayTransition: vi.fn((options: UseOverlayTransitionOptions): UseOverlayTransitionReturn => {
       const isOpen = options.isOpen;
       const type = options.type ?? 'modal';
       const drawerSide = options.drawerSide ?? 'right';

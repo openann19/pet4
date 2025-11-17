@@ -5,7 +5,31 @@
 
 import { allThemes, defaultThemeId } from './themes'
 
-const base = allThemes[defaultThemeId].colors
+const fallbackColors = {
+  background: '#FFF9F0',
+  foreground: '#FFFFFF',
+  mutedForeground: '#E5D5C5',
+  primary: '#FF715B',
+  primaryForeground: '#FFFFFF',
+  secondary: '#FFE4B2',
+  accent: '#FFD580',
+  card: '#FFFFFF',
+  surface: '#FFFFFF',
+  textPrimary: '#1F2933',
+  textSecondary: '#6B7280',
+  border: '#E5E5E5',
+  success: '#22C55E',
+  warning: '#F59E0B',
+  danger: '#EF4444',
+  destructive: '#EF4444',
+  destructiveForeground: '#FFFFFF',
+  info: '#0EA5E9',
+} as const
+
+const base =
+  allThemes[defaultThemeId]?.colors ??
+  Object.values(allThemes)[0]?.colors ??
+  fallbackColors
 
 export const colors = {
   background: base.background,
