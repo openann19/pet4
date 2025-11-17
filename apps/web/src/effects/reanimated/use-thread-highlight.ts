@@ -38,7 +38,7 @@ const DEFAULT_ENABLED = true;
 
 export function useThreadHighlight(
   options: UseThreadHighlightOptions = {}
-): UseThreadHighlightWebReturn {
+): UseThreadHighlightReturn {
   const {
     isThreadMessage = DEFAULT_IS_THREAD_MESSAGE,
     highlightDuration = DEFAULT_HIGHLIGHT_DURATION,
@@ -127,7 +127,13 @@ export function useThreadHighlight(
   });
 
   return {
-    ...baseResult,
+    scale,
+    highlightOpacity,
+    previewOpacity,
+    previewTranslateY,
+    animatedStyle,
+    previewStyle,
+    highlightStyle,
     trigger,
     dismiss,
   };

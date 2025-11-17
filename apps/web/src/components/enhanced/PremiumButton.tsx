@@ -69,7 +69,7 @@ export function PremiumButton({
   const buttonSize: 'sm' | 'default' | 'lg' | 'icon' = size;
 
   // Map variant - gradient uses default with gradient overlay
-  const buttonVariant: VariantProps<typeof buttonVariants>['variant'] = 
+  const buttonVariant: keyof typeof buttonVariants = 
     variant === 'gradient' ? 'default' : variant;
 
   const buttonAriaAttrs = getAriaButtonAttributes({

@@ -34,10 +34,9 @@ export function PageTransitionWrapper({
 
   const animatedStyleValue = useAnimatedStyleValue(
     reducedMotion
-      ? ({
+      ? {
           opacity: 1,
-          transform: [],
-        } as AnimatedStyle)
+        }
       : transition.style
   );
 

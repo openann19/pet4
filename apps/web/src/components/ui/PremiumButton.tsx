@@ -48,7 +48,7 @@ export function PremiumButton({
   const buttonSize: 'sm' | 'default' | 'lg' | 'icon' = size;
 
   // Map variant to Button variant
-  const buttonVariant: VariantProps<typeof buttonVariants>['variant'] = variant;
+  const buttonVariant: keyof typeof buttonVariants = variant;
 
   return (
     <div

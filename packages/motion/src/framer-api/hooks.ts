@@ -189,7 +189,7 @@ export function useDerivedValue<T extends number | string, U>(
 export function useAnimatedStyle(
   styleFactory: () => {
     opacity?: number | MotionValue<number>
-    transform?: Array<{ [key: string]: number | string | MotionValue<number> }>
+    transform?: Array<Record<string, number | string | MotionValue<number> | undefined>>
     backgroundColor?: string | number | MotionValue<string | number>
     color?: string | number | MotionValue<string | number>
     width?: number | string | MotionValue<number | string>
@@ -243,7 +243,7 @@ export function useAnimatedStyle(
 function convertReanimatedStyleToCSS(
   style: {
     opacity?: number | MotionValue<number>
-    transform?: Array<{ [key: string]: number | string | MotionValue<number> }>
+    transform?: Array<Record<string, number | string | MotionValue<number> | undefined>>
     backgroundColor?: string | number | MotionValue<string | number>
     color?: string | number | MotionValue<string | number>
     width?: number | string | MotionValue<number | string>
@@ -292,6 +292,10 @@ function convertReanimatedStyleToCSS(
     const processedTransforms = style.transform.map(t => {
       const processed: { [key: string]: number | string } = {}
       for (const [key, val] of Object.entries(t)) {
+        if (val === undefined) {
+          // Skip undefined values
+          continue
+        }
         if (val instanceof Object && 'get' in val) {
           processed[key] = (val as MotionValue<number>).get()
         } else {

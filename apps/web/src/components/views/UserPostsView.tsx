@@ -13,6 +13,7 @@ import type { Post } from '@/lib/community-types';
 import { createLogger } from '@/lib/logger';
 import { ArrowLeft, User } from '@phosphor-icons/react';
 import { motion, MotionView } from '@petspark/motion';
+import { useEntryAnimation } from '@/effects/reanimated';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';

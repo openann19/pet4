@@ -211,8 +211,11 @@ if (typeof window !== 'undefined') {
     const url = window.location.href;
     if (url !== lastUrl) {
       lastUrl = url;
-      // trackPageView is synchronous, no promise to handle
-      telemetry.trackPageView();
+      // Track page view using public track method
+      telemetry.track('performance.page_load', {
+        url,
+        referrer: document.referrer,
+      });
     }
   }).observe(document, { subtree: true, childList: true });
 }

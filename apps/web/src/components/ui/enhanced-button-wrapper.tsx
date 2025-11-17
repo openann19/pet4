@@ -13,7 +13,7 @@ interface EnhancedButtonWrapperProps {
   pressMotionProps: Record<string, unknown>;
   handleMouseEnter: () => void;
   handleMouseLeave: () => void;
-  buttonVariant: VariantProps<typeof buttonVariants>['variant'];
+  buttonVariant: keyof typeof buttonVariants;
   size: 'default' | 'sm' | 'lg' | 'icon';
   handleClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isDisabled: boolean;

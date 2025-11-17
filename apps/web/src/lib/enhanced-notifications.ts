@@ -143,15 +143,15 @@ export async function createSystemNotification(
 }
 
 export async function clearAllNotifications() {
-  await APIClient.post(ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ);
+  await APIClient.post(ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ, {});
 }
 
 export async function markNotificationAsRead(id: string) {
-  await APIClient.post(ENDPOINTS.NOTIFICATIONS.MARK_READ(id));
+  await APIClient.post(ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {});
 }
 
 export async function deleteNotification(id: string) {
   // Delete notification via API (using mark as read endpoint or a delete endpoint)
   // Note: Backend may need a DELETE endpoint for this
-  await APIClient.post(ENDPOINTS.NOTIFICATIONS.MARK_READ(id));
+  await APIClient.post(ENDPOINTS.NOTIFICATIONS.MARK_READ(id), {});
 }

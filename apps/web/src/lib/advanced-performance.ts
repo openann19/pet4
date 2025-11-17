@@ -5,7 +5,12 @@ const logger = createLogger('AdvancedPerformance');
 
 export class AdvancedPerformance {
   private static observers = new Map<string, IntersectionObserver>();
-  private static prefetchCache = new Set<string>();
+  private static _prefetchCache = new Set<string>();
+  
+  // Public accessor for prefetch cache
+  static get prefetchCache(): Set<string> {
+    return AdvancedPerformance._prefetchCache;
+  }
 
   static lazyLoadImages(container: HTMLElement = document.body): void {
     const images = container.querySelectorAll('img[data-src]');

@@ -42,6 +42,8 @@ export function useFloatingParticle(
     height = 1080,
     duration = 15,
     opacity = 0.6,
+    initialX = 0,
+    initialY = 0,
   } = options;
 
   const x = useSharedValue(initialX);

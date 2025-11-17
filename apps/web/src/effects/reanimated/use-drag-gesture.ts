@@ -32,7 +32,7 @@ export interface UseDragGestureOptions {
 export interface UseDragGestureReturn {
   x: SharedValue<number>;
   y: SharedValue<number>;
-  isDragging: SharedValue<boolean>;
+  isDragging: React.MutableRefObject<boolean>;
   animatedStyle: AnimatedStyle;
   handleMouseDown: (e: React.MouseEvent) => void;
   handleMouseMove: (e: React.MouseEvent) => void;
@@ -58,7 +58,7 @@ export function useDragGesture(options: UseDragGestureOptions = {}): UseDragGest
 
   const x = useSharedValue(0);
   const y = useSharedValue(0);
-  const isDragging = useSharedValue(false);
+  const isDragging = useRef(false);
   const startXRef = useRef(0);
   const startYRef = useRef(0);
   const offsetXRef = useRef(0);
@@ -100,7 +100,7 @@ export function useDragGesture(options: UseDragGestureOptions = {}): UseDragGest
       startYRef.current = clientY;
       offsetXRef.current = x.value;
       offsetYRef.current = y.value;
-      isDragging.value = true;
+      isDragging.current = true;
 
       if (hapticFeedback) {
         haptics.selection();
@@ -140,7 +140,7 @@ export function useDragGesture(options: UseDragGestureOptions = {}): UseDragGest
     if (!enabled || !isActiveRef.current) return;
 
     isActiveRef.current = false;
-    isDragging.value = false;
+    isDragging.current = false;
 
     const finalX = x.value;
     const finalY = y.value;
@@ -203,11 +203,11 @@ export function useDragGesture(options: UseDragGestureOptions = {}): UseDragGest
   const reset = useCallback(() => {
     x.value = withSpring(0, springConfigs.smooth);
     y.value = withSpring(0, springConfigs.smooth);
-    isDragging.value = false;
+    isDragging.current = false;
     isActiveRef.current = false;
     offsetXRef.current = 0;
     offsetYRef.current = 0;
-  }, [x, y, isDragging]);
+  }, [x, y]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const transforms: Record<string, number | string>[] = [];
@@ -221,7 +221,7 @@ export function useDragGesture(options: UseDragGestureOptions = {}): UseDragGest
 
     return {
       transform: transforms.length > 0 ? transforms : undefined,
-      cursor: isDragging.value ? 'grabbing' : 'grab',
+      cursor: isDragging.current ? 'grabbing' : 'grab',
     };
   }) as AnimatedStyle;
 
