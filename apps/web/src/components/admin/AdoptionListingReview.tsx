@@ -14,7 +14,7 @@ import { adoptionMarketplaceService } from '@/lib/adoption-marketplace-service';
 import type { AdoptionListing } from '@/lib/adoption-marketplace-types';
 import { createLogger } from '@/lib/logger';
 import { userService } from '@/lib/user-service';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 
 const logger = createLogger('AdoptionListingReview');
 
@@ -22,7 +22,7 @@ interface ListingItemProps {
   listing: AdoptionListing;
   isSelected: boolean;
   onSelect: () => void;
-  animation: ReturnType<typeof useBounceOnTap>;
+  animation: ReturnType<typeof usePressBounce>;
 }
 
 interface ListingItemWrapperProps {
@@ -32,7 +32,7 @@ interface ListingItemWrapperProps {
 }
 
 function ListingItemWrapper({ listing, isSelected, onSelect }: ListingItemWrapperProps) {
-  const bounceAnimation = useBounceOnTap({
+  const bounceAnimation = usePressBounce({
     scale: 0.98,
     hapticFeedback: true,
   });

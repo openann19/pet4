@@ -14,6 +14,8 @@ import {
   withRepeat,
   withSequence,
   withSpring,
+  useHoverLift,
+  usePressBounce,
   type AnimatedStyle,
 } from '@petspark/motion';
 
@@ -64,9 +66,9 @@ export default function WelcomeModal(): JSX.Element | null {
   const _closeButtonRotateStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${closeButtonRotate.value}deg` }],
   }))
-  const _closeButtonTap = useBounceOnTap({ scale: 0.9 })
+  const _closeButtonTap = usePressBounce({ scale: 0.9 })
   const buttonHover = useHoverLift({ scale: 1.05 })
-  const _buttonTap = useBounceOnTap({ scale: 0.95 })
+  const _buttonTap = usePressBounce({ scale: 0.95 })
 
   // Background gradient animation
   const bgScale = useSharedValue(1)

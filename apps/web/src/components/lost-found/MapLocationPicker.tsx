@@ -10,7 +10,7 @@ import {
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,7 @@ export function MapLocationPicker({
     duration: 300,
   });
 
-  const closeButtonAnimation = useBounceOnTap({
+  const closeButtonAnimation = usePressBounce({
     onPress: handleClose,
     hapticFeedback: true,
   });

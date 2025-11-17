@@ -13,7 +13,7 @@ vi.mock('@/effects/reanimated/use-hover-lift', () => ({
   })),
 }));
 vi.mock('@/effects/reanimated/use-bounce-on-tap', () => ({
-  useBounceOnTap: vi.fn(() => ({
+  usePressBounce: vi.fn(() => ({
     scale: { value: 1 },
     handlePress: vi.fn(),
   })),

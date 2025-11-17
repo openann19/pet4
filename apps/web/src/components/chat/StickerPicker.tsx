@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useStorage } from '@/hooks/use-storage';
-import { useBounceOnTap } from '@/effects/reanimated';
+import { usePressBounce } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import {
   STICKER_CATEGORIES,
@@ -266,7 +266,7 @@ function StickerButton({
   const scale = useMotionValue(0.8);
   const hoverScale = useMotionValue(1);
 
-  const bounceAnimation = useBounceOnTap({
+  const bounceAnimation = usePressBounce({
     onPress: onClick,
     scale: 0.9,
     hapticFeedback: false,

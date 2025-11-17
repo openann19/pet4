@@ -12,7 +12,7 @@ import {
 } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 
 /**
@@ -110,7 +110,7 @@ export function useInteractiveMotion({
     scale: whileHover.scale ?? 1.05,
     translateY: whileHover.y ?? whileHover.translateY,
   });
-  const bounceOnTap = useBounceOnTap({
+  const bounceOnTap = usePressBounce({
     scale: whileTap.scale ?? 0.95,
     hapticFeedback: false,
   });

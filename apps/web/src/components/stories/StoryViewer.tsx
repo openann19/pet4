@@ -29,7 +29,7 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
-import { useMotionVariants, useHoverLift, useBounceOnTap } from '@/effects/reanimated';
+import { useMotionVariants, useHoverLift, usePressBounce } from '@/effects/reanimated';
 import * as Reanimated from '@petspark/motion';
 import { interpolate, Extrapolation, MotionView } from '@petspark/motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -364,7 +364,7 @@ export default function StoryViewer({
   });
 
   const reactionButtonHover = useHoverLift({ scale: 1.3 });
-  const reactionButtonTap = useBounceOnTap({ scale: 0.9 });
+  const reactionButtonTap = usePressBounce({ scale: 0.9 });
 
   const captionAnimation = useMotionVariants({
     initial: { opacity: 0, translateY: 20 },

@@ -4,7 +4,7 @@ import { Plus } from '@phosphor-icons/react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import type { MessageReaction } from '@/lib/chat-types';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
@@ -139,7 +139,7 @@ function ReactionButton({
     opacity.value = withTiming(1, timingConfigs.fast);
   }, [scale, opacity]);
 
-  const bounce = useBounceOnTap({
+  const bounce = usePressBounce({
     onPress: onClick,
     hapticFeedback: true,
     scale: 0.95,
@@ -218,7 +218,7 @@ function AddReactionButton({
   const pickerScale = useSharedValue<number>(0.9);
   const pickerOpacity = useSharedValue<number>(0);
 
-  const bounce = useBounceOnTap({
+  const bounce = usePressBounce({
     onPress: () => { onTogglePicker(!showPicker); },
     hapticFeedback: true,
     scale: 0.95,
@@ -301,7 +301,7 @@ interface EmojiButtonProps {
 function EmojiButton({ emoji, onClick }: EmojiButtonProps): React.JSX.Element {
   const hoverScale = useSharedValue<number>(1);
 
-  const bounce = useBounceOnTap({
+  const bounce = usePressBounce({
     onPress: onClick,
     hapticFeedback: true,
     scale: 0.9,

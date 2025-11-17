@@ -44,7 +44,7 @@ vi.mock('@/effects/reanimated/use-hover-lift', () => ({
 }))
 
 vi.mock('@/effects/reanimated/use-bounce-on-tap', () => ({
-  useBounceOnTap: vi.fn(() => ({
+  usePressBounce: vi.fn(() => ({
     animatedStyle: {},
     handlePress: vi.fn()
   }))

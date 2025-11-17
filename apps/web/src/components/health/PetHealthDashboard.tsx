@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSharedValue, useAnimatedStyle, withTiming, MotionView } from '@petspark/motion';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useStorage } from '@/hooks/use-storage';
@@ -197,7 +197,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
     }, 300);
   }, [onClose]);
 
-  const closeButtonAnimation = useBounceOnTap({
+  const closeButtonAnimation = usePressBounce({
     onPress: handleClose,
     hapticFeedback: true,
   });

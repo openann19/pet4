@@ -16,6 +16,9 @@ import type { Playdate } from '@/lib/playdate-types';
 import type { Location } from '@/lib/maps/types';
 import { getCurrentLocation, calculateDistance, formatDistance } from '@/lib/maps/utils';
 import { format } from 'date-fns';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('PlaydateMap');
 
 interface PlaydateMapProps {
   playdates: Playdate[];

@@ -5,7 +5,7 @@
  * Extracted from App.tsx to follow mobile screen patterns.
  */
 
-import { useBounceOnTap } from '@/effects/reanimated';
+import { usePressBounce } from '@/effects/reanimated';
 import {
   useHeaderAnimation,
   useHeaderButtonAnimation,
@@ -57,7 +57,7 @@ export interface UseAppAnimationsReturn {
   themeContent: ReturnType<typeof useModalAnimation>;
   headerAnimation: ReturnType<typeof useHeaderAnimation>;
   navBarAnimation: ReturnType<typeof useNavBarAnimation>;
-  closeButtonBounce: ReturnType<typeof useBounceOnTap>;
+  closeButtonBounce: ReturnType<typeof usePressBounce>;
 }
 
 export function useAppAnimations(options: UseAppAnimationsOptions): UseAppAnimationsReturn {
@@ -142,7 +142,7 @@ export function useAppAnimations(options: UseAppAnimationsOptions): UseAppAnimat
 
   const headerAnimation = useHeaderAnimation({ delay: 0.1 });
   const navBarAnimation = useNavBarAnimation({ delay: 0.2 });
-  const closeButtonBounce = useBounceOnTap({ hapticFeedback: true });
+  const closeButtonBounce = usePressBounce({ hapticFeedback: true });
 
   return {
     lostFoundAnimation,

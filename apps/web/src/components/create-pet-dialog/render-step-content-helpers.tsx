@@ -18,7 +18,7 @@ interface StepRendererProps {
   stepStyle: AnimatedStyle;
   petTypeIndicatorStyle: AnimatedStyle;
   petTypeButtonHover: ReturnType<typeof import('@/effects/reanimated/use-hover-lift').useHoverLift>;
-  petTypeButtonTap: ReturnType<typeof import('@/effects/reanimated/use-bounce-on-tap').useBounceOnTap>;
+  petTypeButtonTap: ReturnType<typeof import('@/effects/reanimated/use-bounce-on-tap').usePressBounce>;
   photoPresence: ReturnType<typeof import('@/effects/reanimated').useAnimatePresence>;
   actions: CreatePetFormActions;
   applyTemplate: (template: PetProfileTemplate) => void;

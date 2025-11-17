@@ -26,7 +26,7 @@ import { createLogger } from '@/lib/logger';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useExpandCollapse } from '@/effects/reanimated/use-expand-collapse';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 
 const logger = createLogger('SavedSearchesManager');
@@ -67,12 +67,12 @@ function SearchItem({
   onApply,
 }: SearchItemProps): JSX.Element {
   const itemAnimation = useStaggeredItem({ index });
-  const itemBounce = useBounceOnTap({ scale: 0.98, duration: 150 });
+  const itemBounce = usePressBounce({ scale: 0.98, duration: 150 });
   const itemHover = useHoverLift({ scale: 1.01 });
-  const applyBounce = useBounceOnTap({ scale: 0.95, duration: 150 });
-  const pinBounce = useBounceOnTap({ scale: 0.9, duration: 120 });
-  const editBounce = useBounceOnTap({ scale: 0.9, duration: 120 });
-  const deleteBounce = useBounceOnTap({ scale: 0.9, duration: 120 });
+  const applyBounce = usePressBounce({ scale: 0.95, duration: 150 });
+  const pinBounce = usePressBounce({ scale: 0.9, duration: 120 });
+  const editBounce = usePressBounce({ scale: 0.9, duration: 120 });
+  const deleteBounce = usePressBounce({ scale: 0.9, duration: 120 });
 
   const isEditing = editingId === search.id;
 
@@ -208,7 +208,7 @@ export default function SavedSearchesManager({
 
   const modalAnimation = useModalAnimation({ isVisible: true, duration: 300 });
   const saveFormExpand = useExpandCollapse({ isExpanded: showSaveForm, duration: 300 });
-  const saveButtonBounce = useBounceOnTap({ scale: 0.95, duration: 150 });
+  const saveButtonBounce = usePressBounce({ scale: 0.95, duration: 150 });
   const cardHover = useHoverLift({ scale: 1.02 });
 
   const handleSaveCurrentSearch = useCallback((): void => {

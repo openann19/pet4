@@ -9,7 +9,7 @@ import {
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 
 /**
  * Hook for managing chat window header animations
@@ -120,7 +120,7 @@ export function useButtonAnimations() {
     if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
     return { transform: transforms.length > 0 ? transforms : undefined };
   }) as AnimatedStyle;
-  const voiceButtonTap = useBounceOnTap();
+  const voiceButtonTap = usePressBounce();
   const voiceButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = voiceButtonTap.scale.get();
     return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
@@ -135,7 +135,7 @@ export function useButtonAnimations() {
     if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
     return { transform: transforms.length > 0 ? transforms : undefined };
   }) as AnimatedStyle;
-  const reactionButtonTap = useBounceOnTap();
+  const reactionButtonTap = usePressBounce();
   const reactionButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = reactionButtonTap.scale.get();
     return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
@@ -150,7 +150,7 @@ export function useButtonAnimations() {
     if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
     return { transform: transforms.length > 0 ? transforms : undefined };
   }) as AnimatedStyle;
-  const templateButtonTap = useBounceOnTap();
+  const templateButtonTap = usePressBounce();
   const templateButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = templateButtonTap.scale.get();
     return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
@@ -165,7 +165,7 @@ export function useButtonAnimations() {
     if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
     return { transform: transforms.length > 0 ? transforms : undefined };
   }) as AnimatedStyle;
-  const stickerButtonTap = useBounceOnTap();
+  const stickerButtonTap = usePressBounce();
   const stickerButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = stickerButtonTap.scale.get();
     return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
@@ -180,7 +180,7 @@ export function useButtonAnimations() {
     if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
     return { transform: transforms.length > 0 ? transforms : undefined };
   }) as AnimatedStyle;
-  const emojiButtonTap = useBounceOnTap();
+  const emojiButtonTap = usePressBounce();
   const emojiButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = emojiButtonTap.scale.get();
     return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};
@@ -195,7 +195,7 @@ export function useButtonAnimations() {
     if (translateYVal !== 0) transforms.push({ translateY: translateYVal });
     return { transform: transforms.length > 0 ? transforms : undefined };
   }) as AnimatedStyle;
-  const sendButtonTap = useBounceOnTap();
+  const sendButtonTap = usePressBounce();
   const sendButtonTapStyle = useAnimatedStyle(() => {
     const scaleVal = sendButtonTap.scale.get();
     return scaleVal !== 1 ? { transform: [{ scale: scaleVal }] } : {};

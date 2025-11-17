@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { Call } from '@/lib/call-types';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
-import { useModalAnimation, useGlowPulse, useBounceOnTap } from '@/effects/reanimated';
+import { useModalAnimation, useGlowPulse, usePressBounce } from '@/effects/reanimated';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import {
   useAnimatedStyle,
@@ -27,7 +27,7 @@ interface IncomingCallNotificationProps {
 }
 
 interface CallActionButtonProps {
-  bounce: ReturnType<typeof useBounceOnTap>;
+  bounce: ReturnType<typeof usePressBounce>;
   variant?: 'primary' | 'outline';
   className?: string;
   icon: React.ReactNode;
@@ -143,13 +143,13 @@ function useCallHandlers(
     }
   }, [call.id, call.type, callerName, onDecline]);
 
-  const acceptBounce = useBounceOnTap({
+  const acceptBounce = usePressBounce({
     scale: 0.98,
     onPress: handleAccept,
     hapticFeedback: false,
   });
 
-  const declineBounce = useBounceOnTap({
+  const declineBounce = usePressBounce({
     scale: 0.98,
     onPress: handleDecline,
     hapticFeedback: false,

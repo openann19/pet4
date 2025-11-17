@@ -42,7 +42,7 @@ vi.mock('@/effects/reanimated/use-staggered-item', () => ({
 const mockHandlePress = vi.fn();
 
 vi.mock('@/effects/reanimated/use-bounce-on-tap', () => ({
-  useBounceOnTap: ({ onPress }: { onPress?: () => void }) => {
+  usePressBounce: ({ onPress }: { onPress?: () => void }) => {
     const handlePress = vi.fn(() => {
       onPress?.();
     });

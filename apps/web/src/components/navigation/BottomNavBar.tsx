@@ -12,7 +12,7 @@ import {
   MotionView,
 } from '@petspark/motion';
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
-import { useBounceOnTap } from '@/effects/reanimated';
+import { usePressBounce } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -167,7 +167,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave }: NavItemProps) 
     hapticFeedback: true,
   });
 
-  const bounceAnimation = useBounceOnTap({
+  const bounceAnimation = usePressBounce({
     scale: 0.85,
     hapticFeedback: false,
   });

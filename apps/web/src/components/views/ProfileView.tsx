@@ -1,7 +1,7 @@
 import { MotionView } from "@petspark/motion";
 import { useState, lazy, Suspense, useMemo } from 'react'
 import { useStorage } from '@/hooks/use-storage'
-import { useMotionVariants, useStaggeredContainer, useHoverLift, useBounceOnTap, useGlowPulse, useIconRotation } from '@/effects/reanimated'
+import { useMotionVariants, useStaggeredContainer, useHoverLift, usePressBounce, useGlowPulse, useIconRotation } from '@/effects/reanimated'
 import { Plus, PawPrint, Pencil, Heart } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -63,7 +63,7 @@ export default function ProfileView() {
     transition: { delay: 0.4 }
   })
   const emptyStateButtonHover = useHoverLift({ scale: 1.05 })
-  const emptyStateButtonTap = useBounceOnTap({ scale: 0.95 })
+  const emptyStateButtonTap = usePressBounce({ scale: 0.95 })
 
   // Create style objects from MotionValues (framer-motion supports MotionValues in style prop)                                                                 
   const emptyStateIconStyle = useMemo(() => ({
@@ -277,7 +277,7 @@ export default function ProfileView() {
           const imageHover = useHoverLift({ scale: 1.12 })
           const editButtonHover = useHoverLift({ scale: 1.2 })
           const editButtonRotation = useIconRotation({ enabled: false, targetRotation: 360 })
-          const editButtonTap = useBounceOnTap({ scale: 0.9 })
+          const editButtonTap = usePressBounce({ scale: 0.9 })
           
           const cardEntryStyle = useMemo(() => ({
             opacity: cardEntry.opacity,

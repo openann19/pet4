@@ -17,7 +17,7 @@ import {
 import { useApp } from '@/contexts/AppContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
-import { useBounceOnTap } from '@/effects/reanimated';
+import { usePressBounce } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
@@ -409,7 +409,7 @@ function NavButton({
     hapticFeedback: true,
   });
 
-  const bounceAnimation = useBounceOnTap({
+  const bounceAnimation = usePressBounce({
     scale: 0.9,
     hapticFeedback: false,
   });

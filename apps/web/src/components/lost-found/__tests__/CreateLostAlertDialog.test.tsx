@@ -26,7 +26,7 @@ vi.mock('@/effects/reanimated/use-staggered-item', () => ({
 }));
 
 vi.mock('@/effects/reanimated/use-bounce-on-tap', () => ({
-  useBounceOnTap: ({ onPress }: { onPress?: () => void }) => ({
+  usePressBounce: ({ onPress }: { onPress?: () => void }) => ({
     animatedStyle: { transform: [{ scale: 1 }] },
     handlePress: onPress ?? vi.fn(),
   }),

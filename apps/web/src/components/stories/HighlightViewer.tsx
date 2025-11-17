@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useStorage } from '@/hooks/use-storage';
 import { haptics } from '@/lib/haptics';
 import type { StoryHighlight } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 import { PushPin, PushPinSlash, Trash, X } from '@phosphor-icons/react';
 import { motion, MotionView } from '@petspark/motion';
 import { useState } from 'react';

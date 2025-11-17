@@ -66,7 +66,7 @@ vi.mock('@/contexts/AuthContext', () => ({
 
 // Mock effects
 vi.mock('@/effects/reanimated', () => ({
-  useBounceOnTap: vi.fn(() => ({ animatedStyle: {} })),
+  usePressBounce: vi.fn(() => ({ animatedStyle: {} })),
   useHeaderAnimation: vi.fn(() => ({ animatedStyle: {} })),
   useHeaderButtonAnimation: vi.fn(() => ({ animatedStyle: {} })),
   useHoverLift: vi.fn(() => ({ animatedStyle: {} })),

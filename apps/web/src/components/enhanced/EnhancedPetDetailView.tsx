@@ -20,7 +20,7 @@ import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSwipeGesture } from '@/hooks/use-swipe-gesture';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import React from 'react';
 import {
   useSharedValue,
@@ -262,7 +262,7 @@ interface CloseButtonProps {
 }
 
 function CloseButton({ onClose }: CloseButtonProps): React.JSX.Element {
-  const bounce = useBounceOnTap();
+  const bounce = usePressBounce();
 
   const handlePress = useCallback(() => {
     haptics.trigger('light');
@@ -289,7 +289,7 @@ interface PhotoNavButtonProps {
 }
 
 function PhotoNavButton({ onClick }: PhotoNavButtonProps): React.JSX.Element {
-  const bounce = useBounceOnTap();
+  const bounce = usePressBounce();
 
   const handlePress = useCallback(() => {
     haptics.trigger('light');
@@ -708,7 +708,7 @@ function ActionButton({
   onClick,
   className,
 }: ActionButtonProps): React.JSX.Element {
-  const bounce = useBounceOnTap();
+  const bounce = usePressBounce();
 
   const handlePress = useCallback(() => {
     haptics.trigger('light');

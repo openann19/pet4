@@ -23,7 +23,7 @@ const DEFAULT_SCALE = 0.95;
 const DEFAULT_DAMPING = 15;
 const DEFAULT_STIFFNESS = 400;
 
-export function useBounceOnTap(options: UseBounceOnTapOptions = {}): UseBounceOnTapReturn {
+export function usePressBounce(options: UseBounceOnTapOptions = {}): UseBounceOnTapReturn {
   const {
     scale: scaleValue = DEFAULT_SCALE,
     damping = DEFAULT_DAMPING,

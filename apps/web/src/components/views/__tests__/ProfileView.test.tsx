@@ -75,7 +75,7 @@ vi.mock('@/effects/reanimated', () => ({
   useMotionVariants: vi.fn(() => ({ animatedStyle: {} })),
   useStaggeredContainer: vi.fn(() => ({ animatedStyle: {} })),
   useHoverLift: vi.fn(() => ({ animatedStyle: {}, handleEnter: vi.fn(), handleLeave: vi.fn() })),
-  useBounceOnTap: vi.fn(() => ({ animatedStyle: {}, handlePress: vi.fn() })),
+  usePressBounce: vi.fn(() => ({ animatedStyle: {}, handlePress: vi.fn() })),
   useGlowPulse: vi.fn(() => ({ animatedStyle: {} })),
   useIconRotation: vi.fn(() => ({ style: {}, animatedStyle: {} })),
 }));
