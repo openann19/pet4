@@ -91,7 +91,7 @@ export function useMessageBubbleAnimation(
     if (isNew) {
       const isReducedMotion = reducedMotion.value;
       const delay = isReducedMotion ? 0 : index * staggerDelay;
-      const duration = getReducedMotionDuration(300, isReducedMotion);
+      const duration = getReducedMotionDuration(300, Boolean(isReducedMotion));
 
       if (isReducedMotion) {
         // Reduced motion: instant state change
@@ -130,8 +130,8 @@ export function useMessageBubbleAnimation(
   // Highlight animation effect
   useEffect(() => {
     const isReducedMotion = reducedMotion.value;
-    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
-    const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+    const fastDuration = getReducedMotionDuration(150, Boolean(isReducedMotion));
+    const smoothDuration = getReducedMotionDuration(300, Boolean(isReducedMotion));
 
     if (isHighlighted) {
       if (isReducedMotion) {
@@ -269,7 +269,7 @@ export function useMessageBubbleAnimation(
     }
 
     const isReducedMotion = reducedMotion.value;
-    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
+    const fastDuration = getReducedMotionDuration(150, Boolean(isReducedMotion));
 
     if (isReducedMotion) {
       scale.value = withTiming(1, {
@@ -337,8 +337,8 @@ export function useMessageBubbleAnimation(
   const animateReaction = useCallback(
     (_emoji: string) => {
       const isReducedMotion = reducedMotion.value;
-      const fastDuration = getReducedMotionDuration(150, isReducedMotion);
-      const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+      const fastDuration = getReducedMotionDuration(150, Boolean(isReducedMotion));
+      const smoothDuration = getReducedMotionDuration(300, Boolean(isReducedMotion));
 
       reactionScale.value = 1;
       reactionTranslateY.value = 0;
@@ -399,8 +399,8 @@ export function useMessageBubbleAnimation(
 
   const animateHighlight = useCallback(() => {
     const isReducedMotion = reducedMotion.value;
-    const fastDuration = getReducedMotionDuration(150, isReducedMotion);
-    const smoothDuration = getReducedMotionDuration(300, isReducedMotion);
+    const fastDuration = getReducedMotionDuration(150, Boolean(isReducedMotion));
+    const smoothDuration = getReducedMotionDuration(300, Boolean(isReducedMotion));
 
     if (isReducedMotion) {
       backgroundOpacity.value = withSequence(

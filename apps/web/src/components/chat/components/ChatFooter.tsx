@@ -7,7 +7,7 @@ import { MotionView, useAnimatedStyle } from "@petspark/motion";
 
 import { MapPin, Microphone, Smiley, Sparkle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input, type InputRef } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
@@ -23,7 +23,7 @@ import { useUIConfig } from "@/hooks/use-ui-config";
 
 export interface ChatFooterProps {
   inputValue: string;
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<InputRef>;
   showTemplates: boolean;
   showStickers: boolean;
   isRecordingVoice: boolean;

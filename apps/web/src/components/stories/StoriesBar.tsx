@@ -134,6 +134,7 @@ export default function StoriesBar({
               if (!userStories || userStories.length === 0) return null;
 
               const firstStory = userStories[0];
+              if (!firstStory) return null;
 
               return (
                 <StoryRing

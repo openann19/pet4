@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { MotionView } from "@petspark/motion";
 /**
  * Ultra Enhanced Card
@@ -92,14 +93,17 @@ export function UltraCard({
       onMouseMove={enableMagnetic ? magnetic.handleMouseMove : undefined}
       className="inline-block"
     >
-      <MotionView style={combinedStyle}>
+      <motion.div style={{ opacity: reveal.progress.get() }}>
         <div
           onMouseMove={enableTilt ? handleTiltMove : undefined}
           onMouseLeave={enableTilt ? tilt.handleLeave : undefined}
           className="relative"
         >
-          <MotionView
-            style={enableHoverLift ? hoverLift.animatedStyle : enableTilt ? tilt.animatedStyle : undefined}
+          <motion.div
+            style={{
+              scale: enableHoverLift ? hoverLift.scale : undefined,
+              y: enableHoverLift ? hoverLift.translateY : undefined,
+            }}
           >
             <div
               className={cn(
@@ -116,9 +120,9 @@ export function UltraCard({
               )}
               <div className="relative z-10">{children}</div>
             </div>
-          </MotionView>
+          </motion.div>
         </div>
-      </MotionView>
+      </motion.div>
     </div>
   );
 }

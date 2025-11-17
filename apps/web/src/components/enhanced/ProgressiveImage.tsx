@@ -19,6 +19,7 @@ interface ProgressiveImageProps {
   height?: number;
   quality?: number;
   format?: 'webp' | 'avif' | 'auto';
+  draggable?: boolean;
   onLoad?: () => void;
   onError?: (error: Error) => void;
 }
@@ -37,6 +38,7 @@ export function ProgressiveImage({
   height,
   quality = 85,
   format = 'auto',
+  draggable = true,
   onLoad,
   onError,
 }: ProgressiveImageProps) {
@@ -240,6 +242,7 @@ export function ProgressiveImage({
           height={height}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
+          draggable={draggable}
         />
       </motion.div>
 

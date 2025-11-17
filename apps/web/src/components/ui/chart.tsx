@@ -99,12 +99,12 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
 
 function ChartTooltipContent({
   active,
-  payload,
+  payload = [],
   className,
   indicator = 'dot',
   hideLabel = false,
   hideIndicator = false,
-  label,
+  label = '',
   labelFormatter,
   labelClassName,
   formatter,
@@ -113,6 +113,8 @@ function ChartTooltipContent({
   labelKey,
 }: ComponentProps<typeof RechartsPrimitive.Tooltip> &
   ComponentProps<'div'> & {
+    payload?: Array<{ name?: string; value?: unknown; color?: string; dataKey?: string }>;
+    label?: string;
     hideLabel?: boolean;
     hideIndicator?: boolean;
     indicator?: 'line' | 'dot' | 'dashed';
@@ -234,11 +236,12 @@ const ChartLegend = RechartsPrimitive.Legend;
 function ChartLegendContent({
   className,
   hideIcon = false,
-  payload,
+  payload = [],
   verticalAlign = 'bottom',
   nameKey,
-}: ComponentProps<'div'> &
-  Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
+}: ComponentProps<'div'> & {
+    payload?: Array<{ dataKey?: string; value?: string; type?: string; color?: string }>;
+    verticalAlign?: 'top' | 'bottom' | 'middle';
     hideIcon?: boolean;
     nameKey?: string;
   }) {

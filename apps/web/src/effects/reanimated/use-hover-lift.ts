@@ -16,6 +16,8 @@ export interface UseHoverLiftReturn {
   variants: Variants;
   handleEnter: () => void;
   handleLeave: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
   animatedStyle: { scale: MotionValue<number>; transform: { translateY: MotionValue<number> }[] };
 }
 
@@ -88,6 +90,8 @@ export function useHoverLift(options: UseHoverLiftOptions = {}): UseHoverLiftRet
     variants,
     handleEnter,
     handleLeave,
+    onMouseEnter: handleEnter,
+    onMouseLeave: handleLeave,
     animatedStyle: {
       scale,
       transform: [{ translateY }],

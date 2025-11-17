@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { Presence, MotionView } from '@petspark/motion';
 import { Check, MagnifyingGlass, Sliders } from '@phosphor-icons/react';
 import { ScrollArea } from '@/components/ui/scroll-area';

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useSharedValue, withTiming, useAnimatedStyle, animate } from '@petspark/motion';
 import { MotionView } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
@@ -53,8 +54,12 @@ export function PremiumCard({
   };
 
   return (
-    <MotionView
-      style={combinedStyle}
+    <motion.div
+      style={{
+        opacity: opacity.get(),
+        scale: hover ? hoverLift.scale : undefined,
+        y: hover ? hoverLift.translateY : translateY.get(),
+      }}
       onMouseEnter={hover ? hoverLift.handleEnter : undefined}
       onMouseLeave={hover ? hoverLift.handleLeave : undefined}
       className={cn(
@@ -68,6 +73,6 @@ export function PremiumCard({
       {...props}
     >
       {children}
-    </MotionView>
+    </motion.div>
   );
 }

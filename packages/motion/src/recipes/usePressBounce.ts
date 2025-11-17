@@ -11,6 +11,7 @@ export interface UsePressBounceOptions {
 }
 
 export interface UsePressBounceReturn {
+  scale: ReturnType<typeof useSharedValue<number>>
   onPressIn: () => void
   onPressOut: () => void
   animatedStyle: ReturnType<typeof useAnimatedStyle>
@@ -46,5 +47,5 @@ export function usePressBounce(scaleOnPress = 0.96, scaleOnRelease = 1): UsePres
     scale: s.value,
   }))
 
-  return { onPressIn, onPressOut, animatedStyle }
+  return { scale: s, onPressIn, onPressOut, animatedStyle }
 }
