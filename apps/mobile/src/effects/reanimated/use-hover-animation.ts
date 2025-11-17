@@ -9,7 +9,7 @@ import {
 import * as Haptics from 'expo-haptics'
 import { springConfigs, timingConfigs } from './transitions'
 import type { AnimatedStyle } from './animated-view'
-import { isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy } from '@petspark/shared';
 
 export interface UseHoverAnimationOptions {
   scale?: number
