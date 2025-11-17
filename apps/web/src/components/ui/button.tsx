@@ -6,7 +6,7 @@
 import * as React from 'react'
 
 const { forwardRef, useCallback, useMemo } = React
-import { motion, type MotionProps } from '@petspark/motion'
+import { motion, type HTMLMotionProps } from '@petspark/motion'
 import { cn } from '@/lib/utils'
 // import { useTheme } from '@/hooks/use-theme' // TODO: Implement when hooks are ready
 import { createLogger } from '@/lib/logger'
@@ -15,8 +15,8 @@ const logger = createLogger('Button')
 
 export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'size' | 'onAnimationStart' | 'onAnimationEnd' | 'onDrag' | 'onDragEnd' | 'onDragStart'> {
   // Visual variants
-  readonly variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'
-  readonly size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+  readonly variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link' | 'default'
+  readonly size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'icon' | 'default'
   
   // States
   readonly loading?: boolean
@@ -40,6 +40,7 @@ export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
   // Layout
   readonly fullWidth?: boolean
   readonly isIconOnly?: boolean
+  readonly asChild?: boolean
   
   // Advanced features
   readonly tooltip?: string
@@ -50,6 +51,7 @@ export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
 
 // Button variant styles using design tokens
 export const buttonVariants = {
+  default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-primary',
   primary: 'bg-primary text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-primary',
   secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 focus-visible:ring-secondary',
   outline: 'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground focus-visible:ring-accent',
@@ -59,6 +61,8 @@ export const buttonVariants = {
 } as const
 
 const buttonSizes = {
+  icon: 'h-9 w-9 p-0',
+  default: 'h-9 px-4 text-sm',
   xs: 'h-7 px-2 text-xs',
   sm: 'h-8 px-3 text-sm',
   md: 'h-9 px-4 text-sm',
@@ -67,6 +71,8 @@ const buttonSizes = {
 } as const
 
 const iconSizes = {
+  icon: 'h-4 w-4',
+  default: 'h-4 w-4',
   xs: 'h-3 w-3',
   sm: 'h-3.5 w-3.5',
   md: 'h-4 w-4',
@@ -234,7 +240,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     )
     
     // Motion props for animation
-    const motionProps: MotionProps = disableAnimation ? {} : {
+    const motionProps: Partial<HTMLMotionProps<'button'>> = disableAnimation ? {} : {
       whileTap: buttonAnimations.tap,
       whileHover: loading || disabled ? undefined : buttonAnimations.hover,
       transition: { duration: animationDuration }

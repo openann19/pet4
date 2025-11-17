@@ -1,4 +1,4 @@
-import type { PremiumNotification } from '@/components/notifications/PremiumNotificationCenter';
+import type { PremiumNotification } from '@/components/notifications/types';
 import { storage } from './storage';
 import { generateULID } from './utils';
 

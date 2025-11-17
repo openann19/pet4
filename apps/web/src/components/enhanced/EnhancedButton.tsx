@@ -21,9 +21,9 @@ import { springConfigs } from '@/effects/reanimated/transitions';
 
 const logger = createLogger('EnhancedButton');
 
-export interface EnhancedButtonProps
-  extends ComponentProps<'button'>,
-    VariantProps<typeof buttonVariants> {
+export interface EnhancedButtonProps extends Omit<ComponentProps<'button'>, 'size'> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link' | 'default';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'icon' | 'default';
   ripple?: boolean;
   hapticFeedback?: boolean;
   successAnimation?: boolean;

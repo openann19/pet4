@@ -47,7 +47,7 @@ import { toast } from 'sonner';
 import { useKV } from '@/hooks/use-storage';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 
-const LocationPicker = lazy(() => import('./LocationPicker'));
+const LocationPicker = lazy(() => import('../playdates/LocationPicker'));
 
 interface PlaydateSchedulerProps {
     match: Match;

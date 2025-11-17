@@ -3,7 +3,8 @@
  */
 
 declare module 'vaul' {
-  import type { ComponentPropsWithoutRef, PropsWithChildren } from 'react';
+  import type { ComponentPropsWithoutRef, ElementRef, PropsWithChildren, ForwardRefExoticComponent, RefAttributes } from 'react';
+  import * as DialogPrimitive from '@radix-ui/react-dialog';
 
   export interface DrawerProps extends PropsWithChildren {
     readonly open?: boolean;
@@ -26,70 +27,37 @@ declare module 'vaul' {
     readonly container?: HTMLElement;
   }
 
-  export type DrawerTriggerProps = ComponentPropsWithoutRef<'button'>
-  export type DrawerContentProps = ComponentPropsWithoutRef<'div'>
-  export type DrawerHeaderProps = ComponentPropsWithoutRef<'div'>
-  export type DrawerFooterProps = ComponentPropsWithoutRef<'div'>
-  export type DrawerTitleProps = ComponentPropsWithoutRef<'h2'>
-  export type DrawerDescriptionProps = ComponentPropsWithoutRef<'p'>
-  export type DrawerCloseProps = ComponentPropsWithoutRef<'button'>
-  export type DrawerOverlayProps = ComponentPropsWithoutRef<'div'>
-  export interface DrawerPortalProps extends PropsWithChildren {
-    readonly container?: HTMLElement;
-  }
+  type RootComponent = ForwardRefExoticComponent<DrawerProps & RefAttributes<HTMLDivElement>>;
+  type TriggerComponent = ForwardRefExoticComponent<DialogPrimitive.DialogTriggerProps & RefAttributes<HTMLButtonElement>>;
+  type PortalComponent = (props: { container?: HTMLElement; children?: React.ReactNode }) => JSX.Element;
+  type CloseComponent = ForwardRefExoticComponent<DialogPrimitive.DialogCloseProps & RefAttributes<HTMLButtonElement>>;
+  type OverlayComponent = ForwardRefExoticComponent<DialogPrimitive.DialogOverlayProps & RefAttributes<HTMLDivElement>>;
+  type ContentComponent = ForwardRefExoticComponent<DialogPrimitive.DialogContentProps & RefAttributes<HTMLDivElement>>;
+  type HandleComponent = ForwardRefExoticComponent<ComponentPropsWithoutRef<'div'> & RefAttributes<HTMLDivElement>>;
+  type TitleComponent = ForwardRefExoticComponent<DialogPrimitive.DialogTitleProps & RefAttributes<HTMLHeadingElement>>;
+  type DescriptionComponent = ForwardRefExoticComponent<DialogPrimitive.DialogDescriptionProps & RefAttributes<HTMLParagraphElement>>;
 
   export const Drawer: {
-    (props: DrawerProps): JSX.Element;
-    displayName?: string;
+    Root: RootComponent;
+    NestedRoot: RootComponent;
+    Content: ContentComponent;
+    Overlay: OverlayComponent;
+    Trigger: TriggerComponent;
+    Portal: PortalComponent;
+    Handle: HandleComponent;
+    Close: CloseComponent;
+    Title: TitleComponent;
+    Description: DescriptionComponent;
   };
 
-  export const DrawerTrigger: {
-    (props: DrawerTriggerProps): JSX.Element;
-    displayName?: string;
-  };
-
-  export const DrawerContent: {
-    (props: DrawerContentProps): JSX.Element;
-    displayName?: string;
-  };
-
-  export const DrawerHeader: {
-    (props: DrawerHeaderProps): JSX.Element;
-    displayName?: string;
-  };
-
-  export const DrawerFooter: {
-    (props: DrawerFooterProps): JSX.Element;
-    displayName?: string;
-  };
-
-  export const DrawerTitle: {
-    (props: DrawerTitleProps): JSX.Element;
-    displayName?: string;
-  };
-
-  export const DrawerDescription: {
-    (props: DrawerDescriptionProps): JSX.Element;
-    displayName?: string;
-  };
-
-  export const DrawerClose: {
-    (props: DrawerCloseProps): JSX.Element;
-    displayName?: string;
-  };
-
-  export const DrawerOverlay: {
-    (props: DrawerOverlayProps): JSX.Element;
-    displayName?: string;
-  };
-
-  export const DrawerPortal: {
-    (props: DrawerPortalProps): JSX.Element;
-    displayName?: string;
-  };
-
-  export const DrawerNestedRoot: {
-    (props: DrawerProps): JSX.Element;
-    displayName?: string;
-  };
+  export const Root: RootComponent;
+  export const NestedRoot: RootComponent;
+  export const Content: ContentComponent;
+  export const Overlay: OverlayComponent;
+  export const Trigger: TriggerComponent;
+  export const Portal: PortalComponent;
+  export const Handle: HandleComponent;
+  export const Close: CloseComponent;
+  export const Title: TitleComponent;
+  export const Description: DescriptionComponent;
 }
