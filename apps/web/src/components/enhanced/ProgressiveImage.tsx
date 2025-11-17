@@ -71,6 +71,7 @@ export function ProgressiveImage({
       };
     } else {
       setBestFormat(format);
+      return undefined;
     }
   }, [format]);
 
