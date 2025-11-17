@@ -129,7 +129,7 @@ export function PremiumNotificationCenter({
     }
   }, [isOpen, notifications.unreadCount, bellRotate, bellScale]);
 
-  const bellStyle = useAnimatedStyle(() => ({
+  const bellStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ rotate: `${bellRotate.value}deg` }, { scale: bellScale.value }],
   })) as AnimatedStyle;
 

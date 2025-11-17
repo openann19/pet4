@@ -59,12 +59,12 @@ export function NotificationGroupItem({
     itemTranslateY.value = withSpring(0, springConfigs.smooth);
   }, [itemOpacity, itemTranslateY]);
 
-  const itemStyle = useAnimatedStyle(() => ({
+  const itemStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: itemOpacity.value,
     transform: [{ translateY: itemTranslateY.value }, { scale: groupHover.scale.value }],
   })) as AnimatedStyle;
 
-  const iconStyle = useAnimatedStyle(() => ({
+  const iconStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ scale: iconHover.scale.value }],
   })) as AnimatedStyle;
 

@@ -82,7 +82,7 @@ export function useMagneticHover(options: UseMagneticHoverOptions = {}) {
     }
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const animatedStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [
       { translateX: translateX.value },
       { translateY: translateY.value },

@@ -125,16 +125,16 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
     }
   }, [matchedPets.length, isLoading]);
 
-  const emptyHeartStyle = useAnimatedStyle(() => ({
+  const emptyHeartStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ scale: emptyHeartScale.value }, { rotate: `${emptyHeartRotate.value}deg` }],
   })) as AnimatedStyle;
 
-  const emptyPulseStyle = useAnimatedStyle(() => ({
+  const emptyPulseStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ scale: emptyPulseScale.value }],
     opacity: emptyPulseOpacity.value,
   })) as AnimatedStyle;
 
-  const emptyTextStyle = useAnimatedStyle(() => ({
+  const emptyTextStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: emptyTextOpacity.value,
     transform: [{ translateY: emptyTextY.value }],
   })) as AnimatedStyle;
@@ -149,13 +149,12 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
           {emptyStatePresence.shouldRender && (
             <MotionView
-              style={emptyStatePresence.animatedStyle}
               style={emptyHeartStyle}
               className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-6 relative"
             >
               <MotionView
                 style={
-                  useAnimatedStyle(() => ({
+                  useAnimatedStyle((): Record<string, unknown> => ({
                     transform: [
                       {
                         scale: withRepeat(

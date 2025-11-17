@@ -50,7 +50,7 @@ function NotificationItemComponent({
     itemTranslateY.value = withSpring(0, springConfigs.smooth);
   }, [itemOpacity, itemTranslateY]);
 
-  const itemStyle = useAnimatedStyle(() => ({
+  const itemStyle = useAnimatedStyle((): Record<string, unknown> => ({
     opacity: itemOpacity.value,
     transform: [{ translateY: itemTranslateY.value }, { scale: hover.scale.value }],
   })) as AnimatedStyle;

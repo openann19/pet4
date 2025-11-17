@@ -132,7 +132,7 @@ function CommunityViewContent(): JSX.Element {
     mainTabsTranslateY.value = withTiming(0, timingConfigs.smooth);
   }, [mainTabsOpacity, mainTabsTranslateY]);
 
-  const mainTabsStyle = useAnimatedStyle(() => {
+  const mainTabsStyle = useAnimatedStyle((): Record<string, unknown> => {
     return {
       opacity: mainTabsOpacity.value,
       transform: [{ translateY: mainTabsTranslateY.value }],
@@ -364,11 +364,11 @@ function CommunityViewContent(): JSX.Element {
     }
   }, [feedManagement.loading, adoptionLoading, loadingRotation]);
 
-  const loadingSpinnerStyle = useAnimatedStyle(() => ({
+  const loadingSpinnerStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ rotate: `${loadingRotation.value}deg` }],
   })) as AnimatedStyle;
 
-  const emptyStateStyle = useAnimatedStyle(() => ({
+  const emptyStateStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ scale: emptyScale.value }, { rotate: `${emptyRotation.value}deg` }],
   })) as AnimatedStyle;
 
@@ -433,7 +433,7 @@ function CommunityViewContent(): JSX.Element {
     }
   }, [adoptionLoading, adoptionLoadingRotation]);
 
-  const adoptionLoadingSpinnerStyle = useAnimatedStyle(() => ({
+  const adoptionLoadingSpinnerStyle = useAnimatedStyle((): Record<string, unknown> => ({
     transform: [{ rotate: `${adoptionLoadingRotation.value}deg` }],
   })) as AnimatedStyle;
 

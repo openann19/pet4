@@ -119,7 +119,7 @@ function MatchCard({ match, index, onClick }: MatchCardProps) {
         <div className="relative">
           {match.pet.photos?.[0] && (
             <img
-              src={match.pet.photos[0].url}
+              src={typeof match.pet.photos[0] === 'string' ? match.pet.photos[0] : match.pet.photos[0].url}
               alt={match.pet.name}
               className="w-full h-48 object-cover rounded-xl mb-4"
             />

@@ -18,7 +18,7 @@ export function BillingIssueBanner() {
 
   const checkBillingIssues = async () => {
     try {
-      const user = await spark.user();
+      const user = await spark?.user();
       const billingIssue = await PaymentsService.getUserBillingIssue(user.id);
       if (billingIssue && !billingIssue.resolved) {
         setIssue(billingIssue);

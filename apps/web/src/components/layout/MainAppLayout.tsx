@@ -10,7 +10,7 @@ import { AmbientAuroraBackground, ScrollProgressBar, PageChangeFlash } from '@/e
 import SeedDataInitializer from '@/components/SeedDataInitializer'
 import { BillingIssueBanner } from '@/components/payments/BillingIssueBanner'
 import QuickActionsMenu from '@/components/QuickActionsMenu'
-import { BottomNavBar } from '@/components/navigation/BottomNavBar'
+import BottomNavBar from '@/components/navigation/BottomNavBar'
 import { Toaster } from '@/components/ui/sonner'
 import { AppHeader } from './AppHeader'
 import { AppNavigation } from './AppNavigation'
