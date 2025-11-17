@@ -12,7 +12,7 @@ import {
   VideoCamera,
 } from '@phosphor-icons/react';
 import { APIConfigSection } from './APIConfigSection';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -206,7 +206,7 @@ export function ModerationSection({
           max="1"
           step="0.05"
           value={config?.photoModeration?.confidenceThreshold ?? 0.8}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             triggerHaptic('selection');
             onUpdateConfig('photoModeration', 'confidenceThreshold', parseFloat(e.target.value));
           }}
@@ -484,7 +484,7 @@ export function StorageSection({
           <Input
             id="storage-bucket"
             value={config?.storage?.bucket ?? ''}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               triggerHaptic('selection');
               onUpdateConfig('storage', 'bucket', e.target.value);
             }}
@@ -496,7 +496,7 @@ export function StorageSection({
           <Input
             id="storage-region"
             value={config?.storage?.region ?? 'us-east-1'}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               triggerHaptic('selection');
               onUpdateConfig('storage', 'region', e.target.value);
             }}
@@ -657,7 +657,7 @@ export function LiveKitSection({
           id="livekit-url-helper"
           type="url"
           value={config?.livekit?.wsUrl ?? ''}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             triggerHaptic('selection');
             onUpdateConfig('livekit', 'wsUrl', e.target.value);
           }}

@@ -79,7 +79,7 @@ export class PhotoSubmissionService {
       const scanResult = (await photoScanningService.scanPhoto({
         photoUrl,
         metadata: record.metadata,
-      })) as PhotoScanResult;
+      }));
 
       // Determine next status
       const nextStatus = this.determineNextStatus(scanResult, record.kycRequired);

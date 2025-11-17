@@ -80,7 +80,7 @@ export function DeleteConfirmationModal({
 
       const focusableElements = modalRef.current?.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      ) as NodeListOf<HTMLElement>;
+      )!;
 
       if (!focusableElements || focusableElements.length === 0) return;
 

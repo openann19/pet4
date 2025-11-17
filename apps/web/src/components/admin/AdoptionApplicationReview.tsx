@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { isTruthy } from '@petspark/shared';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -633,7 +633,7 @@ export default function AdoptionApplicationReview() {
                 <Input
                   placeholder="Search by applicant name, email, or pet name..."
                   value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
                   className="pl-10"
                 />
               </div>
@@ -766,7 +766,7 @@ export default function AdoptionApplicationReview() {
                       : 'Explain why this application is being rejected...'
                   }
                   value={reviewNotes}
-                  onChange={(e) => { setReviewNotes(e.target.value); }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setReviewNotes(e.target.value); }}
                   rows={4}
                 />
                 <p className="text-xs text-muted-foreground">

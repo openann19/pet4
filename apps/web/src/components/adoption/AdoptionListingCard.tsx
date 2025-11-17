@@ -98,7 +98,7 @@ function AdoptionListingCardComponent({
             >
               <button
                 type="button"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   haptics.trigger('light');
                   onFavorite(listing.id);

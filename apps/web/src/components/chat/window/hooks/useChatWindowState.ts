@@ -3,7 +3,7 @@ import { useStorage } from '@/hooks/use-storage';
 import { useTypingManager } from '@/hooks/use-typing-manager';
 import { realtime } from '@/lib/realtime';
 import type { ChatMessage, ChatRoom } from '@/lib/chat-types';
-import type { InputRef } from '@/components/ui/Input';
+import type { InputRef } from '@/components/ui/input';
 
 interface UseChatWindowStateProps {
   room: ChatRoom;

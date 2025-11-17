@@ -18,7 +18,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { CallSession } from '@/lib/call-types';
 import { formatCallDuration } from '@/lib/call-utils';
 import { haptics } from '@/lib/haptics';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -482,10 +482,10 @@ function CallControlsView({
     };
   }) as AnimatedStyle;
 
-  const muteAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
-  const videoAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
-  const endCallAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
-  const speakerAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
+  const muteAnimation = usePressBounce({ scale: 0.95, hapticFeedback: false });
+  const videoAnimation = usePressBounce({ scale: 0.95, hapticFeedback: false });
+  const endCallAnimation = usePressBounce({ scale: 0.95, hapticFeedback: false });
+  const speakerAnimation = usePressBounce({ scale: 0.95, hapticFeedback: false });
 
   const muteBounceStyle = useAnimatedStyle(() => {
     return {

@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo } from 'react';
 import { MotionView } from '@petspark/motion';
 import { MagnifyingGlass, X, Clock, TrendUp, Sparkle } from '@phosphor-icons/react';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -146,7 +146,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
         <Input
           ref={inputRef}
           value={query}
-          onChange={(e) => { setQuery(e.target.value); }}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setQuery(e.target.value); }}
           onFocus={() => { setIsFocused(true); }}
           onBlur={() => setTimeout(() => { setIsFocused(false); }, 200)}
           placeholder={placeholder}

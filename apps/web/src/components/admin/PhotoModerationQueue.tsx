@@ -471,7 +471,7 @@ export function PhotoModerationQueueAdmin() {
                   <div className="text-sm font-medium mb-2">Decision Reason</div>
                   <Textarea
                     value={decisionReason}
-                    onChange={(e) => { setDecisionReason(e.target.value); }}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setDecisionReason(e.target.value); }}
                     placeholder="Enter reason for decision..."
                     rows={3}
                   />

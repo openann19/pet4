@@ -101,7 +101,7 @@ export function KeyboardShortcutsHelp({ open, onClose, context }: KeyboardShortc
       aria-labelledby="keyboard-shortcuts-title"
       aria-describedby="keyboard-shortcuts-description"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      onClick={(e) => {
+      onClick={(e: React.MouseEvent) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
@@ -109,7 +109,7 @@ export function KeyboardShortcutsHelp({ open, onClose, context }: KeyboardShortc
     >
       <div
         className="bg-white dark:bg-gray-900 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col focus-ring"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-800">

@@ -75,7 +75,7 @@ export function useDeleteBubbleAnimation(
             ...timingConfigs.smooth,
             duration,
           });
-          height.value = withTiming(0, { duration }, (finished) => {
+          height.value = withTiming(0, { duration }, (finished: boolean) => {
             if (finished && onFinish) {
               runOnJS(onFinish)();
             }
@@ -99,7 +99,7 @@ export function useDeleteBubbleAnimation(
             withTiming(0.7, { duration: duration * 0.2 }),
             withTiming(0, { duration: duration * 0.8 })
           );
-          height.value = withTiming(0, { duration }, (finished) => {
+          height.value = withTiming(0, { duration }, (finished: boolean) => {
             if (finished && onFinish) {
               runOnJS(onFinish)();
             }
@@ -121,7 +121,7 @@ export function useDeleteBubbleAnimation(
             withTiming(0.8, { duration: duration * 0.2 }),
             withTiming(0, { duration: duration * 0.8 })
           );
-          height.value = withTiming(0, { duration }, (finished) => {
+          height.value = withTiming(0, { duration }, (finished: boolean) => {
             if (finished && onFinish) {
               runOnJS(onFinish)();
             }
@@ -136,7 +136,7 @@ export function useDeleteBubbleAnimation(
             withTiming(0.5, { duration: duration * 0.3 }),
             withTiming(0, { duration: duration * 0.7 })
           );
-          height.value = withTiming(0, { duration }, (finished) => {
+          height.value = withTiming(0, { duration }, (finished: boolean) => {
             if (finished && onFinish) {
               runOnJS(onFinish)();
             }
@@ -147,7 +147,7 @@ export function useDeleteBubbleAnimation(
         default: {
           scale.value = withTiming(0, { duration });
           opacity.value = withTiming(0, { duration });
-          height.value = withTiming(0, { duration }, (finished) => {
+          height.value = withTiming(0, { duration }, (finished: boolean) => {
             if (finished && onFinish) {
               runOnJS(onFinish)();
             }

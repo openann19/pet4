@@ -128,7 +128,7 @@ export const WithForm: Story = {
               <input
                 id="name"
                 value={name}
-                onChange={(e) => { setName(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setName(e.target.value); }}
                 className="border rounded-md px-3 py-2"
                 placeholder="Enter your name"
               />

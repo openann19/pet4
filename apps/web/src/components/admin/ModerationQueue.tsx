@@ -546,7 +546,7 @@ export function ModerationQueue() {
                     <label className="text-sm font-medium">Additional Notes</label>
                     <Textarea
                       value={decisionText}
-                      onChange={(e) => { setDecisionText(e.target.value); }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setDecisionText(e.target.value); }}
                       placeholder="Add any additional context..."
                       rows={3}
                     />

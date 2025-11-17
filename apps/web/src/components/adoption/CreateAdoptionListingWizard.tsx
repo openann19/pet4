@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -282,7 +282,7 @@ export function CreateAdoptionListingWizard({
                         <Input
                           id="petName"
                           value={formData.petName ?? ''}
-                          onChange={(e) => { updateField('petName', e.target.value); }}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateField('petName', e.target.value); }}
                           placeholder="e.g., Max"
                         />
                       </div>
@@ -319,7 +319,7 @@ export function CreateAdoptionListingWizard({
                         <Input
                           id="petBreed"
                           value={formData.petBreed ?? ''}
-                          onChange={(e) => { updateField('petBreed', e.target.value); }}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateField('petBreed', e.target.value); }}
                           placeholder="e.g., Golden Retriever"
                         />
                       </div>
@@ -331,7 +331,7 @@ export function CreateAdoptionListingWizard({
                           min="0"
                           max="30"
                           value={formData.petAge ?? ''}
-                          onChange={(e) => { updateField('petAge', parseInt(e.target.value) || 0); }}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateField('petAge', parseInt(e.target.value) || 0); }}
                           placeholder="3"
                         />
                       </div>
@@ -383,7 +383,7 @@ export function CreateAdoptionListingWizard({
                         <Input
                           id="petColor"
                           value={formData.petColor ?? ''}
-                          onChange={(e) => { updateField('petColor', e.target.value); }}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateField('petColor', e.target.value); }}
                           placeholder="e.g., Golden"
                         />
                       </div>
@@ -409,7 +409,7 @@ export function CreateAdoptionListingWizard({
                       <Textarea
                         id="petDescription"
                         value={formData.petDescription ?? ''}
-                        onChange={(e) => { updateField('petDescription', e.target.value); }}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateField('petDescription', e.target.value); }}
                         placeholder="Tell us about this pet's personality, habits, and what makes them special..."
                         rows={6}
                       />
@@ -575,7 +575,7 @@ export function CreateAdoptionListingWizard({
                       <Textarea
                         id="specialNeeds"
                         value={formData.specialNeeds ?? ''}
-                        onChange={(e) => { updateField('specialNeeds', e.target.value); }}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateField('specialNeeds', e.target.value); }}
                         placeholder="Any medical conditions, dietary restrictions, or special care requirements..."
                         rows={4}
                       />
@@ -603,7 +603,7 @@ export function CreateAdoptionListingWizard({
                       <Textarea
                         id="reasonForAdoption"
                         value={formData.reasonForAdoption ?? ''}
-                        onChange={(e) => { updateField('reasonForAdoption', e.target.value); }}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateField('reasonForAdoption', e.target.value); }}
                         placeholder="Why are you putting this pet up for adoption?"
                         rows={4}
                       />
@@ -636,7 +636,7 @@ export function CreateAdoptionListingWizard({
                           type="number"
                           min="0"
                           value={formData.fee?.amount ?? ''}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             updateField('fee', {
                               amount: parseFloat(e.target.value) || 0,
                               currency: formData.fee?.currency ?? 'USD',
@@ -680,7 +680,7 @@ export function CreateAdoptionListingWizard({
                         <Input
                           id="locationCity"
                           value={formData.locationCity ?? ''}
-                          onChange={(e) => { updateField('locationCity', e.target.value); }}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateField('locationCity', e.target.value); }}
                           placeholder="e.g., San Francisco"
                         />
                       </div>
@@ -689,7 +689,7 @@ export function CreateAdoptionListingWizard({
                         <Input
                           id="locationCountry"
                           value={formData.locationCountry ?? ''}
-                          onChange={(e) => { updateField('locationCountry', e.target.value); }}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { updateField('locationCountry', e.target.value); }}
                           placeholder="e.g., USA"
                         />
                       </div>

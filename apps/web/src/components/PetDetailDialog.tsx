@@ -29,7 +29,7 @@ import { useEffect } from 'react';
 import { ProgressiveImage } from '@/components/enhanced/ProgressiveImage';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useAnimatePresence } from '@/effects/reanimated';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import {
   useSharedValue,
   useAnimatedStyle,
@@ -72,7 +72,7 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
 
   // Interactive element hooks
   const closeButtonHover = useHoverLift();
-  const closeButtonTap = useBounceOnTap();
+  const closeButtonTap = usePressBounce();
 
   // Presence hooks
   const dialogPresence = useAnimatePresence({ isVisible: open });

@@ -204,7 +204,7 @@ export class UnifiedAPIClient {
     try {
       // Convert Headers to plain object for telemetry
       const headersObj: Record<string, string> = {}
-      headers.forEach((value, key) => {
+      headers.forEach((value: string, key: string) => {
         headersObj[key] = value
       })
 

@@ -224,7 +224,7 @@ export function UltraAnimationShowcase() {
         <section className="space-y-6">
           <h2 className="text-3xl font-bold text-white">Confetti Celebration</h2>
           <Button
-            onClick={(e) => confetti.burst(e.clientX, e.clientY)}
+            onClick={(e: React.MouseEvent) => confetti.burst(e.clientX, e.clientY)}
             className="px-8 py-6 text-xl bg-linear-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700"
           >
             🎉 Celebrate!

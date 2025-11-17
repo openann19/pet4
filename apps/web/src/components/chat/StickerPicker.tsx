@@ -8,12 +8,12 @@ import {
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { MagnifyingGlass, X, Crown, Clock } from '@phosphor-icons/react';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useStorage } from '@/hooks/use-storage';
-import { useBounceOnTap } from '@/effects/reanimated';
+import { usePressBounce } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import {
   STICKER_CATEGORIES,
@@ -151,7 +151,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
               type="text"
               placeholder="Search stickers..."
               value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
               className="pl-10 pr-10"
             />
             {searchQuery && (
@@ -266,7 +266,7 @@ function StickerButton({
   const scale = useMotionValue(0.8);
   const hoverScale = useMotionValue(1);
 
-  const bounceAnimation = useBounceOnTap({
+  const bounceAnimation = usePressBounce({
     onPress: onClick,
     scale: 0.9,
     hapticFeedback: false,

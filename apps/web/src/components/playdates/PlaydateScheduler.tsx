@@ -8,7 +8,7 @@
 
 import { useState, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -103,7 +103,7 @@ export function PlaydateScheduler({
           <Input
             id="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
             placeholder="e.g., Dog Park Meetup"
             className="mt-1"
           />
@@ -116,7 +116,7 @@ export function PlaydateScheduler({
           <Textarea
             id="description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
             placeholder="Tell others about this playdate..."
             className="mt-1"
             rows={3}
@@ -144,7 +144,7 @@ export function PlaydateScheduler({
                 id="time"
                 type="time"
                 value={selectedTime}
-                onChange={(e) => setSelectedTime(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedTime(e.target.value)}
                 className="mt-1"
               />
             </div>
@@ -160,7 +160,7 @@ export function PlaydateScheduler({
                 max={480}
                 step={15}
                 value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDuration(Number(e.target.value))}
                 className="mt-1"
               />
             </div>
@@ -198,7 +198,7 @@ export function PlaydateScheduler({
                 type="number"
                 min={2}
                 value={maxParticipants ?? ''}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setMaxParticipants(e.target.value ? Number(e.target.value) : undefined)
                 }
                 className="mt-1"
@@ -213,7 +213,7 @@ export function PlaydateScheduler({
             <Input
               id="trustedContact"
               value={trustedContactId ?? ''}
-              onChange={(e) => setTrustedContactId(e.target.value || undefined)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTrustedContactId(e.target.value || undefined)}
               placeholder="User ID to share details with"
               className="mt-1"
             />

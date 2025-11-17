@@ -26,7 +26,7 @@ export function PlaceDetailSheet({
   const { t } = useApp();
   const { PLACE_CATEGORIES } = useMapConfig();
 
-  if (!marker || marker.type !== 'place') {
+  if (marker?.type !== 'place') {
     return <></>;
   }
 

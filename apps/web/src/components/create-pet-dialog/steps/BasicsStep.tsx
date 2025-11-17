@@ -1,5 +1,5 @@
 import { MotionView } from '@petspark/motion';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PET_TYPES } from '../create-pet-constants';
 import type { PetType } from '@/lib/pet-profile-templates';
@@ -46,7 +46,7 @@ export function BasicsStep({ petType, name, breed, age, actions }: BasicsStepPro
           <Input
             id="name"
             value={name}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               actions.setName(e.target.value);
             }}
             placeholder={`e.g., ${PLACEHOLDER_NAMES[petType]}`}
@@ -59,7 +59,7 @@ export function BasicsStep({ petType, name, breed, age, actions }: BasicsStepPro
           <Input
             id="breed"
             value={breed}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               actions.setBreed(e.target.value);
             }}
             placeholder={`e.g., ${PLACEHOLDER_BREEDS[petType]}`}
@@ -74,7 +74,7 @@ export function BasicsStep({ petType, name, breed, age, actions }: BasicsStepPro
             min="0"
             max="30"
             value={age}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               actions.setAge(e.target.value);
             }}
             placeholder="3"

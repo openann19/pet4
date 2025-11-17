@@ -2,7 +2,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useSharedValue, withTiming, MotionView } from '@petspark/motion';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import { lostFoundAPI } from '@/api/lost-found-api';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -50,7 +50,7 @@ function FeatureBadge({ feature, index, onRemove }: FeatureBadgeProps): JSX.Elem
     staggerDelay: 30,
   });
 
-  const removeButtonAnimation = useBounceOnTap({
+  const removeButtonAnimation = usePressBounce({
     onPress: (): void => onRemove(index),
     hapticFeedback: true,
   });
@@ -134,12 +134,12 @@ export function CreateLostAlertDialog({
     return Boolean(petName && species && lastSeenDate && lastSeenTime && contactInfo);
   }, [petName, species, lastSeenDate, lastSeenTime, contactInfo]);
 
-  const addFeatureButtonAnimation = useBounceOnTap({
+  const addFeatureButtonAnimation = usePressBounce({
     onPress: handleAddFeature,
     hapticFeedback: true,
   });
 
-  const mapPickerButtonAnimation = useBounceOnTap({
+  const mapPickerButtonAnimation = usePressBounce({
     onPress: (): void => setShowMapPicker(true),
     hapticFeedback: true,
   });
@@ -237,7 +237,7 @@ export function CreateLostAlertDialog({
     onClose,
   ]);
 
-  const submitButtonAnimation = useBounceOnTap({
+  const submitButtonAnimation = usePressBounce({
     onPress: handleSubmit,
     hapticFeedback: true,
   });

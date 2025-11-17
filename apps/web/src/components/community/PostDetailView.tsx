@@ -494,7 +494,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                 <div className="flex gap-2">
                   <Textarea
                     value={commentText}
-                    onChange={(e) => { setCommentText(e.target.value); }}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setCommentText(e.target.value); }}
                     placeholder="Add a comment..."
                     rows={2}
                     className="resize-none"

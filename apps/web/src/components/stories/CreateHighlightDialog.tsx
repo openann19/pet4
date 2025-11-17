@@ -12,9 +12,9 @@ import {
 } from '@/components/ui/dialog';
 import { isTruthy } from '@petspark/shared';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { Story, StoryHighlight } from '@/lib/stories-types';
+import type { Story, StoryHighlight } from '@/lib/api-schemas';
 import type { Pet } from '@/lib/types';
 import { createStoryHighlight } from '@/lib/stories-utils';
 import { filterActiveStories } from '@/lib/stories-utils';
@@ -148,7 +148,7 @@ export default function CreateHighlightDialog({
             <Input
               id="highlight-title"
               value={title}
-              onChange={(e) => { setTitle(e.target.value); }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setTitle(e.target.value); }}
               placeholder="e.g., Summer Adventures, Best Moments"
               maxLength={30}
             />

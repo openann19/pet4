@@ -206,7 +206,7 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
           <label className="text-sm font-medium mb-2 block">Export Format</label>
           <select
             value={exportFormat}
-            onChange={(e) => setExportFormat(e.target.value as ExportFormat)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setExportFormat(e.target.value as ExportFormat)}
             className="w-full p-2 border rounded"
             disabled={isExporting}
           >

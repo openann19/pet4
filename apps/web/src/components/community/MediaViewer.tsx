@@ -75,12 +75,12 @@ function SlideTransition({
   }, [isVisible, direction, translateX, opacity, scale]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const transforms: Array<Record<string, number>> = [];
-    transforms.push({ translateX: translateX.value as number });
-    transforms.push({ scale: scale.value as number });
+    const transforms: Record<string, number>[] = [];
+    transforms.push({ translateX: translateX.value });
+    transforms.push({ scale: scale.value });
     return {
       transform: transforms,
-      opacity: opacity.value as number,
+      opacity: opacity.value,
     };
   }) as AnimatedStyle;
 
@@ -225,7 +225,7 @@ export function MediaViewer({
     (clientX: number) => {
       if (!isDragging || isZoomed || currentMedia?.type === 'video') return;
       const delta = clientX - dragStartX.current;
-      dragX.value = delta as number;
+      dragX.value = delta;
     },
     [isDragging, isZoomed, dragX, currentMedia?.type]
   );

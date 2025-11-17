@@ -530,7 +530,7 @@ export function KYCManagement() {
                     <label className="text-sm font-medium">Detailed Explanation</label>
                     <Textarea
                       value={rejectText}
-                      onChange={(e) => { setRejectText(e.target.value); }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setRejectText(e.target.value); }}
                       placeholder="Provide specific feedback for the user..."
                       rows={3}
                     />

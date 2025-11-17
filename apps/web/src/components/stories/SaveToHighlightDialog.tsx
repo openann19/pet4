@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -148,7 +148,7 @@ export default function SaveToHighlightDialog({
                 <Input
                   id="new-highlight-title"
                   value={newHighlightTitle}
-                  onChange={(e) => { setNewHighlightTitle(e.target.value); }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setNewHighlightTitle(e.target.value); }}
                   placeholder="e.g., Summer Adventures, Best Moments"
                   maxLength={30}
                   autoFocus

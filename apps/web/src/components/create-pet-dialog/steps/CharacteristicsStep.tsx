@@ -1,5 +1,5 @@
 import { MotionView } from '@petspark/motion';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { GenderSelector } from './GenderSelector';
 import { SizeSelector } from './SizeSelector';
@@ -44,7 +44,7 @@ export function CharacteristicsStep({
           <Input
             id="location"
             value={location}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               actions.setLocation(e.target.value);
             }}
             placeholder="e.g., San Francisco, CA"

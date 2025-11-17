@@ -358,7 +358,7 @@ export function AdoptionListingDetailDialog({
 
           {applicationFormPresence.shouldRender && showApplicationForm && (
             <MotionView
-              style={useAnimatedStyleValue(applicationFormPresence.animatedStyle) as React.CSSProperties}
+              style={useAnimatedStyleValue(applicationFormPresence.animatedStyle)}
               className="space-y-4 p-4 border rounded-lg bg-muted/50"
             >
               <div className="flex items-center justify-between">
@@ -381,7 +381,7 @@ export function AdoptionListingDetailDialog({
                     id="application-message"
                     placeholder={'Tell the owner why you want to adopt...'}
                     value={applicationData.message}
-                    onChange={(e) =>
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setApplicationData({ ...applicationData, message: e.target.value })
                     }
                     rows={4}

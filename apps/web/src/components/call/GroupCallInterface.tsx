@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useBounceOnTap, useHoverLift, useModalAnimation } from '@/effects/reanimated';
+import { usePressBounce, useHoverLift, useModalAnimation } from '@/effects/reanimated';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import {
   useAnimatedStyle,
@@ -418,23 +418,23 @@ export default function GroupCallInterface({
     [raisedHands, session.localParticipant.id]
   );
 
-  const muteButton = useBounceOnTap({
+  const muteButton = usePressBounce({
     onPress: handleToggleMute,
     hapticFeedback: true,
   });
 
-  const videoButton = useBounceOnTap({
+  const videoButton = usePressBounce({
     onPress: handleToggleVideo,
     hapticFeedback: true,
   });
 
-  const endCallButton = useBounceOnTap({
+  const endCallButton = usePressBounce({
     onPress: handleEndCall,
     hapticFeedback: true,
     scale: 0.9,
   });
 
-  const raiseHandButton = useBounceOnTap({
+  const raiseHandButton = usePressBounce({
     onPress: handleRaiseHand,
     hapticFeedback: true,
   });
@@ -746,7 +746,7 @@ export default function GroupCallInterface({
               </MotionView>
 
               {(() => {
-                const chatButton = useBounceOnTap({ hapticFeedback: true });
+                const chatButton = usePressBounce({ hapticFeedback: true });
                 const chatButtonStyle = useAnimatedStyle(() => {
                   return {
                     transform: [{ scale: chatButton.scale.get() }],

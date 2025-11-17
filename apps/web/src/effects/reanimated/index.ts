@@ -1,6 +1,6 @@
 'use client';
 
-export { useBounceOnTap } from './use-bounce-on-tap';
+export { usePressBounce } from './use-bounce-on-tap';
 export { useShimmer } from './use-shimmer';
 export { useGlowPulse } from './use-glow-pulse';
 export { useMagneticEffect } from './use-magnetic-effect';

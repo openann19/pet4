@@ -5,7 +5,7 @@ import type { AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { Sparkle, X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import type { SmartSuggestion } from '@/lib/chat-types';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
@@ -74,7 +74,7 @@ function SuggestionButton({
   onSelect: (suggestion: SmartSuggestion) => void;
 }) {
   const hoverLift = useHoverLift({ scale: 1.02 });
-  const bounceOnTap = useBounceOnTap({ scale: 0.98 });
+  const bounceOnTap = usePressBounce({ scale: 0.98 });
 
   const buttonStyle = useAnimatedStyle(() => {
     const hoverScale = hoverLift.scale.get();

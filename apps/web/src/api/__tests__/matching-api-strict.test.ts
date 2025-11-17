@@ -133,7 +133,7 @@ describe('MatchingAPIStrict.updatePreferences', () => {
   });
 
   it('should handle undefined values to clear fields', async () => {
-    // eslint-disable-next-line no-restricted-syntax
+     
     const preferences = await matchingAPIStrict.updatePreferences('owner-1', {
       maxDistanceKm: undefined,
     } as { maxDistanceKm?: number });

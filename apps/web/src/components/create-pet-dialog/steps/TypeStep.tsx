@@ -10,7 +10,7 @@ interface TypeStepProps {
   stepStyle: AnimatedStyle;
   petTypeIndicatorStyle: AnimatedStyle;
   petTypeButtonHover: ReturnType<typeof import('@/effects/reanimated/use-hover-lift').useHoverLift>;
-  petTypeButtonTap: ReturnType<typeof import('@/effects/reanimated/use-bounce-on-tap').useBounceOnTap>;
+  petTypeButtonTap: ReturnType<typeof import('@/effects/reanimated/use-bounce-on-tap').usePressBounce>;
   actions: CreatePetFormActions;
   onNext: () => void;
 }

@@ -304,7 +304,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                 type="file"
                 accept="image/*"
                 capture="environment"
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const file = e.target.files?.[0];
                   if (file) handleFileUpload(file);
                 }}
@@ -316,7 +316,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const file = e.target.files?.[0];
                   if (file) handleFileUpload(file);
                 }}
@@ -329,7 +329,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
                   <input
                     type="text"
                     value={photo}
-                    onChange={(e) => { handlePhotoInput(e.target.value); }}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => { handlePhotoInput(e.target.value); }}
                     placeholder="Paste image URL here..."
                     aria-label="Image URL"
                     className="flex-1 px-3 py-2 text-sm border border-input rounded-md bg-background focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20 transition-all"

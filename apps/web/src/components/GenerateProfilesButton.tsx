@@ -81,7 +81,7 @@ export default function GenerateProfilesButton({
   return (
     <div className={showLabel ? 'w-full' : ''}>
       <MotionView
-        style={buttonHover.animatedStyle as React.CSSProperties}
+        style={buttonHover.animatedStyle}
         onMouseEnter={buttonHover.handleMouseEnter}
         onMouseLeave={buttonHover.handleMouseLeave}
       >

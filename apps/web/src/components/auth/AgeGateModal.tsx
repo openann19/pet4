@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { MotionView, Presence } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
@@ -115,7 +115,7 @@ export default function AgeGateModal({ open, onVerified, onClose }: AgeGateModal
                 id="birthDate"
                 type="date"
                 value={birthDate}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setBirthDate(e.target.value);
                   setError(null);
                 }}
@@ -135,7 +135,7 @@ export default function AgeGateModal({ open, onVerified, onClose }: AgeGateModal
                 type="text"
                 placeholder={t.auth?.countryPlaceholder || 'e.g., United States'}
                 value={country}
-                onChange={(e) => { setCountry(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setCountry(e.target.value); }}
                 className="w-full"
               />
             </div>

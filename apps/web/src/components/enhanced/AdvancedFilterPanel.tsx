@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useFilters } from '@/hooks/use-filters';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import { useSharedValue, useAnimatedStyle, withTiming, animate, MotionView, motion } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';
@@ -224,7 +224,7 @@ function FilterOptionButton({
   className,
 }: FilterOptionButtonProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
-  const bounceAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
+  const bounceAnimation = usePressBounce({ scale: 0.95, hapticFeedback: false });
 
   const ButtonComponent = prefersReducedMotion ? 'button' : motion.button;
 
@@ -270,7 +270,7 @@ function ToggleSwitch({ label, checked, onChange }: ToggleSwitchProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const translateX = useSharedValue(checked ? 20 : 0);
 
-  const toggleAnimation = useBounceOnTap({ scale: 0.95, hapticFeedback: false });
+  const toggleAnimation = usePressBounce({ scale: 0.95, hapticFeedback: false });
 
   useEffect(() => {
     if (prefersReducedMotion) {

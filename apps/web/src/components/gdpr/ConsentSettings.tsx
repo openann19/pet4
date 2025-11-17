@@ -116,7 +116,7 @@ export function ConsentSettings({ userId, onConsentChange }: ConsentSettingsProp
                                     type="checkbox"
                                     className="sr-only peer"
                                     checked={consentManager.preferences.analytics}
-                                    onChange={(e) => {
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         void handlePreferenceChange('analytics', e.target.checked);
                                     }}
                                     disabled={isSaving}
@@ -156,7 +156,7 @@ export function ConsentSettings({ userId, onConsentChange }: ConsentSettingsProp
                                     type="checkbox"
                                     className="sr-only peer"
                                     checked={consentManager.preferences.marketing}
-                                    onChange={(e) => {
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         void handlePreferenceChange('marketing', e.target.checked);
                                     }}
                                     disabled={isSaving}
@@ -195,7 +195,7 @@ export function ConsentSettings({ userId, onConsentChange }: ConsentSettingsProp
                                     type="checkbox"
                                     className="sr-only peer"
                                     checked={consentManager.preferences.thirdParty}
-                                    onChange={(e) => {
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                         void handlePreferenceChange('third_party', e.target.checked);
                                     }}
                                     disabled={isSaving}

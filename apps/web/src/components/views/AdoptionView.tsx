@@ -5,7 +5,7 @@ import { CreateAdoptionListingDialog } from '@/components/adoption/CreateAdoptio
 import { MyApplicationsView } from '@/components/adoption/MyApplicationsView';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useApp } from '@/contexts/AppContext';
 import { useStorage } from '@/hooks/use-storage';
@@ -241,7 +241,7 @@ export default function AdoptionView() {
               <Input
                 placeholder={'Search by pet name, breed, location...'}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 aria-label="Search adoption listings"
                 className="pl-10"
               />

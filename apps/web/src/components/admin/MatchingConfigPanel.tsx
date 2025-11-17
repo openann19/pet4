@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import type { MatchingConfig } from '@/core/domain/matching-config';
 import {
@@ -330,7 +330,7 @@ export function MatchingConfigPanel() {
               min="1"
               max="1000"
               value={config.hardGates.maxDistanceKm}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleHardGateChange('maxDistanceKm', parseInt(e.target.value, 10) || 50)
               }
             />
@@ -393,7 +393,7 @@ export function MatchingConfigPanel() {
               min="1"
               max="1000"
               value={config.featureFlags.MATCH_DISTANCE_MAX_KM}
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleFeatureFlagChange('MATCH_DISTANCE_MAX_KM', parseInt(e.target.value, 10) || 50)
               }
             />

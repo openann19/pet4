@@ -236,7 +236,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
                     type="checkbox"
                     className="sr-only peer"
                     checked={consentManager.preferences.analytics}
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       void handlePreferenceChange('analytics', e.target.checked);
                     }}
                     aria-label="Enable analytics cookies"
@@ -260,7 +260,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
                     type="checkbox"
                     className="sr-only peer"
                     checked={consentManager.preferences.marketing}
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       void handlePreferenceChange('marketing', e.target.checked);
                     }}
                     aria-label="Enable marketing cookies"
@@ -284,7 +284,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
                     type="checkbox"
                     className="sr-only peer"
                     checked={consentManager.preferences.thirdParty}
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       void handlePreferenceChange('third_party', e.target.checked);
                     }}
                     aria-label="Enable third-party cookies"

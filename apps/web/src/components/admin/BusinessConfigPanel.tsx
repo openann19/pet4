@@ -6,7 +6,7 @@
 
 import { CheckCircle, CurrencyDollar, Flask, Gear, Radio } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -90,7 +90,7 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.premium.monthly}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updatePrice(['prices', 'premium', 'monthly'], parseFloat(e.target.value) || 0)
                   }
                 />
@@ -101,7 +101,7 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.premium.yearly}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updatePrice(['prices', 'premium', 'yearly'], parseFloat(e.target.value) || 0)
                   }
                 />
@@ -118,7 +118,7 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.elite.monthly}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updatePrice(['prices', 'elite', 'monthly'], parseFloat(e.target.value) || 0)
                   }
                 />
@@ -129,7 +129,7 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.elite.yearly}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updatePrice(['prices', 'elite', 'yearly'], parseFloat(e.target.value) || 0)
                   }
                 />
@@ -146,7 +146,7 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.boost.price}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updatePrice(['prices', 'boost', 'price'], parseFloat(e.target.value) || 0)
                   }
                 />
@@ -157,7 +157,7 @@ export default function BusinessConfigPanel() {
                   type="number"
                   step="0.01"
                   value={config.prices.superLike.price}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updatePrice(['prices', 'superLike', 'price'], parseFloat(e.target.value) || 0)
                   }
                 />
@@ -175,7 +175,7 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.free.swipeDailyCap}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateLimit(['limits', 'free', 'swipeDailyCap'], parseInt(e.target.value) || 0)
                   }
                 />
@@ -185,7 +185,7 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.free.adoptionListingLimit}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateLimit(
                       ['limits', 'free', 'adoptionListingLimit'],
                       parseInt(e.target.value) || 0
@@ -204,7 +204,7 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.premium.boostsPerWeek}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateLimit(
                       ['limits', 'premium', 'boostsPerWeek'],
                       parseInt(e.target.value) || 0
@@ -217,7 +217,7 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.premium.superLikesPerDay}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateLimit(
                       ['limits', 'premium', 'superLikesPerDay'],
                       parseInt(e.target.value) || 0
@@ -236,7 +236,7 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.elite.boostsPerWeek}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateLimit(['limits', 'elite', 'boostsPerWeek'], parseInt(e.target.value) || 0)
                   }
                 />
@@ -246,7 +246,7 @@ export default function BusinessConfigPanel() {
                 <Input
                   type="number"
                   value={config.limits.elite.superLikesPerDay}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     updateLimit(
                       ['limits', 'elite', 'superLikesPerDay'],
                       parseInt(e.target.value) || 0

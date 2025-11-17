@@ -9,7 +9,7 @@ interface UseChatScrollFabProps {
   scrollFabVisible: boolean;
   setScrollFabVisible: (visible: boolean) => void;
   previousBadgeCount: number;
-  typingUsers: Array<{ userName?: string }>;
+  typingUsers: { userName?: string }[];
 }
 
 /**

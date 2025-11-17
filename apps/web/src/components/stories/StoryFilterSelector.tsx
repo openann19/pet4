@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Presence, MotionView } from '@petspark/motion';
 import { Check, MagnifyingGlass, Sliders } from '@phosphor-icons/react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, Presence, MotionView } from '@petspark/motion';
 import { Check, MagnifyingGlass } from '@phosphor-icons/react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,7 +41,7 @@ export default function StoryTemplateSelector({
           <Input
             placeholder="Search templates..."
             value={searchQuery}
-            onChange={(e) => { setSearchQuery(e.target.value); }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
             className="pl-10"
           />
         </div>

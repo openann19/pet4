@@ -8,7 +8,7 @@
 
 import { useState, useCallback } from 'react';
 import { MapPin, Search } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { cn } from '@/lib/utils';
@@ -101,7 +101,7 @@ export function LocationPicker({
           type="text"
           placeholder="Search for a location..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               void handleSearch();

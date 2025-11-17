@@ -126,7 +126,7 @@ export function AppealDialog({
             <Textarea
               id="appeal-text"
               value={appealText}
-              onChange={(e) => { setAppealText(e.target.value); }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setAppealText(e.target.value); }}
               placeholder="Please provide detailed information about why you believe this content should be restored. Include any relevant context or evidence..."
               rows={6}
               className="resize-none"

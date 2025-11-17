@@ -1,7 +1,7 @@
 import { MagnifyingGlass, List, X, Crosshair } from '@phosphor-icons/react';
 import { MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { haptics } from '@/lib/haptics';
 import { useApp } from '@/contexts/AppContext';
 import { CategoryFilters } from './CategoryFilters';
@@ -45,7 +45,7 @@ export function MapControls({
           />
           <Input
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
             placeholder={t.map?.searchPlaceholder ?? 'Search places...'}
             aria-label="Search places on map"
             className="pl-10 h-11 bg-background/50 border-border"

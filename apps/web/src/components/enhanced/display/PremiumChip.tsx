@@ -109,7 +109,7 @@ export function PremiumChip({
         {onClose && (
           <button
             type="button"
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent) => {
               e.stopPropagation();
               handleClose();
             }}

@@ -9,7 +9,7 @@ import { MyAdoptionListings } from '@/components/adoption/MyAdoptionListings';
 import { AdoptionListingItem } from '@/components/adoption/AdoptionListingItem';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SegmentedControl } from '@/components/enhanced/buttons/SegmentedControl';
 import { Card } from '@/components/ui/card';
@@ -129,7 +129,7 @@ export default function AdoptionMarketplaceView() {
                   <Input
                     placeholder="Search by name, breed, or location..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                     className="pl-12 pr-4 h-12 text-base border-border/60 bg-background/90 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 rounded-xl"                                                   
                   />
                 </div>

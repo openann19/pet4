@@ -7,7 +7,7 @@ import { MotionView, useAnimatedStyle } from "@petspark/motion";
 
 import { MapPin, Microphone, Smiley, Sparkle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { Input, type InputRef } from '@/components/ui/Input';
+import { Input, type InputRef } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
@@ -159,7 +159,7 @@ export function ChatFooter({
               <Input
                 ref={inputRef}
                 value={inputValue}
-                onChange={(e) => { onInputChange(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { onInputChange(e.target.value); }}
                 onKeyDown={onInputKeyDown}
                 placeholder="Type a message..."
                 className="pr-12 glass-effect border-white/30 focus:border-primary/50 backdrop-blur-xl"

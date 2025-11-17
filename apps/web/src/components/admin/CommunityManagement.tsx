@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Dialog,
@@ -292,7 +292,7 @@ export default function CommunityManagement() {
               <Input
                 placeholder="Search posts by content or author..."
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
                 className="pl-10"
               />
             </div>

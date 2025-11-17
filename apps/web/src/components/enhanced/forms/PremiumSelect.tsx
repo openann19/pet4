@@ -240,7 +240,7 @@ export function PremiumSelect({
                       {option?.label}
                       <button
                         type="button"
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent) => {
                           e.stopPropagation();
                           handleRemove(val);
                         }}
@@ -295,7 +295,7 @@ export function PremiumSelect({
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
                   placeholder="Search..."
                   aria-label="Search options"
                   className={cn(

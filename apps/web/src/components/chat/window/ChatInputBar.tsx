@@ -5,7 +5,7 @@
 
 import { MotionView } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
-import { Input, type InputRef } from '@/components/ui/Input'
+import { Input, type InputRef } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import VoiceRecorder from '@/components/chat/VoiceRecorder'
@@ -253,7 +253,7 @@ export function ChatInputBar({
               id="chat-input"
               ref={inputRef}
               value={inputValue}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 onInputChange(e.target.value)
               }}
               onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {

@@ -5,7 +5,7 @@
 
 import * as React from 'react'
 import { AdvancedFormDemo, ComponentShowcase } from '@/components/demo/AdvancedComponentsDemo'
-import { Button } from '@/components/ui/Button'
+import { Button } from '@/components/ui/button'
 
 export default function ComponentsDemoPage() {
   const [showForm, setShowForm] = React.useState(true)

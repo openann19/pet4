@@ -15,7 +15,7 @@ import {
 } from '@phosphor-icons/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SavedSearch } from '@/lib/saved-search-types';
@@ -26,7 +26,7 @@ import { createLogger } from '@/lib/logger';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useExpandCollapse } from '@/effects/reanimated/use-expand-collapse';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 
 const logger = createLogger('SavedSearchesManager');
@@ -67,12 +67,12 @@ function SearchItem({
   onApply,
 }: SearchItemProps): JSX.Element {
   const itemAnimation = useStaggeredItem({ index });
-  const itemBounce = useBounceOnTap({ scale: 0.98, duration: 150 });
+  const itemBounce = usePressBounce({ scale: 0.98, duration: 150 });
   const itemHover = useHoverLift({ scale: 1.01 });
-  const applyBounce = useBounceOnTap({ scale: 0.95, duration: 150 });
-  const pinBounce = useBounceOnTap({ scale: 0.9, duration: 120 });
-  const editBounce = useBounceOnTap({ scale: 0.9, duration: 120 });
-  const deleteBounce = useBounceOnTap({ scale: 0.9, duration: 120 });
+  const applyBounce = usePressBounce({ scale: 0.95, duration: 150 });
+  const pinBounce = usePressBounce({ scale: 0.9, duration: 120 });
+  const editBounce = usePressBounce({ scale: 0.9, duration: 120 });
+  const deleteBounce = usePressBounce({ scale: 0.9, duration: 120 });
 
   const isEditing = editingId === search.id;
 
@@ -87,7 +87,7 @@ function SearchItem({
         <div className="space-y-3">
           <Input
             value={searchName}
-            onChange={(e) => onEdit(search.id, e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => onEdit(search.id, e.target.value)}
             placeholder="Search name"
             autoFocus
           />
@@ -208,7 +208,7 @@ export default function SavedSearchesManager({
 
   const modalAnimation = useModalAnimation({ isVisible: true, duration: 300 });
   const saveFormExpand = useExpandCollapse({ isExpanded: showSaveForm, duration: 300 });
-  const saveButtonBounce = useBounceOnTap({ scale: 0.95, duration: 150 });
+  const saveButtonBounce = usePressBounce({ scale: 0.95, duration: 150 });
   const cardHover = useHoverLift({ scale: 1.02 });
 
   const handleSaveCurrentSearch = useCallback((): void => {
@@ -416,7 +416,7 @@ export default function SavedSearchesManager({
                       id="search-name"
                       placeholder="e.g., Active dogs under 5"
                       value={searchName}
-                      onChange={(e) => setSearchName(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           saveButtonBounce.handlePress();

@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useStorage } from '@/hooks/use-storage';
@@ -233,7 +233,7 @@ export default function UsersView() {
               <Input
                 placeholder="Search users by name or email..."
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
                 className="pl-10"
               />
             </div>
@@ -498,7 +498,7 @@ export default function UsersView() {
                 <Input
                   type="password"
                   value={newPassword}
-                  onChange={(e) => { setNewPassword(e.target.value); }}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setNewPassword(e.target.value); }}
                   placeholder="Enter new password"
                   minLength={8}
                 />

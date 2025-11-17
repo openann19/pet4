@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { MotionView } from '@petspark/motion';
-import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
+import { usePressBounce } from '@/effects/reanimated/use-bounce-on-tap';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 
@@ -72,7 +72,7 @@ interface EmojiButtonProps {
 }
 
 function EmojiButton({ emoji, onSelect }: EmojiButtonProps): React.JSX.Element {
-  const bounce = useBounceOnTap({
+  const bounce = usePressBounce({
     onPress: () => onSelect(emoji),
     hapticFeedback: true,
     scale: 0.9,

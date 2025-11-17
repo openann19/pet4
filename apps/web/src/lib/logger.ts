@@ -93,7 +93,7 @@ const parseLogLevel = (level?: string | null): LogLevel | undefined => {
   if (!normalized) return undefined
   
   // Use Object.values to safely access enum values
-  const logLevelEntries = Object.entries(LogLevel) as Array<[string, LogLevel]>
+  const logLevelEntries = Object.entries(LogLevel) as [string, LogLevel][]
   const entry = logLevelEntries.find(([key]) => key === normalized)
   return entry ? entry[1] : undefined
 }

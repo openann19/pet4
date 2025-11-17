@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { MotionView } from '@petspark/motion';
 import { X, MagnifyingGlass, NavigationArrow, Star } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/Input';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useApp } from '@/contexts/AppContext';
@@ -162,7 +162,7 @@ export default function VenuePicker({
               <Input
                 placeholder={t.map?.searchPlaceholder ?? 'Search places...'}
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(e.target.value); }}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="flex-1"
               />

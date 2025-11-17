@@ -110,7 +110,7 @@ describe('AdoptionAPIStrict.updateListing', () => {
   });
 
   it('should handle undefined values to clear fields', async () => {
-    // eslint-disable-next-line no-restricted-syntax
+     
     const listing = await adoptionAPIStrict.updateListing(
       'listing-1',
       { fee: undefined } as { fee?: number },

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useBounceOnTap } from './use-bounce-on-tap';
+import { usePressBounce } from './use-bounce-on-tap';
 import { haptics } from '@/lib/haptics';
 
 vi.mock('@/lib/haptics', () => ({
@@ -9,13 +9,13 @@ vi.mock('@/lib/haptics', () => ({
   },
 }));
 
-describe('useBounceOnTap', () => {
+describe('usePressBounce', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should initialize with default values', () => {
-    const { result } = renderHook(() => useBounceOnTap());
+    const { result } = renderHook(() => usePressBounce());
 
     expect(result.current.scale.value).toBe(1);
     expect(result.current.handlePress).toBeDefined();
@@ -23,7 +23,7 @@ describe('useBounceOnTap', () => {
   });
 
   it('should call haptic feedback on press by default', () => {
-    const { result } = renderHook(() => useBounceOnTap());
+    const { result } = renderHook(() => usePressBounce());
 
     act(() => {
       result.current.handlePress();
@@ -34,7 +34,7 @@ describe('useBounceOnTap', () => {
 
   it('should not call haptic feedback when disabled', () => {
     const { result } = renderHook(() =>
-      useBounceOnTap({
+      usePressBounce({
         hapticFeedback: false,
       })
     );
@@ -48,7 +48,7 @@ describe('useBounceOnTap', () => {
 
   it('should call onPress callback when provided', () => {
     const onPress = vi.fn();
-    const { result } = renderHook(() => useBounceOnTap({ onPress }));
+    const { result } = renderHook(() => usePressBounce({ onPress }));
 
     act(() => {
       result.current.handlePress();
@@ -59,7 +59,7 @@ describe('useBounceOnTap', () => {
 
   it('should use custom scale value', () => {
     const { result } = renderHook(() =>
-      useBounceOnTap({
+      usePressBounce({
         scale: 0.9,
       })
     );
@@ -73,7 +73,7 @@ describe('useBounceOnTap', () => {
 
   it('should use custom spring config', () => {
     const { result } = renderHook(() =>
-      useBounceOnTap({
+      usePressBounce({
         damping: 20,
         stiffness: 500,
       })

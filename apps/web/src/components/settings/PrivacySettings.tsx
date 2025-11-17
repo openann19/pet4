@@ -258,7 +258,7 @@ export function PrivacySettings({ userId }: PrivacySettingsProps): React.JSX.Ele
                                 <label className="text-sm font-medium mb-2 block">Profile Visibility</label>
                                 <select
                                     value={visibilitySettings.profileVisibility}
-                                    onChange={(e) =>
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         setVisibilitySettings({
                                             ...visibilitySettings,
                                             profileVisibility: e.target.value as VisibilitySettings['profileVisibility'],
@@ -279,7 +279,7 @@ export function PrivacySettings({ userId }: PrivacySettingsProps): React.JSX.Ele
                                     <input
                                         type="checkbox"
                                         checked={visibilitySettings.showLocation}
-                                        onChange={(e) =>
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             setVisibilitySettings({
                                                 ...visibilitySettings,
                                                 showLocation: e.target.checked,
@@ -296,7 +296,7 @@ export function PrivacySettings({ userId }: PrivacySettingsProps): React.JSX.Ele
                                     <input
                                         type="checkbox"
                                         checked={visibilitySettings.showContactInfo}
-                                        onChange={(e) =>
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             setVisibilitySettings({
                                                 ...visibilitySettings,
                                                 showContactInfo: e.target.checked,
@@ -311,7 +311,7 @@ export function PrivacySettings({ userId }: PrivacySettingsProps): React.JSX.Ele
                                 <label className="text-sm font-medium mb-2 block">Who can message me</label>
                                 <select
                                     value={visibilitySettings.allowMessages}
-                                    onChange={(e) =>
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         setVisibilitySettings({
                                             ...visibilitySettings,
                                             allowMessages: e.target.value as VisibilitySettings['allowMessages'],
