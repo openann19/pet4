@@ -55,8 +55,8 @@ function deepMerge(
         !Array.isArray(targetValue)
       ) {
         (result as Record<string, unknown>)[key] = deepMerge(
-          targetValue as AbsoluteMaxUIModeConfig,
-          sourceValue as Partial<AbsoluteMaxUIModeConfig>
+          targetValue as unknown as AbsoluteMaxUIModeConfig,
+          sourceValue as unknown as Partial<AbsoluteMaxUIModeConfig>
         );
       } else if (sourceValue !== undefined) {
         (result as Record<string, unknown>)[key] = sourceValue;

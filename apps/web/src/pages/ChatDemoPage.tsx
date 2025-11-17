@@ -9,10 +9,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import MessageBubble from '@/components/chat/MessageBubble';
-import { ChatInputBar } from '@/components/chat/window/ChatInputBar';
 import TypingIndicator from '@/components/chat/TypingIndicator';
 import { Button } from '@/components/ui/button';
-import type { Message, MessageStatus, ReactionType } from '@/lib/chat-types';
+import type { Message, MessageStatus, ReactionType, TypingUser } from '@/lib/chat-types';
 import { cn } from '@/lib/utils';
 
 // Type definitions for testing APIs exposed to window
@@ -139,8 +138,7 @@ interface ChatDemoPageProps {
 
 export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
   const [messages, setMessages] = useState<Message[]>(variant === 'empty' ? [] : initialMessages);
-  const [isTyping, setIsTyping] = useState(false);
-  const [typingUser, setTypingUser] = useState<string>('');
+  const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
   const [isOnline, setIsOnline] = useState(true);
   const currentUserId = 'currentUser';
 
@@ -155,7 +153,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
         id: `msg-${Date.now()}`,
         content,
         senderId: currentUserId,
-        timestamp: Date.now(),
+        timestamp: new Date().toISOString(),
         status: 'sending',
       };
       setMessages(prev => [...prev, newMessage]);
@@ -274,7 +272,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
       id: `msg-${Date.now()}`,
       content,
       senderId: currentUserId,
-      timestamp: Date.now(),
+      timestamp: new Date().toISOString(),
       status: 'sending',
     };
     
@@ -306,17 +304,30 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
             Start a conversation by sending your first message.
           </p>
           <div className="flex justify-start">
-            <TypingIndicator data-testid="typing-indicator" visible={isTyping} user={typingUser} />
+            <TypingIndicator data-testid="typing-indicator" users={typingUsers} />
           </div>
         </div>
       </div>
       
       <div className="border-t bg-background p-4">
-        <ChatInputBar
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const input = e.currentTarget.elements.namedItem('message') as HTMLInputElement;
+            if (input.value.trim()) {
+              handleSendMessage(input.value);
+              input.value = '';
+            }
+          }}
           data-testid="chat-input-bar"
-          onSubmit={handleSendMessage}
-          placeholder="Type your first message..."
-        />
+        >
+          <input
+            name="message"
+            type="text"
+            placeholder="Type your first message..."
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          />
+        </form>
       </div>
     </div>
   );
@@ -328,9 +339,17 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
         <Button 
           size="sm" 
           variant="outline" 
-          onClick={() => setIsTyping(!isTyping)}
+          onClick={() => {
+            if (typingUsers.length > 0) {
+              setTypingUsers([]);
+            } else {
+              setTypingUsers([
+                { userId: 'user1', userName: 'Someone', startedAt: new Date().toISOString() }
+              ]);
+            }
+          }}
         >
-          {isTyping ? 'Hide' : 'Show'} Typing
+          {typingUsers.length > 0 ? 'Hide' : 'Show'} Typing
         </Button>
         <Button 
           size="sm" 
@@ -367,7 +386,7 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
               isOwn={isOwn}
               isClusterStart={isClusterStart}
               isClusterEnd={isClusterEnd}
-              index={index.toString()}
+              index={index}
               isNew={index === messages.length - 1}
               onReact={handleReact}
               onReply={handleReply}
@@ -380,12 +399,11 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
       })}
       
       {/* Typing Indicator */}
-      {isTyping && (
+      {typingUsers.length > 0 && (
         <div className="flex justify-start">
           <TypingIndicator 
             data-testid="typing-indicator"
-            visible={isTyping}
-            user={typingUser ?? 'Someone'}
+            users={typingUsers}
           />
         </div>
       )}
@@ -394,12 +412,25 @@ export function ChatDemoPage({ variant = 'default' }: ChatDemoPageProps) {
 
   const renderInput = () => (
     <div className="border-t bg-background p-4">
-      <ChatInputBar 
-        onSubmit={handleSendMessage}
-        placeholder="Type a message..."
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const input = e.currentTarget.elements.namedItem('message') as HTMLInputElement;
+          if (input.value.trim()) {
+            handleSendMessage(input.value);
+            input.value = '';
+          }
+        }}
         data-testid="chat-input-bar"
-        inputProps={{ 'data-testid': 'message-input' }}
-      />
+      >
+        <input
+          name="message"
+          type="text"
+          placeholder="Type a message..."
+          data-testid="message-input"
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        />
+      </form>
     </div>
   );
 
