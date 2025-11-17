@@ -18,6 +18,7 @@ export interface UseGlowBorderReturn {
   glowIntensity: MotionValue<number>;
   opacity: MotionValue<number>;
   progress: MotionValue<number>;
+  animatedStyle: { opacity: MotionValue<number> };
 }
 
 export function useGlowBorder(options: UseGlowBorderOptions = {}): UseGlowBorderReturn {
@@ -49,5 +50,6 @@ export function useGlowBorder(options: UseGlowBorderOptions = {}): UseGlowBorder
     glowIntensity,
     opacity,
     progress,
+    animatedStyle: { opacity },
   };
 }

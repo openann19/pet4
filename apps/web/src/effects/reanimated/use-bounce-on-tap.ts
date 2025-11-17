@@ -17,6 +17,7 @@ export interface UseBounceOnTapReturn {
   scale: MotionValue<number>;
   variants: Variants;
   handlePress: () => void;
+  animatedStyle: { scale: MotionValue<number> };
 }
 
 const DEFAULT_SCALE = 0.95;
@@ -77,5 +78,6 @@ export function useBounceOnTap(options: UseBounceOnTapOptions = {}): UseBounceOn
     scale,
     variants,
     handlePress,
+    animatedStyle: { scale },
   };
 }
