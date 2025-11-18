@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -246,7 +246,6 @@ function APIConfigActions({
   return (
     <div className="flex gap-2">
       <ServiceTestButton
-        serviceName={title}
         isTesting={sectionTesting}
         onTest={onTest}
         disabled={isTestDisabled || isProviderDisabled}

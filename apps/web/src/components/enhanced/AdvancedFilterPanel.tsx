@@ -4,7 +4,7 @@ import { X, Funnel, Check, Eraser } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useFilters } from '@/hooks/use-filters';

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Camera, Sparkle, VideoCamera, CheckCircle } from '@phosphor-icons/react';
 
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';

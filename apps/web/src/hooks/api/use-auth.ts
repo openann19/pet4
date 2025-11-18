@@ -35,8 +35,17 @@ export function useLogin(): UseMutationResult<AuthResponse, unknown, LoginCreden
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (credentials: LoginCredentials) =>
-      authAPI.login(credentials.email, credentials.password),
+    mutationFn: async (credentials: LoginCredentials) => {
+      const response = await authAPI.login(credentials.email, credentials.password);
+      // Transform API response to match AuthResponse shape
+      return {
+        user: response.data.user,
+        tokens: {
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        },
+      };
+    },
     onSuccess: (data) => {
       // Set user data in cache
       queryClient.setQueryData(queryKeys.user.profile, data.user);
@@ -54,7 +63,17 @@ export function useSignup(): UseMutationResult<AuthResponse, unknown, SignupData
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: SignupData) => authAPI.signup(data),
+    mutationFn: async (data: SignupData) => {
+      const response = await authAPI.signup(data);
+      // Transform API response to match AuthResponse shape
+      return {
+        user: response.data.user,
+        tokens: {
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+        },
+      };
+    },
     onSuccess: (data) => {
       // Set user data in cache
       queryClient.setQueryData(queryKeys.user.profile, data.user);
@@ -72,7 +91,11 @@ export function useLogout(): UseMutationResult<{ success: boolean }, unknown, vo
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => authAPI.logout(),
+    mutationFn: async () => {
+      const response = await authAPI.logout();
+      // Transform API response to unwrap data
+      return response.data;
+    },
     onSuccess: () => {
       // Clear all queries
       queryClient.clear();
@@ -89,7 +112,11 @@ export function useRefreshToken(): UseMutationResult<
   string
 > {
   return useMutation({
-    mutationFn: (refreshToken: string) => authAPI.refreshToken(refreshToken),
+    mutationFn: async (refreshToken: string) => {
+      const response = await authAPI.refreshToken(refreshToken);
+      // Transform API response to unwrap data
+      return response.data;
+    },
     // Note: Token refresh typically doesn't invalidate queries
     // The token is stored separately (e.g., in localStorage or httpOnly cookie)
   });

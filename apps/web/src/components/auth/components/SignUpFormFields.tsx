@@ -1,7 +1,7 @@
 import { User, EnvelopeSimple, LockKey, Eye, EyeSlash } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
