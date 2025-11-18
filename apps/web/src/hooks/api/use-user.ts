@@ -28,7 +28,11 @@ export interface Pet {
 export function useUser(): UseQueryResult<User> {
   return useQuery({
     queryKey: queryKeys.user.profile,
-    queryFn: async () => authAPI.getCurrentUser(),
+    queryFn: async () => {
+      const response = await authAPI.getCurrentUser();
+      // Unwrap the data field from API response
+      return response.data;
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -45,8 +49,9 @@ export function useUpdateUser(): UseMutationResult<User, unknown, Partial<User>,
     mutationFn: async (data: Partial<User>): Promise<User> => {
       // Note: This assumes authAPI has an update method
       // If not, you may need to add it to api-services.ts
-      const user = await authAPI.getCurrentUser();
-      return { ...user, ...data } as User;
+      const response = await authAPI.getCurrentUser();
+      // Unwrap the data field and merge with updates
+      return { ...response.data, ...data } as User;
     },
     onSuccess: (data) => {
       queryClient.setQueryData(queryKeys.user.profile, data);

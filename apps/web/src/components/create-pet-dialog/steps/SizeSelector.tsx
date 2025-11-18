@@ -1,4 +1,4 @@
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 
 interface SizeSelectorProps {
   size: 'small' | 'medium' | 'large' | 'extra-large';

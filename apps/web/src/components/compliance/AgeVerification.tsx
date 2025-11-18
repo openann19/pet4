@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { createLogger } from '@/lib/logger'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/Label'
+import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const logger = createLogger('AgeVerification')

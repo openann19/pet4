@@ -10,7 +10,7 @@ import {
 } from '@phosphor-icons/react';
 import { APIConfigSection } from './APIConfigSection';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 
 interface SectionHelperProps {
   config: APIConfig;

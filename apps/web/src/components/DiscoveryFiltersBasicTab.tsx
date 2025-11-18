@@ -3,7 +3,7 @@
 import React from 'react';
 import { X } from '@phosphor-icons/react';
 
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';

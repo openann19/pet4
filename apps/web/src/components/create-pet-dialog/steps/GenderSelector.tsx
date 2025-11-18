@@ -1,6 +1,6 @@
 import { MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 
 interface GenderSelectorProps {
   gender: 'male' | 'female';

@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 import {
   STORY_FILTERS,
   FILTER_CATEGORIES,

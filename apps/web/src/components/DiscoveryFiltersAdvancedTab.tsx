@@ -3,7 +3,7 @@
 import React from 'react';
 import { Lightning, CheckCircle, Clock, Sparkle, ChatCircle } from '@phosphor-icons/react';
 
-import { Label } from '@/components/ui/Label';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
