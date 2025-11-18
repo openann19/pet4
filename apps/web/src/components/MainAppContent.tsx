@@ -194,7 +194,13 @@ export function MainAppContent({
         <Toaster />
       </Suspense>
       <Suspense fallback={null}>
-        <BottomNavBar />
+        <BottomNavBar
+          currentView={currentView as any}
+          setCurrentView={(view) => {
+            haptics.impact('light');
+            onNavigate(view);
+          }}
+        />
       </Suspense>
     </div>
   );

@@ -579,13 +579,13 @@ export function MediaViewer({
                 style={headerStyle}
                 className="absolute top-0 left-0 right-0 z-50 p-4 bg-gradient-to-b from-black/80 to-transparent"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => { onOpenChange(false); }}
-                      className="rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                      className="h-9 w-9 rounded-full bg-black/70 hover:bg-black/90 text-white transition-colors"
                     >
                       <X size={24} />
                     </Button>
@@ -599,14 +599,14 @@ export function MediaViewer({
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => {
                         void handleDownload();
                       }}
-                      className="rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                      className="h-9 w-9 rounded-full bg-black/70 hover:bg-black/90 text-white transition-colors"
                     >
                       <DownloadSimple size={22} weight="bold" />
                     </Button>
@@ -616,14 +616,14 @@ export function MediaViewer({
                       onClick={() => {
                         void handleShare();
                       }}
-                      className="rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                      className="h-9 w-9 rounded-full bg-black/70 hover:bg-black/90 text-white transition-colors"
                     >
                       <Share size={22} weight="bold" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                      className="h-9 w-9 rounded-full bg-black/70 hover:bg-black/90 text-white transition-colors"
                     >
                       <DotsThree size={22} weight="bold" />
                     </Button>
@@ -675,12 +675,12 @@ export function MediaViewer({
                           style={videoControlsStyle}
                           className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent"
                         >
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3">
                             <Button
                               variant="ghost"
                               size="icon"
                               onClick={handleVideoClick}
-                              className="h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors shrink-0"
+                              className="h-9 w-9 rounded-full bg-black/70 hover:bg-black/90 text-white transition-colors shrink-0"
                             >
                               {isPlaying ? (
                                 <Pause size={20} weight="fill" />
@@ -689,7 +689,7 @@ export function MediaViewer({
                               )}
                             </Button>
 
-                            <span className="text-white text-sm font-medium min-w-11">
+                            <span className="text-white text-xs font-medium min-w-[3rem] text-center">
                               {formatTime(currentTime)}
                             </span>
 
@@ -701,7 +701,7 @@ export function MediaViewer({
                               className="flex-1"
                             />
 
-                            <span className="text-white/60 text-sm min-w-11 text-right">
+                            <span className="text-white/60 text-xs min-w-[3rem] text-right">
                               {formatTime(duration || 0)}
                             </span>
 
@@ -709,7 +709,7 @@ export function MediaViewer({
                               variant="ghost"
                               size="icon"
                               onClick={toggleMute}
-                              className="h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors shrink-0"
+                              className="h-9 w-9 rounded-full bg-black/70 hover:bg-black/90 text-white transition-colors shrink-0"
                             >
                               {isMuted ? (
                                 <SpeakerSlash size={20} weight="fill" />
@@ -750,7 +750,7 @@ export function MediaViewer({
                       variant="ghost"
                       size="icon"
                       onClick={handlePrevious}
-                      className="h-12 w-12 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm"
+                      className="h-10 w-10 rounded-full bg-black/70 hover:bg-black/90 text-white shadow-lg"
                     >
                       <CaretLeft size={32} weight="bold" />
                     </Button>
@@ -766,7 +766,7 @@ export function MediaViewer({
                       variant="ghost"
                       size="icon"
                       onClick={handleNext}
-                      className="h-12 w-12 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm"
+                      className="h-10 w-10 rounded-full bg-black/70 hover:bg-black/90 text-white shadow-lg"
                     >
                       <CaretRight size={32} weight="bold" />
                     </Button>
@@ -776,7 +776,7 @@ export function MediaViewer({
             )}
 
             {media.length > 1 && (
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full">
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-black/70 px-4 py-2 rounded-full shadow-lg">
                 {media.map((_, index) => (
                   <button
                     key={index}

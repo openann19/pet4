@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import type { View } from '@/lib/routes';
@@ -28,16 +28,33 @@ interface BottomNavBarProps {
 export default function BottomNavBar({ currentView, setCurrentView }: BottomNavBarProps) {
   const [hoveredItem, setHoveredItem] = useState<View | null>(null);
 
+  const activeIndex = useMemo(
+    () => items.findIndex((item) => item.view === currentView),
+    [currentView]
+  );
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 w-full">
       <nav 
-        className="border-t border-border/10 bg-background shadow-lg"
+        className="border-t border-border/10 bg-background/95 backdrop-blur-sm shadow-[0_-4px_20px_rgba(0,0,0,0.25)]"
         aria-label="Bottom navigation"
       >
         <ul 
-          className="grid grid-cols-6 max-w-full mx-auto px-1 py-2"
+          className="relative grid grid-cols-6 max-w-xl mx-auto px-2 py-2 gap-1"
           role="list"
         >
+          {activeIndex >= 0 && (
+            <li
+              aria-hidden="true"
+              className={cn(
+                'pointer-events-none absolute inset-y-1 rounded-2xl bg-accent/10 transition-transform duration-250 ease-out',
+              )}
+              style={{
+                transform: `translateX(${activeIndex * 100}%)`,
+                width: 'calc(100% / 6)',
+              }}
+            />
+          )}
           {items.map((item) => {
             const isActive = currentView === item.view;
             const isHovered = hoveredItem === item.view;
@@ -80,7 +97,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave, onClick }: NavIt
   return (
     <li className="text-center relative" role="listitem">
       <button
-        className="block relative py-2 px-1 w-full transition-colors duration-150 hover:bg-accent/5 active:bg-accent/10 rounded-lg"
+        className="block relative py-2 px-1 w-full rounded-2xl transition-colors duration-150 hover:bg-accent/10 active:bg-accent/15"
         onMouseEnter={onHover}
         onMouseLeave={onLeave}
         onClick={handleClick}
@@ -91,8 +108,8 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave, onClick }: NavIt
           {/* Icon container */}
           <div 
             className={cn(
-              'relative transition-all duration-150',
-              isActive ? 'scale-110' : 'scale-100',
+              'relative transition-transform duration-200',
+              isActive ? 'scale-110 translate-y-0' : 'scale-100 translate-y-[1px]',
               isHovered && !isActive ? 'scale-105' : ''
             )}
             aria-hidden="true"
@@ -103,17 +120,12 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave, onClick }: NavIt
           {/* Label */}
           <span
             className={cn(
-              'text-xs font-medium transition-colors duration-150',
+              'text-[11px] font-medium transition-colors duration-150',
               isActive ? 'text-primary font-semibold' : 'text-muted-foreground'
             )}
           >
             {item.label}
           </span>
-
-          {/* Active indicator line */}
-          {isActive && (
-            <div className="absolute bottom-0 w-8 h-0.5 rounded-full bg-primary" />
-          )}
 
           {/* Badge */}
           {item.badge !== null && item.badge !== undefined && item.badge > 0 && (

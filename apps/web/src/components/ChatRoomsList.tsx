@@ -60,7 +60,7 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
   }
 
   return (
-    <div className="space-y-2 overflow-y-auto max-h-full">
+    <div className="space-y-2 overflow-y-auto max-h-full pr-1">
       {rooms.map((room, idx) => {
         const unreadValue =
           typeof room.unreadCount === 'number'
@@ -69,6 +69,7 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
               ? Object.values(room.unreadCount).reduce((sum, count) => sum + count, 0)
               : 0;
         const hasUnread = unreadValue > 0;
+        const isSelected = selectedRoomId === room.id;
 
         return (
           <MotionView
@@ -77,134 +78,92 @@ export default function ChatRoomsList({ rooms, onSelectRoom, selectedRoomId }: C
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: idx * 0.05, type: 'spring', stiffness: 300, damping: 30 }}
           >
-            <MotionView
-              className={`w-full text-left p-4 rounded-2xl transition-all relative overflow-hidden ${
-                String(selectedRoomId === room.id
-                                    ? 'glass-strong shadow-lg scale-[1.02] border border-primary/30'
-                                    : 'glass-effect hover:glass-strong hover:scale-[1.01]')
-              }`}
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <button
-                type="button"
-                onClick={() => onSelectRoom(room)}
-                className="w-full text-left"
-              >
-              {hasUnread && (
-                <MotionView
-                  className="absolute inset-0 bg-linear-to-r from-primary/5 to-accent/5"
-                  animate={{ opacity: [0.5, 0.8, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
+            <button
+              type="button"
+              onClick={() => onSelectRoom(room)}
+              className={cn(
+                'w-full rounded-2xl border px-4 py-3 text-left transition-all flex items-start gap-3 bg-background/80 hover:bg-background/95',
+                isSelected ? 'border-primary shadow-lg' : 'border-border hover:border-primary/40'
               )}
-
-              <div className="flex items-start gap-3 relative z-10">
-                <div className="relative shrink-0">
-                  <MotionView
-                    animate={hasUnread ? { scale: [1, 1.05, 1] } : {}}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <Avatar
-                      className={cn('w-14 h-14 ring-2', hasUnread ? 'ring-primary' : 'ring-border/40')}
-                    >
-                      <AvatarImage src={room.matchedPetPhoto} alt={room.matchedPetName ?? 'Pet'} />
-                      <AvatarFallback className="bg-linear-to-br from-primary to-accent text-white font-bold">
-                        {room.matchedPetName?.[0] ?? '?'}
-                      </AvatarFallback>
-                    </Avatar>
-                  </MotionView>
-
-                  {hasUnread && (
-                    <MotionView
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-1 -right-1 min-w-6 h-6 rounded-full bg-linear-to-br from-accent to-primary flex items-center justify-center shadow-lg px-2"
-                    >
-                      <MotionView
-                        className="text-white text-xs font-bold"
-                        animate={{ scale: [1, 1.1, 1] }}
-                        transition={{ duration: 1, repeat: Infinity }}
-                      >
-                        {unreadValue > 99 ? '99+' : String(unreadValue)}
-                      </MotionView>
-                    </MotionView>
-                  )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <h3
-                      className={cn('truncate', hasUnread ? 'text-foreground' : 'text-foreground/90', getTypographyClasses('body'), 'font-semibold')}
-                    >
-                      {room.matchedPetName ?? 'Unknown Pet'}
-                    </h3>
-                    {room.lastMessage && (
-                      <span
-                        className={cn('shrink-0 ml-2', hasUnread ? 'text-primary' : 'text-muted-foreground', getTypographyClasses('body-small'))}
-                      >
-                        {formatMessageTime(
-                          room.lastMessage.timestamp ?? room.lastMessage.createdAt
-                        )}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {room.lastMessage ? (
-                      <div className="flex-1 min-w-0 flex items-center gap-1">
-                        {room.lastMessage.status &&
-                          ['sent', 'delivered', 'read'].includes(room.lastMessage.status) && (
-                            <span className="shrink-0">
-                              {room.lastMessage.status === 'read' ? (
-                                <Checks size={14} weight="bold" className="text-primary" />
-                              ) : (
-                                <Check size={14} weight="bold" className="text-muted-foreground" />
-                              )}
-                            </span>
-                          )}
-                        <p
-                          className={cn('truncate', hasUnread ? 'text-foreground' : 'text-muted-foreground', getTypographyClasses('body-small'))}
-                        >
-                          {room.lastMessage.type === 'text'
-                            ? room.lastMessage.content
-                            : room.lastMessage.type === 'sticker'
-                              ? `${room.lastMessage.content} Sticker`
-                              : room.lastMessage.type === 'voice'
-                                ? '🎤 Voice message'
-                                : '📷 Image'}
-                        </p>
-                      </div>
-                    ) : (
-                      <p className={cn('text-muted-foreground italic flex-1 truncate', getTypographyClasses('body-small'))}>
-                        Say hello! 👋
-                      </p>
-                    )}
-                  </div>
-
-                  {room.isTyping && (
-                    <MotionView
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-center gap-1 mt-1"
-                    >
-                      <div className="flex gap-1">
-                        {[0, 1, 2].map((i) => (
-                          <MotionView
-                            key={i}
-                            className="w-2 h-2 rounded-full bg-primary"
-                            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
-                            transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs text-primary">typing...</span>
-                    </MotionView>
-                  )}
-                </div>
+            >
+              <div className="relative shrink-0">
+                <Avatar
+                  className={cn('w-12 h-12 ring-2', hasUnread ? 'ring-primary/60' : 'ring-border/50')}
+                >
+                  <AvatarImage src={room.matchedPetPhoto} alt={room.matchedPetName ?? 'Pet'} />
+                  <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-bold">
+                    {room.matchedPetName?.[0] ?? '?'}
+                  </AvatarFallback>
+                </Avatar>
+                {hasUnread && (
+                  <span className="absolute -top-1 -right-1 min-w-[1.5rem] h-6 rounded-full bg-primary text-white text-xs font-semibold flex items-center justify-center px-1">
+                    {unreadValue > 99 ? '99+' : String(unreadValue)}
+                  </span>
+                )}
               </div>
-              </button>
-            </MotionView>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h3
+                    className={cn(
+                      'truncate text-sm font-semibold',
+                      hasUnread ? 'text-foreground' : 'text-foreground/90'
+                    )}
+                  >
+                    {room.matchedPetName ?? 'Unknown Pet'}
+                  </h3>
+                  {room.lastMessage && (
+                    <span className="text-[11px] text-muted-foreground">
+                      {formatMessageTime(room.lastMessage.timestamp ?? room.lastMessage.createdAt)}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  {room.lastMessage ? (
+                    <div className="flex-1 min-w-0 flex items-center gap-1">
+                      {room.lastMessage.status &&
+                        ['sent', 'delivered', 'read'].includes(room.lastMessage.status) && (
+                          <span className="shrink-0">
+                            {room.lastMessage.status === 'read' ? (
+                              <Checks size={14} weight="bold" className="text-primary" />
+                            ) : (
+                              <Check size={14} weight="bold" className="text-muted-foreground" />
+                            )}
+                          </span>
+                        )}
+                      <p className={cn('truncate', hasUnread && 'text-foreground')}>
+                        {room.lastMessage.type === 'text'
+                          ? room.lastMessage.content
+                          : room.lastMessage.type === 'sticker'
+                            ? `${room.lastMessage.content} Sticker`
+                            : room.lastMessage.type === 'voice'
+                              ? '🎤 Voice message'
+                              : '📷 Image'}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground italic truncate">Say hello! 👋</p>
+                  )}
+                </div>
+
+                {room.isTyping && (
+                  <div className="flex items-center gap-1 mt-1 text-[11px] text-primary">
+                    <div className="flex gap-1">
+                      {[0, 1, 2].map((i) => (
+                        <MotionView
+                          key={i}
+                          className="w-1.5 h-1.5 rounded-full bg-primary"
+                          animate={{ scale: [1, 1.4, 1], opacity: [0.4, 1, 0.4] }}
+                          transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                        />
+                      ))}
+                    </div>
+                    typing…
+                  </div>
+                )}
+              </div>
+            </button>
           </MotionView>
         );
       })}
