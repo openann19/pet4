@@ -180,8 +180,8 @@ class AdoptionMarketplaceService {
 
       // Convert AdoptionProfile to AdoptionListing format
       return this.convertProfileToListing(profile, data);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create listing', err, { ownerId: data.ownerId });
       throw err;
     }
@@ -194,8 +194,8 @@ class AdoptionMarketplaceService {
 
       // Convert AdoptionProfile to AdoptionListing format
       return this.convertProfileToListing(profile);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get listing', err, { id });
       return undefined;
     }
@@ -220,8 +220,8 @@ class AdoptionMarketplaceService {
       listings = this.sortListings(listings, filters?.sortBy);
 
       return listings;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get active listings', err, { filters });
       return [];
     }
@@ -233,8 +233,8 @@ class AdoptionMarketplaceService {
       return response.profiles
         .filter((p: AdoptionProfile) => p.shelterId === userId)
         .map((p: AdoptionProfile) => this.convertProfileToListing(p));
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user listings', err, { userId });
       return [];
     }
@@ -257,8 +257,8 @@ class AdoptionMarketplaceService {
               ? 'on-hold'
               : 'available'
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update listing status', err, { listingId, status });
       throw err;
     }
@@ -303,8 +303,8 @@ class AdoptionMarketplaceService {
       const requestData = this.mapApplicationDataToApiRequest(data);
       const apiApp = await adoptionApi.submitApplication(requestData);
       return this.mapApiApplicationToMarketplace(apiApp);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create application', err, { listingId: data.listingId });
       throw err;
     }
@@ -360,8 +360,8 @@ class AdoptionMarketplaceService {
         reviewNotes: apiApp.reviewNotes,
         ownerNotes: undefined,
       } satisfies AdoptionApplication;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get application', err, { id });
       return undefined;
     }
@@ -416,8 +416,8 @@ class AdoptionMarketplaceService {
             ownerNotes: undefined,
           }) satisfies AdoptionApplication
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get listing applications', err, { listingId });
       return [];
     }
@@ -472,8 +472,8 @@ class AdoptionMarketplaceService {
             ownerNotes: undefined,
           }) satisfies AdoptionApplication
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user applications', err, { userId });
       return [];
     }
@@ -504,8 +504,8 @@ class AdoptionMarketplaceService {
           await this.updateListingStatus(application.listingId, 'adopted');
         }
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update application status', err, { applicationId, status });
       throw err;
     }
@@ -520,8 +520,8 @@ class AdoptionMarketplaceService {
           (a: AdoptionListing, b: AdoptionListing) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get pending listings', err);
       return [];
     }
@@ -581,8 +581,8 @@ class AdoptionMarketplaceService {
           (a: AdoptionApplication, b: AdoptionApplication) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get pending applications', err);
       return [];
     }

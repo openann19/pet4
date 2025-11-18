@@ -68,8 +68,8 @@ export class PhotoModerationAuditService {
       });
 
       return auditLog;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to log audit event', err, {
         photoId: options.photoId,
         action: options.action,
@@ -101,8 +101,8 @@ export class PhotoModerationAuditService {
       });
 
       return logs;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get photo audit logs', err, { photoId });
       throw err;
     }
@@ -131,8 +131,8 @@ export class PhotoModerationAuditService {
       });
 
       return logs;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user audit logs', err, { userId });
       throw err;
     }
@@ -164,8 +164,8 @@ export class PhotoModerationAuditService {
       });
 
       return logs;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get action audit logs', err, { action });
       throw err;
     }
@@ -183,8 +183,8 @@ export class PhotoModerationAuditService {
         auditIds.push(auditId);
         await storage.set(indexKey, auditIds);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to index by photo', err, { photoId, auditId });
       throw err;
     }
@@ -202,8 +202,8 @@ export class PhotoModerationAuditService {
         auditIds.push(auditId);
         await storage.set(indexKey, auditIds);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to index by user', err, { userId, auditId });
       throw err;
     }
@@ -221,8 +221,8 @@ export class PhotoModerationAuditService {
         auditIds.push(auditId);
         await storage.set(indexKey, auditIds);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to index by action', err, { action, auditId });
       throw err;
     }

@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming, Easing } from '@petspark/motion';
-import type { AnimatedStyle } from '@petspark/motion';
+import { useSharedValue, usewithTiming, Easing } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { useUIConfig } from '@/hooks/use-ui-config';
 
 export interface UseParticleBurstOnDeleteOptions {

@@ -55,10 +55,10 @@ export function useStorage<T>(
           setIsLoading(false);
           isInitializedRef.current = true;
         }
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           `Failed to load value for key ${key}`,
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
         if (!cancelled) {
           setValueState(defaultValueRef.current);
@@ -72,7 +72,7 @@ export function useStorage<T>(
       void loadValue().catch((error) => {
         logger.error(
           `Failed to load value for key ${key} in useEffect`,
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
       });
     }
@@ -102,10 +102,10 @@ export function useStorage<T>(
 
         // NOTE: Do NOT call setValueState again here - it was already set above
         // Calling it twice causes infinite loops in components with useEffect dependencies
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           `Failed to set value for key ${key}`,
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
 
         // Revert on error by loading current value from storage
@@ -120,7 +120,7 @@ export function useStorage<T>(
         }
 
         // Re-throw error so caller can handle it
-        throw error;
+        throw _error;
       }
     },
     [key]
@@ -131,10 +131,10 @@ export function useStorage<T>(
     try {
       setValueState(defaultValueRef.current);
       await storage.delete(key);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         `Failed to delete value for key ${key}`,
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }, [key]);
@@ -167,7 +167,7 @@ export function useStorageOnce<T>(key: string, defaultValue: T): T {
         .catch((error) => {
           logger.error(
             'Failed to initialize storage',
-            error instanceof Error ? error : new Error(String(error))
+            _error instanceof Error ? _error : new Error(String(_error))
           );
         });
     }

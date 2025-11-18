@@ -40,7 +40,7 @@ export default function PlaydateMap({ playdates, onSelectPlaydate, onClose }: Pl
         // User can still view playdates without their location
         if (error instanceof Error && error.name !== 'NotAllowedError') {
           // Only handle unexpected errors, permission denials are expected
-          const err = error instanceof Error ? error : new Error(String(error));
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           console.error('PlaydateMap getCurrentLocation error', err);
         }
       });

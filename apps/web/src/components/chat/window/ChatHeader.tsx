@@ -11,7 +11,7 @@ import type { CSSProperties } from 'react'
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view'
 import { useAnimatedStyle } from '@petspark/motion'
 import type { SharedValue } from '@petspark/motion'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import type  from '@/effects/reanimated/animated-view'
 
 export interface ChatHeaderProps {
   room: {

@@ -346,10 +346,10 @@ export default function AdoptionApplicationReview() {
         ]);
         setApplications(appsData);
         setProfiles(profilesData.profiles);
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           'Failed to load applications',
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
         toast.error('Failed to load applications');
       } finally {
@@ -400,8 +400,8 @@ export default function AdoptionApplicationReview() {
         setReviewAction(action);
         setReviewNotes('');
         setShowReviewDialog(true);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to open review dialog', err, {
           applicationId: application._id,
           action,
@@ -472,12 +472,12 @@ export default function AdoptionApplicationReview() {
       setSelectedApplication(null);
       setReviewAction(null);
       setReviewNotes('');
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to submit review',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
-      haptics.trigger('error');
+      haptics.trigger('_error');
       toast.error('Failed to submit review. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -495,8 +495,8 @@ export default function AdoptionApplicationReview() {
         }
         return next;
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle expanded state', err, { appId });
     }
   }, []);

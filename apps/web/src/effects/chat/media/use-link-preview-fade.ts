@@ -14,7 +14,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import {
   Easing,
-  useAnimatedStyle,
+  use
   useSharedValue,
   withRepeat,
   withSequence,
@@ -26,7 +26,7 @@ import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { logEffectStart, logEffectEnd } from '../core/telemetry';
 import { createLogger } from '@/lib/logger';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 const logger = createLogger('link-preview-fade');
 
@@ -64,8 +64,8 @@ const SHIMMER_DURATION = 1200; // ms
  * @example
  * ```tsx
  * const {
- *   skeletonAnimatedStyle,
- *   contentAnimatedStyle,
+ *   skeleton
+ *   content
  *   shimmerAnimatedStyle
  * } = useLinkPreviewFade({
  *   isLoading: true,
@@ -264,8 +264,8 @@ export function useLinkPreviewFade(
     skeletonTranslateY,
     contentTranslateY,
     shimmerPosition,
-    skeletonAnimatedStyle,
-    contentAnimatedStyle,
-    shimmerAnimatedStyle,
+    skeleton
+    content
+    shimmer
   };
 }

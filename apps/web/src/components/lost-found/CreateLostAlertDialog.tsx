@@ -207,8 +207,8 @@ export function CreateLostAlertDialog({
       logger.info('Lost alert created', { petName, species, userId: user.id });
       onSuccess();
       onClose();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create lost alert', err, { petName, species });
       toast.error('Failed to create alert. Please try again.');
     } finally {

@@ -1,9 +1,9 @@
 'use client';
 
-import { useSharedValue, useAnimatedStyle, withTiming, withDelay } from '@petspark/motion';
+import { useSharedValue, usewithTiming, withDelay } from '@petspark/motion';
 import { useEffect } from 'react';
 import { timingConfigs } from './transitions';
-import type { AnimatedStyle } from './animated-view';
+import type  from './animated-view';
 
 export interface UseStaggeredItemOptions {
   index: number;

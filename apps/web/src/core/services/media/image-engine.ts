@@ -555,8 +555,8 @@ export async function applyImagePipeline(
       height: h,
       ...(info.size !== undefined && { bytes: info.size }),
     };
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Image pipeline failed', err, {
       inputUri: input.uri,
       operationCount: ops.length,

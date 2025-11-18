@@ -135,8 +135,8 @@ Return ONLY valid JSON in this exact structure:
         ratings,
       };
     });
-  } catch (error) {
-    const errorInfo = parseLLMError(error);
+  } catch (_error) {
+    const errorInfo = parseLLMError(_error);
     // Debug only - expected fallback behavior when LLM service is unavailable
     logger.debug(errorInfo.technicalMessage);
     // User-friendly message for expected fallback

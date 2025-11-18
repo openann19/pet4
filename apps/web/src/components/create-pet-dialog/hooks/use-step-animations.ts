@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
-import type { AnimatedStyle } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming } from '@petspark/motion';
+import type  from '@petspark/motion';
 import type { Step } from '../create-pet-types';
 
 export function useStepAnimations(currentStep: Step) {

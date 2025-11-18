@@ -29,7 +29,7 @@ import type { Post } from '@/lib/community-types';
 import { PostCard } from '@/components/community/PostCard';
 import { communityService } from '@/lib/community-service';
 import { createLogger } from '@/lib/logger';
-import { useMotionValue, useAnimatedStyle, animate, MotionView } from '@petspark/motion';
+import { useMotionValue, useanimate, MotionView } from '@petspark/motion';
 
 const logger = createLogger('CommunityManagement');
 
@@ -102,8 +102,8 @@ export default function CommunityManagement() {
       setIsLoading(true);
       const feedResponse = await communityService.getFeed({ mode: 'for-you', limit: 1000 });
       setPosts(feedResponse.posts);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load posts', err, { action: 'loadPosts' });
       toast.error('Failed to load posts');
     } finally {
@@ -157,7 +157,7 @@ export default function CommunityManagement() {
         }
         return [...(prev ?? []), postId];
       }).catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to hide post', err, { postId });
         toast.error('Failed to hide post');
       });
@@ -169,7 +169,7 @@ export default function CommunityManagement() {
   const handleUnhidePost = useCallback(
     (postId: string) => {
       void setHiddenPosts((prev) => (prev ?? []).filter((id) => id !== postId)).catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to unhide post', err, { postId });
         toast.error('Failed to restore post');
       });
@@ -195,8 +195,8 @@ export default function CommunityManagement() {
       setShowDeleteDialog(false);
       setSelectedPost(null);
       await loadPosts();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to delete post', err, { postId, action: 'deletePost' });
       toast.error('Failed to delete post');
     }
@@ -362,7 +362,7 @@ export default function CommunityManagement() {
               variant="destructive"
               onClick={() => {
                 void handleDeletePost().catch((error) => {
-                  const err = error instanceof Error ? error : new Error(String(error));
+                  const err = _error instanceof Error ? _error : new Error(String(_error));
                   logger.error('Failed to delete post from button', err);
                 });
               }}

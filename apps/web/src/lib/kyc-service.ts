@@ -25,8 +25,8 @@ export async function startKYC(
       ...(result.providerToken ? { providerToken: result.providerToken } : {}),
       ...(result.url ? { url: result.url } : {}),
     };
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('KYC start failed', err, { action: 'startKYC', userId, provider });
     throw err;
   }
@@ -52,8 +52,8 @@ export async function handleKYCWebhook(
       status,
       ...data,
     });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('KYC webhook handling failed', err, { submissionId, status });
     throw err;
   }
@@ -65,8 +65,8 @@ export async function handleKYCWebhook(
 export async function getKYCStatus(userId: string): Promise<KYCStatus> {
   try {
     return await kycApi.getKYCStatus(userId);
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get KYC status', err, { userId });
     return 'not_started';
   }
@@ -78,8 +78,8 @@ export async function getKYCStatus(userId: string): Promise<KYCStatus> {
 export async function getKYCSubmission(submissionId: string): Promise<KYCSubmission | null> {
   try {
     return await kycApi.getKYCSubmission(submissionId);
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get KYC submission', err, { submissionId });
     return null;
   }
@@ -101,8 +101,8 @@ export async function manualKYCReview(
       actorUserId,
       ...(reason ? { reason } : {}),
     });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Manual KYC review failed', err, { submissionId, decision, actorUserId });
     throw err;
   }
@@ -122,8 +122,8 @@ export async function recordAgeVerification(
       ageVerified,
       ...(country ? { country } : {}),
     });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to record age verification', err, { userId, ageVerified });
     throw err;
   }
@@ -149,8 +149,8 @@ export async function recordConsent(
       ...(ipAddress ? { ipAddress } : {}),
       ...(userAgent ? { userAgent } : {}),
     });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to record consent', err, { userId, type, version });
     throw err;
   }
@@ -162,8 +162,8 @@ export async function recordConsent(
 export async function getUserConsents(userId: string): Promise<ConsentRecord[]> {
   try {
     return await kycApi.getUserConsents(userId);
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get user consents', err, { userId });
     return [];
   }

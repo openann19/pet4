@@ -20,7 +20,7 @@ import {
 } from '@/lib/pet-profile-templates';
 import { cn } from '@/lib/utils';
 import {
-  useAnimatedStyle,
+  use
   useSharedValue,
   withTiming,
   withRepeat,
@@ -28,7 +28,7 @@ import {
   MotionView,
   type MotionValue,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 interface PetProfileTemplatesDialogProps {
   open: boolean;

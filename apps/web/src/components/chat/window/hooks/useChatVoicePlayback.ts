@@ -84,9 +84,9 @@ export function useChatVoicePlayback({
             duration: 1500,
             position: 'top-center',
           });
-        } catch (error) {
-          const err = normalizeError(error);
-          logger.error('ChatWindowNew handleVoiceRecorded onloadend error', err, { messageId });
+        } catch (_error) {
+          const err = normalizeError(_error);
+          logger.error('ChatWindowNew handleVoiceRecorded onloadend _error', err, { messageId });
           toast.error('Failed to process voice message. Please try again.');
           setIsRecording(false);
         }
@@ -103,9 +103,9 @@ export function useChatVoicePlayback({
       };
 
       reader.readAsDataURL(audioBlob);
-    } catch (error) {
-      const err = normalizeError(error);
-      logger.error('ChatWindowNew handleVoiceRecorded error', err, { duration });
+    } catch (_error) {
+      const err = normalizeError(_error);
+      logger.error('ChatWindowNew handleVoiceRecorded _error', err, { duration });
       toast.error('Failed to record voice message. Please try again.');
       setIsRecording(false);
     }
@@ -153,7 +153,7 @@ export function useChatVoicePlayback({
       audioRef.current = null;
     };
     void audio.play().catch((error) => {
-      const err = normalizeError(error);
+      const err = normalizeError(_error);
       logger.error('ChatWindowNew audio.play() error', err, { messageId });
       toast.error('Failed to play voice message. Please try again.');
       setPlayingVoice(null);

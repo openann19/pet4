@@ -3,7 +3,7 @@
 import { useEffect, useCallback } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withTiming,
   withRepeat,
@@ -13,7 +13,7 @@ import {
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 /**
  * Hook to replace motion.div with initial/animate props

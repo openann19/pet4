@@ -49,7 +49,7 @@ export function useAppState(): UseAppStateReturn {
 
   const handleWelcomeGetStarted = (): void => {
     setHasSeenWelcome(true).catch((error: unknown) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to set hasSeenWelcome', err);
     });
     setAuthMode('signup');
@@ -58,7 +58,7 @@ export function useAppState(): UseAppStateReturn {
 
   const handleWelcomeSignIn = (): void => {
     setHasSeenWelcome(true).catch((error: unknown) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to set hasSeenWelcome', err);
     });
     setAuthMode('signin');
@@ -67,7 +67,7 @@ export function useAppState(): UseAppStateReturn {
 
   const handleWelcomeExplore = (): void => {
     setHasSeenWelcome(true).catch((error: unknown) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to set hasSeenWelcome', err);
     });
     setIsGuestMode(true);

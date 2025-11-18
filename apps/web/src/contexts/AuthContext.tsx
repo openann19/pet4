@@ -95,8 +95,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response = await authAPI.getCurrentUser();
       setUser(response.data);
       logger.info('User profile loaded', { userId: response.data.id });
-    } catch (error) {
-      logger.error('Failed to load user profile', error);
+    } catch (_error) {
+      logger.error('Failed to load user profile', _error);
       // Token might be invalid, clear it
       try {
         if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
@@ -138,9 +138,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             logger.info('User profile loaded', { userId: response.data.id });
           }
         }
-      } catch (error) {
+      } catch (_error) {
         if (!cancelled) {
-          logger.error('Failed to initialize auth', error);
+          logger.error('Failed to initialize auth', _error);
           // Token might be invalid, clear it
           try {
             if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
@@ -193,11 +193,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       logger.info('User logged in successfully', { userId: response.data.user.id });
       return response.data.user;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : 'Login failed';
       setError(errorMessage);
-      logger.error('Login failed', error);
-      throw error;
+      logger.error('Login failed', _error);
+      throw _error;
     } finally {
       setIsLoading(false);
     }
@@ -227,11 +227,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       logger.info('User registered successfully', { userId: response.data.user.id });
       return response.data.user;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : 'Registration failed';
       setError(errorMessage);
-      logger.error('Registration failed', error);
-      throw error;
+      logger.error('Registration failed', _error);
+      throw _error;
     } finally {
       setIsLoading(false);
     }
@@ -240,8 +240,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     try {
       await authAPI.logout();
-    } catch (error) {
-      logger.warn('Logout API call failed, proceeding with local logout', error);
+    } catch (_error) {
+      logger.warn('Logout API call failed, proceeding with local logout', _error);
     }
 
     // Clear local state
@@ -268,9 +268,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const refreshAuth = async () => {
     try {
       await loadUserProfile();
-    } catch (error) {
-      logger.error('Failed to refresh auth', error);
-      throw error;
+    } catch (_error) {
+      logger.error('Failed to refresh auth', _error);
+      throw _error;
     }
   };
 
@@ -318,10 +318,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       // For now, throw error as OAuth not yet implemented in API
       throw new Error('Google sign in not yet implemented');
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Google sign in failed';
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : 'Google sign in failed';
       setError(errorMessage);
-      logger.error('Google sign in failed', { error });
+      logger.error('Google sign in failed', { _error });
       throw error;
     } finally {
       setIsLoading(false);
@@ -337,10 +337,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       // For now, throw error as OAuth not yet implemented in API
       throw new Error('Apple sign in not yet implemented');
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Apple sign in failed';
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : 'Apple sign in failed';
       setError(errorMessage);
-      logger.error('Apple sign in failed', { error });
+      logger.error('Apple sign in failed', { _error });
       throw error;
     } finally {
       setIsLoading(false);
@@ -380,8 +380,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setSessionExpiresAt(new Date(Date.now() + 24 * 60 * 60 * 1000)); // 24 hours
       
       logger.info('Session extended successfully');
-    } catch (error) {
-      logger.error('Failed to extend session', { error });
+    } catch (_error) {
+      logger.error('Failed to extend session', { _error });
       throw error;
     }
   }, [user]);

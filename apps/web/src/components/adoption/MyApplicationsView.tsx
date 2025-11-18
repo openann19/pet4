@@ -71,10 +71,10 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
           (a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
         )
       );
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to load applications',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     } finally {
       setIsLoading(false);

@@ -942,7 +942,7 @@ vi.mock('@/lib/realtime', () => {
         callbacks.forEach((callback) => {
           try {
             callback(data);
-          } catch (error) {
+          } catch (_error) {
             // Ignore errors in test
           }
         });

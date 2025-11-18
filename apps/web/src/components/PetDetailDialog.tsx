@@ -167,9 +167,9 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                 try {
                   haptics.trigger('light');
                   onOpenChange(false);
-                } catch (error) {
-                  const err = error instanceof Error ? error : new Error(String(error));
-                  logger.error('PetDetailDialog close button error', err);
+                } catch (_error) {
+                  const err = _error instanceof Error ? _error : new Error(String(_error));
+                  logger.error('PetDetailDialog close button _error', err);
                   // Still close dialog even if haptics fails
                   onOpenChange(false);
                 }
@@ -201,9 +201,9 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     onClick={() => {
                       try {
                         prevPhoto();
-                      } catch (error) {
-                        const err = error instanceof Error ? error : new Error(String(error));
-                        logger.error('PetDetailDialog prevPhoto error', err);
+                      } catch (_error) {
+                        const err = _error instanceof Error ? _error : new Error(String(_error));
+                        logger.error('PetDetailDialog prevPhoto _error', err);
                       }
                     }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 glass-strong rounded-full flex items-center justify-center shadow-2xl border border-white/30 backdrop-blur-xl opacity-0 group-hover:opacity-100 transition-opacity z-30"
@@ -214,9 +214,9 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                     onClick={() => {
                       try {
                         nextPhoto();
-                      } catch (error) {
-                        const err = error instanceof Error ? error : new Error(String(error));
-                        logger.error('PetDetailDialog nextPhoto error', err);
+                      } catch (_error) {
+                        const err = _error instanceof Error ? _error : new Error(String(_error));
+                        logger.error('PetDetailDialog nextPhoto _error', err);
                       }
                     }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 glass-strong rounded-full flex items-center justify-center shadow-2xl border border-white/30 backdrop-blur-xl opacity-0 group-hover:opacity-100 transition-opacity z-30"
@@ -232,9 +232,9 @@ export default function PetDetailDialog({ pet, open, onOpenChange }: PetDetailDi
                             if (idx >= 0 && idx < photos.length) {
                               goToPhoto(idx);
                             }
-                          } catch (error) {
-                            const err = error instanceof Error ? error : new Error(String(error));
-                            logger.error('PetDetailDialog goToPhoto error', err, { index: idx });
+                          } catch (_error) {
+                            const err = _error instanceof Error ? _error : new Error(String(_error));
+                            logger.error('PetDetailDialog goToPhoto _error', err, { index: idx });
                           }
                         }}
                         className={`h-2 rounded-full transition-all shadow-lg ${idx === currentIndex

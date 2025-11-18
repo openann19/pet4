@@ -242,9 +242,9 @@ export default function AdvancedChatWindow({
         // Close chat or navigate away
         onBack?.();
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to block user');
-      logger.error('Failed to block user', error);
+      logger.error('Failed to block user', _error);
     }
   }, [room, currentUserId, onBack]);
 

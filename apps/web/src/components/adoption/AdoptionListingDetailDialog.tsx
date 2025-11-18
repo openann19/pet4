@@ -166,10 +166,10 @@ export function AdoptionListingDetailDialog({
 
       onApplicationSubmitted();
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : undefined;
+      const errorMessage = _error instanceof Error ? error.message : undefined;
       logger.error(
         'Failed to submit application',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       haptics.trigger('error');
       toast.error(errorMessage ?? 'Failed to submit application. Please try again.');

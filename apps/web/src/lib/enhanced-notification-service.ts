@@ -128,10 +128,10 @@ export class EnhancedNotificationService {
         userB: userB.id,
         correlationId,
       });
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send match notification',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         {
           matchId: match.id,
           correlationId,
@@ -192,10 +192,10 @@ export class EnhancedNotificationService {
         toPetId,
         correlationId,
       });
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send like notification',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         {
           fromPetId,
           toPetId,
@@ -260,10 +260,10 @@ export class EnhancedNotificationService {
         recipientId,
         correlationId,
       });
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send message notification',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         {
           chatRoomId,
           senderId,
@@ -316,10 +316,10 @@ export class EnhancedNotificationService {
         type: notification.type,
         correlationId,
       });
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send notification',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         {
           notificationId: notification.id,
           correlationId,

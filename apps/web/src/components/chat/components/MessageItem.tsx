@@ -8,7 +8,7 @@ import { useEffect, useRef, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, Translate as TranslateIcon } from '@phosphor-icons/react';
-import { useAnimatedStyle, MotionView } from '@petspark/motion';
+import { useMotionView } from '@petspark/motion';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
 import { useSendWarp } from '@/effects/chat/bubbles/use-send-warp';

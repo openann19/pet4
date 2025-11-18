@@ -14,7 +14,7 @@
 import { useCallback, useEffect } from 'react';
 import {
   Easing,
-  useAnimatedStyle,
+  use
   useSharedValue,
   withRepeat,
   withSequence,
@@ -25,7 +25,7 @@ import { createLogger } from '@/lib/logger';
 import { useReducedMotionSV } from '../core/reduced-motion';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 const logger = createLogger('liquid-dots');
 

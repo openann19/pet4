@@ -45,8 +45,8 @@ export default function ChatModerationPanel() {
       setReports(
         allReports.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       );
-    } catch (error) {
-      logger.error('Load reports error', error instanceof Error ? error : new Error(String(error)));
+    } catch (_error) {
+      logger.error('Load reports _error', _error instanceof Error ? _error : new Error(String(_error)));
       toast.error('Failed to load reports');
     } finally {
       setLoading(false);
@@ -74,8 +74,8 @@ export default function ChatModerationPanel() {
       toast.success(`Action taken: ${action}`);
       setSelectedReport(null);
       setAction('no_action');
-    } catch (error) {
-      logger.error('Review error', error instanceof Error ? error : new Error(String(error)));
+    } catch (_error) {
+      logger.error('Review _error', _error instanceof Error ? _error : new Error(String(_error)));
       toast.error('Failed to review report');
     } finally {
       setActionInFlight(false);

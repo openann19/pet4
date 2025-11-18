@@ -207,9 +207,9 @@ export abstract class BaseService {
       });
 
       return data;
-    } catch (error) {
+    } catch (_error) {
       const duration = Date.now() - startTime;
-      const errorCode = this.getErrorCode(error);
+      const errorCode = this.getErrorCode(_error);
 
       this.recordTelemetry({
         service: this.serviceName,
@@ -240,13 +240,13 @@ export abstract class BaseService {
     for (let attempt = 0; attempt < attempts; attempt++) {
       try {
         return await fn();
-      } catch (error) {
-        lastError = error;
+      } catch (_error) {
+        lastError = _error;
 
-        // Check if error is retryable
-        const isRetryable = this.isRetryableError(error, retryableStatusCodes);
+        // Check if _error is retryable
+        const isRetryable = this.isRetryableError(_error, retryableStatusCodes);
         if (!isRetryable || attempt === attempts - 1) {
-          throw error;
+          throw _error;
         }
 
         // Calculate delay with exponential backoff
@@ -256,7 +256,7 @@ export abstract class BaseService {
           `Request failed, retrying in ${delay}ms (attempt ${attempt + 1}/${attempts})`,
           {
             service: this.serviceName,
-            error: error instanceof Error ? error.message : String(error),
+            error: _error instanceof Error ? error.message : String(_error),
           }
         );
 
@@ -290,8 +290,8 @@ export abstract class BaseService {
   private validateResponse<T>(data: unknown, schema: z.ZodType<T>, endpoint: string): T {
     try {
       return schema.parse(data);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Response validation failed', err, {
         service: this.serviceName,
         endpoint,
@@ -328,7 +328,7 @@ export abstract class BaseService {
     if (error instanceof Error) {
       errorMessage = error.message || 'Unknown error';
     } else {
-      errorMessage = String(error) || 'Unknown error';
+      errorMessage = String(_error) || 'Unknown error';
     }
     const enhancedMessage = `[${this.serviceName}] ${method} ${endpoint}: ${errorMessage}`;
 

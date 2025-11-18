@@ -98,8 +98,8 @@ class StreamingService {
       });
 
       return convertLiveStream(result.stream);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create stream', err, { hostId });
       throw err;
     }
@@ -109,8 +109,8 @@ class StreamingService {
     try {
       const stream = await liveStreamingAPI.getStreamById(streamId);
       return stream ? convertLiveStream(stream) : undefined;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get stream by ID', err, { streamId });
       throw err;
     }
@@ -134,8 +134,8 @@ class StreamingService {
         : undefined;
       const response = await liveStreamingAPI.queryActiveStreams(filters);
       return response.streams.map(convertLiveStream);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get active streams', err, { category });
       throw err;
     }
@@ -147,8 +147,8 @@ class StreamingService {
       return response.streams
         .map(convertLiveStream)
         .sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user streams', err, { userId });
       throw err;
     }
@@ -171,8 +171,8 @@ class StreamingService {
         await liveStreamingAPI.endRoom(streamId, stream.hostId);
       }
       // For other status updates, API will handle it
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update stream status', err, { streamId, status });
       throw err;
     }
@@ -186,8 +186,8 @@ class StreamingService {
   ): Promise<void> {
     try {
       await liveStreamingAPI.joinStream(streamId, userId, userName, userAvatar);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to join stream', err, { streamId, userId });
       throw err;
     }
@@ -196,8 +196,8 @@ class StreamingService {
   async leaveStream(streamId: string, userId: string): Promise<void> {
     try {
       await liveStreamingAPI.leaveStream(streamId, userId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to leave stream', err, { streamId, userId });
       throw err;
     }
@@ -219,8 +219,8 @@ class StreamingService {
         message
       );
       return convertStreamChatMessage(apiMessage);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to send chat message', err, { streamId, userId });
       throw err;
     }
@@ -230,8 +230,8 @@ class StreamingService {
     try {
       const messages = await liveStreamingAPI.queryChatMessages(streamId);
       return messages.slice(-limit).map(convertStreamChatMessage);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get chat history', err, { streamId });
       throw err;
     }
@@ -254,8 +254,8 @@ class StreamingService {
         throw new Error('Stream not found');
       }
       await liveStreamingAPI.endRoom(streamId, stream.hostId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to end stream', err, { streamId });
       throw err;
     }
@@ -274,8 +274,8 @@ class StreamingService {
         description,
       });
       logger.info('Stream reported', { streamId, reporterId, reason });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to report stream', err, { streamId, reporterId });
       throw err;
     }
@@ -284,8 +284,8 @@ class StreamingService {
   async banUserFromStream(streamId: string, userId: string): Promise<void> {
     try {
       await liveStreamingAPI.leaveStream(streamId, userId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to ban user from stream', err, { streamId, userId });
       throw err;
     }

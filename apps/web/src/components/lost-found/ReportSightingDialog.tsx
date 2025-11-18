@@ -118,10 +118,10 @@ export function ReportSightingDialog({
     } catch (error: unknown) {
       const logger = createLogger('ReportSightingDialog');
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to report sighting. Please try again.';
+        _error instanceof Error ? error.message : 'Failed to report sighting. Please try again.';
       logger.error(
         'Failed to report sighting',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error(errorMessage);
     } finally {

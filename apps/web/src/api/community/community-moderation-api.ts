@@ -23,8 +23,8 @@ export class CommunityModerationApi {
       };
 
       await APIClient.post('/api/v1/community/reports', request);
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to report content', err, { resourceId: data.resourceId });
       throw err;
     }
@@ -56,8 +56,8 @@ export class CommunityModerationApi {
       };
 
       await APIClient.post(`/api/v1/community/appeals`, request);
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to submit appeal', err, { resourceId, userId });
       throw err;
     }
@@ -94,8 +94,8 @@ export class CommunityModerationApi {
 
       const response = await APIClient.get<GetReportsResponse>(url);
       return response.data.reports;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get reports for moderation', err, { filters });
       throw err;
     }

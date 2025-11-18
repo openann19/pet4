@@ -117,9 +117,9 @@ export class RealTimeMonitor {
     this.listeners.forEach((listener) => {
       try {
         listener(metrics)
-      } catch (error) {
+      } catch (_error) {
         logger.error('Error in metrics listener', {
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         })
       }
     })
@@ -241,9 +241,9 @@ export class RealTimeMonitor {
     this.alertListeners.forEach((listener) => {
       try {
         listener(alert)
-      } catch (error) {
+      } catch (_error) {
         logger.error('Error in alert listener', {
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         })
       }
     })

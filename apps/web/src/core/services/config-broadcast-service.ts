@@ -108,8 +108,8 @@ class ConfigBroadcastService {
       });
 
       return { success: true, version: newVersion };
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to broadcast config', err, { configType });
       throw err;
     }
@@ -150,8 +150,8 @@ class ConfigBroadcastService {
     this.listeners.forEach((listener) => {
       try {
         listener.onConfigUpdate(event);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Error notifying config listener', err);
       }
     });

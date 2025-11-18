@@ -87,7 +87,7 @@ class ImageLoader {
                 onLoad?.();
               })
               .catch((error) => {
-                const err = error instanceof Error ? error : new Error(String(error));
+                const err = _error instanceof Error ? _error : new Error(String(_error));
                 onError?.(err);
               })
               .finally(() => {

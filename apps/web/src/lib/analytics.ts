@@ -29,8 +29,8 @@ export async function hashEmail(email: string): Promise<string> {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
     return hashHex;
-  } catch (error) {
-    const errorObj = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const errorObj = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to hash email', errorObj);
     // Return a safe fallback that doesn't leak PII
     return `error_${email.length}`;
@@ -108,9 +108,9 @@ class Analytics {
       try {
         // TypeScript-safe call after runtime check
         (window.spark_analytics.clear as () => void)();
-      } catch (error) {
+      } catch (_error) {
         const errorObj =
-          error instanceof Error ? error : new Error(String(error));
+          _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to clear analytics data', errorObj);
       }
     }
@@ -132,12 +132,12 @@ class Analytics {
         timestamp: Date.now()
       })
       logger.debug('Analytics events flushed', { count: events.length })
-    } catch (error) {
+    } catch (_error) {
       // Re-queue events on failure (up to a limit)
       if (this.eventQueue.length < 100) {
         this.eventQueue.unshift(...events)
       }
-      logger.error('Failed to send analytics events', error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to send analytics events', _error instanceof Error ? _error : new Error(String(_error)))
     }
   }
 

@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withTiming,
   withDelay,
@@ -32,7 +32,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { toast } from 'sonner';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 const logger = createLogger('MediaViewer');
 
@@ -372,8 +372,8 @@ export function MediaViewer({
       document.body.removeChild(a);
       window.URL.revokeObjectURL(downloadUrl);
       toast.success(t.community?.downloaded ?? `${isVideo ? 'Video' : 'Image'} downloaded`);
-    } catch (error) {
-      logger.error('Failed to download', error instanceof Error ? error : new Error(String(error)));
+    } catch (_error) {
+      logger.error('Failed to download', _error instanceof Error ? _error : new Error(String(_error)));
       toast.error(t.community?.downloadError ?? 'Failed to download');
     }
   }, [currentIndex, media, t, logger]);

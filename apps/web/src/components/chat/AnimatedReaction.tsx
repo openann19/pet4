@@ -19,7 +19,7 @@ export function AnimatedReaction({
   className,
 }: AnimatedReactionProps): React.JSX.Element {
     const _uiConfig = useUIConfig();
-    const { animatedStyle: rawAnimatedStyle, animate } = useReactionAnimation({
+    const { animatedStyle: rawanimate } = useReactionAnimation({
         hapticFeedback: true,
       });
 

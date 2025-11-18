@@ -33,8 +33,8 @@ export class LiveStreamingParticipationApi {
         viewer: response.data.viewer,
         joinToken: response.data.joinToken,
       };
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to join stream', err, { streamId, userId });
       throw err;
     }
@@ -45,8 +45,8 @@ export class LiveStreamingParticipationApi {
       await APIClient.post(ENDPOINTS.STREAMING.LEAVE_STREAM(streamId), {
         userId,
       });
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to leave stream', err, { streamId, userId });
       throw err;
     }

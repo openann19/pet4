@@ -132,8 +132,8 @@ export function useEffectTelemetry(options: UseEffectTelemetryOptions): UseEffec
         deviceHz: deviceHz as 60 | 120,
         reducedMotion,
       });
-    } catch (error) {
-      logger.warn('Failed to log effect start', { error, effectName });
+    } catch (_error) {
+      logger.warn('Failed to log effect start', { _error, effectName });
       effectIdRef.current = null;
     }
 

@@ -53,7 +53,7 @@ export class MediaStreamManager {
       });
       return stream;
     } catch (error: unknown) {
-      const err = normalizeError(error);
+      const err = normalizeError(_error);
       logger.error('Failed to get user media', err);
       throw err;
     }
@@ -81,7 +81,7 @@ export class MediaStreamManager {
       });
       return stream;
     } catch (error: unknown) {
-      const err = normalizeError(error);
+      const err = normalizeError(_error);
       logger.error('Failed to get display media', err);
       throw err;
     }

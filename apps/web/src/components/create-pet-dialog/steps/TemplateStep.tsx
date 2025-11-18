@@ -2,7 +2,7 @@ import { Sparkle } from '@phosphor-icons/react';
 import { MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { getTemplatesByType, type PetType, type PetProfileTemplate } from '@/lib/pet-profile-templates';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import type { CreatePetFormActions } from '../create-pet-types';
 import { TemplateCard } from './TemplateCard';
 

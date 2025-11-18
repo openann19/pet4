@@ -43,9 +43,9 @@ export function useChatInput({ sendChatMessage, handleTypingMessageSend }: UseCh
           position: 'top-center',
         });
       }
-    } catch (error) {
-      const err = normalizeError(error);
-      logger.error('ChatWindowNew handleSendMessage error', err, { content, type });
+    } catch (_error) {
+      const err = normalizeError(_error);
+      logger.error('ChatWindowNew handleSendMessage _error', err, { content, type });
       toast.error('Failed to send message. Please try again.');
     }
   };

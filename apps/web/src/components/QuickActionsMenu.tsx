@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MotionView, Presence } from '@petspark/motion';
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring, type MotionValue } from '@petspark/motion';
+import { useSharedValue, usewithTiming, withSpring, type MotionValue } from '@petspark/motion';
 import React from 'react';
 import {
   Plus,
@@ -73,9 +73,9 @@ function QuickActionItem({ icon, label, onClick, color, index }: QuickActionItem
     try {
       haptics.selection();
       onClick();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('QuickActionItem onClick error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('QuickActionItem onClick _error', err);
     }
   }, [onClick]);
 
@@ -122,9 +122,9 @@ export default function QuickActionsMenu({
     try {
       haptics.light();
       setIsOpen((prev) => !prev);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('QuickActionsMenu handleToggle error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('QuickActionsMenu handleToggle _error', err);
       // Still toggle state even if haptics fails
       setIsOpen((prev) => !prev);
     }
@@ -139,9 +139,9 @@ export default function QuickActionsMenu({
           try {
             onCreatePet();
             setIsOpen(false);
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('QuickActionsMenu onCreatePet error', err);
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('QuickActionsMenu onCreatePet _error', err);
             setIsOpen(false);
           }
         },
@@ -154,9 +154,9 @@ export default function QuickActionsMenu({
           try {
             onViewHealth();
             setIsOpen(false);
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('QuickActionsMenu onViewHealth error', err);
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('QuickActionsMenu onViewHealth _error', err);
             setIsOpen(false);
           }
         },
@@ -169,9 +169,9 @@ export default function QuickActionsMenu({
           try {
             onSchedulePlaydate();
             setIsOpen(false);
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('QuickActionsMenu onSchedulePlaydate error', err);
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('QuickActionsMenu onSchedulePlaydate _error', err);
             setIsOpen(false);
           }
         },
@@ -186,9 +186,9 @@ export default function QuickActionsMenu({
               try {
                 onViewMap();
                 setIsOpen(false);
-              } catch (error) {
-                const err = error instanceof Error ? error : new Error(String(error));
-                logger.error('QuickActionsMenu onViewMap error', err);
+              } catch (_error) {
+                const err = _error instanceof Error ? _error : new Error(String(_error));
+                logger.error('QuickActionsMenu onViewMap _error', err);
                 setIsOpen(false);
               }
             },
@@ -203,9 +203,9 @@ export default function QuickActionsMenu({
           try {
             onSavedSearches();
             setIsOpen(false);
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('QuickActionsMenu onSavedSearches error', err);
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('QuickActionsMenu onSavedSearches _error', err);
             setIsOpen(false);
           }
         },
@@ -218,9 +218,9 @@ export default function QuickActionsMenu({
           try {
             onGenerateProfiles();
             setIsOpen(false);
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('QuickActionsMenu onGenerateProfiles error', err);
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('QuickActionsMenu onGenerateProfiles _error', err);
             setIsOpen(false);
           }
         },
@@ -233,9 +233,9 @@ export default function QuickActionsMenu({
           try {
             onViewStats();
             setIsOpen(false);
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('QuickActionsMenu onViewStats error', err);
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('QuickActionsMenu onViewStats _error', err);
             setIsOpen(false);
           }
         },

@@ -3,13 +3,13 @@
 import { useEffect, useState, useRef } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withTiming,
   withSpring,
   type SharedValue,
 } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 export interface UseAnimatePresenceOptions {
   isVisible: boolean;

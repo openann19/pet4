@@ -38,8 +38,8 @@ export function useAdoptionMarketplace(): UseAdoptionMarketplaceReturn {
     try {
       const user = await spark.user();
       setCurrentUser({ id: user.id, name: user.login ?? '' });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load user', err, { action: 'loadUser' });
     }
   }, []);
@@ -51,8 +51,8 @@ export function useAdoptionMarketplace(): UseAdoptionMarketplaceReturn {
         const response = await adoptionMarketplaceService.getActiveListings(filters);
         setListings(response);
         setHasMore(false);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to load listings', err, { action: 'loadListings' });
         toast.error('Failed to load adoption listings');
       } finally {

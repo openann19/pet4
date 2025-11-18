@@ -53,8 +53,8 @@ class ImageUploadApiImpl {
         `/uploads/images/signed-url?${queryParams.toString()}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get signed URL', err, { key, contentType });
       throw err;
     }
@@ -84,8 +84,8 @@ class ImageUploadApiImpl {
         { ...request, data: base64 } // Send as base64 string
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to upload image', err, { key, contentType });
       throw err;
     }

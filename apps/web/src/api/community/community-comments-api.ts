@@ -54,8 +54,8 @@ export class CommunityCommentsApi {
       );
 
       return response.data.comment;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to create comment', err, { postId: data.postId });
       throw err;
     }
@@ -67,8 +67,8 @@ export class CommunityCommentsApi {
         ENDPOINTS.COMMUNITY.COMMENT(postId)
       );
       return response.data.comments;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get post comments', err, { postId });
       throw err;
     }

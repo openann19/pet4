@@ -1,13 +1,13 @@
 'use client';
 
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { platformHaptics, type PlatformHaptics } from '@/lib/platform-haptics';
 import { useCallback, useRef } from 'react';
 import {
   Extrapolation,
   interpolate,
-  useAnimatedStyle,
+  use
   useSharedValue,
   withSpring,
   type SharedValue,

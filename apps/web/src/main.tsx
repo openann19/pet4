@@ -87,8 +87,8 @@ if (typeof window !== 'undefined') {
     if (_refreshRateCleanup) {
       window.addEventListener('beforeunload', _refreshRateCleanup);
     }
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     rootLogger.error('Refresh rate detection failed', err);
   }
 }
@@ -99,8 +99,8 @@ import { initWebVitals } from './lib/web-vitals';
 if (import.meta.env.PROD) {
   try {
     initWebVitals();
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     rootLogger.error('Web Vitals initialization failed', err);
   }
 }
@@ -111,8 +111,8 @@ try {
   initErrorReporting({
     enabled: import.meta.env.PROD,
   });
-} catch (error) {
-  const err = error instanceof Error ? error : new Error(String(error));
+} catch (_error) {
+  const err = _error instanceof Error ? _error : new Error(String(_error));
   rootLogger.error('Error reporting initialization failed', err);
 }
 
@@ -160,7 +160,7 @@ createRoot(rootElement).render(
 // --- ultra: sw register ---
 if ('serviceWorker' in navigator) {
   void navigator.serviceWorker.register('/sw.js').catch((error: unknown) => {
-    const err = error instanceof Error ? error : new Error(String(error));
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     rootLogger.warn('Fallback service worker registration failed', {
       message: err.message,
       stack: err.stack,

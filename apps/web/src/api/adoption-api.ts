@@ -82,8 +82,8 @@ class AdoptionApiImpl {
         `${ENDPOINTS.ADOPTION.LISTINGS}${query ? `?${query}` : ''}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get adoption profiles', err, { filters });
       throw err;
     }
@@ -96,8 +96,8 @@ class AdoptionApiImpl {
     try {
       const response = await APIClient.get<AdoptionProfile>(ENDPOINTS.ADOPTION.GET_LISTING(id));
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       // Return null if not found (404)
       if (err instanceof Error && 'status' in err && (err as { status: number }).status === 404) {
         return null;
@@ -114,8 +114,8 @@ class AdoptionApiImpl {
     try {
       const response = await APIClient.post<AdoptionApplication>(ENDPOINTS.ADOPTION.APPLY, request);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to submit application', err, {
         adoptionProfileId: request.adoptionProfileId,
       });
@@ -132,8 +132,8 @@ class AdoptionApiImpl {
         `${ENDPOINTS.ADOPTION.APPLICATIONS}?applicantId=${userId}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user applications', err, { userId });
       return [];
     }
@@ -146,8 +146,8 @@ class AdoptionApiImpl {
     try {
       const response = await APIClient.get<AdoptionApplication[]>(ENDPOINTS.ADOPTION.APPLICATIONS);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get all applications', err);
       return [];
     }
@@ -162,8 +162,8 @@ class AdoptionApiImpl {
         `${ENDPOINTS.ADOPTION.APPLICATIONS}?adoptionProfileId=${profileId}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get applications by profile', err, { profileId });
       return [];
     }
@@ -179,8 +179,8 @@ class AdoptionApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create adoption profile', err);
       throw err;
     }
@@ -192,8 +192,8 @@ class AdoptionApiImpl {
   async updateProfileStatus(profileId: string, status: AdoptionProfile['status']): Promise<void> {
     try {
       await APIClient.patch(ENDPOINTS.ADOPTION.UPDATE_LISTING(profileId), { status });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update profile status', err, { profileId, status });
       throw err;
     }
@@ -208,8 +208,8 @@ class AdoptionApiImpl {
   ): Promise<void> {
     try {
       await APIClient.patch(ENDPOINTS.ADOPTION.UPDATE_APPLICATION(applicationId), request);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update application status', err, {
         applicationId,
         status: request.status,
@@ -225,8 +225,8 @@ class AdoptionApiImpl {
     try {
       const response = await APIClient.get<Shelter[]>('/api/v1/adoption/shelters');
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get shelters', err);
       return [];
     }
@@ -238,8 +238,8 @@ class AdoptionApiImpl {
   async deleteProfile(profileId: string): Promise<void> {
     try {
       await APIClient.delete(ENDPOINTS.ADOPTION.DELETE_LISTING(profileId));
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to delete adoption profile', err, { profileId });
       throw err;
     }

@@ -40,8 +40,8 @@ class LLMApiImpl {
 
       const response = await APIClient.post<LLMCallResponse>('/llm/chat', request);
       return response.data.response;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to call LLM', err, {
         prompt: typeof prompt === 'string' ? prompt.substring(0, 100) : 'object',
         model,

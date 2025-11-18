@@ -9,7 +9,7 @@ import { PaperPlaneRight } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 export interface ScrollToBottomFABProps {
   isVisible: boolean;
@@ -23,7 +23,7 @@ export function ScrollToBottomFAB({
   isVisible,
   badgeCount = 0,
   animatedStyle,
-  badgeAnimatedStyle,
+  badge
   onClick,
 }: ScrollToBottomFABProps): React.ReactElement | null {
     const _uiConfig = useUIConfig();

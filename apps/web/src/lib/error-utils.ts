@@ -22,12 +22,12 @@ export function isError(error: unknown): error is Error {
  * @returns An Error instance
  */
 export function normalizeError(error: unknown): Error {
-  if (isError(error)) {
+  if (isError(_error)) {
     return error;
   }
 
   if (typeof error === 'string') {
-    return new Error(error);
+    return new Error(_error);
   }
 
   if (error === null || error === undefined) {
@@ -35,7 +35,7 @@ export function normalizeError(error: unknown): Error {
   }
 
   try {
-    return new Error(String(error));
+    return new Error(String(_error));
   } catch {
     return new Error('Failed to convert error to string');
   }
@@ -48,7 +48,7 @@ export function normalizeError(error: unknown): Error {
  * @returns The error message string
  */
 export function getErrorMessage(error: unknown): string {
-  if (isError(error)) {
+  if (isError(_error)) {
     return error.message;
   }
 
@@ -61,7 +61,7 @@ export function getErrorMessage(error: unknown): string {
   }
 
   try {
-    return String(error);
+    return String(_error);
   } catch {
     return 'Failed to convert error to string';
   }

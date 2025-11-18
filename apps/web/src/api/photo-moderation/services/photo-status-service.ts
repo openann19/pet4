@@ -76,8 +76,8 @@ export class PhotoStatusService {
       );
 
       return updatedRecord;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to update photo moderation status', err, {
         photoId: request.photoId,
         action: request.action,
@@ -108,8 +108,8 @@ export class PhotoStatusService {
         isVisible,
         requiresKYC: record.kycRequired,
       };
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get photo moderation status', err, { photoId });
       throw err;
     }
@@ -119,8 +119,8 @@ export class PhotoStatusService {
     try {
       const status = await this.getStatus(photoId, userId);
       return status.isVisible;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to check photo visibility', err, { photoId });
       return false;
     }

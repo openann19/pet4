@@ -72,8 +72,8 @@ class KYCApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to start KYC', err, {
         userId: request.userId,
         provider: request.provider,
@@ -91,8 +91,8 @@ class KYCApiImpl {
         `${ENDPOINTS.KYC.STATUS}?userId=${userId}`
       );
       return response.data.status;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get KYC status', err, { userId });
       throw err;
     }
@@ -107,8 +107,8 @@ class KYCApiImpl {
         ENDPOINTS.KYC.GET_VERIFICATION(submissionId)
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get KYC submission', err, { submissionId });
       // Return null if not found (404)
       if (err instanceof Error && 'status' in err && (err as { status: number }).status === 404) {
@@ -127,8 +127,8 @@ class KYCApiImpl {
         `${ENDPOINTS.KYC.STATUS}?userId=${userId}&submissions=true`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user KYC submissions', err, { userId });
       return [];
     }
@@ -143,8 +143,8 @@ class KYCApiImpl {
         `${String(ENDPOINTS.KYC.GET_VERIFICATION(request.submissionId) ?? '')}/webhook`,
         request
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to handle KYC webhook', err, { submissionId: request.submissionId });
       throw err;
     }
@@ -159,8 +159,8 @@ class KYCApiImpl {
         `${String(ENDPOINTS.KYC.GET_VERIFICATION(request.submissionId) ?? '')}/review`,
         request
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to manual review KYC', err, { submissionId: request.submissionId });
       throw err;
     }
@@ -176,8 +176,8 @@ class KYCApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to record age verification', err, { userId: request.userId });
       throw err;
     }
@@ -193,8 +193,8 @@ class KYCApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to record consent', err, { userId: request.userId, type: request.type });
       throw err;
     }
@@ -209,8 +209,8 @@ class KYCApiImpl {
         `${ENDPOINTS.KYC.STATUS}/consent?userId=${userId}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user consents', err, { userId });
       return [];
     }
@@ -229,8 +229,8 @@ class KYCApiImpl {
         `${ENDPOINTS.KYC.STATUS}/audit?${params.toString()}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get KYC audit logs', err, { userId, submissionId });
       return [];
     }
@@ -245,8 +245,8 @@ class KYCApiImpl {
         `${ENDPOINTS.KYC.STATUS}/admin/submissions`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get all KYC submissions', err);
       return [];
     }

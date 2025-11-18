@@ -34,8 +34,8 @@ function getAnalyticsEndpoint(): string | null {
     }
 
     return target.toString()
-  } catch (error) {
-    logger.warn('Failed to resolve analytics endpoint; skipping metrics', { error })
+  } catch (_error) {
+    logger.warn('Failed to resolve analytics endpoint; skipping metrics', { _error })
     return null
   }
 }
@@ -281,9 +281,9 @@ class ErrorTrackingService {
       if (!response.ok) {
         throw new Error(`Failed to send error report: ${response.statusText}`)
       }
-    } catch (error) {
-      // Silently fail - error tracking should not break the app
-      logger.debug('Error tracking backend unavailable', { error })
+    } catch (_error) {
+      // Silently fail - _error tracking should not break the app
+      logger.debug('Error tracking backend unavailable', { _error })
     }
   }
 
@@ -305,10 +305,10 @@ class ErrorTrackingService {
       await Promise.all(
         errorsToSend.map((error) => this.sendToBackend(error))
       )
-    } catch (error) {
+    } catch (_error) {
       // Re-add to queue if send fails
       this.errorQueue.unshift(...errorsToSend)
-      logger.warn('Failed to flush error queue', { error })
+      logger.warn('Failed to flush _error queue', { _error })
     }
   }
 
@@ -375,8 +375,8 @@ function trackLCP(): void {
     })
 
     observer.observe({ entryTypes: ['largest-contentful-paint'] })
-  } catch (error) {
-    logger.warn('Failed to track LCP', { error })
+  } catch (_error) {
+    logger.warn('Failed to track LCP', { _error })
   }
 }
 
@@ -391,8 +391,8 @@ function trackFID(): void {
     })
 
     observer.observe({ entryTypes: ['first-input'] })
-  } catch (error) {
-    logger.warn('Failed to track FID', { error })
+  } catch (_error) {
+    logger.warn('Failed to track FID', { _error })
   }
 }
 
@@ -416,8 +416,8 @@ function trackCLS(): void {
     })
 
     observer.observe({ entryTypes: ['layout-shift'] })
-  } catch (error) {
-    logger.warn('Failed to track CLS', { error })
+  } catch (_error) {
+    logger.warn('Failed to track CLS', { _error })
   }
 }
 

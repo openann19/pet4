@@ -53,8 +53,8 @@ export class PhotoSubmissionService {
       });
 
       return record;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to submit photo for moderation', err, {
         photoId: request.photoId,
       });
@@ -106,8 +106,8 @@ export class PhotoSubmissionService {
         status: nextStatus,
         nsfwScore: scanResult.nsfwScore,
       });
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to scan photo', err, { photoId });
       throw err;
     }

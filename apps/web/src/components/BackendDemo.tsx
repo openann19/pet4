@@ -58,8 +58,8 @@ export default function BackendDemo() {
       }
       const result = await db.findMany<DemoRecord>('demo_records', queryOptions);
       setRecords(result.data);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load records', err, { action: 'loadRecords', userId: user?.id });
       toast.error('Failed to load records');
     } finally {
@@ -72,8 +72,8 @@ export default function BackendDemo() {
       const total = await db.count<DemoRecord>('demo_records');
       const myRecords = user ? await db.count<DemoRecord>('demo_records', { ownerId: user.id }) : 0;
       setStats({ total, myRecords });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load stats', err, { action: 'loadStats', userId: user?.id });
     }
   };
@@ -101,8 +101,8 @@ export default function BackendDemo() {
       setContent('');
       await loadRecords();
       await loadStats();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create record', err, { action: 'createRecord', userId: user?.id });
       toast.error('Failed to create record');
     }
@@ -114,8 +114,8 @@ export default function BackendDemo() {
       toast.success('Record deleted');
       await loadRecords();
       await loadStats();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to delete record', err, { action: 'deleteRecord', recordId: id });
       toast.error('Failed to delete record');
     }
@@ -129,8 +129,8 @@ export default function BackendDemo() {
       toast.success(`Deleted ${count} records`);
       await loadRecords();
       await loadStats();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to clear records', err, { action: 'clearRecords', userId: user?.id });
       toast.error('Failed to clear records');
     }

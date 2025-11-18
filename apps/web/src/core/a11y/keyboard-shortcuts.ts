@@ -143,8 +143,8 @@ export class KeyboardShortcutsRegistry {
       try {
         shortcut.action();
         logger?.debug?.('Executed keyboard shortcut', { key: shortcutKey, description: shortcut.description });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Error executing keyboard shortcut', err, { key: shortcutKey });
       }
     }

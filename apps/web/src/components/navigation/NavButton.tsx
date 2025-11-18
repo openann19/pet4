@@ -4,7 +4,7 @@ import { MotionView } from "@petspark/motion";
 import { type ReactNode } from 'react'
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation'
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import type  from '@/effects/reanimated/animated-view'
 
 export interface NavButtonProps {
   isActive: boolean

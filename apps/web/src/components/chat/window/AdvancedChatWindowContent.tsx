@@ -12,7 +12,7 @@ import { ChatErrorBoundary } from './ChatErrorBoundary';
 import { AnnounceNewMessage, AnnounceTyping } from './LiveRegions';
 import type { ChatMessage } from '@/lib/chat-types';
 import type { InputRef } from '@/components/ui/input';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 interface AdvancedChatWindowContentProps {
   room: ChatRoom;

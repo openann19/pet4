@@ -21,7 +21,7 @@ import {
   UserPlus,
 } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
-import { MotionView, useSharedValue, useAnimatedStyle, withSpring, type AnimatedStyle } from '@petspark/motion';
+import { MotionView, useSharedValue, usewithSpring, type AnimatedStyle } from '@petspark/motion';
 import { useEntryAnimation } from '@/effects/reanimated';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useCallback, useEffect, useState } from 'react';
@@ -180,8 +180,8 @@ export default function NotificationsView({
     try {
       const notifs = await communityService.getNotifications();
       setNotifications(notifs);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load notifications', err);
       toast.error('Failed to load notifications');
     } finally {
@@ -200,8 +200,8 @@ export default function NotificationsView({
       setNotifications(
         notifications.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to mark notification as read', err);
     }
   };
@@ -213,8 +213,8 @@ export default function NotificationsView({
       await Promise.all(unreadIds.map((id) => communityService.markNotificationRead(id)));
       setNotifications(notifications.map((n) => ({ ...n, read: true })));
       toast.success('All notifications marked as read');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to mark all as read', err);
     }
   };
@@ -222,7 +222,7 @@ export default function NotificationsView({
   const handleNotificationClick = (notification: CommunityNotification) => {
     if (!notification.read) {
       void handleMarkAsRead(notification.id).catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to mark notification as read', err, { notificationId: notification.id });
       });
     }

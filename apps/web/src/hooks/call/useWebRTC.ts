@@ -154,10 +154,10 @@ export function useWebRTC(options: UseWebRTCOptions) {
               await peerConnectionRef.current.setRemoteDescription(offer);
               const answer = await peerConnectionRef.current.createAnswer();
               signalingClient.sendAnswer(answer, remoteUserId, callId);
-            } catch (error) {
-              const err = error instanceof Error ? error : new Error(String(error));
+            } catch (_error) {
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.error('Failed to handle offer', err);
-              setCallState((prev) => ({ ...prev, error: err.message }));
+              setCallState((prev) => ({ ...prev, _error: err.message }));
             }
           },
           onAnswer: async (answer) => {
@@ -165,10 +165,10 @@ export function useWebRTC(options: UseWebRTCOptions) {
 
             try {
               await peerConnectionRef.current.setRemoteDescription(answer);
-            } catch (error) {
-              const err = error instanceof Error ? error : new Error(String(error));
+            } catch (_error) {
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.error('Failed to handle answer', err);
-              setCallState((prev) => ({ ...prev, error: err.message }));
+              setCallState((prev) => ({ ...prev, _error: err.message }));
             }
           },
           onIceCandidate: async (candidate) => {
@@ -176,8 +176,8 @@ export function useWebRTC(options: UseWebRTCOptions) {
 
             try {
               await peerConnectionRef.current.addIceCandidate(candidate);
-            } catch (error) {
-              const err = error instanceof Error ? error : new Error(String(error));
+            } catch (_error) {
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.warn('Failed to add ICE candidate', err);
             }
           },
@@ -228,19 +228,19 @@ export function useWebRTC(options: UseWebRTCOptions) {
           try {
             const offer = await peerConnection.createOffer();
             signalingClient.sendOffer(offer, remoteUserId, callId);
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
             logger.error('Failed to create offer', err);
-            setCallState((prev) => ({ ...prev, error: err.message }));
+            setCallState((prev) => ({ ...prev, _error: err.message }));
           }
         }
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to initialize WebRTC', err);
         if (mounted) {
           setCallState((prev) => ({
             ...prev,
-            error: err.message,
+            _error: err.message,
             isConnecting: false,
           }));
         }

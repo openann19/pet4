@@ -24,8 +24,8 @@ export function LostFoundManagement() {
           (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load alerts', err, { action: 'loadAlerts' });
       toast.error('Failed to load alerts');
     }
@@ -42,8 +42,8 @@ export function LostFoundManagement() {
         toast.success('Alert archived');
         await loadAlerts();
         setSelectedAlert(null);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to archive alert', err, { action: 'archiveAlert', alertId });
         toast.error('Failed to archive alert');
       }

@@ -40,10 +40,10 @@ class AdminApiImpl {
     try {
       const response = await APIClient.get<SystemStats>(ENDPOINTS.ADMIN.ANALYTICS);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get system stats', err);
-      // Return default stats on error
+      // Return default stats on _error
       return {
         totalUsers: 0,
         activeUsers: 0,
@@ -66,8 +66,8 @@ class AdminApiImpl {
         ...entry,
         timestamp: new Date().toISOString(),
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create audit log', err, { action: entry.action });
       // Don't throw - audit logging failures shouldn't break the app
     }
@@ -82,8 +82,8 @@ class AdminApiImpl {
         `${ENDPOINTS.ADMIN.SETTINGS}/audit?limit=${limit}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get audit logs', err);
       return [];
     }
@@ -98,8 +98,8 @@ class AdminApiImpl {
         action,
         ...(reason ? { reason } : {}),
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to moderate photo', err, { taskId, action });
       throw err;
     }
@@ -127,8 +127,8 @@ class AdminApiImpl {
         newPassword: options?.newPassword,
       });
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to reset user password', err, { userId });
       throw err;
     }
@@ -159,8 +159,8 @@ class AdminApiImpl {
         [key: string]: unknown;
       }>(ENDPOINTS.ADMIN.USER(userId));
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user details', err, { userId });
       throw err;
     }
@@ -181,8 +181,8 @@ class AdminApiImpl {
   ): Promise<void> {
     try {
       await APIClient.put(ENDPOINTS.ADMIN.USER(userId), updates);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update user', err, { userId });
       throw err;
     }
@@ -205,8 +205,8 @@ class AdminApiImpl {
         }
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to broadcast config', err, { configType });
       throw err;
     }
@@ -242,8 +242,8 @@ class AdminApiImpl {
         }[]
       >(`${ENDPOINTS.ADMIN.CONFIG_HISTORY}?${params.toString()}`);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get config history', err);
       return [];
     }
@@ -258,8 +258,8 @@ class AdminApiImpl {
         ENDPOINTS.ADMIN.CONFIG_SYSTEM
       );
       return response.data.config;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get system config', err);
       return null;
     }
@@ -281,8 +281,8 @@ class AdminApiImpl {
         }
       );
       return response.data.config;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update system config', err);
       throw err;
     }

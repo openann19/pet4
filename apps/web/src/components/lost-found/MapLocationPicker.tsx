@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withRepeat,
   withSequence,
   withTiming,
@@ -12,7 +12,7 @@ import { isTruthy } from '@petspark/shared';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import { timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { X, MapPin, Check, Crosshair } from '@phosphor-icons/react';
@@ -79,7 +79,7 @@ export function MapLocationPicker({
           setSelectedLon(position.coords.longitude);
         },
         (error): void => {
-          const err = error instanceof Error ? error : new Error(String(error));
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Geolocation error', err);
         }
       );
@@ -99,8 +99,8 @@ export function MapLocationPicker({
 
       const data = await response.json();
       setAddress(data.display_name ?? 'Address not found');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to fetch address', err, { lat, lon });
       setAddress('Unable to fetch address');
     } finally {
@@ -120,7 +120,7 @@ export function MapLocationPicker({
           setSelectedLon(position.coords.longitude);
         },
         (error): void => {
-          const err = error instanceof Error ? error : new Error(String(error));
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Geolocation error', err);
         }
       );

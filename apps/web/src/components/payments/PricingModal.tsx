@@ -48,9 +48,9 @@ export function PricingModal({ open, onOpenChange, onSuccess }: PricingModalProp
 
       onSuccess?.();
       onOpenChange(false);
-    } catch (error) {
+    } catch (_error) {
       toast.error('Subscription failed', {
-        description: error instanceof Error ? error.message : 'Please try again',
+        description: _error instanceof Error ? _error.message : 'Please try again',
       });
     } finally {
       setLoading(false);

@@ -70,7 +70,7 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
         };
 
         void setSwipeHistory((prev) => [...(prev ?? []), newSwipe]).catch((error) => {
-          const err = error instanceof Error ? error : new Error(String(error));
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Failed to save swipe history', err, { petId: currentPet.id, action });
         });
 
@@ -93,7 +93,7 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
             };
 
             void setMatches((prev) => [...(prev ?? []), match]).catch((error) => {
-              const err = error instanceof Error ? error : new Error(String(error));
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.error('Failed to save match', err, { petId: currentPet.id });
             });
             onMatch(match);
@@ -103,8 +103,8 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
 
         // Move to next pet
         onSwipeComplete();
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Swipe failed', err, { petId: currentPet.id, action });
         toast.error('Failed to process swipe. Please try again.');
       }
@@ -126,7 +126,7 @@ export function useDiscoverSwipe(options: UseDiscoverSwipeOptions): UseDiscoverS
   } = useSwipe({
     onSwipe: (dir) => {
       void handleSwipe(dir === 'right' ? 'like' : 'pass').catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Swipe handler failed', err, { direction: dir });
       });
     },

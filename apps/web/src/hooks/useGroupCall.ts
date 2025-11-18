@@ -125,11 +125,11 @@ export function useGroupCall(
         });
         toast.success('Group call connected!');
       }, 2000);
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to start group call');
       logger.error(
         'Failed to start group call',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   };

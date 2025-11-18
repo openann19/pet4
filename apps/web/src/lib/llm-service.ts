@@ -23,8 +23,8 @@ class LLMService {
   async llm(prompt: LLMPrompt, model?: string, jsonMode?: boolean): Promise<string> {
     try {
       return await llmApi.call(prompt, model, jsonMode);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('LLM call failed', err, {
         prompt: typeof prompt === 'string' ? prompt.substring(0, 100) : 'object',
         model,

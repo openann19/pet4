@@ -100,9 +100,9 @@ export class GDPRService {
         purpose,
         legalBasis,
       })
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to persist consent to API', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
     }
 
@@ -127,9 +127,9 @@ export class GDPRService {
       // Persist to API
       try {
         await gdprApi.revokeConsent(userId, type)
-      } catch (error) {
+      } catch (_error) {
         logger.error('Failed to persist consent revocation to API', {
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         })
       }
 
@@ -198,9 +198,9 @@ export class GDPRService {
         data: apiRequest.data,
         reason: apiRequest.reason,
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to submit data access request', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
       // Return local request even if API call fails
       return request
@@ -250,9 +250,9 @@ export class GDPRService {
         data: apiRequest.data,
         reason: apiRequest.reason,
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to submit data rectification request', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
       // Return local request even if API call fails
       return request
@@ -299,9 +299,9 @@ export class GDPRService {
         data: apiRequest.data,
         reason: apiRequest.reason,
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to submit data erasure request', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
       // Return local request even if API call fails
       return request
@@ -355,9 +355,9 @@ export class GDPRService {
         data: apiRequest.data,
         reason: apiRequest.reason,
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to submit data portability request', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
       // Return local request even if API call fails
       return request
@@ -396,11 +396,11 @@ export class GDPRService {
       const blob = new Blob([jsonString], { type: 'application/json' })
       logger.debug('User data exported', { userId, format })
       return blob
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to export user data', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
-      throw error
+      throw _error
     }
   }
 
@@ -415,11 +415,11 @@ export class GDPRService {
         reason: reason ?? 'User requested deletion',
       })
       logger.debug('User data deletion requested', { userId, reason })
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to delete user data', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
-      throw error
+      throw _error
     }
   }
 
@@ -442,9 +442,9 @@ export class GDPRService {
         })
       })
       logger.debug('Request status fetched', { userId, count: apiRequests.length })
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to fetch request status', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
     }
   }

@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   interpolate,
   Extrapolation,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { haptics } from '@/lib/haptics';
 import { toast } from 'sonner';
 import { createLogger } from '@/lib/logger';
@@ -119,8 +119,8 @@ export function usePullToRefresh(options: UsePullToRefreshOptions): UsePullToRef
         await onRefresh();
         haptics.success();
         toast.success('Feed refreshed!');
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to refresh feed', err);
         haptics.error();
         toast.error('Failed to refresh');

@@ -191,17 +191,17 @@ export function useBatteryStatus() {
           const updateLevel = () => {
             try {
               setBatteryLevel(battery.level);
-            } catch (error) {
-              const err = error instanceof Error ? error : new Error(String(error));
-              logger.error('useBatteryStatus updateLevel error', err);
+            } catch (_error) {
+              const err = _error instanceof Error ? _error : new Error(String(_error));
+              logger.error('useBatteryStatus updateLevel _error', err);
             }
           };
           const updateCharging = () => {
             try {
               setIsCharging(battery.charging);
-            } catch (error) {
-              const err = error instanceof Error ? error : new Error(String(error));
-              logger.error('useBatteryStatus updateCharging error', err);
+            } catch (_error) {
+              const err = _error instanceof Error ? _error : new Error(String(_error));
+              logger.error('useBatteryStatus updateCharging _error', err);
             }
           };
 
@@ -212,18 +212,18 @@ export function useBatteryStatus() {
             try {
               battery.removeEventListener('levelchange', updateLevel);
               battery.removeEventListener('chargingchange', updateCharging);
-            } catch (error) {
-              const err = error instanceof Error ? error : new Error(String(error));
-              logger.error('useBatteryStatus cleanup error', err);
+            } catch (_error) {
+              const err = _error instanceof Error ? _error : new Error(String(_error));
+              logger.error('useBatteryStatus cleanup _error', err);
             }
           };
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('useBatteryStatus setup error', err);
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('useBatteryStatus setup _error', err);
         }
       })
       .catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to get battery status', err);
       });
 
@@ -252,27 +252,27 @@ export function useNetworkStatus() {
     const handleOnline = () => {
       try {
         setIsOnline(true);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('useNetworkStatus handleOnline error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('useNetworkStatus handleOnline _error', err);
       }
     };
 
     const handleOffline = () => {
       try {
         setIsOnline(false);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('useNetworkStatus handleOffline error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('useNetworkStatus handleOffline _error', err);
       }
     };
 
     try {
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('useNetworkStatus setup event listeners error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('useNetworkStatus setup event listeners _error', err);
     }
 
     const nav = window.navigator as Navigator & { connection?: NetworkInformation };
@@ -286,9 +286,9 @@ export function useNetworkStatus() {
           try {
             setConnectionType(connection.type ?? 'unknown');
             setEffectiveType(connection.effectiveType ?? 'unknown');
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('useNetworkStatus handleChange error', err);
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('useNetworkStatus handleChange _error', err);
           }
         };
 
@@ -299,14 +299,14 @@ export function useNetworkStatus() {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
             connection.removeEventListener('change', handleChange);
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('useNetworkStatus cleanup error', err);
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('useNetworkStatus cleanup _error', err);
           }
         };
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('useNetworkStatus setup connection listeners error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('useNetworkStatus setup connection listeners _error', err);
       }
     }
 
@@ -314,9 +314,9 @@ export function useNetworkStatus() {
       try {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('useNetworkStatus cleanup error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('useNetworkStatus cleanup _error', err);
       }
     };
   }, []);

@@ -198,8 +198,8 @@ export class GDPRService {
       });
 
       return exportData;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : String(_error);
       logger.error('Data export failed', new Error(errorMessage), { userId });
       throw new Error(`Failed to export user data: ${errorMessage}`);
     }
@@ -240,12 +240,12 @@ export class GDPRService {
               try {
                 await db.delete(collection.name, record.id);
                 deletedCount++;
-              } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
+              } catch (_error) {
+                const errorMessage = _error instanceof Error ? _error.message : String(_error);
                 result.errors.push({
                   collection: collection.name,
                   recordId: record.id,
-                  error: errorMessage,
+                  _error: errorMessage,
                 });
                 result.success = false;
               }
@@ -256,8 +256,8 @@ export class GDPRService {
             result.deletedCollections.push(collection.name);
             result.deletedRecords += deletedCount;
           }
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : String(error);
+        } catch (_error) {
+          const errorMessage = _error instanceof Error ? _error.message : String(_error);
           logger.error('Failed to delete collection', new Error(errorMessage), {
             userId,
             collection: collection.name,
@@ -275,8 +275,8 @@ export class GDPRService {
         await db.delete<UserProfile>('users', userId);
         result.deletedCollections.push('users');
         result.deletedRecords++;
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
+      } catch (_error) {
+        const errorMessage = _error instanceof Error ? _error.message : String(_error);
         logger.error('Failed to delete user', new Error(errorMessage), { userId });
         result.success = false;
         result.errors.push({
@@ -301,8 +301,8 @@ export class GDPRService {
       }
 
       return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+    } catch (_error) {
+      const errorMessage = _error instanceof Error ? _error.message : String(_error);
       logger.error('Data deletion failed', new Error(errorMessage), { userId });
       throw new Error(`Failed to delete user data: ${errorMessage}`);
     }
@@ -316,13 +316,13 @@ export class GDPRService {
       const response = await api.get<UserDataExport>(`/api/gdpr/export/${userId}`);
       logger.debug('Data export requested via API', { userId });
       return response;
-    } catch (error) {
-      const apiError = error as APIError;
+    } catch (_error) {
+      const apiError = _error as APIError;
       logger.error('API data export failed', new Error(apiError.message), {
         userId,
         code: apiError.code,
       });
-      throw error;
+      throw _error;
     }
   }
 
@@ -334,13 +334,13 @@ export class GDPRService {
       const response = await api.post<DataDeletionResult>(`/api/gdpr/delete/${userId}`, {});
       logger.debug('Data deletion requested via API', { userId });
       return response;
-    } catch (error) {
-      const apiError = error as APIError;
+    } catch (_error) {
+      const apiError = _error as APIError;
       logger.error('API data deletion failed', new Error(apiError.message), {
         userId,
         code: apiError.code,
       });
-      throw error;
+      throw _error;
     }
   }
 

@@ -358,7 +358,7 @@ export function useAnalytics(config: AnalyticsConfig) {
       if (debug) {
         logger.debug('Flushed events', { count: eventsToSend.length });
       }
-    } catch (error) {
+    } catch (_error) {
       // Re-queue events on failure
       queueRef.current.unshift(...eventsToSend);
       setState((prev) => ({
@@ -373,7 +373,7 @@ export function useAnalytics(config: AnalyticsConfig) {
         });
       }
 
-      const errorInstance = error instanceof Error ? error : new Error(String(error));
+      const errorInstance = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Flush failed', errorInstance, { eventCount: eventsToSend.length });
     }
   }, [projectId, endpoint, debug, logger]);

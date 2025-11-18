@@ -101,8 +101,8 @@ export default function AdoptionView() {
       );
       setListings(mappedListings);
       setCursor(result.nextCursor);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load listings', err, { action: 'loadListings' });
       toast.error('Failed to load adoption listings');
     } finally {
@@ -118,8 +118,8 @@ export default function AdoptionView() {
       const user = await spark.user();
       const applications = await adoptionApi.getUserApplications(user.id);
       setUserApplicationsCount(applications.length);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load user applications count', err, {
         action: 'loadUserApplicationsCount',
       });

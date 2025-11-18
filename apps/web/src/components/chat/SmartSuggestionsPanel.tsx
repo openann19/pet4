@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming, withSpring } from '@petspark/motion';
+import { useSharedValue, usewithTiming, withSpring } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { Sparkle, X } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';

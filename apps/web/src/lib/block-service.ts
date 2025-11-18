@@ -43,12 +43,12 @@ class BlockServiceImpl {
       });
 
       return response.data;
-    } catch (error) {
-      logger.error('Failed to block pet', error, {
+    } catch (_error) {
+      logger.error('Failed to block pet', _error, {
         blockerPetId,
         blockedPetId,
       });
-      throw error;
+      throw _error;
     }
   }
 
@@ -74,12 +74,12 @@ class BlockServiceImpl {
       });
 
       return response.data;
-    } catch (error) {
-      logger.error('Failed to block user', error, {
+    } catch (_error) {
+      logger.error('Failed to block user', _error, {
         blockerUserId,
         blockedUserId,
       });
-      throw error;
+      throw _error;
     }
   }
 
@@ -94,12 +94,12 @@ class BlockServiceImpl {
         blockerPetId,
         blockedPetId,
       });
-    } catch (error) {
-      logger.error('Failed to unblock pet', error, {
+    } catch (_error) {
+      logger.error('Failed to unblock pet', _error, {
         blockerPetId,
         blockedPetId,
       });
-      throw error;
+      throw _error;
     }
   }
 
@@ -114,12 +114,12 @@ class BlockServiceImpl {
         blockerUserId,
         blockedUserId,
       });
-    } catch (error) {
-      logger.error('Failed to unblock user', error, {
+    } catch (_error) {
+      logger.error('Failed to unblock user', _error, {
         blockerUserId,
         blockedUserId,
       });
-      throw error;
+      throw _error;
     }
   }
 
@@ -133,8 +133,8 @@ class BlockServiceImpl {
       );
 
       return response.data;
-    } catch (error) {
-      logger.error('Failed to check block status', error, {
+    } catch (_error) {
+      logger.error('Failed to check block status', _error, {
         blockerPetId,
         blockedPetId,
       });
@@ -154,8 +154,8 @@ class BlockServiceImpl {
       const response = await APIClient.get<BlockRecord[]>(ENDPOINTS.BLOCKING.BLOCKED_PETS(petId));
 
       return response.data;
-    } catch (error) {
-      logger.error('Failed to get blocked pets', error, { petId });
+    } catch (_error) {
+      logger.error('Failed to get blocked pets', _error, { petId });
       return [];
     }
   }
@@ -168,8 +168,8 @@ class BlockServiceImpl {
       const response = await APIClient.get<BlockRecord[]>(ENDPOINTS.BLOCKING.BLOCKED_USERS(userId));
 
       return response.data;
-    } catch (error) {
-      logger.error('Failed to get blocked users', error, { userId });
+    } catch (_error) {
+      logger.error('Failed to get blocked users', _error, { userId });
       return [];
     }
   }
@@ -205,13 +205,13 @@ class BlockServiceImpl {
 
       // Then block
       return this.blockPet(reporterPetId, reportedPetId, reason);
-    } catch (error) {
-      logger.error('Failed to report and block', error, {
+    } catch (_error) {
+      logger.error('Failed to report and block', _error, {
         reporterPetId,
         reportedPetId,
         reason,
       });
-      throw error;
+      throw _error;
     }
   }
 }

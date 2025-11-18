@@ -1,11 +1,11 @@
 'use client';;
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithTiming, MotionView } from '@petspark/motion';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { useStorage } from '@/hooks/use-storage';
 import { createLogger } from '@/lib/logger';
 import { Badge } from '@/components/ui/badge';
@@ -258,8 +258,8 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         summary.lastCheckup = lastCheckup;
       }
       setHealthSummary(summary);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to generate health summary', err, { petId: pet.id });
       toast.error('Failed to load health summary', {
         description: 'Please try again later',
@@ -324,8 +324,8 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         description: 'Vaccination record created successfully',
       });
       logger.info('Vaccination added', { petId: pet.id, vaccinationId: newVaccination.id });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to add vaccination', err, { petId: pet.id });
       toast.error('Failed to add vaccination', { description: 'Please try again' });
     }
@@ -348,8 +348,8 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         description: 'Health record created successfully',
       });
       logger.info('Health record added', { petId: pet.id, recordId: newRecord.id });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to add health record', err, { petId: pet.id });
       toast.error('Failed to add health record', { description: 'Please try again' });
     }
@@ -370,8 +370,8 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
       setReminders((current): VetReminder[] => [...(current ?? []), newReminder]);
       toast.success('Reminder added', { description: 'Reminder created successfully' });
       logger.info('Reminder added', { petId: pet.id, reminderId: newReminder.id });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to add reminder', err, { petId: pet.id });
       toast.error('Failed to add reminder', { description: 'Please try again' });
     }
@@ -390,8 +390,8 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
         );
         toast.success('Reminder completed', { description: 'Reminder marked as complete' });
         logger.info('Reminder completed', { petId: pet.id, reminderId });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to complete reminder', err, { petId: pet.id, reminderId });
         toast.error('Failed to complete reminder', { description: 'Please try again' });
       }

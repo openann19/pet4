@@ -45,7 +45,7 @@ export function useMatching({ userPet, otherPet, autoCalculate = true }: UseMatc
       setMatchReasoning(reasoning);
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
-      setError(error);
+      setError(_error);
       setCompatibilityScore(0);
       setCompatibilityFactors(null);
       setMatchReasoning([]);

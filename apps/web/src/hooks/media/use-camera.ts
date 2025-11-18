@@ -195,7 +195,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     } catch (err) {
       const error = err as Error
 
-      setError(error)
+      setError(_error)
       setIsActive(false)
 
       if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {

@@ -189,8 +189,8 @@ export default function UsersView() {
         setNewPassword('');
         setResetPasswordMode('email');
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       toast.error('Failed to reset password: ' + err.message);
     } finally {
       setResettingPassword(false);
@@ -405,7 +405,7 @@ export default function UsersView() {
                   onClick={() => {
                     if (!selectedUser) return;
                     void handleSuspendUser(selectedUser.id).catch((error) => {
-                      const err = error instanceof Error ? error : new Error(String(error));
+                      const err = _error instanceof Error ? _error : new Error(String(_error));
                       logger.error('Failed to suspend user', err, { userId: selectedUser.id });
                       toast.error('Failed to suspend user: ' + err.message);
                     });
@@ -419,7 +419,7 @@ export default function UsersView() {
                   onClick={() => {
                     if (!selectedUser) return;
                     void handleBanUser(selectedUser.id).catch((error) => {
-                      const err = error instanceof Error ? error : new Error(String(error));
+                      const err = _error instanceof Error ? _error : new Error(String(_error));
                       logger.error('Failed to ban user', err, { userId: selectedUser.id });
                       toast.error('Failed to ban user: ' + err.message);
                     });
@@ -436,7 +436,7 @@ export default function UsersView() {
                 onClick={() => {
                   if (!selectedUser) return;
                   void handleReactivateUser(selectedUser.id).catch((error) => {
-                    const err = error instanceof Error ? error : new Error(String(error));
+                    const err = _error instanceof Error ? _error : new Error(String(_error));
                     logger.error('Failed to reactivate user', err, { userId: selectedUser.id });
                     toast.error('Failed to reactivate user: ' + err.message);
                   });
@@ -522,7 +522,7 @@ export default function UsersView() {
             <Button
               onClick={() => {
                 void handleResetPassword().catch((error) => {
-                  const err = error instanceof Error ? error : new Error(String(error));
+                  const err = _error instanceof Error ? _error : new Error(String(_error));
                   logger.error('Failed to reset password', err, {
                     userId: selectedUser?.id,
                     mode: resetPasswordMode,

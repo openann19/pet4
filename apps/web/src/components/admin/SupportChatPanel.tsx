@@ -85,8 +85,8 @@ export default function SupportChatPanel() {
         status: statusFilter.length > 0 ? statusFilter : filter.status,
       });
       setTickets(ticketsData);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load tickets', err);
       toast.error('Failed to load support tickets');
     } finally {
@@ -98,8 +98,8 @@ export default function SupportChatPanel() {
     try {
       const statsData = await supportApi.getStats();
       setStats(statsData);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load stats', err);
     }
   }, []);
@@ -112,8 +112,8 @@ export default function SupportChatPanel() {
           (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         )
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load messages', err);
     }
   }, []);
@@ -151,8 +151,8 @@ export default function SupportChatPanel() {
         targetId: selectedTicket.id,
         details: JSON.stringify({ messageId: message.id }),
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to send message', err);
       toast.error('Failed to send message');
     } finally {
@@ -176,8 +176,8 @@ export default function SupportChatPanel() {
         targetId: selectedTicket.id,
         details: JSON.stringify({ status }),
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update status', err);
       toast.error('Failed to update ticket status');
     }
@@ -364,7 +364,7 @@ export default function SupportChatPanel() {
                           v === 'closed'
                         ) {
                           void handleUpdateStatus(v).catch((error) => {
-                            const err = error instanceof Error ? error : new Error(String(error));
+                            const err = _error instanceof Error ? _error : new Error(String(_error));
                             logger.error('Failed to update ticket status', err);
                           });
                         }
@@ -458,7 +458,7 @@ export default function SupportChatPanel() {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.metaKey) {
                         void handleSendMessage().catch((error) => {
-                          const err = error instanceof Error ? error : new Error(String(error));
+                          const err = _error instanceof Error ? _error : new Error(String(_error));
                           logger.error('Failed to send message from keyboard', err);
                         });
                       }
@@ -467,7 +467,7 @@ export default function SupportChatPanel() {
                   <Button
                     onClick={() => {
                       void handleSendMessage().catch((error) => {
-                        const err = error instanceof Error ? error : new Error(String(error));
+                        const err = _error instanceof Error ? _error : new Error(String(_error));
                         logger.error('Failed to send message from button', err);
                       });
                     }}

@@ -239,7 +239,7 @@ export const kycNative = new KycNativeService();
 //     locale: 'en'
 // });
 //   // Session started successfully
-// } catch (error) {
+// } catch (_error) {
 //   // Error handling should be implemented
 // } finally {
 //   subscription.remove();

@@ -101,8 +101,8 @@ export default function MapSettingsView() {
         setMapSettings(config.settings);
         setCategorySettings(config.categorySettings);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load map config', err);
       toast.error('Failed to load map configuration');
     } finally {
@@ -136,8 +136,8 @@ export default function MapSettingsView() {
       };
       await updateMapConfig(config, currentUser.id || 'admin');
       toast.success('Map configuration saved successfully');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to save map config', err);
       toast.error('Failed to save map configuration');
     } finally {
@@ -156,7 +156,7 @@ export default function MapSettingsView() {
     }));
     // Auto-save to backend
     void saveConfig().catch((error) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to save map setting', err, { key });
     });
   };
@@ -176,7 +176,7 @@ export default function MapSettingsView() {
     setIsAddingCategory(false);
     // Auto-save to backend
     void saveConfig().catch((error) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to save category', err);
       toast.error('Failed to save category');
     });
@@ -190,7 +190,7 @@ export default function MapSettingsView() {
     }));
     // Auto-save to backend
     void saveConfig().catch((error) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to save after deleting category', err, { categoryId });
       toast.error('Failed to delete category');
     });
@@ -207,7 +207,7 @@ export default function MapSettingsView() {
     setEditingCategory(null);
     // Auto-save to backend
     void saveConfig().catch((error) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to save after updating category', err, { categoryId: updatedCategory.id });
       toast.error('Failed to update category');
     });
@@ -219,7 +219,7 @@ export default function MapSettingsView() {
     setCategorySettings(DEFAULT_CATEGORY_SETTINGS);
     // Auto-save to backend
     void saveConfig().catch((error) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to save after reset', err);
       toast.error('Failed to reset settings');
     });
@@ -259,10 +259,10 @@ export default function MapSettingsView() {
         targetId: 'map-settings',
         details: JSON.stringify({ configType: 'map' }),
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       toast.error('Failed to broadcast map settings');
-      logger.error('Broadcast error', err, { configType: 'map' });
+      logger.error('Broadcast _error', err, { configType: 'map' });
     } finally {
       setBroadcasting(false);
     }
@@ -296,7 +296,7 @@ export default function MapSettingsView() {
             <Button
               onClick={() => {
                 void handleBroadcastSettings().catch((error) => {
-                  const err = error instanceof Error ? error : new Error(String(error));
+                  const err = _error instanceof Error ? _error : new Error(String(_error));
                   const logger = createLogger('MapSettingsView');
                   logger.error('Failed to broadcast settings from button', err);
                 });
@@ -584,8 +584,8 @@ export default function MapSettingsView() {
                         ...current,
                         enableUserSubmittedPlaces: checked,
                       }));
-                    } catch (error) {
-                      const err = error instanceof Error ? error : new Error(String(error));
+                    } catch (_error) {
+                      const err = _error instanceof Error ? _error : new Error(String(_error));
                       logger.error('Failed to update category setting', err);
                     }
                   }}
@@ -603,8 +603,8 @@ export default function MapSettingsView() {
                         ...current,
                         requireModeration: checked,
                       }));
-                    } catch (error) {
-                      const err = error instanceof Error ? error : new Error(String(error));
+                    } catch (_error) {
+                      const err = _error instanceof Error ? _error : new Error(String(_error));
                       logger.error('Failed to update category setting', err);
                     }
                   }}

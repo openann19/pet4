@@ -45,8 +45,8 @@ export function MediaEditor({ source, onDone, onCancel }: MediaEditorProps): Rea
       const result = await editMedia(mediaInput, ops);
 
       onDone(result.uri);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Export failed', err, { sourceUri: source.uri });
       throw err;
     } finally {

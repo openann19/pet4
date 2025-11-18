@@ -17,8 +17,8 @@ export class CommunityClientSocialApi {
         {}
       );
       return response.data.savedPost;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to save post', err, { postId });
       throw err;
     }
@@ -27,8 +27,8 @@ export class CommunityClientSocialApi {
   async unsavePost(postId: string): Promise<void> {
     try {
       await APIClient.delete(ENDPOINTS.COMMUNITY.SAVE_POST(postId));
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to unsave post', err, { postId });
       throw err;
     }
@@ -40,8 +40,8 @@ export class CommunityClientSocialApi {
         ENDPOINTS.COMMUNITY.SAVED_POSTS
       );
       return response.data.posts;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get saved posts', err);
       throw err;
     }
@@ -53,8 +53,8 @@ export class CommunityClientSocialApi {
         ENDPOINTS.COMMUNITY.IS_SAVED(postId)
       );
       return response.data.saved;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to check if post is saved', err, { postId });
       return false;
     }
@@ -67,8 +67,8 @@ export class CommunityClientSocialApi {
         { targetId, targetName }
       );
       return response.data.follow;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to follow user', err, { targetId });
       throw err;
     }
@@ -77,8 +77,8 @@ export class CommunityClientSocialApi {
   async unfollowUser(targetId: string): Promise<void> {
     try {
       await APIClient.delete(`${ENDPOINTS.COMMUNITY.FOLLOW}/${targetId}`);
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to unfollow user', err, { targetId });
       throw err;
     }
@@ -93,8 +93,8 @@ export class CommunityClientSocialApi {
         `${ENDPOINTS.COMMUNITY.FOLLOW}/${targetId}?type=${type}`
       );
       return response.data.following;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to check if following', err, { targetId, type });
       return false;
     }

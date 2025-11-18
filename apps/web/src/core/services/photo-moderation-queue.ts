@@ -60,8 +60,8 @@ export class PhotoModerationQueueService {
         photoId,
         priority,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to enqueue photo', err, { photoId, priority });
       throw err;
     }
@@ -95,8 +95,8 @@ export class PhotoModerationQueueService {
       });
 
       return allItems.slice(0, limit);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get next batch', err, { limit, statuses });
       throw err;
     }
@@ -128,8 +128,8 @@ export class PhotoModerationQueueService {
         previousStatus: item.status,
         newStatus: status,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update queue status', err, { photoId, status });
       throw err;
     }
@@ -144,8 +144,8 @@ export class PhotoModerationQueueService {
       await storage.delete(queueKey);
 
       logger.info('Photo dequeued', { photoId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to dequeue photo', err, { photoId });
       throw err;
     }
@@ -188,8 +188,8 @@ export class PhotoModerationQueueService {
       }
 
       return stats;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get queue stats', err);
       throw err;
     }
@@ -223,8 +223,8 @@ export class PhotoModerationQueueService {
       });
 
       return batchId;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to assign batch', err, { moderatorId, photoCount: photoIds.length });
       throw err;
     }

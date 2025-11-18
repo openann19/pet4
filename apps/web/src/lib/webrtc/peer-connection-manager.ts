@@ -114,7 +114,7 @@ export class PeerConnectionManager {
       this.setupEventHandlers();
       logger.info('Peer connection initialized');
     } catch (error: unknown) {
-      const err = normalizeError(error);
+      const err = normalizeError(_error);
       logger.error('Failed to initialize peer connection', err);
       this.events.onError?.(err);
       throw err;
@@ -252,7 +252,7 @@ export class PeerConnectionManager {
       logger.debug('Created offer', { type: offer.type });
       return offer;
     } catch (error: unknown) {
-      const err = normalizeError(error);
+      const err = normalizeError(_error);
       logger.error('Failed to create offer', err);
       this.events.onError?.(err);
       throw err;
@@ -273,7 +273,7 @@ export class PeerConnectionManager {
       logger.debug('Created answer', { type: answer.type });
       return answer;
     } catch (error: unknown) {
-      const err = normalizeError(error);
+      const err = normalizeError(_error);
       logger.error('Failed to create answer', err);
       this.events.onError?.(err);
       throw err;
@@ -292,7 +292,7 @@ export class PeerConnectionManager {
       await this.peerConnection.setRemoteDescription(description);
       logger.debug('Set remote description', { type: description.type });
     } catch (error: unknown) {
-      const err = normalizeError(error);
+      const err = normalizeError(_error);
       logger.error('Failed to set remote description', err);
       this.events.onError?.(err);
       throw err;
@@ -311,7 +311,7 @@ export class PeerConnectionManager {
       await this.peerConnection.addIceCandidate(candidate);
       logger.debug('Added ICE candidate', { candidate: candidate.candidate });
     } catch (error: unknown) {
-      const err = normalizeError(error);
+      const err = normalizeError(_error);
       logger.warn('Failed to add ICE candidate', err);
       // Don't throw - ICE candidate errors are often non-fatal
     }
@@ -384,7 +384,7 @@ export class PeerConnectionManager {
     try {
       return await this.peerConnection.getStats();
     } catch (error: unknown) {
-      const err = normalizeError(error);
+      const err = normalizeError(_error);
       logger.warn('Failed to get statistics', err);
       return null;
     }

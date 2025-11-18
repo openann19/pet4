@@ -101,16 +101,16 @@ export async function forwardGeocode(
     trackGeocodingMetrics(metrics);
 
     return results;
-  } catch (error) {
+  } catch (_error) {
     const latency = Date.now() - startTime;
-    const err = error instanceof Error ? error : new Error(String(error));
+    const err = _error instanceof Error ? _error : new Error(String(_error));
 
     const metrics: GeocodingMetrics = {
       requestId,
       query,
       latency,
       resultCount: 0,
-      error: err.message,
+      _error: err.message,
     };
 
     logger.error('Geocoding failed', err, metrics);
@@ -184,9 +184,9 @@ export async function reverseGeocode(
     trackGeocodingMetrics(metrics);
 
     return result;
-  } catch (error) {
+  } catch (_error) {
     const latency = Date.now() - startTime;
-    const err = error instanceof Error ? error : new Error(String(error));
+    const err = _error instanceof Error ? _error : new Error(String(_error));
 
     const metrics: GeocodingMetrics = {
       requestId,

@@ -129,10 +129,10 @@ export default function ReportsView() {
       const backendReports = await adminReportsApi.listReports();
       const uiReports = backendReports.map(mapBackendReportToUI);
       setReports(uiReports);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to load reports',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to load reports. Please try again.');
     } finally {
@@ -207,10 +207,10 @@ export default function ReportsView() {
         );
         // Don't fail the resolve operation if audit log fails
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to resolve report',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to resolve report. Please try again.');
     } finally {
@@ -255,10 +255,10 @@ export default function ReportsView() {
         );
         // Don't fail the dismiss operation if audit log fails
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to dismiss report',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to dismiss report. Please try again.');
     } finally {
@@ -457,7 +457,7 @@ export default function ReportsView() {
                 void handleDismiss().catch((error) => {
                   logger.error(
                     'Failed to dismiss report',
-                    error instanceof Error ? error : new Error(String(error))
+                    _error instanceof Error ? _error : new Error(String(_error))
                   );
                 });
               }}
@@ -471,7 +471,7 @@ export default function ReportsView() {
                 void handleResolve().catch((error) => {
                   logger.error(
                     'Failed to resolve report',
-                    error instanceof Error ? error : new Error(String(error))
+                    _error instanceof Error ? _error : new Error(String(_error))
                   );
                 });
               }}

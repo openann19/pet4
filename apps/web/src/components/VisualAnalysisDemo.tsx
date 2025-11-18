@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withRepeat,
   withTiming,
   withSequence,
   MotionView,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { useAnimatePresence } from '@/effects/reanimated';
 import { Sparkle, Eye, ArrowRight } from '@phosphor-icons/react';
 import { Card } from '@/components/ui/card';

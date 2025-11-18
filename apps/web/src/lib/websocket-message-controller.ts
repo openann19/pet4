@@ -64,8 +64,8 @@ export class WebSocketMessageController {
       try {
         socket.send(JSON.stringify(entry))
         return
-      } catch (error) {
-        const normalizedError = extractError(error)
+      } catch (_error) {
+        const normalizedError = extractError(_error)
         this.deps.logger.error('Failed to send WebSocket message', {
           message: normalizedError.message,
           stack: normalizedError.stack,

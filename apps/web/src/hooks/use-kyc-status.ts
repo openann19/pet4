@@ -63,7 +63,7 @@ export function useKYCStatus(userId: string) {
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err));
       logger.error('Failed to fetch KYC status', error);
-      setError(error);
+      setError(_error);
       setStatus('not_started');
       setVerification(null);
     } finally {

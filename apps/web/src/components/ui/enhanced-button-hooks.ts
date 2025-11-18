@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withTiming,
   withRepeat,

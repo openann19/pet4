@@ -39,10 +39,10 @@ class PushNotificationManager {
     try {
       this.registration = await navigator.serviceWorker.ready;
       return true;
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Service worker initialization failed',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return false;
     }
@@ -60,10 +60,10 @@ class PushNotificationManager {
     try {
       this.permission = await Notification.requestPermission();
       return this.permission === 'granted';
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Permission request failed',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return false;
     }
@@ -92,10 +92,10 @@ class PushNotificationManager {
         ...(notification.actions ? { actions: notification.actions } : {}),
       };
       await this.registration.showNotification(notification.title, options);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to show notification',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -185,8 +185,8 @@ class DeepLinkManager {
         path: url.pathname,
         params,
       };
-    } catch (error) {
-      logger.error('Invalid deep link', error instanceof Error ? error : new Error(String(error)));
+    } catch (_error) {
+      logger.error('Invalid deep link', _error instanceof Error ? _error : new Error(String(_error)));
       return null;
     }
   }

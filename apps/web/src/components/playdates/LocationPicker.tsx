@@ -87,8 +87,8 @@ export function LocationPicker({
         setCurrentLocation(location);
         onLocationSelect(location);
       }
-    } catch (error) {
-      logger.error('Location search failed', error);
+    } catch (_error) {
+      logger.error('Location search failed', _error);
     } finally {
       setIsSearching(false);
     }

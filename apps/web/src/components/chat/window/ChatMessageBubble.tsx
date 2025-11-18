@@ -10,7 +10,7 @@ import { Check, Checks, Heart, Pause, Play } from '@phosphor-icons/react';
 import type { ChatMessage, MessageReaction } from '@/lib/chat-types';
 import { REACTION_EMOJIS } from '@/lib/chat-types';
 import { formatChatTime, getReactionsArray } from '@/lib/chat-utils';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 export interface ChatMessageBubbleProps {
   message: ChatMessage;

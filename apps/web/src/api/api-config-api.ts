@@ -81,8 +81,8 @@ export async function getAPIConfig(): Promise<APIConfig | null> {
   try {
     const response = await APIClient.get<{ config: APIConfig | null }>('/admin/config/api');
     return response.data.config;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get API config', err);
     throw err;
   }
@@ -101,8 +101,8 @@ export async function updateAPIConfig(
       updatedBy,
     });
     return response.data.config;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to update API config', err, { updatedBy });
     throw err;
   }

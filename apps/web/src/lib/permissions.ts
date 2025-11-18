@@ -111,10 +111,10 @@ class PermissionsManager {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       stream.getTracks().forEach((track) => track.stop());
       return true;
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Camera permission denied',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return false;
     }
@@ -125,10 +125,10 @@ class PermissionsManager {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((track) => track.stop());
       return true;
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Microphone permission denied',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return false;
     }
@@ -156,10 +156,10 @@ class PermissionsManager {
     try {
       const permission = await Notification.requestPermission();
       return permission === 'granted';
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Notification permission denied',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return false;
     }

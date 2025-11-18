@@ -236,8 +236,8 @@ export default function SavedSearchesManager({
       logger.info('Search saved', { searchId: newSearch.id, searchName: newSearch.name });
       setSearchName('');
       setShowSaveForm(false);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to save search', err, { searchName });
       toast.error('Failed to save search');
       triggerHaptic('error');
@@ -269,8 +269,8 @@ export default function SavedSearchesManager({
         logger.info('Search updated', { searchId: id, searchName: searchName.trim() });
         setEditingId(null);
         setSearchName('');
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to update search', err, { searchId: id, searchName });
         toast.error('Failed to update search');
         triggerHaptic('error');
@@ -294,8 +294,8 @@ export default function SavedSearchesManager({
         toast.success('Search applied', { description: `Filters updated to "${search.name}"` });
         logger.info('Search applied', { searchId: search.id, searchName: search.name });
         onClose();
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to apply search', err, {
           searchId: search.id,
           searchName: search.name,
@@ -315,8 +315,8 @@ export default function SavedSearchesManager({
         );
         triggerHaptic('light');
         logger.info('Search pin toggled', { searchId: id });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to toggle pin', err, { searchId: id });
         triggerHaptic('error');
       }
@@ -331,8 +331,8 @@ export default function SavedSearchesManager({
         triggerHaptic('light');
         toast.info('Search deleted', { description: `"${name}" has been removed` });
         logger.info('Search deleted', { searchId: id, searchName: name });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to delete search', err, { searchId: id, searchName: name });
         toast.error('Failed to delete search');
         triggerHaptic('error');

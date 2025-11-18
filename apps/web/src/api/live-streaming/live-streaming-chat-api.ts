@@ -32,8 +32,8 @@ function broadcastChatMessage(
       roomId,
       messageId: message.id,
     });
-  } catch (error) {
-    const err = normalizeError(error);
+  } catch (_error) {
+    const err = normalizeError(_error);
     logger.error('Failed to broadcast chat message', err, {
       roomId,
       messageId: message.id,
@@ -82,8 +82,8 @@ export class LiveStreamingChatApi {
       broadcastChatMessage(stream.roomId, message);
 
       return message;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to send chat message', err, { streamId, userId });
       throw err;
     }
@@ -95,8 +95,8 @@ export class LiveStreamingChatApi {
         ENDPOINTS.STREAMING.GET_CHAT(streamId)
       );
       return response.data.messages;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to query chat messages', err, { streamId });
       throw err;
     }

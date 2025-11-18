@@ -27,8 +27,8 @@ export function AchievementsPanel({ userId, className }: AchievementsPanelProps)
       try {
         const data = await gamificationClient.getAchievements(userId);
         setAchievements(data);
-      } catch (error) {
-        console.error('Failed to load achievements:', error);
+      } catch (_error) {
+        console.error('Failed to load achievements:', _error);
       } finally {
         setLoading(false);
       }

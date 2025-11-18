@@ -45,8 +45,8 @@ export async function generateProfilesInFeed(count = 15): Promise<Pet[]> {
     });
 
     return uniqueNewPets;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to generate profiles', err, { action: 'generateProfilesInFeed', count });
     throw new FixerError(
       'Failed to generate profiles',
@@ -73,8 +73,8 @@ export async function resetAndGenerateProfiles(count = 15): Promise<Pet[]> {
     logger.info('Successfully generated fresh profiles', { count: newPets.length });
 
     return newPets;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to reset and generate profiles', err, {
       action: 'resetAndGenerateProfiles',
       count,
@@ -115,8 +115,8 @@ export async function generateManualProfilesInFeed(count = 15): Promise<Pet[]> {
     });
 
     return uniqueNewPets;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to generate manual profiles', err, {
       action: 'generateManualProfilesInFeed',
       count,

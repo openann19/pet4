@@ -91,10 +91,10 @@ export class LostFoundAPI {
           alertId: alert.id,
           radiusKm,
         });
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           'Failed to trigger geofenced notifications',
-          error instanceof Error ? error : new Error(String(error)),
+          _error instanceof Error ? _error : new Error(String(_error)),
           {
             alertId: alert.id,
           }
@@ -103,8 +103,8 @@ export class LostFoundAPI {
       }
 
       return alert;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create alert', err, { ownerId: data.ownerId });
       throw err;
     }
@@ -164,8 +164,8 @@ export class LostFoundAPI {
 
       const response = await APIClient.get<QueryAlertsResponse>(url);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to query alerts', err, { filters });
       throw err;
     }
@@ -185,16 +185,16 @@ export class LostFoundAPI {
       // Increment view count (fire and forget)
       try {
         await APIClient.post(ENDPOINTS.LOST_FOUND.INCREMENT_VIEW(id), {});
-      } catch (error) {
+      } catch (_error) {
         logger.warn('Failed to increment view count', {
           alertId: id,
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         });
       }
 
       return alert;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       // If 404, return null instead of throwing
       if (err.message.includes('404') || err.message.includes('not found')) {
         return null;
@@ -234,8 +234,8 @@ export class LostFoundAPI {
       );
 
       return response.data.alert;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update alert status', err, { id, status, userId });
       throw err;
     }
@@ -280,17 +280,17 @@ export class LostFoundAPI {
           alertId: alert.id,
           ownerId: alert.ownerId,
         });
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           'Failed to send sighting notification',
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
         // Don't fail the sighting creation if notification fails
       }
 
       return sighting;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create sighting', err, { alertId: data.alertId });
       throw err;
     }
@@ -304,8 +304,8 @@ export class LostFoundAPI {
       const url = `${ENDPOINTS.LOST_FOUND.GET_SIGHTINGS}?alertId=${alertId}`;
       const response = await APIClient.get<QuerySightingsResponse>(url);
       return response.data.sightings;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to query sightings', err, { alertId });
       throw err;
     }
@@ -319,8 +319,8 @@ export class LostFoundAPI {
       const url = `${ENDPOINTS.LOST_FOUND.QUERY_ALERTS}?mine=1&ownerId=${userId}`;
       const response = await APIClient.get<QueryAlertsResponse>(url);
       return response.data.alerts;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user alerts', err, { userId });
       throw err;
     }
@@ -337,8 +337,8 @@ export class LostFoundAPI {
         { verified, userId }
       );
       return response.data.sighting;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to verify sighting', err, { sightingId, verified });
       throw err;
     }

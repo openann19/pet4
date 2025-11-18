@@ -49,9 +49,9 @@ export class APIClient {
       }
 
       return await response.json();
-    } catch (error) {
-      if ((error as APIError).code) {
-        throw error;
+    } catch (_error) {
+      if ((_error as APIError).code) {
+        throw _error;
       }
 
       throw {

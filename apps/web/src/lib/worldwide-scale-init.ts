@@ -60,8 +60,8 @@ export async function initializeWorldwideScale(options: {
     }
 
     logger.debug('Worldwide scale features initialized')
-  } catch (error) {
-    logger.error('Failed to initialize worldwide scale features', error instanceof Error ? error : new Error(String(error)))
+  } catch (_error) {
+    logger.error('Failed to initialize worldwide scale features', _error instanceof Error ? _error : new Error(String(_error)))
   }
 }
 

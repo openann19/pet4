@@ -273,15 +273,15 @@ export function useChatMessages({
         // Call API to delete
         try {
           await chatApi.deleteMessage(messageId, false);
-        } catch (error) {
+        } catch (_error) {
           // If API call fails, revert optimistic update
           queryClient.invalidateQueries({
             queryKey: queryKeys.chat.messages(roomId),
           });
           throw error;
         }
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         throw err;
       }
     },

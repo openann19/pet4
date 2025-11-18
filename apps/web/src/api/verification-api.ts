@@ -45,8 +45,8 @@ class VerificationApiImpl {
       const url = `/verification/requests${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
       const response = await APIClient.get<GetVerificationRequestsResponse>(url);
       return response.data.requests;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get verification requests', err, { filters });
       throw err;
     }
@@ -76,8 +76,8 @@ class VerificationApiImpl {
         request
       );
       return response.data.request;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update verification status', err, { requestId, status });
       throw err;
     }

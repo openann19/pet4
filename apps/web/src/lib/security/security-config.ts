@@ -136,16 +136,16 @@ class SecurityConfigImpl {
       } else {
         localStorage.setItem(key, value);
       }
-    } catch (error) {
-      logger.error('Failed to store data securely', error, { key });
+    } catch (_error) {
+      logger.error('Failed to store data securely', _error, { key });
     }
   }
 
   secureRetrieve(key: string): string | null {
     try {
       return sessionStorage.getItem(key) ?? localStorage.getItem(key);
-    } catch (error) {
-      logger.error('Failed to retrieve data securely', error, { key });
+    } catch (_error) {
+      logger.error('Failed to retrieve data securely', _error, { key });
       return null;
     }
   }
@@ -154,8 +154,8 @@ class SecurityConfigImpl {
     try {
       sessionStorage.removeItem(key);
       localStorage.removeItem(key);
-    } catch (error) {
-      logger.error('Failed to clear data securely', error, { key });
+    } catch (_error) {
+      logger.error('Failed to clear data securely', _error, { key });
     }
   }
 

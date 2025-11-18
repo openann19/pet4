@@ -73,8 +73,8 @@ export class PhotoModerationEventService {
         previousStatus,
         newStatus,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to emit state change event', err, {
         photoId,
         userId,
@@ -111,8 +111,8 @@ export class PhotoModerationEventService {
         processedCount,
         failedCount,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to emit batch processed event', err, { batchId });
     }
   }
@@ -136,8 +136,8 @@ export class PhotoModerationEventService {
 
       const wsManager = this.getWSManager();
       wsManager.send('/notifications', 'photo_moderation_queue_stats', event);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to emit queue stats update', err);
     }
   }

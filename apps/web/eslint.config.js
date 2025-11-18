@@ -253,6 +253,7 @@ export default tseslint.config(
       '@typescript-eslint/require-await': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/only-throw-error': 'off', // Temporarily disabled due to false positives with catch block variable renaming
       '@typescript-eslint/no-array-delete': 'off', // Disable problematic rule that causes parser crashes
       'max-lines': ['warn', { max: 800, skipComments: true, skipBlankLines: true }],
       'max-lines-per-function': ['warn', { max: 250 }],

@@ -1,4 +1,4 @@
-import { motion, type Variants } from '@petspark/motion'
+import { motion } from '@petspark/motion'
 import { useApp } from '@/contexts/AppContext'
 import AgeGateModal from './AgeGateModal'
 import { useSignUpForm } from './hooks/useSignUpForm'

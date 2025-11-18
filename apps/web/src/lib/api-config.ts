@@ -15,8 +15,8 @@ export async function getAPIConfig(): Promise<APIConfig | null> {
     // Fallback to cached config if API returns null
     const cachedConfig = await storage.get<APIConfig>('admin-api-config');
     return cachedConfig ?? null;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Error fetching API config, using cached config', err, { action: 'getAPIConfig' });
     const cachedConfig = await storage.get<APIConfig>('admin-api-config');
     return cachedConfig ?? null;

@@ -25,8 +25,8 @@ export class CommunityClientPostsApi {
         `${ENDPOINTS.COMMUNITY.POSTS}${query ? `?${query}` : ''}`
       );
       return response.data;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get feed', err, { options });
       throw err;
     }
@@ -39,8 +39,8 @@ export class CommunityClientPostsApi {
         request
       );
       return response.data.post;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to create post', err);
       throw err;
     }
@@ -52,8 +52,8 @@ export class CommunityClientPostsApi {
         ENDPOINTS.COMMUNITY.POST(postId)
       );
       return response.data.post ?? null;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get post', err, { postId });
       return null;
     }
@@ -62,8 +62,8 @@ export class CommunityClientPostsApi {
   async deletePost(postId: string): Promise<void> {
     try {
       await APIClient.delete(ENDPOINTS.COMMUNITY.POST(postId));
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to delete post', err, { postId });
       throw err;
     }

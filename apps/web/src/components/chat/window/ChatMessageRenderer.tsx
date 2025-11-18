@@ -4,7 +4,7 @@ import { WebBubbleWrapper } from '@/components/chat/WebBubbleWrapper';
 import { Pause, Play, Checks, Check } from '@phosphor-icons/react';
 import type { ChatMessage } from '@/lib/chat-types';
 import { formatChatTime } from '@/lib/chat-utils';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 interface ChatMessageRendererProps {
   messageGroups: { date: string; messages: ChatMessage[] }[];

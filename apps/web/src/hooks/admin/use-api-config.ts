@@ -101,8 +101,8 @@ export function useAPIConfig(currentUser: User | null): UseAPIConfigReturn {
       if (loadedConfig) {
         setConfig(loadedConfig);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load API config', err);
       toast.error('Failed to load API configuration');
     } finally {
@@ -125,8 +125,8 @@ export function useAPIConfig(currentUser: User | null): UseAPIConfigReturn {
       const updatedConfig = await updateAPIConfig(config, currentUser.id || 'admin');
       setConfig(updatedConfig);
       toast.success('API configuration saved successfully');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to save API config', err);
       toast.error('Failed to save API configuration');
     } finally {
@@ -138,8 +138,8 @@ export function useAPIConfig(currentUser: User | null): UseAPIConfigReturn {
     try {
       setShowSecrets((prev) => ({ ...prev, [key]: !prev[key] }));
       logger.info('Secret visibility toggled', { key, visible: !showSecrets[key] });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle secret visibility', err, { key });
     }
   }, [showSecrets]);
@@ -172,11 +172,11 @@ export function useAPIConfig(currentUser: User | null): UseAPIConfigReturn {
         logger.info('Configuration updated', { section, field, value });
         // Auto-save to backend (debounced in practice, but immediate for now)
         void saveConfig().catch((error) => {
-          const err = error instanceof Error ? error : new Error(String(error));
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Failed to save configuration', err, { section, field, value });
         });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to update configuration', err, { section, field, value });
         toast.error('Failed to update configuration');
       }
@@ -194,8 +194,8 @@ export function useAPIConfig(currentUser: User | null): UseAPIConfigReturn {
       setTestingService(null);
       toast.success(`${service} connection test successful`);
       logger.info('Connection test successful', { service });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       setTestingService(null);
       toast.error(`${service} connection test failed`);
       logger.error('Connection test failed', err, { service });
@@ -212,13 +212,13 @@ export function useAPIConfig(currentUser: User | null): UseAPIConfigReturn {
         logger.info('Configuration reset to defaults', { section });
         // Auto-save to backend
         void saveConfig().catch((error) => {
-          const err = error instanceof Error ? error : new Error(String(error));
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Failed to save after reset', err, { section });
           toast.error('Failed to reset configuration');
         });
         toast.success('Reset to default configuration');
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to reset configuration', err, { section });
         toast.error('Failed to reset configuration');
       }
@@ -253,8 +253,8 @@ export function useAPIConfig(currentUser: User | null): UseAPIConfigReturn {
         targetId: 'api-config',
         details: JSON.stringify({ configType: 'api' }),
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to broadcast API config', err);
       toast.error('Failed to broadcast API configuration');
     } finally {

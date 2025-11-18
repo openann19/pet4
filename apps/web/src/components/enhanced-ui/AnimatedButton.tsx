@@ -95,9 +95,9 @@ export function AnimatedButton({
       }, 100);
 
       onClick?.();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('AnimatedButton onClick error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('AnimatedButton onClick _error', err);
     }
   }, [disabled, onClick, scale]);
 

@@ -62,8 +62,8 @@ export function useUserPets(): UseQueryResult<Pet[], Error> {
       try {
         const response = await APIClient.get<Pet[]>('/user/pets');
         return response.data ?? [];
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to fetch user pets', err);
         throw err;
       }
@@ -82,8 +82,8 @@ export function useMatches(): UseQueryResult<Match[], Error> {
       try {
         const response = await APIClient.get<Match[]>('/matches');
         return response.data ?? [];
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to fetch matches', err);
         throw err;
       }
@@ -102,8 +102,8 @@ export function useSwipeHistory(): UseQueryResult<SwipeAction[], Error> {
       try {
         const response = await APIClient.get<SwipeAction[]>('/swipes/history');
         return response.data ?? [];
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to fetch swipe history', err);
         throw err;
       }
@@ -122,8 +122,8 @@ export function usePlaydates(): UseQueryResult<Playdate[], Error> {
       try {
         const response = await APIClient.get<Playdate[]>('/playdates');
         return response.data ?? [];
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to fetch playdates', err);
         throw err;
       }
@@ -182,8 +182,8 @@ export function useSwipeMutation(): UseMutationResult<
       try {
         const response = await APIClient.post<SwipeAction>('/swipes', swipe);
         return response.data;
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Swipe mutation failed', err);
         throw err;
       }
@@ -222,8 +222,8 @@ export function useCreatePlaydateMutation(): UseMutationResult<
       try {
         const response = await APIClient.post<Playdate>('/playdates', playdate);
         return response.data;
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Create playdate mutation failed', err);
         throw err;
       }

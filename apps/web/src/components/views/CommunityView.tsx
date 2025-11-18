@@ -32,7 +32,7 @@ import {
 } from '@phosphor-icons/react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withTiming,
   interpolate,
@@ -41,7 +41,7 @@ import {
   withSequence,
   MotionView,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
@@ -179,8 +179,8 @@ function CommunityViewContent(): JSX.Element {
     try {
       const result = await lostFoundAPI.queryAlerts({ status: ['active'] });
       setLostFoundAlerts(result.alerts.map(convertLostAlertToLostPetAlert));
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load lost found alerts', err);
     } finally {
       setLostFoundLoading(false);
@@ -279,8 +279,8 @@ function CommunityViewContent(): JSX.Element {
 
       setAdoptionHasMore(!!response.nextCursor);
       setAdoptionCursor(response.nextCursor);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load adoption profiles', err, { action: 'loadAdoptionProfiles' });
     } finally {
       setAdoptionLoading(false);
@@ -550,8 +550,8 @@ function CommunityViewContent(): JSX.Element {
                       await trendingTags.loadTrendingTags();
                       haptics.success();
                       toast.success(t.community?.refreshed ?? 'Feed refreshed!');
-                    } catch (error) {
-                      const err = error instanceof Error ? error : new Error(String(error));
+                    } catch (_error) {
+                      const err = _error instanceof Error ? _error : new Error(String(_error));
                       logger.error('Failed to refresh feed', err);
                       haptics.error();
                       toast.error(t.community?.refreshError ?? 'Failed to refresh');
@@ -798,8 +798,8 @@ function CommunityViewContent(): JSX.Element {
                         ...(currentUser.avatarUrl && { reporterAvatar: currentUser.avatarUrl }),
                       });
                       toast.success(t.lostFound?.sightingSubmitted ?? 'Sighting reported');
-                    } catch (error) {
-                      const err = error instanceof Error ? error : new Error(String(error));
+                    } catch (_error) {
+                      const err = _error instanceof Error ? _error : new Error(String(_error));
                       logger.error('Failed to report sighting', err);
                       toast.error('Failed to report sighting');
                     }
@@ -844,7 +844,7 @@ export default function CommunityView(): JSX.Element {
     <RouteErrorBoundary
       onError={(error) => {
         logger.error('CommunityView error', {
-          error: error instanceof Error ? error.message : String(error),
+          error: _error instanceof Error ? error.message : String(_error),
         });
       }}
     >

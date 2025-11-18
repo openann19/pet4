@@ -32,8 +32,8 @@ export class LiveStreamingReactionsApi {
       );
 
       return response.data.reaction;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to send reaction', err, { streamId, userId });
       throw err;
     }

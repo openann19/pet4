@@ -40,9 +40,9 @@ export function useSubscriptionAdmin(): UseSubscriptionAdminReturn {
       setSubscriptions(subs);
       setAuditLogs(logs);
       setMetrics(rev);
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to load data');
-      throw error;
+      throw _error;
     } finally {
       setLoading(false);
     }
@@ -71,9 +71,9 @@ export function useSubscriptionAdmin(): UseSubscriptionAdminReturn {
 
         toast.success('Subscription comped successfully');
         await loadData();
-      } catch (error) {
+      } catch (_error) {
         toast.error('Failed to comp subscription');
-        throw error;
+        throw _error;
       }
     },
     [loadData]
@@ -96,9 +96,9 @@ export function useSubscriptionAdmin(): UseSubscriptionAdminReturn {
 
         toast.success('Subscription cancelled successfully');
         await loadData();
-      } catch (error) {
+      } catch (_error) {
         toast.error('Failed to cancel subscription');
-        throw error;
+        throw _error;
       }
     },
     [loadData]
@@ -121,9 +121,9 @@ export function useSubscriptionAdmin(): UseSubscriptionAdminReturn {
 
         toast.success('Refund processed successfully');
         await loadData();
-      } catch (error) {
+      } catch (_error) {
         toast.error('Failed to process refund');
-        throw error;
+        throw _error;
       }
     },
     [loadData]

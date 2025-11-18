@@ -37,8 +37,8 @@ export function ConsentSettings({ userId, onConsentChange }: ConsentSettingsProp
             onConsentChange?.({
                 [category]: value,
             });
-        } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
+        } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
             logger.error('Failed to update preference', err, { category, value });
         } finally {
             setIsSaving(false);

@@ -23,8 +23,8 @@ export function BillingIssueBanner() {
       if (billingIssue && !billingIssue.resolved) {
         setIssue(billingIssue);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to check billing issues', err, { action: 'checkBillingIssues' });
     }
   };

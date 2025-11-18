@@ -6,7 +6,7 @@ import { Bell, BellRinging } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/badge';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withTiming,
   withRepeat,
   withSequence,
@@ -20,7 +20,7 @@ import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 import { PremiumNotificationCenter } from './PremiumNotificationCenter';
 import type { PremiumNotification } from './types';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 const logger = createLogger('PremiumNotificationBell');
 
@@ -80,8 +80,8 @@ export function PremiumNotificationBell(): JSX.Element {
           }
         };
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to check for new notifications', err);
     }
     return undefined;
@@ -94,8 +94,8 @@ export function PremiumNotificationBell(): JSX.Element {
       setLastCheckTime(Date.now());
       setHasNewNotification(false);
       logger.info('Notification bell clicked', { unreadCount, urgentCount });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to handle notification bell click', err);
     }
   }, [setLastCheckTime, unreadCount, urgentCount]);

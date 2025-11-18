@@ -8,7 +8,7 @@ import type { Pet } from '@/lib/types';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
-import { useAnimatedStyle, useSharedValue, withRepeat, withTiming, MotionView } from '@petspark/motion';
+import { useuseSharedValue, withRepeat, withTiming, MotionView } from '@petspark/motion';
 
 interface GenerateProfilesButtonProps {
   variant?: 'default' | 'outline' | 'ghost';
@@ -63,13 +63,13 @@ export default function GenerateProfilesButton({
       toast.success('Profiles Generated!', {
         description: `${newPets.length} new pet profiles added to discovery`,
       });
-    } catch (error) {
+    } catch (_error) {
       const logger = createLogger('GenerateProfilesButton');
       logger.error(
         'Failed to generate profiles',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
-      haptics.trigger('error');
+      haptics.trigger('_error');
       toast.error('Error', {
         description: 'Failed to generate new profiles. Please try again.',
       });

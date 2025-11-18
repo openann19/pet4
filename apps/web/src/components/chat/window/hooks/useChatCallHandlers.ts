@@ -28,7 +28,7 @@ export function useChatCallHandlers({ room, initiateCall }: UseChatCallHandlersP
       if (petId && petName) {
         void initiateCall(petId, petName, room.matchedPetPhoto ?? undefined, 'voice').catch(
           (error) => {
-            const err = normalizeError(error);
+            const err = normalizeError(_error);
             logger.error('ChatWindowNew handleVoiceCall error', err, { petId, petName });
             toast.error('Failed to start voice call. Please try again.');
           }
@@ -38,9 +38,9 @@ export function useChatCallHandlers({ room, initiateCall }: UseChatCallHandlersP
         logger.warn('ChatWindowNew handleVoiceCall missing petId or petName', { petId, petName });
         toast.error('Unable to start call. Pet information is missing.');
       }
-    } catch (error) {
-      const err = normalizeError(error);
-      logger.error('ChatWindowNew handleVoiceCall sync error', err);
+    } catch (_error) {
+      const err = normalizeError(_error);
+      logger.error('ChatWindowNew handleVoiceCall sync _error', err);
       toast.error('Failed to start voice call. Please try again.');
     }
   };
@@ -53,7 +53,7 @@ export function useChatCallHandlers({ room, initiateCall }: UseChatCallHandlersP
       if (petId && petName) {
         void initiateCall(petId, petName, room.matchedPetPhoto ?? undefined, 'video').catch(
           (error) => {
-            const err = normalizeError(error);
+            const err = normalizeError(_error);
             logger.error('ChatWindowNew handleVideoCall error', err, { petId, petName });
             toast.error('Failed to start video call. Please try again.');
           }
@@ -63,9 +63,9 @@ export function useChatCallHandlers({ room, initiateCall }: UseChatCallHandlersP
         logger.warn('ChatWindowNew handleVideoCall missing petId or petName', { petId, petName });
         toast.error('Unable to start call. Pet information is missing.');
       }
-    } catch (error) {
-      const err = normalizeError(error);
-      logger.error('ChatWindowNew handleVideoCall sync error', err);
+    } catch (_error) {
+      const err = normalizeError(_error);
+      logger.error('ChatWindowNew handleVideoCall sync _error', err);
       toast.error('Failed to start video call. Please try again.');
     }
   };

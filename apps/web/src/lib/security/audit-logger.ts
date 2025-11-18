@@ -145,8 +145,8 @@ class AuditLoggerImpl {
     try {
       await APIClient.post('/audit/events', { events: eventsToFlush });
       logger.info(`Flushed ${eventsToFlush.length} audit events`);
-    } catch (error) {
-      logger.error('Failed to flush audit events', error);
+    } catch (_error) {
+      logger.error('Failed to flush audit events', _error);
       // Re-queue events on failure
       this.eventQueue.unshift(...eventsToFlush);
     }
@@ -169,8 +169,8 @@ class AuditLoggerImpl {
           return userId;
         }
       }
-    } catch (error) {
-      logger.error('Failed to extract user ID from token', error);
+    } catch (_error) {
+      logger.error('Failed to extract user ID from token', _error);
     }
     return undefined;
   }
@@ -181,8 +181,8 @@ class AuditLoggerImpl {
       const response = await fetch('https://api.ipify.org?format=json');
       const data = (await response.json()) as { ip?: string };
       return typeof data.ip === 'string' ? data.ip : undefined;
-    } catch (error) {
-      logger.error('Failed to get client IP', error);
+    } catch (_error) {
+      logger.error('Failed to get client IP', _error);
       return undefined;
     }
   }

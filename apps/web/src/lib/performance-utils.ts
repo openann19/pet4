@@ -63,8 +63,8 @@ export function lazyLoad<T>(
       const module = await importFunc();
       cached = module.default;
       return cached;
-    } catch (error) {
-      logger.error('Lazy load failed', error instanceof Error ? error : new Error(String(error)));
+    } catch (_error) {
+      logger.error('Lazy load failed', _error instanceof Error ? _error : new Error(String(_error)));
       return fallback;
     }
   };

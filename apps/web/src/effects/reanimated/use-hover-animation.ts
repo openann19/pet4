@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming } from '@petspark/motion';
 import { springConfigs, timingConfigs } from './transitions';
 import type { CSSProperties } from 'react';
 

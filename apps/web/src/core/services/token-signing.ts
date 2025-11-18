@@ -64,8 +64,8 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
       issuer: 'livekit',
       ...(adminConfig.livekit.wsUrl && { apiUrl: adminConfig.livekit.wsUrl }),
     };
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.warn('Failed to read admin config', err);
     return null;
   }
@@ -203,7 +203,7 @@ export async function signLiveKitToken(
  *       canPublishData: tokenObj.grants.canPublishData
  *     }
  *   }
- * } catch (error) {
+ * } catch (_error) {
  *   return null
  * }
  * ```

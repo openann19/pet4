@@ -55,8 +55,8 @@ export class PhotoScanningService {
       });
 
       return scanResult;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Photo scan failed', err, {
         photoId: options.metadata.photoId,
         photoUrl: options.photoUrl,
@@ -84,8 +84,8 @@ export class PhotoScanningService {
       try {
         const result = await this.scanPhoto(photo);
         results.set(photo.metadata.photoId, result);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Batch scan item failed', err, {
           photoId: photo.metadata.photoId,
         });

@@ -34,8 +34,8 @@ export function useLocalStorage<T>(
         const valueToStore = value instanceof Function ? value(storedValue) : value;
         setStoredValue(valueToStore);
         setStorageItem(key, valueToStore, ttl !== undefined ? { ttl } : {});
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error(`Error setting localStorage key`, err, { key });
       }
     },
@@ -47,8 +47,8 @@ export function useLocalStorage<T>(
     try {
       removeStorageItem(key);
       setStoredValue(initialValue);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error(`Error removing localStorage key`, err, { key });
     }
   }, [key, initialValue]);
@@ -62,8 +62,8 @@ export function useLocalStorage<T>(
         try {
           const parsed = JSON.parse(e.newValue) as { value: T };
           setStoredValue(parsed.value);
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Error parsing storage change', err, { key });
         }
       }

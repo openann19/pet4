@@ -191,7 +191,7 @@ export default function PlaydateScheduler({
           .catch((error) => {
             // User cancelled or share failed
             if (error instanceof Error && error.name !== 'AbortError') {
-              const err = error instanceof Error ? error : new Error(String(error));
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.error('PlaydateScheduler shareLocation error', err, {
                 playdateId: playdate.id,
               });
@@ -206,16 +206,16 @@ export default function PlaydateScheduler({
             haptics.success();
           })
           .catch((error) => {
-            const err = error instanceof Error ? error : new Error(String(error));
+            const err = _error instanceof Error ? _error : new Error(String(_error));
             logger.error('PlaydateScheduler copyToClipboard error', err, {
               playdateId: playdate.id,
             });
             toast.error('Failed to copy location link. Please try again.');
           });
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('PlaydateScheduler shareLocation sync error', err, {
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('PlaydateScheduler shareLocation sync _error', err, {
         playdateId: playdate.id,
       });
       toast.error('Failed to share location. Please try again.');

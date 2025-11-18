@@ -32,8 +32,8 @@ export class CommunityReactionsApi {
       );
 
       return response.data;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to toggle reaction', err, { postId, userId });
       throw err;
     }

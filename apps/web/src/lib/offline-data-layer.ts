@@ -105,9 +105,9 @@ export class OfflineDataLayer {
         dbName: this.dbName,
         dbVersion: this.dbVersion,
       })
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to initialize offline data layer', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
     }
   }
@@ -197,9 +197,9 @@ export class OfflineDataLayer {
             reject(request.error)
           }
         })
-      } catch (error) {
+      } catch (_error) {
         logger.error('Failed to get data from IndexedDB', {
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         })
         return null
       }
@@ -254,9 +254,9 @@ export class OfflineDataLayer {
             reject(request.error)
           }
         })
-      } catch (error) {
+      } catch (_error) {
         logger.error('Failed to cache data in IndexedDB', {
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         })
       }
     }
@@ -311,9 +311,9 @@ export class OfflineDataLayer {
             reject(request.error)
           }
         })
-      } catch (error) {
+      } catch (_error) {
         logger.error('Failed to persist optimistic update', {
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         })
       }
     }
@@ -354,9 +354,9 @@ export class OfflineDataLayer {
             reject(request.error)
           }
         })
-      } catch (error) {
+      } catch (_error) {
         logger.error('Failed to commit optimistic update', {
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         })
       }
     }
@@ -400,9 +400,9 @@ export class OfflineDataLayer {
             reject(request.error)
           }
         })
-      } catch (error) {
+      } catch (_error) {
         logger.error('Failed to rollback optimistic update', {
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         })
       }
     }
@@ -464,9 +464,9 @@ export class OfflineDataLayer {
             reject(request.error)
           }
         })
-      } catch (error) {
+      } catch (_error) {
         logger.error('Failed to clear cache', {
-          error: error instanceof Error ? error : new Error(String(error)),
+          _error: _error instanceof Error ? _error : new Error(String(_error)),
         })
       }
     }

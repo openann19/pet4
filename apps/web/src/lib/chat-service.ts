@@ -70,7 +70,7 @@ export async function sendMessage(
     }
 
     return finalMessage;
-  } catch (error) {
+  } catch (_error) {
     // Mark as failed
     optimisticMessage.status = 'failed';
     messageCache.set(optimisticMessage.id, optimisticMessage);
@@ -81,7 +81,7 @@ export async function sendMessage(
       roomMessagesCache.set(roomId, cachedRoomMessages);
     }
 
-    logger.error('Send message error', error instanceof Error ? error : new Error(String(error)), {
+    logger.error('Send message error', _error instanceof Error ? _error : new Error(String(_error)), {
       roomId,
       messageId: optimisticMessage.id,
     });
@@ -102,8 +102,8 @@ export async function markAsRead(roomId: string, messageId: string, userId: stri
       message.status = 'read';
       messageCache.set(messageId, message);
     }
-  } catch (error) {
-    logger.error('Mark as read error', error instanceof Error ? error : new Error(String(error)), {
+  } catch (_error) {
+    logger.error('Mark as read _error', _error instanceof Error ? _error : new Error(String(_error)), {
       roomId,
       messageId,
       userId,
@@ -134,8 +134,8 @@ export async function addReaction(
       roomMessages[index] = updatedMessage;
       roomMessagesCache.set(roomId, roomMessages);
     }
-  } catch (error) {
-    logger.error('Add reaction error', error instanceof Error ? error : new Error(String(error)), {
+  } catch (_error) {
+    logger.error('Add reaction _error', _error instanceof Error ? _error : new Error(String(_error)), {
       messageId,
       userId,
       reaction,
@@ -173,10 +173,10 @@ export async function sendTypingIndicator(roomId: string, userId: string): Promi
       createdAt: new Date(now).toISOString(),
     };
     messageCache.set(lastSentKey, timestampMessage);
-  } catch (error) {
+  } catch (_error) {
     logger.error(
-      'Typing indicator error',
-      error instanceof Error ? error : new Error(String(error)),
+      'Typing indicator _error',
+      _error instanceof Error ? _error : new Error(String(_error)),
       { roomId, userId }
     );
     // Don't throw - typing indicator is non-critical
@@ -209,8 +209,8 @@ export async function getRoomMessages(
     });
 
     return result;
-  } catch (error) {
-    logger.error('Get messages error', error instanceof Error ? error : new Error(String(error)), {
+  } catch (_error) {
+    logger.error('Get messages _error', _error instanceof Error ? _error : new Error(String(_error)), {
       roomId,
       cursor,
     });
@@ -254,10 +254,10 @@ export async function deleteMessage(
         roomMessages[index] = cachedMessage;
         roomMessagesCache.set(cachedMessage.roomId, roomMessages);
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error(
-        'Delete message error',
-        error instanceof Error ? error : new Error(String(error)),
+        'Delete message _error',
+        _error instanceof Error ? _error : new Error(String(_error)),
         { messageId, userId, forEveryone }
       );
       throw error;

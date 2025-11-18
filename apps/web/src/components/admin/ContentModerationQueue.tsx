@@ -1,4 +1,4 @@
-import { MotionView, type Variants } from "@petspark/motion";
+import { MotionView } from "@petspark/motion";
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { communityAPI } from '@/api/community-api';
@@ -179,10 +179,10 @@ export function ContentModerationQueue() {
       });
 
       setItems(filtered);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to load moderation queue',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to load moderation queue');
     } finally {
@@ -192,7 +192,7 @@ export function ContentModerationQueue() {
 
   useEffect(() => {
     void loadQueue().catch((error) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load queue in useEffect', err);
     });
   }, [loadQueue]);
@@ -235,10 +235,10 @@ export function ContentModerationQueue() {
       await loadQueue();
       setSelectedItem(null);
       setDecisionText('');
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to approve content',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to approve content');
     } finally {
@@ -281,10 +281,10 @@ export function ContentModerationQueue() {
       setSelectedItem(null);
       setDecisionText('');
       setDecisionReason('');
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to reject content',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to reject content');
     } finally {
@@ -603,7 +603,7 @@ export function ContentModerationQueue() {
                     <Button
                       onClick={() => {
                         void handleApprove().catch((error) => {
-                          const err = error instanceof Error ? error : new Error(String(error));
+                          const err = _error instanceof Error ? _error : new Error(String(_error));
                           logger.error('Failed to approve from button', err);
                         });
                       }}
@@ -616,7 +616,7 @@ export function ContentModerationQueue() {
                     <Button
                       onClick={() => {
                         void handleReject().catch((error) => {
-                          const err = error instanceof Error ? error : new Error(String(error));
+                          const err = _error instanceof Error ? _error : new Error(String(_error));
                           logger.error('Failed to reject from button', err);
                         });
                       }}

@@ -73,17 +73,17 @@ export function useOptimistic<T>(initialData: T): UseOptimisticReturn<T> {
         onSuccess?.(result)
 
         logger.debug('Optimistic update confirmed')
-      } catch (error) {
-        // Rollback on error
+      } catch (_error) {
+        // Rollback on _error
         setData(rollbackData)
         setIsOptimistic(false)
 
-        onError?.(error as Error, rollbackData)
+        onError?.(_error as Error, rollbackData)
         onRollback?.(rollbackData)
 
-        logger.error('Optimistic update failed - rolled back', error)
+        logger.error('Optimistic update failed - rolled back', _error)
 
-        throw error
+        throw _error
       }
     },
     [data, rollbackData]

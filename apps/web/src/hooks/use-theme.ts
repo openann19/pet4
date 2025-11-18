@@ -35,8 +35,8 @@ const getStoredTheme = (): Theme => {
   try {
     const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme
     return stored && ['light', 'dark', 'system'].includes(stored) ? stored : 'system'
-  } catch (error) {
-    logger.warn('Failed to read theme from localStorage', { error })
+  } catch (_error) {
+    logger.warn('Failed to read theme from localStorage', { _error })
     return 'system'
   }
 }
@@ -47,8 +47,8 @@ const storeTheme = (theme: Theme): void => {
   
   try {
     localStorage.setItem(THEME_STORAGE_KEY, theme)
-  } catch (error) {
-    logger.warn('Failed to store theme in localStorage', { error })
+  } catch (_error) {
+    logger.warn('Failed to store theme in localStorage', { _error })
   }
 }
 
@@ -64,8 +64,8 @@ export function useTheme(): UseThemeReturn {
     
     try {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    } catch (error) {
-      logger.warn('Failed to detect system theme preference', { error })
+    } catch (_error) {
+      logger.warn('Failed to detect system theme preference', { _error })
       return 'light'
     }
   }, [])

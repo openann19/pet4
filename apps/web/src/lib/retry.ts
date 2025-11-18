@@ -29,8 +29,8 @@ export async function retry<T>(fn: () => Promise<T>, options: RetryOptions): Pro
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       return await fn();
-    } catch (error) {
-      lastError = ensureError(error);
+    } catch (_error) {
+      lastError = ensureError(_error);
 
       if (attempt === attempts) {
         logger.error(`All ${attempts} attempts failed`, lastError);

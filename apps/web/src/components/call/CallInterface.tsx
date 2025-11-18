@@ -21,13 +21,13 @@ import { haptics } from '@/lib/haptics';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withTiming,
   withRepeat,
   withSequence,
   MotionView,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 interface CallInterfaceProps {
   session: CallSession;

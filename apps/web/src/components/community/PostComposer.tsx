@@ -170,8 +170,8 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
       haptics.selection();
       toast.success(t.community?.imageAdded || 'Image added');
       setShowMediaOptions(false);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to upload image', err);
       toast.error(err.message || 'Failed to upload image');
       haptics.error();
@@ -253,8 +253,8 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
       toast.success(`Video compressed: ${originalSize} → ${compressedSize}`);
       haptics.success();
       setShowMediaOptions(false);
-    } catch (error) {
-      logger.error('Video processing error', error instanceof Error ? error : new Error(String(error)));
+    } catch (_error) {
+      logger.error('Video processing _error', _error instanceof Error ? _error : new Error(String(_error)));
       setVideoState({
         file: null,
         previewUrl: null,
@@ -263,7 +263,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
         metadata: null,
         isCompressing: false,
         compressionProgress: null,
-        error: error instanceof Error ? error.message : 'Failed to process video',
+        _error: _error instanceof Error ? _error.message : 'Failed to process video',
       });
       toast.error('Failed to process video');
       haptics.error();
@@ -377,10 +377,10 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
       onPostCreated?.();
       onOpenChange(false);
-    } catch (error) {
+    } catch (_error) {
       haptics.error();
       toast.error(t.community?.postFailed || 'Failed to create post');
-      logger.error('Post creation failed', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Post creation failed', _error instanceof Error ? _error : new Error(String(_error)));
     } finally {
       setIsSubmitting(false);
     }

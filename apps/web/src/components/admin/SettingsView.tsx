@@ -80,8 +80,8 @@ export default function SettingsView() {
             setSystemSettings({ ...DEFAULT_SYSTEM_SETTINGS, ...systemConfig.systemSettings })
           }
         }
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error))
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error))
         logger.error('Failed to load system config', err)
         toast.error('Failed to load system configuration')
       } finally {
@@ -110,8 +110,8 @@ export default function SettingsView() {
       await adminApi.updateSystemConfig(config as unknown as Record<string, unknown>, currentUser.id || 'admin')
       toast.success('System configuration saved successfully')
       logger.info('System config saved', { featureFlags, systemSettings })
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error))
       logger.error('Failed to save system config', err)
       toast.error('Failed to save system configuration')
     } finally {
@@ -125,13 +125,13 @@ export default function SettingsView() {
       setFeatureFlags((current: FeatureFlags) => ({ ...current, [key]: value }))
       // Auto-save to backend
       void saveConfig().catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error))
+        const err = _error instanceof Error ? _error : new Error(String(_error))
         logger.error('Failed to save after feature flag change', err, { key, value })
       })
       toast.success(`Feature ${value ? 'enabled' : 'disabled'}`)
       logger.info('Feature flag updated', { key, value })
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error))
       logger.error('Failed to update feature flag', err, { key, value })
       toast.error('Failed to update feature flag')
     }
@@ -143,13 +143,13 @@ export default function SettingsView() {
       setSystemSettings((current: SystemSettings) => ({ ...current, [key]: value }))
       // Auto-save to backend
       void saveConfig().catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error))
+        const err = _error instanceof Error ? _error : new Error(String(_error))
         logger.error('Failed to save after system setting change', err, { key, value })
       })
       toast.success('Setting updated')
       logger.info('System setting updated', { key, value })
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error))
       logger.error('Failed to update system setting', err, { key, value })
       toast.error('Failed to update system setting')
     }
@@ -189,8 +189,8 @@ export default function SettingsView() {
       })
 
       toast.success('System configuration saved and broadcasted successfully')
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error))
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error))
       logger.error('Failed to broadcast system config', err)
       toast.error('Failed to broadcast system configuration')
     } finally {

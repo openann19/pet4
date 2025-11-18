@@ -54,10 +54,10 @@ export async function verifyReceipt(
 
     return { valid: false, error: 'Unsupported platform' };
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : undefined;
+    const errorMessage = _error instanceof Error ? error.message : undefined;
     logger.error(
       'Receipt verification failed',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
     return { valid: false, error: errorMessage ?? ERROR_VERIFICATION_FAILED };
   }
@@ -105,10 +105,10 @@ async function verifyStripeReceipt(
 
     return { valid: false, error: data.error ?? ERROR_INVALID_RECEIPT };
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : undefined;
+    const errorMessage = _error instanceof Error ? error.message : undefined;
     logger.error(
       'Stripe receipt verification failed',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
     return { valid: false, error: errorMessage ?? ERROR_VERIFICATION_FAILED };
   }
@@ -155,10 +155,10 @@ async function verifyAppleReceipt(
 
     return { valid: false, error: data.error ?? ERROR_INVALID_RECEIPT };
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : undefined;
+    const errorMessage = _error instanceof Error ? error.message : undefined;
     logger.error(
       'Apple receipt verification failed',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
     return { valid: false, error: errorMessage ?? ERROR_VERIFICATION_FAILED };
   }
@@ -205,10 +205,10 @@ async function verifyGoogleReceipt(
 
     return { valid: false, error: data.error ?? ERROR_INVALID_RECEIPT };
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : undefined;
+    const errorMessage = _error instanceof Error ? error.message : undefined;
     logger.error(
       'Google Play receipt verification failed',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
     return { valid: false, error: errorMessage ?? ERROR_VERIFICATION_FAILED };
   }
@@ -220,8 +220,8 @@ async function verifyGoogleReceipt(
 async function savePurchase(purchase: Purchase): Promise<void> {
   try {
     await APIClient.post('/payments/purchases', purchase);
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to save purchase', err, { purchaseId: purchase.id });
     throw err;
   }
@@ -253,8 +253,8 @@ async function grantEntitlements(userId: string, sku: string): Promise<void> {
     if (plan !== 'free') {
       await PaymentsService.updateEntitlements(userId, plan);
     }
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to grant entitlements', err, { userId, sku });
     throw err;
   }
@@ -288,8 +288,8 @@ export async function handleRefund(purchaseId: string, reason?: string): Promise
     }
 
     logger.info('Refund processed', { purchaseId, userId: purchase.userId, reason });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to handle refund', err, { purchaseId });
     throw err;
   }
@@ -304,8 +304,8 @@ export async function getBusinessConfig(): Promise<BusinessConfig | null> {
       '/payments/business-config'
     );
     return response.data.config;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get business config', err);
     throw err;
   }
@@ -324,8 +324,8 @@ export async function updateBusinessConfig(
       updatedBy,
     });
     return response.data.config;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to update business config', err, { updatedBy });
     throw err;
   }

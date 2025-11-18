@@ -64,7 +64,7 @@ export function ProtectedRoute({
           setKycStatus('verified');
         })
         .catch((error) => {
-          const err = error instanceof Error ? error : new Error(String(error));
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Failed to check KYC status', err, { userId: user.id });
           setKycStatus('not_verified');
           navigate('/kyc/required', { replace: true });

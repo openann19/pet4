@@ -33,9 +33,9 @@ export function useMapLocation(): UseMapLocationReturn {
       setCoarseLocation(coarse);
       setLocationPermission('granted');
       toast.success(t.map?.locationEnabled ?? 'Location enabled');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Location error', err, { action: 'getUserLocation' });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('Location _error', err, { action: 'getUserLocation' });
       setLocationPermission('denied');
       setUserLocation(DEFAULT_LOCATION);
       setCoarseLocation(DEFAULT_LOCATION);

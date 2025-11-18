@@ -191,8 +191,8 @@ async function retrieveKeys(
         );
 
         resolve({ publicKey, privateKey });
-      } catch (error) {
-        reject(error);
+      } catch (_error) {
+        reject(_error);
       }
     };
   });
@@ -267,11 +267,11 @@ export function useEncryption(config: EncryptionConfig) {
       aesKeyRef.current = aesKey;
 
       setState((prev) => ({ ...prev, isReady: true }));
-    } catch (error) {
+    } catch (_error) {
       if (onError) {
-        onError(error as Error);
+        onError(_error as Error);
       }
-      throw error;
+      throw _error;
     }
   }, [userId, onKeyGenerated, onError]);
 
@@ -528,9 +528,9 @@ export function useEncryption(config: EncryptionConfig) {
           // Generate new keys
           await generateKeys();
         }
-      } catch (error) {
+      } catch (_error) {
         if (onError) {
-          onError(error as Error);
+          onError(_error as Error);
         }
       }
     };

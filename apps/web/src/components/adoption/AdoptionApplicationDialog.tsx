@@ -137,12 +137,12 @@ export function AdoptionApplicationDialog({
       });
 
       onSubmitSuccess();
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to submit application',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
-      haptics.trigger('error');
+      haptics.trigger('_error');
       toast.error(
         t.adoption?.applicationFailed ?? 'Failed to submit application. Please try again.'
       );

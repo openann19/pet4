@@ -1,5 +1,5 @@
 'use client';;
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming, MotionView } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';

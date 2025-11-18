@@ -27,10 +27,10 @@ export default function SeedDataInitializer(): null {
         await setIsInitialized(true);
         await initializeCommunityData();
         await initializeAdoptionProfiles();
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           'Failed to mark data as initialized',
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
         initializationAttemptedRef.current = false;
       }
@@ -45,10 +45,10 @@ export default function SeedDataInitializer(): null {
       await initializeCommunityData();
       await initializeAdoptionProfiles();
       await setIsInitialized(true);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to initialize sample data',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       initializationAttemptedRef.current = false;
     } finally {

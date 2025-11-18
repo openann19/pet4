@@ -38,8 +38,8 @@ export class CommunityPostsApi {
         request
       );
       return response.data.post;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to create post', err, { kind: data.kind });
       throw err;
     }
@@ -54,8 +54,8 @@ export class CommunityPostsApi {
       const url = buildFeedUrl(ENDPOINTS.COMMUNITY.POSTS, queryParams);
       const response = await APIClient.get<QueryFeedResponse>(url);
       return response.data;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to query feed', err, { filters });
       throw err;
     }
@@ -65,8 +65,8 @@ export class CommunityPostsApi {
     try {
       const response = await APIClient.get<{ post: Post }>(ENDPOINTS.COMMUNITY.POST(id));
       return response.data.post ?? null;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get post', err, { postId: id });
       return null;
     }
@@ -94,8 +94,8 @@ export class CommunityPostsApi {
         };
       }
       return this.queryFeed(filters);
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get feed', err, { options });
       throw err;
     }
@@ -105,8 +105,8 @@ export class CommunityPostsApi {
     try {
       const result = await this.queryFeed();
       return result.posts;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get all posts', err);
       throw err;
     }
@@ -118,8 +118,8 @@ export class CommunityPostsApi {
         '/api/v1/community/content/fingerprints'
       );
       return response.data.fingerprints;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get content fingerprints', err);
       throw err;
     }
@@ -129,8 +129,8 @@ export class CommunityPostsApi {
     try {
       const response = await APIClient.get<{ posts: Post[] }>('/api/v1/community/posts/pending');
       return response.data.posts;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get pending posts', err);
       throw err;
     }
@@ -147,8 +147,8 @@ export class CommunityPostsApi {
         { status, moderatorId }
       );
       return response.data.post;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to update post status', err, { postId, status });
       throw err;
     }

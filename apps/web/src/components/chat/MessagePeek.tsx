@@ -1,6 +1,6 @@
 'use client';;
 import { useEffect, useRef } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming, MotionView } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { useFeatureFlags } from '@/config/feature-flags';

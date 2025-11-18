@@ -75,8 +75,8 @@ class AudioEngineImpl {
 
       this.isInitialized = true;
       logger.info('Audio engine initialized');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to initialize audio engine', err);
       throw err;
     }
@@ -182,8 +182,8 @@ class AudioEngineImpl {
         volume,
         spatial,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to play sound', err, { effect });
     }
   }
@@ -320,8 +320,8 @@ class AudioEngineImpl {
       } else {
         source.start(0);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to play preset', err);
       if (pooledContext) {
         this.releaseContext(pooledContext);
@@ -500,7 +500,7 @@ export const audioEngine = new AudioEngineImpl();
 if (typeof window !== 'undefined') {
   audioEngine.initialize().catch((error) => {
     logger.warn('Failed to auto-initialize audio engine', {
-      error: error instanceof Error ? error.message : String(error),
+      error: _error instanceof Error ? error.message : String(_error),
     });
   });
 }

@@ -99,8 +99,8 @@ export async function safeAsync<T>(
   try {
     const result = await operation();
     return [result, undefined];
-  } catch (error) {
-    return [undefined, error instanceof Error ? error : new Error(String(error))];
+  } catch (_error) {
+    return [undefined, _error instanceof Error ? _error : new Error(String(_error))];
   }
 }
 
@@ -112,8 +112,8 @@ export function safeSync<T>(operation: () => T): [T | undefined, Error | undefin
   try {
     const result = operation();
     return [result, undefined];
-  } catch (error) {
-    return [undefined, error instanceof Error ? error : new Error(String(error))];
+  } catch (_error) {
+    return [undefined, _error instanceof Error ? _error : new Error(String(_error))];
   }
 }
 

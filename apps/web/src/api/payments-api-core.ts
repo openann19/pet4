@@ -49,8 +49,8 @@ export class PaymentsApiImpl {
         `${ENDPOINTS.PAYMENTS.ENTITLEMENTS}?userId=${userId}`
       );
       return response.data.entitlements;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user entitlements', err, { userId });
       throw err;
     }
@@ -78,8 +78,8 @@ export class PaymentsApiImpl {
         request
       );
       return response.data.entitlements;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update entitlements', err, { userId, planTier });
       throw err;
     }
@@ -95,8 +95,8 @@ export class PaymentsApiImpl {
         `${ENDPOINTS.PAYMENTS.SUBSCRIPTION}?userId=${userId}`
       );
       return response.data.subscription;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user subscription', err, { userId });
       throw err;
     }
@@ -124,8 +124,8 @@ export class PaymentsApiImpl {
         request
       );
       return response.data.subscription;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create subscription', err, { userId, planId });
       throw err;
     }
@@ -145,8 +145,8 @@ export class PaymentsApiImpl {
         data
       );
       return response.data.subscription;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update subscription', err, { subscriptionId });
       throw err;
     }
@@ -174,8 +174,8 @@ export class PaymentsApiImpl {
         request
       );
       return response.data.entitlements;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to add consumable', err, { userId, consumableKey });
       throw err;
     }
@@ -201,8 +201,8 @@ export class PaymentsApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to redeem consumable', err, { userId, consumableKey });
       throw err;
     }
@@ -218,8 +218,8 @@ export class PaymentsApiImpl {
         `/payments/billing-issue?userId=${userId}`
       );
       return response.data.issue;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get billing issue', err, { userId });
       throw err;
     }
@@ -245,8 +245,8 @@ export class PaymentsApiImpl {
         request
       );
       return response.data.issue;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create billing issue', err, { userId, subscriptionId });
       throw err;
     }
@@ -259,8 +259,8 @@ export class PaymentsApiImpl {
   async resolveBillingIssue(issueId: string): Promise<void> {
     try {
       await APIClient.post(`/payments/billing-issue/${issueId}/resolve`, {});
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to resolve billing issue', err, { issueId });
       throw err;
     }
@@ -276,8 +276,8 @@ export class PaymentsApiImpl {
         `/payments/audit-logs?limit=${limit}`
       );
       return response.data.logs;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get audit logs', err);
       throw err;
     }
@@ -293,8 +293,8 @@ export class PaymentsApiImpl {
         '/payments/subscriptions/all'
       );
       return response.data.subscriptions;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get all subscriptions', err);
       throw err;
     }
@@ -308,8 +308,8 @@ export class PaymentsApiImpl {
     try {
       const response = await APIClient.get<GetRevenueMetricsResponse>('/payments/revenue-metrics');
       return response.data.metrics;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get revenue metrics', err);
       throw err;
     }
@@ -331,8 +331,8 @@ export class PaymentsApiImpl {
         `/payments/usage-counter?${queryParams.toString()}`
       );
       return response.data.usageCounter;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get usage counter', err, { userId, date });
       throw err;
     }
@@ -358,8 +358,8 @@ export class PaymentsApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to increment usage', err, { userId, type, operationId });
       throw err;
     }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSharedValue, withTiming, useAnimatedStyle, animate } from '@petspark/motion';
+import { useSharedValue, withTiming, useanimate } from '@petspark/motion';
 import { MotionView } from '@petspark/motion';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';

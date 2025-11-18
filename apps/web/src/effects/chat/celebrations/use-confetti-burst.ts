@@ -12,7 +12,7 @@
 import { useCallback, useRef } from 'react';
 import {
   Easing,
-  useAnimatedStyle,
+  use
   useSharedValue,
   withTiming,
   type SharedValue,
@@ -24,7 +24,7 @@ import { logEffectEnd, logEffectStart } from '../core/telemetry';
 import { randomRange } from '../core/seeded-rng';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 const _logger = createLogger('confetti-burst');
 

@@ -157,8 +157,8 @@ export class CommunityAPI {
       }
 
       return this.postsApi.updatePostStatus(postId, status, adminId);
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to update post status', err, { postId, status, adminId });
       throw err;
     }
