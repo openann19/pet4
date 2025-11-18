@@ -141,7 +141,7 @@ Return as JSON with a "reasons" array of 2-3 strings:
 
   try {
     const result = await llmService.llm(prompt, 'gpt-4o-mini', true);
-    const data = JSON.parse(result);
+    const data = JSON.parse(result) as unknown;
     return data.reasons ?? generateFallbackReasoning(userPet, otherPet, factors);
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));

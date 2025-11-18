@@ -347,7 +347,7 @@ export default function StoryViewer({
             // Share cancelled
           });
       } else {
-        navigator.clipboard.writeText(`${window.location.origin}/stories/${currentStory.id}`);
+        void navigator.clipboard.writeText(`${window.location.origin}/stories/${currentStory.id}`);
         toast.success('Link copied to clipboard');
       }
     }

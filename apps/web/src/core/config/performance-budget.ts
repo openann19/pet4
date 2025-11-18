@@ -50,7 +50,7 @@ export class PerformanceBudget {
   private violations: BudgetViolation[] = [];
 
   constructor(config?: PerformanceBudgetConfig) {
-    this.config = config || DEFAULT_PERFORMANCE_BUDGET;
+    this.config = config ?? DEFAULT_PERFORMANCE_BUDGET;
   }
 
   /**

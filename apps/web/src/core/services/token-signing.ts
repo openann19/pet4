@@ -72,15 +72,15 @@ function getConfigFromAdmin(): TokenSigningConfig | null {
 }
 
 function getConfigFromEnv(): TokenSigningConfig | null {
-  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY || import.meta.env.LIVEKIT_API_KEY;
+  const apiKey = import.meta.env.VITE_LIVEKIT_API_KEY ?? import.meta.env.LIVEKIT_API_KEY;
   const apiSecret =
-    import.meta.env.VITE_LIVEKIT_API_SECRET || import.meta.env.LIVEKIT_API_SECRET;
+    import.meta.env.VITE_LIVEKIT_API_SECRET ?? import.meta.env.LIVEKIT_API_SECRET;
 
   if (!apiKey || !apiSecret) {
     return null;
   }
 
-  const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL || import.meta.env.LIVEKIT_WS_URL;
+  const apiUrl = import.meta.env.VITE_LIVEKIT_WS_URL ?? import.meta.env.LIVEKIT_WS_URL;
 
   return {
     apiKey,

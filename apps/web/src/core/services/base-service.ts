@@ -60,7 +60,7 @@ export abstract class BaseService {
 
   constructor(serviceName: string, apiClient?: typeof APIClient) {
     this.serviceName = serviceName;
-    this.apiClient = apiClient || APIClient;
+    this.apiClient = apiClient ?? APIClient;
   }
 
   /**
@@ -356,7 +356,7 @@ export abstract class BaseService {
     }
 
     const now = Date.now();
-    const cacheTTL = ttl || cached.ttl;
+    const cacheTTL = ttl ?? cached.ttl;
     if (now - cached.timestamp > cacheTTL) {
       this.cache.delete(key);
       return null;
@@ -370,7 +370,7 @@ export abstract class BaseService {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
-      ttl: ttl || defaultTTL,
+      ttl: ttl ?? defaultTTL,
     });
   }
 

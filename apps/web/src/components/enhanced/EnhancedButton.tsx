@@ -137,7 +137,7 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
           <MotionView style={bounceAnimation.animatedStyle as any} className="relative">
             <div className="relative overflow-hidden">
               <Button
-                ref={ref || buttonRef}
+                ref={ref ?? buttonRef}
                 onClick={() => void handleClick()}
                 className={cn(
                   'relative overflow-hidden transition-all duration-300',

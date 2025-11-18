@@ -338,7 +338,7 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
     >
       {React.Children.map(children, (child, index) => {
         if (React.isValidElement(child) && child.type === Checkbox) {
-          const itemValue = child.props.value || String(index)
+          const itemValue = child.props.value ?? String(index)
           const isChecked = currentValue.includes(itemValue)
           
           return React.cloneElement(child as React.ReactElement<CheckboxProps>, {

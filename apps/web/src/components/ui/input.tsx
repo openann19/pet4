@@ -173,10 +173,10 @@ export const Input = forwardRef<InputRef, InputProps>(
     const inputRef = useRef<HTMLInputElement>(null)
     const debounceRef = useRef<NodeJS.Timeout>()
     const [isFocused, setIsFocused] = useState(false)
-    const [internalValue, setInternalValue] = useState(value ?? defaultValue || '')
+    const [internalValue, setInternalValue] = useState(value ?? defaultValue ?? '')
     
     // Generate unique ID if not provided
-    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`
+    const inputId = id ?? `input-${Math.random().toString(36).substr(2, 9)}`
     const errorId = `${inputId}-error`
     const descriptionId = `${inputId}-description`
     const helperId = `${inputId}-helper`

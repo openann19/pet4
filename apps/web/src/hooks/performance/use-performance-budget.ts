@@ -286,7 +286,7 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
       const entries = entryList.getEntries();
       const lastEntry = entries[entries.length - 1] as PerformancePaintTiming & { renderTime?: number; loadTime?: number };
       if (lastEntry) {
-        webVitalsRef.current.lcp = lastEntry.renderTime || lastEntry.loadTime || lastEntry.startTime;
+        webVitalsRef.current.lcp = lastEntry.renderTime ?? lastEntry.loadTime ?? lastEntry.startTime;
       }
     });
 

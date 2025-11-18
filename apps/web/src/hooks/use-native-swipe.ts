@@ -65,7 +65,7 @@ export function useNativeSwipe(options: UseNativeSwipeOptions): UseNativeSwipeRe
     reduceMotion = false,
   } = options;
 
-  const haptics = customHaptics || platformHaptics;
+  const haptics = customHaptics ?? platformHaptics;
   const threshold = cardWidth * commitThreshold;
 
   const translationX = useSharedValue(0);

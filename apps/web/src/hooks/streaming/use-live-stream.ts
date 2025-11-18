@@ -186,8 +186,8 @@ export function useLiveStream(config: LiveStreamConfig) {
         if (mediaConfig.screenShare) {
           // Screen sharing
           stream = await navigator.mediaDevices.getDisplayMedia({
-            video: mediaConfig.video || true,
-            audio: mediaConfig.audio || false,
+            video: mediaConfig.video ?? true,
+            audio: mediaConfig.audio ?? false,
           });
         } else {
           // Camera/microphone
@@ -201,7 +201,7 @@ export function useLiveStream(config: LiveStreamConfig) {
 
           stream = await navigator.mediaDevices.getUserMedia({
             video: mediaConfig.video ? videoConstraints : false,
-            audio: mediaConfig.audio || false,
+            audio: mediaConfig.audio ?? false,
           });
         }
 

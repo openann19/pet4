@@ -215,7 +215,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     }, [size, children])
     
     // Loading state content
-    const loadingContent = loadingIcon || <LoadingSpinner size={size} />
+    const loadingContent = loadingIcon ?? <LoadingSpinner size={size} />
     
     // Button content
     const buttonContent = (
@@ -328,7 +328,7 @@ export const LoadingButton: React.FC<ButtonProps & { isLoading?: boolean }> = ({
   <Button
     {...props}
     loading={isLoading}
-    disabled={disabled || isLoading}
+    disabled={disabled ?? isLoading}
   >
     {children}
   </Button>

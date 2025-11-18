@@ -55,7 +55,7 @@ export function MessageItem({
   const stableReference = useMemo(() => {
     return getStableMessageReference(
       message.id,
-      message.timestamp || message.createdAt,
+      message.timestamp ?? message.createdAt,
       message.senderName ?? currentUserName || 'Unknown',
       message.content,
       true // use relative timestamp

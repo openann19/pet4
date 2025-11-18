@@ -40,7 +40,7 @@ export function LiveStreamManagement() {
           status,
           allowChat: apiStream.allowChat,
           maxDuration: apiStream.maxDuration ?? 60,
-          startedAt: apiStream.startedAt || apiStream.createdAt,
+          startedAt: apiStream.startedAt ?? apiStream.createdAt,
           endedAt: apiStream.endedAt,
           viewerCount: apiStream.viewerCount,
           peakViewerCount: apiStream.peakViewerCount,
@@ -48,7 +48,7 @@ export function LiveStreamManagement() {
           likesCount: apiStream.reactionsCount || 0,
           roomToken: apiStream.roomId,
           recordingUrl: apiStream.vodUrl,
-          thumbnailUrl: apiStream.posterUrl || apiStream.thumbnail,
+          thumbnailUrl: apiStream.posterUrl ?? apiStream.thumbnail,
           tags: [],
         } as LiveStream;
       });

@@ -60,7 +60,7 @@ export function useLocalStorage<T>(
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === key && e.newValue) {
         try {
-          const parsed = JSON.parse(e.newValue);
+          const parsed = JSON.parse(e.newValue) as unknown;
           setStoredValue(parsed.value);
         } catch (error) {
           const err = error instanceof Error ? error : new Error(String(error));

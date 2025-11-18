@@ -63,7 +63,7 @@ export function getAdminMapProviderConfig(): MapProviderConfig {
   try {
     const stored = localStorage.getItem('admin-map-provider-config');
     if (isTruthy(stored)) {
-      cachedAdminConfig = JSON.parse(stored);
+      cachedAdminConfig = JSON.parse(stored) as unknown;
       return cachedAdminConfig ?? getEnvConfig();
     }
   } catch {

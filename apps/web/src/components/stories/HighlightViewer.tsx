@@ -149,8 +149,8 @@ export default function HighlightViewer({
                 aria-label={`View story ${index + 1}: ${story.caption ?? 'Untitled story'}`}
               >
                   <img
-                    src={story.thumbnailUrl || story.mediaUrl}
-                    alt={story.caption || `Story ${String(index + 1)}`}
+                    src={story.thumbnailUrl ?? story.mediaUrl}
+                    alt={story.caption ?? `Story ${String(index + 1)}`}
                     className="w-full h-full object-cover"
                   />                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 

@@ -112,9 +112,9 @@ function rgbToHex(rgb: string): string {
     return rgb; // Already hex or invalid
   }
 
-  const r = parseInt(match[1] || '0', 10);
-  const g = parseInt(match[2] || '0', 10);
-  const b = parseInt(match[3] || '0', 10);
+  const r = parseInt(match[1] ?? '0', 10);
+  const g = parseInt(match[2] ?? '0', 10);
+  const b = parseInt(match[3] ?? '0', 10);
 
   return `#${[r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('')}`;
 }
@@ -176,7 +176,7 @@ function getComputedFocusThickness(element: HTMLElement): number {
     // Box shadow format: offset-x offset-y blur-radius spread-radius color
     const parts = boxShadow.split(' ');
     if (parts.length >= 4) {
-      const spread = parseFloat(parts[3] || '0');
+      const spread = parseFloat(parts[3] ?? '0');
       if (!Number.isNaN(spread) && spread > 0) {
         return spread;
       }

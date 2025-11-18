@@ -161,7 +161,7 @@ class ConfigBroadcastService {
    * Get current version for a config type
    */
   getConfigVersion(configType: ConfigType): number {
-    return this.configVersions.get(configType) || 0;
+    return this.configVersions.get(configType) ?? 0;
   }
 
   /**

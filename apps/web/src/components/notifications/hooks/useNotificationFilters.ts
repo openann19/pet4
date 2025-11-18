@@ -29,7 +29,7 @@ export function useNotificationFilters(
 
     notifications.forEach((n: PremiumNotification) => {
       if (!n.archived) {
-        const count = categoryCounts.get(n.type) || 0;
+        const count = categoryCounts.get(n.type) ?? 0;
         categoryCounts.set(n.type, count + 1);
       }
     });
@@ -50,7 +50,7 @@ export function useNotificationFilters(
 
     const allCategories = Array.from(categoryCounts.entries()).map(([value, count]) => ({
       value,
-      label: categoryLabels[value] || value,
+      label: categoryLabels[value] ?? value,
       count,
     }));
 

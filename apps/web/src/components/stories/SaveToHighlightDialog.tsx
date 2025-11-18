@@ -96,7 +96,7 @@ export default function SaveToHighlightDialog({
       story.userId,
       firstPet?.id ?? story.petId,
       newHighlightTitle,
-      story.thumbnailUrl || story.mediaUrl,
+      story.thumbnailUrl ?? story.mediaUrl,
       [story]
     );
 
@@ -160,7 +160,7 @@ export default function SaveToHighlightDialog({
 
               <div className="aspect-[9/16] max-h-48 rounded-2xl overflow-hidden bg-muted">
                 <img
-                  src={story.thumbnailUrl || story.mediaUrl}
+                  src={story.thumbnailUrl ?? story.mediaUrl}
                   alt="Story preview"
                   className="w-full h-full object-cover"
                 />

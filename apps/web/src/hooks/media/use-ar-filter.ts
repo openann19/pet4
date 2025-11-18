@@ -367,7 +367,7 @@ export function useARFilter(options: UseARFilterOptions): UseARFilterReturn {
 
     const video = videoRef.current
     video.srcObject = videoSource
-    video.play()
+    void video.play()
 
     video.onloadedmetadata = () => {
       if (canvasRef.current) {
