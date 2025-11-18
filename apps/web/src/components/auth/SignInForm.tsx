@@ -1,4 +1,4 @@
-import { motion, type Variants } from '@petspark/motion'
+import { motion } from '@petspark/motion'
 import { Button } from '@/components/ui/button'
 import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'

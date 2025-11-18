@@ -45,14 +45,14 @@ export default function LostFoundMap({
         try {
           const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
           setUserLocation(coarse);
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('LostFoundMap snapToGrid error', err);
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('LostFoundMap snapToGrid _error', err);
           setUserLocation({ lat: 40.7128, lng: -74.006 });
         }
       })
       .catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('LostFoundMap getCurrentLocation error', err);
         // Fallback to default location (New York)
         setUserLocation({ lat: 40.7128, lng: -74.006 });

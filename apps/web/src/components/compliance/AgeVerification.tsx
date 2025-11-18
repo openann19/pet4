@@ -78,8 +78,8 @@ export function AgeVerification({ onVerified, requiredAge = MINIMUM_AGE }: AgeVe
       sessionStorage.setItem(AGE_VERIFICATION_KEY, JSON.stringify(verificationData))
       logger.debug('Age verification completed', { age })
       onVerified(true)
-    } catch (error) {
-      logger.error('Failed to store age verification', error instanceof Error ? error : new Error(String(error)))
+    } catch (_error) {
+      logger.error('Failed to store age verification', _error instanceof Error ? _error : new Error(String(_error)))
       onVerified(true) // Still allow access if storage fails
     }
   }
@@ -176,8 +176,8 @@ export function isAgeVerified(): boolean {
       const parsed = JSON.parse(stored) as { verified: boolean; age: number }
       return parsed.verified === true && parsed.age >= MINIMUM_AGE
     }
-  } catch (error) {
-    logger.warn('Failed to check age verification', { error })
+  } catch (_error) {
+    logger.warn('Failed to check age verification', { _error })
   }
   return false
 }

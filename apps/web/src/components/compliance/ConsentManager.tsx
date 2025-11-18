@@ -56,8 +56,8 @@ export function ConsentManager({ onConsentChange, showOnlyIfNeeded = true }: Con
           return
         }
       }
-    } catch (error) {
-      logger.warn('Failed to load consent preferences', { error })
+    } catch (_error) {
+      logger.warn('Failed to load consent preferences', { _error })
     }
 
     // Check if user is in EU or California
@@ -114,8 +114,8 @@ export function ConsentManager({ onConsentChange, showOnlyIfNeeded = true }: Con
       setShowBanner(false)
       onConsentChange?.(consentPrefs)
       logger.debug('Consent preferences saved', { preferences: consentPrefs })
-    } catch (error) {
-      logger.error('Failed to save consent preferences', error instanceof Error ? error : new Error(String(error)))
+    } catch (_error) {
+      logger.error('Failed to save consent preferences', _error instanceof Error ? _error : new Error(String(_error)))
     }
   }
 
@@ -224,8 +224,8 @@ export function useConsentPreferences(): ConsentPreferences {
           setPreferences(parsed.preferences)
         }
       }
-    } catch (error) {
-      logger.warn('Failed to load consent preferences', { error })
+    } catch (_error) {
+      logger.warn('Failed to load consent preferences', { _error })
     }
   }, [])
 

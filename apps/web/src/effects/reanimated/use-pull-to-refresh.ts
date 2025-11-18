@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withTiming,
   interpolate,
@@ -11,7 +11,7 @@ import {
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { springConfigs, timingConfigs } from './transitions';
-import type { AnimatedStyle } from './animated-view';
+import type  from './animated-view';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 export interface UsePullToRefreshOptions {

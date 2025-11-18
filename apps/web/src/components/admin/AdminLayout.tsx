@@ -93,8 +93,8 @@ export default function AdminLayout({
   const handleSidebarToggle = useCallback(() => {
     try {
       setSidebarOpen((prev) => !prev);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle sidebar', err);
     }
   }, []);
@@ -103,8 +103,8 @@ export default function AdminLayout({
     (view: AdminView) => {
       try {
         onViewChange(view);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to change view', err, { view });
       }
     },
@@ -114,8 +114,8 @@ export default function AdminLayout({
   const handleExit = useCallback(() => {
     try {
       onExit?.();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to exit admin console', err);
     }
   }, [onExit]);
@@ -185,8 +185,8 @@ export default function AdminLayout({
                   onClick={() => {
                     try {
                       window.location.href = '/';
-                    } catch (error) {
-                      const err = error instanceof Error ? error : new Error(String(error));
+                    } catch (_error) {
+                      const err = _error instanceof Error ? _error : new Error(String(_error));
                       logger.error('Failed to navigate to main app', err);
                     }
                   }}
@@ -245,8 +245,8 @@ export default function AdminLayout({
               onClick={() => {
                 try {
                   window.location.href = '/';
-                } catch (error) {
-                  const err = error instanceof Error ? error : new Error(String(error));
+                } catch (_error) {
+                  const err = _error instanceof Error ? _error : new Error(String(_error));
                   logger.error('Failed to navigate to main app', err);
                 }
               }}

@@ -71,9 +71,9 @@ export function useBusinessConfig(
         };
         setConfig(defaultConfig);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Load config error', err, { action: 'loadConfig' });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('Load config _error', err, { action: 'loadConfig' });
       toast.error('Failed to load config');
     } finally {
       setLoading(false);
@@ -96,9 +96,9 @@ export function useBusinessConfig(
     try {
       await updateBusinessConfig(config, currentUser.id || 'admin');
       toast.success('Business config updated successfully');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Save config error', err, { action: 'saveConfig' });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('Save config _error', err, { action: 'saveConfig' });
       toast.error('Failed to save config');
     } finally {
       setSaving(false);
@@ -134,9 +134,9 @@ export function useBusinessConfig(
         targetId: config.id || 'default',
         details: JSON.stringify({ configType: 'business' }),
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Save and broadcast config error', err, { action: 'saveAndBroadcastConfig' });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('Save and broadcast config _error', err, { action: 'saveAndBroadcastConfig' });
       toast.error('Failed to save and broadcast config');
     } finally {
       setSaving(false);

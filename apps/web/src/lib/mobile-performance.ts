@@ -204,10 +204,10 @@ export class PerformanceMonitor {
     try {
       const key = 'pawfectmatch:performance:metrics';
       localStorage.setItem(key, JSON.stringify(this.metrics));
-    } catch (error) {
+    } catch (_error) {
       logger.warn(
         'Failed to persist metrics',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -223,10 +223,10 @@ export class PerformanceMonitor {
           ...parsed,
         };
       }
-    } catch (error) {
+    } catch (_error) {
       logger.warn(
         'Failed to load metrics',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
 

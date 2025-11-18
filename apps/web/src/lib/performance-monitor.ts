@@ -230,7 +230,7 @@ export class PerformanceMonitor {
       });
 
       return result;
-    } catch (error) {
+    } catch (_error) {
       const endTime = performance.now();
       const duration = endTime - startTime;
 
@@ -238,10 +238,10 @@ export class PerformanceMonitor {
         operation,
         duration,
         timestamp: Date.now(),
-        stage: 'error',
+        stage: '_error',
         metadata: {
           ...metadata,
-          error: error instanceof Error ? error.message : String(error),
+          _error: _error instanceof Error ? _error.message : String(_error),
         },
       });
 
@@ -276,7 +276,7 @@ export class PerformanceMonitor {
       });
 
       return result;
-    } catch (error) {
+    } catch (_error) {
       const endTime = performance.now();
       const duration = endTime - startTime;
 
@@ -284,10 +284,10 @@ export class PerformanceMonitor {
         operation,
         duration,
         timestamp: Date.now(),
-        stage: 'error',
+        stage: '_error',
         metadata: {
           ...metadata,
-          error: error instanceof Error ? error.message : String(error),
+          _error: _error instanceof Error ? _error.message : String(_error),
         },
       });
 

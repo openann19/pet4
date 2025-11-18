@@ -84,9 +84,9 @@ class OfflineSyncManager {
 
         // Start sync
         void this.syncPendingActions();
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('OfflineSyncManager online handler error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('OfflineSyncManager online handler _error', err);
       }
     };
 
@@ -95,18 +95,18 @@ class OfflineSyncManager {
         logger.info('Offline - queuing future actions');
         this.isOnline = false;
         this.notifyListeners();
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('OfflineSyncManager offline handler error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('OfflineSyncManager offline handler _error', err);
       }
     };
 
     try {
       window.addEventListener('online', this.onlineHandler);
       window.addEventListener('offline', this.offlineHandler);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('OfflineSyncManager setup event listeners error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('OfflineSyncManager setup event listeners _error', err);
     }
   }
 
@@ -128,9 +128,9 @@ class OfflineSyncManager {
         clearTimeout(this.idleSyncTimeout);
         this.idleSyncTimeout = null;
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('OfflineSyncManager cleanup event listeners error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('OfflineSyncManager cleanup event listeners _error', err);
     }
 
     this.listeners.clear();
@@ -165,10 +165,10 @@ class OfflineSyncManager {
           void this.syncPendingActions();
         }
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to load queue from storage',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -183,10 +183,10 @@ class OfflineSyncManager {
       }
 
       await storage.set('offline-sync-queue', this.syncQueue);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to save queue to storage',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -278,16 +278,16 @@ class OfflineSyncManager {
         logger.debug('Completed action', { action: action.action, actionId: action.id });
 
         this.syncQueue = this.syncQueue.filter((a) => a.id !== action.id);
-      } catch (error) {
+      } catch (_error) {
         action.retries++;
         failed++;
 
         if (action.retries >= action.maxRetries) {
           action.status = 'failed';
-          action.error = error instanceof Error ? error.message : 'Unknown error';
+          action.error = _error instanceof Error ? _error.message : 'Unknown _error';
           logger.error(
             'Action failed after max retries',
-            error instanceof Error ? error : new Error(String(error)),
+            _error instanceof Error ? _error : new Error(String(_error)),
             { action: action.action, actionId: action.id }
           );
         } else {
@@ -390,9 +390,9 @@ class OfflineSyncManager {
       if (syncTime) {
         this.lastSyncTime = syncTime;
       }
-    } catch (error) {
+    } catch (_error) {
       logger.warn('Failed to load last sync time', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       });
     }
   }
@@ -515,10 +515,10 @@ class OfflineSyncManager {
     this.listeners.forEach((listener) => {
       try {
         listener(status);
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           'Error in listener',
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
       }
     });

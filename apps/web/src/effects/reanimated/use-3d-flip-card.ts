@@ -3,7 +3,7 @@
  * Realistic card flip with perspective and backface visibility
  */
 
-import { useSharedValue, useAnimatedStyle, withSpring, interpolate } from '@petspark/motion';
+import { useSharedValue, usewithSpring, interpolate } from '@petspark/motion';
 import { useCallback, useState } from 'react';
 
 export interface Use3DFlipCardOptions {
@@ -49,8 +49,8 @@ export function use3DFlipCard(options: Use3DFlipCardOptions = {}) {
   });
 
   return {
-    frontAnimatedStyle,
-    backAnimatedStyle,
+    front
+    back
     flip,
     isFlipped,
   };

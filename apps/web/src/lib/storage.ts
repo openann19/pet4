@@ -71,7 +71,7 @@ class StorageService {
 
       request.onerror = () => {
         const error = request.error ?? new Error('Failed to open IndexedDB');
-        const errorObj = error instanceof Error ? error : new Error(String(error));
+        const errorObj = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to open IndexedDB', errorObj);
         reject(errorObj);
       };
@@ -161,9 +161,9 @@ class StorageService {
           }
         }
       };
-    } catch (error) {
+    } catch (_error) {
       logger.warn('Failed to setup broadcast channel', {
-        error: error instanceof Error ? error.message : String(error),
+        _error: _error instanceof Error ? _error.message : String(_error),
       });
     }
   }
@@ -175,9 +175,9 @@ class StorageService {
     if (isTruthy(this.broadcastChannel)) {
       try {
         this.broadcastChannel.postMessage({ type: 'invalidate', key });
-      } catch (error) {
+      } catch (_error) {
         logger.warn('Failed to broadcast cache invalidation', {
-          error: error instanceof Error ? error.message : String(error),
+          _error: _error instanceof Error ? _error.message : String(_error),
         });
       }
     }
@@ -190,9 +190,9 @@ class StorageService {
     if (isTruthy(this.broadcastChannel)) {
       try {
         this.broadcastChannel.postMessage({ type: 'update', key });
-      } catch (error) {
+      } catch (_error) {
         logger.warn('Failed to broadcast update', {
-          error: error instanceof Error ? error.message : String(error),
+          _error: _error instanceof Error ? _error.message : String(_error),
         });
       }
     }
@@ -224,9 +224,9 @@ class StorageService {
       const item = localStorage.getItem(`${LOCAL_STORAGE_PREFIX}${key}`);
       if (!item) return null;
       return JSON.parse(item) as T;
-    } catch (error) {
+    } catch (_error) {
       logger.warn(`Failed to read from localStorage for key ${key}`, {
-        error: error instanceof Error ? error.message : String(error),
+        error: _error instanceof Error ? error.message : String(_error),
       });
       return null;
     }
@@ -238,9 +238,9 @@ class StorageService {
   private setToLocalStorage<T>(key: string, value: T): void {
     try {
       localStorage.setItem(`${LOCAL_STORAGE_PREFIX}${key}`, JSON.stringify(value));
-    } catch (error) {
+    } catch (_error) {
       logger.warn(`Failed to write to localStorage for key ${key}`, {
-        error: error instanceof Error ? error.message : String(error),
+        error: _error instanceof Error ? error.message : String(_error),
       });
     }
   }
@@ -251,9 +251,9 @@ class StorageService {
   private deleteFromLocalStorage(key: string): void {
     try {
       localStorage.removeItem(`${LOCAL_STORAGE_PREFIX}${key}`);
-    } catch (error) {
+    } catch (_error) {
       logger.warn(`Failed to delete from localStorage for key ${key}`, {
-        error: error instanceof Error ? error.message : String(error),
+        error: _error instanceof Error ? error.message : String(_error),
       });
     }
   }
@@ -282,7 +282,7 @@ class StorageService {
 
       request.onerror = () => {
         const error = request.error ?? new Error('Failed to read from IndexedDB');
-        const errorObj = error instanceof Error ? error : new Error(String(error));
+        const errorObj = _error instanceof Error ? _error : new Error(String(_error));
         logger.error(`Failed to read from IndexedDB for key ${key}`, errorObj);
 
         // Attempt to recover by re-initializing
@@ -332,7 +332,7 @@ class StorageService {
 
       request.onerror = () => {
         const error = request.error ?? new Error('Failed to write to IndexedDB');
-        const errorObj = error instanceof Error ? error : new Error(String(error));
+        const errorObj = _error instanceof Error ? _error : new Error(String(_error));
         logger.error(`Failed to write to IndexedDB for key ${key}`, errorObj);
 
         // Attempt to recover by re-initializing
@@ -378,7 +378,7 @@ class StorageService {
 
       request.onerror = () => {
         const error = request.error ?? new Error('Failed to delete from IndexedDB');
-        const errorObj = error instanceof Error ? error : new Error(String(error));
+        const errorObj = _error instanceof Error ? _error : new Error(String(_error));
         reject(errorObj);
       };
 
@@ -417,7 +417,7 @@ class StorageService {
           await new Promise<void>((resolve, reject) => {
             request.onerror = () => {
               const error = request.error ?? new Error('Failed to iterate IndexedDB');
-              const errorObj = error instanceof Error ? error : new Error(String(error));
+              const errorObj = _error instanceof Error ? _error : new Error(String(_error));
               reject(errorObj);
             };
             request.onsuccess = (event) => {
@@ -433,9 +433,9 @@ class StorageService {
           });
         }
       }
-    } catch (error) {
+    } catch (_error) {
       logger.warn('Failed to get keys from IndexedDB', {
-        error: error instanceof Error ? error.message : String(error),
+        _error: _error instanceof Error ? _error.message : String(_error),
       });
     }
 
@@ -459,9 +459,9 @@ class StorageService {
     } else {
       try {
         value = await this.getFromIndexedDB<T>(key);
-      } catch (error) {
+      } catch (_error) {
         logger.warn(`Failed to read from IndexedDB for key ${key}, falling back to localStorage`, {
-          error: error instanceof Error ? error.message : String(error),
+          error: _error instanceof Error ? error.message : String(_error),
         });
         value = this.getFromLocalStorage<T>(key);
       }
@@ -491,9 +491,9 @@ class StorageService {
       if (size >= MAX_LOCALSTORAGE_SIZE) {
         try {
           await this.setToIndexedDB(key, value);
-        } catch (error) {
+        } catch (_error) {
           logger.warn(`Failed to write to IndexedDB for key ${key}`, {
-            error: error instanceof Error ? error.message : String(error),
+            error: _error instanceof Error ? error.message : String(_error),
           });
         }
       }
@@ -504,9 +504,9 @@ class StorageService {
         await this.setToIndexedDB(key, value);
         // Broadcast invalidation to other tabs
         this.broadcastInvalidation(key);
-      } catch (error) {
+      } catch (_error) {
         logger.warn(`Failed to write to IndexedDB for key ${key}, falling back to localStorage`, {
-          error: error instanceof Error ? error.message : String(error),
+          error: _error instanceof Error ? error.message : String(_error),
         });
         this.setToLocalStorage(key, value);
         // Broadcast invalidation to other tabs
@@ -526,9 +526,9 @@ class StorageService {
     this.deleteFromLocalStorage(key);
     try {
       await this.deleteFromIndexedDB(key);
-    } catch (error) {
+    } catch (_error) {
       logger.warn(`Failed to delete from IndexedDB for key ${key}`, {
-        error: error instanceof Error ? error.message : String(error),
+        error: _error instanceof Error ? error.message : String(_error),
       });
     }
 
@@ -568,15 +568,15 @@ class StorageService {
             request.onsuccess = () => resolve();
             request.onerror = () => {
               const error = request.error ?? new Error('Failed to clear IndexedDB');
-              const errorObj = error instanceof Error ? error : new Error(String(error));
+              const errorObj = _error instanceof Error ? _error : new Error(String(_error));
               reject(errorObj);
             };
           });
         }
       }
-    } catch (error) {
+    } catch (_error) {
       logger.warn('Failed to clear IndexedDB', {
-        error: error instanceof Error ? error.message : String(error),
+        _error: _error instanceof Error ? _error.message : String(_error),
       });
     }
   }
@@ -590,7 +590,7 @@ if (typeof window !== 'undefined') {
   // Initialize asynchronously to avoid blocking
   void storage.initDB().catch((error) => {
     logger.warn('Failed to initialize IndexedDB, using localStorage only', {
-      error: error instanceof Error ? error.message : String(error),
+      error: _error instanceof Error ? error.message : String(_error),
     });
   });
 }

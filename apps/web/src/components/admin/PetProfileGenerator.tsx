@@ -135,9 +135,9 @@ JSON format:
       });
 
       logger.info('Generated pets', { count: newPets.length, pets: newPets });
-    } catch (error) {
-      const errorInfo = parseLLMError(error);
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const errorInfo = parseLLMError(_error);
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to generate pet profiles', err, {
         technicalMessage: errorInfo.technicalMessage,
         userMessage: errorInfo.userMessage,

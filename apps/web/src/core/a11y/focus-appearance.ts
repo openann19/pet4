@@ -140,9 +140,9 @@ function checkContrastAgainstAdjacentColors(
       if (ratio < minContrast) {
         failingColors.push(adjacentColor);
       }
-    } catch (error) {
+    } catch (_error) {
       // Invalid color, skip
-      logger.warn('Invalid color for contrast check', error instanceof Error ? error : new Error(String(error)), {
+      logger.warn('Invalid color for contrast check', _error instanceof Error ? _error : new Error(String(_error)), {
         color: adjacentColor,
       });
     }

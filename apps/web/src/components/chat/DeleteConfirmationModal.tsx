@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming, MotionView } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';

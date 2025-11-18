@@ -68,7 +68,7 @@ export const ErrorFallback = ({ error, resetErrorBoundary }: ErrorFallbackProps)
   if (isTruthy(import.meta.env.DEV)) throw error;
 
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
-  const chunkError = isChunkLoadError(error);
+  const chunkError = isChunkLoadError(_error);
 
   const handleHardReload = (): void => {
     window.location.reload();

@@ -1,6 +1,6 @@
 'use client';;
 import { useState, useCallback, useEffect } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithSpring, MotionView } from '@petspark/motion';
 import type { Sticker } from '@/lib/sticker-library';
 import { cn } from '@/lib/utils';
 import { useStickerAnimation } from '@/effects/reanimated/use-sticker-animation';

@@ -26,8 +26,8 @@ export async function getUserPlan(userId: string): Promise<Plan> {
     const entitlements = await PaymentsService.getUserEntitlements(userId);
     // Map PlanTier to Plan (they have the same values)
     return entitlements.planTier as Plan;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get user plan', err, { userId });
     return 'free';
   }
@@ -110,8 +110,8 @@ export async function getUsageCounter(userId: string): Promise<UsageCounter> {
 
   try {
     return await paymentsApi.getUsageCounter(userId, today);
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get usage counter from API, returning zero usage', err, {
       userId,
       today,
@@ -155,8 +155,8 @@ export async function incrementUsage(
   // Persist usage increment via API
   try {
     return await paymentsApi.incrementUsage(userId, type, operationId);
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to increment usage via API', err, { userId, type, operationId });
 
     // If API fails, return success but log warning (optimistic client-side check passed)
@@ -191,8 +191,8 @@ async function getActiveAdoptionListingsCount(userId: string): Promise<number> {
   try {
     const listings = await adoptionMarketplaceService.getUserListings(userId);
     return listings.filter((l) => l.status === 'active').length;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get active adoption listings count', err, { userId });
     return 0;
   }

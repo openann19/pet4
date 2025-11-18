@@ -9,14 +9,14 @@ import { createLogger } from '@/lib/logger';
 import { useModalAnimation, useGlowPulse, useBounceOnTap } from '@/effects/reanimated';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withRepeat,
   withSequence,
   withTiming,
   MotionView,
 } from '@petspark/motion';
 import { useEffect } from 'react';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 const logger = createLogger('IncomingCallNotification');
 
@@ -45,8 +45,8 @@ export default function IncomingCallNotification({
       haptics.success();
       logger.info('Call accepted', { callId: call.id, callerName, callType: call.type });
       onAccept();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to accept call', err, { callId: call.id, callerName });
       haptics.error();
     }
@@ -57,8 +57,8 @@ export default function IncomingCallNotification({
       haptics.heavy();
       logger.info('Call declined', { callId: call.id, callerName, callType: call.type });
       onDecline();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to decline call', err, { callId: call.id, callerName });
       haptics.error();
     }

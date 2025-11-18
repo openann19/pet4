@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { motion, useMotionValue, animate, type Variants, MotionView, usePressMotion } from '@petspark/motion';
+import { motion, useMotionValue, animate, MotionView, usePressMotion } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import { haptics } from '@/lib/haptics';
 import type { ButtonHTMLAttributes } from 'react';

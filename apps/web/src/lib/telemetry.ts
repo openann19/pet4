@@ -165,10 +165,10 @@ class TelemetryService {
       } else {
         logger.debug('Telemetry events sent', { eventCount: events.length });
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Error sending telemetry events',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       // Re-queue events for retry
       this.eventQueue = [...events, ...this.eventQueue].slice(0, 100);

@@ -184,8 +184,8 @@ export async function searchNearbyPlaces(
     });
 
     return places;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to search nearby places', err, {
       location,
       radiusKm,
@@ -278,8 +278,8 @@ export async function searchPlacesByQuery(
     });
 
     return places;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to search places by query', err, {
       query,
       location,

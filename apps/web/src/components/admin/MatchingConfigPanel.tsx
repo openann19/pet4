@@ -56,11 +56,11 @@ export function MatchingConfigPanel() {
         };
         setConfig(defaultConfig);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to load configuration');
       logger.error(
         'Failed to load configuration',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     } finally {
       setLoading(false);
@@ -86,11 +86,11 @@ export function MatchingConfigPanel() {
       const updatedConfig = await matchingAPI.updateConfig(updateData);
       setConfig(updatedConfig);
       toast.success('Configuration saved successfully');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to save configuration');
       logger.error(
         'Failed to save configuration',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     } finally {
       setSaving(false);
@@ -130,11 +130,11 @@ export function MatchingConfigPanel() {
         targetId: updatedConfig.id || 'default',
         details: JSON.stringify({ configType: 'matching' }),
       });
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to save and broadcast configuration');
       logger.error(
         'Failed to save and broadcast configuration',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     } finally {
       setSaving(false);
@@ -404,7 +404,7 @@ export function MatchingConfigPanel() {
         <Button
           onClick={() => {
             void handleSave().catch((error) => {
-              const err = error instanceof Error ? error : new Error(String(error));
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.error('Failed to save config', err, { action: 'handleSave' });
               toast.error('Failed to save configuration');
             });
@@ -429,7 +429,7 @@ export function MatchingConfigPanel() {
         <Button
           onClick={() => {
             void handleSaveAndBroadcast().catch((error) => {
-              const err = error instanceof Error ? error : new Error(String(error));
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.error('Failed to save and broadcast config', err, {
                 action: 'handleSaveAndBroadcast',
               });
@@ -456,7 +456,7 @@ export function MatchingConfigPanel() {
           variant="outline"
           onClick={() => {
             void loadConfig().catch((error) => {
-              const err = error instanceof Error ? error : new Error(String(error));
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.error('Failed to load config', err, { action: 'loadConfig' });
               toast.error('Failed to load configuration');
             });

@@ -37,12 +37,12 @@ export function useSignUpSubmission(onSuccess: () => void) {
       haptics.trigger('success');
 
       onSuccess();
-    } catch (error) {
-      const err = error as APIError | Error;
-      logger.error('Sign up error', err instanceof Error ? err : new Error(err.message || 'Unknown error'));
+    } catch (_error) {
+      const err = _error as APIError | Error;
+      logger.error('Sign up _error', err instanceof Error ? err : new Error(err.message || 'Unknown _error'));
       const errorMessage = 'message' in err ? err.message : (err as APIError).message || t.auth?.signUpError || 'Failed to create account. Please try again.';
       toast.error(errorMessage);
-      haptics.trigger('error');
+      haptics.trigger('_error');
     } finally {
       setIsLoading(false);
     }

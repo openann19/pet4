@@ -63,10 +63,10 @@ export async function verifyPassword(
 
     // Compare hashes (constant-time comparison)
     return newHash === hash;
-  } catch (error) {
+  } catch (_error) {
     log.error(
       'Error verifying password',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
     return false;
   }

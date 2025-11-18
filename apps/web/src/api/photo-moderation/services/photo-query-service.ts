@@ -11,8 +11,8 @@ export class PhotoQueryService {
   async getPendingPhotos(limit = 50): Promise<PhotoModerationRecord[]> {
     try {
       return await photoModerationStorage.getRecordsByStatus('pending', limit);
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get pending photos', err);
       throw err;
     }
@@ -21,8 +21,8 @@ export class PhotoQueryService {
   async getQuarantinedPhotos(limit = 50): Promise<PhotoModerationRecord[]> {
     try {
       return await photoModerationStorage.getRecordsByStatus('quarantined', limit);
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get quarantined photos', err);
       throw err;
     }
@@ -37,8 +37,8 @@ export class PhotoQueryService {
   }> {
     try {
       return await photoModerationQueue.getStats();
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get queue stats', err);
       throw err;
     }
@@ -47,8 +47,8 @@ export class PhotoQueryService {
   async getAuditLogs(photoId: string) {
     try {
       return await photoModerationAudit.getPhotoAuditLogs(photoId);
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get audit logs', err, { photoId });
       throw err;
     }

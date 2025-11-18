@@ -96,8 +96,8 @@ export function initializeTheme() {
     if (tryApplyThemeMode(savedThemeMode, root)) return;
     
     applyDefaultTheme(root);
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to initialize theme', err, { action: 'initializeTheme' });
     root.classList.remove('dark');
     try {

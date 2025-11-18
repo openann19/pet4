@@ -113,8 +113,8 @@ export class MediaUploadService {
       });
 
       return response;
-    } catch (error) {
-      const apiError = error as APIError;
+    } catch (_error) {
+      const apiError = _error as APIError;
       logger.error('Failed to request upload intent', new Error(apiError.message), {
         code: apiError.code,
         correlationId,
@@ -162,8 +162,8 @@ export class MediaUploadService {
         uploadId: intent.uploadId,
         correlationId,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to upload to provider', err, {
         uploadId: intent.uploadId,
         correlationId,
@@ -208,8 +208,8 @@ export class MediaUploadService {
       });
 
       return response;
-    } catch (error) {
-      const apiError = error as APIError;
+    } catch (_error) {
+      const apiError = _error as APIError;
       logger.error('Failed to complete upload', new Error(apiError.message), {
         uploadId,
         code: apiError.code,
@@ -439,8 +439,8 @@ export class MediaUploadService {
       });
 
       return completion;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Chunked upload failed', err, {
         fileName: file.name,
         fileSize: file.size,
@@ -515,8 +515,8 @@ export class MediaUploadService {
       });
 
       return completion;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Media upload failed', err, {
         fileName: file.name,
         mediaType,

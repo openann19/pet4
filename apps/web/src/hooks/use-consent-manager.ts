@@ -232,8 +232,8 @@ export function useConsentManager(
             ipAddress: undefined, // Will be set by server
             userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
           });
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Failed to update consent in API', err, { userId, category });
           // Don't throw - local state is updated
         }
@@ -271,8 +271,8 @@ export function useConsentManager(
             ipAddress: undefined,
             userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
           });
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Failed to update consent in API', err, { userId, category });
         }
       }
@@ -309,8 +309,8 @@ export function useConsentManager(
             ipAddress: undefined,
             userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
           });
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Failed to withdraw consent in API', err, { userId, category });
         }
       }
@@ -344,8 +344,8 @@ export function useConsentManager(
               ipAddress: undefined,
               userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
             });
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
             logger.error('Failed to update consent in API', err, { userId, category: 'analytics' });
           }
         }
@@ -359,8 +359,8 @@ export function useConsentManager(
               ipAddress: undefined,
               userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
             });
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
             logger.error('Failed to update consent in API', err, { userId, category: 'marketing' });
           }
         }
@@ -374,8 +374,8 @@ export function useConsentManager(
               ipAddress: undefined,
               userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
             });
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
             logger.error('Failed to update consent in API', err, { userId, category: 'third_party' });
           }
         }

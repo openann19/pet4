@@ -2,7 +2,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withTiming,
   withDelay,
@@ -28,7 +28,7 @@ import {
 } from '@/lib/sticker-library';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface StickerPickerProps {

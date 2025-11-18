@@ -102,8 +102,8 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
               }
             }
           }
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           const shakeSequence = withSequence(
             withTiming(-5, { duration: 50 }),
             withTiming(5, { duration: 50 }),

@@ -57,8 +57,8 @@ export class LiveStreamingStreamsApi {
       }
 
       return { stream, joinToken, publishToken };
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to create room', err, { hostId: data.hostId });
       throw err;
     }
@@ -83,8 +83,8 @@ export class LiveStreamingStreamsApi {
             });
           }
         }
-      } catch (error) {
-        const err = normalizeError(error);
+      } catch (_error) {
+        const err = normalizeError(_error);
         logger.error('Failed to create VOD recording', err, {
           streamId: stream.id,
           roomId: stream.roomId,
@@ -95,8 +95,8 @@ export class LiveStreamingStreamsApi {
         if (stream.roomId) {
           await deleteLiveKitRoom(stream.roomId);
         }
-      } catch (error) {
-        const err = normalizeError(error);
+      } catch (_error) {
+        const err = normalizeError(_error);
         logger.error('Failed to delete LiveKit room', err, {
           streamId: stream.id,
           roomId: stream.roomId,
@@ -104,8 +104,8 @@ export class LiveStreamingStreamsApi {
       }
 
       return stream;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to end room', err, { streamId, hostId });
       throw err;
     }
@@ -148,8 +148,8 @@ export class LiveStreamingStreamsApi {
 
       const response = await APIClient.get<QueryActiveStreamsResponse>(url);
       return response.data;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to query active streams', err, { filters });
       throw err;
     }
@@ -161,8 +161,8 @@ export class LiveStreamingStreamsApi {
         ENDPOINTS.STREAMING.STREAM(id)
       );
       return response.data.stream ?? null;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get stream', err, { streamId: id });
       return null;
     }
@@ -172,8 +172,8 @@ export class LiveStreamingStreamsApi {
     try {
       const result = await this.queryActiveStreams();
       return result.streams;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get all streams', err);
       throw err;
     }

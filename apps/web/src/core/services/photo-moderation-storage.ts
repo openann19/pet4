@@ -57,8 +57,8 @@ export class PhotoModerationStorageService {
       });
 
       return record;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create moderation record', err, {
         photoId: options.photoId,
       });
@@ -74,8 +74,8 @@ export class PhotoModerationStorageService {
       const recordKey = `${RECORD_PREFIX}${photoId}`;
       const record = await storage.get<PhotoModerationRecord>(recordKey);
       return record ?? null;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get moderation record', err, { photoId });
       throw err;
     }
@@ -137,8 +137,8 @@ export class PhotoModerationStorageService {
       });
 
       return record;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update moderation record', err, { photoId });
       throw err;
     }
@@ -161,8 +161,8 @@ export class PhotoModerationStorageService {
       }
 
       return records;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get records by user', err, { userId });
       throw err;
     }
@@ -188,8 +188,8 @@ export class PhotoModerationStorageService {
       }
 
       return records;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get records by status', err, { status });
       throw err;
     }
@@ -202,8 +202,8 @@ export class PhotoModerationStorageService {
     try {
       const record = await this.getRecord(photoId);
       return record?.status === 'approved' || false;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to check approval status', err, { photoId });
       return false;
     }
@@ -221,8 +221,8 @@ export class PhotoModerationStorageService {
         photoIds.push(photoId);
         await storage.set(indexKey, photoIds);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to index by user', err, { userId, photoId });
       throw err;
     }
@@ -240,8 +240,8 @@ export class PhotoModerationStorageService {
         photoIds.push(photoId);
         await storage.set(indexKey, photoIds);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to index by status', err, { status, photoId });
       throw err;
     }
@@ -260,8 +260,8 @@ export class PhotoModerationStorageService {
 
       const filtered = photoIds.filter((id) => id !== photoId);
       await storage.set(indexKey, filtered);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to remove from status index', err, { status, photoId });
       throw err;
     }

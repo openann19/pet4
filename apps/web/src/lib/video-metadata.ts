@@ -25,7 +25,7 @@ export class VideoMetadataExtractor {
 
       video.onerror = (error) => {
         URL.revokeObjectURL(video.src);
-        const message = error instanceof Error ? error.message : 'Failed to load video metadata';
+        const message = _error instanceof Error ? error.message : 'Failed to load video metadata';
         reject(new Error(message));
       };
 
@@ -59,7 +59,7 @@ export class VideoMetadataExtractor {
 
       video.onerror = (error) => {
         URL.revokeObjectURL(video.src);
-        const message = error instanceof Error ? error.message : 'Failed to extract thumbnail';
+        const message = _error instanceof Error ? error.message : 'Failed to extract thumbnail';
         reject(new Error(message));
       };
 

@@ -70,14 +70,14 @@ export default function AgeGateModal({ open, onVerified, onClose }: AgeGateModal
 
       haptics.trigger('success');
       onVerified(country || undefined);
-    } catch (error) {
+    } catch (_error) {
       const logger = createLogger('AgeGateModal');
       logger.error(
-        'Age verification error',
-        error instanceof Error ? error : new Error(String(error))
+        'Age verification _error',
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       setError(t.auth?.verificationError || 'Verification failed. Please try again.');
-      haptics.trigger('error');
+      haptics.trigger('_error');
     } finally {
       setIsLoading(false);
     }

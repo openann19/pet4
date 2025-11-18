@@ -1,6 +1,6 @@
 'use client';
 
-import { useMotionValue, animate, type MotionValue, type Variants } from '@petspark/motion';
+import { useMotionValue, animate, type MotionValue } from '@petspark/motion';
 import { useEffect } from 'react';
 import { isTruthy } from '@petspark/shared';
 

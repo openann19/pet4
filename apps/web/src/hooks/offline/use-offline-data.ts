@@ -77,7 +77,7 @@ export function useOfflineData<T>(
       logger.debug('Data loaded from cache', { resourceType, resourceId })
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
-      setError(error)
+      setError(_error)
       logger.error('Failed to load data', { error, resourceType, resourceId })
     } finally {
       setIsLoading(false)
@@ -161,7 +161,7 @@ export function useOfflineData<T>(
       logger.debug('Data cleared', { resourceType, resourceId })
     } catch (err) {
       const error = err instanceof Error ? err : new Error(String(err))
-      setError(error)
+      setError(_error)
       logger.error('Failed to clear data', { error, resourceType, resourceId })
     }
   }, [resourceType, resourceId, dataLayer])

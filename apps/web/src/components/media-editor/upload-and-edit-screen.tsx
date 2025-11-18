@@ -76,8 +76,8 @@ export function UploadAndEditScreen({
         const out = await editMedia(media, ops, { quality: 0.9 });
         onDone(out.uri);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Export failed', err, { mediaType: media.type });
       throw err;
     } finally {

@@ -67,8 +67,8 @@ export class CallClient {
       this.localStream = stream;
       logger.debug('Media stream obtained', { quality, tracks: stream.getTracks().length });
       return stream;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get media stream', err, { quality });
 
       // Fallback to lower quality
@@ -106,8 +106,8 @@ export class CallClient {
 
       logger.debug('Screen share stream obtained');
       return stream;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get screen share', err);
       throw err;
     }

@@ -59,8 +59,8 @@ export async function getMapConfig(): Promise<MapConfig | null> {
   try {
     const response = await APIClient.get<{ config: MapConfig | null }>('/admin/config/map');
     return response.data.config;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get map config', err);
     throw err;
   }
@@ -79,8 +79,8 @@ export async function updateMapConfig(
       updatedBy,
     });
     return response.data.config;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to update map config', err, { updatedBy });
     throw err;
   }

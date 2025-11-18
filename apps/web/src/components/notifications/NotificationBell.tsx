@@ -8,13 +8,13 @@ import { haptics } from '@/lib/haptics';
 import { NotificationCenter, type AppNotification } from './NotificationCenter';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withTiming,
   withRepeat,
   withSequence,
   MotionView,
 } from '@petspark/motion';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);

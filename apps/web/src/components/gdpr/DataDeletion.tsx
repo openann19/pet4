@@ -62,8 +62,8 @@ export function DataDeletion({ userId, onDeletionComplete }: DataDeletionProps):
                     `Deletion completed with errors: ${result.errors.map((errorItem) => errorItem.error).join(', ')}`
                 );
             }
-        } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
+        } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
             logger.error('Failed to delete user data', err, { userId });
             setDeletionError(err.message);
         } finally {

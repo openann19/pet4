@@ -49,8 +49,8 @@ export function CommentsSheet({ open, onOpenChange, postId, postAuthor }: Commen
     try {
       const response = await communityService.getComments(postId)
       setComments(response)
-    } catch (error) {
-      logger.error('Failed to load comments', error instanceof Error ? error : new Error(String(error)))
+    } catch (_error) {
+      logger.error('Failed to load comments', _error instanceof Error ? _error : new Error(String(_error)))
       toast.error(t.community?.commentsLoadError ?? 'Failed to load comments')
     } finally {
       setLoading(false)
@@ -118,8 +118,8 @@ export function CommentsSheet({ open, onOpenChange, postId, postAuthor }: Commen
       window.setTimeout(() => {
         scrollAreaRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
       }, 120)
-    } catch (error) {
-      logger.error('Failed to post comment', error instanceof Error ? error : new Error(String(error)))
+    } catch (_error) {
+      logger.error('Failed to post comment', _error instanceof Error ? _error : new Error(String(_error)))
       toast.error(t.community?.commentError ?? 'Failed to post comment')
       haptics.error()
     } finally {

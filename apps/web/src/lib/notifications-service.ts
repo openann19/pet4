@@ -58,10 +58,10 @@ export class NotificationsService {
 
       // Handle deep link - register route for navigation
       // Routes are registered in the main app router
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send lost alert notification',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -97,10 +97,10 @@ export class NotificationsService {
       });
 
       // Handle deep link - register route for navigation
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send sighting notification',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -152,10 +152,10 @@ export class NotificationsService {
       });
 
       // Handle deep link - register route for navigation
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send community post notification',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -195,10 +195,10 @@ export class NotificationsService {
       });
 
       // Handle deep link - register route for navigation
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send go live notification',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -230,10 +230,10 @@ export class NotificationsService {
           requireInteraction: false,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send alert view notification',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -259,10 +259,10 @@ export class NotificationsService {
           requireInteraction: false,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to send post popular notification',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -360,10 +360,10 @@ export class NotificationsService {
         alertId: alert.id,
         radiusKm,
       });
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to trigger geofenced notifications',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         {
           alertId: alert.id,
         }
@@ -380,7 +380,7 @@ if (typeof window !== 'undefined') {
   notificationsService.initialize().catch((error) => {
     logger.error(
       'Failed to initialize notifications service',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
   });
 }

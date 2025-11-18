@@ -60,14 +60,14 @@ export default function VenuePicker({
           try {
             const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
             setUserLocation(coarse);
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('VenuePicker snapToGrid error', err);
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('VenuePicker snapToGrid _error', err);
             setUserLocation(matchLocation ?? { lat: 40.7128, lng: -74.006 });
           }
         })
         .catch((error) => {
-          const err = error instanceof Error ? error : new Error(String(error));
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('VenuePicker getCurrentLocation error', err);
           // Fallback to match location or default location
           setUserLocation(matchLocation ?? { lat: 40.7128, lng: -74.006 });
@@ -104,8 +104,8 @@ export default function VenuePicker({
       }));
 
       setVenues(places.slice(0, 20));
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       toast.error(err.message ?? t.map?.errorLoadingMap ?? 'Error loading venues');
     }
   };

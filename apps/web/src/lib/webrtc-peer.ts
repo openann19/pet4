@@ -83,7 +83,7 @@ export class WebRTCPeer {
       this.sendSignal(signalData).catch((error) => {
         logger.error(
           'Failed to send signal',
-          error instanceof Error ? error : new Error(String(error)),
+          _error instanceof Error ? _error : new Error(String(_error)),
           {
             callId: this.config.callId,
           }
@@ -157,8 +157,8 @@ export class WebRTCPeer {
           reject(error);
         });
 
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to create peer connection', err, { callId: this.config.callId });
         reject(err);
       }
@@ -219,10 +219,10 @@ export class WebRTCPeer {
           try {
             this.peer.signal(signal.data as SimplePeer.SignalData);
             this.config.onConnectionStateChange?.('connecting');
-          } catch (error) {
+          } catch (_error) {
             logger.error(
               'Failed to process incoming signal',
-              error instanceof Error ? error : new Error(String(error)),
+              _error instanceof Error ? _error : new Error(String(_error)),
               {
                 callId: this.config.callId,
                 signalType: signal.type,
@@ -248,10 +248,10 @@ export class WebRTCPeer {
       this.peer.removeStream(this.config.localStream);
       this.peer.addStream(newStream);
       this.config.localStream = newStream;
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to replace stream',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         {
           callId: this.config.callId,
         }
@@ -279,10 +279,10 @@ export class WebRTCPeer {
     if (this.peer !== null) {
       try {
         this.peer.destroy();
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           'Error destroying peer',
-          error instanceof Error ? error : new Error(String(error)),
+          _error instanceof Error ? _error : new Error(String(_error)),
           {
             callId: this.config.callId,
           }

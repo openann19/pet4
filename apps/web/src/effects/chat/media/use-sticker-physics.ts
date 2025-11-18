@@ -14,7 +14,7 @@ import { useCallback, useRef } from 'react';
 import {
   Easing,
   type SharedValue,
-  useAnimatedStyle,
+  use
   useSharedValue,
   withSequence,
   withTiming,
@@ -26,7 +26,7 @@ import { randomRange } from '../core/seeded-rng';
 import { logEffectEnd, logEffectStart } from '../core/telemetry';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 const logger = createLogger('sticker-physics');
 

@@ -3,7 +3,7 @@
  * Depth-based parallax scrolling with multiple layers
  */
 
-import { useSharedValue, useAnimatedStyle, interpolate } from '@petspark/motion';
+import { useSharedValue, useinterpolate } from '@petspark/motion';
 import { useCallback, useEffect } from 'react';
 
 export interface UseParallaxScrollOptions {

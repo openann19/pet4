@@ -49,10 +49,10 @@ export function AdoptionListingUpdateExample() {
         // Clear fee explicitly
         await adoptionAPI.updateListing(listingId, updateData2, 'owner123');
       }
-    } catch (error) {
+    } catch (_error) {
       // Error handling - in production, use structured logging
-      if (error instanceof Error) {
-        // Handle error appropriately
+      if (_error instanceof Error) {
+        // Handle _error appropriately
       }
     }
   };

@@ -137,8 +137,8 @@ async function initializeModels(): Promise<void> {
       const { loadNSFWModel } = await import('@/lib/nsfw/loader');
       nsfwModel = await loadNSFWModel();
       logger.info('NSFW model loaded successfully');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load NSFW model', err, {
         errorMessage: err.message,
         errorStack: err.stack,
@@ -148,10 +148,10 @@ async function initializeModels(): Promise<void> {
     }
 
     modelsInitialized = true;
-  } catch (error) {
+  } catch (_error) {
     logger.error(
       'Failed to initialize moderation models',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
     // Continue without models - will fall back to keyword-based detection
   }
@@ -175,11 +175,11 @@ export async function generateContentFingerprint(
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
     return `fp_${hashHex.substring(0, 16)}`;
-  } catch (error) {
+  } catch (_error) {
     // Fallback to simple hash if crypto.subtle is unavailable
     logger.warn(
       'crypto.subtle not available, using fallback hash',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
     let hash = 0;
     for (let i = 0; i < content.length; i++) {
@@ -244,12 +244,12 @@ async function detectProfanity(text: string): Promise<number> {
     }
 
     return 0;
-  } catch (error) {
+  } catch (_error) {
     logger.error(
       'Error in profanity detection',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
-    // On error, use basic keyword check
+    // On _error, use basic keyword check
     const isProfane = profanityFilter.isProfane(text);
     return isProfane ? 0.5 : 0;
   }
@@ -286,12 +286,12 @@ async function detectNSFWText(text: string): Promise<number> {
     const matches = nsfwKeywords.filter((keyword) => lowerText.includes(keyword)).length;
 
     return Math.min(matches * 0.2, 0.7); // Max 0.7 for keyword matches (requires review)
-  } catch (error) {
+  } catch (_error) {
     logger.error(
       'Error in NSFW text detection',
-      error instanceof Error ? error : new Error(String(error))
+      _error instanceof Error ? _error : new Error(String(_error))
     );
-    // On error, use keyword fallback
+    // On _error, use keyword fallback
     const nsfwKeywords = ['explicit', 'adult', 'nsfw', 'xxx', 'porn', 'sexual'];
     const lowerText = text.toLowerCase();
     const matches = nsfwKeywords.filter((keyword) => lowerText.includes(keyword)).length;
@@ -358,10 +358,10 @@ async function detectNSFWMedia(mediaUrl: string, mediaType: 'image' | 'video'): 
     });
 
     return maxScore;
-  } catch (error) {
+  } catch (_error) {
     logger.error(
       'Failed to analyze media for NSFW content',
-      error instanceof Error ? error : new Error(String(error)),
+      _error instanceof Error ? _error : new Error(String(_error)),
       {
         mediaUrl,
         mediaType,

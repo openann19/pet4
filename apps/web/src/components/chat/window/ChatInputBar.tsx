@@ -19,7 +19,7 @@ import {
 } from '@phosphor-icons/react'
 import { MESSAGE_TEMPLATES, REACTION_EMOJIS } from '@/lib/chat-types'
 import { CHAT_STICKERS } from '@/lib/chat-utils'
-import type { AnimatedStyle } from '@/effects/reanimated/animated-view'
+import type  from '@/effects/reanimated/animated-view'
 import { useAnimatedStyle } from '@petspark/motion'
 import { useMemo } from 'react'
 import type { InputRef } from '@/components/ui/input'

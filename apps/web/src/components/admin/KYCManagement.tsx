@@ -1,4 +1,4 @@
-import { MotionView, type Variants } from "@petspark/motion";
+import { MotionView } from "@petspark/motion";
 import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { kycApi } from '@/api/kyc-api';

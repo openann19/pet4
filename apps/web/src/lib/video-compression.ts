@@ -148,11 +148,11 @@ export class VideoCompressor {
       }
 
       return await this.performCompression(file, width, height, opts, onProgress);
-    } catch (error) {
-      if (error instanceof Error && error.message === 'NO_COMPRESSION_NEEDED') {
+    } catch (_error) {
+      if (_error instanceof Error && _error.message === 'NO_COMPRESSION_NEEDED') {
         return file;
       }
-      throw error;
+      throw _error;
     }
   }
 
@@ -233,8 +233,8 @@ export class VideoCompressor {
           mediaRecorder.start();
           this.beginFrameCapture(context.video, context.ctx, width, height, mediaRecorder, onProgress);
           this.startVideoPlayback(context.video, reject);
-        } catch (error) {
-          this.handleProcessingError(context.video, error, reject, 'Failed to process video');
+        } catch (_error) {
+          this.handleProcessingError(context.video, _error, reject, 'Failed to process video');
         }
       };
 
@@ -320,7 +320,7 @@ export class VideoCompressor {
     fallbackMessage: string
   ): void {
     URL.revokeObjectURL(video.src);
-    const message = error instanceof Error ? error.message : fallbackMessage;
+    const message = _error instanceof Error ? error.message : fallbackMessage;
     reject(new Error(message));
   }
 

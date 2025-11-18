@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
+import { motion, useMotionValue, animate } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import { useUIConfig } from "@/hooks/use-ui-config";
 

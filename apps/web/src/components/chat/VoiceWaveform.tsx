@@ -8,7 +8,7 @@
 
 import { useEffect } from 'react';
 import { useVoiceWaveform } from '@/effects/chat/media/use-voice-waveform';
-import { useAnimatedStyle, MotionView } from '@petspark/motion';
+import { useMotionView } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface VoiceWaveformProps {

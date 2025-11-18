@@ -67,9 +67,9 @@ export function TranslationButton({
         // Fallback: show original text with a note
         setTranslatedText(originalText);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('Translation error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('Translation _error', err);
       setTranslatedText(originalText);
     } finally {
       setIsTranslating(false);

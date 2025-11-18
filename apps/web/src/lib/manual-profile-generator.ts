@@ -303,8 +303,8 @@ export async function generateAndSaveManualProfiles(count = 15): Promise<Pet[]> 
     });
 
     return uniqueNewPets;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to generate manual profiles', err, {
       action: 'generateAndSaveManualProfiles',
       count,

@@ -175,8 +175,8 @@ export default function AdoptionManagement(): JSX.Element {
         });
         void toast.success('Adoption profile hidden');
         void logger.info('Profile hidden', { profileId });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         void logger.error('Failed to hide profile', err, { profileId });
         void toast.error('Failed to hide profile');
       }
@@ -190,8 +190,8 @@ export default function AdoptionManagement(): JSX.Element {
         setHiddenProfiles((prev) => (prev ?? []).filter((id) => id !== profileId));
         void toast.success('Adoption profile restored');
         void logger.info('Profile unhidden', { profileId });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         void logger.error('Failed to unhide profile', err, { profileId });
         void toast.error('Failed to unhide profile');
       }
@@ -211,8 +211,8 @@ export default function AdoptionManagement(): JSX.Element {
       void logger.info('Profile deleted', { profileId: selectedProfile._id });
       setShowDeleteDialog(false);
       setSelectedProfile(null);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to delete profile', err, { profileId: selectedProfile._id });
       toast.error('Failed to delete adoption profile. Please try again.');
     } finally {
@@ -418,7 +418,7 @@ export default function AdoptionManagement(): JSX.Element {
               variant="destructive"
               onClick={() => {
                 void handleDeleteProfile().catch((error) => {
-                  const err = error instanceof Error ? error : new Error(String(error));
+                  const err = _error instanceof Error ? _error : new Error(String(_error));
                   logger.error('Failed to delete profile from button', err);
                 });
               }}

@@ -8,9 +8,9 @@
  */
 
 import { useMemo } from 'react';
-import { useSharedValue, withTiming, useAnimatedStyle, MotionView } from '@petspark/motion';
+import { useSharedValue, withTiming, useMotionView } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { safeHref } from '@/lib/url-safety';
 import { SmartImage } from '@/components/media/SmartImage';
 import { useUIConfig } from "@/hooks/use-ui-config";

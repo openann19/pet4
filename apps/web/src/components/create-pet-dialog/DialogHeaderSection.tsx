@@ -4,7 +4,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 interface DialogHeaderSectionProps {
   emojiStyle: AnimatedStyle;

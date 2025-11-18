@@ -134,7 +134,7 @@ export function useAsyncEffect(
         }
       })
       .catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Async effect failed', err);
       });
 
@@ -259,10 +259,10 @@ export function createRAFScheduler() {
     currentCallbacks.forEach((cb) => {
       try {
         cb();
-      } catch (error) {
+      } catch (_error) {
         logger.error(
-          'RAF callback error',
-          error instanceof Error ? error : new Error(String(error))
+          'RAF callback _error',
+          _error instanceof Error ? _error : new Error(String(_error))
         );
       }
     });

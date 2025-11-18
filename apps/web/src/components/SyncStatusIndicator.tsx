@@ -3,7 +3,7 @@ import { CloudArrowUp, CloudSlash, CloudCheck, Warning } from '@phosphor-icons/r
 import { subscribeToSyncStatus, type SyncStatus } from '@/lib/offline-sync';
 import { Button } from '@/components/ui/button';
 import {
-  useAnimatedStyle,
+  use
   useSharedValue,
   withRepeat,
   withSequence,

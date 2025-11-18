@@ -1,6 +1,6 @@
 import { MotionView } from '@petspark/motion';
 import { Waveform } from '@phosphor-icons/react';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import type { Message } from '@/lib/chat-types';
 import type { useVoiceWaveform } from '@/hooks/use-voice-waveform';
 

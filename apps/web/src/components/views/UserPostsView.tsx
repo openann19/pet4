@@ -143,8 +143,8 @@ function UserPostsViewContent({
 
         setHasMore(!!response.nextCursor);
         setCursor(response.nextCursor);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to load user posts', err, { userId });
         toast.error('Failed to load posts');
       } finally {
@@ -296,7 +296,7 @@ export default function UserPostsView(props: UserPostsViewProps) {
     <RouteErrorBoundary
       onError={(error) => {
         logger.error('UserPostsView error', {
-          error: error instanceof Error ? error.message : String(error),
+          error: _error instanceof Error ? error.message : String(_error),
         });
       }}
     >

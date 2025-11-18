@@ -80,8 +80,8 @@ export function setAdminMapProviderConfig(config: Partial<MapProviderConfig>): v
   try {
     localStorage.setItem('admin-map-provider-config', JSON.stringify(updated));
     cachedAdminConfig = updated;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to save map provider config', err);
   }
 }

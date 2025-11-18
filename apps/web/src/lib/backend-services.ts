@@ -109,8 +109,8 @@ export class PhotoService {
       );
       const policy = unwrapPayload<PolicyConfig>(response.data, 'policy');
       return policy ?? DEFAULT_POLICY;
-    } catch (error) {
-      logger.warn('Failed to load moderation policy from backend, using defaults', { error });
+    } catch (_error) {
+      logger.warn('Failed to load moderation policy from backend, using defaults', { _error });
       return DEFAULT_POLICY;
     }
   }

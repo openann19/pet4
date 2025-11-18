@@ -78,9 +78,9 @@ export default function OAuthButtons({
       } else if (onGoogleSignIn) {
         onGoogleSignIn();
       }
-    } catch (error) {
+    } catch (_error) {
       const logger = createLogger('OAuthButtons');
-      logger.error('Google OAuth error', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Google OAuth _error', _error instanceof Error ? _error : new Error(String(_error)));
       if (onGoogleSignIn) {
         onGoogleSignIn();
       }
@@ -114,9 +114,9 @@ export default function OAuthButtons({
         // Fallback to redirect
         window.location.href = '/api/v1/auth/oauth/apple/authorize';
       }
-    } catch (error) {
+    } catch (_error) {
       const logger = createLogger('OAuthButtons');
-      logger.error('Apple OAuth error', error instanceof Error ? error : new Error(String(error)));
+      logger.error('Apple OAuth _error', _error instanceof Error ? _error : new Error(String(_error)));
       if (onAppleSignIn) {
         onAppleSignIn();
       }

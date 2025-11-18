@@ -90,8 +90,8 @@ export class SoundFeedbackService {
     if (typeof window !== 'undefined' && 'AudioContext' in window) {
       try {
         this.audioContext = new AudioContext();
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.warn('Failed to initialize AudioContext', err);
       }
     }
@@ -164,8 +164,8 @@ export class SoundFeedbackService {
         volume: this.volume,
         hapticTriggered: this.hapticEnabled && (options.haptic ?? true),
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.warn('Failed to play sound', err, {
         soundType,
       });

@@ -233,7 +233,7 @@ export function useBiometricAuth(config: BiometricAuthConfig) {
       }));
 
       return true;
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, isAuthenticating: false }));
 
       if (onError) {
@@ -324,7 +324,7 @@ export function useBiometricAuth(config: BiometricAuthConfig) {
       }
 
       return true;
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, isAuthenticating: false }));
 
       if (onError) {

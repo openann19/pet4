@@ -75,9 +75,9 @@ export async function sendPing(
       haptic: options.haptic !== false, // Default to true
       hapticType: 'light',
     });
-  } catch (error) {
+  } catch (_error) {
     // Silently fail if audio context is not available
-    const err = error instanceof Error ? error : new Error(String(error));
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     if (err.name !== 'NotAllowedError') {
       // Only log non-permission errors
       // Audio engine handles logging internally

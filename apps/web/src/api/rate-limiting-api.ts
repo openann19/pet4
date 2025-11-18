@@ -44,8 +44,8 @@ class RateLimitingApiImpl {
 
       const response = await APIClient.post<RateLimitResult>('/rate-limiting/check', request);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to check rate limit', err, { userId, action });
       // Fail open - allow request if rate limiting check fails
       throw err;

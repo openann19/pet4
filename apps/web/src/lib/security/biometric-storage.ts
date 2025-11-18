@@ -270,9 +270,9 @@ export class BiometricSecureStorage {
 
     try {
       localStorage.setItem(key, JSON.stringify(data))
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to persist credential to localStorage', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
     }
   }
@@ -303,9 +303,9 @@ export class BiometricSecureStorage {
           this.credentials.set(`${userId}:${data.deviceId}`, credential)
         }
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error('Failed to load persisted credentials', {
-        error: error instanceof Error ? error : new Error(String(error)),
+        _error: _error instanceof Error ? _error : new Error(String(_error)),
       })
     }
 

@@ -38,9 +38,9 @@ class OfflineQueueManager {
         this.isOnline = true;
         this.notifyListeners(true);
         void this.processQueue();
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('OfflineQueueManager online handler error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('OfflineQueueManager online handler _error', err);
       }
     };
 
@@ -48,18 +48,18 @@ class OfflineQueueManager {
       try {
         this.isOnline = false;
         this.notifyListeners(false);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('OfflineQueueManager offline handler error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('OfflineQueueManager offline handler _error', err);
       }
     };
 
     try {
       window.addEventListener('online', this.onlineHandler);
       window.addEventListener('offline', this.offlineHandler);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('OfflineQueueManager setup event listeners error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('OfflineQueueManager setup event listeners _error', err);
     }
   }
 
@@ -77,9 +77,9 @@ class OfflineQueueManager {
         window.removeEventListener('offline', this.offlineHandler);
         this.offlineHandler = null;
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('OfflineQueueManager cleanup event listeners error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('OfflineQueueManager cleanup event listeners _error', err);
     }
 
     this.listeners.clear();
@@ -127,9 +127,9 @@ class OfflineQueueManager {
         return { actions: [], processing: false };
       }
       return JSON.parse(stored) as OfflineQueueState;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('OfflineQueueManager getQueue error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('OfflineQueueManager getQueue _error', err);
       return { actions: [], processing: false };
     }
   }
@@ -140,9 +140,9 @@ class OfflineQueueManager {
     }
     try {
       localStorage.setItem('offline_queue', JSON.stringify(state));
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('OfflineQueueManager saveQueue error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('OfflineQueueManager saveQueue _error', err);
       // Silently fail - queue will be lost but app continues
     }
   }
@@ -169,7 +169,7 @@ class OfflineQueueManager {
 
         action.status = 'success';
         queue.actions = queue.actions.filter((a) => a.id !== action.id);
-      } catch (error) {
+      } catch (_error) {
         action.retries++;
         if (action.retries >= action.maxRetries) {
           action.status = 'failed';
@@ -178,7 +178,7 @@ class OfflineQueueManager {
         }
         logger.error(
           `Action ${action.id} failed (retry ${action.retries}/${action.maxRetries})`,
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
       }
 

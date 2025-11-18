@@ -254,8 +254,8 @@ export default function GroupCallInterface({
       try {
         localVideoRef.current.srcObject = session.localStream;
         logger.info('Local video stream attached', { participantId: session.localParticipant.id });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to attach local video stream', err, {
           participantId: session.localParticipant.id,
         });
@@ -270,8 +270,8 @@ export default function GroupCallInterface({
         try {
           videoElement.srcObject = stream;
           logger.info('Remote video stream attached', { participantId });
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
           logger.error('Failed to attach remote video stream', err, { participantId });
         }
       }
@@ -294,8 +294,8 @@ export default function GroupCallInterface({
         participantId: session.localParticipant.id,
         isMuted: !session.localParticipant.isMuted,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle mute', err, { participantId: session.localParticipant.id });
     }
   }, [onToggleMute, session.localParticipant.id, session.localParticipant.isMuted]);
@@ -308,8 +308,8 @@ export default function GroupCallInterface({
         participantId: session.localParticipant.id,
         isVideoEnabled: !session.localParticipant.isVideoEnabled,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle video', err, { participantId: session.localParticipant.id });
     }
   }, [onToggleVideo, session.localParticipant.id, session.localParticipant.isVideoEnabled]);
@@ -323,8 +323,8 @@ export default function GroupCallInterface({
         participantCount: totalParticipants,
       });
       onEndCall();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to end call', err, { callId: session.call.id });
     }
   }, [onEndCall, session.call.id, duration, totalParticipants]);
@@ -336,8 +336,8 @@ export default function GroupCallInterface({
         logger.info('Fullscreen toggled', { isFullscreen: newValue });
         return newValue;
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle fullscreen', err);
     }
   }, []);
@@ -350,8 +350,8 @@ export default function GroupCallInterface({
         currentLayout: session.layout,
         callId: session.call.id,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle layout', err, { callId: session.call.id });
     }
   }, [onToggleLayout, session.layout, session.call.id]);
@@ -370,8 +370,8 @@ export default function GroupCallInterface({
         }
         return newSet;
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle hand raise', err, {
         participantId: session.localParticipant.id,
       });
@@ -386,8 +386,8 @@ export default function GroupCallInterface({
     try {
       onInviteParticipants?.();
       logger.info('Invite participants triggered', { callId: session.call.id });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to invite participants', err, { callId: session.call.id });
     }
   }, [onInviteParticipants, session.call.id]);

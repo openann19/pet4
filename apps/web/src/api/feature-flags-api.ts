@@ -42,8 +42,8 @@ class FeatureFlagsApiImpl {
     try {
       const response = await APIClient.get<GetFeatureFlagsResponse>('/feature-flags');
       return response.data.flags;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get feature flags', err);
       throw err;
     }
@@ -69,8 +69,8 @@ class FeatureFlagsApiImpl {
         request
       );
       return response.data.flag;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update feature flag', err, { flagKey });
       throw err;
     }
@@ -84,8 +84,8 @@ class FeatureFlagsApiImpl {
     try {
       const response = await APIClient.get<{ tests: ABTest[] }>('/ab-tests');
       return response.data.tests;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get A/B tests', err);
       throw err;
     }
@@ -101,8 +101,8 @@ class FeatureFlagsApiImpl {
         `/ab-tests/${testId}/variant?userId=${userId}`
       );
       return response.data.variant;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get A/B test variant', err, { testId, userId });
       throw err;
     }
@@ -121,8 +121,8 @@ class FeatureFlagsApiImpl {
       };
 
       await APIClient.post('/ab-tests/exposure', request);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to track A/B test exposure', err, { testId, userId, variantId });
       throw err;
     }

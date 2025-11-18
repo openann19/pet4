@@ -39,10 +39,10 @@ export async function loadTranslationModule(
     }
 
     throw new Error(`Translation module not found: ${feature}`);
-  } catch (error) {
+  } catch (_error) {
     // Fallback to empty object if module doesn't exist
-    const err = error instanceof Error ? error : new Error(String(error));
-    logger.warn('Failed to load translation module', { feature, language, error: err.message });
+    const err = _error instanceof Error ? _error : new Error(String(_error));
+    logger.warn('Failed to load translation module', { feature, language, _error: err.message });
     return {};
   }
 }

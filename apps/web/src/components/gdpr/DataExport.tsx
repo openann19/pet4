@@ -152,9 +152,9 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
           const gdprService = getGDPRService();
           await gdprService.requestDataPortability(userId, exportFormat);
           logger.debug('Data portability request submitted', { userId, format: exportFormat });
-        } catch (error) {
+        } catch (_error) {
           logger.error('Failed to submit data portability request', {
-            error: error instanceof Error ? error : new Error(String(error)),
+            _error: _error instanceof Error ? _error : new Error(String(_error)),
           });
         }
       }
@@ -166,8 +166,8 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
       setTimeout(() => {
         setExportSuccess(false);
       }, 5000);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to export user data', err, { userId });
       setExportError(err.message);
     } finally {

@@ -138,11 +138,11 @@ export function useCall(
       });
 
       peerConnectionRef.current = peer;
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to start call');
       logger.error(
         'Failed to start call',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   };
@@ -219,11 +219,11 @@ export function useCall(
       });
 
       peerConnectionRef.current = peer;
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to answer call');
       logger.error(
         'Failed to answer call',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   };

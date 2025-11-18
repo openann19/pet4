@@ -21,7 +21,7 @@ export function parseLLMError(error: unknown): LLMErrorInfo {
       ? error.message
       : typeof error === 'object' && error !== null && 'message' in error
         ? String(error.message)
-        : String(error);
+        : String(_error);
   const errorString = errorMessage.toLowerCase();
 
   // Check for budget limit errors
@@ -84,10 +84,10 @@ export async function callLLM(
     const { llmService } = await import('./llm-service');
     const result = await llmService.llm(prompt, modelName, jsonMode);
     return { success: true, data: result };
-  } catch (error) {
-    const errorInfo = parseLLMError(error);
+  } catch (_error) {
+    const errorInfo = parseLLMError(_error);
     const logger = createLogger('llm-utils');
-    logger.error('LLM call failed', error instanceof Error ? error : new Error(String(error)), {
+    logger.error('LLM call failed', _error instanceof Error ? _error : new Error(String(_error)), {
       technicalMessage: errorInfo.technicalMessage,
     });
     return { success: false, error: errorInfo };

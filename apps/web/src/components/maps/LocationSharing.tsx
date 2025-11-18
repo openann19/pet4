@@ -164,14 +164,14 @@ export function LocationPicker({
             const coarse = snapToGrid(location, mapSettings.PRIVACY_GRID_METERS);
             setSelectedLocation(coarse);
           }
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('LocationPicker snapToGrid error', err);
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('LocationPicker snapToGrid _error', err);
           setSelectedLocation(currentLocation ?? { lat: 40.7128, lng: -74.006 });
         }
       })
       .catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('LocationPicker getCurrentLocation error', err);
         // Fallback to current location or default location
         setSelectedLocation(currentLocation ?? { lat: 40.7128, lng: -74.006 });

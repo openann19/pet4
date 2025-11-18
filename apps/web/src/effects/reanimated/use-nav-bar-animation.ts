@@ -2,7 +2,7 @@
 
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withTiming,
   withRepeat,
@@ -11,7 +11,7 @@ import {
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 export interface UseNavBarAnimationOptions {
   delay?: number;

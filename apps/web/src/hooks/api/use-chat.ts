@@ -81,8 +81,8 @@ export function useSendMessage(): UseSendMessageReturn {
   const sendMessage = async (input: SendMessageInput): Promise<Message> => {
     try {
       return await mutation.mutateAsync(input);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to send message', err, { chatRoomId: input.chatRoomId });
       throw err;
     }
@@ -109,8 +109,8 @@ export function useMarkAsRead(): UseMarkAsReadReturn {
   const markAsRead = async (input: MarkAsReadInput): Promise<{ success: boolean }> => {
     try {
       return await mutation.mutateAsync(input);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to mark message as read', err, {
         chatRoomId: input.chatRoomId,
         messageId: input.messageId,

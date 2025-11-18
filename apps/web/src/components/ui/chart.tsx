@@ -113,13 +113,13 @@ function ChartTooltipContent({
   labelKey,
 }: ComponentProps<typeof RechartsPrimitive.Tooltip> &
   ComponentProps<'div'> & {
-    payload?: Array<{ 
+    payload?: { 
     name?: string; 
     value?: unknown; 
     color?: string; 
     dataKey?: string;
     payload?: Record<string, unknown>;
-  }>;
+  }[];
     label?: string;
     hideLabel?: boolean;
     hideIndicator?: boolean;
@@ -271,7 +271,7 @@ function ChartLegendContent({
 
         return (
           <div
-            key={item.value as string}
+            key={item.value}
             className={cn(
               '[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3'
             )}

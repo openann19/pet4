@@ -50,8 +50,8 @@ export class MatchingAPIStrict {
         }
       );
       return response.data.preferences;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update preferences', err, { ownerId });
       throw err;
     }
@@ -66,8 +66,8 @@ export class MatchingAPIStrict {
     try {
       const response = await APIClient.put<{ config: MatchingConfig }>('/matching/config', data);
       return response.data.config;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update config', err);
       throw err;
     }

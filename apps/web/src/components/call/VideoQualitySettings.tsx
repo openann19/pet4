@@ -1,7 +1,7 @@
 'use client';;
 import { useCallback, useMemo, useEffect } from 'react';
 import { MonitorPlay, Check } from '@phosphor-icons/react';
-import { useSharedValue, useAnimatedStyle, withSpring, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithSpring, MotionView } from '@petspark/motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,7 @@ import type { VideoQuality } from '@/lib/call-types';
 import { haptics } from '@/lib/haptics';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 interface VideoQualitySettingsProps {
   currentQuality: VideoQuality;

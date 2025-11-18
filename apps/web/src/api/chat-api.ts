@@ -52,8 +52,8 @@ class ChatApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to send message', err, { roomId, type: request.type });
       throw err;
     }
@@ -69,8 +69,8 @@ class ChatApiImpl {
         `${ENDPOINTS.CHAT.MESSAGES(roomId)}${query}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get messages', err, { roomId, cursor });
       throw err;
     }
@@ -82,8 +82,8 @@ class ChatApiImpl {
   async markAsRead(roomId: string, messageId: string): Promise<void> {
     try {
       await APIClient.post(`${ENDPOINTS.CHAT.MARK_READ(roomId)}`, { messageId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to mark as read', err, { roomId, messageId });
       throw err;
     }
@@ -99,8 +99,8 @@ class ChatApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to add reaction', err, { messageId, reaction: request.reaction });
       throw err;
     }
@@ -112,8 +112,8 @@ class ChatApiImpl {
   async sendTypingIndicator(roomId: string, request: TypingIndicatorRequest): Promise<void> {
     try {
       await APIClient.post(`/api/v1/chat/rooms/${roomId}/typing`, request);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to send typing indicator', err, { roomId, userId: request.userId });
       throw err;
     }
@@ -125,8 +125,8 @@ class ChatApiImpl {
   async deleteMessage(messageId: string, forEveryone = false): Promise<void> {
     try {
       await APIClient.post(`/api/v1/chat/messages/${messageId}/delete`, { forEveryone });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to delete message', err, { messageId, forEveryone });
       throw err;
     }
@@ -143,8 +143,8 @@ class ChatApiImpl {
         { id: string; participants: string[]; lastMessage?: Message; updatedAt: string }[]
       >(ENDPOINTS.CHAT.CONVERSATIONS);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get conversations', err);
       return [];
     }
@@ -163,8 +163,8 @@ class ChatApiImpl {
         createdAt: string;
       }>(ENDPOINTS.CHAT.CONVERSATION(conversationId));
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get conversation', err, { conversationId });
       throw err;
     }

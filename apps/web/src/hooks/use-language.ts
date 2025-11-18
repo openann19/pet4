@@ -22,8 +22,8 @@ const getStoredLanguage = (): Language => {
     if (stored && ['en', 'bg'].includes(stored)) {
       return stored
     }
-  } catch (error) {
-    logger.warn('Failed to read language from localStorage', { error })
+  } catch (_error) {
+    logger.warn('Failed to read language from localStorage', { _error })
   }
   
   // Try to detect from browser
@@ -32,8 +32,8 @@ const getStoredLanguage = (): Language => {
     if (['en', 'bg'].includes(browserLang)) {
       return browserLang
     }
-  } catch (error) {
-    logger.warn('Failed to detect browser language', { error })
+  } catch (_error) {
+    logger.warn('Failed to detect browser language', { _error })
   }
   
   return 'en'
@@ -45,8 +45,8 @@ const storeLanguage = (language: Language): void => {
   
   try {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language)
-  } catch (error) {
-    logger.warn('Failed to store language in localStorage', { error })
+  } catch (_error) {
+    logger.warn('Failed to store language in localStorage', { _error })
   }
 }
 

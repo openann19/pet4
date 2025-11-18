@@ -50,14 +50,14 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
             logger.warn('DiscoverMapMode invalid location format', { location });
             setUserLocation({ lat: 40.7128, lng: -74.006 });
           }
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('DiscoverMapMode snapToGrid error', err);
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('DiscoverMapMode snapToGrid _error', err);
           setUserLocation({ lat: 40.7128, lng: -74.006 });
         }
       })
       .catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('DiscoverMapMode getCurrentLocation error', err);
         // Fallback to default location (New York)
         setUserLocation({ lat: 40.7128, lng: -74.006 });
@@ -94,9 +94,9 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
             locationData: petLoc,
             distance,
           };
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('DiscoverMapMode calculateDistance error', err, { petId: pet?.id });
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('DiscoverMapMode calculateDistance _error', err, { petId: pet?.id });
           return null;
         }
       })
@@ -128,9 +128,9 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
       haptics.trigger('light');
       setSelectedPet(marker.data as Pet);
       setShowDetail(true);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('DiscoverMapMode handleMarkerClick error', err, { markerId: marker?.id });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('DiscoverMapMode handleMarkerClick _error', err, { markerId: marker?.id });
     }
   };
 

@@ -12,7 +12,7 @@
 import { useEffect } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withRepeat,
   withTiming,
@@ -25,7 +25,7 @@ import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-mo
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 /**
  * Scroll FAB magnetic effect options
@@ -165,6 +165,6 @@ export function useScrollFabMagnetic(
     translateY,
     badgeScale,
     animatedStyle,
-    badgeAnimatedStyle,
+    badge
   };
 }

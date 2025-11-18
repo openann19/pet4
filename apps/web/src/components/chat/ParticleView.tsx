@@ -1,6 +1,6 @@
 'use client';
 
-import { useAnimatedStyle, MotionView } from '@petspark/motion';
+import { useMotionView } from '@petspark/motion';
 import type { Particle } from '@/effects/reanimated/particle-engine';
 
 export interface ParticleViewProps {

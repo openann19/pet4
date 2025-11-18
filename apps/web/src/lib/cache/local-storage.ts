@@ -47,8 +47,8 @@ export function getStorageItem<T>(key: string): T | null {
     }
 
     return parsed.value;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error(`Error reading from localStorage`, err, { key });
     return null;
   }
@@ -69,8 +69,8 @@ export function setStorageItem<T>(key: string, value: T, options: StorageOptions
     };
     localStorage.setItem(key, JSON.stringify(entry));
     return true;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error(`Error writing to localStorage`, err, { key });
     return false;
   }
@@ -86,8 +86,8 @@ export function removeStorageItem(key: string): boolean {
   try {
     localStorage.removeItem(key);
     return true;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error(`Error removing from localStorage`, err, { key });
     return false;
   }
@@ -114,8 +114,8 @@ export function clearExpiredStorage(): void {
         // Skip invalid items
       }
     });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Error clearing expired storage', err);
   }
 }
@@ -134,8 +134,8 @@ export function getStorageSize(): number {
       }
     });
     return size;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Error calculating storage size', err);
     return 0;
   }

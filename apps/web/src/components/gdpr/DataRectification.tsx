@@ -81,8 +81,8 @@ export function DataRectification({ userId, onRectificationComplete }: DataRecti
       setTimeout(() => {
         setRectificationSuccess(false);
       }, 5000);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to submit data rectification request', err, { userId });
       setRectificationError(err.message);
     } finally {

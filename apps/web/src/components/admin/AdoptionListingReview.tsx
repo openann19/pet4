@@ -96,8 +96,8 @@ export function AdoptionListingReview() {
     try {
       const listings = await adoptionMarketplaceService.getPendingListings();
       setPendingListings(listings);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load pending listings', err, { action: 'loadPendingListings' });
       toast.error('Failed to load listings');
     }
@@ -119,8 +119,8 @@ export function AdoptionListingReview() {
         toast.success('Listing approved');
         await loadPendingListings();
         setSelectedListing(null);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to approve listing', err, { listingId, action: 'approve' });
         toast.error('Failed to approve listing');
       } finally {
@@ -153,8 +153,8 @@ export function AdoptionListingReview() {
         await loadPendingListings();
         setSelectedListing(null);
         setRejectionReason('');
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to reject listing', err, {
           listingId,
           action: 'reject',

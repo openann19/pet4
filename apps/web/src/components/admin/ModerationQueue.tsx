@@ -56,19 +56,19 @@ export function ModerationQueue() {
           const allPhotos = await photoService.getPhotosByOwner(task.ownerId, true);
           const photo = allPhotos.find((p) => p.id === task.photoId);
           if (photo) photoMap.set(photo.id, photo);
-        } catch (error) {
+        } catch (_error) {
           logger.error(
             'Failed to load photos for task',
-            error instanceof Error ? error : new Error(String(error)),
+            _error instanceof Error ? _error : new Error(String(_error)),
             { taskId: task.id, ownerId: task.ownerId }
           );
         }
       }
       setPhotos(photoMap);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to load moderation queue',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to load moderation queue');
     }
@@ -231,7 +231,7 @@ export function ModerationQueue() {
         <Button
           onClick={() => {
             void loadQueue().catch((error) => {
-              const err = error instanceof Error ? error : new Error(String(error));
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.error('Failed to load queue from button', err);
             });
           }}
@@ -504,7 +504,7 @@ export function ModerationQueue() {
                   <Button
                     onClick={() => {
                       void handleTakeTask().catch((error) => {
-                        const err = error instanceof Error ? error : new Error(String(error));
+                        const err = _error instanceof Error ? _error : new Error(String(_error));
                         logger.error('Failed to take task from button', err);
                       });
                     }}
@@ -556,7 +556,7 @@ export function ModerationQueue() {
                     <Button
                       onClick={() => {
                         void handleApprove().catch((error) => {
-                          const err = error instanceof Error ? error : new Error(String(error));
+                          const err = _error instanceof Error ? _error : new Error(String(_error));
                           logger.error('Failed to approve from button', err);
                         });
                       }}
@@ -569,7 +569,7 @@ export function ModerationQueue() {
                     <Button
                       onClick={() => {
                         void handleReject().catch((error) => {
-                          const err = error instanceof Error ? error : new Error(String(error));
+                          const err = _error instanceof Error ? _error : new Error(String(_error));
                           logger.error('Failed to reject from button', err);
                         });
                       }}
@@ -582,7 +582,7 @@ export function ModerationQueue() {
                     <Button
                       onClick={() => {
                         void handleHoldForKYC().catch((error) => {
-                          const err = error instanceof Error ? error : new Error(String(error));
+                          const err = _error instanceof Error ? _error : new Error(String(_error));
                           logger.error('Failed to hold for KYC from button', err);
                         });
                       }}

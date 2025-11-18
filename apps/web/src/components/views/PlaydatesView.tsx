@@ -59,8 +59,8 @@ export function PlaydatesView(): React.JSX.Element {
       setIsLoading(true);
       const data = await playdatesClient.getPlaydates();
       setPlaydates(data);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load playdates', err);
       toast.error('Failed to load playdates');
     } finally {
@@ -88,8 +88,8 @@ export function PlaydatesView(): React.JSX.Element {
         setPlaydates((prev) => [newPlaydate, ...prev]);
         setShowScheduler(false);
         toast.success('Playdate scheduled!');
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to schedule playdate', err);
         toast.error('Failed to schedule playdate');
       }
@@ -103,8 +103,8 @@ export function PlaydatesView(): React.JSX.Element {
         const updated = await playdatesClient.joinPlaydate(playdateId);
         setPlaydates((prev) => prev.map((p) => (p.id === playdateId ? updated : p)));
         toast.success('Joined playdate!');
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to join playdate', err);
         toast.error('Failed to join playdate');
       }
@@ -117,8 +117,8 @@ export function PlaydatesView(): React.JSX.Element {
       try {
         await playdatesClient.checkIn(playdateId);
         toast.success('Checked in!');
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to check in', err);
         toast.error('Failed to check in');
       }

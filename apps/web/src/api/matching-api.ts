@@ -71,8 +71,8 @@ export class MatchingAPI {
     try {
       const response = await APIClient.post<DiscoverResponse>(ENDPOINTS.MATCHING.DISCOVER, request);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to discover candidates', err, { petId: request.petId });
       throw err;
     }
@@ -82,8 +82,8 @@ export class MatchingAPI {
     try {
       const response = await APIClient.post<ScoreResponse>(ENDPOINTS.MATCHING.SCORE, request);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to calculate match score', err, {
         petId1: request.petId1,
         petId2: request.petId2,
@@ -122,7 +122,7 @@ export class MatchingAPI {
           .catch((error: unknown) => {
             logger.error(
               'Failed to emit match_created event',
-              error instanceof Error ? error : new Error(String(error))
+              _error instanceof Error ? _error : new Error(String(_error))
             );
           });
       } else if (request.action === 'like' || request.action === 'superlike') {
@@ -132,14 +132,14 @@ export class MatchingAPI {
           .catch((error: unknown) => {
             logger.error(
               'Failed to emit like_received event',
-              error instanceof Error ? error : new Error(String(error))
+              _error instanceof Error ? _error : new Error(String(_error))
             );
           });
       }
 
       return result;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to record swipe', err, {
         petId: request.petId,
         targetPetId: request.targetPetId,
@@ -154,8 +154,8 @@ export class MatchingAPI {
         `${ENDPOINTS.MATCHING.MATCHES}?petId=${petId}`
       );
       return response.data.matches;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get matches', err, { petId });
       throw err;
     }
@@ -167,8 +167,8 @@ export class MatchingAPI {
         `${ENDPOINTS.MATCHING.PREFERENCES}?ownerId=${ownerId}`
       );
       return response.data.preferences;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get preferences', err, { ownerId });
       throw err;
     }
@@ -187,8 +187,8 @@ export class MatchingAPI {
         }
       );
       return response.data.preferences;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update preferences', err, { ownerId });
       throw err;
     }
@@ -202,8 +202,8 @@ export class MatchingAPI {
         reportedPetId: request.reportedPetId,
         reason: request.reason,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to report pet', err, { reporterPetId: request.reporterPetId });
       throw err;
     }
@@ -216,11 +216,11 @@ export class MatchingAPI {
       const response = await APIClient.get<{ config: MatchingConfig }>('/matching/config');
       this.configCache = response.data.config;
       return response.data.config;
-    } catch (error) {
+    } catch (_error) {
       // If config not found, use defaults
       logger.warn(
         'Failed to get matching config, using defaults',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       const defaultConfig: MatchingConfig = {
         id: 'default',
@@ -246,8 +246,8 @@ export class MatchingAPI {
       const response = await APIClient.put<{ config: MatchingConfig }>('/matching/config', data);
       this.configCache = response.data.config;
       return response.data.config;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update config', err);
       throw err;
     }

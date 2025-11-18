@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   useSharedValue,
   withTiming,
-  useAnimatedStyle,
+  use
   withSequence,
   withDelay,
   animate,

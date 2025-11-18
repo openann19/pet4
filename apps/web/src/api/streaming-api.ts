@@ -56,8 +56,8 @@ class StreamingApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to verify token', err);
       throw err;
     }
@@ -81,8 +81,8 @@ class StreamingApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to start recording', err, { roomId });
       throw err;
     }
@@ -104,8 +104,8 @@ class StreamingApiImpl {
         `/streaming/recording/${recordingId}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get recording', err, { recordingId });
       throw err;
     }

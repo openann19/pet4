@@ -237,11 +237,11 @@ export function useLiveStream(config: LiveStreamConfig) {
         if (enableRecording) {
           startRecording(stream);
         }
-      } catch (error) {
+      } catch (_error) {
         if (onError) {
-          onError(error as Error);
+          onError(_error as Error);
         }
-        throw error;
+        throw _error;
       }
     },
     [webrtc, quality, enableRecording, onError]

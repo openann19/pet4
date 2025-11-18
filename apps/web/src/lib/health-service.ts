@@ -65,8 +65,8 @@ export class HealthService {
       });
 
       return response;
-    } catch (error) {
-      const apiError = error as APIError;
+    } catch (_error) {
+      const apiError = _error as APIError;
       logger.error('Liveness check failed', new Error(apiError.message), {
         code: apiError.code,
         correlationId,
@@ -92,8 +92,8 @@ export class HealthService {
       });
 
       return response;
-    } catch (error) {
-      const apiError = error as APIError;
+    } catch (_error) {
+      const apiError = _error as APIError;
       logger.error('Readiness check failed', new Error(apiError.message), {
         code: apiError.code,
         correlationId,
@@ -129,8 +129,8 @@ export class HealthService {
       });
 
       return response;
-    } catch (error) {
-      const apiError = error as APIError;
+    } catch (_error) {
+      const apiError = _error as APIError;
       logger.warn('Failed to fetch version from backend, using local config', {
         code: apiError.code,
         correlationId,
@@ -159,8 +159,8 @@ export class HealthService {
         environment: version.environment,
         correlationId,
       });
-    } catch (error) {
-      const apiError = error as APIError;
+    } catch (_error) {
+      const apiError = _error as APIError;
       logger.error('Failed to sync version', new Error(apiError.message), {
         code: apiError.code,
         correlationId,

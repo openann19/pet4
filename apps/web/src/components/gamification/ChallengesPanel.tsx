@@ -27,8 +27,8 @@ export function ChallengesPanel({ userId, className }: ChallengesPanelProps) {
       try {
         const data = await gamificationClient.getChallenges(userId);
         setChallenges(data.filter((c) => c.status === 'active'));
-      } catch (error) {
-        console.error('Failed to load challenges:', error);
+      } catch (_error) {
+        console.error('Failed to load challenges:', _error);
       } finally {
         setLoading(false);
       }
@@ -83,8 +83,8 @@ function ChallengeCard({ challenge, userId }: ChallengeCardProps) {
       try {
         const data = await gamificationClient.getChallengeProgress(userId, challenge.id);
         setProgress(data);
-      } catch (error) {
-        console.error('Failed to load challenge progress:', error);
+      } catch (_error) {
+        console.error('Failed to load challenge progress:', _error);
       }
     })();
   }, [challenge.id, userId]);

@@ -155,8 +155,8 @@ export function useCallSession(
         setSession(newSession);
 
         logger.debug('Call started', { callId, remoteUserId, quality });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to start call', err);
         onError?.(err);
         setSession(null);
@@ -204,8 +204,8 @@ export function useCallSession(
         setSession(newSession);
 
         logger.debug('Call accepted', { callId, remoteUserId, quality });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to accept call', err);
         onError?.(err);
         setSession(null);
@@ -330,8 +330,8 @@ export function useCallSession(
 
         setIsScreenSharing(true);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle screen share', err);
       onError?.(err);
     }
@@ -375,8 +375,8 @@ export function useCallSession(
 
         setVideoQualityState(quality);
         logger.debug('Video quality changed', { quality });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to change video quality', err);
         onError?.(err);
       }

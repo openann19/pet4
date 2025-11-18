@@ -65,8 +65,8 @@ export const AdvancedFormDemo: React.FC = () => {
           marketingConsent: formData.marketingConsent
         })
       }
-    } catch (error) {
-      console.error('Form submission failed:', error)
+    } catch (_error) {
+      console.error('Form submission failed:', _error)
     } finally {
       setIsSubmitting(false)
     }

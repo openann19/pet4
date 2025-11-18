@@ -142,9 +142,9 @@ export class ConflictResolver<T = unknown> {
         try {
           data = this.resolveMerge(conflict)
           resolved = true
-        } catch (error) {
+        } catch (_error) {
           logger.warn('Merge resolution failed, falling back to user intervention', {
-            error: error instanceof Error ? error : new Error(String(error)),
+            _error: _error instanceof Error ? _error : new Error(String(_error)),
           })
           requiresUserIntervention = true
         }

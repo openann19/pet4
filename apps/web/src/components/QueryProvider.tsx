@@ -28,9 +28,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
       try {
         logger.debug('Network connection restored');
         onlineManager.setOnline(true);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('QueryProvider handleOnline error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('QueryProvider handleOnline _error', err);
       }
     };
 
@@ -38,9 +38,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
       try {
         logger.debug('Network connection lost');
         onlineManager.setOnline(false);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('QueryProvider handleOffline error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('QueryProvider handleOffline _error', err);
       }
     };
 
@@ -52,18 +52,18 @@ export function QueryProvider({ children }: QueryProviderProps) {
       if (typeof navigator.onLine === 'boolean') {
         onlineManager.setOnline(navigator.onLine);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('QueryProvider setup online/offline listeners error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('QueryProvider setup online/offline listeners _error', err);
     }
 
     return () => {
       try {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('QueryProvider cleanup online/offline listeners error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('QueryProvider cleanup online/offline listeners _error', err);
       }
     };
   }, []);
@@ -77,18 +77,18 @@ export function QueryProvider({ children }: QueryProviderProps) {
     const handleFocus = () => {
       try {
         focusManager.setFocused(true);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('QueryProvider handleFocus error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('QueryProvider handleFocus _error', err);
       }
     };
 
     const handleBlur = () => {
       try {
         focusManager.setFocused(false);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('QueryProvider handleBlur error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('QueryProvider handleBlur _error', err);
       }
     };
 
@@ -100,25 +100,25 @@ export function QueryProvider({ children }: QueryProviderProps) {
       if (typeof document.hasFocus === 'function') {
         try {
           focusManager.setFocused(document.hasFocus());
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('QueryProvider document.hasFocus error', err);
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('QueryProvider document.hasFocus _error', err);
           // Default to focused if hasFocus fails
           focusManager.setFocused(true);
         }
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('QueryProvider setup focus/blur listeners error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('QueryProvider setup focus/blur listeners _error', err);
     }
 
     return () => {
       try {
         window.removeEventListener('focus', handleFocus);
         window.removeEventListener('blur', handleBlur);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('QueryProvider cleanup focus/blur listeners error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('QueryProvider cleanup focus/blur listeners _error', err);
       }
     };
   }, []);
@@ -146,22 +146,22 @@ export function QueryProvider({ children }: QueryProviderProps) {
               refetchType: 'active',
             })
             .catch((error: unknown) => {
-              const err = error instanceof Error ? error : new Error(String(error));
+              const err = _error instanceof Error ? _error : new Error(String(_error));
               logger.error('Background sync failed', err);
             });
         }
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('Background sync interval error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('Background sync interval _error', err);
       }
     }, backgroundSyncConfig.syncInterval);
 
     return () => {
       try {
         clearInterval(syncInterval);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('QueryProvider cleanup sync interval error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('QueryProvider cleanup sync interval _error', err);
       }
     };
   }, [queryClient]);

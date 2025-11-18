@@ -82,8 +82,8 @@ export function LiveStreamRoom({
 
       setIsLive(true);
       logger.info('Stream started', { streamId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to start stream', err);
     }
   };

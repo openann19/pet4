@@ -248,8 +248,8 @@ export async function checkRateLimit(
     const responseTime = performance.now() - startTime
     rateLimitManager.updateMetrics(action, result.allowed, responseTime)
     return result
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error))
     logger.error('Rate limit check failed, falling back to local storage', err, {
       userId,
       action,

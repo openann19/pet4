@@ -63,8 +63,8 @@ class GDPRApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to export user data', err, {
         userId: request.userId,
       });
@@ -82,8 +82,8 @@ class GDPRApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to delete user data', err, {
         userId: request.userId,
       });
@@ -100,8 +100,8 @@ class GDPRApiImpl {
         ENDPOINTS.GDPR.CONSENT_STATUS(userId)
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get consent status', err, { userId });
       return [];
     }
@@ -117,8 +117,8 @@ class GDPRApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update consent', err, {
         userId: request.userId,
         category: request.category,
@@ -137,8 +137,8 @@ class GDPRApiImpl {
         { userId }
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to request data access', err, { userId });
       throw err;
     }
@@ -154,8 +154,8 @@ class GDPRApiImpl {
         request
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to request data rectification', err, {
         userId: request.userId,
       });
@@ -173,8 +173,8 @@ class GDPRApiImpl {
         { userId, reason }
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to request data erasure', err, { userId });
       throw err;
     }
@@ -190,8 +190,8 @@ class GDPRApiImpl {
         { userId, format }
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to request data portability', err, { userId, format });
       throw err;
     }
@@ -206,8 +206,8 @@ class GDPRApiImpl {
         `/api/gdpr/requests/${userId}/${requestId}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get request status', err, { userId, requestId });
       return null;
     }
@@ -222,8 +222,8 @@ class GDPRApiImpl {
         `/api/gdpr/requests/${userId}`
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user requests', err, { userId });
       return [];
     }
@@ -243,8 +243,8 @@ class GDPRApiImpl {
           version: '1.0.0',
         }
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to grant consent', err, { userId, type: request.type });
       throw err;
     }
@@ -264,8 +264,8 @@ class GDPRApiImpl {
           version: '1.0.0',
         }
       );
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to revoke consent', err, { userId, type });
       throw err;
     }

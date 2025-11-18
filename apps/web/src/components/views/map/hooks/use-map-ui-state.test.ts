@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useMapUIState } from './use-map-ui-state';
-import { useSharedValue, useAnimatedStyle, withSpring } from '@petspark/motion';
+import { useSharedValue, usewithSpring } from '@petspark/motion';
 
 vi.mock('@petspark/motion', () => ({
   useSharedValue: vi.fn((initial: number) => ({ value: initial })),

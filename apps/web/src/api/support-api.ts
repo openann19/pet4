@@ -27,8 +27,8 @@ class SupportApiImpl {
     try {
       const response = await APIClient.post<SupportTicket>(ENDPOINTS.ADMIN.SUPPORT_TICKETS, data);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create support ticket', err, { userId: data.userId });
       throw err;
     }
@@ -72,8 +72,8 @@ class SupportApiImpl {
 
       const response = await APIClient.get<SupportTicket[]>(url);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get support tickets', err);
       return [];
     }
@@ -86,8 +86,8 @@ class SupportApiImpl {
     try {
       const response = await APIClient.get<SupportTicket>(ENDPOINTS.ADMIN.SUPPORT_TICKET(ticketId));
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get support ticket', err, { ticketId });
       return null;
     }
@@ -103,8 +103,8 @@ class SupportApiImpl {
         updates
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update support ticket', err, { ticketId });
       throw err;
     }
@@ -123,8 +123,8 @@ class SupportApiImpl {
         { status }
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update ticket status', err, { ticketId, status });
       throw err;
     }
@@ -140,8 +140,8 @@ class SupportApiImpl {
         { assignedTo }
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to assign ticket', err, { ticketId, assignedTo });
       throw err;
     }
@@ -156,8 +156,8 @@ class SupportApiImpl {
         ENDPOINTS.ADMIN.SUPPORT_TICKET_MESSAGES(ticketId)
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get ticket messages', err, { ticketId });
       return [];
     }
@@ -190,8 +190,8 @@ class SupportApiImpl {
         }
       );
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to add ticket message', err, { ticketId });
       throw err;
     }
@@ -204,8 +204,8 @@ class SupportApiImpl {
     try {
       const response = await APIClient.get<SupportTicketStats>(ENDPOINTS.ADMIN.SUPPORT_STATS);
       return response.data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get support stats', err);
       return {
         total: 0,

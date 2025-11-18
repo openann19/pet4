@@ -90,10 +90,10 @@ export class PerformanceMonitor {
         };
         window.addEventListener('load', this.loadHandler);
       }
-    } catch (error) {
+    } catch (_error) {
       logger.warn(
         'Performance monitoring initialization failed',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }

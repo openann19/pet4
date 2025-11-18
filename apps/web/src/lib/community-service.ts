@@ -28,8 +28,8 @@ export const communityService = {
   async getFeed(options: FeedOptions): Promise<FeedResponse> {
     try {
       return await communityApi.getFeed(options);
-    } catch (error) {
-      logger.error('Failed to get feed', normalizeError(error), { options });
+    } catch (_error) {
+      logger.error('Failed to get feed', normalizeError(_error), { options });
       return { posts: [], hasMore: false };
     }
   },
@@ -47,9 +47,9 @@ export const communityService = {
         ...(postData.tags ? { tags: postData.tags } : {}),
         visibility: postData.visibility ?? 'public',
       });
-    } catch (error) {
-      logger.error('Failed to create post', normalizeError(error));
-      throw normalizeError(error);
+    } catch (_error) {
+      logger.error('Failed to create post', normalizeError(_error));
+      throw normalizeError(_error);
     }
   },
 
@@ -57,8 +57,8 @@ export const communityService = {
     try {
       const post = await communityApi.getPost(postId);
       return post ?? undefined;
-    } catch (error) {
-      logger.error('Failed to get post', normalizeError(error), { postId });
+    } catch (_error) {
+      logger.error('Failed to get post', normalizeError(_error), { postId });
       return undefined;
     }
   },
@@ -66,49 +66,49 @@ export const communityService = {
   async deletePost(postId: string): Promise<void> {
     try {
       await communityApi.deletePost(postId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to delete post',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async likePost(postId: string): Promise<Reaction> {
     try {
       return await communityApi.likePost(postId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to like post',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async unlikePost(postId: string): Promise<void> {
     try {
       await communityApi.unlikePost(postId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to unlike post',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async getPostLikes(postId: string): Promise<Reaction[]> {
     try {
       return await communityApi.getPostLikes(postId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get post likes',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId }
       );
       return [];
@@ -118,10 +118,10 @@ export const communityService = {
   async isPostLiked(postId: string): Promise<boolean> {
     try {
       return await communityApi.isPostLiked(postId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to check if post is liked',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId }
       );
       return false;
@@ -131,10 +131,10 @@ export const communityService = {
   async getComments(postId: string, cursor?: string): Promise<Comment[]> {
     try {
       return await communityApi.getComments(postId, cursor);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get comments',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId, cursor }
       );
       return [];
@@ -150,49 +150,49 @@ export const communityService = {
         text: commentData.text,
         ...(commentData.parentId !== undefined && { parentId: commentData.parentId }),
       });
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to add comment',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async savePost(postId: string): Promise<SavedPost> {
     try {
       return await communityApi.savePost(postId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to save post',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async unsavePost(postId: string): Promise<void> {
     try {
       await communityApi.unsavePost(postId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to unsave post',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async getSavedPosts(): Promise<CommunityPost[]> {
     try {
       return await communityApi.getSavedPosts();
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get saved posts',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return [];
     }
@@ -201,10 +201,10 @@ export const communityService = {
   async isPostSaved(postId: string): Promise<boolean> {
     try {
       return await communityApi.isPostSaved(postId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to check if post is saved',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { postId }
       );
       return false;
@@ -214,36 +214,36 @@ export const communityService = {
   async followUser(targetId: string, targetName: string): Promise<Follow> {
     try {
       return await communityApi.followUser(targetId, targetName);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to follow user',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { targetId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async unfollowUser(targetId: string): Promise<void> {
     try {
       await communityApi.unfollowUser(targetId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to unfollow user',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { targetId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async isFollowing(targetId: string, type: 'user' | 'tag' | 'breed' = 'user'): Promise<boolean> {
     try {
       return await communityApi.isFollowing(targetId, type);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to check following status',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { targetId, type }
       );
       return false;
@@ -253,10 +253,10 @@ export const communityService = {
   async getTrendingTags(period: 'day' | 'week' | 'month' = 'day'): Promise<string[]> {
     try {
       return await communityApi.getTrendingTags(period);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get trending tags',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { period }
       );
       return [];
@@ -278,35 +278,35 @@ export const communityService = {
         reasons,
         ...(description !== undefined && { description }),
       });
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to report content',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { targetType, targetId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async saveDraft(draft: Partial<PostDraft>): Promise<PostDraft> {
     try {
       return await communityApi.saveDraft(draft);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to save draft',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
-      throw error;
+      throw _error;
     }
   },
 
   async getDrafts(): Promise<PostDraft[]> {
     try {
       return await communityApi.getDrafts();
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get drafts',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return [];
     }
@@ -315,13 +315,13 @@ export const communityService = {
   async deleteDraft(draftId: string): Promise<void> {
     try {
       await communityApi.deleteDraft(draftId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to delete draft',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { draftId }
       );
-      throw error;
+      throw _error;
     }
   },
 
@@ -335,10 +335,10 @@ export const communityService = {
   async getNotifications(): Promise<CommunityNotification[]> {
     try {
       return await communityApi.getNotifications();
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get notifications',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return [];
     }
@@ -347,13 +347,13 @@ export const communityService = {
   async markNotificationRead(notificationId: string): Promise<void> {
     try {
       await communityApi.markNotificationRead(notificationId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to mark notification as read',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { notificationId }
       );
-      throw error;
+      throw _error;
     }
   },
 };

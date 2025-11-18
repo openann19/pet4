@@ -3,7 +3,7 @@
 import { MotionView } from "@petspark/motion";
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { useShimmer } from '@/effects/reanimated/use-shimmer';
 import { useUIConfig } from "@/hooks/use-ui-config";
 

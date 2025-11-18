@@ -110,8 +110,8 @@ class AdminSyncService {
         targetType,
         targetId,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to broadcast admin action', err, {
         action,
         adminId,
@@ -152,8 +152,8 @@ class AdminSyncService {
       this.notifyListeners(event);
 
       logger.info('Config update broadcasted', { configType, adminId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to broadcast config update', err, { configType });
     }
   }
@@ -196,8 +196,8 @@ class AdminSyncService {
         targetType,
         targetId,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to broadcast moderation decision', err, {
         action,
         targetType,
@@ -238,8 +238,8 @@ class AdminSyncService {
       this.notifyListeners(event);
 
       logger.info('User update broadcasted', { action, adminId, userId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to broadcast user update', err, { action, userId });
     }
   }
@@ -276,8 +276,8 @@ class AdminSyncService {
       this.notifyListeners(event);
 
       logger.info('Ticket update broadcasted', { action, adminId, ticketId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to broadcast ticket update', err, { action, ticketId });
     }
   }
@@ -357,8 +357,8 @@ class AdminSyncService {
     this.listeners.forEach((listener) => {
       try {
         listener.onAdminAction(event);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Error notifying admin sync listener', err);
       }
     });

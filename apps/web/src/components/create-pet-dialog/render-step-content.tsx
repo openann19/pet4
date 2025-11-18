@@ -1,4 +1,4 @@
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import type { CreatePetFormState, CreatePetFormActions } from './create-pet-types';
 import type { PetProfileTemplate } from '@/lib/pet-profile-templates';
 import {

@@ -26,10 +26,10 @@ export const adoptionService = {
   }): Promise<{ profiles: AdoptionProfile[]; hasMore: boolean; nextCursor?: string }> {
     try {
       return await adoptionApi.getAdoptionProfiles(filters);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get adoption profiles',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { filters }
       );
       return { profiles: [], hasMore: false };
@@ -39,10 +39,10 @@ export const adoptionService = {
   async getProfileById(id: string): Promise<AdoptionProfile | null> {
     try {
       return await adoptionApi.getProfileById(id);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get profile by ID',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { id }
       );
       return null;
@@ -53,10 +53,10 @@ export const adoptionService = {
     try {
       const result = await adoptionApi.getAdoptionProfiles({ limit: 1000 });
       return result.profiles;
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get all profiles',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return [];
     }
@@ -67,23 +67,23 @@ export const adoptionService = {
   ): Promise<AdoptionApplication> {
     try {
       return await adoptionApi.submitApplication(application);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to submit application',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { adoptionProfileId: application.adoptionProfileId }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async getUserApplications(userId: string): Promise<AdoptionApplication[]> {
     try {
       return await adoptionApi.getUserApplications(userId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get user applications',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { userId }
       );
       return [];
@@ -93,10 +93,10 @@ export const adoptionService = {
   async getShelters(): Promise<Shelter[]> {
     try {
       return await adoptionApi.getShelters();
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get shelters',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return [];
     }
@@ -107,35 +107,35 @@ export const adoptionService = {
   ): Promise<AdoptionProfile> {
     try {
       return await adoptionApi.createAdoptionProfile(profile);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to create adoption profile',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
-      throw error;
+      throw _error;
     }
   },
 
   async updateProfileStatus(profileId: string, status: AdoptionProfile['status']): Promise<void> {
     try {
       await adoptionApi.updateProfileStatus(profileId, status);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to update profile status',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { profileId, status }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async getAllApplications(): Promise<AdoptionApplication[]> {
     try {
       return await adoptionApi.getAllApplications();
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get all applications',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return [];
     }
@@ -151,23 +151,23 @@ export const adoptionService = {
         status,
         ...(reviewNotes !== undefined && { reviewNotes }),
       });
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to update application status',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { applicationId, status }
       );
-      throw error;
+      throw _error;
     }
   },
 
   async getApplicationsByProfile(profileId: string): Promise<AdoptionApplication[]> {
     try {
       return await adoptionApi.getApplicationsByProfile(profileId);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get applications by profile',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { profileId }
       );
       return [];

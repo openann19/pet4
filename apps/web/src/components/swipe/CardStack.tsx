@@ -1,10 +1,10 @@
 'use client';;
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useSharedValue, withSpring, useAnimatedStyle, MotionView } from '@petspark/motion';
+import { useSharedValue, withSpring, useMotionView } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { imagePrefetcher } from '@/lib/image-prefetcher';
 import { useNativeSwipe } from '@/hooks/use-native-swipe';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('CardStack');
@@ -134,7 +134,7 @@ export function CardStack<T extends CardData>({
       imagePrefetcher.prefetchBatch(prefetchUrls, { priority: 'high' }).catch((error: unknown) => {
         logger.warn(
           'Image prefetch failed',
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
       });
     }

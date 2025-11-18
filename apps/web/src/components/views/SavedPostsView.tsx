@@ -95,8 +95,8 @@ function SavedPostsViewContent({ onBack, onAuthorClick }: SavedPostsViewProps) {
     try {
       const savedPosts = await communityService.getSavedPosts();
       setPosts(savedPosts);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load saved posts', err);
       toast.error('Failed to load saved posts');
     } finally {
@@ -221,7 +221,7 @@ export default function SavedPostsView(props: SavedPostsViewProps) {
     <RouteErrorBoundary
       onError={(error) => {
         logger.error('SavedPostsView error', {
-          error: error instanceof Error ? error.message : String(error),
+          error: _error instanceof Error ? error.message : String(_error),
         });
       }}
     >

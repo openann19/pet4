@@ -68,7 +68,7 @@ class ImagePrefetcher {
         resolve({
           success: false,
           url,
-          error: error instanceof Error ? error : new Error('Image load failed'),
+          error: _error instanceof Error ? _error : new Error('Image load failed'),
         });
       };
 

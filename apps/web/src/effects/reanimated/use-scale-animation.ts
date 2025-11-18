@@ -3,7 +3,7 @@
 import { useEffect, useCallback } from 'react';
 import { useMotionValue, animate, type MotionValue } from '@petspark/motion';
 import { springConfigs, timingConfigs } from './transitions';
-import type { AnimatedStyle } from './animated-view';
+import type  from './animated-view';
 
 export interface UseScaleAnimationOptions {
   initial?: boolean;

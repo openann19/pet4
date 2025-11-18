@@ -82,9 +82,9 @@ export default function DashboardView() {
           // Keep local counts if API doesn't provide them
           totalMessages: systemStats.totalMessages ?? localStats.totalMessages,
         });
-      } catch (error) {
+      } catch (_error) {
         // Fallback to local calculations if API fails
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.warn(
           'Failed to load system stats from API, falling back to local calculations',
           err
@@ -104,7 +104,7 @@ export default function DashboardView() {
     };
 
     void loadStats().catch((error) => {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load stats in useEffect', err);
     });
   }, [allPets, matches, reports, verifications, logger]);

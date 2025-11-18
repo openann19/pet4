@@ -63,8 +63,8 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
         marketing: true,
         third_party: true,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to accept all consent', err);
     }
   };
@@ -85,8 +85,8 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
         marketing: false,
         third_party: false,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to reject all consent', err);
     }
   };
@@ -107,8 +107,8 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
         marketing: false,
         third_party: false,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to accept essential only', err);
     }
   };
@@ -130,8 +130,8 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
       onConsentChange?.({
         [category]: value,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update preference', err, { category, value });
     }
   };

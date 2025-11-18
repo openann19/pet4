@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
+import { motion, useMotionValue, animate } from '@petspark/motion';
 import {
   Heart,
   Translate,

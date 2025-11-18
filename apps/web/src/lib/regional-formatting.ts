@@ -210,9 +210,9 @@ export function formatCurrency(
       minimumFractionDigits: options?.minimumFractionDigits ?? 2,
       maximumFractionDigits: options?.maximumFractionDigits ?? 2
     }).format(amount)
-  } catch (error) {
-    const normalized = toErrorLike(error);
-    logger.warn('Failed to format currency, using fallback', { amount, language, error: normalized.message });
+  } catch (_error) {
+    const normalized = toErrorLike(_error);
+    logger.warn('Failed to format currency, using fallback', { amount, language, _error: normalized.message });
     return `${currency} ${amount.toFixed(2)}`
   }
 }
@@ -235,9 +235,9 @@ export function formatNumber(
       minimumFractionDigits: options?.minimumFractionDigits,
       maximumFractionDigits: options?.maximumFractionDigits ?? 2
     }).format(value)
-  } catch (error) {
-    const normalized = toErrorLike(error);
-    logger.warn('Failed to format number, using fallback', { value, language, error: normalized.message });
+  } catch (_error) {
+    const normalized = toErrorLike(_error);
+    logger.warn('Failed to format number, using fallback', { value, language, _error: normalized.message });
     return value.toString()
   }
 }
@@ -269,9 +269,9 @@ export function formatDate(
     }
 
     return new Intl.DateTimeFormat(settings.locale, formatOptions).format(dateObj)
-  } catch (error) {
-    const normalized = toErrorLike(error);
-    logger.warn('Failed to format date, using fallback', { date, language, error: normalized.message });
+  } catch (_error) {
+    const normalized = toErrorLike(_error);
+    logger.warn('Failed to format date, using fallback', { date, language, _error: normalized.message });
     return dateObj.toLocaleDateString()
   }
 }
@@ -310,9 +310,9 @@ export function formatRelativeTime(
     }
 
     return rtf.format(0, 'second')
-  } catch (error) {
-    const normalized = toErrorLike(error);
-    logger.warn('Failed to format relative time, using fallback', { date, language, error: normalized.message });
+  } catch (_error) {
+    const normalized = toErrorLike(_error);
+    logger.warn('Failed to format relative time, using fallback', { date, language, _error: normalized.message });
     return 'just now'
   }
 }

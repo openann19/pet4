@@ -110,11 +110,11 @@ export class WorkerPoolManager {
                 taskId,
                 data: data
               });
-            } catch (error) {
+            } catch (_error) {
               self.postMessage({
-                type: 'error',
+                type: '_error',
                 taskId,
-                error: error.message
+                _error: _error.message
               });
             }
           } else if (type === 'cancel') {
@@ -182,7 +182,7 @@ export class WorkerPoolManager {
         );
 
         if (task.onError) {
-          task.onError(error);
+          task.onError(_error);
         }
 
         this.processQueue();
@@ -248,7 +248,7 @@ export class WorkerPoolManager {
         },
         onError: (error: Error) => {
           if (task.onError) {
-            task.onError(error);
+            task.onError(_error);
           }
           reject(error);
         },

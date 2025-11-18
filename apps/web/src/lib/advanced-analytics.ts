@@ -137,8 +137,8 @@ class AnalyticsService {
     // Send to backend API (fire-and-forget)
     try {
       await analyticsApi.trackEvent(event);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to track event via API, storing locally', err, { name });
       // Store locally as fallback
       const allEvents = (await storage.get<AnalyticsEvent[]>('analytics-events')) ?? [];
@@ -223,8 +223,8 @@ class AnalyticsService {
     // Send to backend API
     try {
       await analyticsApi.createSession(session);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create session via API, storing locally', err);
       // Store locally as fallback
       const sessions = (await storage.get<UserSession[]>('analytics-sessions')) ?? [];
@@ -370,8 +370,8 @@ export async function getAnalyticsMetrics(
 ): Promise<AnalyticsMetrics> {
   try {
     return await analyticsApi.getMetrics(startDate, endDate);
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get metrics from API, computing locally', err);
 
     const sessions = (await storage.get<UserSession[]>('analytics-sessions')) ?? [];
@@ -478,8 +478,8 @@ function calculateUserPreferences(userEvents: AnalyticsEvent[]): {
 export async function getUserBehaviorInsights(userId: string): Promise<UserBehaviorInsights> {
   try {
     return await analyticsApi.getUserBehaviorInsights(userId);
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get insights from API, computing locally', err, { userId });
 
     const events = (await storage.get<AnalyticsEvent[]>('analytics-events')) ?? [];

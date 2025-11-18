@@ -70,8 +70,8 @@ export function useLostFoundAlerts({
       const result = await lostFoundAPI.queryAlerts(filters);
       setAlerts(result.alerts);
       setCursor(result.nextCursor);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load alerts', err, { action: 'loadAlerts' });
       toast.error('Failed to load lost & found alerts');
     } finally {

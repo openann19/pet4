@@ -44,8 +44,8 @@ class AnalyticsApiImpl {
     try {
       const request: TrackEventRequest = { event };
       await APIClient.post('/analytics/events', request);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to track event', err, { event: event });
       // Don't throw - analytics should be fire-and-forget
     }
@@ -60,8 +60,8 @@ class AnalyticsApiImpl {
       const request: CreateSessionRequest = { session };
       const response = await APIClient.post<CreateSessionResponse>('/analytics/sessions', request);
       return response.data.session;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create analytics session', err);
       throw err;
     }
@@ -80,8 +80,8 @@ class AnalyticsApiImpl {
       const url = `/analytics/metrics${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
       const response = await APIClient.get<GetMetricsResponse>(url);
       return response.data.metrics;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get analytics metrics', err);
       throw err;
     }
@@ -95,8 +95,8 @@ class AnalyticsApiImpl {
     try {
       const response = await APIClient.get<GetInsightsResponse>(`/analytics/insights/${userId}`);
       return response.data.insights;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user behavior insights', err, { userId });
       throw err;
     }

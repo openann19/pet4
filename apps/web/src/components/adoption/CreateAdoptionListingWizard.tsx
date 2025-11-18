@@ -160,10 +160,10 @@ export function CreateAdoptionListingWizard({
       toast.success('Adoption listing submitted for review!');
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to create listing',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to create listing. Please try again.');
     } finally {
@@ -840,7 +840,7 @@ export function CreateAdoptionListingWizard({
               <Button
                 onClick={() => {
                   void handleSubmit().catch((error) => {
-                    const err = error instanceof Error ? error : new Error(String(error));
+                    const err = _error instanceof Error ? _error : new Error(String(_error));
                     logger.error('Failed to submit adoption listing from button', err);
                   });
                 }}

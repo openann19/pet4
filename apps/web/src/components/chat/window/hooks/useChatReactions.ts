@@ -21,14 +21,14 @@ export function useChatReactions({ addChatReaction }: UseChatReactionsProps) {
     try {
       haptics.trigger('selection');
       void addChatReaction(messageId, emoji as ReactionType).catch((error) => {
-        const err = normalizeError(error);
+        const err = normalizeError(_error);
         logger.error('ChatWindowNew handleReaction error', err, { messageId, emoji });
         toast.error('Failed to add reaction. Please try again.');
       });
       setShowReactions(null);
-    } catch (error) {
-      const err = normalizeError(error);
-      logger.error('ChatWindowNew handleReaction sync error', err, { messageId, emoji });
+    } catch (_error) {
+      const err = normalizeError(_error);
+      logger.error('ChatWindowNew handleReaction sync _error', err, { messageId, emoji });
       setShowReactions(null);
     }
   };

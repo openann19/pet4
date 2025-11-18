@@ -20,10 +20,10 @@ class NativePlatformHaptics implements PlatformHaptics {
       if (typeof window !== 'undefined' && 'vibrate' in navigator) {
         this.isSupported = true;
       }
-    } catch (error) {
+    } catch (_error) {
       logger.warn(
         'Haptics initialization failed',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -32,10 +32,10 @@ class NativePlatformHaptics implements PlatformHaptics {
     if (!this.isSupported) return;
     try {
       navigator.vibrate(pattern);
-    } catch (error) {
+    } catch (_error) {
       logger.warn(
         'Haptic feedback failed',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }

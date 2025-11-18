@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect } from 'react';
 import type { ButtonHTMLAttributes } from 'react';
-import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
+import { motion, useMotionValue, animate } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
@@ -77,9 +77,9 @@ export function ToggleButton({
         onChange?.(newChecked);
         haptics.selection();
         onClick?.(e);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('ToggleButton onClick error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('ToggleButton onClick _error', err);
       }
     },
     [checked, disabled, onChange, onClick]

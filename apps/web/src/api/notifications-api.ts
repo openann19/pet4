@@ -47,8 +47,8 @@ class NotificationsApiImpl {
       };
 
       await APIClient.post(ENDPOINTS.USERS.LOCATION, request);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update user location', err, { userId });
       throw err;
     }
@@ -67,8 +67,8 @@ class NotificationsApiImpl {
       const url = `${ENDPOINTS.USERS.LOCATION_NEARBY}?lat=${centerLat}&lon=${centerLon}&radius=${radiusKm}`;
       const response = await APIClient.get<QueryNearbyUsersResponse>(url);
       return response.data.userIds;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to query nearby users', err, { centerLat, centerLon, radiusKm });
       throw err;
     }
@@ -93,8 +93,8 @@ class NotificationsApiImpl {
       };
 
       await APIClient.post(ENDPOINTS.NOTIFICATIONS.GEOFENCE, request);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to trigger geofence', err, { alertId });
       throw err;
     }
@@ -122,8 +122,8 @@ class NotificationsApiImpl {
         }[];
       }>(ENDPOINTS.NOTIFICATIONS.USER_LOCATIONS);
       return response.data.locations;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user locations', err);
       throw err;
     }

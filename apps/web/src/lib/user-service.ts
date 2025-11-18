@@ -79,10 +79,10 @@ class UserService {
 
       // Return guest user
       return this.createGuestUser();
-    } catch (error) {
+    } catch (_error) {
       log.error(
         'Failed to load user',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         'UserService'
       );
       return this.createGuestUser();
@@ -108,8 +108,8 @@ class UserService {
       
       await storage.set('all-users', allUsers)
       await storage.set('is-authenticated', !user.isGuest)
-    } catch (error) {
-      const normalized = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const normalized = _error instanceof Error ? _error : new Error(String(_error));
       log.warn('Failed to cache user', normalized, 'UserService');
     }
   }
@@ -176,10 +176,10 @@ class UserService {
       // Try all-users array
       const allUsers = (await storage.get<User[]>('all-users')) ?? [];
       return allUsers.find((u) => u.id === userId) ?? null;
-    } catch (error) {
+    } catch (_error) {
       log.error(
         `Failed to get user ${userId}`,
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         'UserService'
       );
       return null;

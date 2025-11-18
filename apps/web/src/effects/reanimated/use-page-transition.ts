@@ -1,8 +1,8 @@
 'use client';
 
-import { useSharedValue, useAnimatedStyle, animate } from '@petspark/motion';
+import { useSharedValue, useanimate } from '@petspark/motion';
 import { useEffect } from 'react';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 export interface UsePageTransitionOptions {
   isVisible: boolean;

@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { WebBubbleWrapper } from '@/components/chat/WebBubbleWrapper';
 import { VirtualMessageList } from '@/components/chat/window/VirtualMessageList';
 import type { ChatMessage, TypingUser } from '@/lib/chat-types';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { ChatMessageBubble } from './ChatMessageBubble';
 

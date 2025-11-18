@@ -50,9 +50,9 @@ export function useEnhancedButtonHandlers({
         }
 
         onClick?.(e);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('EnhancedButton onClick error', err, { variant, size });
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('EnhancedButton onClick _error', err, { variant, size });
       }
     },
     [disabled, loading, hapticFeedback, enableGlow, glowOpacity, onClick, variant, size]

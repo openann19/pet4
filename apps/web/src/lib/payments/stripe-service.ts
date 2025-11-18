@@ -63,9 +63,9 @@ class StripeServiceImpl {
       }>(ENDPOINTS.PAYMENTS.CREATE_INTENT, { productId });
 
       return response.data;
-    } catch (error) {
-      logger.error('Failed to create payment intent', error, { productId });
-      throw error;
+    } catch (_error) {
+      logger.error('Failed to create payment intent', _error, { productId });
+      throw _error;
     }
   }
 
@@ -93,9 +93,9 @@ class StripeServiceImpl {
       // For non-redirect flows, notify backend
       logger.info('Payment confirmed successfully');
       return { success: true };
-    } catch (error) {
-      logger.error('Payment confirmation error', error);
-      return { success: false, error: 'Payment processing failed' };
+    } catch (_error) {
+      logger.error('Payment confirmation _error', _error);
+      return { success: false, _error: 'Payment processing failed' };
     }
   }
 

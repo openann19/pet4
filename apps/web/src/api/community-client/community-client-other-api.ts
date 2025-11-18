@@ -20,8 +20,8 @@ export class CommunityClientOtherApi {
         `/api/v1/community/trending/tags?period=${period}`
       );
       return response.data.tags;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get trending tags', err, { period });
       throw err;
     }
@@ -37,8 +37,8 @@ export class CommunityClientOtherApi {
         request
       );
       return response.data.report;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to report content', err, { postId });
       throw err;
     }
@@ -51,8 +51,8 @@ export class CommunityClientOtherApi {
         draft
       );
       return response.data.draft;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to save draft', err);
       throw err;
     }
@@ -64,8 +64,8 @@ export class CommunityClientOtherApi {
         '/api/v1/community/drafts'
       );
       return response.data.drafts;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get drafts', err);
       throw err;
     }
@@ -74,8 +74,8 @@ export class CommunityClientOtherApi {
   async deleteDraft(draftId: string): Promise<void> {
     try {
       await APIClient.delete(`/api/v1/community/drafts/${draftId}`);
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to delete draft', err, { draftId });
       throw err;
     }
@@ -87,8 +87,8 @@ export class CommunityClientOtherApi {
         '/api/v1/community/notifications'
       );
       return response.data.notifications;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get notifications', err);
       throw err;
     }
@@ -97,8 +97,8 @@ export class CommunityClientOtherApi {
   async markNotificationRead(notificationId: string): Promise<void> {
     try {
       await APIClient.post(`/api/v1/community/notifications/${notificationId}/read`, {});
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to mark notification as read', err, { notificationId });
       throw err;
     }

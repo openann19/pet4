@@ -67,8 +67,8 @@ export function observeLCP(callback: MetricCallback): void {
     });
 
     observer.observe({ type: 'largest-contentful-paint', buffered: true });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Error observing LCP', err);
   }
 }
@@ -95,8 +95,8 @@ export function observeFID(callback: MetricCallback): void {
     });
 
     observer.observe({ type: 'first-input', buffered: true });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Error observing FID', err);
   }
 }
@@ -133,8 +133,8 @@ export function observeCLS(callback: MetricCallback): void {
     });
 
     observer.observe({ type: 'layout-shift', buffered: true });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Error observing CLS', err);
   }
 }
@@ -158,8 +158,8 @@ export function observeFCP(callback: MetricCallback): void {
     });
 
     observer.observe({ type: 'paint', buffered: true });
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Error observing FCP', err);
   }
 }
@@ -180,8 +180,8 @@ export function observeTTFB(callback: MetricCallback): void {
       const ttfb = navigationEntry.responseStart - navigationEntry.requestStart;
       callback(createMetric('TTFB', ttfb, THRESHOLDS.TTFB));
     }
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Error observing TTFB', err);
   }
 }
@@ -211,8 +211,8 @@ export function trackMetric(name: string, value: number): void {
         start: 0,
         duration: value,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Error tracking metric', err, { metricName: name, value });
     }
   }

@@ -56,8 +56,8 @@ export function useChatMessageSending({
           type: p.type as ChatMessage['type'],
           content: p.content,
         });
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to send message', err);
       }
     },

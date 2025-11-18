@@ -57,10 +57,10 @@ export function LiveStreamManagement() {
           (a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime()
         )
       );
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to load streams',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to load streams');
     }
@@ -81,10 +81,10 @@ export function LiveStreamManagement() {
         toast.success('Stream ended');
         await loadStreams();
         setSelectedStream(null);
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           'Failed to end stream',
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
         toast.error('Failed to end stream');
       }

@@ -3,7 +3,7 @@
  * Smooth, fluid swipe with elastic bounce and momentum
  */
 
-import { useSharedValue, useAnimatedStyle, withSpring, withDecay } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withDecay } from '@petspark/motion';
 import { useCallback, useState } from 'react';
 
 export interface UseLiquidSwipeOptions {

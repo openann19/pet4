@@ -234,7 +234,7 @@ export function useLazyTranslation(lang: Language = 'en'): UseLazyTranslationRet
         const error = err instanceof Error ? err : new Error(String(err));
         logger.error('Failed to load translations', error, { language });
 
-        setError(error);
+        setError(_error);
         setLoadedTranslations(null);
         setIsLoading(false);
       });

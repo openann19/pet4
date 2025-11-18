@@ -69,12 +69,12 @@ class UploadServiceImpl {
       });
 
       return result.data;
-    } catch (error) {
-      logger.error('File upload failed', error, {
+    } catch (_error) {
+      logger.error('File upload failed', _error, {
         fileName: file.name,
         size: file.size,
       });
-      throw error;
+      throw _error;
     }
   }
 

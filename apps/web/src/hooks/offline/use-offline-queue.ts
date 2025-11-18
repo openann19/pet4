@@ -220,13 +220,13 @@ async function executeAPIOperation(operation: QueuedOperation): Promise<void> {
         break
       }
     }
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error))
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error))
     logger.error('API operation failed', {
       id: operation.id,
       type,
       resourceType,
-      error: err,
+      _error: err,
     })
     throw err
   }
@@ -310,8 +310,8 @@ export function useOfflineQueue(
             }
           }
         }
-      } catch (error) {
-        logger.error('IndexedDB initialization failed', error)
+      } catch (_error) {
+        logger.error('IndexedDB initialization failed', _error)
       }
     }
 
@@ -347,8 +347,8 @@ export function useOfflineQueue(
       request.onerror = () => {
         logger.error('Failed to load queue from IndexedDB', request.error)
       }
-    } catch (error) {
-      logger.error('Error loading queue from IndexedDB', error)
+    } catch (_error) {
+      logger.error('Error loading queue from IndexedDB', _error)
     }
   }, [])
 
@@ -371,8 +371,8 @@ export function useOfflineQueue(
         transaction.onerror = () => {
           logger.error('Failed to persist operation', transaction.error)
         }
-      } catch (error) {
-        logger.error('Error persisting operation', error)
+      } catch (_error) {
+        logger.error('Error persisting operation', _error)
       }
     },
     [persistToIndexedDB]
@@ -391,8 +391,8 @@ export function useOfflineQueue(
         store.delete(id)
 
         logger.debug('Operation removed from IndexedDB', { id })
-      } catch (error) {
-        logger.error('Error removing operation from IndexedDB', error)
+      } catch (_error) {
+        logger.error('Error removing operation from IndexedDB', _error)
       }
     },
     [persistToIndexedDB]
@@ -488,14 +488,14 @@ export function useOfflineQueue(
         void removeFromDB(operation.id).catch((error) => {
           logger.error('Failed to remove operation from DB', {
             id: operation.id,
-            error: error instanceof Error ? error : new Error(String(error)),
+            error: _error instanceof Error ? _error : new Error(String(_error)),
           });
         });
         onOperationComplete?.(operation)
 
         logger.debug('Operation completed successfully', { id: operation.id })
-      } catch (error) {
-        const err = error as Error
+      } catch (_error) {
+        const err = _error as Error
 
         // Check for conflict
         if (err.message.includes('conflict') || err.message.includes('409')) {
@@ -621,7 +621,7 @@ export function useOfflineQueue(
           void processOperation(op).catch((error) => {
             logger.error('Failed to process operation', {
               id: op.id,
-              error: error instanceof Error ? error : new Error(String(error)),
+              error: _error instanceof Error ? _error : new Error(String(_error)),
             });
           });
         }
@@ -685,7 +685,7 @@ export function useOfflineQueue(
       void removeFromDB(id).catch((error) => {
         logger.error('Failed to remove operation from DB on dequeue', {
           id,
-          error: error instanceof Error ? error : new Error(String(error)),
+          error: _error instanceof Error ? _error : new Error(String(_error)),
         });
       });
       logger.debug('Operation dequeued', { id })
@@ -821,7 +821,7 @@ export function useOfflineQueue(
         void removeFromDB(op.id).catch((error) => {
           logger.error('Failed to remove completed operation from DB', {
             id: op.id,
-            error: error instanceof Error ? error : new Error(String(error)),
+            error: _error instanceof Error ? _error : new Error(String(_error)),
           });
         });
       })
@@ -849,7 +849,7 @@ export function useOfflineQueue(
         void removeFromDB(op.id).catch((error) => {
           logger.error('Failed to remove old operation from DB', {
             id: op.id,
-            error: error instanceof Error ? error : new Error(String(error)),
+            error: _error instanceof Error ? _error : new Error(String(_error)),
           });
         });
       })

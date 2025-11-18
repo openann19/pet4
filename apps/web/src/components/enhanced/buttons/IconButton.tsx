@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useRef, useEffect, type ReactNode, type ButtonHTMLAttributes } from 'react';
-import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
+import { motion, useMotionValue, animate } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useRippleEffect } from '@/effects/reanimated/use-ripple-effect';
 import { useMagneticHover } from '@/effects/reanimated/use-magnetic-hover';
@@ -147,9 +147,9 @@ export function IconButton({
         });
 
         onClick?.(e);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('IconButton onClick error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('IconButton onClick _error', err);
       }
     },
     [disabled, enableRipple, ripple, onClick, activeScale]

@@ -52,8 +52,8 @@ export function VerificationReviewDashboard(): JSX.Element {
         selectedTab !== 'all' ? { status: [selectedTab] } : undefined;
       const requests = await verificationApi.getVerificationRequests(filters);
       setVerificationRequests(requests);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load verification requests', err);
       toast.error('Failed to load verification requests');
     } finally {
@@ -163,8 +163,8 @@ export function VerificationReviewDashboard(): JSX.Element {
       setSelectedRequest(null);
       setReviewNotes('');
       await loadVerificationRequests();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to approve verification', err);
       haptics.error();
       toast.error('Failed to approve verification');
@@ -205,8 +205,8 @@ export function VerificationReviewDashboard(): JSX.Element {
       setReviewNotes('');
       setRejectionReason('');
       await loadVerificationRequests();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to reject verification', err);
       haptics.error();
       toast.error('Failed to reject verification');

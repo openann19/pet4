@@ -120,8 +120,8 @@ export async function requestMediaPermissions(
 
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     return stream;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to get media permissions', err, { type, videoQuality });
     if (videoQuality === '4k' && type === 'video') {
       logger.info('4K not supported, falling back to 1080p', {
@@ -208,8 +208,8 @@ export async function establishCallConnection(config: CallConnectionConfig): Pro
     await peer.connect();
 
     return peer;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Failed to establish call connection', err, {
       action: 'establishCallConnection',
       callId: config.callId,

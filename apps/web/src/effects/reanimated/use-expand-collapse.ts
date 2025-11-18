@@ -1,8 +1,8 @@
 'use client';
 
-import { useSharedValue, useAnimatedStyle, withTiming } from '@petspark/motion';
+import { useSharedValue, usewithTiming } from '@petspark/motion';
 import { useEffect, useRef } from 'react';
-import type { AnimatedStyle } from './animated-view';
+import type  from './animated-view';
 
 export interface UseExpandCollapseOptions {
   isExpanded: boolean;

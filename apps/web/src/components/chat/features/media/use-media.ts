@@ -106,12 +106,12 @@ export function useMedia(options: UseMediaOptions): UseMediaReturn {
           },
         });
         toast.success('Message translated!');
-      } catch (error) {
+      } catch (_error) {
         const { parseLLMError } = await import('@/lib/llm-utils');
-        const errorInfo = parseLLMError(error);
+        const errorInfo = parseLLMError(_error);
         logger.error(
           'Translation failed',
-          error instanceof Error ? error : new Error(String(error)),
+          _error instanceof Error ? _error : new Error(String(_error)),
           { technicalMessage: errorInfo.technicalMessage }
         );
         toast.error('Translation failed', {

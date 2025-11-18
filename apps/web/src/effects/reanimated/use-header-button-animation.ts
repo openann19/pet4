@@ -2,14 +2,14 @@
 
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withTiming,
   withSpring,
   withDelay,
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 export interface UseHeaderButtonAnimationOptions {
   delay?: number;

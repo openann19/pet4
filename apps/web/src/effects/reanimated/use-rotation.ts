@@ -1,8 +1,8 @@
 'use client';
 
-import { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from '@petspark/motion';
+import { useSharedValue, usewithRepeat, withTiming } from '@petspark/motion';
 import { useEffect } from 'react';
-import type { AnimatedStyle } from './animated-view';
+import type  from './animated-view';
 
 export interface UseRotationOptions {
   enabled?: boolean;

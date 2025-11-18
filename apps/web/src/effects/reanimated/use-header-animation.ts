@@ -2,14 +2,14 @@
 
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withTiming,
   withRepeat,
   withSequence,
   withDelay,
 } from '@petspark/motion';
 import { useEffect } from 'react';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 export interface UseHeaderAnimationOptions {
   delay?: number;

@@ -2,13 +2,13 @@
 
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withRepeat,
   withSequence,
   withTiming,
 } from '@petspark/motion';
 import { useEffect } from 'react';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 
 export interface UseLogoAnimationReturn {
   scale: ReturnType<typeof useSharedValue<number>>;

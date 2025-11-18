@@ -48,9 +48,9 @@ export function FloatingActionButton({
   const handleClick = React.useCallback(() => {
     try {
       onClick();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('FloatingActionButton onClick error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('FloatingActionButton onClick _error', err);
     }
   }, [onClick]);
 

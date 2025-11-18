@@ -29,12 +29,12 @@ export function useSignInSubmission(onSuccess: () => void) {
       toast.success(t.auth?.signInSuccess || 'Welcome back!');
       haptics.trigger('success');
       onSuccess();
-    } catch (error) {
-      const err = error as APIError | Error;
-      logger.error('Sign in error', err instanceof Error ? err : new Error(err.message || 'Unknown error'));
+    } catch (_error) {
+      const err = _error as APIError | Error;
+      logger.error('Sign in _error', err instanceof Error ? err : new Error(err.message || 'Unknown _error'));
       const errorMessage = 'message' in err ? err.message : (err as APIError).message || t.auth?.signInError || 'Failed to sign in. Please try again.';
       toast.error(errorMessage);
-      haptics.trigger('error');
+      haptics.trigger('_error');
     } finally {
       setIsLoading(false);
     }

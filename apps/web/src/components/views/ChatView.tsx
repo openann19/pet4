@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withTiming,
   withRepeat,
   withSequence,
@@ -19,7 +19,7 @@ import type { ChatRoom } from '@/lib/chat-types';
 import { createChatRoom } from '@/lib/chat-utils';
 import { createLogger } from '@/lib/logger';
 import type { Match, Pet } from '@/lib/types';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
@@ -138,8 +138,8 @@ export default function ChatView() {
                 updatedAt: lastMessage?.timestamp ?? room.updatedAt,
               };
             }
-          } catch (error) {
-            const err = error instanceof Error ? error : new Error(String(error));
+          } catch (_error) {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
             logger.error('Error loading messages', err);
           }
           return room;

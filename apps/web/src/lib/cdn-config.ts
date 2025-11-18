@@ -67,9 +67,9 @@ export function generateCDNImageUrl(
     params.set('v', CDN_CONFIG.cacheVersion)
 
     return `${url.pathname}?${params.toString()}`
-  } catch (error) {
-    const normalized = error instanceof Error ? error : new Error(String(error));
-    logger.warn('Failed to generate CDN URL, using original', { path, error: normalized.message });
+  } catch (_error) {
+    const normalized = _error instanceof Error ? _error : new Error(String(_error));
+    logger.warn('Failed to generate CDN URL, using original', { path, _error: normalized.message });
     return path
   }
 }

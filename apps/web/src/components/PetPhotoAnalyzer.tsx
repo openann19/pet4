@@ -188,11 +188,11 @@ Return ONLY valid JSON with this exact structure, nothing else:
       toast.success('Photo analyzed successfully! 🎉', {
         description: `Found a ${analysisResult.breed} with ${analysisResult.confidence}% confidence`,
       });
-    } catch (error) {
-      const errorInfo = parseLLMError(error);
+    } catch (_error) {
+      const errorInfo = parseLLMError(_error);
       logger.error(
         'Failed to analyze photo',
-        error instanceof Error ? error : new Error(String(error)),
+        _error instanceof Error ? _error : new Error(String(_error)),
         { technicalMessage: errorInfo.technicalMessage }
       );
       toast.error('Failed to analyze photo', {

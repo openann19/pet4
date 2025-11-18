@@ -97,8 +97,8 @@ export async function registerServiceWorkerWithCleanup(
       registration,
       cleanup,
     };
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Service worker registration failed', {
       message: err.message,
       stack: err.stack,
@@ -122,8 +122,8 @@ export async function unregisterServiceWorker(): Promise<boolean> {
       return await registration.unregister();
     }
     return false;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('Service worker unregistration failed', {
       message: err.message,
       stack: err.stack,
@@ -163,8 +163,8 @@ export async function promptPWAInstall(
     await promptEvent.prompt();
     const result = await promptEvent.userChoice;
     return result;
-  } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+  } catch (_error) {
+    const err = _error instanceof Error ? _error : new Error(String(_error));
     logger.error('PWA install prompt failed', {
       message: err.message,
       stack: err.stack,

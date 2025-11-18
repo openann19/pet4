@@ -18,8 +18,8 @@ export class CommunityClientInteractionsApi {
         {}
       );
       return response.data.reaction;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to like post', err, { postId });
       throw err;
     }
@@ -28,8 +28,8 @@ export class CommunityClientInteractionsApi {
   async unlikePost(postId: string): Promise<void> {
     try {
       await APIClient.delete(ENDPOINTS.COMMUNITY.LIKE_POST(postId));
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to unlike post', err, { postId });
       throw err;
     }
@@ -41,8 +41,8 @@ export class CommunityClientInteractionsApi {
         ENDPOINTS.COMMUNITY.LIKES(postId)
       );
       return response.data.reactions;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get post likes', err, { postId });
       throw err;
     }
@@ -54,8 +54,8 @@ export class CommunityClientInteractionsApi {
         ENDPOINTS.COMMUNITY.IS_LIKED(postId)
       );
       return response.data.liked;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to check if post is liked', err, { postId });
       return false;
     }
@@ -68,8 +68,8 @@ export class CommunityClientInteractionsApi {
         : ENDPOINTS.COMMUNITY.COMMENT(postId);
       const response = await APIClient.get<{ comments: Comment[] }>(url);
       return response.data.comments;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to get comments', err, { postId });
       throw err;
     }
@@ -82,8 +82,8 @@ export class CommunityClientInteractionsApi {
         request
       );
       return response.data.comment;
-    } catch (error) {
-      const err = normalizeError(error);
+    } catch (_error) {
+      const err = normalizeError(_error);
       logger.error('Failed to add comment', err, { postId });
       throw err;
     }

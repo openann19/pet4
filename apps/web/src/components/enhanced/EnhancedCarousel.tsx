@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useSharedValue, useAnimatedStyle, withSpring, withTiming, animate } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming, animate } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { isTruthy } from '@petspark/shared';

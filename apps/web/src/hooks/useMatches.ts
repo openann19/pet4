@@ -166,7 +166,7 @@ export function useMatches(petId?: string): {
         void generateMatchReasoning(userPet, selectedPet)
           .then(setMatchReasoning)
           .catch((error: unknown) => {
-            const _err = error instanceof Error ? error : new Error(String(error));
+            const _err = _error instanceof Error ? _error : new Error(String(_error));
             // Silently fail match reasoning generation - it's not critical
             // Error is intentionally swallowed as reasoning is non-essential
             setMatchReasoning([]);

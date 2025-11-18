@@ -80,10 +80,10 @@ export class EnhancedAuthService {
       }
 
       this.startSessionMonitoring();
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Auth initialization failed',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       await this.restoreGuestSession();
     }

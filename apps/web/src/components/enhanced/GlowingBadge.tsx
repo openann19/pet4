@@ -71,8 +71,8 @@ export function GlowingBadge({
       animate(scale, scaleTransition.target, scaleTransition.transition);
       const opacityTransition = withTiming(1, { duration: 300 });
       animate(opacity, opacityTransition.target, opacityTransition.transition);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to initialize badge animation', err, { variant });
     }
   }, [scale, opacity, variant]);
@@ -86,8 +86,8 @@ export function GlowingBadge({
         );
         const repeatTransition = withRepeat(sequence, -1, true);
         animate(pulseOpacity, repeatTransition.target, repeatTransition.transition);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to initialize pulse animation', err, { variant });
       }
     } else {

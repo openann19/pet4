@@ -150,12 +150,12 @@ export function useOutbox(options: UseOutboxOptions): UseOutboxReturn {
           await sendFnRef.current(item.payload);
           logger.debug('Successfully sent outbox item', { clientId: item.clientId });
           return { success: true, clientId: item.clientId };
-        } catch (error) {
+        } catch (_error) {
           const nextAttempt = Math.min(item.attempt + 1, maxAttempts);
           if (nextAttempt >= maxAttempts) {
             logger.error(
               'Outbox item failed after max attempts',
-              error instanceof Error ? error : new Error(String(error)),
+              _error instanceof Error ? _error : new Error(String(_error)),
               {
                 clientId: item.clientId,
                 attempts: nextAttempt,

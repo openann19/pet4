@@ -74,8 +74,8 @@ export function PhotoModerationQueueAdmin() {
       }
 
       setRecords(loadedRecords);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load records', err);
       toast.error('Failed to load moderation queue');
     } finally {
@@ -87,8 +87,8 @@ export function PhotoModerationQueueAdmin() {
     try {
       const queueStats = await photoModerationAPI.getQueueStats();
       setStats(queueStats);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load stats', err);
     }
   }, []);
@@ -97,8 +97,8 @@ export function PhotoModerationQueueAdmin() {
     try {
       const logs = await photoModerationAPI.getAuditLogs(photoId);
       setAuditLogs(logs);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load audit logs', err);
     }
   }, []);
@@ -111,7 +111,7 @@ export function PhotoModerationQueueAdmin() {
   useEffect(() => {
     if (selectedRecord) {
       void loadAuditLogs(selectedRecord.photoId).catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to load audit logs in useEffect', err);
       });
     }
@@ -140,8 +140,8 @@ export function PhotoModerationQueueAdmin() {
       await loadStats();
       setSelectedRecord(null);
       setDecisionReason('');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to approve photo', err);
       toast.error('Failed to approve photo');
     } finally {
@@ -176,8 +176,8 @@ export function PhotoModerationQueueAdmin() {
       await loadStats();
       setSelectedRecord(null);
       setDecisionReason('');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to reject photo', err);
       toast.error('Failed to reject photo');
     } finally {
@@ -208,8 +208,8 @@ export function PhotoModerationQueueAdmin() {
       await loadStats();
       setSelectedRecord(null);
       setDecisionReason('');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to quarantine photo', err);
       toast.error('Failed to quarantine photo');
     } finally {
@@ -240,8 +240,8 @@ export function PhotoModerationQueueAdmin() {
       await loadStats();
       setSelectedRecord(null);
       setDecisionReason('');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to release from quarantine', err);
       toast.error('Failed to release from quarantine');
     } finally {
@@ -483,7 +483,7 @@ export function PhotoModerationQueueAdmin() {
                       <Button
                         onClick={() => {
                           void handleApprove().catch((error) => {
-                            const err = error instanceof Error ? error : new Error(String(error));
+                            const err = _error instanceof Error ? _error : new Error(String(_error));
                             logger.error('Failed to approve from button', err);
                           });
                         }}
@@ -495,7 +495,7 @@ export function PhotoModerationQueueAdmin() {
                       <Button
                         onClick={() => {
                           void handleReject().catch((error) => {
-                            const err = error instanceof Error ? error : new Error(String(error));
+                            const err = _error instanceof Error ? _error : new Error(String(_error));
                             logger.error('Failed to reject from button', err);
                           });
                         }}
@@ -507,7 +507,7 @@ export function PhotoModerationQueueAdmin() {
                       <Button
                         onClick={() => {
                           void handleQuarantine().catch((error) => {
-                            const err = error instanceof Error ? error : new Error(String(error));
+                            const err = _error instanceof Error ? _error : new Error(String(_error));
                             logger.error('Failed to quarantine from button', err);
                           });
                         }}
@@ -522,7 +522,7 @@ export function PhotoModerationQueueAdmin() {
                       <Button
                         onClick={() => {
                           void handleApprove().catch((error) => {
-                            const err = error instanceof Error ? error : new Error(String(error));
+                            const err = _error instanceof Error ? _error : new Error(String(_error));
                             logger.error('Failed to approve from button', err);
                           });
                         }}
@@ -534,7 +534,7 @@ export function PhotoModerationQueueAdmin() {
                       <Button
                         onClick={() => {
                           void handleReleaseFromQuarantine().catch((error) => {
-                            const err = error instanceof Error ? error : new Error(String(error));
+                            const err = _error instanceof Error ? _error : new Error(String(_error));
                             logger.error('Failed to release from quarantine from button', err);
                           });
                         }}

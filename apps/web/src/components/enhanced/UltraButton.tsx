@@ -5,7 +5,7 @@ import { MotionView } from "@petspark/motion";
  */
 
 import React, { type ReactNode, type ButtonHTMLAttributes, useCallback } from 'react';
-import { motion, useMotionValue, animate, type Variants } from '@petspark/motion';
+import { motion, useMotionValue, animate } from '@petspark/motion';
 import { useMagneticEffect } from '@/effects/reanimated/use-magnetic-effect';
 import { useShimmer } from '@/effects/reanimated/use-shimmer';
 import { springConfigs } from '@/effects/reanimated/transitions';
@@ -102,9 +102,9 @@ export function UltraButton({
 
       try {
         onClick?.(e);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('UltraButton onClick error', err);
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('UltraButton onClick _error', err);
       }
     },
     [onClick, props.disabled]

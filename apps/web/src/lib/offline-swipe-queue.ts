@@ -28,12 +28,12 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
       const queue = this.getQueue();
       queue.push(action);
       this.saveQueue(queue);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to enqueue swipe action',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
-      throw error;
+      throw _error;
     }
   }
 
@@ -46,10 +46,10 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
       const action = queue.shift();
       this.saveQueue(queue);
       return action ?? null;
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to dequeue swipe action',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return null;
     }
@@ -59,10 +59,10 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
     try {
       const queue = this.getQueue();
       return queue.length > 0 ? queue[0]! : null;
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to peek swipe queue',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return null;
     }
@@ -71,10 +71,10 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
   clear(): void {
     try {
       localStorage.removeItem(this.storageKey);
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to clear swipe queue',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }
@@ -83,10 +83,10 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
     try {
       const queue = this.getQueue();
       return queue.length;
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to get queue size',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return 0;
     }
@@ -105,10 +105,10 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
       }
       const parsed = JSON.parse(stored) as SwipeAction[];
       return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
+    } catch (_error) {
       logger.warn(
         'Failed to parse swipe queue',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return [];
     }
@@ -117,12 +117,12 @@ class LocalStorageSwipeQueue implements OfflineSwipeQueue {
   private saveQueue(queue: SwipeAction[]): void {
     try {
       localStorage.setItem(this.storageKey, JSON.stringify(queue));
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to save swipe queue',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
-      throw error;
+      throw _error;
     }
   }
 }

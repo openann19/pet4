@@ -50,8 +50,8 @@ export class WebSocketManager {
       }
 
       this.establishBrowserConnection(accessToken);
-    } catch (error) {
-      this.handleConnectionFailure(error);
+    } catch (_error) {
+      this.handleConnectionFailure(_error);
     }
   }
 
@@ -126,8 +126,8 @@ export class WebSocketManager {
       try {
         this.ws.send(JSON.stringify(message));
         // Wait for server acknowledgment (handled via receiveMessage)
-      } catch (error) {
-        const normalizedError = extractError(error);
+      } catch (_error) {
+        const normalizedError = extractError(_error);
         logger.error('Failed to send WebSocket message', {
           message: normalizedError.message,
           stack: normalizedError.stack,
@@ -270,7 +270,7 @@ export class WebSocketManager {
   }
 
   private handleConnectionFailure(error: unknown): void {
-    const normalizedError = extractError(error);
+    const normalizedError = extractError(_error);
     logger.error('Failed to establish WebSocket connection', {
       message: normalizedError.message,
       stack: normalizedError.stack,
@@ -323,8 +323,8 @@ export class WebSocketManager {
       handlers.forEach((handler) => {
         try {
           handler(data);
-        } catch (error) {
-          const normalizedError = extractError(error);
+        } catch (_error) {
+          const normalizedError = extractError(_error);
           logger.error('Error in event handler', {
             message: normalizedError.message,
             stack: normalizedError.stack,

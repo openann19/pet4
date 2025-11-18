@@ -36,8 +36,8 @@ export class PaymentsService {
   static async getUserEntitlements(userId: string): Promise<UserEntitlements> {
     try {
       return await paymentsApi.getUserEntitlements(userId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user entitlements', err, { userId });
       throw err;
     }
@@ -51,8 +51,8 @@ export class PaymentsService {
   ): Promise<UserEntitlements> {
     try {
       return await paymentsApi.updateEntitlements(userId, planTier, reason, actorUserId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update entitlements', err, { userId, planTier });
       throw err;
     }
@@ -61,8 +61,8 @@ export class PaymentsService {
   static async getUserSubscription(userId: string): Promise<Subscription | null> {
     try {
       return await paymentsApi.getUserSubscription(userId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user subscription', err, { userId });
       throw err;
     }
@@ -76,8 +76,8 @@ export class PaymentsService {
   ): Promise<Subscription> {
     try {
       return await paymentsApi.createSubscription(userId, planId, store, metadata);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create subscription', err, { userId, planId });
       throw err;
     }
@@ -107,8 +107,8 @@ export class PaymentsService {
       }
 
       return updated;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to cancel subscription', err, { subscriptionId });
       throw err;
     }
@@ -137,8 +137,8 @@ export class PaymentsService {
       );
 
       return subscription;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to comp subscription', err, { userId, planId });
       throw err;
     }
@@ -152,8 +152,8 @@ export class PaymentsService {
   ): Promise<UserEntitlements> {
     try {
       return await paymentsApi.addConsumable(userId, consumableKey, quantity, actorUserId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to add consumable', err, { userId, consumableKey });
       throw err;
     }
@@ -166,8 +166,8 @@ export class PaymentsService {
   ): Promise<{ success: boolean; remaining: number }> {
     try {
       return await paymentsApi.redeemConsumable(userId, consumableKey, idempotencyKey);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to redeem consumable', err, { userId, consumableKey });
       throw err;
     }
@@ -180,8 +180,8 @@ export class PaymentsService {
   ): Promise<BillingIssue> {
     try {
       return await paymentsApi.createBillingIssue(userId, subscriptionId, type);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create billing issue', err, { userId, subscriptionId });
       throw err;
     }
@@ -190,8 +190,8 @@ export class PaymentsService {
   static async getUserBillingIssue(userId: string): Promise<BillingIssue | null> {
     try {
       return await paymentsApi.getUserBillingIssue(userId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user billing issue', err, { userId });
       throw err;
     }
@@ -200,8 +200,8 @@ export class PaymentsService {
   static async resolveBillingIssue(issueId: string): Promise<void> {
     try {
       await paymentsApi.resolveBillingIssue(issueId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to resolve billing issue', err, { issueId });
       throw err;
     }
@@ -245,8 +245,8 @@ export class PaymentsService {
   static async getAuditLogs(limit = 50): Promise<AuditLogEntry[]> {
     try {
       return await paymentsApi.getAuditLogs(limit);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get audit logs', err);
       throw err;
     }
@@ -255,8 +255,8 @@ export class PaymentsService {
   static async getAllSubscriptions(): Promise<Subscription[]> {
     try {
       return await paymentsApi.getAllSubscriptions();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get all subscriptions', err);
       throw err;
     }
@@ -265,8 +265,8 @@ export class PaymentsService {
   static async getRevenueMetrics(): Promise<RevenueMetrics> {
     try {
       return await paymentsApi.getRevenueMetrics();
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get revenue metrics', err);
       throw err;
     }
@@ -303,8 +303,8 @@ export class PaymentsService {
       // Return the subscription (refund processing should happen on the backend)
       // The subscription will be updated by the backend payment provider
       return subscription;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to refund subscription', err, { subscriptionId, amount, reason });
       throw err;
     }

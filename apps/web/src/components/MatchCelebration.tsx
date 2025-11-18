@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withTiming,
   withRepeat,
@@ -12,7 +12,7 @@ import {
 import type { Transition } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { useAnimatePresence } from '@/effects/reanimated';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { Heart, Sparkle } from '@phosphor-icons/react';
 
 interface MatchCelebrationProps {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import React from 'react';
-import { useSharedValue, useAnimatedStyle, withTiming, animate } from '@petspark/motion';
+import { useSharedValue, usewithTiming, animate } from '@petspark/motion';
 import { MotionView } from '@petspark/motion';
 import { TrendUp, Heart, Users, Clock, Star, Lightning } from '@phosphor-icons/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

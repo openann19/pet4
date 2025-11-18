@@ -26,10 +26,10 @@ class HapticFeedback {
     if (!this.isSupported) return;
     try {
       navigator.vibrate(pattern);
-    } catch (error) {
+    } catch (_error) {
       logger.warn(
         'Haptic feedback failed',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
     }
   }

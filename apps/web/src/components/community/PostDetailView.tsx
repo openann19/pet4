@@ -106,8 +106,8 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
         toast.error('Post not found');
         onOpenChange(false);
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load post', err, { postId });
       toast.error('Failed to load post');
       onOpenChange(false);
@@ -126,8 +126,8 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
       setTimeout(() => {
         commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to load comments', err, { postId });
     } finally {
       setCommentsLoading(false);
@@ -162,8 +162,8 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
       if (result.added) {
         haptics.impact('medium');
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to toggle reaction', err);
       toast.error('Failed to react to post');
     }
@@ -184,8 +184,8 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
         setIsSaved(true);
         toast.success(t.community?.saved ?? 'Post saved');
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to save post', err);
       toast.error('Failed to save post');
     }
@@ -240,8 +240,8 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
       setCommentText('');
       await loadComments();
       haptics.impact('medium');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to submit comment', err);
       toast.error('Failed to submit comment');
     } finally {

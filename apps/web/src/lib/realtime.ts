@@ -82,8 +82,8 @@ export class RealtimeClient {
         // For now, we're using Spark KV storage as the real backend
         resolve({ success: true });
         this.processEvent(event, data);
-      } catch (error) {
-        resolve({ success: false, error: (error as Error).message });
+      } catch (_error) {
+        resolve({ success: false, _error: (_error as Error).message });
       }
     });
   }
@@ -108,10 +108,10 @@ export class RealtimeClient {
       callbacks.forEach((callback) => {
         try {
           callback(data);
-        } catch (error) {
+        } catch (_error) {
           logger.error(
             `Error in event listener for ${event}`,
-            error instanceof Error ? error : new Error(String(error))
+            _error instanceof Error ? _error : new Error(String(_error))
           );
         }
       });

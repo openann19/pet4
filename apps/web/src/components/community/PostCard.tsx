@@ -2,7 +2,7 @@
 import { memo, useEffect, useState, useCallback } from 'react';
 import {
   useSharedValue,
-  useAnimatedStyle,
+  use
   withSpring,
   withTiming,
   withSequence,
@@ -39,7 +39,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type { AnimatedStyle } from '@petspark/motion';
+import type  from '@petspark/motion';
 import { Suspense } from 'react';
 import { CommentsSheet } from './CommentsSheet';
 import { MediaViewer, type MediaItem } from '@/components/lazy-exports';
@@ -197,10 +197,10 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
       if (result.added) {
         triggerHaptic('success');
       }
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to toggle reaction',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       toast.error('Failed to react to post');
     }
@@ -219,9 +219,9 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
         setIsSaved(true);
         toast.success(t.community?.saved ?? 'Post saved');
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('PostCard handleSave error', err, { postId: post.id, isSaved });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('PostCard handleSave _error', err, { postId: post.id, isSaved });
       toast.error('Failed to save post. Please try again.');
     }
   }, [isSaved, post.id, t, logger]);
@@ -237,11 +237,11 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
             text: post.text?.slice(0, 100) ?? '',
             url: `${window.location.origin}/community/post/${post.id}`,
           });
-        } catch (error) {
+        } catch (_error) {
           // User cancelled share - AbortError is expected
-          if (error instanceof Error && error.name !== 'AbortError') {
-            const err = error instanceof Error ? error : new Error(String(error));
-            logger.error('PostCard handleShare navigator.share error', err, { postId: post.id });
+          if (_error instanceof Error && _error.name !== 'AbortError') {
+            const err = _error instanceof Error ? _error : new Error(String(_error));
+            logger.error('PostCard handleShare navigator.share _error', err, { postId: post.id });
             toast.error('Failed to share post. Please try again.');
           }
         }
@@ -251,18 +251,18 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
             `${window.location.origin}/community/post/${post.id}`
           );
           toast.success(t.community?.linkCopied ?? 'Link copied to clipboard');
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('PostCard handleShare clipboard.writeText error', err, { postId: post.id });
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('PostCard handleShare clipboard.writeText _error', err, { postId: post.id });
           toast.error('Failed to copy link. Please try again.');
         }
       } else {
         logger.warn('PostCard handleShare navigator.share and navigator.clipboard not available');
         toast.error('Sharing is not supported in this browser.');
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('PostCard handleShare error', err, { postId: post.id });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('PostCard handleShare _error', err, { postId: post.id });
       toast.error('Failed to share post. Please try again.');
     }
   }, [post.authorName, post.text, post.id, t, logger]);
@@ -271,9 +271,9 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
     try {
       triggerHaptic('selection');
       setShowReportDialog(true);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('PostCard handleReport error', err, { postId: post.id });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('PostCard handleReport _error', err, { postId: post.id });
     }
   }, [post.id, logger]);
 
@@ -291,9 +291,9 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
         setMediaViewerIndex(index);
         setShowMediaViewer(true);
         triggerHaptic('selection');
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('PostCard handleMediaClick error', err, { postId: post.id, index });
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('PostCard handleMediaClick _error', err, { postId: post.id, index });
       }
     },
     [post.id, post.media, logger]
@@ -316,9 +316,9 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
         triggerHaptic('selection');
         setShowPostDetail(true);
         onPostClick?.(post.id);
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
-        logger.error('PostCard handleCardClick error', err, { postId: post.id });
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
+        logger.error('PostCard handleCardClick _error', err, { postId: post.id });
       }
     },
     [onPostClick, post.id, logger]
@@ -328,9 +328,9 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
     try {
       setShowComments(true);
       triggerHaptic('selection');
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('PostCard handleCommentClick error', err, { postId: post.id });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('PostCard handleCommentClick _error', err, { postId: post.id });
     }
   }, [post.id, logger]);
 

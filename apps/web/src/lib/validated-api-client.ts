@@ -150,11 +150,11 @@ export class ValidatedAPIClient {
       const data: unknown = await response.json();
 
       return await this.validateResponse(data, schema, correlationId, options.skipValidation);
-    } catch (error) {
+    } catch (_error) {
       clearTimeout(timeoutId);
 
-      if (error instanceof ValidationError || error instanceof APIResponseError) {
-        throw error;
+      if (_error instanceof ValidationError || _error instanceof APIResponseError) {
+        throw _error;
       }
 
       if (error instanceof Error && error.name === 'AbortError') {
@@ -174,7 +174,7 @@ export class ValidatedAPIClient {
         'Network request failed',
         {
           code: 'NETWORK_ERROR',
-          message: error instanceof Error ? error.message : 'Network request failed',
+          message: _error instanceof Error ? error.message : 'Network request failed',
           details: error,
           correlationId,
           timestamp: new Date().toISOString(),

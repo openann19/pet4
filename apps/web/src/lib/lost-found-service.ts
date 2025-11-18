@@ -25,8 +25,8 @@ class LostFoundService {
         ownerId: userId,
         ownerName,
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create alert', err, { userId });
       throw err;
     }
@@ -35,8 +35,8 @@ class LostFoundService {
   async getAlertById(id: string): Promise<LostAlert | undefined> {
     try {
       return (await lostFoundAPI.getAlertById(id)) ?? undefined;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get alert by ID', err, { id });
       throw err;
     }
@@ -46,8 +46,8 @@ class LostFoundService {
     try {
       const response = await lostFoundAPI.queryAlerts(filters);
       return response.alerts;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get active alerts', err, { filters });
       throw err;
     }
@@ -56,8 +56,8 @@ class LostFoundService {
   async getUserAlerts(userId: string): Promise<LostAlert[]> {
     try {
       return await lostFoundAPI.getUserAlerts(userId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get user alerts', err, { userId });
       throw err;
     }
@@ -72,8 +72,8 @@ class LostFoundService {
         throw new Error('Alert not found');
       }
       await lostFoundAPI.updateAlertStatus(alertId, status, alert.ownerId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to update alert status', err, { alertId, status });
       throw err;
     }
@@ -84,9 +84,9 @@ class LostFoundService {
       // View count increment is handled automatically by the API when getting alert
       // This method is kept for backward compatibility but does nothing
       await lostFoundAPI.getAlertById(alertId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.warn('Failed to increment view count', { error: err, alertId });
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.warn('Failed to increment view count', { _error: err, alertId });
       // Don't throw - view count increment is non-critical
     }
   }
@@ -98,8 +98,8 @@ class LostFoundService {
         reporterId: data.reporterId ?? '',
         reporterName: data.reporterName ?? '',
       });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to create sighting', err, { alertId: data.alertId });
       throw err;
     }
@@ -108,8 +108,8 @@ class LostFoundService {
   async getAlertSightings(alertId: string): Promise<Sighting[]> {
     try {
       return await lostFoundAPI.querySightings(alertId);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get alert sightings', err, { alertId });
       throw err;
     }
@@ -123,8 +123,8 @@ class LostFoundService {
         throw new Error('User not authenticated');
       }
       await lostFoundAPI.verifySighting(sightingId, verified, user.id);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to verify sighting', err, { sightingId, verified });
       throw err;
     }
@@ -140,8 +140,8 @@ class LostFoundService {
         },
       });
       return response.alerts;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to get nearby alerts', err, { lat, lon, radiusKm });
       throw err;
     }

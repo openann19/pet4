@@ -84,8 +84,8 @@ export class SignalingClient {
             this.events.onCallEnd?.(data.from, data.callId);
             break;
         }
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error(String(error));
+      } catch (_error) {
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Error handling signaling event', err, { type: data.type });
         this.events.onError?.(err);
       }
@@ -105,8 +105,8 @@ export class SignalingClient {
         data: offer,
       });
       logger.debug('Sent offer', { to, callId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to send offer', err);
       this.events.onError?.(err);
     }
@@ -125,8 +125,8 @@ export class SignalingClient {
         data: answer,
       });
       logger.debug('Sent answer', { to, callId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to send answer', err);
       this.events.onError?.(err);
     }
@@ -145,8 +145,8 @@ export class SignalingClient {
         data: candidate,
       });
       logger.debug('Sent ICE candidate', { to, callId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to send ICE candidate', err);
       this.events.onError?.(err);
     }
@@ -164,8 +164,8 @@ export class SignalingClient {
         callId,
       });
       logger.debug('Sent call end', { to, callId });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
       logger.error('Failed to send call end', err);
       this.events.onError?.(err);
     }

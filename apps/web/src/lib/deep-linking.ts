@@ -58,9 +58,9 @@ class DeepLinkManager {
       this.popstateHandler = () => {
         try {
           this.handleCurrentUrl();
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('DeepLinkManager popstate handler error', err);
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('DeepLinkManager popstate handler _error', err);
         }
       };
       window.addEventListener('popstate', this.popstateHandler);
@@ -70,9 +70,9 @@ class DeepLinkManager {
         try {
           this.appState = 'foreground';
           this.processPendingRoute();
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('DeepLinkManager focus handler error', err);
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('DeepLinkManager focus handler _error', err);
         }
       };
       window.addEventListener('focus', this.focusHandler);
@@ -80,9 +80,9 @@ class DeepLinkManager {
       this.blurHandler = () => {
         try {
           this.appState = 'background';
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('DeepLinkManager blur handler error', err);
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('DeepLinkManager blur handler _error', err);
         }
       };
       window.addEventListener('blur', this.blurHandler);
@@ -96,15 +96,15 @@ class DeepLinkManager {
           } else {
             this.appState = 'background';
           }
-        } catch (error) {
-          const err = error instanceof Error ? error : new Error(String(error));
-          logger.error('DeepLinkManager visibilitychange handler error', err);
+        } catch (_error) {
+          const err = _error instanceof Error ? _error : new Error(String(_error));
+          logger.error('DeepLinkManager visibilitychange handler _error', err);
         }
       };
       document.addEventListener('visibilitychange', this.visibilityChangeHandler);
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('DeepLinkManager initialize error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('DeepLinkManager initialize _error', err);
     }
   }
 
@@ -118,7 +118,7 @@ class DeepLinkManager {
 
     if (route) {
       void this.handleRoute(route).catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to handle current URL', err);
       });
     }
@@ -188,10 +188,10 @@ class DeepLinkManager {
         params,
         query,
       };
-    } catch (error) {
+    } catch (_error) {
       logger.error(
         'Failed to parse URL',
-        error instanceof Error ? error : new Error(String(error))
+        _error instanceof Error ? _error : new Error(String(_error))
       );
       return null;
     }
@@ -204,10 +204,10 @@ class DeepLinkManager {
       try {
         await handler(route);
         logger.info('Deep link handled', { path: route.path, appState: this.appState });
-      } catch (error) {
+      } catch (_error) {
         logger.error(
           'Deep link handler failed',
-          error instanceof Error ? error : new Error(String(error))
+          _error instanceof Error ? _error : new Error(String(_error))
         );
       }
     } else {
@@ -218,10 +218,10 @@ class DeepLinkManager {
           try {
             await defaultHandler(route);
             return;
-          } catch (error) {
+          } catch (_error) {
             logger.error(
               'Default route handler failed',
-              error instanceof Error ? error : new Error(String(error))
+              _error instanceof Error ? _error : new Error(String(_error))
             );
           }
         }
@@ -241,7 +241,7 @@ class DeepLinkManager {
       const route = this.pendingRoute;
       this.pendingRoute = null;
       void this.handleRoute(route).catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to process pending route', err);
       });
     }
@@ -250,7 +250,7 @@ class DeepLinkManager {
   navigate(route: DeepLinkRoute): void {
     if (this.appState === 'foreground') {
       void this.handleRoute(route).catch((error) => {
-        const err = error instanceof Error ? error : new Error(String(error));
+        const err = _error instanceof Error ? _error : new Error(String(_error));
         logger.error('Failed to navigate to route', err);
       });
     } else {
@@ -295,9 +295,9 @@ class DeepLinkManager {
         document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
         this.visibilityChangeHandler = null;
       }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error('DeepLinkManager destroy error', err);
+    } catch (_error) {
+      const err = _error instanceof Error ? _error : new Error(String(_error));
+      logger.error('DeepLinkManager destroy _error', err);
     }
 
     this.isInitialized = false;
