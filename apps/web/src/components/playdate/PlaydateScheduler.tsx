@@ -714,7 +714,7 @@ export default function PlaydateScheduler({
           >
             <LocationPicker
               {...(selectedLocation !== null ? { value: selectedLocation } : {})}
-              onChange={() => void handleLocationChange()}
+              onChange={(location) => void handleLocationChange(location)}
               onClose={() => { setShowLocationPicker(false); }}
             />
           </Suspense>

@@ -220,7 +220,7 @@ function Button({
 
   return (
     <motion.button
-      onClick={() => void handleClick()}
+      onClick={handleClick ? () => void handleClick() : undefined}
       style={{
         ...styles.btn,
         ...(variant === 'secondary' ? styles.btnSecondary : styles.btnPrimary),

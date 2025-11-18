@@ -140,7 +140,7 @@ export function SmartImage({
         width={width}
         height={height}
         onLoad={handleLoad}
-        onClick={() => void onClick()}
+        onClick={onClick ? () => void onClick() : undefined}
         loading="lazy"
         decoding="async"
       />

@@ -132,7 +132,7 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
           break;
         default:
           blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-          _mimeType = 'application/json';
+          mimeType = 'application/json';
           fileExtension = 'json';
       }
 

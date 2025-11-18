@@ -318,7 +318,7 @@ export const Input = forwardRef<InputRef, InputProps>(
         id={inputId}
         className={inputClasses}
         value={currentValue}
-        onChange={() => void handleChange()}
+        onChange={(e) => void handleChange(e)}
         onFocus={handleFocus}
         onBlur={handleBlur}
         maxLength={maxLength}

@@ -110,7 +110,7 @@ export function useMapPlaces(
       filtered = filtered.filter(
         (place) =>
           place.name.toLowerCase().includes(query) ||
-          place.description?.toLowerCase().includes(query) ?? 
+          (place.description?.toLowerCase().includes(query) ?? false) ||
           place.category.toLowerCase().includes(query)
       );
     }
