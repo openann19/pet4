@@ -33,7 +33,7 @@ export interface EnhancedButtonProps extends Omit<ComponentProps<'button'>, 'siz
 export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>(
   (
     {
-      _ripple = true,
+      ripple: _ripple = true,
       hapticFeedback = true,
       successAnimation = false,
       onClick,

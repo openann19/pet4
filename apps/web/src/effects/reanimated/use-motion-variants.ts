@@ -5,8 +5,8 @@ import { useMotionValue, animate, type MotionValue, type Variants as FramerVaria
 import {
   springConfigs,
   timingConfigs,
-  type _SpringConfig,
-  type _TimingConfig,
+  type SpringConfig,
+  type TimingConfig,
 } from '@/effects/reanimated/transitions';
 
 export interface VariantDefinition {

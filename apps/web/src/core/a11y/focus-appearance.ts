@@ -10,7 +10,7 @@
  * Location: apps/web/src/core/a11y/focus-appearance.ts
  */
 
-import { getContrastRatio, _hexToRgb, getLuminance } from '../utils/contrast';
+import { getContrastRatio, hexToRgb, getLuminance } from '../utils/contrast';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('focus-appearance');

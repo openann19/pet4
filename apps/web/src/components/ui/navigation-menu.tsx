@@ -39,7 +39,7 @@ interface NavigationMenuListProps
 function NavigationMenuList({
   className,
   activeIndex = 0,
-  _showInkBar = true,
+  showInkBar: _showInkBar = true,
   ...props
 }: NavigationMenuListProps) {
   const listRef = React.useRef<HTMLUListElement | null>(null)

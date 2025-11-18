@@ -1,7 +1,7 @@
 'use client';
 
 import React, { type ComponentProps } from 'react';
-import { _useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import {

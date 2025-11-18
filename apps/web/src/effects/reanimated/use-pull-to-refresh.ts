@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, _useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   useSharedValue,
   useAnimatedStyle,

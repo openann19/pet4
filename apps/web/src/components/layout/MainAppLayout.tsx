@@ -73,7 +73,7 @@ export function MainAppLayout({
   totalSwipes,
   successRate,
   playdates,
-  _NAV_BUTTON_BASE_CLASSES,
+  NAV_BUTTON_BASE_CLASSES: _NAV_BUTTON_BASE_CLASSES,
 }: MainAppLayoutProps) {
   return (
     <div className="min-h-screen pb-20 sm:pb-24 bg-background text-foreground relative overflow-hidden">

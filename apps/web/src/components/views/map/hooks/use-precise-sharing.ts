@@ -1,4 +1,4 @@
-import { _useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useStorage } from '@/hooks/use-storage';
 import { toast } from 'sonner';
 import { useApp } from '@/contexts/AppContext';

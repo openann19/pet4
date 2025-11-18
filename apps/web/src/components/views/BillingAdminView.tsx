@@ -6,7 +6,7 @@
 
 'use client';
 
-import { _useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { SubscriptionAdminPanel } from '@/components/payments/SubscriptionAdminPanel';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { getTypographyClasses } from '@/lib/typography';

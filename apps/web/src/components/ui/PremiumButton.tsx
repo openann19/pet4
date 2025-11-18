@@ -8,7 +8,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { _MotionView, usePressBounce, useMagnetic } from '@petspark/motion';
+import { MotionView, usePressBounce, useMagnetic } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';                                                                       
 import { cn } from '@/lib/utils';
 import type { buttonVariants } from '@/components/ui/button';

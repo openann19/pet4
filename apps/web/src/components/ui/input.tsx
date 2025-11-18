@@ -446,7 +446,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement,
   Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'>
 >(({ 
   variant = 'default',
-  _size = 'md', 
+  size: _size = 'md', 
   className,
   rows = 3,
   ...props 

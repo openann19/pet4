@@ -4,7 +4,7 @@
  * Manages notification data, filtering, and grouping
  */
 
-import { _useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import type {
   PremiumNotification,

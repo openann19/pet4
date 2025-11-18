@@ -33,16 +33,16 @@ import {
 import {
   useSharedValue,
   useAnimatedStyle,
-  _withSpring,
+  withSpring,
   withTiming,
-  _interpolate,
+  interpolate,
   Extrapolation,
   withRepeat,
   withSequence,
   MotionView,
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@petspark/motion';
-import { _springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { OfflineIndicator } from '@/components/network/OfflineIndicator';
