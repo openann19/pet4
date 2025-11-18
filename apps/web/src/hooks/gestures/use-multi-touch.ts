@@ -91,7 +91,7 @@ export interface UseMultiTouchReturn {
   readonly translateY: SharedValue<number>
   readonly scale: SharedValue<number>
   readonly rotation: SharedValue<number>
-  readonly gestureState: SharedValue<GestureState>
+  readonly gestureState: SharedValue<string>
   readonly animatedStyle: ReturnType<typeof useAnimatedStyle>
   readonly reset: () => void
   readonly handlers: {

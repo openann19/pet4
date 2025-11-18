@@ -110,9 +110,9 @@ export function useStatusTicks(
       return
     }
 
-    const isReducedMotion = reducedMotion.value
+    const isReducedMotion = reducedMotion.value > 0;
     // Use adaptive duration scaling based on device refresh rate
-    const baseDuration = getReducedMotionDuration(CROSSFADE_DURATION, isReducedMotion)
+    const baseDuration = getReducedMotionDuration(CROSSFADE_DURATION, isReducedMotion);
     const duration = scaleDuration(baseDuration)
 
     // Determine tick states based on status
@@ -168,13 +168,13 @@ export function useStatusTicks(
       duration,
       easing: isReducedMotion
         ? Easing.linear
-        : Easing.bezier(0.4, 0.0, 0.2, 1.0), // Smooth bezier for morphing
+        : Easing.ease, // Smooth easing for morphing
     })
     tick2Fill.value = withTiming(newTick2Fill, {
       duration,
       easing: isReducedMotion
         ? Easing.linear
-        : Easing.bezier(0.4, 0.0, 0.2, 1.0), // Smooth bezier for morphing
+        : Easing.ease, // Smooth easing for morphing
     })
 
     // Animate color with smooth interpolation

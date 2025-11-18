@@ -82,7 +82,7 @@ function updateMetaTag(attribute: 'name' | 'property', key: string, value: strin
     document.head.appendChild(meta);
   }
   
-  meta.content = value;
+  (meta as HTMLMetaElement).content = value;
 }
 
 /**
@@ -95,11 +95,11 @@ function updateLinkTag(rel: string, href: string): void {
   
   if (!link) {
     link = document.createElement('link');
-    link.rel = rel;
+    (link as HTMLLinkElement).rel = rel;
     document.head.appendChild(link);
   }
   
-  link.href = href;
+  (link as HTMLLinkElement).href = href;
 }
 
 /**

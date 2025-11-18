@@ -205,15 +205,18 @@ export function useHighContrast(
   }, [])
 
   // Determine theme mode for theme system
-  const themeMode: 'light' | 'dark' | 'auto' = isActive
-    ? mode === 'auto'
-      ? 'auto'
-      : mode === 'off'
-        ? 'light'
-        : mode === 'light'
-          ? 'light'
-          : 'dark'
-    : 'light'
+  let themeMode: 'light' | 'dark' | 'auto'
+  if (!isActive) {
+    // When high contrast is not active, fall back to light mode for the theme system
+    themeMode = 'light'
+  } else if (mode === 'auto') {
+    themeMode = 'auto'
+  } else if (mode === 'dark') {
+    themeMode = 'dark'
+  } else {
+    // Covers the "light" case explicitly
+    themeMode = 'light'
+  }
 
   // Get theme from theme system
   const theme = getHighContrastTheme({

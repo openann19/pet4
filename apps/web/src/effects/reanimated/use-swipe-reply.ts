@@ -49,13 +49,13 @@ export function useSwipeReply(options: UseSwipeReplyOptions = {}): UseSwipeReply
   const opacity = useSharedValue(0);
   const previewOpacity = useSharedValue(0);
   const previewScale = useSharedValue(0.9);
-  const hasTriggeredHaptic = useSharedValue(false);
+  const hasTriggeredHaptic = useSharedValue(0);
 
   const handleGestureStart = useCallback(() => {
     if (!enabled) {
       return;
     }
-    hasTriggeredHaptic.value = false;
+    hasTriggeredHaptic.value = 0;
   }, [enabled, hasTriggeredHaptic]);
 
   const handleGestureUpdate = useCallback(
@@ -70,11 +70,11 @@ export function useSwipeReply(options: UseSwipeReplyOptions = {}): UseSwipeReply
       const progress = Math.min(clampedX / threshold, 1);
       opacity.value = interpolate(progress, [0, 1], [0, 0.3], Extrapolation.CLAMP);
 
-      if (clampedX >= threshold && !hasTriggeredHaptic.value) {
+      if (clampedX >= threshold && hasTriggeredHaptic.value === 0) {
         if (hapticFeedback) {
           haptics.selection();
         }
-        hasTriggeredHaptic.value = true;
+        hasTriggeredHaptic.value = 1;
       }
     },
     [enabled, threshold, hapticFeedback, translateX, opacity, hasTriggeredHaptic]
@@ -114,7 +114,7 @@ export function useSwipeReply(options: UseSwipeReplyOptions = {}): UseSwipeReply
     opacity.value = withTiming(0, timingConfigs.fast);
     previewOpacity.value = withTiming(0, timingConfigs.fast);
     previewScale.value = withTiming(0.9, timingConfigs.fast);
-    hasTriggeredHaptic.value = false;
+    hasTriggeredHaptic.value = 0;
   }, [translateX, opacity, previewOpacity, previewScale, hasTriggeredHaptic]);
 
   const animatedStyle = useAnimatedStyle(() => {

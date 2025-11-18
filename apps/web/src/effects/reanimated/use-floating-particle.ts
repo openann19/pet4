@@ -35,7 +35,7 @@ export interface UseFloatingParticleReturn {
  * Adapts the base hook with web-specific defaults and behaviors
  */
 export function useFloatingParticle(
-  options: WebFloatingParticleOptions = {}
+  options: UseFloatingParticleOptions = {}
 ): UseFloatingParticleReturn {
   const {
     width = 1920,
@@ -46,8 +46,8 @@ export function useFloatingParticle(
     initialY = 0,
   } = options;
 
-  const x = useSharedValue(initialX);
-  const y = useSharedValue(initialY);
+  const x = useSharedValue<number>(initialX);
+  const y = useSharedValue<number>(initialY);
   const opacityValue = useSharedValue(0);
   const scale = useSharedValue(0.5);
 

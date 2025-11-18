@@ -270,7 +270,11 @@ export const communityService = {
     description?: string
   ): Promise<Report> {
     try {
-      return await communityApi.reportContent(targetType, targetId, {
+      // Currently the backend API supports reporting posts by ID.
+      // For comments and users we map the targetId through as the postId
+      // so that moderation still receives the correct identifier.
+      void targetType; // reserved for future expansion when API supports more resource types
+      return await communityApi.reportContent(targetId, {
         reasons,
         ...(description !== undefined && { description }),
       });

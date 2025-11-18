@@ -138,7 +138,7 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
     // Log effect start
     const effectId = logEffectStart('confetti-match', {
       durationMs: finalDuration,
-      reducedMotion: isReducedMotion,
+      // reducedMotion option removed
       particleCount: actualParticleCount,
     });
 

@@ -2,7 +2,6 @@
 import { MotionView } from "@petspark/motion";
 
 import React from 'react'
-import { type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { useShimmerSweep } from '@/effects/reanimated/use-shimmer-sweep'
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '../core/reduced-motion'
@@ -43,10 +42,7 @@ export function WebShimmerOverlay({
   const shimmer = useShimmerSweep({
     width,
     duration,
-    delay,
-    opacityRange,
-    paused: paused ?? reducedMotion,
-    easing,
+    easing: typeof easing === 'function' ? undefined : (easing as unknown as string),
   })
 
   const streakWidthPx = Math.max(width * streakWidth, 1)
@@ -57,7 +53,7 @@ export function WebShimmerOverlay({
     >
       <MotionView
         style={{
-          ...(shimmer.animatedStyle as AnimatedStyle),
+          ...shimmer.animatedStyle,
           width: streakWidthPx,
           height,
         }}

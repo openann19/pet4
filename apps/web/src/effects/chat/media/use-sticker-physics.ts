@@ -97,7 +97,7 @@ export function useStickerPhysics(options: UseStickerPhysicsOptions = {}): UseSt
     // Log effect start
     const effectId = logEffectStart('sticker-physics', {
       durationMs: finalDuration,
-      reducedMotion: isReducedMotion,
+      // reducedMotion option removed
     });
 
     // Cache texture (for future use) - only if performance optimization enabled

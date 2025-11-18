@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { MotionView, Presence } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import { useApp } from '@/contexts/AppContext';
 import { haptics } from '@/lib/haptics';
 import { recordAgeVerification } from '@/lib/kyc-service';

@@ -10,7 +10,7 @@
  * - Offline-first support with queue management
  */
 
-import { APIClient } from '@/lib/api-client';
+import { APIClient, type RequestOptions } from '@/lib/api-client';
 import { createLogger } from '@/lib/logger';
 import type { z } from 'zod';
 
@@ -35,6 +35,8 @@ export interface ServiceRequestConfig {
   cache?: CacheOptions;
   timeout?: number;
   skipValidation?: boolean;
+  headers?: Record<string, string>;
+  credentials?: RequestCredentials;
 }
 
 export interface TelemetryEvent {
@@ -105,16 +107,11 @@ export abstract class BaseService {
                   exponentialBackoff: config.retry.exponentialBackoff ?? true,
                 }
               : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
+            const requestConfig: RequestOptions = {
+              headers: config.headers,
+              credentials: config.credentials,
+            };
+            // TODO: Implement timeout and retry logic in api-client
             return await this.apiClient.get<T>(endpoint, requestConfig);
           }
           case 'POST': {
@@ -125,16 +122,11 @@ export abstract class BaseService {
                   exponentialBackoff: config.retry.exponentialBackoff ?? true,
                 }
               : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
+            const requestConfig: RequestOptions = {
+              headers: config.headers,
+              credentials: config.credentials,
+            };
+            // TODO: Implement timeout and retry logic in api-client
             return await this.apiClient.post<T>(endpoint, body, requestConfig);
           }
           case 'PUT': {
@@ -145,16 +137,11 @@ export abstract class BaseService {
                   exponentialBackoff: config.retry.exponentialBackoff ?? true,
                 }
               : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
+            const requestConfig: RequestOptions = {
+              headers: config.headers,
+              credentials: config.credentials,
+            };
+            // TODO: Implement timeout and retry logic in api-client
             return await this.apiClient.put<T>(endpoint, body, requestConfig);
           }
           case 'PATCH': {
@@ -165,16 +152,11 @@ export abstract class BaseService {
                   exponentialBackoff: config.retry.exponentialBackoff ?? true,
                 }
               : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
+            const requestConfig: RequestOptions = {
+              headers: config.headers,
+              credentials: config.credentials,
+            };
+            // TODO: Implement timeout and retry logic in api-client
             return await this.apiClient.patch<T>(endpoint, body, requestConfig);
           }
           case 'DELETE': {
@@ -185,16 +167,11 @@ export abstract class BaseService {
                   exponentialBackoff: config.retry.exponentialBackoff ?? true,
                 }
               : undefined;
-            const requestConfig: {
-              timeout?: number;
-              retry?: { attempts: number; delay: number; exponentialBackoff: boolean };
-            } = {};
-            if (config.timeout !== undefined) {
-              requestConfig.timeout = config.timeout;
-            }
-            if (retryConfig !== undefined) {
-              requestConfig.retry = retryConfig;
-            }
+            const requestConfig: RequestOptions = {
+              headers: config.headers,
+              credentials: config.credentials,
+            };
+            // TODO: Implement timeout and retry logic in api-client
             return await this.apiClient.delete<T>(endpoint, requestConfig);
           }
           default:

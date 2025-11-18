@@ -37,7 +37,7 @@ export function useGlowBorder(options: UseGlowBorderOptions = {}): UseGlowBorder
   useEffect(() => {
     if (!enabled) return;
 
-    const controls = animate(progress, [0, 1, 0], {
+    const controls = animate(progress, 1, {
       duration: speed / 1000,
       repeat: Infinity,
       ease: 'easeInOut',

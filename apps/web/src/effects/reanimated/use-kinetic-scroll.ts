@@ -28,7 +28,7 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
   const lastTime = useRef(0);
 
   const handleDragStart = useCallback((event: React.MouseEvent | React.TouchEvent) => {
-    cancelAnimation(offset);
+    cancelAnimation();
     setIsDragging(true);
 
     const clientY = 'touches' in event ? (event.touches[0]?.clientY ?? 0) : event.clientY;
@@ -84,7 +84,7 @@ export function useKineticScroll(options: UseKineticScrollOptions = {}) {
   }));
 
   const reset = useCallback(() => {
-    cancelAnimation(offset);
+    cancelAnimation();
     offset.value = 0;
     velocity.value = 0;
   }, []);

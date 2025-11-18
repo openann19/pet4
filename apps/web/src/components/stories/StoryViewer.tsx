@@ -421,7 +421,7 @@ export default function StoryViewer({
 
   return (
                           <motion.div
-      style={viewerEntry.animatedStyle}
+      style={viewerEntry.animatedStyle as any}
       className="fixed inset-0 z-100 bg-black"
       role="dialog"
       aria-modal="true"
@@ -592,7 +592,7 @@ export default function StoryViewer({
             <div className="absolute bottom-24 left-0 right-0 px-4">
                                     <motion.div
                 className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
-                style={captionAnimation.animatedStyle}
+                style={captionAnimation.animatedStyle as any}
               >
                 <p className="text-white text-center">{currentStory.caption}</p>
               </motion.div>
@@ -607,7 +607,7 @@ export default function StoryViewer({
               {showReactions && (
                                       <motion.div
                   key="reactions"
-                  style={reactionsAnimation.animatedStyle}
+                  style={reactionsAnimation.animatedStyle as any}
                   className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
                   role="dialog"
                   aria-label="React to story"
@@ -618,7 +618,7 @@ export default function StoryViewer({
                         key={emoji}
                         type="button"
                         className="text-4xl focus:outline-none focus:ring-2 focus:ring-white rounded-lg p-2"
-                        style={combinedReactionButtonStyle}
+                        style={combinedReactionButtonStyle as any}
                         onMouseEnter={reactionButtonHover.handleEnter}
                         onMouseLeave={reactionButtonHover.handleLeave}
                         onClick={() => {
@@ -679,7 +679,7 @@ export default function StoryViewer({
           <div className="absolute bottom-4 left-4 right-4 z-20">
                                   <motion.div
               className="glass-strong p-4 rounded-2xl backdrop-blur-xl"
-              style={analyticsAnimation.animatedStyle}
+              style={analyticsAnimation.animatedStyle as any}
               role="region"
               aria-label="Story analytics"
             >

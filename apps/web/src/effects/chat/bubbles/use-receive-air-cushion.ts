@@ -86,7 +86,7 @@ export function useReceiveAirCushion(
 
     // Log effect start
     const effectId = logEffectStart('receive-air-cushion', {
-      reducedMotion: isReducedMotion,
+      // reducedMotion option removed
       isMention,
     });
 
@@ -112,7 +112,7 @@ export function useReceiveAirCushion(
     // Shadow animation (0 → 4px) - only if shadows enabled
     if (visual.enableShadows) {
       // Use adaptive duration scaling for shadow animation
-      const baseShadowDuration = getReducedMotionDuration(SHADOW_DURATION, isReducedMotion);
+      const baseShadowDuration = getReducedMotionDuration(SHADOW_DURATION, reducedMotion.value > 0);
       const shadowDuration = scaleDuration(baseShadowDuration);
 
       shadowOpacity.value = withTiming(1.0, {

@@ -75,7 +75,7 @@ export function useScrollFabMagnetic(
   useEffect(() => {
     if (enabled && isVisible) {
       // Use adaptive duration scaling
-      const baseDuration = getReducedMotionDuration(ENTRY_DURATION, reducedMotion.value);
+      const baseDuration = getReducedMotionDuration(ENTRY_DURATION, reducedMotion.value > 0);
       const duration = scaleDuration(baseDuration);
 
       if (isTruthy(reducedMotion.value)) {

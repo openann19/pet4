@@ -89,6 +89,7 @@ export function VirtualList<T>({
       >
         {rowVirtualizer.getVirtualItems().map((virtualItem) => {
           const item = items[virtualItem.index];
+          if (!item) return null;
           const key = keyExtractor ? keyExtractor(item, virtualItem.index) : virtualItem.index;
 
           return (
@@ -103,7 +104,7 @@ export function VirtualList<T>({
               }}
               data-index={virtualItem.index}
             >
-              {renderItem(item, virtualItem.index)}
+              {item && renderItem(item, virtualItem.index)}
             </div>
           );
         })}

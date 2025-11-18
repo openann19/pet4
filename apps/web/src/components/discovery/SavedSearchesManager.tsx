@@ -17,7 +17,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SavedSearch } from '@/lib/saved-search-types';
 import type { DiscoveryPreferences } from '@/components/discovery-preferences';
@@ -79,7 +79,7 @@ function SearchItem({
 
   return (
     <MotionView
-      style={itemAnimation.animatedStyle}
+      style={itemAnimation.animatedStyle as any}
       className="group p-4 rounded-lg border bg-card hover:shadow-md transition-all"
       onMouseEnter={itemHover.handleEnter}
       onMouseLeave={itemHover.handleLeave}
@@ -397,7 +397,7 @@ export default function SavedSearchesManager({
                 style={{
                   scale: cardHover.scale,
                   y: cardHover.translateY,
-                }}
+                } as any}
                 onMouseEnter={cardHover.handleEnter}
                 onMouseLeave={cardHover.handleLeave}
               >
@@ -410,7 +410,7 @@ export default function SavedSearchesManager({
           </CardHeader>
           <CardContent>
             {showSaveForm && (
-              <MotionView style={saveFormExpand.heightStyle} className="mb-4 overflow-hidden">
+              <MotionView style={saveFormExpand.heightStyle as any} className="mb-4 overflow-hidden">
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <Label htmlFor="search-name" className="sr-only">

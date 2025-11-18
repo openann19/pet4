@@ -1,7 +1,7 @@
 import { X } from '@phosphor-icons/react';
 import { MotionView } from '@petspark/motion';
 import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import { INTERESTS, LOOKING_FOR } from '../create-pet-constants';
 import type { PetType } from '@/lib/pet-profile-templates';
 import type { CreatePetFormActions } from '../create-pet-types';

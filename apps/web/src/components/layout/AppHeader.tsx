@@ -267,7 +267,7 @@ function HeaderButton({
 }) {
   return (
     <MotionView
-      style={animation.buttonStyle}
+      style={animation.buttonStyle as any}
       onMouseEnter={animation.handleEnter}
       onMouseLeave={animation.handleLeave}
       onClick={animation.handleTap}

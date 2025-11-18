@@ -8,7 +8,7 @@ import * as React from 'react'
 const { useState } = React
 import { Button, LoadingButton, IconButton, ButtonGroup } from '../ui/button'
 import { Input, Textarea } from '../ui/input'
-import { Label, Field } from '../ui/label'
+import { Label, Field } from '../ui/Label'
 import { Checkbox, CheckboxGroup } from '../ui/checkbox'
 import { useTheme } from '@/hooks/use-theme'
 import { useLanguage } from '@/hooks/use-language'

@@ -55,7 +55,7 @@ function VaccinationItem({ vaccination, index }: VaccinationItemProps): JSX.Elem
 
   return (
     <MotionView
-      style={staggeredAnimation.itemStyle}
+      style={staggeredAnimation.itemStyle as any}
       className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:shadow-md transition-shadow"
     >
       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -90,7 +90,7 @@ function HealthRecordItem({ record, index }: HealthRecordItemProps): JSX.Element
 
   return (
     <MotionView
-      style={staggeredAnimation.itemStyle}
+      style={staggeredAnimation.itemStyle as any}
       className="p-4 rounded-lg border bg-card hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between mb-2">
@@ -128,7 +128,7 @@ function ReminderItem({ reminder, index, onComplete }: ReminderItemProps): JSX.E
 
   return (
     <MotionView
-      style={staggeredAnimation.itemStyle}
+      style={staggeredAnimation.itemStyle as any}
       className={`flex items-start gap-3 p-4 rounded-lg border bg-card hover:shadow-md transition-shadow ${
         String(reminder.completed ? 'opacity-50' : '')
       }`}

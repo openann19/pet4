@@ -134,7 +134,7 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
     return (
       <MotionView style={successAnimatedStyle} className="relative">
         <MotionView style={errorAnimatedStyle} className="relative">
-          <MotionView style={bounceAnimation.animatedStyle} className="relative">
+          <MotionView style={bounceAnimation.animatedStyle as any} className="relative">
             <div className="relative overflow-hidden">
               <Button
                 ref={ref || buttonRef}

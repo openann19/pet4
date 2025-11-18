@@ -72,12 +72,12 @@ function getVariantValue(
 }
 
 function applyTransition(
-  value: MotionValue<number | string>,
-  target: number | string,
+  value: MotionValue<number>,
+  target: number,
   transition?: VariantDefinition['transition']
 ): void {
   const delay = transition?.delay ?? 0;
-  const duration = transition?.duration ?? timingConfigs.smooth.duration;
+  const duration = transition?.duration ?? timingConfigs.smooth.duration ?? 300;
 
   if (transition?.type === 'spring') {
     const springConfig = {
@@ -226,11 +226,11 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
 
   // Convert variants to Framer Motion format
   const framerVariants: FramerVariants = {}
-  
+
   for (const [key, variant] of Object.entries(variants)) {
     const transition = variant.transition ?? defaultTransition
     const delay = transition?.delay ?? 0
-    const duration = transition?.duration ?? timingConfigs.smooth.duration
+    const durationMs = transition?.duration ?? timingConfigs.smooth.duration ?? 200
     
     framerVariants[key] = {
       opacity: variant.opacity,
@@ -252,7 +252,7 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
           }
         : {
             type: 'tween',
-            duration: duration / 1000,
+            duration: durationMs / 1000,
             ease: 'easeInOut',
             delay: delay / 1000,
           },

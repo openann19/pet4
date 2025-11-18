@@ -84,7 +84,7 @@ export function SegmentedControl({
     return () => resizeObserver.disconnect();
   }, [updateIndicator, selectedValues]);
 
-  const indicatorVariants: Variants = prefersReducedMotion
+  const indicatorVariants = prefersReducedMotion
     ? {
         animate: {
           x: indicatorPosition,
@@ -137,8 +137,6 @@ export function SegmentedControl({
       )}
     >
       <motion.div
-        variants={indicatorVariants}
-        animate="animate"
         style={{
           x: indicatorPosition,
           width: indicatorWidth,

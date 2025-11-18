@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/textarea';
 import { createLogger } from '@/lib/logger';
 import type { LostAlert } from '@/lib/lost-found-types';

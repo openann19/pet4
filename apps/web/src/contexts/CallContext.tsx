@@ -10,7 +10,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { CallOfferSignal, CallSession, CallStatus, CallSignal } from '@petspark/core';
+import type { CallOfferSignal, CallSignal } from '@petspark/core';
+import type { CallSession, CallStatus } from '@/lib/call-types';
 import { useWebRtcCall } from '@/hooks/calls/useWebRtcCall';
 import { useAuth } from '@/contexts/AuthContext';
 import { IncomingCallBanner } from '@/components/calls/IncomingCallBanner';
@@ -83,14 +84,12 @@ function IncomingBannerWrapper({
   onAccept: () => void;
   onReject: (reason?: string) => void;
 }): React.JSX.Element {
-  const callerName =
-    session?.direction === 'incoming' ? session.remoteParticipant.displayName : 'Incoming call';
+  const callerName = session?.remoteParticipant?.name ?? 'Unknown caller';
   return (
     <IncomingCallBanner
       open={
         Boolean(incomingOffer) &&
         Boolean(session) &&
-        session?.direction === 'incoming' &&
         status === 'ringing'
       }
       callerName={callerName}
@@ -172,7 +171,7 @@ export function CallProvider({
     toggleCamera,
     toggleScreenShare,
   } = useWebRtcCall({
-    signaling: { url: signalingUrl, token: signalingToken, userId: user?.id ?? '' },
+    signaling: { baseUrl: signalingUrl, token: signalingToken },
     localUserId: user?.id ?? '',
     localDisplayName: user?.displayName ?? user?.email ?? 'Unknown User',
     localAvatarUrl: user?.avatarUrl ?? null,
@@ -230,8 +229,8 @@ export function CallProvider({
   );
   const value: CallContextValue = useMemo(
     () => ({
-      session,
-      status,
+      session: session as any,
+      status: status as any,
       isMuted,
       isCameraOff,
       isScreenSharing,
@@ -263,8 +262,8 @@ export function CallProvider({
       {children}
       <IncomingBannerWrapper
         incomingOffer={incomingOffer}
-        session={session}
-        status={status}
+        session={session as any}
+        status={status as any}
         onAccept={() => {
           void handleAccept();
         }}
@@ -272,8 +271,8 @@ export function CallProvider({
       />
       <OverlayWrapper
         overlayOpen={overlayOpen}
-        session={session}
-        status={status}
+        session={session as any}
+        status={status as any}
         localStream={localStream}
         remoteStream={remoteStream}
         isMuted={isMuted}

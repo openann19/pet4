@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import type { UpdateAdoptionListingData } from '@/api/types';
 import { AdoptionAPIStrict } from '@/api/adoption-api-strict';
 import { MatchingAPIStrict } from '@/api/matching-api-strict';

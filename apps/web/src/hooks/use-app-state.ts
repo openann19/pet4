@@ -32,17 +32,20 @@ export function useAppState(): UseAppStateReturn {
   const [appState, setAppState] = useState<AppState>('welcome');
   const [authMode, setAuthMode] = useState<AuthMode>('signup');
   const [hasSeenWelcome, setHasSeenWelcome] = useStorage<boolean>('has-seen-welcome-v2', false);
+  const [isGuestMode, setIsGuestMode] = useState(false);
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (hasSeenWelcome && isAuthenticated) {
+    if (isGuestMode) {
+      setAppState('main');
+    } else if (hasSeenWelcome && isAuthenticated) {
       setAppState('main');
     } else if (hasSeenWelcome) {
       setAppState('auth');
     } else {
       setAppState('welcome');
     }
-  }, [hasSeenWelcome, isAuthenticated]);
+  }, [hasSeenWelcome, isAuthenticated, isGuestMode]);
 
   const handleWelcomeGetStarted = (): void => {
     setHasSeenWelcome(true).catch((error: unknown) => {
@@ -67,14 +70,17 @@ export function useAppState(): UseAppStateReturn {
       const err = error instanceof Error ? error : new Error(String(error));
       logger.error('Failed to set hasSeenWelcome', err);
     });
+    setIsGuestMode(true);
     setAppState('main');
   };
 
   const handleAuthSuccess = (): void => {
+    setIsGuestMode(false);
     setAppState('main');
   };
 
   const handleAuthBack = (): void => {
+    setIsGuestMode(false);
     setAppState('welcome');
   };
 

@@ -1,0 +1,313 @@
+---
+alwaysApply: true
+---
+GLOBAL WEB UX PATTERN V1
+1. Semantic Structure & ARIA (applies to every page)
+
+Every page MUST follow this landmark skeleton:
+
+Exactly one <main> per page.
+
+Optional <header>, <nav>, <footer>, <aside> as needed.
+
+Every <main> MUST have an accessible name:
+
+aria-label="X" or an <h1> as the first heading inside it.
+
+Every visually distinct block MUST be:
+
+A <section> with a heading, or
+
+A <section aria-label="…"> if no visible heading.
+
+Lists of similar items MUST use semantic lists:
+
+Cards, tiles, rows → <ul> / <ol> with <li>.
+
+Decorative images/icons:
+
+Must have alt="" and aria-hidden="true".
+
+Functional images/icons:
+
+Must have descriptive alt or aria-label on their button/container.
+
+Modals/popovers:
+
+Must use role="dialog" or role="alertdialog",
+
+Have aria-modal="true",
+
+Have a programmatically associated title (either aria-labelledby or aria-label),
+
+Trap focus while open and restore focus on close.
+
+2. Keyboard & Interaction Rules (global, no exceptions)
+
+Everything clickable MUST be keyboard-usable:
+
+Use <button>, <a>, or role="button" + tabIndex={0} + Enter/Space handlers.
+
+No click-only div/span.
+
+Focus states:
+
+Every interactive element MUST have a visible :focus-visible style that contrasts with background (e.g. focus ring).
+
+Focus outline must not be removed without a replacement.
+
+Logical tab order:
+
+Follows visual hierarchy: nav → main sections → footers.
+
+No tabIndex > 0; only 0 (custom focusable) or -1 (programmatic focus).
+
+Global shortcuts:
+
+Page-specific shortcuts are allowed, but:
+
+Must not override basic browser shortcuts.
+
+Must be documented (tooltip, settings, or help hint).
+
+Any custom gesture (drag, swipe) MUST have button/keyboard equivalents.
+
+3. Typography System (one global scale)
+
+Single primary font across app (e.g. system/Inter); optional display font only for big headings.
+
+Base font-size: 16px (1rem).
+
+Allowed roles & tokens (no other random sizes):
+
+display:
+
+clamp(2.25rem, 3vw, 3rem); weight 700–800
+
+Use: hero headings / main title.
+
+h1:
+
+clamp(1.75rem, 2.5vw, 2.25rem); weight 600–700
+
+h2:
+
+clamp(1.5rem, 2.1vw, 2rem); weight 600
+
+h3:
+
+1.25rem–1.5rem; weight 500–600
+
+body:
+
+1rem; line-height ≥ 1.5
+
+body-sm:
+
+0.875rem; line-height ≥ 1.4
+
+caption/hint:
+
+0.75rem; line-height ≥ 1.4 (minimal text size).
+
+Rules:
+
+No text below 0.75rem.
+
+Long-form text max width ~60ch (to avoid unreadable wide lines).
+
+Use body or body-sm for any paragraph; no ad-hoc 13px, 15px etc.
+
+Hierarchy: each page must have exactly one h1, then h2 / h3 in order (no skipping levels visually).
+
+4. Color, Contrast & Elevation
+
+Global color tokens only (design system palette):
+
+Primary, secondary, accent, danger, warning, success, background, surface, border, text-primary, text-muted.
+
+Components MUST NOT hardcode arbitrary hex except via tokens.
+
+Contrast:
+
+All interactive text and important content must meet WCAG AA:
+
+Text on background: ≥ 4.5:1.
+
+Text on images MUST sit on overlays (gradient or solid) to guarantee contrast.
+
+Surfaces:
+
+At most 3–4 elevation levels (e.g. base, raised, overlay, modal).
+
+Shadows and blurs must come from that small set; no per-component custom values.
+
+Semantic colors:
+
+Error/destructive → danger token.
+
+Success confirmations → success token.
+
+Primary call-to-action → primary token (consistent across app).
+
+5. Layout, Spacing & Responsiveness
+
+Layout grid:
+
+Content width limited by a container (e.g. max-width: 64rem–80rem).
+
+Page content centered with padding on both sides (1rem–1.5rem).
+
+Spacing scale (global):
+
+Use a small set: 4 / 8 / 12 / 16 / 24 / 32 / 40 / 48 px.
+
+Components must use these spacing tokens, not random pixel gaps.
+
+Breakpoints:
+
+At least:
+
+sm: mobile, md: tablet, lg: desktop.
+
+Layouts MUST not require horizontal scrolling on normal content; only for intentional carousels/strips.
+
+Rules:
+
+Vertical rhythm: consistent spacing between sections (e.g. 32–48px).
+
+Forms and cards must not stretch beyond comfortable reading widths.
+
+6. Components Global Rules (buttons, inputs, cards, etc.)
+
+Buttons:
+
+Must use a shared base style for:
+
+Primary, secondary, ghost, destructive.
+
+States required: default, hover, active, focus-visible, disabled.
+
+Minimum size: 44×44 px touch area.
+
+Text inside buttons: body or body-sm weight 500–600, never all-caps by default unless part of the brand.
+
+Inputs:
+
+Must have:
+
+Visible label (<label>),
+
+Optional helper text (id + aria-describedby),
+
+Error message with clear styling and aria-invalid="true" when failing validation.
+
+Click on label focuses the input.
+
+Cards:
+
+Use one global card pattern (padding, radius, shadow).
+
+Cards that are clickable must:
+
+Show hover & focus state,
+
+Use either whole-card click or explicit CTA, not both.
+
+7. Motion & Reduced Motion (global rule)
+
+Motion is allowed only for:
+
+Transitions between states (e.g. cards, modals),
+
+Microinteractions (hover/press),
+
+Feedback (toasts, notifications).
+
+Timing:
+
+Enter/exit / major transitions: 150–300ms.
+
+Hover/press: 75–150ms.
+
+No long, distracting animations > 500ms for core interactions.
+
+Easing:
+
+Use a standard set (e.g. ease-out, cubic-bezier(0.16, 1, 0.3, 1)), not random per component.
+
+prefers-reduced-motion:
+
+Must be respected globally:
+
+Animations and transitions reduced to minimal or disabled.
+
+No continuous looping motion for users with reduced-motion enabled.
+
+8. Forms, Errors & Empty States
+
+Each form:
+
+Must have a title/heading that describes purpose,
+
+Must provide per-field errors and (if relevant) a global error at top.
+
+Error messages:
+
+Plain, specific language (“Email is invalid”, “Password must be at least 8 characters”),
+
+Not just a color change—text + icon or underline.
+
+Empty states:
+
+Must include:
+
+A short title,
+
+A one-line explanation,
+
+Optional action (“Add X”, “Refresh”).
+
+Decorative visuals optional, but must be marked decorative for screen readers.
+
+9. Accessibility & Global Behavior
+
+Every interactive page:
+
+Must be navigable by keyboard only.
+
+Must be usable with screen readers (labels, roles, focus order).
+
+Focus management:
+
+On route change:
+
+Focus moves to main heading or main region.
+
+On modal open:
+
+Focus moves inside modal and is trapped.
+
+On modal close:
+
+Focus returns to the previously focused element.
+
+Announcements:
+
+Important one-off events (e.g. “Story created”, “Match found”) should be sent to a polite aria-live region.
+
+10. Consistency Rule (the meta-rule)
+
+For any new page / component:
+
+If you define a new font size, color, radius, shadow, spacing, or motion curve that is not in the global set → that’s a violation.
+
+If you introduce any interactive element that:
+
+is not focusable,
+
+has no visible focus state,
+
+or has no clear ARIA label / semantic tag → that’s a violation.
+
+If you add new motion that does not respect prefers-reduced-motion → violation.

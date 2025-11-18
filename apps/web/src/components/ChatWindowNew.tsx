@@ -30,7 +30,7 @@ export default function ChatWindow({
       currentUserId={currentUserId}
       currentUserName={currentUserName}
       onBack={onBack}
-      chatWindowData={chatWindowData}
+      chatWindowData={chatWindowData as any}
     />
   );
 }

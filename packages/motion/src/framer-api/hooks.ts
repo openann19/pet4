@@ -4,7 +4,8 @@
  */
 
 import { useMotionValue, useTransform, animate, type MotionValue, type AnimationPlaybackControls } from 'framer-motion'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { DependencyList } from 'react'
 import type { Transition } from 'framer-motion'
 import type { CSSProperties } from 'react'
 import {
@@ -23,6 +24,13 @@ import { convertTransformToStyle } from './useMotionStyle'
 type AnimationReturn<T extends number | string> = {
   target: T extends number ? number : T extends string ? string : T
   transition: Transition
+}
+
+/**
+ * Type guard to check if a value is an AnimationReturn
+ */
+function isAnimationReturn<T extends number | string>(value: T | AnimationReturn<T>): value is AnimationReturn<T> {
+  return typeof value === 'object' && value !== null && 'target' in value && 'transition' in value;
 }
 
 /**
@@ -54,19 +62,19 @@ export function useSharedValue<T extends number | string>(
     },
     set(newValue: T | AnimationReturn<T>) {
       // Handle withSpring/withTiming return values
-      if (typeof newValue === 'object' && newValue !== null && 'target' in newValue && 'transition' in newValue) {
-        const animationReturn = newValue as AnimationReturn<T>
+      if (isAnimationReturn<T>(newValue)) {
+        const animationReturn = newValue
         // animate only accepts number types, so we need to ensure T is number
-        if (typeof animationReturn.target === 'number') {
+        if (typeof (animationReturn as any).target === 'number') {
           const numericMotionValue = motionValue as unknown as MotionValue<number>
           // Use the two-argument form: animate(motionValue, target)
           // Store the animation controls if needed
-          const _controls = animate(numericMotionValue, animationReturn.target as number)
+          const _controls = animate(numericMotionValue, (animationReturn as any).target as number)
           // Note: Transition options are not applied in this simplified form
           // This is a types/API mismatch that would need further investigation
         } else {
           // For string types, use set directly
-          motionValue.set(animationReturn.target as T)
+          motionValue.set((animationReturn as any).target as T)
         }
       } else {
         motionValue.set(newValue as T)
@@ -151,7 +159,8 @@ export function useAnimateValue(
     const current = motionValue.get()
     if (current !== target) {
       // Animate the motion value by interpolating between current and target
-      const duration = (transition as { duration?: number })?.duration ?? 300
+      const transitionWithDuration = transition as ({ duration?: number } | undefined)
+      const duration = transitionWithDuration?.duration ?? 300
       const startTime = Date.now()
       const startValue = current
       
@@ -186,52 +195,84 @@ export function useDerivedValue<T extends number | string, U>(
  * Equivalent to useAnimatedStyle from Reanimated
  * Returns a style object that updates when motion values change
  */
-export function useAnimatedStyle(
-  styleFactory: () => {
-    opacity?: number | MotionValue<number>
-    transform?: Array<Record<string, number | string | MotionValue<number> | undefined>>
-    backgroundColor?: string | number | MotionValue<string | number>
-    color?: string | number | MotionValue<string | number>
-    width?: number | string | MotionValue<number | string>
-    height?: number | string | MotionValue<number | string>
-    [key: string]: unknown
+type AnimatedStyleFactory = () => {
+  opacity?: number | MotionValue<number>
+  transform?: Array<Record<string, number | string | MotionValue<number> | undefined>>
+  backgroundColor?: string | number | MotionValue<string | number>
+  color?: string | number | MotionValue<string | number>
+  width?: number | string | MotionValue<number | string>
+  height?: number | string | MotionValue<number | string>
+  [key: string]: unknown
+}
+
+type AnimatedStyleState = {
+  styleFactory: AnimatedStyleFactory
+  deps: DependencyList
+}
+
+function computeAnimatedStyle(factory: AnimatedStyleFactory): CSSProperties {
+  try {
+    const computed = factory()
+    return convertReanimatedStyleToCSS(computed)
+  } catch {
+    return {}
   }
+}
+
+function areDependenciesEqual(prev: DependencyList, next: DependencyList): boolean {
+  if (prev.length !== next.length) {
+    return false
+  }
+  return prev.every((value, index) => Object.is(value, next[index]))
+}
+
+function useStableAnimatedFactory(
+  styleFactory: AnimatedStyleFactory,
+  deps: DependencyList
+): AnimatedStyleFactory {
+  const ref = useRef<AnimatedStyleState>({ styleFactory, deps })
+
+  const depsChanged = !areDependenciesEqual(ref.current.deps, deps)
+  if (ref.current.styleFactory !== styleFactory || depsChanged) {
+    ref.current = { styleFactory, deps }
+  }
+
+  return ref.current.styleFactory
+}
+
+export function useAnimatedStyle(
+  styleFactory: AnimatedStyleFactory,
+  deps: DependencyList = []
 ): CSSProperties {
-  const [style, setStyle] = useState<CSSProperties>(() => {
-    try {
-      const computed = styleFactory()
-      return convertReanimatedStyleToCSS(computed)
-    } catch {
-      return {}
-    }
-  })
+  const memoizedFactory = useStableAnimatedFactory(styleFactory, deps)
+  const [style, setStyle] = useState<CSSProperties>(() => computeAnimatedStyle(memoizedFactory))
 
   useEffect(() => {
-    let rafId: number
+    setStyle(computeAnimatedStyle(memoizedFactory))
+  }, [memoizedFactory])
+
+  useEffect(() => {
+    let rafId = 0
     let isActive = true
-    
+
     const updateStyle = () => {
-      if (!isActive) return
-      
-      try {
-        const computed = styleFactory()
-        const newStyle = convertReanimatedStyleToCSS(computed)
-        setStyle(newStyle)
-      } catch {
-        // Ignore errors
+      if (!isActive) {
+        return
       }
-      
-      if (isActive) {
-        rafId = requestAnimationFrame(updateStyle)
-      }
+
+      setStyle(computeAnimatedStyle(memoizedFactory))
+      rafId = requestAnimationFrame(updateStyle)
     }
 
     rafId = requestAnimationFrame(updateStyle)
+
     return () => {
       isActive = false
-      if (rafId) cancelAnimationFrame(rafId)
+      if (rafId) {
+        cancelAnimationFrame(rafId)
+      }
     }
-  }, [styleFactory])
+  }, [memoizedFactory])
 
   return style
 }
@@ -253,62 +294,83 @@ function convertReanimatedStyleToCSS(
 ): CSSProperties {
   const css: CSSProperties = {}
 
-  if (style.opacity !== undefined) {
-    const value = style.opacity instanceof Object && 'get' in style.opacity 
-      ? (style.opacity as MotionValue<number>).get() 
-      : style.opacity
-    css.opacity = value as number
+  const opacity = resolveScalar(style.opacity)
+  if (opacity !== undefined) {
+    css.opacity = opacity
   }
 
-  if (style.backgroundColor !== undefined) {
-    const value = style.backgroundColor instanceof Object && 'get' in style.backgroundColor
-      ? (style.backgroundColor as MotionValue<string | number>).get()
-      : style.backgroundColor
-    css.backgroundColor = String(value)
+  const backgroundColor = resolveScalar(style.backgroundColor)
+  if (backgroundColor !== undefined) {
+    css.backgroundColor = String(backgroundColor)
   }
 
-  if (style.color !== undefined) {
-    const value = style.color instanceof Object && 'get' in style.color
-      ? (style.color as MotionValue<string | number>).get()
-      : style.color
-    css.color = String(value)
+  const color = resolveScalar(style.color)
+  if (color !== undefined) {
+    css.color = String(color)
   }
 
-  if (style.width !== undefined) {
-    const value = style.width instanceof Object && 'get' in style.width
-      ? (style.width as MotionValue<number | string>).get()
-      : style.width
-    css.width = typeof value === 'number' ? `${value}px` : value
+  const width = resolveLength(style.width)
+  if (width !== undefined) {
+    css.width = width
   }
 
-  if (style.height !== undefined) {
-    const value = style.height instanceof Object && 'get' in style.height
-      ? (style.height as MotionValue<number | string>).get()
-      : style.height
-    css.height = typeof value === 'number' ? `${value}px` : value
+  const height = resolveLength(style.height)
+  if (height !== undefined) {
+    css.height = height
   }
 
-  if (style.transform && Array.isArray(style.transform)) {
-    const processedTransforms = style.transform.map(t => {
-      const processed: { [key: string]: number | string } = {}
-      for (const [key, val] of Object.entries(t)) {
-        if (val === undefined) {
-          // Skip undefined values
-          continue
-        }
-        if (val instanceof Object && 'get' in val) {
-          processed[key] = (val as MotionValue<number>).get()
-        } else {
-          processed[key] = val as number | string
-        }
-      }
-      return processed
-    })
-    const transformStyle = convertTransformToStyle(processedTransforms)
-    Object.assign(css, transformStyle)
-  }
+  Object.assign(css, buildTransformStyle(style.transform))
 
   return css
+}
+
+function resolveScalar<T extends number | string>(
+  value?: T | MotionValue<T>
+): T | undefined {
+  if (value === undefined) {
+    return undefined
+  }
+
+  if (value instanceof Object && 'get' in value) {
+    return (value as MotionValue<T>).get()
+  }
+
+  return value
+}
+
+function resolveLength(value?: number | string | MotionValue<number | string>): string | number | undefined {
+  const resolved = resolveScalar(value)
+  if (resolved === undefined) {
+    return undefined
+  }
+  return typeof resolved === 'number' ? `${resolved}px` : resolved
+}
+
+function buildTransformStyle(
+  transform?: Array<Record<string, number | string | MotionValue<number> | undefined>>
+): CSSProperties {
+  if (!transform || !Array.isArray(transform)) {
+    return {}
+  }
+
+  const processedTransforms = transform.map(entry => {
+    const processed: Record<string, number | string> = {}
+
+    for (const [key, value] of Object.entries(entry)) {
+      if (value === undefined) {
+        continue
+      }
+      if (value instanceof Object && 'get' in value) {
+        processed[key] = (value as MotionValue<number>).get()
+      } else {
+        processed[key] = value as number | string
+      }
+    }
+
+    return processed
+  })
+
+  return convertTransformToStyle(processedTransforms)
 }
 
 /**

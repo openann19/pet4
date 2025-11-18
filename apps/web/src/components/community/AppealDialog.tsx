@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import { Textarea } from '@/components/ui/textarea';
 import { haptics } from '@/lib/haptics';
 import { userService } from '@/lib/user-service';

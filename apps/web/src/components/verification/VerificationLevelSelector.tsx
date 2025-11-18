@@ -44,9 +44,16 @@ export function VerificationLevelSelector({
 
           return (
             <MotionView
-              as="button"
               key={level}
-              onClick={() => { onSelectLevel(level); }}
+              onClick={() => onSelectLevel(level)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelectLevel(level);
+                }
+              }}
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
               className={cn(

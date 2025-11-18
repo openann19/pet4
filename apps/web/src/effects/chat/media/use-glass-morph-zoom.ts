@@ -28,7 +28,7 @@ import { useUIConfig } from '@/hooks/use-ui-config'
 /**
  * Custom easing: (0.2, 0.8, 0.2, 1)
  */
-const GLASS_ZOOM_EASING = Easing.bezier(0.2, 0.8, 0.2, 1)
+const GLASS_ZOOM_EASING = Easing.ease;
 
 /**
  * Glass morph zoom effect options

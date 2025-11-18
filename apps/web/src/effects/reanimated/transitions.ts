@@ -43,7 +43,7 @@ export function createTimingTransition(config: TimingConfig = timingConfigs.smoo
 }
 
 export function createDelayedTransition(delay: number, transition: (value: number) => number) {
-  return (value: number) => withDelay(delay, transition(value));
+  return (value: number) => withDelay(delay, { target: value, transition: transition });
 }
 
 export const fadeIn = {

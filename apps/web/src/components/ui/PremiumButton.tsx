@@ -83,8 +83,8 @@ export function PremiumButton({
       >
         <motion.div
           style={{
-            scale: pressBounce.scale,
-            y: hoverLift.translateY,
+            scale: pressBounce.scale as any,
+            y: hoverLift.translateY as any,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

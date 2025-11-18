@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { errorTracking } from '@/lib/error-tracking';
 import { isAgeVerified } from '@/components/compliance';
-import type { User } from '@/lib/types';
+import type { User } from '@/lib/contracts';
 
 export function useAppEffects(user: User | null) {
   const [ageVerified, setAgeVerified] = useState(isAgeVerified());

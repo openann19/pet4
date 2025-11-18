@@ -66,7 +66,7 @@ export type { UseNavBarAnimationOptions, UseNavBarAnimationReturn } from './use-
 export type { UseHeaderAnimationOptions, UseHeaderAnimationReturn } from './use-header-animation';
 export type { UseModalAnimationOptions, UseModalAnimationReturn } from './use-modal-animation';
 export type { UseIconRotationOptions, UseIconRotationReturn } from './use-icon-rotation';
-export type { UseShimmerSweepOptions, UseShimmerSweepReturn } from './use-shimmer-sweep';
+export type { ShimmerSweepOptions, UseShimmerSweepReturn } from './use-shimmer-sweep';
 export type { UseLogoAnimationReturn } from './use-logo-animation';
 export type { UseLogoGlowReturn } from './use-logo-animation';
 export type {

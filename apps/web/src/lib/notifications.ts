@@ -83,7 +83,9 @@ class NotificationManager {
     if (cancel) {
       toastOptions.cancel = {
         label: cancel.label,
-        ...(cancel.onClick ? { onClick: cancel.onClick } : {}),
+        onClick: cancel.onClick ? cancel.onClick : (() => {
+          // default no-op so Action.onClick is always defined
+        }),
       };
     }
     // Note: 'important' is not a standard sonner property, removing it

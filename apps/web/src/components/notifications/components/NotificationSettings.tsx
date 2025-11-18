@@ -4,7 +4,7 @@
  * Settings panel for notification preferences
  */
 
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import { Switch } from '@/components/ui/switch';
 import { MoonStars, Sparkle, Bell, BellRinging } from '@phosphor-icons/react';
 import type { NotificationPreferences } from '../types';

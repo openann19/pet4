@@ -118,7 +118,7 @@ export function useAuroraRing(options: UseAuroraRingOptions = {}): UseAuroraRing
 
     isActiveRef.current = true;
 
-    const isReducedMotion = reducedMotion.value;
+    const isReducedMotion = reducedMotion.value > 0;
     const pulseDuration = getReducedMotionDuration(
       scaleDuration(PULSE_DURATION),
       isReducedMotion
@@ -132,7 +132,7 @@ export function useAuroraRing(options: UseAuroraRingOptions = {}): UseAuroraRing
     const effectId = logEffectStart('presence-aurora', {
       status,
       size,
-      reducedMotion: isReducedMotion,
+      // reducedMotion option removed
     });
     effectIdRef.current = effectId;
 

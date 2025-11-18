@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Heart, CheckCircle, Translate } from '@phosphor-icons/react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Heart, CheckCircle, Translate, Sun, Moon } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'
@@ -8,7 +8,6 @@ import { motion, type Variants } from '@petspark/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { isTruthy } from '@petspark/shared'
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography'
-import { getAriaButtonAttributes } from '@/lib/accessibility'
 import { cn } from '@/lib/utils'
 
 interface WelcomeScreenProps {
@@ -17,6 +16,35 @@ interface WelcomeScreenProps {
   onExplore: () => void
   isOnline?: boolean
   deepLinkMessage?: string
+}
+
+interface FadeInConfig {
+  delay?: number
+  distance?: number
+}
+
+const MOTION_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
+
+const createFadeInUpVariants = (shouldReduceMotion: boolean, { delay = 0, distance = 20 }: FadeInConfig = {}): Variants => {
+  if (shouldReduceMotion) {
+    return {
+      hidden: { opacity: 1, y: 0 },
+      visible: { opacity: 1, y: 0, transition: { duration: 0 } }
+    }
+  }
+
+  return {
+    hidden: { opacity: 0, y: distance },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay,
+        duration: 0.35,
+        ease: MOTION_EASE
+      }
+    }
+  }
 }
 
 const track = (name: string, props?: Record<string, string | number | boolean>) => {
@@ -28,7 +56,7 @@ const track = (name: string, props?: Record<string, string | number | boolean>) 
 }
 
 export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnline = true, deepLinkMessage }: WelcomeScreenProps) {
-  const { t, language, toggleLanguage: _toggleLanguage } = useApp()
+  const { t, language, setLanguage, theme, setTheme } = useApp()
   const [isLoading, setIsLoading] = useState(true)
   const primaryBtnRef = useRef<HTMLButtonElement | null>(null)
 
@@ -68,11 +96,20 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
     onExplore()
   }
 
-  const handleLanguageToggle = () => {
+  const handleLanguageSelect = (targetLanguage: 'en' | 'bg') => {
+    if (language === targetLanguage) return
     haptics.trigger('selection')
     const from = language || 'en'
-    const to = language === 'en' ? 'bg' : 'en'
+    const to = targetLanguage
     track('welcome_language_changed', { from, to })
+    void setLanguage(targetLanguage)
+  }
+
+  const handleThemeSelect = (nextTheme: 'light' | 'dark') => {
+    if (theme === nextTheme) return
+    haptics.trigger('light')
+    track('welcome_theme_toggled', { from: theme, to: nextTheme })
+    setTheme(nextTheme)
   }
 
   const handleLegalClick = (type: 'terms' | 'privacy') => {
@@ -81,18 +118,20 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
 
   // Animation variants using Framer Motion
   const shouldReduceMotion = useReducedMotion()
-  
-  const loadingVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.3 } }
-  }
 
-  const languageButtonVariants: Variants = {
+  const loadingVariants = useMemo<Variants>(() => ({
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.4 } }
-  }
+    visible: {
+      opacity: 1,
+      transition: shouldReduceMotion ? { duration: 0 } : { duration: 0.25, ease: MOTION_EASE }
+    }
+  }), [shouldReduceMotion])
 
-  const logoVariants: Variants = {
+  const languageButtonVariants = useMemo<Variants>(() => (
+    createFadeInUpVariants(shouldReduceMotion, { delay: 0.05, distance: 8 })
+  ), [shouldReduceMotion])
+
+  const logoVariants = useMemo<Variants>(() => ({
     hidden: { 
       opacity: 0, 
       scale: 0.9, 
@@ -106,9 +145,9 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
       transition: shouldReduceMotion 
         ? { duration: 0 }
         : { 
-            opacity: { duration: 0.5 },
-            scale: { type: 'spring', damping: 20, stiffness: 300 },
-            y: { type: 'spring', damping: 20, stiffness: 300 }
+            opacity: { duration: 0.4, ease: MOTION_EASE },
+            scale: { duration: 0.45, ease: MOTION_EASE },
+            y: { duration: 0.45, ease: MOTION_EASE }
           }
     },
     pulsing: {
@@ -123,97 +162,31 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
         repeatType: 'reverse' as const
       }
     }
-  }
+  }), [shouldReduceMotion])
 
-  const titleVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: shouldReduceMotion
-        ? { duration: 0 }
-        : {
-            delay: 0.2,
-            opacity: { duration: 0.5 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.2 }
-          }
-    }
-  }
+  const titleVariants = useMemo<Variants>(() => (
+    createFadeInUpVariants(shouldReduceMotion, { delay: 0.1, distance: 24 })
+  ), [shouldReduceMotion])
 
-  const proofItemsVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: shouldReduceMotion
-        ? { duration: 0 }
-        : {
-            delay: 0.3,
-            opacity: { duration: 0.4 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.3 }
-          }
-    }
-  }
+  const proofItemsVariants = useMemo<Variants>(() => (
+    createFadeInUpVariants(shouldReduceMotion, { delay: 0.18 })
+  ), [shouldReduceMotion])
 
-  const deepLinkVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: shouldReduceMotion
-        ? { duration: 0 }
-        : {
-            delay: 0.6,
-            opacity: { duration: 0.4 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.6 }
-          }
-    }
-  }
+  const deepLinkVariants = useMemo<Variants>(() => (
+    createFadeInUpVariants(shouldReduceMotion, { delay: 0.24 })
+  ), [shouldReduceMotion])
 
-  const offlineVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: shouldReduceMotion
-        ? { duration: 0 }
-        : {
-            delay: 0.6,
-            opacity: { duration: 0.4 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.6 }
-          }
-    }
-  }
+  const offlineVariants = useMemo<Variants>(() => (
+    createFadeInUpVariants(shouldReduceMotion, { delay: 0.24 })
+  ), [shouldReduceMotion])
 
-  const buttonsVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: shouldReduceMotion
-        ? { duration: 0 }
-        : {
-            delay: 0.7,
-            opacity: { duration: 0.5 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.7 }
-          }
-    }
-  }
+  const buttonsVariants = useMemo<Variants>(() => (
+    createFadeInUpVariants(shouldReduceMotion, { delay: 0.28 })
+  ), [shouldReduceMotion])
 
-  const legalVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: shouldReduceMotion
-        ? { duration: 0 }
-        : {
-            delay: 0.9,
-            opacity: { duration: 0.5 },
-            y: { type: 'spring', damping: 20, stiffness: 300, delay: 0.9 }
-          }
-    }
-  }
+  const legalVariants = useMemo<Variants>(() => (
+    createFadeInUpVariants(shouldReduceMotion, { delay: 0.34 })
+  ), [shouldReduceMotion])
 
   useEffect(() => {
     const timer = setTimeout(() => { setIsLoading(false); }, 300)
@@ -256,11 +229,6 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
     )
   }
 
-  const languageButtonAria = getAriaButtonAttributes({
-    label: language === 'en' ? 'Switch to Bulgarian' : 'Превключи на English',
-    pressed: language === 'bg',
-  });
-
   return (
     <main 
       className="fixed inset-0 bg-background overflow-auto"
@@ -268,30 +236,65 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
     >
       <div className="min-h-screen flex flex-col">
         <nav 
-          className={cn(
-            'absolute z-10',
-            getSpacingClassesFromConfig({ marginY: 'xl', marginX: 'xl' })
-          )}
-          aria-label="Language selection"
+          className="absolute top-6 right-6 z-10"
+          aria-label="Theme and language settings"
         >
           <motion.div
             variants={languageButtonVariants}
             initial="hidden"
             animate="visible"
-            className="top-6 right-6"
+            className="flex items-center gap-2 rounded-full border border-border/40 bg-card/90 px-3 py-2 shadow-[0_8px_20px_rgba(0,0,0,0.25)] backdrop-blur supports-backdrop-filter:bg-card/70"
           >
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLanguageToggle}
-              className={cn(
-                'rounded-full gap-2'
-              )}
-              {...languageButtonAria}
-            >
-              <Translate size={20} weight="bold" aria-hidden="true" />
-              <span>{language === 'en' ? 'БГ' : 'EN'}</span>
-            </Button>
+            <div className="flex items-center gap-1" role="group" aria-label="Theme selection">
+              {[
+                { value: 'light', label: 'Light', Icon: Sun },
+                { value: 'dark', label: 'Dark', Icon: Moon }
+              ].map(({ value, label, Icon }) => {
+                const isActive = theme === value
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => handleThemeSelect(value as 'light' | 'dark')}
+                    className={cn(
+                      'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background',
+                      isActive ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                    )}
+                    aria-pressed={isActive}
+                    aria-label={`Switch to ${label.toLowerCase()} mode`}
+                  >
+                    <Icon size={16} weight="bold" aria-hidden="true" />
+                    <span>{label}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            <span className="h-5 w-px bg-border/60" aria-hidden="true" />
+
+            <div className="flex items-center gap-1" role="group" aria-label="Language selection">
+              {[
+                { value: 'en', label: 'EN' },
+                { value: 'bg', label: 'БГ' }
+              ].map(({ value, label }) => {
+                const isActive = language === value
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => handleLanguageSelect(value as 'en' | 'bg')}
+                    className={cn(
+                      'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background',
+                      isActive ? 'bg-accent text-accent-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                    )}
+                    aria-pressed={isActive}
+                    aria-label={value === 'en' ? 'Switch to English' : 'Превключи на български'}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
           </motion.div>
         </nav>
 

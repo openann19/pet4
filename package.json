@@ -13,6 +13,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,mdx,css,scss,yaml,yml}\" --ignore-path .gitignore",
     "validate": "pnpm typecheck && pnpm lint && pnpm test",
+    "dev:web-stack": "bash scripts/dev-web-stack.sh",
     "depcheck": "pnpm -r --filter './apps/*' --filter './packages/*' exec depcheck || true",
     "test": "pnpm -r --filter './apps/*' --filter './packages/*' exec -- pnpm test:run 2>/dev/null || pnpm -r --filter './apps/*' --filter './packages/*' exec -- vitest run --passWithNoTests 2>/dev/null || true",
     "dev:single": "pnpm --filter ./packages/shared dev",

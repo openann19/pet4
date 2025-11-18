@@ -41,7 +41,7 @@ export function useWaveAnimation(options: UseWaveAnimationOptions = {}): UseWave
       duration: speed / 1000,
       repeat: Infinity,
       ease: 'linear',
-      onUpdate: (latest) => {
+      onUpdate: (latest: number) => {
         const phase = latest * Math.PI * 2 * frequency;
         const wave = Math.sin(phase) * amplitude;
         

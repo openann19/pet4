@@ -10,6 +10,7 @@ import { useApp } from '@/contexts/AppContext';
 import { analytics } from '@/lib/analytics';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
+import { cn } from '@/lib/utils';
 import { isTruthy } from '@petspark/shared';
 
 // Google Logo SVG component
@@ -52,6 +53,7 @@ export default function OAuthButtons({
   disabled = false,
 }: OAuthButtonsProps) {
   const { t } = useApp();
+  const providerButtonBase = 'flex-1 h-12 rounded-xl text-sm font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background';
 
   const handleGoogleSignIn = async () => {
     if (disabled) return;
@@ -123,29 +125,33 @@ export default function OAuthButtons({
 
   return (
     <div className="flex gap-3">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="lg"
         onClick={handleGoogleSignIn}
         disabled={disabled}
-        className="flex-1 h-12 flex items-center justify-center gap-2 bg-white border border-(--border-light) rounded-xl text-sm font-medium text-(--text-primary) hover:bg-(--muted) transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-(--color-focus-ring) focus:ring-offset-2"
         aria-label="Sign in with Google"
+        className={cn(providerButtonBase, 'bg-card text-card-foreground border border-border hover:bg-muted/80 dark:hover:bg-muted/60')}
       >
         <GoogleLogo size={18} aria-hidden="true" />
-        <span>Google</span>
-      </button>
+        <span>{t.auth?.signInWithGoogle ?? 'Google'}</span>
+      </Button>
 
-      <button
+      <Button
         type="button"
+        variant="default"
+        size="lg"
         onClick={handleAppleSignIn}
         disabled={disabled}
-        className="flex-1 h-12 flex items-center justify-center gap-2 bg-(--color-neutral-12) border border-(--color-neutral-12) rounded-xl text-sm font-medium text-white hover:bg-(--color-neutral-11) transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-black"
         aria-label="Sign in with Apple"
+        className={cn(providerButtonBase, 'bg-foreground text-background hover:bg-foreground/90 dark:hover:bg-foreground/80 border border-foreground')}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
         </svg>
-        <span>Apple</span>
-      </button>
+        <span>{t.auth?.signInWithApple ?? 'Apple'}</span>
+      </Button>
     </div>
   );
 }

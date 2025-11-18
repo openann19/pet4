@@ -109,22 +109,22 @@ export function useLinkPreviewFade(
     const isReducedMotion = reducedMotion.value;
     const skeletonDuration = getReducedMotionDuration(
       scaleDuration(SKELETON_DURATION),
-      isReducedMotion
+      reducedMotion.value > 0
     );
     const contentDuration = getReducedMotionDuration(
       scaleDuration(CONTENT_DURATION),
-      isReducedMotion
+      reducedMotion.value > 0
     );
     const shimmerDuration = getReducedMotionDuration(
       scaleDuration(SHIMMER_DURATION),
-      isReducedMotion
+      reducedMotion.value > 0
     );
 
     if (isLoading) {
       // Log effect start
       const effectId = logEffectStart('link-preview', {
         phase: 'loading',
-        reducedMotion: isReducedMotion,
+        // reducedMotion option removed
       });
       effectIdRef.current = effectId;
 

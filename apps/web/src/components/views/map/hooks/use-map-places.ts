@@ -64,7 +64,7 @@ export function useMapPlaces(
         address: `${String(Math.floor(Math.random() * 999))} Main St, City`,
         phone: `+1-555-${String(Math.floor(Math.random() * 9000) + 1000)}`,
         hours: '9:00 AM - 6:00 PM',
-        photos: [`https://images.unsplash.com/photo-${String(1560807700000 + i * 1000000 ?? '')}?w=400&q=80`],
+        photos: [`https://images.unsplash.com/photo-${String(1560807700000 + i * 1000000)}?w=400&q=80`],
         verified: Math.random() > 0.3,
         petFriendly: true,
         rating: 3.5 + Math.random() * 1.5,

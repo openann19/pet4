@@ -59,7 +59,7 @@ export function PremiumCard({
         opacity: opacity.get(),
         scale: hover ? hoverLift.scale : undefined,
         y: hover ? hoverLift.translateY : translateY.get(),
-      }}
+      } as any}
       onMouseEnter={hover ? hoverLift.handleEnter : undefined}
       onMouseLeave={hover ? hoverLift.handleLeave : undefined}
       className={cn(

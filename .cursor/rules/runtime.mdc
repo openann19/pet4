@@ -1,0 +1,176 @@
+---
+alwaysApply: true
+---
+Prompt for AI Dev: “No Runtime Errors Between Pages”
+
+You must make the entire app navigation-safe: no runtime errors when moving between any pages/screens on web or mobile.
+
+Apply the following global rules whenever you create or modify pages, routes, screens, or shared components:
+
+1. Route & Navigation Contracts (Web + Mobile)
+
+Define a typed route/screen map and use it everywhere:
+
+Web (Next.js): define a RouteConfig type (path + params + searchParams shape). All links and router.push calls must use helpers derived from this config (e.g. toPetDetail({ id })) – no hardcoded paths.
+
+Mobile (React Navigation): define a single RootStackParamList/RootTabsParamList. Every screen must use the generated types (NativeStackScreenProps<RootStackParamList, 'ScreenName'>).
+
+For every route/screen, explicitly list:
+
+required route params,
+
+optional params,
+
+expected data shape (e.g. Pet).
+
+It is forbidden to:
+
+access route.params.foo or searchParams.foo without narrowing/guarding,
+
+pass props or params that are any or cast with as just to “make TS happy”.
+
+When navigating:
+
+Never call navigation.navigate('SomeScreen', params) or router.push('/path') with inline string literals that don’t go through typed helpers.
+
+If a destination screen requires data, either:
+
+pass a minimal ID (e.g. petId) and re-fetch on the destination, or
+
+pass only serializable, validated props (no functions, no large objects from state).
+
+2. Defensive Props & State Between Pages
+
+Every page/screen and every shared component must:
+
+Treat all incoming props as possibly missing or malformed unless validated.
+
+Use TypeScript + runtime validation (Zod or similar) for:
+
+route.params,
+
+searchParams,
+
+data hydrated from storage / localStorage / AsyncStorage / network.
+
+You must not use:
+
+foo! (non-null assertion) on anything derived from routes, storage, or remote data,
+
+unsafe optional chaining followed by non-null assumptions (obj?.x.y).
+
+For any list/index access that can cross screens (e.g. pets[currentIndex]):
+
+Guard it first:
+
+const pet = pets[index];
+if (!pet) {
+  // render safe fallback, not crash
+}
+
+
+Never assume pets[index] exists just because the previous screen had it.
+
+3. Data Fetching & Cross-Page Consistency
+
+All data loading between pages/screens must:
+
+Wrap async logic in try/catch,
+
+Provide loading + error + empty states,
+
+Never throw unhandled rejections that bubble as runtime errors.
+
+If a screen depends on data created/modified on a previous screen (e.g. new pet, new story):
+
+Do not rely on stale in-memory state only.
+
+Either:
+
+re-fetch on focus/route enter, or
+
+keep the data in a stable global store (query cache, Zustand, Redux) with clear contracts.
+
+Local persistence (web + mobile):
+
+All storage access (localStorage, AsyncStorage, custom useStorage) must:
+
+be wrapped in try/catch,
+
+validate parsed JSON with a schema,
+
+provide sane defaults when data is missing or corrupted.
+
+4. Shared Components Used Across Pages
+
+Any component used on multiple pages (buttons, cards, layout, nav, story bars, carousels) must:
+
+Have a minimal, well-typed props interface,
+
+Define safe defaults for optional props,
+
+Never assume external context that might not exist (e.g. useContext must always have a provider or throw a controlled error with guidance).
+
+If a shared component needs context:
+
+Provide a hook like useXContext that throws a clear error if used outside the provider,
+
+Ensure the provider is mounted at a layout level shared by all screens that use it.
+
+It is forbidden to:
+
+Reach into window, document, or platform-specific APIs without guarding for environment (SSR vs client),
+
+Use process.env in client components without appropriate guards.
+
+5. Page-to-Page Runtime Safety Checklist (Enforced on Every Change)
+
+For every new or modified page/screen:
+
+Type safety
+
+TypeScript passes with strict mode and noImplicitAny, strictNullChecks.
+
+No as any and no non-null assertions on route/params/data.
+
+Runtime guards
+
+All route params, search params, and storage-loaded data are schema-validated.
+
+All optional data has guards and fallbacks (no Cannot read property 'x' of undefined).
+
+Navigation
+
+All navigate/push calls use typed helpers and pass exactly the required params.
+
+Destination screens can handle:
+
+missing params gracefully (fallback UI + redirect),
+
+stale or missing data (loading & empty states).
+
+Environment
+
+No direct window/document/localStorage access in code that can run during SSR; use guards like typeof window !== 'undefined'.
+
+Automated navigation tests
+
+Add or update a test that:
+
+Programmatically visits/pushes every route/screen (web + mobile),
+
+Asserts that nothing throws or crashes during:
+
+initial render,
+
+navigation,
+
+back navigation.
+
+On web: implement a simple route-walker test that renders each page component with representative params and mocks, and asserts no runtime error.
+
+You must follow these rules for all pages and screens and update existing code where broken. The goal:
+
+No runtime exceptions when navigating between any routes/screens, even if data is missing, corrupted, or delayed.
+
+Every failure mode must degrade into a controlled UI state (loading, empty, or error), not a crash.

@@ -55,7 +55,7 @@ export function usePullToRefresh({
     (e: globalThis.TouchEvent): void => {
       if (!enabled || !containerRef.current) return;
 
-      if (containerRef.current.scrollTop === 0) {
+      if (containerRef.current.scrollTop === 0 && e.touches.length > 0 && e.touches[0]) {
         startY.current = e.touches[0].clientY;
         isPulling.current = true;
       }
@@ -67,6 +67,7 @@ export function usePullToRefresh({
     (e: globalThis.TouchEvent): void => {
       if (!enabled || !isPulling.current || !containerRef.current) return;
 
+      if (e.touches.length === 0 || !e.touches[0]) return;
       const currentY = e.touches[0].clientY;
       const diff = currentY - startY.current;
 

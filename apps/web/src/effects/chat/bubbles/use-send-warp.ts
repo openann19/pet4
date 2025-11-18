@@ -29,7 +29,7 @@ import type { AnimatedStyle } from '@petspark/motion';
  * Cubic bezier easing: (0.17, 0.84, 0.44, 1)
  * Custom easing for send warp slide
  */
-const SEND_WARP_EASING = Easing.bezier(0.17, 0.84, 0.44, 1);
+const SEND_WARP_EASING = Easing.ease;
 
 /**
  * Send warp effect options
@@ -82,11 +82,11 @@ export function useSendWarp(options: UseSendWarpOptions = {}): UseSendWarpReturn
     const isReducedMotion = reducedMotion.value;
     // Use adaptive duration scaling based on device refresh rate
     const baseSlideDuration = scaleDuration(SLIDE_DURATION);
-    const slideDuration = getReducedMotionDuration(baseSlideDuration, isReducedMotion);
+    const slideDuration = getReducedMotionDuration(baseSlideDuration, Boolean(isReducedMotion));
 
     // Log effect start
     const effectId = logEffectStart('send-warp', {
-      reducedMotion: isReducedMotion,
+      reducedMotion: Boolean(isReducedMotion),
     });
     effectIdRef.current = effectId;
 

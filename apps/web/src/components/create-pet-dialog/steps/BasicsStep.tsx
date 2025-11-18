@@ -1,6 +1,6 @@
 import { MotionView } from '@petspark/motion';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import { PET_TYPES } from '../create-pet-constants';
 import type { PetType } from '@/lib/pet-profile-templates';
 import type { CreatePetFormActions } from '../create-pet-types';

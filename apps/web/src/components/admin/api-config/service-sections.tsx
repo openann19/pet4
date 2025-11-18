@@ -2,7 +2,7 @@ import type { APIConfig } from '@/api/api-config-api';
 import { APIConfigSection } from './APIConfigSection';
 import { ConfigField } from './ConfigField';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import {

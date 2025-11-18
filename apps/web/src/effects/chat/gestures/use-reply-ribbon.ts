@@ -219,16 +219,10 @@ export function useReplyRibbon(
 
     // Animate to composer
     if (composerRect) {
-      ribbonP2.current = withTiming(
-        {
-          x: composerRect.left + composerRect.width / 2,
-          y: composerRect.top + composerRect.height / 2,
-        },
-        {
-          duration,
-          easing: Easing.inOut(Easing.ease),
-        }
-      )
+      ribbonP2.current = {
+        x: composerRect.left + composerRect.width / 2,
+        y: composerRect.top + composerRect.height / 2,
+      }
 
       ribbonProgress.value = withTiming(1, {
         duration,

@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import {
   Select,
   SelectContent,
@@ -56,10 +56,10 @@ function FeatureBadge({ feature, index, onRemove }: FeatureBadgeProps): JSX.Elem
   });
 
   return (
-    <MotionView style={staggeredAnimation.itemStyle}>
+    <MotionView style={staggeredAnimation.itemStyle as any}>
       <Badge variant="secondary" className="gap-1">
         {feature}
-        <MotionView style={removeButtonAnimation.animatedStyle}>
+        <MotionView style={removeButtonAnimation.animatedStyle as any}>
           <button onClick={removeButtonAnimation.handlePress} type="button" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
             <X size={12} />
           </button>

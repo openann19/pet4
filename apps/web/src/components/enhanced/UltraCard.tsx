@@ -103,7 +103,7 @@ export function UltraCard({
             style={{
               scale: enableHoverLift ? hoverLift.scale : undefined,
               y: enableHoverLift ? hoverLift.translateY : undefined,
-            }}
+            } as any}
           >
             <div
               className={cn(

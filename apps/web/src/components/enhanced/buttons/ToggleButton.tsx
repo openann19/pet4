@@ -14,7 +14,7 @@ import { getAriaButtonAttributes } from '@/lib/accessibility';
 const logger = createLogger('ToggleButton');
 
 export interface ToggleButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange' | 'style' | 'animate' | 'variants' | 'transition' | 'transformOrigin'> {
   checked?: boolean;
   onChange?: (checked: boolean) => void;
   variant?: 'primary' | 'secondary' | 'accent' | 'ghost';
@@ -32,6 +32,7 @@ export function ToggleButton({
   onClick,
   disabled = false,
   'aria-label': ariaLabel,
+  // Extract conflicting props
   ...props
 }: ToggleButtonProps): React.JSX.Element {
   const _uiConfig = useUIConfig();
@@ -125,6 +126,7 @@ export function ToggleButton({
 
   return (
     <motion.button
+      {...(props as any)}
       onClick={handleClick}
       disabled={disabled}
       variants={variants}
@@ -140,7 +142,6 @@ export function ToggleButton({
         className
       )}
       {...toggleAria}
-      {...props}
     >
       {children}
     </motion.button>

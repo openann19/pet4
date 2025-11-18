@@ -9,7 +9,6 @@ import {
   withTiming,
   MotionView,
 } from '@petspark/motion';
-import { type AnimatedStyle } from '@/effects/reanimated/animated-view';
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '../core/reduced-motion'
 
@@ -43,14 +42,14 @@ export function WebDeliveryTicks({ state, className }: WebDeliveryTicksProps): R
     return {
       color,
     }
-  }) as AnimatedStyle
+  })
 
   const firstTickStyle = useAnimatedStyle(() => {
     const opacity = interpolate(progress.value, [0, 0.5], [0.4, 1])
     return {
       opacity,
     }
-  }) as AnimatedStyle
+  })
 
   const secondTickStyle = useAnimatedStyle(() => {
     const opacity = interpolate(progress.value, [0.5, 1], [0, 1])
@@ -59,7 +58,7 @@ export function WebDeliveryTicks({ state, className }: WebDeliveryTicksProps): R
       opacity,
       transform: [{ translateX }],
     }
-  }) as AnimatedStyle
+  })
 
   return (
     <MotionView

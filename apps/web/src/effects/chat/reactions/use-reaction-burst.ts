@@ -174,14 +174,14 @@ export function useReactionBurst(options: UseReactionBurstOptions = {}): UseReac
       return;
     }
 
-    const isReducedMotion = reducedMotion.value;
+    const isReducedMotion = reducedMotion.value > 0;
     // Use adaptive duration scaling based on device refresh rate
     const baseBurstDuration = getReducedMotionDuration(BURST_DURATION, isReducedMotion);
     const burstDuration = scaleDuration(baseBurstDuration);
 
     // Log effect start
     const effectId = logEffectStart('reaction-burst', {
-      reducedMotion: isReducedMotion,
+      // reducedMotion option removed
     });
 
     // Trigger haptic: Impact.Light on attach (only if haptics enabled)

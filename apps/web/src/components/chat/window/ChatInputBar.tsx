@@ -106,10 +106,10 @@ export function ChatInputBar({
   return (
     <MotionView
       className="glass-strong border-t border-white/20 p-4 shadow-2xl backdrop-blur-2xl"
-      style={inputBarStyle}
+      style={inputBarStyle as any}
     >
       {showTemplates && (
-        <MotionView style={templatesStyle} className="mb-3 overflow-hidden">
+        <MotionView style={templatesStyle as any} className="mb-3 overflow-hidden">
           <div className="glass-effect rounded-2xl p-3 space-y-2">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-semibold flex items-center gap-2">
@@ -134,7 +134,7 @@ export function ChatInputBar({
                 return (
                 <MotionView
                   key={template.id}
-                  style={mergedStyle}
+                  style={mergedStyle as any}
                   onClick={() => onUseTemplate(template.text)}
                   onMouseEnter={templateButtonHover.handleEnter}
                   onMouseLeave={templateButtonHover.handleLeave}
@@ -205,7 +205,7 @@ export function ChatInputBar({
                       return (
                       <MotionView
                         key={sticker.id}
-                        style={mergedStickerStyle}
+                        style={mergedStickerStyle as any}
                         onClick={() => onSendMessage(sticker.emoji, 'sticker')}
                         onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                           if (e.key === 'Enter' || e.key === ' ') {
@@ -242,7 +242,7 @@ export function ChatInputBar({
                       return (
                       <MotionView
                         key={emoji}
-                        style={mergedEmojiStyle}
+                        style={mergedEmojiStyle as any}
                         onClick={() => {
                           onSendMessage(emoji, 'text')
                         }}
@@ -301,7 +301,7 @@ export function ChatInputBar({
             <Microphone size={20} weight="regular" />
           </Button>
 
-          <MotionView style={sendButtonHover.animatedStyle}>
+          <MotionView style={sendButtonHover.animatedStyle as any}>
             <Button
               onClick={() => {
                 onSendMessage(inputValue, 'text')

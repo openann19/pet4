@@ -1,6 +1,6 @@
 import { Check } from '@phosphor-icons/react';
 import { Card } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/Label';
 import { themePresets, type ThemePreset } from '@/lib/theme-presets';
 import { haptics } from '@/lib/haptics';
 
