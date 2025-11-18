@@ -132,7 +132,7 @@ export function AnimatedView({
       className={className}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      onClick={() => void onClick()}
+      onClick={onClick ? (e) => void onClick(e) : undefined}
       onKeyDown={handleKeyDown}
       role={role}
       tabIndex={tabIndex}

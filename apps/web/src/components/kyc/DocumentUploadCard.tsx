@@ -124,7 +124,7 @@ export function DocumentUploadCard({
               type="file"
               multiple
               accept={acceptedTypes.join(',')}
-              onChange={() => void handleFileSelect()}
+              onChange={(event) => void handleFileSelect(event)}
               className="hidden"
             />
             <div className="flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-border rounded-lg hover:border-primary transition-colors cursor-pointer">

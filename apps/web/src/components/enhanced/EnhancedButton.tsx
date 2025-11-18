@@ -138,7 +138,7 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
             <div className="relative overflow-hidden">
               <Button
                 ref={ref ?? buttonRef}
-                onClick={() => void handleClick()}
+                onClick={(e) => void handleClick(e)}
                 className={cn(
                   'relative overflow-hidden transition-all duration-300',
                   'hover:shadow-lg hover:-translate-y-0.5',

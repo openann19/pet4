@@ -262,7 +262,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           ref={ref}
           className={buttonClasses}
           disabled={loading || disabled}
-          onClick={() => void handleClick()}
+          onClick={(e) => void handleClick(e)}
           title={tooltip}
           data-tracking-id={trackingId}
           {...accessibilityProps}
@@ -280,7 +280,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={buttonClasses}
         disabled={loading || disabled}
-        onClick={() => void handleClick()}
+        onClick={(e) => void handleClick(e)}
         title={tooltip}
         data-tracking-id={trackingId}
         {...accessibilityProps}

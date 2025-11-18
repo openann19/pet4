@@ -111,7 +111,7 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
               { label: t.auth?.signUp || 'Sign Up', value: 'signup' }
             ]}
             value={mode}
-            onChange={() => void handleModeSwitch()}
+            onChange={(value) => void handleModeSwitch(value)}
             aria-label="Authentication mode"
           />
 

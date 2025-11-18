@@ -109,7 +109,7 @@ export const AdvancedFormDemo: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto p-6">
-      <form onSubmit={() => void handleSubmit()} className="space-y-6">
+      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold">

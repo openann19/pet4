@@ -56,7 +56,7 @@ export function EnhancedButtonWrapper({
       <Button
         variant={buttonVariant}
         size={size}
-        onClick={() => void handleClick()}
+        onClick={(e) => void handleClick(e)}
         disabled={isDisabled}
         className={cn('relative overflow-hidden', enableGlow && 'shadow-lg', className)}
         aria-busy={loading}

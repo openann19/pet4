@@ -147,7 +147,7 @@ export function UltraButton({
             variant={variant}
             size={size}
             className={cn('relative overflow-hidden', className)}
-            onClick={() => void handleClick()}
+            onClick={(e) => void handleClick(e)}
             {...props}
           >
             {enableGlow && (
