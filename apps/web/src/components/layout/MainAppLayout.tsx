@@ -88,8 +88,8 @@ export function MainAppLayout({
       </Suspense>
 
       <AppHeader
-        animations={animations}
-        t={t}
+        animations={animations as any}
+        t={t as any}
         theme={theme}
         toggleTheme={toggleTheme}
         language={language}
@@ -102,7 +102,7 @@ export function MainAppLayout({
         <BillingIssueBanner />
       </Suspense>
 
-      <AppMainContent currentView={currentView} navigation={navigation} animations={animations} />
+      <AppMainContent currentView={currentView} navigation={navigation} animations={animations as any} />
 
       <Suspense fallback={null}>
         <QuickActionsMenu
@@ -141,7 +141,7 @@ export function MainAppLayout({
         setShowMap={setShowMap}
         setShowAdminConsole={setShowAdminConsole}
         setShowThemeSettings={setShowThemeSettings}
-        animations={animations}
+        animations={animations as any}
         totalMatches={totalMatches}
         totalSwipes={totalSwipes}
         successRate={successRate}
