@@ -1,4 +1,4 @@
-import { _motion, MotionView } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { Shield, ShieldCheck, ShieldStar, Clock } from '@phosphor-icons/react';
 import { VERIFICATION_REQUIREMENTS, type VerificationLevel } from '@/lib/verification-types';
 import { cn } from '@/lib/utils';

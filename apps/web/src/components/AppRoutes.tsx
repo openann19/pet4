@@ -74,7 +74,7 @@ export function AppRoutesContent({
               <MainAppLayout
                 currentView={currentView}
                 setCurrentView={setCurrentView}
-                navigation={navigation}
+                navigation={navigation as any}
                 animations={animations}
                 t={t}
                 theme={theme}

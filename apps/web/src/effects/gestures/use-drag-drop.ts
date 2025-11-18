@@ -80,7 +80,7 @@ export function useDragDrop(options: UseDragDropOptions = {}): UseDragDropReturn
     requireConfirmation = false,
   } = options;
 
-  const { _visual, feedback } = useUIConfig();
+  const { visual: _visual, feedback } = useUIConfig();
   const [isDragging, setIsDragging] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const dragCounter = useRef(0);

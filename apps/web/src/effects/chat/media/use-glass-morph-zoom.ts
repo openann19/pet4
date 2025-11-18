@@ -70,7 +70,7 @@ export function useGlassMorphZoom(
   } = options
 
   // Get device refresh rate for adaptive animations
-  const { _hz, scaleDuration } = useDeviceRefreshRate()
+  const { hz: _hz, scaleDuration } = useDeviceRefreshRate()
   const { visual, feedback, animation } = useUIConfig()
 
   const scale = useSharedValue(1)

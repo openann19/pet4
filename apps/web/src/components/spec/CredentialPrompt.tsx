@@ -66,7 +66,7 @@ export function CredentialPrompt({
         <p className="text-sm text-gray-600 mb-4">{currentPrompt.description}</p>
       )}
 
-      <form onSubmit={() => void handleSubmit()} className="space-y-4">
+      <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
         <div>
           <label htmlFor={currentPrompt.key} className="block text-sm font-medium mb-1">
             {currentPrompt.label}

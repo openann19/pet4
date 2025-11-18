@@ -75,7 +75,7 @@ export function WebBubbleWrapper({
         delay: index * staggerDelay,
         ease: 'easeOut',
       }}
-      onClick={() => void onClick()}
+      onClick={onClick ? () => void onClick() : undefined}
       onContextMenu={handleContextMenu}
       className={cn('relative', className)}
       onMouseEnter={() => setIsHovered(true)}

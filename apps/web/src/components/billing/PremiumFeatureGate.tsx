@@ -101,7 +101,7 @@ export function PremiumFeatureGate({
                     variant="outline"
                     size="sm"
                     className="min-w-[120px]"
-                    onClick={() => void onUpgradeClick()}
+                    onClick={onUpgradeClick ? () => void onUpgradeClick() : undefined}
                 >
                     View plans
                 </Button>

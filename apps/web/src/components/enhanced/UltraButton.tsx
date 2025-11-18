@@ -73,7 +73,7 @@ export function UltraButton({
   children,
   enableMagnetic = true,
   enableElastic = true,
-  _enableRipple = true,
+  enableRipple: _enableRipple = true,
   enableGlow = false,
   glowColor = 'rgba(99, 102, 241, 0.5)',
   variant = 'default',
@@ -147,7 +147,7 @@ export function UltraButton({
             variant={variant}
             size={size}
             className={cn('relative overflow-hidden', className)}
-            onClick={() => void handleClick()}
+            onClick={(e) => void handleClick(e)}
             {...props}
           >
             {enableGlow && (

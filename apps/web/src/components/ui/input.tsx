@@ -318,7 +318,7 @@ export const Input = forwardRef<InputRef, InputProps>(
         id={inputId}
         className={inputClasses}
         value={currentValue}
-        onChange={() => void handleChange()}
+        onChange={(e) => void handleChange(e)}
         onFocus={handleFocus}
         onBlur={handleBlur}
         maxLength={maxLength}
@@ -446,7 +446,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement,
   Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'>
 >(({ 
   variant = 'default',
-  _size = 'md', 
+  size: _size = 'md', 
   className,
   rows = 3,
   ...props 

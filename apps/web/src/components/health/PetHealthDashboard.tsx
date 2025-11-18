@@ -4,7 +4,7 @@ import { useSharedValue, useAnimatedStyle, withTiming, MotionView } from '@petsp
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { _springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@petspark/motion';
 import { useStorage } from '@/hooks/use-storage';
 import { createLogger } from '@/lib/logger';

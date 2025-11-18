@@ -35,7 +35,7 @@ import {
   withRepeat,
   withSequence,
   MotionView,
-  _Presence,
+  Presence,
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@petspark/motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';

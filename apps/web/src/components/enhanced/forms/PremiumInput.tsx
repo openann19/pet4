@@ -266,7 +266,7 @@ export function PremiumInput({
           id={inputId}
           type={inputType}
           value={value}
-          onChange={() => void handleChange()}
+          onChange={(e) => void handleChange(e)}
           onFocus={handleFocus}
           onBlur={handleBlur}
           disabled={disabled}

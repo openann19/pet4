@@ -173,7 +173,7 @@ export default function CreateStoryDialog({
         type="file"
         accept="image/*,video/*"
         className="hidden"
-        onChange={() => void handleFileSelect()}
+        onChange={(e) => void handleFileSelect(e)}
       />
       <input
         ref={cameraInputRef}
@@ -181,7 +181,7 @@ export default function CreateStoryDialog({
         accept="image/*,video/*"
         capture="environment"
         className="hidden"
-        onChange={() => void handleFileSelect()}
+        onChange={(e) => void handleFileSelect(e)}
       />
 
       <Dialog open={open} onOpenChange={onOpenChange}>

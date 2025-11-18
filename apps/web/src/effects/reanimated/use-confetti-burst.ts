@@ -5,7 +5,7 @@
 
 import {
   useSharedValue,
-  _useAnimatedStyle,
+  useAnimatedStyle,
   withTiming,
   withSequence,
   interpolate,

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { _motion, MotionView } from '@petspark/motion';
+import { motion, MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck, CheckCircle, Clock, XCircle } from '@phosphor-icons/react';

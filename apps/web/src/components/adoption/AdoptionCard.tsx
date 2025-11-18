@@ -131,7 +131,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
                 style={favoriteButtonAnimation.animatedStyle}
                 onMouseEnter={favoriteButtonAnimation.handleMouseEnter}
                 onMouseLeave={favoriteButtonAnimation.handleMouseLeave}
-                onClick={() => void handleFavoriteClick()}
+                onClick={(e) => void handleFavoriteClick(e)}
                 className="w-9 h-9 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg cursor-pointer"
                 role="button"
                 tabIndex={0}
@@ -221,7 +221,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
             <Button
               size="sm"
               className="gap-1.5"
-              onClick={() => void handleViewDetailsClick()}
+              onClick={(e) => void handleViewDetailsClick(e)}
               type="button"
             >
               <PawPrint size={16} weight="fill" />

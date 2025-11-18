@@ -86,7 +86,7 @@ export function useAccessibility(
     enableFocusTrap = DEFAULT_ENABLE_FOCUS_TRAP,
     enableKeyboardNav = DEFAULT_ENABLE_KEYBOARD_NAV,
     announcePageLoad = DEFAULT_ANNOUNCE_PAGE_LOAD,
-    _skipLinkTarget,
+    skipLinkTarget: _skipLinkTarget,
   } = options
 
   // State

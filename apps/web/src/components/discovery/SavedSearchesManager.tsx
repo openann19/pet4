@@ -56,7 +56,7 @@ interface SearchItemProps {
 function SearchItem({
   search,
   index,
-  _totalItems,
+  totalItems: _totalItems,
   editingId,
   searchName,
   getPreferencesSummary,

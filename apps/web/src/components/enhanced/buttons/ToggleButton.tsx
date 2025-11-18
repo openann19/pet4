@@ -127,7 +127,7 @@ export function ToggleButton({
   return (
     <motion.button
       {...(props as any)}
-      onClick={() => void handleClick()}
+      onClick={(e) => void handleClick(e)}
       disabled={disabled}
       variants={variants}
       animate={checked ? 'checked' : 'unchecked'}

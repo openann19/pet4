@@ -2,7 +2,7 @@ import { useCallback, useState, useRef, useEffect } from 'react';
 import { createLogger } from '@/lib/logger';
 import { getWorkerPool } from '@/lib/worker-pool';
 import {
-  _VideoTimelineError,
+  VideoTimelineError,
   VideoFrameError,
   WaveformError,
   VideoExportError,

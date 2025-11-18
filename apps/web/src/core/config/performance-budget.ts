@@ -5,9 +5,9 @@
 
 import type {
   PerformanceBudgetConfig,
-  _BundleBudget,
-  _LoadTimeBudget,
-  _RuntimeBudget,
+  BundleBudget,
+  LoadTimeBudget,
+  RuntimeBudget,
 } from './performance-budget.config';
 import { DEFAULT_PERFORMANCE_BUDGET } from './performance-budget.config';
 import { createLogger } from '@/lib/logger';
