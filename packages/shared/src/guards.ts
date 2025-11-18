@@ -1,5 +1,4 @@
 // Minimal, pure, safe guards used by codemods (no runtime deps).
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 export function isDefined<T>(v: T | null | undefined): v is T {
   return v !== null && v !== undefined;
 }

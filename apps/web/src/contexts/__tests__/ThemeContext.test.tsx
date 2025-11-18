@@ -136,7 +136,6 @@ describe('ThemeContext', () => {
             });
 
             expect(mockSetModePromise).toHaveBeenCalled();
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const callArg = mockSetModePromise.mock.calls[0]?.[0];
             expect(typeof callArg).toBe('function');
         });

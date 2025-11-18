@@ -7,15 +7,13 @@
  */
 
 import { useMemo } from 'react'
-import { useAnimatedStyle } from 'react-native-reanimated'
-// Layout animations are imported separately due to TypeScript type issues
-// These exist at runtime but TypeScript definitions may be incomplete
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const ReanimatedLayout = require('react-native-reanimated')
-const FadeInImpl = ReanimatedLayout.FadeIn
-const FadeOutImpl = ReanimatedLayout.FadeOut
-const SlideInDownImpl = ReanimatedLayout.SlideInDown
-const SlideOutUpImpl = ReanimatedLayout.SlideOutUp
+import {
+  useAnimatedStyle,
+  FadeIn,
+  FadeOut,
+  SlideInDown,
+  SlideOutUp,
+} from 'react-native-reanimated'
 import { useReducedMotionSV } from '../reduced-motion'
 import { motionDurations } from '../motionTokens'
 import { isTruthy } from '../utils/guards'
@@ -107,9 +105,9 @@ export function useListItemPresenceMotion(
     }
     
     if (useSlide) {
-      return SlideInDownImpl.delay(staggerDelayMs).duration(motionDurations.fast) as any
+      return SlideInDown.delay(staggerDelayMs).duration(motionDurations.fast)
     }
-    return FadeInImpl.delay(staggerDelayMs).duration(motionDurations.fast) as any
+    return FadeIn.delay(staggerDelayMs).duration(motionDurations.fast)
   }, [reducedMotion, useSlide, staggerDelayMs])
   
   const exiting = useMemo(() => {
@@ -118,9 +116,9 @@ export function useListItemPresenceMotion(
     }
     
     if (useSlide) {
-      return SlideOutUpImpl.duration(motionDurations.fast) as any
+      return SlideOutUp.duration(motionDurations.fast)
     }
-    return FadeOutImpl.duration(motionDurations.fast) as any
+    return FadeOut.duration(motionDurations.fast)
   }, [reducedMotion, useSlide])
   
   // Motion props for compatibility (empty on mobile)

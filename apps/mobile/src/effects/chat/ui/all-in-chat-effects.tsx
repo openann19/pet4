@@ -936,18 +936,16 @@ export function PrismShimmerOverlay({
  * The onStart/onUpdate callbacks don't accept event parameters according to types,
  * but they do at runtime. Needs gesture-handler upgrade or workaround.
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export function EmojiTrail({
-  emoji = '✨',
-  lifeMs = 900,
-  step = 10,
-  max = 64,
-  onComplete,
+  emoji: _emoji = '✨',
+  lifeMs: _lifeMs = 900,
+  step: _step = 10,
+  max: _max = 64,
+  onComplete: _onComplete,
 }: EmojiTrailProps): React.JSX.Element {
   // Component disabled - return empty view
   return <View />
 }
-/* eslint-enable @typescript-eslint/no-unused-vars */
 
 // Original implementation commented out due to types/runtime mismatch:
 /*

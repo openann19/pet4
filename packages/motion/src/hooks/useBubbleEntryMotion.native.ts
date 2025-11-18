@@ -8,15 +8,17 @@
  */
 
 import { useCallback, useEffect, useMemo } from 'react'
-import { useSharedValue, withSpring, withTiming, withDelay, useAnimatedStyle } from 'react-native-reanimated'
-// Layout animations are imported separately due to TypeScript type issues
-// These exist at runtime but TypeScript definitions may be incomplete
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const ReanimatedLayout = require('react-native-reanimated')
-const FadeInImpl = ReanimatedLayout.FadeIn
-const FadeOutImpl = ReanimatedLayout.FadeOut
-const SlideInRightImpl = ReanimatedLayout.SlideInRight
-const SlideInLeftImpl = ReanimatedLayout.SlideInLeft
+import {
+  useSharedValue,
+  withSpring,
+  withTiming,
+  withDelay,
+  useAnimatedStyle,
+  FadeIn,
+  FadeOut,
+  SlideInRight,
+  SlideInLeft,
+} from 'react-native-reanimated'
 import { useReducedMotionSV, getReducedMotionDuration } from '../reduced-motion'
 import { motionDurations, motionSprings } from '../motionTokens'
 import { isTruthy } from '../utils/guards'
@@ -52,12 +54,12 @@ export interface UseBubbleEntryMotionReturn {
   /**
    * Entering animation (for use with Animated.View entering prop)
    */
-  entering: any | undefined
+  entering: import('react-native-reanimated').BaseAnimationBuilder | undefined
   
   /**
    * Exiting animation (for use with Animated.View exiting prop)
    */
-  exiting: any | undefined
+  exiting: import('react-native-reanimated').BaseAnimationBuilder | undefined
   
   /**
    * Motion props (for compatibility with web API, returns empty object)
@@ -151,16 +153,16 @@ export function useBubbleEntryMotion(
     }
     
     if (resolvedDirection === 'right') {
-      return SlideInRightImpl.delay(staggerDelayMs).duration(motionDurations.normal) as any
+      return SlideInRight.delay(staggerDelayMs).duration(motionDurations.normal)
     }
-    return SlideInLeftImpl.delay(staggerDelayMs).duration(motionDurations.normal) as any
+    return SlideInLeft.delay(staggerDelayMs).duration(motionDurations.normal)
   }, [reducedMotion, resolvedDirection, staggerDelayMs])
   
   const exiting = useMemo(() => {
     if (isTruthy(reducedMotion.value)) {
       return undefined
     }
-    return FadeOutImpl.duration(motionDurations.fast) as any
+    return FadeOut.duration(motionDurations.fast)
   }, [reducedMotion])
   
   // Motion props for compatibility (empty on mobile)

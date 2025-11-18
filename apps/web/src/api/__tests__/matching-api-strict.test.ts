@@ -165,8 +165,7 @@ describe('MatchingAPIStrict.updateConfig', () => {
   });
 
   it('should handle undefined values to clear fields', async () => {
-    // eslint-disable-next-line no-restricted-syntax
-    const config = await matchingAPIStrict.updateConfig({ weights: undefined } as { weights?: unknown });
+    const config = await matchingAPIStrict.updateConfig({ weights: undefined });
 
     expect(config).toMatchObject({
       id: expect.any(String),
