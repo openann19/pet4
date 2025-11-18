@@ -346,7 +346,6 @@ describe('design-tokens', () => {
 
         it('handles window undefined gracefully', () => {
             const originalWindow = global.window;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const globalAny = global as any;
             const originalWindowProp = globalAny.window;
             delete globalAny.window;

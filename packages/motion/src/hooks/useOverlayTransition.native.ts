@@ -8,21 +8,22 @@
  */
 
 import { useMemo, useEffect } from 'react'
-import { useSharedValue, withSpring, withTiming, useAnimatedStyle } from 'react-native-reanimated'
-// Layout animations are imported separately due to TypeScript type issues
-// These exist at runtime but TypeScript definitions may be incomplete
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const ReanimatedLayout = require('react-native-reanimated')
-const FadeInImpl = ReanimatedLayout.FadeIn
-const FadeOutImpl = ReanimatedLayout.FadeOut
-const SlideInDownImpl = ReanimatedLayout.SlideInDown
-const SlideOutDownImpl = ReanimatedLayout.SlideOutDown
-const SlideInUpImpl = ReanimatedLayout.SlideInUp
-const SlideOutUpImpl = ReanimatedLayout.SlideOutUp
-const SlideInLeftImpl = ReanimatedLayout.SlideInLeft
-const SlideOutLeftImpl = ReanimatedLayout.SlideOutLeft
-const SlideInRightImpl = ReanimatedLayout.SlideInRight
-const SlideOutRightImpl = ReanimatedLayout.SlideOutRight
+import {
+  useSharedValue,
+  withSpring,
+  withTiming,
+  useAnimatedStyle,
+  FadeIn,
+  FadeOut,
+  SlideInDown,
+  SlideOutDown,
+  SlideInUp,
+  SlideOutUp,
+  SlideInLeft,
+  SlideOutLeft,
+  SlideInRight,
+  SlideOutRight,
+} from 'react-native-reanimated'
 import { useReducedMotionSV, getReducedMotionDuration } from '../reduced-motion'
 import { motionSprings, motionDurations } from '../motionTokens'
 import { isTruthy } from '../utils/guards'
@@ -175,14 +176,14 @@ export function useOverlayTransition(
     if (isTruthy(reducedMotion.value)) {
       return undefined
     }
-    return FadeInImpl.duration(motionDurations.fast) as any
+    return FadeIn.duration(motionDurations.fast)
   }, [reducedMotion])
   
   const backdropExiting = useMemo(() => {
     if (isTruthy(reducedMotion.value)) {
       return undefined
     }
-    return FadeOutImpl.duration(motionDurations.fast) as any
+    return FadeOut.duration(motionDurations.fast)
   }, [reducedMotion])
   
   const contentEntering = useMemo(() => {
@@ -191,24 +192,24 @@ export function useOverlayTransition(
     }
     
     if (type === 'sheet') {
-      return SlideInDownImpl.duration(motionDurations.normal) as any
+      return SlideInDown.duration(motionDurations.normal)
     }
     
     if (type === 'drawer') {
       switch (drawerSide) {
         case 'left':
-          return SlideInLeftImpl.duration(motionDurations.normal) as any
+          return SlideInLeft.duration(motionDurations.normal)
         case 'right':
-          return SlideInRightImpl.duration(motionDurations.normal) as any
+          return SlideInRight.duration(motionDurations.normal)
         case 'top':
-          return SlideInUpImpl.duration(motionDurations.normal) as any
+          return SlideInUp.duration(motionDurations.normal)
         case 'bottom':
-          return SlideInDownImpl.duration(motionDurations.normal) as any
+          return SlideInDown.duration(motionDurations.normal)
       }
     }
     
     // modal
-    return FadeInImpl.duration(motionDurations.normal) as any
+    return FadeIn.duration(motionDurations.normal)
   }, [reducedMotion, type, drawerSide])
   
   const contentExiting = useMemo(() => {
@@ -217,24 +218,24 @@ export function useOverlayTransition(
     }
     
     if (type === 'sheet') {
-      return SlideOutDownImpl.duration(motionDurations.fast) as any
+      return SlideOutDown.duration(motionDurations.fast)
     }
     
     if (type === 'drawer') {
       switch (drawerSide) {
         case 'left':
-          return SlideOutLeftImpl.duration(motionDurations.fast) as any
+          return SlideOutLeft.duration(motionDurations.fast)
         case 'right':
-          return SlideOutRightImpl.duration(motionDurations.fast) as any
+          return SlideOutRight.duration(motionDurations.fast)
         case 'top':
-          return SlideOutUpImpl.duration(motionDurations.fast) as any
+          return SlideOutUp.duration(motionDurations.fast)
         case 'bottom':
-          return SlideOutDownImpl.duration(motionDurations.fast) as any
+          return SlideOutDown.duration(motionDurations.fast)
       }
     }
     
     // modal
-    return FadeOutImpl.duration(motionDurations.fast) as any
+    return FadeOut.duration(motionDurations.fast)
   }, [reducedMotion, type, drawerSide])
   
   const backdropProps = useMemo(() => ({

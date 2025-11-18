@@ -37,8 +37,7 @@ export function useAdvancedChatWindowProps({
   const setMessagesWrapper: React.Dispatch<React.SetStateAction<typeof state.messages>> = (
     updater: React.SetStateAction<typeof state.messages>
   ): void => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    state.setMessages(updater);
+    void state.setMessages(updater);
   };
 
   // Message sending
