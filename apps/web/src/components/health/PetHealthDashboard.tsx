@@ -4,7 +4,7 @@ import { useSharedValue, useAnimatedStyle, withTiming, MotionView } from '@petsp
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { _springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import type { AnimatedStyle } from '@petspark/motion';
 import { useStorage } from '@/hooks/use-storage';
 import { createLogger } from '@/lib/logger';
@@ -531,7 +531,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
                     <CardTitle>Vaccination Records</CardTitle>
                     <CardDescription>Track all vaccination history</CardDescription>
                   </div>
-                  <Button onClick={handleAddVaccination} size="sm">
+                  <Button onClick={() => void handleAddVaccination()} size="sm">
                     <Plus size={16} className="mr-2" />
                     Add Vaccination
                   </Button>
@@ -564,7 +564,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
                     <CardTitle>Health Records</CardTitle>
                     <CardDescription>All medical history and visits</CardDescription>
                   </div>
-                  <Button onClick={handleAddHealthRecord} size="sm">
+                  <Button onClick={() => void handleAddHealthRecord()} size="sm">
                     <Plus size={16} className="mr-2" />
                     Add Record
                   </Button>
@@ -597,7 +597,7 @@ export function PetHealthDashboard({ pet, onClose }: PetHealthDashboardProps): J
                     <CardTitle>Reminders</CardTitle>
                     <CardDescription>Upcoming appointments and tasks</CardDescription>
                   </div>
-                  <Button onClick={handleAddReminder} size="sm">
+                  <Button onClick={() => void handleAddReminder()} size="sm">
                     <Plus size={16} className="mr-2" />
                     Add Reminder
                   </Button>

@@ -40,7 +40,7 @@ export function PremiumToggle({
 
   useEffect(() => {
     const config = SIZE_CONFIG[size];
-    const maxTranslate = config.width - config.thumb - 4;
+    const _maxTranslate = config.width - config.thumb - 4;
     animate(thumbPosition, checked ? 1 : 0, {
       type: 'spring',
       damping: springConfigs.bouncy.damping,
@@ -120,7 +120,7 @@ export function PremiumToggle({
     )}>
       <button
         type="button"
-        onClick={handleToggle}
+        onClick={() => void handleToggle()}
         disabled={disabled}
         role="switch"
         className={cn(
@@ -161,7 +161,7 @@ export function PremiumToggle({
       </button>
       {label && (
         <label
-          onClick={handleToggle}
+          onClick={() => void handleToggle()}
           htmlFor={undefined}
           className={cn(
             getTypographyClasses('caption'),

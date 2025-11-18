@@ -55,7 +55,7 @@ export function SignUpFormBody({
   onSubmit,
 }: SignUpFormBodyProps) {
   return (
-    <form onSubmit={onSubmit} className={getSpacingClassesFromConfig({ spaceY: 'lg' })}>
+    <form onSubmit={() => void onSubmit()} className={getSpacingClassesFromConfig({ spaceY: 'lg' })}>
       <SignUpFormFields
         name={name}
         email={email}

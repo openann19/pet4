@@ -253,14 +253,14 @@ export function useActiveMatchesCount(): number {
 /**
  * Alias hooks for backward compatibility with tests
  */
-export function useUserMatches(userId: string): UseQueryResult<Match[], Error> {
+export function useUserMatches(_userId: string): UseQueryResult<Match[], Error> {
   return useMatches();
 }
 
-export function useUserSwipes(userId: string): UseQueryResult<SwipeAction[], Error> {
+export function useUserSwipes(_userId: string): UseQueryResult<SwipeAction[], Error> {
   return useSwipeHistory();
 }
 
-export function useUserPlaydates(userId: string): UseQueryResult<Playdate[], Error> {
+export function useUserPlaydates(_userId: string): UseQueryResult<Playdate[], Error> {
   return usePlaydates();
 }

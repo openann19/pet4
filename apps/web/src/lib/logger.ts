@@ -98,7 +98,7 @@ const parseLogLevel = (level?: string | null): LogLevel | undefined => {
   return entry ? entry[1] : undefined
 }
 
-const resolveDefaultLevel = (): LogLevel => {
+const _resolveDefaultLevel = (): LogLevel => {
   let envLevel: string | undefined
 
   if (typeof import.meta !== 'undefined') {

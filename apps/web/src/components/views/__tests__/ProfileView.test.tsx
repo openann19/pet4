@@ -58,7 +58,7 @@ vi.mock('@/components/payments/SubscriptionStatusCard', () => ({
 vi.mock('@/components/health/PetHealthDashboard', () => ({
   default: ({ onClose }: { onClose: () => void }) => (
     <div data-testid="health-dashboard">
-      <button onClick={onClose}>Close</button>
+      <button onClick={() => void onClose()}>Close</button>
     </div>
   ),
 }));

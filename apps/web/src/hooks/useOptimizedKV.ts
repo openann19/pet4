@@ -6,13 +6,13 @@ export function useOptimizedKV<T>(key: string, defaultValue: T) {
 
   const optimizedSetValue = useCallback(
     (newValue: T | ((current: T) => T)) => {
-      setValue(newValue);
+      void setValue(newValue);
     },
     [setValue]
   );
 
   const optimizedDeleteValue = useCallback(() => {
-    deleteValue();
+    void deleteValue();
   }, [deleteValue]);
 
   return [value, optimizedSetValue, optimizedDeleteValue] as const;
@@ -28,7 +28,7 @@ export function useDebouncedKV<T>(key: string, defaultValue: T, delay = 300) {
         clearTimeout(timeoutRef.current);
       }
       timeoutRef.current = setTimeout(() => {
-        setValue(newValue);
+        void setValue(newValue);
         timeoutRef.current = null;
       }, delay);
     },

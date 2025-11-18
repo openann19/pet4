@@ -60,7 +60,7 @@ export function NotificationCenter() {
   };
 
   const clearAll = () => {
-    setNotifications([]);
+    void setNotifications([]);
   };
 
   return (
@@ -89,7 +89,7 @@ export function NotificationCenter() {
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold text-lg">Notifications</h3>
           {unreadCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={markAllAsRead} className="text-xs">
+            <Button variant="ghost" size="sm" onClick={() => void markAllAsRead()} className="text-xs">
               <CheckCircle size={16} className="mr-1" />
               Mark all read
             </Button>
@@ -163,7 +163,7 @@ export function NotificationCenter() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={clearAll}
+              onClick={() => void clearAll()}
               className="w-full text-xs text-muted-foreground"
             >
               Clear all notifications

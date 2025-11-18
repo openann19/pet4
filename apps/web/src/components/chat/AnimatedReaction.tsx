@@ -41,7 +41,7 @@ export function AnimatedReaction({
   return (
     <MotionView
       style={animatedStyle as unknown as MotionStyle}
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       className={cn('text-2xl cursor-pointer select-none', className)}
     >
       {emoji}

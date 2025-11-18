@@ -31,7 +31,7 @@ export function GenerateProfilesModal({
         <MotionView
             style={generateProfilesModal.style}
             className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4"
-            onClick={onClose}
+            onClick={() => void onClose()}
         >
             <MotionView
                 style={generateProfilesContent.style}
@@ -42,7 +42,7 @@ export function GenerateProfilesModal({
                     <GenerateProfilesButton />
                 </Suspense>
                 <MotionView style={closeButtonBounce.animatedStyle}>
-                    <Button variant="outline" className="w-full mt-4" onClick={onClose}>
+                    <Button variant="outline" className="w-full mt-4" onClick={() => void onClose()}>
                         Close
                     </Button>
                 </MotionView>

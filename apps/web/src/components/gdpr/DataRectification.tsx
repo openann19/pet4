@@ -136,7 +136,7 @@ export function DataRectification({ userId, onRectificationComplete }: DataRecti
             <Button
               type="button"
               variant="outline"
-              onClick={handleAddCorrection}
+              onClick={() => void handleAddCorrection()}
               disabled={isSubmitting || !fieldName.trim() || !fieldValue.trim()}
             >
               Add
@@ -200,7 +200,7 @@ export function DataRectification({ userId, onRectificationComplete }: DataRecti
         )}
 
         <Button
-          onClick={handleSubmit}
+          onClick={() => void handleSubmit()}
           disabled={isSubmitting || Object.keys(corrections).length === 0}
           className="w-full"
         >

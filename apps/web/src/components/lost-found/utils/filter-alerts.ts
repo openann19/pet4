@@ -26,7 +26,7 @@ export function filterAlerts({
     list = list.filter(
       (a) =>
         a.petSummary.name.toLowerCase().includes(query) ||
-        a.petSummary.breed?.toLowerCase().includes(query) ||
+        a.petSummary.breed?.toLowerCase().includes(query) ?? 
         a.petSummary.species.toLowerCase().includes(query) ||
         a.lastSeen.description?.toLowerCase().includes(query)
     );

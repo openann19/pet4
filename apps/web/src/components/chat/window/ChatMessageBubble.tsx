@@ -50,7 +50,7 @@ export interface ChatMessageBubbleProps {
 export function ChatMessageBubble({
   message,
   isCurrentUser,
-  currentUserId,
+  _currentUserId,
   voiceMessages,
   playingVoice,
   showReactions,

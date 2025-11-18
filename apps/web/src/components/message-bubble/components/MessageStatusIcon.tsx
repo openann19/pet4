@@ -21,7 +21,7 @@ export function MessageStatusIcon({ status, statusStyle, onRetry }: MessageStatu
   if (status === 'failed') {
     return (
       <button
-        onClick={onRetry}
+        onClick={() => void onRetry()}
         className="text-destructive hover:text-destructive/80"
         aria-label="Retry sending"
       >

@@ -203,7 +203,7 @@ export function MapLocationPicker({
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            onClick={handleUseCurrentLocation}
+            onClick={() => void handleUseCurrentLocation()}
             className="flex-1"
             disabled={isLoadingAddress}
           >
@@ -212,7 +212,7 @@ export function MapLocationPicker({
           </Button>
           <Button
             variant="default"
-            onClick={handleConfirm}
+            onClick={() => void handleConfirm()}
             className="flex-1"
             disabled={isLoadingAddress}
           >

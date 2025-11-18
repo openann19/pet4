@@ -56,7 +56,7 @@ export function LocationBubble({
       <MotionView
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        onClick={handleTap}
+        onClick={() => void handleTap()}
         className={cn(
           'relative rounded-2xl overflow-hidden border cursor-pointer group',
           isOwn ? 'bg-primary/10 border-primary/30' : 'bg-muted border-border',
@@ -127,7 +127,7 @@ export function LocationBubble({
                 {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
               </p>
             </div>
-            <Button className="w-full" onClick={handleOpenInMaps}>
+            <Button className="w-full" onClick={() => void handleOpenInMaps()}>
               <NavigationArrow size={18} className="mr-2" />
               {t.map?.openInMaps ?? 'Open in Maps'}
             </Button>
@@ -174,7 +174,7 @@ export function LocationPicker({
         const err = error instanceof Error ? error : new Error(String(error));
         logger.error('LocationPicker getCurrentLocation error', err);
         // Fallback to current location or default location
-        setSelectedLocation(currentLocation || { lat: 40.7128, lng: -74.006 });
+        setSelectedLocation(currentLocation ?? { lat: 40.7128, lng: -74.006 });
       });
   }, [sharingPrecise, mapSettings.PRIVACY_GRID_METERS, currentLocation]);
 
@@ -232,10 +232,10 @@ export function LocationPicker({
       )}
 
       <div className="flex gap-2">
-        <Button variant="outline" className="flex-1" onClick={onClose}>
+        <Button variant="outline" className="flex-1" onClick={() => void onClose()}>
           {t.common.cancel ?? 'Cancel'}
         </Button>
-        <Button className="flex-1" onClick={handleShare} disabled={!selectedLocation}>
+        <Button className="flex-1" onClick={() => void handleShare()} disabled={!selectedLocation}>
           <MapPin size={18} className="mr-2" />
           {t.map?.shareLocation ?? 'Share'}
         </Button>

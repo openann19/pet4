@@ -480,7 +480,7 @@ export function AdoptionFiltersSheet({
             </Button>
           )}
           <Button 
-            onClick={handleApply} 
+            onClick={() => void handleApply()} 
             size="lg"
             className="w-full sm:w-auto rounded-xl shadow-lg hover:shadow-xl transition-all" 
             aria-label="Apply filters"

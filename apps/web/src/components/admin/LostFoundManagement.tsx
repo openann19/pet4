@@ -205,16 +205,16 @@ export function LostFoundManagement() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Breed</p>
-                      <p className="font-medium">{selectedAlert.petSummary.breed || 'Mixed'}</p>
+                      <p className="font-medium">{selectedAlert.petSummary.breed ?? 'Mixed'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Color</p>
-                      <p className="font-medium">{selectedAlert.petSummary.color || 'Unknown'}</p>
+                      <p className="font-medium">{selectedAlert.petSummary.color ?? 'Unknown'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Size</p>
                       <p className="font-medium capitalize">
-                        {selectedAlert.petSummary.size || 'Unknown'}
+                        {selectedAlert.petSummary.size ?? 'Unknown'}
                       </p>
                     </div>
                   </div>

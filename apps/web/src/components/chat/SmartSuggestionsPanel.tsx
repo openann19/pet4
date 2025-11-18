@@ -49,7 +49,7 @@ export default function SmartSuggestionsPanel({ onSelect, onDismiss }: SmartSugg
             variant="ghost"
             size="icon"
             className="h-6 w-6"
-            onClick={onDismiss}
+            onClick={() => void onDismiss()}
             aria-label="Dismiss smart suggestions"
           >
             <X size={12} />

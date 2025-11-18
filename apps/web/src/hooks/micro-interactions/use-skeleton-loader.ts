@@ -64,7 +64,7 @@ export function useSkeletonLoader(
 ): UseSkeletonLoaderReturn {
   const {
     enabled = DEFAULT_ENABLED,
-    shape = 'rectangle',
+    _shape = 'rectangle',
     shimmerSpeed = DEFAULT_SHIMMER_SPEED,
     pulseSpeed = DEFAULT_PULSE_SPEED,
     staggerDelay = DEFAULT_STAGGER_DELAY,

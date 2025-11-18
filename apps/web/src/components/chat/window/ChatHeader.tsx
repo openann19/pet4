@@ -86,7 +86,7 @@ function CallButton({ style, icon, onClick, onMouseEnter, onMouseLeave, title, a
         variant="ghost"
         size="sm"
         className="shrink-0 w-10 h-10 p-0"
-        onClick={onClick}
+        onClick={() => void onClick()}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         title={title}
@@ -112,7 +112,7 @@ function ChatHeaderContent({ room, typingUsers, typingContainerStyle, typingText
         <Button
           variant="ghost"
           size="sm"
-          onClick={onBack}
+          onClick={() => void onBack()}
           className="md:hidden w-10 h-10 p-0"
           aria-label="Back to chat list"
         >
@@ -170,7 +170,7 @@ export function ChatHeader({
       <CallButton
         style={videoButtonStyleValue}
         icon={<VideoCamera size={24} weight="regular" />}
-        onClick={onVideoCall}
+        onClick={() => void onVideoCall()}
         onMouseEnter={videoButtonHover.handleEnter}
         onMouseLeave={videoButtonHover.handleLeave}
         title="Start video call"
@@ -179,7 +179,7 @@ export function ChatHeader({
       <CallButton
         style={voiceButtonStyleValue}
         icon={<Phone size={24} weight="regular" />}
-        onClick={onVoiceCall}
+        onClick={() => void onVoiceCall()}
         onMouseEnter={voiceButtonHover.handleEnter}
         onMouseLeave={voiceButtonHover.handleLeave}
         title="Start voice call"

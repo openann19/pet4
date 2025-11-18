@@ -1,5 +1,5 @@
 import { makeRng } from '@petspark/shared';
-import { motion, MotionView } from '@petspark/motion';
+import { _motion, MotionView } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { useUIConfig } from "@/hooks/use-ui-config";
 

@@ -117,7 +117,7 @@ export function KeyboardShortcutsHelp({ open, onClose, context }: KeyboardShortc
             Keyboard Shortcuts
           </h2>
           <button
-            onClick={onClose}
+            onClick={() => void onClose()}
             aria-label="Close keyboard shortcuts help"
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 focus-ring"
           >

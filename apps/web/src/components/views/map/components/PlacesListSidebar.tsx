@@ -47,7 +47,7 @@ export function PlacesListSidebar({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={onClose}
+                onClick={() => void onClose()}
                 aria-label="Close places list"
               >
                 <X size={20} />

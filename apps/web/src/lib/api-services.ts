@@ -5,7 +5,7 @@ import {
   matchSchema,
   messageSchema,
   userSchema,
-  authTokensSchema,
+  _authTokensSchema,
   notificationSchema,
   adoptionProfileSchema,
   communityPostSchema,

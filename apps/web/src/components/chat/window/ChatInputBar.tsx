@@ -88,7 +88,7 @@ export function ChatInputBar({
   emojiButtonTap,
   emojiButtonHover,
   sendButtonHover,
-  sendButtonTap,
+  _sendButtonTap,
   onInputChange,
   onSendMessage,
   onUseTemplate,

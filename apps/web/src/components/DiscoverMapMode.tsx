@@ -239,7 +239,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
                 variant="outline"
                 size="lg"
                 className="flex-1 h-14 text-lg"
-                onClick={handlePass}
+                onClick={() => void handlePass()}
               >
                 <X size={24} className="mr-2" />
                 {t.discover.pass}
@@ -247,7 +247,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
               <Button
                 size="lg"
                 className="flex-1 h-14 text-lg bg-linear-to-r from-primary to-accent"
-                onClick={handleLike}
+                onClick={() => void handleLike()}
               >
                 <Heart size={24} className="mr-2" weight="fill" />
                 {t.discover.like}

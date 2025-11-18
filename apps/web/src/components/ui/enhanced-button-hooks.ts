@@ -8,7 +8,7 @@ import {
   withTiming,
   withRepeat,
   interpolate,
-  type Transition,
+  type _Transition,
 } from '@petspark/motion';
 import { type AnimatedStyle as ViewAnimatedStyle } from '@/effects/reanimated/animated-view';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';

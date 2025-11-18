@@ -94,7 +94,7 @@ export function AppHeader({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={onToggleLanguage}
+                onClick={() => void onToggleLanguage()}
                 className="rounded-full h-9 px-3 hover:bg-primary/15 active:bg-primary/25 transition-all duration-300 shadow-lg hover:shadow-primary/20 flex items-center gap-1.5"
                 aria-label={language === 'en' ? 'Switch to Bulgarian' : 'Превключи на English'}
                 aria-pressed={language === 'bg'}
@@ -118,7 +118,7 @@ export function AppHeader({
                 variant="ghost"
                 size="sm"
                 isIconOnly
-                onClick={onOpenAdminConsole}
+                onClick={() => void onOpenAdminConsole()}
                 className="rounded-full hover:bg-primary/15 active:bg-primary/25 transition-all duration-300 shadow-lg hover:shadow-primary/20 w-10 h-10 p-0"
                 aria-label="Admin Console"
                 title="Admin Console"
@@ -136,7 +136,7 @@ export function AppHeader({
                 variant="ghost"
                 size="sm"
                 isIconOnly
-                onClick={onToggleTheme}
+                onClick={() => void onToggleTheme()}
                 className="rounded-full hover:bg-primary/15 active:bg-primary/25 transition-all duration-300 shadow-lg hover:shadow-primary/20 w-10 h-10 p-0"
                 aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               >
@@ -157,7 +157,7 @@ export function AppHeader({
                 variant="ghost"
                 size="sm"
                 isIconOnly
-                onClick={onOpenThemeSettings}
+                onClick={() => void onOpenThemeSettings()}
                 className="rounded-full hover:bg-primary/15 active:bg-primary/25 transition-all duration-300 shadow-lg hover:shadow-primary/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 aria-label="Theme Settings"
                 title="Ultra Theme Settings"

@@ -74,7 +74,7 @@ export default function HighlightViewer({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
-      onClick={onClose}
+      onClick={() => void onClose()}
     >
       <MotionView
         initial={{ y: '100%', opacity: 0 }}
@@ -98,7 +98,7 @@ export default function HighlightViewer({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={handleTogglePin}
+                  onClick={() => void handleTogglePin()}
                   className="shrink-0"
                   aria-label={highlight.isPinned ? 'Unpin highlight' : 'Pin highlight'}
                 >
@@ -112,7 +112,7 @@ export default function HighlightViewer({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={handleDelete}
+                  onClick={() => void handleDelete()}
                   className="shrink-0 text-destructive hover:text-destructive"
                   aria-label="Delete highlight"
                 >
@@ -124,7 +124,7 @@ export default function HighlightViewer({
             <Button
               variant="ghost"
               size="icon"
-              onClick={onClose}
+              onClick={() => void onClose()}
               className="shrink-0"
               aria-label="Close highlight viewer"
             >
@@ -146,7 +146,7 @@ export default function HighlightViewer({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.03 }}
-                aria-label={`View story ${index + 1}: ${story.caption || 'Untitled story'}`}
+                aria-label={`View story ${index + 1}: ${story.caption ?? 'Untitled story'}`}
               >
                   <img
                     src={story.thumbnailUrl || story.mediaUrl}

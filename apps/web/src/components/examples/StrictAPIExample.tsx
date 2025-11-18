@@ -67,7 +67,7 @@ export function AdoptionListingUpdateExample() {
         <Label htmlFor="petName">Pet Name</Label>
         <Input id="petName" value={petName} onChange={(e) => setPetName(e.target.value)} />
       </div>
-      <Button onClick={handleUpdate}>Update Listing</Button>
+      <Button onClick={() => void handleUpdate()}>Update Listing</Button>
     </div>
   );
 }
@@ -116,7 +116,7 @@ export function PreferencesUpdateExample() {
           Clear distance
         </Label>
       </div>
-      <Button onClick={handleUpdatePreferences}>Update Preferences</Button>
+      <Button onClick={() => void handleUpdatePreferences()}>Update Preferences</Button>
     </div>
   );
 }

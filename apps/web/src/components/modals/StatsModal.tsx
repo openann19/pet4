@@ -37,7 +37,7 @@ export function StatsModal({
         <MotionView
             style={statsModal.style}
             className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4"
-            onClick={onClose}
+            onClick={() => void onClose()}
         >
             <MotionView
                 style={statsContent.style}
@@ -48,7 +48,7 @@ export function StatsModal({
                     <StatsCard totalMatches={totalMatches} totalSwipes={totalSwipes} successRate={successRate} />
                 </Suspense>
                 <MotionView style={closeButtonBounce.animatedStyle}>
-                    <Button variant="outline" className="w-full mt-4" onClick={onClose}>
+                    <Button variant="outline" className="w-full mt-4" onClick={() => void onClose()}>
                         Close
                     </Button>
                 </MotionView>

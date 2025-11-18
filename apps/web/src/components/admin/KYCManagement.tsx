@@ -519,7 +519,7 @@ export function KYCManagement() {
 
                   <div className="grid grid-cols-2 gap-2">
                     <Button
-                      onClick={handleVerify}
+                      onClick={() => void handleVerify()}
                       disabled={loading}
                       className="bg-green-600 hover:bg-green-700"
                     >
@@ -527,7 +527,7 @@ export function KYCManagement() {
                       Verify & Approve
                     </Button>
                     <Button
-                      onClick={handleReject}
+                      onClick={() => void handleReject()}
                       disabled={loading || !rejectText}
                       variant="destructive"
                     >

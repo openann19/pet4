@@ -54,7 +54,7 @@ function TopBar({
         variant="outline"
         size="sm"
         className="rounded-full border-slate-600/70 bg-slate-900/60 text-slate-200 hover:bg-slate-800"
-        onClick={onClose}
+        onClick={() => void onClose()}
       >
         Minimize
       </Button>
@@ -68,7 +68,7 @@ const MuteBtn = ({ isMuted, onToggleMute }: { isMuted: boolean; onToggleMute: ()
     size="sm"
     isIconOnly
     variant="outline"
-    onClick={onToggleMute}
+    onClick={() => void onToggleMute()}
     aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
     className={cn(
       'rounded-full border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800',
@@ -91,7 +91,7 @@ const CameraBtn = ({
     size="sm"
     isIconOnly
     variant="outline"
-    onClick={onToggleCamera}
+    onClick={() => void onToggleCamera()}
     aria-label={isCameraOff ? 'Turn camera on' : 'Turn camera off'}
     className={cn(
       'rounded-full border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800',
@@ -116,7 +116,7 @@ const ScreenShareBtn = ({
     size="sm"
     isIconOnly
     variant="outline"
-    onClick={onToggleScreenShare}
+    onClick={() => void onToggleScreenShare()}
     aria-label={isScreenSharing ? 'Stop screen sharing' : 'Share screen'}
     disabled={!isActive}
     className={cn(
@@ -134,7 +134,7 @@ const EndBtn = ({ onEndCall }: { onEndCall: () => void }) => (
     size="sm"
     isIconOnly
     variant="destructive"
-    onClick={onEndCall}
+    onClick={() => void onEndCall()}
     aria-label="End call"
     className="rounded-full bg-red-600 text-white hover:bg-red-700"
   >

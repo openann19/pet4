@@ -5,8 +5,8 @@ import { useMotionValue, animate, type MotionValue, type Variants as FramerVaria
 import {
   springConfigs,
   timingConfigs,
-  type SpringConfig,
-  type TimingConfig,
+  type _SpringConfig,
+  type _TimingConfig,
 } from '@/effects/reanimated/transitions';
 
 export interface VariantDefinition {
@@ -123,7 +123,7 @@ export function useMotionVariants(options: UseMotionVariantsOptions = {}): UseMo
 
   const initialVariant = getVariantValue(variants, initial, { opacity: 1, scale: 1 });
   const animateVariant = getVariantValue(variants, animate, { opacity: 1, scale: 1 });
-  const exitVariant = getVariantValue(variants, exit, { opacity: 0, scale: 0.95 });
+  const _exitVariant = getVariantValue(variants, exit, { opacity: 0, scale: 0.95 });
 
   const opacity = useMotionValue(initialVariant.opacity ?? animateVariant.opacity ?? 1);
   const scale = useMotionValue(initialVariant.scale ?? animateVariant.scale ?? 1);

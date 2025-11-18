@@ -23,7 +23,7 @@ export function TypingIndicator({ users }: TypingIndicatorProps): JSX.Element {
     <MotionView style={animation.animatedStyle} className="flex items-end gap-2 flex-row">
       <Avatar className="w-8 h-8 ring-2 ring-white/20 shrink-0">
         <AvatarFallback className="bg-linear-to-br from-secondary to-primary text-white text-xs font-bold">
-          {users[0]?.userName?.[0] || '?'}
+          {users[0]?.userName?.[0] ?? '?'}
         </AvatarFallback>
       </Avatar>
       <WebBubbleWrapper showTyping isIncoming>

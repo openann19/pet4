@@ -39,7 +39,7 @@ export function LiveStreamManagement() {
           category: apiStream.category as LiveStream['category'],
           status,
           allowChat: apiStream.allowChat,
-          maxDuration: apiStream.maxDuration || 60,
+          maxDuration: apiStream.maxDuration ?? 60,
           startedAt: apiStream.startedAt || apiStream.createdAt,
           endedAt: apiStream.endedAt,
           viewerCount: apiStream.viewerCount,

@@ -33,7 +33,7 @@ export interface EnhancedButtonProps extends Omit<ComponentProps<'button'>, 'siz
 export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>(
   (
     {
-      ripple = true,
+      _ripple = true,
       hapticFeedback = true,
       successAnimation = false,
       onClick,
@@ -138,7 +138,7 @@ export const EnhancedButton = forwardRef<HTMLButtonElement, EnhancedButtonProps>
             <div className="relative overflow-hidden">
               <Button
                 ref={ref || buttonRef}
-                onClick={handleClick}
+                onClick={() => void handleClick()}
                 className={cn(
                   'relative overflow-hidden transition-all duration-300',
                   'hover:shadow-lg hover:-translate-y-0.5',

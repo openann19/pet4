@@ -214,7 +214,7 @@ export function CreateAdoptionListingWizard({
             variant="ghost"
             size="sm"
             isIconOnly
-            onClick={onClose}
+            onClick={() => void onClose()}
             aria-label="Close adoption listing wizard"
             className="w-10 h-10 p-0"
           >
@@ -820,7 +820,7 @@ export function CreateAdoptionListingWizard({
         <div className="flex items-center justify-between mt-6 sticky bottom-0 bg-background pt-4 pb-4 border-t border-border">
           <Button
             variant="outline"
-            onClick={handleBack}
+            onClick={() => void handleBack()}
             disabled={currentStepIndex === 0 || isSubmitting}
           >
             <ArrowLeft size={16} className="mr-2" />
@@ -828,11 +828,11 @@ export function CreateAdoptionListingWizard({
           </Button>
 
           <div className="flex gap-2">
-            <Button variant="ghost" onClick={onClose} disabled={isSubmitting}>
+            <Button variant="ghost" onClick={() => void onClose()} disabled={isSubmitting}>
               Cancel
             </Button>
             {currentStepIndex < STEPS.length - 1 ? (
-              <Button onClick={handleNext} disabled={!canProceed() || isSubmitting}>
+              <Button onClick={() => void handleNext()} disabled={!canProceed() || isSubmitting}>
                 Next
                 <ArrowRight size={16} className="ml-2" />
               </Button>

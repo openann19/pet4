@@ -111,7 +111,7 @@ export function RequestStatus({ userId, onRefresh }: RequestStatusProps): React.
         <CardContent className="p-6">
           <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
             <p className="text-sm text-destructive">Error: {error}</p>
-            <Button variant="outline" size="sm" onClick={handleRefresh} className="mt-2">
+            <Button variant="outline" size="sm" onClick={() => void handleRefresh()} className="mt-2">
               Retry
             </Button>
           </div>
@@ -129,7 +129,7 @@ export function RequestStatus({ userId, onRefresh }: RequestStatusProps): React.
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">No requests found.</p>
-          <Button variant="outline" onClick={handleRefresh} className="mt-4">
+          <Button variant="outline" onClick={() => void handleRefresh()} className="mt-4">
             Refresh
           </Button>
         </CardContent>
@@ -145,7 +145,7 @@ export function RequestStatus({ userId, onRefresh }: RequestStatusProps): React.
             <CardTitle>Request Status</CardTitle>
             <CardDescription>View the status of your GDPR data subject requests.</CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={handleRefresh}>
+          <Button variant="outline" size="sm" onClick={() => void handleRefresh()}>
             Refresh
           </Button>
         </div>

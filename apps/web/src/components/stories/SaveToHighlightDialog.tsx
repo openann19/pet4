@@ -44,7 +44,7 @@ export default function SaveToHighlightDialog({
   const userHighlights = (highlights ?? []).filter((h) => h.userId === story.userId);
   const storyAlreadyInHighlight = (highlightId: string) => {
     const highlight = userHighlights.find((h) => h.id === highlightId);
-    return highlight?.stories.some((s) => s.id === story.id) || false;
+    return highlight?.stories.some((s) => s.id === story.id) ?? false;
   };
 
   const handleSelectHighlight = (highlightId: string) => {
@@ -94,7 +94,7 @@ export default function SaveToHighlightDialog({
     const firstPet = userPets?.[0];
     const newHighlight = createStoryHighlight(
       story.userId,
-      firstPet?.id || story.petId,
+      firstPet?.id ?? story.petId,
       newHighlightTitle,
       story.thumbnailUrl || story.mediaUrl,
       [story]
@@ -242,7 +242,7 @@ export default function SaveToHighlightDialog({
                 Back
               </Button>
               <Button
-                onClick={handleCreateNew}
+                onClick={() => void handleCreateNew()}
                 disabled={!newHighlightTitle.trim()}
                 className="bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
               >
@@ -261,7 +261,7 @@ export default function SaveToHighlightDialog({
                 New Highlight
               </Button>
               <Button
-                onClick={handleSaveToExisting}
+                onClick={() => void handleSaveToExisting()}
                 disabled={!selectedHighlightId}
                 className="flex-1 bg-linear-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
               >

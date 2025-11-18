@@ -46,7 +46,7 @@ export function ConsentSettings({ userId, onConsentChange }: ConsentSettingsProp
     };
 
     // Get consent status for a category
-    const getConsentStatus = (category: ConsentCategory): 'accepted' | 'rejected' | 'pending' => {
+    const _getConsentStatus = (category: ConsentCategory): 'accepted' | 'rejected' | 'pending' => {
         if (category === 'essential') {
             return 'accepted';
         }

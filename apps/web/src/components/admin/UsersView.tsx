@@ -446,7 +446,7 @@ export default function UsersView() {
                 Reactivate User
               </Button>
             )}
-            <Button variant="outline" onClick={openResetPasswordDialog}>
+            <Button variant="outline" onClick={() => void openResetPasswordDialog()}>
               <Key size={16} className="mr-2" />
               Reset Password
             </Button>

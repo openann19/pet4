@@ -107,7 +107,7 @@ export function PremiumAvatar({
       className={cn('relative inline-block', className)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       onContextMenu={handleLongPress}
       role={onClick ? 'button' : 'img'}
       aria-label={ariaLabel ?? alt}

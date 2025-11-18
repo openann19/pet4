@@ -14,7 +14,7 @@ vi.mock('@/components/views/MatchesView', () => ({
   default: ({ onNavigateToChat }: { onNavigateToChat: () => void }) => (
     <div data-testid="matches-view">
       Matches View
-      <button onClick={onNavigateToChat} data-testid="matches-nav-chat">
+      <button onClick={() => void onNavigateToChat()} data-testid="matches-nav-chat">
         Chat
       </button>
     </div>
@@ -84,16 +84,16 @@ vi.mock('@/components/AppHeader', () => ({
   }: any) => (
     <div data-testid="app-header">
       Header - Theme: {theme}, Lang: {language}
-      <button onClick={onToggleTheme} data-testid="toggle-theme">
+      <button onClick={() => void onToggleTheme()} data-testid="toggle-theme">
         Toggle Theme
       </button>
-      <button onClick={onToggleLanguage} data-testid="toggle-language">
+      <button onClick={() => void onToggleLanguage()} data-testid="toggle-language">
         Toggle Language
       </button>
-      <button onClick={onOpenAdminConsole} data-testid="open-admin">
+      <button onClick={() => void onOpenAdminConsole()} data-testid="open-admin">
         Admin
       </button>
-      <button onClick={onOpenThemeSettings} data-testid="open-theme-settings">
+      <button onClick={() => void onOpenThemeSettings()} data-testid="open-theme-settings">
         Theme Settings
       </button>
     </div>
@@ -131,7 +131,7 @@ vi.mock('@/components/AppModals', () => ({
   }: any) => (
     <div data-testid="app-modals">
       Modals - Show Admin: {showAdminConsole ? 'yes' : 'no'}
-      <button onClick={onCloseAdminConsole} data-testid="close-admin">
+      <button onClick={() => void onCloseAdminConsole()} data-testid="close-admin">
         Close Admin
       </button>
     </div>
@@ -158,7 +158,7 @@ vi.mock('@/components/QuickActionsMenu', () => ({
   }: any) => (
     <div data-testid="quick-actions">
       Quick Actions
-      <button onClick={onCreatePet} data-testid="create-pet">
+      <button onClick={() => void onCreatePet()} data-testid="create-pet">
         Create Pet
       </button>
     </div>

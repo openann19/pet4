@@ -42,7 +42,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadApplications();
+    void loadApplications();
   }, []);
 
   const loadApplications = async () => {
@@ -144,7 +144,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
           variant="ghost"
           size="sm"
           icon={<ArrowLeft size={20} weight="bold" />}
-          onClick={onBack}
+          onClick={() => void onBack()}
           className="rounded-full w-10 h-10 p-0"
           ariaLabel="Go back"
         />
@@ -163,7 +163,7 @@ export function MyApplicationsView({ onBack }: MyApplicationsViewProps) {
               You haven't submitted any adoption applications yet. Browse available pets and apply
               to adopt your perfect companion!
             </p>
-            <Button onClick={onBack} className="mt-6">
+            <Button onClick={() => void onBack()} className="mt-6">
               Browse Pets
             </Button>
           </CardContent>

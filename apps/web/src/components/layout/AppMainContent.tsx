@@ -20,8 +20,8 @@ interface AppMainContentProps {
   currentView: View
   navigation: {
     navigateToView: (view: View) => void
-    navigate?: (config: any) => void
-    routes?: any
+    navigate?: (config: unknown) => void
+    routes?: unknown
   }
   animations: {
     loadingTransition: {

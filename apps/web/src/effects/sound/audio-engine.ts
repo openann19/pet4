@@ -269,7 +269,7 @@ class AudioEngineImpl {
         );
         gainNode.gain.exponentialRampToValueAtTime(
           0.0001,
-          context.currentTime + (preset.duration || 0.2)
+          context.currentTime + (preset.duration ?? 0.2)
         );
       }
 

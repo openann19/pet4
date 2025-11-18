@@ -86,19 +86,19 @@ export interface ShaderProgram {
 // Constants
 // ============================================================================
 
-const QUALITY_SETTINGS = {
+const _QUALITY_SETTINGS = {
   low: { scale: 0.5, quality: 0.6, maxFPS: 24 },
   medium: { scale: 0.75, quality: 0.8, maxFPS: 30 },
   high: { scale: 1.0, quality: 0.92, maxFPS: 60 },
   ultra: { scale: 1.0, quality: 0.98, maxFPS: 120 },
 } as const;
 
-const MAX_CANVAS_SIZE = 8192; // WebGL max texture size
-const FRAME_BUFFER_SIZE = 30; // Number of frames to buffer for smooth playback
-const WORKER_POOL_SIZE = navigator.hardwareConcurrency || 4;
+const _MAX_CANVAS_SIZE = 8192; // WebGL max texture size
+const _FRAME_BUFFER_SIZE = 30; // Number of frames to buffer for smooth playback
+const _WORKER_POOL_SIZE = navigator.hardwareConcurrency || 4;
 
 // Default vertex shader for 2D operations
-const DEFAULT_VERTEX_SHADER = `
+const _DEFAULT_VERTEX_SHADER = `
   attribute vec2 a_position;
   attribute vec2 a_texCoord;
   varying vec2 v_texCoord;
@@ -110,7 +110,7 @@ const DEFAULT_VERTEX_SHADER = `
 `;
 
 // Default fragment shader (passthrough)
-const DEFAULT_FRAGMENT_SHADER = `
+const _DEFAULT_FRAGMENT_SHADER = `
   precision mediump float;
   varying vec2 v_texCoord;
   uniform sampler2D u_image;
@@ -131,9 +131,9 @@ export function useMediaProcessor() {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const webglManagerRef = useRef<WebGLContextManager | null>(null);
-  const operationHistoryRef = useRef<CanvasOperation[]>([]);
+  const _operationHistoryRef = useRef<CanvasOperation[]>([]);
   const performanceMonitor = getPerformanceMonitor();
-  const workerPool = getWorkerPool();
+  const _workerPool = getWorkerPool();
 
   // ============================================================================
   // WebGL Initialization
@@ -348,7 +348,7 @@ export function useMediaProcessor() {
     source: HTMLImageElement | HTMLCanvasElement,
     targetWidth: number,
     targetHeight: number,
-    options: { algorithm?: 'bilinear' | 'bicubic' | 'lanczos' } = {}
+    _options: { algorithm?: 'bilinear' | 'bicubic' | 'lanczos' } = {}
   ): HTMLCanvasElement => {
     const canvas = document.createElement('canvas');
     canvas.width = targetWidth;

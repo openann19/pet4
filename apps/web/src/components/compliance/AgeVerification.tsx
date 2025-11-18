@@ -153,7 +153,7 @@ export function AgeVerification({ onVerified, requiredAge = MINIMUM_AGE }: AgeVe
             </div>
           )}
 
-          <Button onClick={handleVerify} className="w-full" size="lg">
+          <Button onClick={() => void handleVerify()} className="w-full" size="lg">
             Verify Age
           </Button>
 

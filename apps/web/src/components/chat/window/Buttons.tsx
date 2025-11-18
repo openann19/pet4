@@ -44,7 +44,7 @@ export function ReactionButton({ emoji, onClick }: ReactionButtonProps): JSX.Ele
       onMouseLeave={hover.handleMouseLeave}
       onMouseDown={hover.handleMouseDown}
       onMouseUp={hover.handleMouseUp}
-      onClick={onClick}
+      onClick={() => void onClick()}
       className="text-2xl p-2 rounded-xl hover:bg-white/20 transition-colors cursor-pointer"
     >
       {emoji}

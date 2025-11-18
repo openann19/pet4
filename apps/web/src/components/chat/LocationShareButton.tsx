@@ -101,7 +101,7 @@ export function LocationShareButton({
                 </p>
                 <Button
                   type="button"
-                  onClick={handleGetLocation}
+                  onClick={() => void handleGetLocation()}
                   disabled={isLoading}
                   className="w-full"
                 >
@@ -147,7 +147,7 @@ export function LocationShareButton({
                   >
                     Change
                   </Button>
-                  <Button type="button" onClick={handleShare} className="flex-1">
+                  <Button type="button" onClick={() => void handleShare()} className="flex-1">
                     Share Location
                   </Button>
                 </div>

@@ -48,7 +48,7 @@ export function NotificationBell() {
       <Button
         variant="ghost"
         size="icon"
-        onClick={handleClick}
+        onClick={() => void handleClick()}
         className="relative rounded-full w-11 h-11 hover:bg-primary/10 active:bg-primary/20 transition-colors shrink-0 touch-manipulation"
         aria-label={`Notifications${unreadCount > 0 ? ` - ${unreadCount} unread` : ''}`}
       >

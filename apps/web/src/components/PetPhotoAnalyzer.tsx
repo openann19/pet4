@@ -501,7 +501,7 @@ Return ONLY valid JSON with this exact structure, nothing else:
               </Button>
               <Button
                 className="flex-1 bg-linear-to-r from-green-500 to-emerald-500 hover:opacity-90"
-                onClick={handleAccept}
+                onClick={() => void handleAccept()}
               >
                 <Check size={18} weight="bold" />
                 <span className="ml-2">Apply to Profile</span>

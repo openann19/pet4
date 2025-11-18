@@ -13,7 +13,7 @@ export function BillingIssueBanner() {
   const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
-    checkBillingIssues();
+    void checkBillingIssues();
   }, []);
 
   const checkBillingIssues = async () => {
@@ -88,7 +88,7 @@ export function BillingIssueBanner() {
               size="sm"
               variant="outline"
               className="bg-background"
-              onClick={handleRetry}
+              onClick={() => void handleRetry()}
               disabled={retrying}
             >
               <CreditCard className="h-4 w-4 mr-2" />

@@ -59,7 +59,7 @@ describe('FloatingActionButton', () => {
     const user = userEvent.setup();
     const onClick = vi.fn();
 
-    renderWithProviders(<FloatingActionButton onClick={onClick} />);
+    renderWithProviders(<FloatingActionButton onClick={() => void onClick()} />);
 
     const button = screen.getByRole('button');
     await user.click(button);

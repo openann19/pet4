@@ -164,7 +164,7 @@ describe('Button', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<Button onClick={handleClick}>Click</Button>);
+      render(<Button onClick={() => void handleClick()}>Click</Button>);
       const button = screen.getByRole('button');
 
       await user.click(button);
@@ -176,7 +176,7 @@ describe('Button', () => {
       const handleClick = vi.fn();
 
       render(
-        <Button disabled onClick={handleClick}>
+        <Button disabled onClick={() => void handleClick()}>
           Click
         </Button>
       );
@@ -190,7 +190,7 @@ describe('Button', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<Button onClick={handleClick}>Click</Button>);
+      render(<Button onClick={() => void handleClick()}>Click</Button>);
       const button = screen.getByRole('button');
 
       await user.click(button);
@@ -204,7 +204,7 @@ describe('Button', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<Button onClick={handleClick}>Click</Button>);
+      render(<Button onClick={() => void handleClick()}>Click</Button>);
       const button = screen.getByRole('button');
 
       button.focus();
@@ -217,7 +217,7 @@ describe('Button', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<Button onClick={handleClick}>Click</Button>);
+      render(<Button onClick={() => void handleClick()}>Click</Button>);
       const button = screen.getByRole('button');
 
       button.focus();
@@ -231,7 +231,7 @@ describe('Button', () => {
       const handleClick = vi.fn();
 
       render(
-        <Button disabled onClick={handleClick}>
+        <Button disabled onClick={() => void handleClick()}>
           Click
         </Button>
       );
@@ -362,7 +362,7 @@ describe('Button', () => {
 
   describe('Edge Cases', () => {
     it('should handle null onClick', () => {
-      render(<Button onClick={undefined}>No Handler</Button>);
+      render(<Button onClick={() => void undefined()}>No Handler</Button>);
       const button = screen.getByRole('button');
       expect(button).toBeInTheDocument();
     });
@@ -390,7 +390,7 @@ describe('Button', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<Button onClick={handleClick}>Rapid</Button>);
+      render(<Button onClick={() => void handleClick()}>Rapid</Button>);
       const button = screen.getByRole('button');
 
       await user.click(button);

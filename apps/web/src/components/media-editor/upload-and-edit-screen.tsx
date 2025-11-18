@@ -161,7 +161,7 @@ export function UploadAndEditScreen({
           <VideoTrimmer
             uri={media.uri}
             {...(media.durationSec !== undefined ? { durationSec: media.durationSec } : {})}
-            onChange={onTrimChange}
+            onChange={() => void onTrimChange()}
           />
           <div style={styles.actions}>
             <Button label={busy ? 'Transcoding…' : 'Export'} onPress={runExport} disabled={busy} />
@@ -220,7 +220,7 @@ function Button({
 
   return (
     <motion.button
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       style={{
         ...styles.btn,
         ...(variant === 'secondary' ? styles.btnSecondary : styles.btnPrimary),

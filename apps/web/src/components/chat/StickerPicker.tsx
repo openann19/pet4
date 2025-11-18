@@ -74,7 +74,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
       sticker.id,
       ...(recentStickerIds ?? []).filter((id) => id !== sticker.id),
     ].slice(0, 24);
-    setRecentStickerIds(updatedRecent);
+    void setRecentStickerIds(updatedRecent);
 
     onSelectSticker(sticker);
   };
@@ -133,7 +133,7 @@ export function StickerPicker({ onSelectSticker, onClose }: StickerPickerProps) 
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleClose}
+            onClick={() => void handleClose()}
             className="rounded-full"
             aria-label="Close sticker picker"
           >

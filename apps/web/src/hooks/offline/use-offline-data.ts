@@ -56,7 +56,7 @@ export function useOfflineData<T>(
     resourceType,
     resourceId,
     enableOptimisticUpdates = true,
-    enableAutoSync = true,
+    _enableAutoSync = true,
     ...layerOptions
   } = options
 

@@ -80,7 +80,7 @@ export function UltraCard({
     tilt.handleMove(x, y, rect.width, rect.height);
   };
 
-  const combinedStyle = {
+  const _combinedStyle = {
     ...reveal.animatedStyle,
     ...(enableMagnetic ? magnetic.animatedStyle : {}),
   };

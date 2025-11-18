@@ -162,7 +162,7 @@ export class MLMatchingWeightAdjuster {
     for (const factor of Object.keys(importance)) {
       const likedAvg = likedFactorScores[factor];
       const passedAvg = passedFactorScores[factor];
-      const currentImportance = importance[factor] ?? 0;
+      const _currentImportance = importance[factor] ?? 0;
       importance[factor] = Math.max(0, (likedAvg ?? 0) - (passedAvg ?? 0));
     }
 
@@ -247,7 +247,7 @@ export class MLMatchingWeightAdjuster {
    * Aggregate factor scores from successful matches
    */
   private aggregateFactorScoresFromMatches(
-    matches: MatchData[]
+    _matches: MatchData[]
   ): Record<string, number> {
     // In a real implementation, this would fetch factor scores for matched pets
     // For now, return empty (would need access to pet profiles and match scores)
@@ -258,7 +258,7 @@ export class MLMatchingWeightAdjuster {
    * Aggregate factor scores from message activity
    */
   private aggregateFactorScoresFromMessages(
-    messages: MessageActivity[]
+    _messages: MessageActivity[]
   ): Record<string, number> {
     // Messages indicate engagement - higher message count = higher importance
     // In a real implementation, this would correlate message activity with factor scores
@@ -269,7 +269,7 @@ export class MLMatchingWeightAdjuster {
    * Aggregate factor scores from view time
    */
   private aggregateFactorScoresFromViewTime(
-    viewTimes: ViewTimeData[]
+    _viewTimes: ViewTimeData[]
   ): Record<string, number> {
     // Longer view time = more interest
     // In a real implementation, this would correlate view time with factor scores

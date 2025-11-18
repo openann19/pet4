@@ -50,7 +50,7 @@ export function useMapQuotaMonitor(config: QuotaConfig = DEFAULT_QUOTA_CONFIG): 
 
     if (now - lastReset > dayInMs) {
       resetQuotas();
-      setLastReset(now);
+      void setLastReset(now);
     }
   }, [lastReset, setLastReset]);
 

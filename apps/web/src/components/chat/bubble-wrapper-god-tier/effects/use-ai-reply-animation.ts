@@ -8,7 +8,7 @@ import {
   withTiming,
   Easing,
   interpolate,
-  Extrapolation,
+  _Extrapolation,
   type SharedValue,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';

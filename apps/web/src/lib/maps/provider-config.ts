@@ -101,12 +101,12 @@ export function useMapProviderConfig(): {
 
   const updateConfig = (updates: Partial<MapProviderConfig>): void => {
     const newConfig = { ...config, ...updates };
-    setAdminConfig(newConfig);
+    void setAdminConfig(newConfig);
     setAdminMapProviderConfig(newConfig);
   };
 
   const resetToDefaults = (): void => {
-    setAdminConfig(envConfig);
+    void setAdminConfig(envConfig);
     setAdminMapProviderConfig(envConfig);
   };
 

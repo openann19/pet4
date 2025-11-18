@@ -9,7 +9,7 @@ interface SecretToggleProps {
 
 export function SecretToggle({ isVisible, onToggle, ariaLabel }: SecretToggleProps) {
   return (
-    <Button variant="outline" size="sm" isIconOnly onClick={onToggle} aria-label={ariaLabel} className="w-10 h-10 p-0">
+    <Button variant="outline" size="sm" isIconOnly onClick={() => void onToggle()} aria-label={ariaLabel} className="w-10 h-10 p-0">
       {isVisible ? <EyeSlash size={20} /> : <Eye size={20} />}
     </Button>
   );

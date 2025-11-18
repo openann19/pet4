@@ -160,7 +160,7 @@ export function EnhancedCarousel({
           onTouchStart={handleDragStart}
           onTouchMove={handleDrag}
           onTouchEnd={handleDragEnd}
-          onClick={resetAutoPlay}
+          onClick={() => void resetAutoPlay()}
           className="absolute inset-0 cursor-grab active:cursor-grabbing"
         >
           {items[currentIndex]}

@@ -76,7 +76,7 @@ export function AccessibleStoriesBar({
       <li className="shrink-0">
         <button
           type="button"
-          onClick={handleAddStory}
+          onClick={() => void handleAddStory()}
           className={cn(
             'relative h-16 w-16 rounded-full border-2 border-dashed',
             'flex items-center justify-center',

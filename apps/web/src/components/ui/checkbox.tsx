@@ -224,7 +224,7 @@ export const Checkbox = forwardRef<CheckboxRef, CheckboxProps>(
               type="checkbox"
               className="sr-only"
               checked={isChecked}
-              onChange={handleChange}
+              onChange={() => void handleChange()}
               disabled={disabled}
               data-tracking-id={trackingId}
               {...accessibilityProps}

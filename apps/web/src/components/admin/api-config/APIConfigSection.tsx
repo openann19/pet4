@@ -229,7 +229,7 @@ function APIConfigContent({
 }
 
 function APIConfigActions({
-  title,
+  _title,
   sectionTesting,
   isTestDisabled,
   isProviderDisabled,
@@ -250,7 +250,7 @@ function APIConfigActions({
         onTest={onTest}
         disabled={isTestDisabled || isProviderDisabled}
       />
-      <Button variant="outline" onClick={onReset}>
+      <Button variant="outline" onClick={() => void onReset()}>
         Reset
       </Button>
     </div>

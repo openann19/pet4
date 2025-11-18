@@ -276,7 +276,7 @@ export function useOfflineQueue(
           logger.debug('IndexedDB opened successfully')
 
           // Load persisted queue
-          loadQueueFromDB()
+          void loadQueueFromDB()
         }
 
         request.onupgradeneeded = (event) => {
@@ -315,7 +315,7 @@ export function useOfflineQueue(
       }
     }
 
-    openDB()
+    void openDB()
 
     return () => {
       if (dbRef.current) {
@@ -512,7 +512,7 @@ export function useOfflineQueue(
                       : op
                   )
                 )
-                persistOperation(resolvedOp)
+                void persistOperation(resolvedOp)
               } else {
                 // Conflict resolution failed - mark as conflict
                 setQueue((prev) =>
@@ -660,7 +660,7 @@ export function useOfflineQueue(
       }
 
       setQueue((prev) => [...prev, operation])
-      persistOperation(operation)
+      void persistOperation(operation)
 
       logger.debug('Operation enqueued', {
         id,
@@ -670,7 +670,7 @@ export function useOfflineQueue(
 
       // Process immediately if online
       if (isOnline) {
-        processOperation(operation)
+        void processOperation(operation)
       }
 
       return id
@@ -797,7 +797,7 @@ export function useOfflineQueue(
       const operation = queue.find((op) => op.id === id)
       if (operation) {
         const updatedOp = { ...operation, priority, updatedAt: Date.now() }
-        persistOperation(updatedOp)
+        void persistOperation(updatedOp)
       }
 
       logger.debug('Operation prioritized', { id, priority })

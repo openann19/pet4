@@ -23,11 +23,11 @@ export interface UseGlowBorderReturn {
 
 export function useGlowBorder(options: UseGlowBorderOptions = {}): UseGlowBorderReturn {
   const {
-    color = 'rgba(99, 102, 241, 0.8)',
+    _color = 'rgba(99, 102, 241, 0.8)',
     intensity = 20,
     speed = 2000,
     enabled = true,
-    pulseSize = 8,
+    _pulseSize = 8,
   } = options;
 
   const progress = useMotionValue(0);

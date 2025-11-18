@@ -14,8 +14,8 @@ import type {
   ChatRoom,
   MessageReaction,
   ReactionType,
-  SmartSuggestion,
-  MessageTemplate,
+  _SmartSuggestion,
+  _MessageTemplate,
 } from '@/lib/chat-types';
 import { generateMessageId } from '@/lib/chat-utils';
 import { useTypingManager } from '@/hooks/use-typing-manager';
@@ -316,7 +316,7 @@ export default function AdvancedChatWindow({
     context: 'chat',
     onSend: () => {
       if (inputValue.trim()) {
-        onSend(inputValue, 'text');
+        void onSend(inputValue, 'text');
       }
     },
     onReply: undefined,
@@ -429,7 +429,7 @@ export default function AdvancedChatWindow({
             typingChange(v);
           }}
           onSendMessage={(content: string, type?: 'text' | 'sticker' | 'voice') => {
-            onSend(content, type ?? 'text');
+            void onSend(content, type ?? 'text');
           }}
           onUseTemplate={(template: string) => {
             setInputValue(template);
@@ -437,7 +437,7 @@ export default function AdvancedChatWindow({
           }}
           onVoiceRecorded={(_audioBlob: Blob, _duration: number, _waveform: number[]) => {
             setIsRecordingVoice(false);
-            onSend('Voice message', 'voice');
+            void onSend('Voice message', 'voice');
           }}
           onVoiceCancel={() => {
             setIsRecordingVoice(false);

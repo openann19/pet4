@@ -65,7 +65,7 @@ function VoiceAttachment({ attachment }: VoiceAttachmentProps): React.JSX.Elemen
       <Button
         size="icon"
         variant="ghost"
-        onClick={togglePlayback}
+        onClick={() => void togglePlayback()}
         className="shrink-0 w-8 h-8"
         aria-label={isPlaying ? 'Pause voice message' : 'Play voice message'}
       >
@@ -126,7 +126,7 @@ function PhotoAttachment({ attachment }: PhotoAttachmentProps): React.JSX.Elemen
         size="icon"
         variant="ghost"
         className="absolute top-2 right-2 bg-black/50 hover:bg-black/70"
-        onClick={handleDownload}
+        onClick={() => void handleDownload()}
         aria-label="Download photo"
       >
         <DownloadSimple size={16} weight="bold" />
@@ -205,7 +205,7 @@ function DocumentAttachment({ attachment }: DocumentAttachmentProps): React.JSX.
       <Button
         size="icon"
         variant="ghost"
-        onClick={handleDownload}
+        onClick={() => void handleDownload()}
         aria-label={`Download ${attachment.name ?? 'document'}`}
       >
         <DownloadSimple size={16} weight="bold" />

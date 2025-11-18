@@ -56,7 +56,7 @@ export function FloatingActionButton({
 
   return (
     <MotionView
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       className={`fixed bottom-24 right-6 z-50 flex h-14 items-center gap-3 rounded-full bg-linear-to-r from-primary to-accent px-6 text-white shadow-2xl transition-all duration-300 ${className}`}
       initial={{ opacity: 0, scale: 0.85, y: 12 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}

@@ -34,7 +34,7 @@ export function useAdoptionProfiles(
       });
       return response.items;
     },
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (_lastPage, _allPages) => {
       // Return cursor for next page if available
       return undefined;
     },

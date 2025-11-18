@@ -11,7 +11,7 @@ import { communityService } from '@/lib/community-service';
 import type { Post } from '@/lib/community-types';
 import { createLogger } from '@/lib/logger';
 import { ArrowLeft, BookmarkSimple } from '@phosphor-icons/react';
-import { motion, MotionView } from '@petspark/motion';
+import { _motion, MotionView } from '@petspark/motion';
 import { useEntryAnimation } from '@/effects/reanimated';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -68,7 +68,7 @@ function PostItemView({
         role="button"
         tabIndex={0}
         className="cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded"
-        aria-label={`View post: ${post.text?.substring(0, 50) || 'Untitled post'}`}
+        aria-label={`View post: ${post.text?.substring(0, 50) ?? 'Untitled post'}`}
       >
         <PostCard
           post={post}
@@ -118,7 +118,7 @@ function SavedPostsViewContent({ onBack, onAuthorClick }: SavedPostsViewProps) {
         {/* Header */}
         <div className="flex items-center gap-4 p-4 border-b bg-card">
           {onBack && (
-            <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full" aria-label="Arrow Left">
+            <Button variant="ghost" size="icon" onClick={() => void onBack()} className="rounded-full" aria-label="Arrow Left">
               <ArrowLeft size={20} />
             </Button>
           )}

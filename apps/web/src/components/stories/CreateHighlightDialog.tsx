@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useStorage } from '@/hooks/use-storage';
-import { motion, MotionView } from '@petspark/motion';
+import { _motion, MotionView } from '@petspark/motion';
 import { Plus, Check } from '@phosphor-icons/react';
 import {
   Dialog,
@@ -240,7 +240,7 @@ export default function CreateHighlightDialog({
             Cancel
           </Button>
           <Button
-            onClick={handleSave}
+            onClick={() => void handleSave()}
             disabled={!title.trim() || selectedStories.size === 0}
             className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
           >

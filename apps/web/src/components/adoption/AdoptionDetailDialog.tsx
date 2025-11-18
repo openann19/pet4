@@ -372,7 +372,7 @@ export function AdoptionDetailDialog({
               <Button
                 size="lg"
                 className="flex-1"
-                onClick={handleApply}
+                onClick={() => void handleApply()}
                 disabled={profile.status !== 'available'}
               >
                 <Heart size={20} weight="fill" className="mr-2" />

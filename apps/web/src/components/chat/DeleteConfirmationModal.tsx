@@ -143,7 +143,7 @@ export function DeleteConfirmationModal({
         'bg-black/50 backdrop-blur-sm',
         className
       )}
-      onClick={handleCancel}
+      onClick={() => void handleCancel()}
     >
       <MotionView
         style={modalStyle}
@@ -186,7 +186,7 @@ export function DeleteConfirmationModal({
             </h3>
           </div>
           <button
-            onClick={handleCancel}
+            onClick={() => void handleCancel()}
             className="p-1 hover:bg-muted rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring min-w-[44px] min-h-[44px] flex items-center justify-center"
             aria-label="Close dialog"
           >
@@ -208,7 +208,7 @@ export function DeleteConfirmationModal({
 
         <div className="flex gap-3">
           <button
-            onClick={handleCancel}
+            onClick={() => void handleCancel()}
             className={cn(
               'flex-1 px-4 py-2 rounded-lg',
               'bg-muted hover:bg-muted/80',
@@ -221,7 +221,7 @@ export function DeleteConfirmationModal({
             Cancel
           </button>
           <button
-            onClick={handleConfirm}
+            onClick={() => void handleConfirm()}
             className={cn(
               'flex-1 px-4 py-2 rounded-lg',
               'bg-destructive hover:bg-destructive/90',

@@ -56,7 +56,7 @@ interface SearchItemProps {
 function SearchItem({
   search,
   index,
-  totalItems,
+  _totalItems,
   editingId,
   searchName,
   getPreferencesSummary,
@@ -106,7 +106,7 @@ function SearchItem({
                 Save
               </Button>
             </MotionView>
-            <Button size="sm" variant="outline" onClick={onCancelEdit} className="flex-1">
+            <Button size="sm" variant="outline" onClick={() => void onCancelEdit()} className="flex-1">
               Cancel
             </Button>
           </div>
@@ -381,7 +381,7 @@ export default function SavedSearchesManager({
               <p className="text-sm text-muted-foreground">Quick access to your favorite filters</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} aria-label="X">
+          <Button variant="ghost" size="icon" onClick={() => void onClose()} aria-label="X">
             <X size={24} />
           </Button>
         </div>
@@ -430,7 +430,7 @@ export default function SavedSearchesManager({
                     />
                   </div>
                   <MotionView style={saveButtonBounce.animatedStyle}>
-                    <Button onClick={handleSaveCurrentSearch}>
+                    <Button onClick={() => void handleSaveCurrentSearch()}>
                       <FloppyDisk size={16} className="mr-2" />
                       Save
                     </Button>

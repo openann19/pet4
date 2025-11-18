@@ -12,7 +12,7 @@ import type {
   CallSession,
   CallParticipant,
   VideoQuality,
-  CallStatus,
+  _CallStatus,
 } from '@/lib/calls/call-types';
 import { createLogger } from '@/lib/logger';
 
@@ -128,10 +128,10 @@ export function useCallSession(
         const stream = await client.requestMediaStream(quality);
         setLocalStream(stream);
 
-        const pc = client.createPeerConnection();
+        const _pc = client.createPeerConnection();
         client.addLocalStream(stream);
 
-        const offer = await client.createOffer();
+        const _offer = await client.createOffer();
 
         const remoteParticipant: CallParticipant = {
           id: remoteUserId,
@@ -177,7 +177,7 @@ export function useCallSession(
         const stream = await client.requestMediaStream(quality);
         setLocalStream(stream);
 
-        const pc = client.createPeerConnection();
+        const _pc = client.createPeerConnection();
         client.addLocalStream(stream);
 
         await client.handleOffer(offer);

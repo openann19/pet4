@@ -48,7 +48,7 @@ export interface SmartReplyProps {
  */
 export function SmartReply({
   message,
-  messageLanguage,
+  _messageLanguage,
   userLanguage,
   onSelect,
   maxSuggestions = 3,
@@ -56,7 +56,7 @@ export function SmartReply({
 }: SmartReplyProps): React.JSX.Element | null {
   const [suggestions, setSuggestions] = useState<SmartReplySuggestion[]>([]);
   const [loading, setLoading] = useState(false);
-  const [sentiment, setSentiment] = useState<SentimentResult | null>(null);
+  const [_sentiment, setSentiment] = useState<SentimentResult | null>(null);
 
   // Generate smart reply suggestions
   const generateSuggestions = useCallback(async () => {

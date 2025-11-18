@@ -89,7 +89,7 @@ export function ChatFooter({
           <Sparkle size={16} weight="fill" className="mr-1" />
           Templates
         </Button>
-        <Button variant="ghost" size="sm" onClick={onShareLocation} className="shrink-0">
+        <Button variant="ghost" size="sm" onClick={() => void onShareLocation()} className="shrink-0">
           <MapPin size={16} className="mr-1" />
           Location
         </Button>
@@ -175,7 +175,7 @@ export function ChatFooter({
             </Button>
 
             <Button
-              onClick={onSend}
+              onClick={() => void onSend()}
               disabled={!inputValue.trim()}
               size="icon"
               className="shrink-0 bg-linear-to-br from-primary to-accent hover:shadow-lg transition-all"

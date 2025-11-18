@@ -270,9 +270,9 @@ export default function NotificationsView({
       case 'mention':
         return `${notification.actorName} mentioned you`;
       case 'moderation':
-        return notification.content || 'Your content was reviewed';
+        return notification.content ?? 'Your content was reviewed';
       default:
-        return notification.content || 'New notification';
+        return notification.content ?? 'New notification';
     }
   };
 
@@ -291,7 +291,7 @@ export default function NotificationsView({
             <Button
               variant="ghost"
               size="icon"
-              onClick={onBack}
+              onClick={() => void onBack()}
               className="rounded-full"
               aria-label="Go back to previous page"
             >
@@ -311,7 +311,7 @@ export default function NotificationsView({
               )}
             </div>
             {unreadCount > 0 && (
-              <Button variant="outline" size="sm" onClick={handleMarkAllAsRead} className="text-xs">
+              <Button variant="outline" size="sm" onClick={() => void handleMarkAllAsRead()} className="text-xs">
                 <Check size={14} className="mr-1" />
                 Mark all read
               </Button>

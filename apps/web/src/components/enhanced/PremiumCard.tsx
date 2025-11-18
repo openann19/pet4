@@ -43,7 +43,7 @@ export function PremiumCard({
     transform: [{ translateY: translateY.get() }],
   }));
 
-  const combinedStyle =
+  const _combinedStyle =
     hover && hoverLift.animatedStyle ? { ...entryStyle, ...hoverLift.animatedStyle } : entryStyle;
 
   const variants = {

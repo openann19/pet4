@@ -14,7 +14,7 @@ import {
   withRepeat,
   withSequence,
   withSpring,
-  type AnimatedStyle,
+  type _AnimatedStyle,
   type MotionValue,
 } from '@petspark/motion';
 
@@ -43,7 +43,7 @@ export default function WelcomeModal(): JSX.Element | null {
     return { transform: transforms };
   });
 
-  const iconAnimatedStyle = useAnimatedStyle(() => {
+  const _iconAnimatedStyle = useAnimatedStyle(() => {
     const transforms: Record<string, number | string | MotionValue<number>>[] = [];
     transforms.push({ scale: iconScale.value });
     return { transform: transforms };
@@ -188,7 +188,7 @@ export default function WelcomeModal(): JSX.Element | null {
           >
             <button
               type="button"
-              onClick={handleClose}
+              onClick={() => void handleClose()}
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-colors z-10 shadow-md focus:outline-none focus:ring-2 focus:ring-(--coral-primary) focus:ring-offset-2"
               aria-label="Close welcome dialog"
             >
@@ -244,7 +244,7 @@ export default function WelcomeModal(): JSX.Element | null {
             >
               <Button
                 size="lg"
-                onClick={handleClose}
+                onClick={() => void handleClose()}
                 className="px-8 shadow-xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
               >
                 {t.welcome.getStarted}

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { _motion, MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UploadSimple, CheckCircle, XCircle, File, Trash, Clock } from '@phosphor-icons/react';
@@ -97,7 +97,7 @@ export function DocumentUploadCard({
         ref={fileInputRef}
         type="file"
         accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf"
-        onChange={handleFileSelect}
+        onChange={() => void handleFileSelect()}
         className="hidden"
         disabled={disabled}
       />
@@ -174,7 +174,7 @@ export function DocumentUploadCard({
             <Button
               variant="outline"
               size="sm"
-              onClick={handleBrowse}
+              onClick={() => void handleBrowse()}
               disabled={disabled}
               className="w-full gap-2"
             >

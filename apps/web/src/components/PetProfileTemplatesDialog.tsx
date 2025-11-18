@@ -348,7 +348,7 @@ export default function PetProfileTemplatesDialog({
               </Button>
               <Button
                 ref={confirmButtonRef}
-                onClick={handleConfirmSelection}
+                onClick={() => void handleConfirmSelection()}
                 disabled={!selectedTemplate}
                 className="min-w-35 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ minHeight: '44px' }}

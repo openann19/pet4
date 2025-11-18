@@ -16,7 +16,7 @@ export function CredentialPrompt({
   className,
 }: CredentialPromptProps): React.JSX.Element | null {
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0)
-  const [values, setValues] = useState<Record<string, string>>({})
+  const [_values, setValues] = useState<Record<string, string>>({})
 
   const prompts = mergedSpec?.configuration.credentials?.prompts ?? []
 
@@ -66,7 +66,7 @@ export function CredentialPrompt({
         <p className="text-sm text-gray-600 mb-4">{currentPrompt.description}</p>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={() => void handleSubmit()} className="space-y-4">
         <div>
           <label htmlFor={currentPrompt.key} className="block text-sm font-medium mb-1">
             {currentPrompt.label}
@@ -90,7 +90,7 @@ export function CredentialPrompt({
           {!currentPrompt.required && (
             <button
               type="button"
-              onClick={handleSkip}
+              onClick={() => void handleSkip()}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
             >
               Skip

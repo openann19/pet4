@@ -53,14 +53,14 @@ describe('PremiumButton', () => {
   });
 
   it('renders button with children', () => {
-    render(<PremiumButton onClick={mockOnClick}>Click Me</PremiumButton>);
+    render(<PremiumButton onClick={() => void mockOnClick()}>Click Me</PremiumButton>);
 
     expect(screen.getByText('Click Me')).toBeInTheDocument();
   });
 
   it('calls onClick when clicked', async () => {
     const user = userEvent.setup();
-    render(<PremiumButton onClick={mockOnClick}>Click Me</PremiumButton>);
+    render(<PremiumButton onClick={() => void mockOnClick()}>Click Me</PremiumButton>);
 
     const button = screen.getByRole('button', { name: /click me/i });
     await user.click(button);

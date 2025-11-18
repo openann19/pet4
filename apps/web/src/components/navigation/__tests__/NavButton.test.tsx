@@ -43,7 +43,7 @@ describe('NavButton', () => {
     render(
       <NavButton
         isActive={false}
-        onClick={onClick}
+        onClick={() => void onClick()}
         icon={<span>Icon</span>}
         label="Home"
       />,
@@ -63,7 +63,7 @@ describe('NavButton', () => {
     render(
       <NavButton
         isActive={false}
-        onClick={onClick}
+        onClick={() => void onClick()}
         icon={<span>Icon</span>}
         label="Home"
       />,
@@ -82,7 +82,7 @@ describe('NavButton', () => {
     render(
       <NavButton
         isActive={false}
-        onClick={onClick}
+        onClick={() => void onClick()}
         icon={<span>Icon</span>}
         label="Home"
       />,

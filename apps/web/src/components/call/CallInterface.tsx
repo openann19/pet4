@@ -193,7 +193,7 @@ export default function CallInterface({
         <div className="absolute top-6 right-6 z-10">
           {isVideoCall && (
             <Button
-              onClick={handleToggleFullscreen}
+              onClick={() => void handleToggleFullscreen()}
               size="icon"
               variant="ghost"
               className="glass-strong backdrop-blur-2xl text-white hover:bg-white/20"

@@ -210,7 +210,7 @@ export function AnimatedButton({
       <Button
         variant={variant}
         size={size}
-        onClick={handlePress}
+        onClick={() => void handlePress()}
         disabled={disabled}
         type={type}
         aria-label={ariaLabel}

@@ -24,7 +24,7 @@ export function DialogFooterSection({
     <div className="flex gap-3 pt-6 mt-6 border-t">
       {currentStep !== 'type' && currentStep !== 'complete' && (
         <MotionView>
-          <Button type="button" variant="outline" onClick={onBack} className="gap-2">
+          <Button type="button" variant="outline" onClick={() => void onBack()} className="gap-2">
             <ArrowLeft size={16} weight="bold" />
             Back
           </Button>
@@ -35,7 +35,7 @@ export function DialogFooterSection({
         <MotionView>
           <Button
             type="button"
-            onClick={onNext}
+            onClick={() => void onNext()}
             disabled={!canProceed}
             className="gap-2 bg-linear-to-r from-primary to-accent"
           >
@@ -47,7 +47,7 @@ export function DialogFooterSection({
         <MotionView>
           <Button
             type="button"
-            onClick={onSubmit}
+            onClick={() => void onSubmit()}
             className="gap-2 bg-linear-to-r from-primary to-accent"
           >
             <Check size={16} weight="bold" />

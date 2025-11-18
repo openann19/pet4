@@ -789,10 +789,10 @@ export default function DiscoveryFilters() {
         </Tabs>
 
         <div className="flex gap-3 border-t pt-4">
-          <Button type="button" variant="outline" className="flex-1" onClick={handleReset}>
+          <Button type="button" variant="outline" className="flex-1" onClick={() => void handleReset()}>
             Reset All
           </Button>
-          <Button type="button" className="flex-1" onClick={handleSave}>
+          <Button type="button" className="flex-1" onClick={() => void handleSave()}>
             Apply Filters
           </Button>
         </div>

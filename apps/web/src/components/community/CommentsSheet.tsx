@@ -432,7 +432,7 @@ function CommentItem({ comment, onReply, translator, isReply = false, isAuthor =
         <div className="mt-2 ml-4 flex items-center gap-4">
           <button
             type="button"
-            onClick={handleLike}
+            onClick={() => void handleLike()}
             className="group/like flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-(--color-focus-ring) focus-visible:ring-offset-2"
             aria-pressed={isLiked}
             aria-label={isLiked ? 'Unlike comment' : 'Like comment'}
@@ -492,7 +492,7 @@ function ReplyBanner({ replyingTo, onCancel, translator }: { readonly replyingTo
         <Button
           variant="ghost"
           size="sm"
-          onClick={onCancel}
+          onClick={() => void onCancel()}
           className="h-7 text-xs"
         >
           {translator.common?.cancel ?? 'Cancel'}

@@ -47,7 +47,7 @@ vi.mock('@/lib/logger', () => ({
 vi.mock('../PremiumNotificationCenter', () => ({
   PremiumNotificationCenter: ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => (
     <div data-testid="notification-center" data-open={isOpen}>
-      <button onClick={onClose}>Close</button>
+      <button onClick={() => void onClose()}>Close</button>
     </div>
   ),
 }));

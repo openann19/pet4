@@ -198,7 +198,7 @@ export class MediaUploadService {
         correlationId,
       } as UploadCompletionRequest);
 
-      const completion = response
+      const _completion = response
 
       logger.info('Upload completed', {
         uploadId,

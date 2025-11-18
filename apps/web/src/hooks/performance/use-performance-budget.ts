@@ -317,7 +317,7 @@ export function usePerformanceBudget(config: PerformanceBudgetConfig) {
       for (const entry of entryList.getEntries()) {
         const layoutShift = entry as PerformanceEntry & { hadRecentInput?: boolean; value?: number };
         if (!layoutShift.hadRecentInput) {
-          clsValue += layoutShift.value || 0;
+          clsValue += layoutShift.value ?? 0;
           webVitalsRef.current.cls = clsValue;
         }
       }

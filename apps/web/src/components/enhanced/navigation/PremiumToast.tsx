@@ -166,7 +166,7 @@ export function PremiumToast({
       </div>
 
       <button
-        onClick={handleDismiss}
+        onClick={() => void handleDismiss()}
         className={cn(
           'shrink-0 opacity-50 hover:opacity-100 transition-opacity',
           getSpacingClassesFromConfig({ padding: 'xs' })

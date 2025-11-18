@@ -193,7 +193,7 @@ export function DismissibleOverlay({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={onClose}
+                    onClick={() => void onClose()}
                     className="ml-auto rounded-full"
                     aria-label="Close"
                   >

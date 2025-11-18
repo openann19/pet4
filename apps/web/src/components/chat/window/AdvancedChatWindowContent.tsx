@@ -195,7 +195,7 @@ export function AdvancedChatWindowContent({
             style={scrollFabStyleValue}
             size="sm"
             className="rounded-full shadow-lg bg-primary hover:bg-primary/90 w-10 h-10 p-0"
-            onClick={scrollToBottom}
+            onClick={() => void scrollToBottom()}
             aria-label="Scroll to bottom"
           >
             <PaperPlaneRight size={20} weight="fill" />

@@ -85,7 +85,7 @@ export function IncomingCallToast({
               size="sm"
               isIconOnly
               variant="ghost"
-              onClick={onDecline}
+              onClick={() => void onDecline()}
               aria-label="Decline call"
               className="rounded-full size-10 bg-red-500/20 text-red-100 hover:bg-red-500/30"
             >
@@ -97,7 +97,7 @@ export function IncomingCallToast({
               size="sm"
               isIconOnly
               variant="primary"
-              onClick={onAccept}
+              onClick={() => void onAccept()}
               aria-label="Accept call"
               className="rounded-full size-10 bg-emerald-500 text-white hover:bg-emerald-600"
             >

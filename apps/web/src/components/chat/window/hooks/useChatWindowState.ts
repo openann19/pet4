@@ -19,7 +19,7 @@ export function useChatWindowState({
   room,
   currentUserId,
   currentUserName,
-  currentUserAvatar,
+  _currentUserAvatar,
 }: UseChatWindowStateProps) {
   const [messages, setMessages] = useStorage<ChatMessage[]>(`chat-messages-${room.id}`, []);
   const [inputValue, setInputValue] = useState('');

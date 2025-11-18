@@ -85,7 +85,7 @@ function getConfigFromEnv(): TokenSigningConfig | null {
   return {
     apiKey,
     apiSecret,
-    issuer: import.meta.env.VITE_LIVEKIT_ISSUER || 'livekit',
+    issuer: import.meta.env.VITE_LIVEKIT_ISSUER ?? 'livekit',
     ...(apiUrl !== undefined && { apiUrl }),
   };
 }

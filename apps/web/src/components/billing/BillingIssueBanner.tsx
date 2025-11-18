@@ -54,7 +54,7 @@ export function BillingIssueBanner({
                 {onOpenBillingPortal ? (
                     <button
                         type="button"
-                        onClick={onOpenBillingPortal}
+                        onClick={() => void onOpenBillingPortal()}
                         className={cn(
                             getTypographyClasses('caption'),
                             'inline-flex font-medium text-destructive underline underline-offset-4',

@@ -103,7 +103,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
       <Card className="overflow-hidden cursor-pointer group border-border/50 shadow-lg hover:shadow-xl transition-shadow">
         <div
           className="relative h-64 overflow-hidden bg-muted"
-          onClick={handleSelect}
+          onClick={() => void handleSelect()}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
@@ -131,7 +131,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
                 style={favoriteButtonAnimation.animatedStyle}
                 onMouseEnter={favoriteButtonAnimation.handleMouseEnter}
                 onMouseLeave={favoriteButtonAnimation.handleMouseLeave}
-                onClick={handleFavoriteClick}
+                onClick={() => void handleFavoriteClick()}
                 className="w-9 h-9 rounded-full bg-white/90 dark:bg-black/90 backdrop-blur-sm flex items-center justify-center shadow-lg cursor-pointer"
                 role="button"
                 tabIndex={0}
@@ -160,7 +160,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
 
         <div
           className="p-4 space-y-3"
-          onClick={handleSelect}
+          onClick={() => void handleSelect()}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
@@ -221,7 +221,7 @@ function AdoptionCardComponent({ profile, onSelect, onFavorite, isFavorited }: A
             <Button
               size="sm"
               className="gap-1.5"
-              onClick={handleViewDetailsClick}
+              onClick={() => void handleViewDetailsClick()}
               type="button"
             >
               <PawPrint size={16} weight="fill" />

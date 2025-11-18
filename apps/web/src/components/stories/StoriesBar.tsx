@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, Suspense } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { _motion, MotionView } from '@petspark/motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import StoryRing from './StoryRing';
 import { StoryViewer } from '@/components/lazy-exports';
@@ -88,7 +88,7 @@ export default function StoriesBar({
               <p className="text-sm text-muted-foreground">Be the first to share a story!</p>
             </div>
             <button
-              onClick={handleShowCreateDialog}
+              onClick={() => void handleShowCreateDialog()}
               className="w-12 h-12 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-xl shadow-lg hover:scale-105 transition-transform"
             >
               +
@@ -125,7 +125,7 @@ export default function StoriesBar({
               petName={currentUserPetName}
               petPhoto={currentUserPetPhoto}
               isOwn
-              onClick={handleOwnStoryClick}
+              onClick={() => void handleOwnStoryClick()}
             />
 
             {uniqueUserIds.map((userId) => {

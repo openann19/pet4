@@ -23,11 +23,11 @@ interface MainAppLayoutProps {
   setCurrentView: (view: View) => void
   navigation: {
     navigateToView: (view: View) => void
-    navigate?: (config: any) => void
-    routes?: any
+    navigate?: (config: unknown) => void
+    routes?: unknown
   }
-  animations: any
-  t: any
+  animations: unknown
+  t: unknown
   theme: string
   toggleTheme: () => void
   language: string
@@ -73,7 +73,7 @@ export function MainAppLayout({
   totalSwipes,
   successRate,
   playdates,
-  NAV_BUTTON_BASE_CLASSES,
+  _NAV_BUTTON_BASE_CLASSES,
 }: MainAppLayoutProps) {
   return (
     <div className="min-h-screen pb-20 sm:pb-24 bg-background text-foreground relative overflow-hidden">

@@ -91,7 +91,7 @@ const messageAnimations = {
 const ClearIcon: React.FC<{ size: keyof typeof iconSizes; onClick: () => void }> = ({ size, onClick }) => (
   <button
     type="button"
-    onClick={onClick}
+    onClick={() => void onClick()}
     className={cn(
       "absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors rounded-sm",
       iconSizes[size]
@@ -173,7 +173,7 @@ export const Input = forwardRef<InputRef, InputProps>(
     const inputRef = useRef<HTMLInputElement>(null)
     const debounceRef = useRef<NodeJS.Timeout>()
     const [isFocused, setIsFocused] = useState(false)
-    const [internalValue, setInternalValue] = useState(value || defaultValue || '')
+    const [internalValue, setInternalValue] = useState(value ?? defaultValue || '')
     
     // Generate unique ID if not provided
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`
@@ -318,7 +318,7 @@ export const Input = forwardRef<InputRef, InputProps>(
         id={inputId}
         className={inputClasses}
         value={currentValue}
-        onChange={handleChange}
+        onChange={() => void handleChange()}
         onFocus={handleFocus}
         onBlur={handleBlur}
         maxLength={maxLength}
@@ -377,7 +377,7 @@ export const Input = forwardRef<InputRef, InputProps>(
             
             {/* Right side icons/controls */}
             {loading && <LoadingSpinner size={size} />}
-            {!loading && clearable && hasValue && <ClearIcon size={size} onClick={handleClear} />}
+            {!loading && clearable && hasValue && <ClearIcon size={size} onClick={() => void handleClear()} />}
             {!loading && !clearable && rightIcon && (
               <div className={cn(
                 "absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground",
@@ -446,7 +446,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement,
   Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'>
 >(({ 
   variant = 'default',
-  size = 'md', 
+  _size = 'md', 
   className,
   rows = 3,
   ...props 

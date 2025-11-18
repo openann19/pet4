@@ -167,7 +167,7 @@ export function FloatingActionButton({
 
   return (
     <button
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseDown={handleMouseDown}

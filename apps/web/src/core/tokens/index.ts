@@ -56,7 +56,7 @@ export const Spacing = {
   component: (path: string): string => {
     const { Dimens } = require('./dimens');
     const parts = path.split('.');
-    let value: number | undefined;
+    let _value: number | undefined;
     let current: unknown = Dimens.component;
 
     for (const part of parts) {

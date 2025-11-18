@@ -46,7 +46,7 @@ export default function CreatePetDialog(props: CreatePetDialogProps) {
           canProceed={canProceed}
           onBack={handleBack}
           onNext={handleNext}
-          onSubmit={handleSubmit}
+          onSubmit={() => void handleSubmit()}
           editingPet={editingPet}
         />
       </DialogContent>

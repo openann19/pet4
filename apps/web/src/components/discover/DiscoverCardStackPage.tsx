@@ -197,7 +197,7 @@ export function DiscoverCardStackPage({
             >
               <button
                 type="button"
-                onClick={handleOpenDetails}
+                onClick={() => void handleOpenDetails()}
                 className="w-full h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                 aria-label={`View details for ${currentPet.name}`}
               >
@@ -247,7 +247,7 @@ export function DiscoverCardStackPage({
       >
         <button
           type="button"
-          onClick={handlePass}
+          onClick={() => void handlePass()}
           disabled={isTransitioning}
           className={`h-14 w-14 rounded-full ${colors.danger} shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-transform hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
           aria-label="Pass on this pet"
@@ -259,7 +259,7 @@ export function DiscoverCardStackPage({
 
         <button
           type="button"
-          onClick={handleSuperlike}
+          onClick={() => void handleSuperlike()}
           disabled={isTransitioning}
           className={`h-16 w-16 rounded-full ${colors.accent} shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-transform hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
           aria-label="Superlike this pet"
@@ -271,7 +271,7 @@ export function DiscoverCardStackPage({
 
         <button
           type="button"
-          onClick={handleLike}
+          onClick={() => void handleLike()}
           disabled={isTransitioning}
           className={`h-14 w-14 rounded-full ${colors.success} shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-transform hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
           aria-label="Like this pet"

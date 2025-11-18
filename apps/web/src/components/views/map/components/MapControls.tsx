@@ -67,7 +67,7 @@ export function MapControls({
         <Button
           variant="ghost"
           size="icon"
-          onClick={onRequestLocation}
+          onClick={() => void onRequestLocation()}
           disabled={isLocating}
           className="h-11 w-11 rounded-xl hover:bg-primary/10"
           aria-label={isLocating ? 'Locating your position' : 'Use current location'}

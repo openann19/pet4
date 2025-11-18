@@ -169,7 +169,7 @@ export function SmartToast({
         )}
       </div>
       <button
-        onClick={handleDismiss}
+        onClick={() => void handleDismiss()}
         className={cn(
           'shrink-0 opacity-50 hover:opacity-100 min-w-[44px] min-h-[44px] flex items-center justify-center',
           prefersReducedMotion ? '' : 'transition-opacity duration-200',

@@ -89,7 +89,7 @@ export function PremiumChip({
   return (
     <MotionView style={animatedStyle}>
       <div
-        onClick={handleClick}
+        onClick={() => void handleClick()}
         className={cn(
           'inline-flex items-center gap-1.5 rounded-full border font-medium transition-all duration-200',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',

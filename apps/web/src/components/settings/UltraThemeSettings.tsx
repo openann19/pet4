@@ -75,7 +75,7 @@ function UltraThemeSettings() {
                   <Check size={20} weight="bold" />
                   Apply Theme
                 </Button>
-                <Button onClick={handleCancelPreview} variant="outline">
+                <Button onClick={() => void handleCancelPreview()} variant="outline">
                   Cancel
                 </Button>
               </div>

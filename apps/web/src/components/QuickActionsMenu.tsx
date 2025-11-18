@@ -84,7 +84,7 @@ function QuickActionItem({ icon, label, onClick, color, index }: QuickActionItem
       style={animatedStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       className="group flex items-center gap-3 bg-card/95 backdrop-blur-md border border-border rounded-full px-4 py-3 shadow-lg hover:shadow-xl transition-all"
     >
       <div
@@ -277,7 +277,7 @@ export default function QuickActionsMenu({
       </Presence>
 
       <MotionView
-        onClick={handleToggle}
+        onClick={() => void handleToggle()}
         className={`w-14 h-14 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center text-white shadow-2xl hover:shadow-primary/50 transition-all ${isOpen ? 'rotate-45' : ''
           }`}
         style={{ transition: 'transform 0.3s ease' }}
@@ -311,7 +311,7 @@ export default function QuickActionsMenu({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={handleToggle}
+          onClick={() => void handleToggle()}
           className="fixed inset-0 bg-black/20 backdrop-blur-sm -z-10"
         />
       </Presence>

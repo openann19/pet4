@@ -55,7 +55,7 @@ class NotificationManager {
       cancel,
       onDismiss,
       onAutoClose,
-      important = false,
+      _important = false,
       closeButton = true,
     } = options;
 

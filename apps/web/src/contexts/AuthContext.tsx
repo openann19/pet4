@@ -291,7 +291,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await refreshAuth();
       return user;
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }, [user]);
@@ -309,7 +309,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
   }, []);
 
-  const signInWithGoogle = useCallback(async (token: string): Promise<User> => {
+  const signInWithGoogle = useCallback(async (_token: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
     
@@ -328,7 +328,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  const signInWithApple = useCallback(async (token: string): Promise<User> => {
+  const signInWithApple = useCallback(async (_token: string): Promise<User> => {
     setIsLoading(true);
     setError(null);
     
@@ -399,7 +399,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         await extendSession();
         return true;
-      } catch (error) {
+      } catch (_error) {
         logger.warn('Session extension failed, signing out');
         await signOut();
         return false;

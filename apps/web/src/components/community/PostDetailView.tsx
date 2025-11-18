@@ -60,8 +60,8 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
 
   useEffect(() => {
     if (open && postId) {
-      loadPost();
-      loadComments();
+      void loadPost();
+      void loadComments();
     } else {
       setPost(null);
       setComments([]);
@@ -207,7 +207,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
         await navigator.clipboard.writeText(window.location.href);
         toast.success('Link copied to clipboard');
       }
-    } catch (error) {
+    } catch (_error) {
       // User cancelled share
     }
   };
@@ -374,7 +374,7 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                   {/* Actions */}
                   <div className="flex items-center gap-4 py-4 border-t border-b">
                     <button
-                      onClick={handleLike}
+                      onClick={() => void handleLike()}
                       className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                     >
                       <Heart
@@ -391,14 +391,14 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                       <ChatCircle size={24} />
                       <span className="text-sm font-medium">{comments.length}</span>
                     </button>
-                    <button onClick={handleSave} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
+                    <button onClick={() => void handleSave()} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
                       <BookmarkSimple
                         size={24}
                         weight={isSaved ? 'fill' : 'regular'}
                         className={isSaved ? 'text-primary' : ''}
                       />
                     </button>
-                    <button onClick={handleShare} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
+                    <button onClick={() => void handleShare()} className="hover:opacity-80 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
                       <Share size={24} />
                     </button>
                   </div>
@@ -500,12 +500,12 @@ export function PostDetailView({ open, onOpenChange, postId, onAuthorClick }: Po
                     className="resize-none"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                        handleSubmitComment();
+                        void handleSubmitComment();
                       }
                     }}
                   />
                   <Button
-                    onClick={handleSubmitComment}
+                    onClick={() => void handleSubmitComment()}
                     disabled={!commentText.trim() || submittingComment}
                     className="self-end"
                   >

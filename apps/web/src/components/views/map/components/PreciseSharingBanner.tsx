@@ -34,7 +34,7 @@ export function PreciseSharingBanner({
         <Button
           size="sm"
           variant="ghost"
-          onClick={onDisable}
+          onClick={() => void onDisable()}
           className="shrink-0 h-8 text-xs"
         >
           {t.map?.disable ?? 'Disable'}

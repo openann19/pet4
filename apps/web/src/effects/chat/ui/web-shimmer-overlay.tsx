@@ -27,9 +27,9 @@ export function WebShimmerOverlay({
   height = DEFAULT_HEIGHT,
   streakWidth = DEFAULT_STREAK,
   duration,
-  delay,
-  opacityRange,
-  paused,
+  _delay,
+  _opacityRange,
+  _paused,
   easing,
   className,
   children,
@@ -38,7 +38,7 @@ export function WebShimmerOverlay({
     return null
   }
 
-  const reducedMotion = useReducedMotion()
+  const _reducedMotion = useReducedMotion()
   const shimmer = useShimmerSweep({
     width,
     duration,

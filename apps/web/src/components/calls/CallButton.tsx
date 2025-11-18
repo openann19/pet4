@@ -41,7 +41,7 @@ export function CallButton({
       size="sm"
       isIconOnly
       aria-label={`Call ${remoteDisplayName}`}
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       className={cn('rounded-full w-10 h-10 p-0', className)}
     >
       <Phone className="h-4 w-4" />

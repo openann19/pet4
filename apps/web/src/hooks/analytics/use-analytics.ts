@@ -120,7 +120,7 @@ const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 const DB_NAME = 'petspark-analytics';
 const DB_VERSION = 1;
 const STORE_NAME = 'events';
-const MAX_QUEUE_SIZE = 1000;
+const _MAX_QUEUE_SIZE = 1000;
 const ENGAGEMENT_UPDATE_INTERVAL = 1000;
 
 // ============================================================================

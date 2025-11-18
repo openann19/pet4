@@ -70,7 +70,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
   };
 
   // Handle reject all
-  const handleRejectAll = async (): Promise<void> => {
+  const _handleRejectAll = async (): Promise<void> => {
     try {
       await consentManager.rejectConsent('analytics');
       await consentManager.rejectConsent('marketing');
@@ -173,7 +173,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleAcceptEssential}
+                onClick={() => void handleAcceptEssential()}
                 aria-label="Accept essential cookies only"
               >
                 Essential Only
@@ -181,7 +181,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleManagePreferences}
+                onClick={() => void handleManagePreferences()}
                 aria-label="Manage cookie preferences"
               >
                 Manage
@@ -189,7 +189,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
               <Button
                 variant="default"
                 size="sm"
-                onClick={handleAcceptAll}
+                onClick={() => void handleAcceptAll()}
                 aria-label="Accept all cookies"
               >
                 Accept All
@@ -298,7 +298,7 @@ export function ConsentBanner({ onConsentChange, showOnMount = true }: ConsentBa
             <Button variant="outline" onClick={() => setShowPreferences(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSavePreferences}>Save Preferences</Button>
+            <Button onClick={() => void handleSavePreferences()}>Save Preferences</Button>
           </div>
         </DialogContent>
       </Dialog>

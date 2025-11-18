@@ -13,11 +13,11 @@ import { getStorageItem, setStorageItem, removeStorageItem } from '@/lib/cache/l
 import { createLogger } from '@/lib/logger';
 import type {
   ConsentCategory,
-  ConsentStatus,
+  _ConsentStatus,
   ConsentPreferences,
   ConsentRecord,
   ConsentUpdateRequest,
-  ConsentManager,
+  _ConsentManager,
 } from '@petspark/shared';
 import { ConsentManager as ConsentManagerUtil, CONSENT_VERSION, DEFAULT_CONSENT_PREFERENCES } from '@petspark/shared';
 
@@ -401,7 +401,7 @@ export function useConsentManager(
           .then((module) => {
             module.analytics.clear();
           })
-          .catch((error: unknown) => {
+          .catch((_error: unknown) => {
             // Silently fail analytics clear - non-critical operation
             // Error is intentionally swallowed
           });

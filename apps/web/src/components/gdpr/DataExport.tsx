@@ -132,7 +132,7 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
           break;
         default:
           blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-          mimeType = 'application/json';
+          _mimeType = 'application/json';
           fileExtension = 'json';
       }
 
@@ -233,7 +233,7 @@ export function DataExport({ userId, onExportComplete }: DataExportProps): React
           </div>
         )}
 
-        <Button onClick={handleExport} disabled={isExporting} className="w-full">
+        <Button onClick={() => void handleExport()} disabled={isExporting} className="w-full">
           {isExporting ? 'Exporting...' : 'Export My Data'}
         </Button>
 

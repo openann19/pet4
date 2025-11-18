@@ -39,16 +39,16 @@ interface NavigationMenuListProps
 function NavigationMenuList({
   className,
   activeIndex = 0,
-  showInkBar = true,
+  _showInkBar = true,
   ...props
 }: NavigationMenuListProps) {
   const listRef = React.useRef<HTMLUListElement | null>(null)
 
-  const handleListRef = React.useCallback((node: HTMLUListElement | null) => {
+  const _handleListRef = React.useCallback((node: HTMLUListElement | null) => {
     listRef.current = node
   }, [])
 
-  const clampedIndex = React.useMemo(() => {
+  const _clampedIndex = React.useMemo(() => {
     if (!Number.isFinite(activeIndex)) {
       return 0
     }

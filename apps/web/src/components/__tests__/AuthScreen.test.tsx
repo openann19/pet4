@@ -30,8 +30,8 @@ vi.mock('@/effects/reanimated/animated-view', () => ({
 vi.mock('@/components/auth/SignInForm', () => ({
   default: ({ onSuccess, onSwitchToSignUp }: { onSuccess: () => void; onSwitchToSignUp: () => void }) => (
     <div data-testid="sign-in-form">
-      <button onClick={onSuccess}>Sign In Success</button>
-      <button onClick={onSwitchToSignUp}>Switch to Sign Up</button>
+      <button onClick={() => void onSuccess()}>Sign In Success</button>
+      <button onClick={() => void onSwitchToSignUp()}>Switch to Sign Up</button>
     </div>
   ),
 }));
@@ -39,8 +39,8 @@ vi.mock('@/components/auth/SignInForm', () => ({
 vi.mock('@/components/auth/SignUpForm', () => ({
   default: ({ onSuccess, onSwitchToSignIn }: { onSuccess: () => void; onSwitchToSignIn: () => void }) => (
     <div data-testid="sign-up-form">
-      <button onClick={onSuccess}>Sign Up Success</button>
-      <button onClick={onSwitchToSignIn}>Switch to Sign In</button>
+      <button onClick={() => void onSuccess()}>Sign Up Success</button>
+      <button onClick={() => void onSwitchToSignIn()}>Switch to Sign In</button>
     </div>
   ),
 }));

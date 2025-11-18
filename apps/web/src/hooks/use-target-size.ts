@@ -16,7 +16,7 @@ import {
 } from '@/core/a11y/target-size';
 import { createLogger } from '@/lib/logger';
 
-const logger = createLogger('use-target-size');
+const _logger = createLogger('use-target-size');
 
 /**
  * Options for target size hook
@@ -90,7 +90,7 @@ export function useTargetSize(options: UseTargetSizeOptions = {}): UseTargetSize
  * Hook to validate target size for a ref
  */
 export function useTargetSizeRef(options: UseTargetSizeOptions = {}) {
-  const { validate, ensure } = useTargetSize(options);
+  const { _validate, ensure } = useTargetSize(options);
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {

@@ -10,7 +10,7 @@
  * Location: apps/web/src/core/a11y/focus-appearance.ts
  */
 
-import { getContrastRatio, hexToRgb, getLuminance } from '../utils/contrast';
+import { getContrastRatio, _hexToRgb, getLuminance } from '../utils/contrast';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('focus-appearance');
@@ -279,7 +279,7 @@ export function ensureFocusAppearance(
 
   // Apply focus styles
   const style = element.style;
-  const className = element.className;
+  const _className = element.className;
 
   // Remove existing focus styles
   element.classList.remove('focus-ring', 'focus-visible-ring');
