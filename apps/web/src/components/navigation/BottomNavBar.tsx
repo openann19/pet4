@@ -29,13 +29,13 @@ export default function BottomNavBar({ currentView, setCurrentView }: BottomNavB
   const [hoveredItem, setHoveredItem] = useState<View | null>(null);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-40 w-full">
       <nav 
-        className="border-t border-border/20 bg-background/95 backdrop-blur-sm shadow-lg"
+        className="border-t border-border/10 bg-background shadow-lg"
         aria-label="Bottom navigation"
       >
         <ul 
-          className="grid grid-cols-6 px-2 py-1"
+          className="grid grid-cols-6 max-w-full mx-auto px-1 py-2"
           role="list"
         >
           {items.map((item) => {
@@ -80,39 +80,39 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave, onClick }: NavIt
   return (
     <li className="text-center relative" role="listitem">
       <button
-        className="block relative group py-3 px-2 w-full"
+        className="block relative py-2 px-1 w-full transition-colors duration-150 hover:bg-accent/5 active:bg-accent/10 rounded-lg"
         onMouseEnter={onHover}
         onMouseLeave={onLeave}
         onClick={handleClick}
         aria-label={item.label}
         aria-current={isActive ? 'page' : undefined}
       >
-        <div className="flex flex-col items-center justify-center gap-1">
+        <div className="flex flex-col items-center justify-center gap-0.5">
           {/* Icon container */}
           <div 
             className={cn(
-              'relative transition-all duration-200',
-              isActive ? 'scale-110 -translate-y-0.5' : 'scale-100',
+              'relative transition-all duration-150',
+              isActive ? 'scale-110' : 'scale-100',
               isHovered && !isActive ? 'scale-105' : ''
             )}
             aria-hidden="true"
           >
-            <span className="text-xl leading-none select-none">{item.icon}</span>
+            <span className="text-lg leading-none select-none">{item.icon}</span>
           </div>
 
           {/* Label */}
           <span
             className={cn(
-              'text-xs font-medium transition-colors duration-200',
+              'text-xs font-medium transition-colors duration-150',
               isActive ? 'text-primary font-semibold' : 'text-muted-foreground'
             )}
           >
             {item.label}
           </span>
 
-          {/* Active indicator dot */}
+          {/* Active indicator line */}
           {isActive && (
-            <div className="absolute bottom-1 w-1 h-1 rounded-full bg-primary" />
+            <div className="absolute bottom-0 w-8 h-0.5 rounded-full bg-primary" />
           )}
 
           {/* Badge */}
@@ -133,10 +133,10 @@ interface BadgeProps {
 function Badge({ count, isActive }: BadgeProps) {
   return (
     <div
-      className="absolute -top-1 -right-1 min-w-5 h-5 rounded-full bg-destructive flex items-center justify-center shadow-sm z-20 px-1"
+      className="absolute -top-0.5 -right-0.5 min-w-4 h-4 rounded-full bg-destructive flex items-center justify-center shadow-md z-20 px-0.5"
       aria-label={`${count} ${count === 1 ? 'notification' : 'notifications'}`}
     >
-      <span className="text-xs font-bold text-destructive-foreground">
+      <span className="text-[10px] font-bold text-destructive-foreground leading-none">
         {count > 9 ? '9+' : count}
       </span>
     </div>

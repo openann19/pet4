@@ -117,7 +117,7 @@ export function PricingModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-3xl rounded-3xl border border-border/60 bg-background/95 backdrop-blur-xl">
+            <DialogContent className="max-w-3xl rounded-3xl border border-border/60 bg-background shadow-2xl">
                 <DialogHeader>
                     <DialogTitle
                         className={cn(
@@ -217,7 +217,7 @@ export function PricingModal({
                                 >
                                     {isPopular ? (
                                         <div 
-                                            className="absolute right-3 top-3 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground backdrop-blur"
+                                            className="absolute right-3 top-3 rounded-full bg-primary/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground"
                                             aria-label="Most popular plan"
                                         >
                                             Most popular

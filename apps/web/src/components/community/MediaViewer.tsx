@@ -560,7 +560,7 @@ export function MediaViewer({
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/98 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           className="fixed inset-0 z-50 flex items-center justify-center"
           onPointerDownOutside={(e) => { e.preventDefault(); }}
@@ -585,7 +585,7 @@ export function MediaViewer({
                       variant="ghost"
                       size="icon"
                       onClick={() => { onOpenChange(false); }}
-                      className="rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm"
+                      className="rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
                     >
                       <X size={24} />
                     </Button>
@@ -606,7 +606,7 @@ export function MediaViewer({
                       onClick={() => {
                         void handleDownload();
                       }}
-                      className="rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm"
+                      className="rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
                     >
                       <DownloadSimple size={22} weight="bold" />
                     </Button>
@@ -616,14 +616,14 @@ export function MediaViewer({
                       onClick={() => {
                         void handleShare();
                       }}
-                      className="rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm"
+                      className="rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
                     >
                       <Share size={22} weight="bold" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm"
+                      className="rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
                     >
                       <DotsThree size={22} weight="bold" />
                     </Button>
@@ -659,7 +659,7 @@ export function MediaViewer({
                             onMouseEnter={playButtonHover.handleMouseEnter}
                             onMouseLeave={playButtonHover.handleMouseLeave}
                             onClick={handleVideoClick}
-                            className="pointer-events-auto w-20 h-20 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/80 transition-colors cursor-pointer"
+                            className="pointer-events-auto w-20 h-20 rounded-full bg-black/70 flex items-center justify-center text-white hover:bg-black/90 transition-colors cursor-pointer"
                           >
                             {isPlaying ? (
                               <Pause size={40} weight="fill" />
@@ -680,7 +680,7 @@ export function MediaViewer({
                               variant="ghost"
                               size="icon"
                               onClick={handleVideoClick}
-                              className="h-10 w-10 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm shrink-0"
+                              className="h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors shrink-0"
                             >
                               {isPlaying ? (
                                 <Pause size={20} weight="fill" />
@@ -709,7 +709,7 @@ export function MediaViewer({
                               variant="ghost"
                               size="icon"
                               onClick={toggleMute}
-                              className="h-10 w-10 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-sm shrink-0"
+                              className="h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors shrink-0"
                             >
                               {isMuted ? (
                                 <SpeakerSlash size={20} weight="fill" />

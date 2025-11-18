@@ -91,7 +91,7 @@ export default function AgeGateModal({ open, onVerified, onClose }: AgeGateModal
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/95 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/98"
       >
         <MotionView
           initial={{ scale: 0.95, opacity: 0 }}

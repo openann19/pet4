@@ -38,7 +38,7 @@ function LoadingSpinner() {
 
       {/* Center icon container */}
       <MotionView
-        className="absolute inset-4 flex items-center justify-center rounded-full border border-primary/20 bg-gradient-to-br from-primary/10 to-accent/10 backdrop-blur-sm"
+        className="absolute inset-4 flex items-center justify-center rounded-full border border-primary/20 bg-gradient-to-br from-primary/10 to-accent/10"
         initial={{ rotate: 0 }}
         animate={{ rotate: 360 }}
         transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
