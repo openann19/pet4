@@ -246,7 +246,6 @@ function APIConfigActions({
   return (
     <div className="flex gap-2">
       <ServiceTestButton
-        serviceName={title}
         isTesting={sectionTesting}
         onTest={onTest}
         disabled={isTestDisabled || isProviderDisabled}
