@@ -41,24 +41,33 @@ interface AllProvidersProps {
   children: ReactNode;
   queryClient?: QueryClient;
   initialEntries?: string[];
+  skipRouter?: boolean;
 }
 
 /**
  * AllProviders component that wraps children with all necessary providers
  * Note: AppProvider and AuthProvider use hooks internally, so we use the actual providers
  */
-function AllProviders({ children, queryClient }: AllProvidersProps) {
+function AllProviders({ children, queryClient, skipRouter = false }: AllProvidersProps) {
   const client = queryClient ?? createTestQueryClient();
+
+  const content = (
+    <QueryClientProvider client={client}>
+      <AppProvider>
+        <AuthProvider>
+          <UIProvider>{children}</UIProvider>
+        </AuthProvider>
+      </AppProvider>
+    </QueryClientProvider>
+  );
+
+  if (skipRouter) {
+    return content;
+  }
 
   return (
     <BrowserRouter>
-      <QueryClientProvider client={client}>
-        <AppProvider>
-          <AuthProvider>
-            <UIProvider>{children}</UIProvider>
-          </AuthProvider>
-        </AppProvider>
-      </QueryClientProvider>
+      {content}
     </BrowserRouter>
   );
 }
@@ -66,6 +75,7 @@ function AllProviders({ children, queryClient }: AllProvidersProps) {
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   queryClient?: QueryClient;
   initialEntries?: string[];
+  skipRouter?: boolean;
 }
 
 /**
@@ -76,11 +86,11 @@ export function renderWithProviders(
   ui: ReactElement,
   options: CustomRenderOptions = {}
 ): ReturnType<typeof render> {
-  const { queryClient, initialEntries, ...renderOptions } = options;
+  const { queryClient, initialEntries, skipRouter, ...renderOptions } = options;
 
   function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <AllProviders queryClient={queryClient} initialEntries={initialEntries}>
+      <AllProviders queryClient={queryClient} initialEntries={initialEntries} skipRouter={skipRouter}>
         {children}
       </AllProviders>
     );

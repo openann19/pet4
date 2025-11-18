@@ -70,6 +70,55 @@ vi.mock('@/effects/reanimated/transitions', async () => {
   return mockModule;
 });
 
+// Mock framer-motion to avoid prop warnings in tests
+vi.mock('framer-motion', async () => {
+  const actual = await vi.importActual<typeof import('framer-motion')>('framer-motion');
+  
+  // Create a component factory that strips motion props
+  const createMotionComponent = (tag: string) => {
+    return React.forwardRef<HTMLElement, any>((props, ref) => {
+      // Strip motion-specific props that shouldn't appear in DOM
+      const {
+        initial,
+        animate,
+        exit,
+        variants,
+        transition,
+        whileHover,
+        whileTap,
+        whileFocus,
+        whileDrag,
+        whileInView,
+        drag,
+        dragConstraints,
+        dragElastic,
+        dragMomentum,
+        onDrag,
+        onDragStart,
+        onDragEnd,
+        layout,
+        layoutId,
+        ...domProps
+      } = props;
+      
+      return React.createElement(tag, { ...domProps, ref });
+    });
+  };
+
+  return {
+    ...actual,
+    motion: new Proxy({} as any, {
+      get: (_target, tag: string) => {
+        if (typeof tag === 'string') {
+          return createMotionComponent(tag);
+        }
+        return createMotionComponent('div');
+      },
+    }),
+    AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
+  };
+});
+
 //========== TEST WRAPPER UTILITIES ==========
 // Mock contexts - wrap in act() to handle React state updates
 vi.mock('@/contexts/AppContext', () => ({
@@ -524,6 +573,10 @@ vi.mock('@/config/env', () => ({
     VITE_USE_MOCKS: 'false',
     VITE_ENABLE_MAPS: false,
     VITE_MAPBOX_TOKEN: undefined,
+    flags: {
+      mocks: false,
+      maps: false,
+    },
   },
   flags: {
     mocks: false,
