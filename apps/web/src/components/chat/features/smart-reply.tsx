@@ -48,7 +48,7 @@ export interface SmartReplyProps {
  */
 export function SmartReply({
   message,
-  _messageLanguage,
+  messageLanguage: _messageLanguage,
   userLanguage,
   onSelect,
   maxSuggestions = 3,

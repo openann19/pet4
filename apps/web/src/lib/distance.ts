@@ -1,4 +1,4 @@
-import { _isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy, isDefined } from '@petspark/shared';
 
 export interface Coordinates {
   latitude: number;

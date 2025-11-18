@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Heart, CheckCircle, _Translate, Sun, Moon } from '@phosphor-icons/react'
+import { Heart, CheckCircle, Translate, Sun, Moon } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { useApp } from '@/contexts/AppContext'
 import { haptics } from '@/lib/haptics'

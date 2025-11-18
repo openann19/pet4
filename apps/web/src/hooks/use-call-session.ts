@@ -12,7 +12,7 @@ import type {
   CallSession,
   CallParticipant,
   VideoQuality,
-  _CallStatus,
+  CallStatus,
 } from '@/lib/calls/call-types';
 import { createLogger } from '@/lib/logger';
 

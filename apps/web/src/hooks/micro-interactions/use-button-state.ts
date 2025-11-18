@@ -96,7 +96,7 @@ export function useButtonState(
     loading = false,
     initialState = 'idle',
     enableHaptics = true,
-    _enableSound = false,
+    enableSound: _enableSound = false,
     onStateChange,
   } = options
 

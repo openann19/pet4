@@ -36,7 +36,7 @@ import {
   _withSpring,
   withTiming,
   _interpolate,
-  _Extrapolation,
+  Extrapolation,
   withRepeat,
   withSequence,
   MotionView,

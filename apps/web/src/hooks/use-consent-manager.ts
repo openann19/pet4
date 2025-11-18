@@ -13,11 +13,11 @@ import { getStorageItem, setStorageItem, removeStorageItem } from '@/lib/cache/l
 import { createLogger } from '@/lib/logger';
 import type {
   ConsentCategory,
-  _ConsentStatus,
+  ConsentStatus,
   ConsentPreferences,
   ConsentRecord,
   ConsentUpdateRequest,
-  _ConsentManager,
+  ConsentManager,
 } from '@petspark/shared';
 import { ConsentManager as ConsentManagerUtil, CONSENT_VERSION, DEFAULT_CONSENT_PREFERENCES } from '@petspark/shared';
 

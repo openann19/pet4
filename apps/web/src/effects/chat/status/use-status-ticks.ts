@@ -16,7 +16,7 @@ import {
   useSharedValue,
   withTiming,
   _interpolate,
-  _Extrapolation,
+  Extrapolation,
   type SharedValue,
 } from '@petspark/motion'
 import { createLogger } from '@/lib/logger'

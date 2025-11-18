@@ -229,7 +229,7 @@ function APIConfigContent({
 }
 
 function APIConfigActions({
-  _title,
+  title: _title,
   sectionTesting,
   isTestDisabled,
   isProviderDisabled,

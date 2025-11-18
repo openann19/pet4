@@ -99,8 +99,8 @@ export function useAdoptionFilters({
 
   const hasActiveFilters = useCallback(() => {
     return !!(
-      localFilters.species?.length ?? 
-      localFilters.size?.length ?? 
+      (localFilters.species?.length ?? 0) ||
+      (localFilters.size?.length ?? 0) ||
       localFilters.ageMin ||
       localFilters.ageMax ||
       localFilters.location ||
@@ -109,9 +109,9 @@ export function useAdoptionFilters({
       localFilters.goodWithPets !== undefined ||
       localFilters.vaccinated !== undefined ||
       localFilters.spayedNeutered !== undefined ||
-      localFilters.energyLevel?.length ?? 
+      (localFilters.energyLevel?.length ?? 0) ||
       localFilters.feeMax ||
-      localFilters.status?.length ?? 
+      (localFilters.status?.length ?? 0) ||
       localFilters.featured !== undefined ||
       localFilters.sortBy
     );

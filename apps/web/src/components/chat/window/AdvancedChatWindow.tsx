@@ -14,8 +14,8 @@ import type {
   ChatRoom,
   MessageReaction,
   ReactionType,
-  _SmartSuggestion,
-  _MessageTemplate,
+  SmartSuggestion,
+  MessageTemplate,
 } from '@/lib/chat-types';
 import { generateMessageId } from '@/lib/chat-utils';
 import { useTypingManager } from '@/hooks/use-typing-manager';

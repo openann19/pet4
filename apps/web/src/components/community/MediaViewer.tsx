@@ -7,7 +7,7 @@ import {
   withTiming,
   withDelay,
   interpolate,
-  _Extrapolation,
+  Extrapolation,
   MotionView,
 } from '@petspark/motion';
 import { Button } from '@/components/ui/button';

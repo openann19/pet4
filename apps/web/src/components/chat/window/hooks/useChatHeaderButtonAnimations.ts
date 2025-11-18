@@ -11,7 +11,7 @@ import type { CSSProperties } from 'react';
  */
 export function useChatHeaderButtonAnimations(typingUsersCount: number) {
   const { headerStyle } = useChatHeaderAnimations();
-  const { _typingContainerStyle, _typingTextStyle, typingDotsStyle } =
+  const { typingContainerStyle: _typingContainerStyle, typingTextStyle: _typingTextStyle, typingDotsStyle } =
     useTypingIndicatorAnimations(typingUsersCount);
 
   const videoButtonScale = useSharedValue<number>(1);

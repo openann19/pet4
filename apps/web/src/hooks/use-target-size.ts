@@ -90,7 +90,7 @@ export function useTargetSize(options: UseTargetSizeOptions = {}): UseTargetSize
  * Hook to validate target size for a ref
  */
 export function useTargetSizeRef(options: UseTargetSizeOptions = {}) {
-  const { _validate, ensure } = useTargetSize(options);
+  const { validate: _validate, ensure } = useTargetSize(options);
   const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {

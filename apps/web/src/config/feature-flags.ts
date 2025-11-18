@@ -1,4 +1,4 @@
-import { _isTruthy, isDefined } from '@petspark/shared';
+import { isTruthy, isDefined } from '@petspark/shared';
 
 /**
  * Feature Flags Configuration

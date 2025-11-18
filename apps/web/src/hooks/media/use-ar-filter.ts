@@ -166,7 +166,7 @@ export const AR_FILTERS: readonly ARFilter[] = [
 export function useARFilter(options: UseARFilterOptions): UseARFilterReturn {
   const {
     videoSource,
-    _targetFPS = DEFAULT_TARGET_FPS,
+    targetFPS: _targetFPS = DEFAULT_TARGET_FPS,
     faceDetectionInterval = DEFAULT_FACE_DETECTION_INTERVAL,
     enablePerformanceMonitoring = true,
     onFaceDetected,

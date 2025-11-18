@@ -5,7 +5,7 @@ import {
   useAnimatedStyle,
   withTiming,
   interpolate,
-  _Extrapolation,
+  Extrapolation,
 } from '@petspark/motion';
 import { useMemo, useEffect } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';

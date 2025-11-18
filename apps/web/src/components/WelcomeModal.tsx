@@ -14,7 +14,7 @@ import {
   withRepeat,
   withSequence,
   withSpring,
-  type _AnimatedStyle,
+  type AnimatedStyle,
   type MotionValue,
 } from '@petspark/motion';
 

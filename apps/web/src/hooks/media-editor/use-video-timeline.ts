@@ -5,7 +5,7 @@ import {
   _VideoTimelineError,
   VideoFrameError,
   WaveformError,
-  _VideoExportError,
+  VideoExportError,
   createErrorContext,
   type MediaErrorContext,
 } from '@/lib/media-errors';
