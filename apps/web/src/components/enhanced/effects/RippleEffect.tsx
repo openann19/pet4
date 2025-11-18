@@ -61,7 +61,7 @@ export function RippleEffect({
 
   return (
     <div
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       onKeyDown={handleKeyDown}
       role={role}
       tabIndex={tabIndex}

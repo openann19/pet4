@@ -98,7 +98,7 @@ export function PremiumButton({
         <Button
           variant={buttonVariant}
           size={buttonSize}
-          onClick={handleClick}
+          onClick={() => void handleClick()}
           disabled={loading ?? props.disabled}
           className={cn(
             'relative overflow-hidden',

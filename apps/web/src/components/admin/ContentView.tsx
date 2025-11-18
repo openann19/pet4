@@ -211,11 +211,11 @@ export default function ContentView() {
             <Button variant="outline" onClick={() => { setDialogOpen(false); }}>
               Close
             </Button>
-            <Button variant="destructive" onClick={handleRemovePet}>
+            <Button variant="destructive" onClick={() => void handleRemovePet()}>
               <XCircle size={16} className="mr-2" />
               Remove Profile
             </Button>
-            <Button onClick={handleApprovePet}>
+            <Button onClick={() => void handleApprovePet()}>
               <CheckCircle size={16} className="mr-2" />
               Approve
             </Button>

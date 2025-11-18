@@ -10,21 +10,21 @@ import {
  */
 export function useChatInputAnimations(showTemplates: boolean) {
   const {
-    templateButtonHover: templateHoverBase,
+    templateButtonHover: _templateHoverBase,
     templateButtonHoverStyle,
-    templateButtonTap: templateTapBase,
+    templateButtonTap: _templateTapBase,
     templateButtonTapStyle,
-    stickerButtonHover: stickerHoverBase,
+    stickerButtonHover: _stickerHoverBase,
     stickerButtonHoverStyle,
-    stickerButtonTap: stickerTapBase,
+    stickerButtonTap: _stickerTapBase,
     stickerButtonTapStyle,
-    emojiButtonHover: emojiHoverBase,
+    emojiButtonHover: _emojiHoverBase,
     emojiButtonHoverStyle,
-    emojiButtonTap: emojiTapBase,
+    emojiButtonTap: _emojiTapBase,
     emojiButtonTapStyle,
-    sendButtonHover: sendHoverBase,
+    sendButtonHover: _sendHoverBase,
     sendButtonHoverStyle,
-    sendButtonTap: sendTapBase,
+    sendButtonTap: _sendTapBase,
     sendButtonTapStyle,
   } = useButtonAnimations();
 

@@ -182,7 +182,7 @@ function CarouselPrevious({
         className
       )}
       disabled={!canScrollPrev}
-      onClick={scrollPrev}
+      onClick={() => void scrollPrev()}
       {...props}
     >
       <ArrowLeft />
@@ -212,7 +212,7 @@ function CarouselNext({
         className
       )}
       disabled={!canScrollNext}
-      onClick={scrollNext}
+      onClick={() => void scrollNext()}
       {...props}
     >
       <ArrowRight />

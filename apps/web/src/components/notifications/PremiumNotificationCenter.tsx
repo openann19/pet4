@@ -206,7 +206,7 @@ export function PremiumNotificationCenter({
                     {filtersWithNotifications.view === 'grouped' ? 'List view' : 'Grouped view'}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={deleteAllArchived} disabled={archivedCount === 0}>
+                  <DropdownMenuItem onClick={() => void deleteAllArchived()} disabled={archivedCount === 0}>
                     <Trash size={16} className="mr-2" />
                     Delete archived ({archivedCount})
                   </DropdownMenuItem>

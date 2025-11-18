@@ -102,7 +102,7 @@ function QualityButton({ option, isSelected, onSelect }: QualityButtonProps): JS
                         ? 'bg-gradient-to-r from-primary to-accent border-primary/50'
                         : 'hover:bg-muted/50')
         }`}
-        onClick={handleClick}
+        onClick={() => void handleClick()}
       >
         <div className="flex flex-col items-start gap-1 flex-1">
           <div className="flex items-center gap-2">

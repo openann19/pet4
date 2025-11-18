@@ -15,7 +15,7 @@ export function ContextMenuItem({
 }: ContextMenuItemProps) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => void onClick()}
       className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm ${
         variant === 'destructive'
           ? 'hover:bg-destructive/10 text-destructive'

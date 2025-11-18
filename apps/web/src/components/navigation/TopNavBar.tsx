@@ -267,7 +267,7 @@ export default function TopNavBar({
             <NavButton
               icon={<Translate size={20} weight="bold" />}
               label={language === 'en' ? 'БГ' : 'EN'}
-              onClick={handleLanguageToggle}
+              onClick={() => void handleLanguageToggle()}
               ariaLabel={
                 language === 'en'
                   ? 'Switch to Bulgarian'
@@ -282,7 +282,7 @@ export default function TopNavBar({
                   <Moon size={20} weight="bold" />
                 )
               }
-              onClick={handleThemeToggle}
+              onClick={() => void handleThemeToggle()}
               ariaLabel={
                 theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
               }
@@ -291,18 +291,18 @@ export default function TopNavBar({
               <>
                 <NavButton
                   icon={<Bell size={20} weight="bold" />}
-                  onClick={handleNotificationsClick}
+                  onClick={() => void handleNotificationsClick()}
                   ariaLabel="Notifications"
                   badge={0}
                 />
                 <NavButton
                   icon={<ShieldCheck size={20} weight="bold" />}
-                  onClick={handleAdminClick}
+                  onClick={() => void handleAdminClick()}
                   ariaLabel="Admin Console"
                 />
                 <NavButton
                   icon={<User size={20} weight="bold" />}
-                  onClick={handleProfileClick}
+                  onClick={() => void handleProfileClick()}
                   ariaLabel="Profile"
                 />
               </>
@@ -315,7 +315,7 @@ export default function TopNavBar({
               'md:hidden rounded-lg hover:bg-primary/10 transition-colors',
               getSpacingClassesFromConfig({ padding: 'sm' })
             )}
-            onClick={toggleMobileMenu}
+            onClick={() => void toggleMobileMenu()}
             aria-label="Toggle navigation menu"
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
@@ -484,7 +484,7 @@ function MobileNavButton({ icon, label, onClick }: MobileNavButtonProps) {
 
   return (
     <button
-      onClick={onClick}
+      onClick={() => void onClick()}
       {...buttonAriaAttrs}
       className={cn(
         'w-full flex items-center rounded-lg hover:bg-primary/10 active:bg-primary/20 transition-colors text-left',

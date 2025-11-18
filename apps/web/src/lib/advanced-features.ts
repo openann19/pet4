@@ -438,7 +438,7 @@ export function useWakeLock() {
   useEffect(() => {
     return () => {
       if (wakeLockRef.current) {
-        wakeLockRef.current.release();
+        void wakeLockRef.current.release();
       }
     };
   }, []);

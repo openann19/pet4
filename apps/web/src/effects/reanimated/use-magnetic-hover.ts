@@ -19,7 +19,7 @@ export interface UseMagneticHoverReturn {
   animatedStyle: ReturnType<typeof useAnimatedStyle>;
   translateX: ReturnType<typeof useSharedValue<number>>;
   translateY: ReturnType<typeof useSharedValue<number>>;
-  variants: any;
+  variants: unknown;
   handleMouseEnter: () => void;
   handleMouseLeave: () => void;
   handleMouseMove: (event: React.MouseEvent<HTMLElement>) => void;

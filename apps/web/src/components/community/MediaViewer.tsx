@@ -646,7 +646,7 @@ export function MediaViewer({
                         poster={(currentMedia as PostVideo).thumbnail}
                         className="max-w-full max-h-full object-contain"
                         playsInline
-                        onClick={handleVideoClick}
+                        onClick={() => void handleVideoClick()}
                       />
 
                       {showVideoControls && (
@@ -658,7 +658,7 @@ export function MediaViewer({
                             style={playButtonHover.animatedStyle}
                             onMouseEnter={playButtonHover.handleMouseEnter}
                             onMouseLeave={playButtonHover.handleMouseLeave}
-                            onClick={handleVideoClick}
+                            onClick={() => void handleVideoClick()}
                             className="pointer-events-auto w-20 h-20 rounded-full bg-black/70 flex items-center justify-center text-white hover:bg-black/90 transition-colors cursor-pointer"
                           >
                             {isPlaying ? (
@@ -679,7 +679,7 @@ export function MediaViewer({
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={handleVideoClick}
+                              onClick={() => void handleVideoClick()}
                               className="h-9 w-9 rounded-full bg-black/70 hover:bg-black/90 text-white transition-colors shrink-0"
                             >
                               {isPlaying ? (
@@ -708,7 +708,7 @@ export function MediaViewer({
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={toggleMute}
+                              onClick={() => void toggleMute()}
                               className="h-9 w-9 rounded-full bg-black/70 hover:bg-black/90 text-white transition-colors shrink-0"
                             >
                               {isMuted ? (
@@ -724,7 +724,7 @@ export function MediaViewer({
                   ) : (
                     <MotionView
                       style={imageStyle}
-                      onClick={handleImageClick}
+                      onClick={() => void handleImageClick()}
                       className="max-w-full max-h-full cursor-zoom-in select-none"
                     >
                       <img
@@ -749,7 +749,7 @@ export function MediaViewer({
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={handlePrevious}
+                      onClick={() => void handlePrevious()}
                       className="h-10 w-10 rounded-full bg-black/70 hover:bg-black/90 text-white shadow-lg"
                     >
                       <CaretLeft size={32} weight="bold" />
@@ -765,7 +765,7 @@ export function MediaViewer({
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={handleNext}
+                      onClick={() => void handleNext()}
                       className="h-10 w-10 rounded-full bg-black/70 hover:bg-black/90 text-white shadow-lg"
                     >
                       <CaretRight size={32} weight="bold" />

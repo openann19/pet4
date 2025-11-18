@@ -109,7 +109,7 @@ export function useFilters() {
   const webglManagerRef = useRef<WebGLContextManager | null>(null);
   const lutCacheRef = useRef<Map<string, LUT>>(new Map());
   const performanceMonitor = getPerformanceMonitor();
-  const workerPool = getWorkerPool();
+  const _workerPool = getWorkerPool();
 
   // ============================================================================
   // Canvas-based Filters (CPU)
@@ -427,7 +427,7 @@ export function useFilters() {
           throw new LUTError(`Failed to load LUT: ${response.statusText}`, errorContext, false);
         }
 
-        const arrayBuffer = await response.arrayBuffer();
+        const _arrayBuffer = await response.arrayBuffer();
         // Parse LUT file (simplified - actual implementation would parse .cube or .3dl format)
         // For now, create a placeholder LUT
         const lut: LUT = {

@@ -30,7 +30,7 @@ import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate'
 import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config'
 import { useUIConfig } from '@/hooks/use-ui-config'
 
-const logger = createLogger('reply-ribbon')
+const _logger = createLogger('reply-ribbon')
 
 /**
  * Reply ribbon effect options
@@ -74,7 +74,7 @@ export function useReplyRibbon(
     onComplete,
   } = options
 
-  const reducedMotion = useReducedMotionSV()
+  const _reducedMotion = useReducedMotionSV()
   const { hz, scaleDuration } = useDeviceRefreshRate()
   const { visual, feedback, animation } = useUIConfig()
 
@@ -169,7 +169,7 @@ export function useReplyRibbon(
       const prevP1 = ribbonP1.current
       const dx = point.x - prevP1.x
       const dy = point.y - prevP1.y
-      const distance = Math.sqrt(dx * dx + dy * dy)
+      const _distance = Math.sqrt(dx * dx + dy * dy)
 
       // Apply tension: The ribbon doesn't immediately follow, it has resistance
       const tensionFactor = 1 - tension

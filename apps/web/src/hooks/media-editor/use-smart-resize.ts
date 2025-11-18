@@ -209,9 +209,9 @@ export const ASPECT_RATIO_PRESETS: readonly AspectRatioPreset[] = [
 // ============================================================================
 
 const FACE_DETECTION_MIN_SIZE = 20;
-const FACE_DETECTION_SCALE_FACTOR = 1.1;
-const EDGE_DETECTION_THRESHOLD = 100;
-const SEAM_CARVING_ENERGY_THRESHOLD = 0.3;
+const _FACE_DETECTION_SCALE_FACTOR = 1.1;
+const _EDGE_DETECTION_THRESHOLD = 100;
+const _SEAM_CARVING_ENERGY_THRESHOLD = 0.3;
 
 // ============================================================================
 // Hook Implementation
@@ -222,10 +222,10 @@ export function useSmartResize() {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<Error | null>(null);
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const faceDetectionModelRef = useRef<unknown>(null);
+  const _canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const _faceDetectionModelRef = useRef<unknown>(null);
   const performanceMonitor = getPerformanceMonitor();
-  const workerPool = getWorkerPool();
+  const _workerPool = getWorkerPool();
 
   // ============================================================================
   // Face Detection (Simplified - uses Viola-Jones-inspired approach)
@@ -655,7 +655,7 @@ export function useSmartResize() {
               setProgress(30);
 
               // Calculate energy map (can be done in worker)
-              const energyMap = calculateEnergyMap(imageData);
+              const _energyMap = calculateEnergyMap(imageData);
               setProgress(60);
 
               // For now, use standard scaling as seam carving is complex

@@ -370,7 +370,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
       <MotionView style={containerStyle}>
         <Card
           className="overflow-hidden bg-linear-to-br from-card via-card to-card/95 border border-border/60 shadow-lg hover:shadow-xl hover:border-border transition-all duration-500 backdrop-blur-sm cursor-pointer"
-          onClick={handleCardClick}
+          onClick={() => void handleCardClick()}
         >
           {/* Author Header */}
           <div className="flex items-center justify-between p-4 pb-3">
@@ -426,7 +426,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
                 </MotionView>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleReport} className="text-destructive">
+                <DropdownMenuItem onClick={() => void handleReport()} className="text-destructive">
                   <Flag size={18} className="mr-2" />
                   Report Post
                 </DropdownMenuItem>
@@ -525,7 +525,7 @@ function PostCardComponent({ post, onAuthorClick, onPostClick }: PostCardProps):
                 )}
               </button>
 
-              <button onClick={handleCommentClick} className="flex items-center gap-1.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
+              <button onClick={() => void handleCommentClick()} className="flex items-center gap-1.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--color-focus-ring)" aria-label="Button">
                 <ChatCircle
                   size={24}
                   weight="regular"

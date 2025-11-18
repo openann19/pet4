@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, MotionView } from '@petspark/motion';
+import { _motion, MotionView } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck, CheckCircle, Clock, XCircle } from '@phosphor-icons/react';
@@ -62,7 +62,7 @@ export function VerificationButton({
     },
   };
 
-  const status = request?.status || 'unverified';
+  const status = request?.status ?? 'unverified';
   const config = statusConfig[status];
   const Icon = config.icon;
 

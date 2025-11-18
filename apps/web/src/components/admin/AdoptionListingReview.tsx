@@ -58,7 +58,7 @@ function ListingItem({ listing, isSelected, onSelect, animation }: ListingItemPr
       variants={animation.variants}
       initial="rest"
       whileTap="tap"
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       className={`w-full text-left p-4 rounded-lg border-2 transition-all cursor-pointer ${
         isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
       }`}

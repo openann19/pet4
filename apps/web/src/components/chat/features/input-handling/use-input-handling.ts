@@ -40,7 +40,7 @@ export function useInputHandling(options: UseInputHandlingOptions): UseInputHand
   }, []);
 
   const handleTemplateSelect = useCallback((template: MessageTemplate): void => {
-    setInputValue(template.content || template.text || '');
+    setInputValue(template.content ?? (template.text || ''));
     setShowTemplates(false);
     inputRef.current?.focus();
   }, []);

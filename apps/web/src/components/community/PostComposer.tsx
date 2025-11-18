@@ -82,7 +82,7 @@ function ImagePreviewItem({
       />
       <button
         type="button"
-        onClick={onRemove}
+        onClick={() => void onRemove()}
         className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
         aria-label="Remove image"
       >
@@ -341,7 +341,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
       const postData: Parameters<typeof communityAPI.createPost>[0] = {
         authorId: user.id,
-        authorName: user.login || 'User',
+        authorName: user.login ?? 'User',
         authorAvatar: user.avatarUrl ?? undefined,
         kind: 'post' as PostKind,
         text: text.trim(),
@@ -353,8 +353,8 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
       if (location) {
         postData.location = {
-          city: location.placeName?.split(',')[0] || 'Unknown',
-          country: location.placeName?.split(',').pop()?.trim() || 'Unknown',
+          city: location.placeName?.split(',')[0] ?? 'Unknown',
+          country: location.placeName?.split(',').pop()?.trim() ?? 'Unknown',
           lat: location.lat,
           lon: location.lng,
         };
@@ -530,7 +530,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                   {/* Center Play/Pause control */}
                   <motion.button
                     type="button"
-                    onClick={toggleVideoPlayback}
+                    onClick={() => void toggleVideoPlayback()}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.97 }}
                     className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -546,7 +546,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                   {/* Remove video */}
                   <button
                     type="button"
-                    onClick={handleRemoveVideo}
+                    onClick={() => void handleRemoveVideo()}
                     className="absolute top-3 right-3 bg-black/70 hover:bg-black/90 text-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
                     disabled={videoState.isCompressing}
                     aria-label="Remove video"
@@ -638,7 +638,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                       onChange={(e) => { void handleImageFileSelect(e); }}
                       disabled={isUploadingImage}
                     />
-                    <Button onClick={handleImageUpload} className="w-full" disabled={images.length >= MAX_IMAGES}>
+                    <Button onClick={() => void handleImageUpload()} className="w-full" disabled={images.length >= MAX_IMAGES}>
                       <Camera size={18} className="mr-2" />
                       Add Photo
                     </Button>
@@ -662,7 +662,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
 
                     <input ref={videoInputRef} type="file" accept="video/*" onChange={(e) => { void handleVideoFileSelect(e); }} className="hidden" />
 
-                    <Button onClick={handleVideoUploadClick} className="w-full" disabled={!!videoState.file || videoState.isCompressing}>
+                    <Button onClick={() => void handleVideoUploadClick()} className="w-full" disabled={!!videoState.file || videoState.isCompressing}>
                       <VideoCamera size={18} className="mr-2" />
                       {videoState.isCompressing ? 'Processing...' : 'Choose Video'}
                     </Button>
@@ -721,7 +721,7 @@ export function PostComposer({ open, onOpenChange, onPostCreated }: PostComposer
                 className="flex-1 px-3 py-2 text-sm border border-input bg-background rounded-md"
                 aria-label="Add tag"
               />
-              <Button onClick={handleAddTag} variant="outline" size="sm" aria-label="Add tag">
+              <Button onClick={() => void handleAddTag()} variant="outline" size="sm" aria-label="Add tag">
                 <Tag size={16} />
               </Button>
             </div>

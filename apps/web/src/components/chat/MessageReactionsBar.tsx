@@ -48,7 +48,7 @@ function ReactionButton({ emoji, count, onClick }: { emoji: string; count: numbe
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={() => void onClick()}
       className={cn(
         'inline-flex items-center gap-1 px-2 py-1 rounded-full',
         'bg-white/10 hover:bg-white/20',

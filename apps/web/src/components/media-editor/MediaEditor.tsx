@@ -125,7 +125,7 @@ interface ToolChipProps {
 function ToolChip({ active, onPress, label }: ToolChipProps): React.ReactElement {
   return (
     <button
-      onClick={onPress}
+      onClick={() => void onPress()}
       style={{
         padding: '6px 10px',
         borderRadius: 999,

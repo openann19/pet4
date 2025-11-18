@@ -32,11 +32,11 @@ export function NotFoundPage(): JSX.Element {
                 </Alert>
 
                 <div className="flex flex-col gap-3">
-                    <Button onClick={handleGoHome} variant="default" className="w-full">
+                    <Button onClick={() => void handleGoHome()} variant="default" className="w-full">
                         <House size={16} className="mr-2" />
                         Go Home
                     </Button>
-                    <Button onClick={handleGoBack} variant="outline" className="w-full">
+                    <Button onClick={() => void handleGoBack()} variant="outline" className="w-full">
                         <ArrowLeft size={16} className="mr-2" />
                         Go Back
                     </Button>

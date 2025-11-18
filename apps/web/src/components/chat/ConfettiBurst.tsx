@@ -107,7 +107,7 @@ export function ConfettiBurst({
 
       // Full animation sequence
       const maxDelay = Math.max(...particles.map(part => part.delay));
-      const totalDuration = maxDelay + dur + Math.max(140, dur * 0.25);
+      const _totalDuration = maxDelay + dur + Math.max(140, dur * 0.25);
 
       // Start animations
       p.o.value = withDelay(p.delay, withTiming(1, { duration: 80 }));

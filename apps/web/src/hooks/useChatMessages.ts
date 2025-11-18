@@ -236,7 +236,7 @@ export function useChatMessages({
     [currentUserId, queryClient, roomId]
   );
 
-  const markAsRead = useCallback(async (messageId: string) => {
+  const markAsRead = useCallback(async (_messageId: string) => {
     queryClient.setQueryData(
       queryKeys.chat.messages(roomId),
       (old: { pages: ChatMessage[][] } | undefined) => {

@@ -111,7 +111,7 @@ export function LocationPicker({
         />
         <Button
           type="button"
-          onClick={handleSearch}
+          onClick={() => void handleSearch()}
           disabled={isSearching || !searchQuery.trim()}
           size="icon"
         >
@@ -119,7 +119,7 @@ export function LocationPicker({
         </Button>
         <Button
           type="button"
-          onClick={handleGetCurrentLocation}
+          onClick={() => void handleGetCurrentLocation()}
           disabled={isSearching}
           size="icon"
           variant="outline"

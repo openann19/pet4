@@ -193,13 +193,13 @@ export function ConsentManager({ onConsentChange, showOnlyIfNeeded = true }: Con
           </div>
 
           <div className="flex flex-wrap gap-2 pt-4">
-            <Button onClick={handleAcceptAll} variant="default" size="sm">
+            <Button onClick={() => void handleAcceptAll()} variant="default" size="sm">
               Accept All
             </Button>
-            <Button onClick={handleRejectAll} variant="outline" size="sm">
+            <Button onClick={() => void handleRejectAll()} variant="outline" size="sm">
               Reject All
             </Button>
-            <Button onClick={handleSavePreferences} variant="default" size="sm">
+            <Button onClick={() => void handleSavePreferences()} variant="default" size="sm">
               Save Preferences
             </Button>
           </div>

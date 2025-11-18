@@ -5,9 +5,9 @@
 
 import type {
   PerformanceBudgetConfig,
-  BundleBudget,
-  LoadTimeBudget,
-  RuntimeBudget,
+  _BundleBudget,
+  _LoadTimeBudget,
+  _RuntimeBudget,
 } from './performance-budget.config';
 import { DEFAULT_PERFORMANCE_BUDGET } from './performance-budget.config';
 import { createLogger } from '@/lib/logger';
@@ -50,7 +50,7 @@ export class PerformanceBudget {
   private violations: BudgetViolation[] = [];
 
   constructor(config?: PerformanceBudgetConfig) {
-    this.config = config || DEFAULT_PERFORMANCE_BUDGET;
+    this.config = config ?? DEFAULT_PERFORMANCE_BUDGET;
   }
 
   /**

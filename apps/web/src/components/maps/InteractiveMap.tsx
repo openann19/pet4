@@ -166,7 +166,7 @@ export default function InteractiveMap({
           <Marker
             key={marker.id}
             position={[marker.location.lat, marker.location.lng]}
-            icon={marker.icon || DEFAULT_ICON}
+            icon={marker.icon ?? DEFAULT_ICON}
             eventHandlers={{
               click: () => {
                 if (isTruthy(onMarkerClick)) {

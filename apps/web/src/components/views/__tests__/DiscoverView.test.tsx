@@ -46,14 +46,14 @@ vi.mock('@/components/MatchCelebration', () => ({
   default: ({ open, onClose }: { open: boolean; onClose: () => void }) =>
     open ? (
       <div data-testid="match-celebration">
-        <button onClick={onClose}>Close</button>
+        <button onClick={() => void onClose()}>Close</button>
       </div>
     ) : null,
 }));
 vi.mock('@/components/enhanced/EnhancedPetDetailView', () => ({
   EnhancedPetDetailView: ({ onClose }: { onClose: () => void }) => (
     <div data-testid="pet-detail-view">
-      <button onClick={onClose}>Close</button>
+      <button onClick={() => void onClose()}>Close</button>
     </div>
   ),
 }));

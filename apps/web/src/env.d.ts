@@ -15,7 +15,7 @@ interface ImportMeta {
 
 // Apple ID Global Types
 interface AppleIDAuth {
-  init(config: any): Promise<void>
+  init(config: unknown): Promise<void>
   signIn(): Promise<any>
 }
 
@@ -26,7 +26,7 @@ interface AppleID {
 interface Window {
   AppleID?: AppleID
   spark_analytics?: {
-    track(eventName: string, properties?: any): void
+    track(eventName: string, properties?: unknown): void
     clear?(): void
   }
 }

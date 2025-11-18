@@ -69,7 +69,7 @@ export function AppealDialog({
         resourceId,
         resourceType,
         user.id,
-        user.login || 'User',
+        user.login ?? 'User',
         appealText.trim(),
         reportId
       );
@@ -80,7 +80,7 @@ export function AppealDialog({
 
       onAppealed?.();
       handleClose();
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to submit appeal. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -160,14 +160,14 @@ export function AppealDialog({
         <DialogFooter>
           <Button
             variant="outline"
-            onClick={handleClose}
+            onClick={() => void handleClose()}
             disabled={isSubmitting}
             aria-label="Cancel appeal"
           >
             Cancel
           </Button>
           <Button
-            onClick={handleSubmit}
+            onClick={() => void handleSubmit()}
             disabled={!appealText.trim() || appealText.trim().length < 50 || isSubmitting}
             aria-label="Submit appeal"
           >

@@ -347,7 +347,7 @@ export default function StoryViewer({
             // Share cancelled
           });
       } else {
-        navigator.clipboard.writeText(`${window.location.origin}/stories/${currentStory.id}`);
+        void navigator.clipboard.writeText(`${window.location.origin}/stories/${currentStory.id}`);
         toast.success('Link copied to clipboard');
       }
     }
@@ -476,7 +476,7 @@ export default function StoryViewer({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={handlePauseToggle}
+                onClick={() => void handlePauseToggle()}
                 className="text-white hover:bg-white/20"
                 aria-label={isPaused ? 'Play story' : 'Pause story'}
               >
@@ -487,7 +487,7 @@ export default function StoryViewer({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={handleMuteToggle}
+                  onClick={() => void handleMuteToggle()}
                   className="text-white hover:bg-white/20"
                   aria-label={isMuted ? 'Unmute video' : 'Mute video'}
                 >
@@ -502,7 +502,7 @@ export default function StoryViewer({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={toggleFullscreen}
+                onClick={() => void toggleFullscreen()}
                 className="text-white hover:bg-white/20"
                 aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
               >
@@ -526,11 +526,11 @@ export default function StoryViewer({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-background/95 backdrop-blur-lg">
-                    <DropdownMenuItem onClick={handleSaveStory}>
+                    <DropdownMenuItem onClick={() => void handleSaveStory()}>
                       <BookmarkSimple size={18} className="mr-2" />
                       Save to Highlight
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleShare}>
+                    <DropdownMenuItem onClick={() => void handleShare()}>
                       <PaperPlaneRight size={18} className="mr-2" />
                       Share Story
                     </DropdownMenuItem>
@@ -541,7 +541,7 @@ export default function StoryViewer({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={onClose}
+                onClick={() => void onClose()}
                 className="text-white hover:bg-white/20"
                 aria-label="Close story viewer"
               >
@@ -662,7 +662,7 @@ export default function StoryViewer({
               </div>
 
               <Button
-                onClick={handleReply}
+                onClick={() => void handleReply()}
                 disabled={!replyText.trim()}
                 size="icon"
                 className="shrink-0 bg-white text-black hover:bg-white/90"

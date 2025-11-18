@@ -111,7 +111,7 @@ export function PremiumErrorState({
       )}
       {onRetry && (
         <PremiumButton
-          onClick={handleRetry}
+          onClick={() => void handleRetry()}
           variant="default"
           size="default"
           icon={<RefreshCw size={16} />}

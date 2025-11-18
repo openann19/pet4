@@ -266,7 +266,7 @@ export function PremiumInput({
           id={inputId}
           type={inputType}
           value={value}
-          onChange={handleChange}
+          onChange={() => void handleChange()}
           onFocus={handleFocus}
           onBlur={handleBlur}
           disabled={disabled}
@@ -291,7 +291,7 @@ export function PremiumInput({
           {showClearButton && hasValue && !disabled && (
             <button
               type="button"
-              onClick={handleClear}
+              onClick={() => void handleClear()}
               className={cn(
                 'rounded-md hover:bg-muted transition-colors',
                 getSpacingClassesFromConfig({ padding: 'xs' })
@@ -305,7 +305,7 @@ export function PremiumInput({
           {showPasswordToggle && type === 'password' && (
             <button
               type="button"
-              onClick={togglePassword}
+              onClick={() => void togglePassword()}
               className={cn(
                 'rounded-md hover:bg-muted transition-colors',
                 getSpacingClassesFromConfig({ padding: 'xs' })

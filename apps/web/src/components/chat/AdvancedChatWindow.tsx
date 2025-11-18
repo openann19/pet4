@@ -194,13 +194,13 @@ export default function AdvancedChatWindow({
     context: 'chat',
     onSend: () => {
       if (inputHandling.inputValue.trim()) {
-        handleSendWithTyping(inputHandling.inputValue, 'text');
+        void handleSendWithTyping(inputHandling.inputValue, 'text');
       }
     },
     onReply: focusedMessage
       ? () => {
         inputHandling.inputRef.current?.focus();
-        inputHandling.handleInputChange(`@${focusedMessage.senderName || 'User'} `);
+        inputHandling.handleInputChange(`@${focusedMessage.senderName ?? 'User'} `);
       }
       : undefined,
     onDelete: focusedMessage

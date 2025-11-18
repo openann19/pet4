@@ -289,7 +289,7 @@ export default function ChatModerationPanel() {
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleReview} disabled={actionInFlight}>
+                <Button onClick={() => void handleReview()} disabled={actionInFlight}>
                   <Check size={16} className="mr-2" />
                   {actionInFlight ? 'Processing…' : 'Take Action'}
                 </Button>

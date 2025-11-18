@@ -169,7 +169,7 @@ export function EnhancedPetDetailView({
   return (
     <MotionView
       className="fixed inset-0 bg-background/95 backdrop-blur-xl z-50 flex items-center justify-center p-4"
-      onClick={handleClose}
+      onClick={() => void handleClose()}
       style={containerStyle}
     >
       <MotionView
@@ -204,8 +204,8 @@ export function EnhancedPetDetailView({
               {photos.length > 1 && (
                 <>
                   <div className="absolute inset-0 flex items-center justify-between px-4 pointer-events-none">
-                    <PhotoNavButton onClick={handlePrevPhoto} />
-                    <PhotoNavButton onClick={handleNextPhoto} />
+                    <PhotoNavButton onClick={() => void handlePrevPhoto()} />
+                    <PhotoNavButton onClick={() => void handleNextPhoto()} />
                   </div>
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                     {photos.map((_, idx) => (
@@ -273,7 +273,7 @@ function CloseButton({ onClose }: CloseButtonProps): React.JSX.Element {
     <Button
       variant="ghost"
       size="icon"
-      onClick={handlePress}
+      onClick={() => void handlePress()}
       className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
       aria-label="Close pet detail view"
     >
@@ -300,7 +300,7 @@ function PhotoNavButton({ onClick }: PhotoNavButtonProps): React.JSX.Element {
     <Button
       variant="ghost"
       size="icon"
-      onClick={handlePress}
+      onClick={() => void handlePress()}
       className="rounded-full bg-background/80 backdrop-blur-sm hover:bg-background pointer-events-auto"
       aria-label="Navigate to next photo"
     >
@@ -320,7 +320,7 @@ interface PhotoIndicatorProps {
 function PhotoIndicator({ index, isActive, onClick }: PhotoIndicatorProps): React.JSX.Element {
   return (
     <button
-      onClick={onClick}
+      onClick={() => void onClick()}
       className={`h-2 rounded-full transition-all overflow-hidden ${isActive ? 'w-6 bg-white' : 'w-2 bg-white/50'
         }`}
       aria-label={`Go to photo ${index + 1}`}
@@ -673,16 +673,16 @@ function ActionButtons({ onLike, onPass, onChat }: ActionButtonsProps): React.JS
   return (
     <div className="border-t border-border p-4 bg-card/95 backdrop-blur-sm">
       <div className="flex gap-3 max-w-md mx-auto">
-        {onPass && <ActionButton variant="outline" icon={X} label="Pass" onClick={onPass} />}
+        {onPass && <ActionButton variant="outline" icon={X} label="Pass" onClick={() => void onPass()} />}
         {onChat && (
-          <ActionButton variant="secondary" icon={ChatCircle} label="Chat" onClick={onChat} />
+          <ActionButton variant="secondary" icon={ChatCircle} label="Chat" onClick={() => void onChat()} />
         )}
         {onLike && (
           <ActionButton
             variant="primary"
             icon={Heart}
             label="Like"
-            onClick={onLike}
+            onClick={() => void onLike()}
             className="bg-linear-to-r from-primary to-accent hover:opacity-90"
           />
         )}
@@ -719,7 +719,7 @@ function ActionButton({
         variant === 'outline' ? 'outline' : variant === 'secondary' ? 'secondary' : 'default'
       }
       size="lg"
-      onClick={handlePress}
+      onClick={() => void handlePress()}
       className={`flex-1 rounded-full ${className ?? ''}`}
     >
       <MotionView style={bounce.animatedStyle} className="flex items-center">

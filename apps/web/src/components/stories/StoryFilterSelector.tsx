@@ -106,7 +106,7 @@ export default function StoryFilterSelector({
           <Input
             placeholder="Search filters..."
             value={searchQuery}
-            onChange={handleSearchChange}
+            onChange={() => void handleSearchChange()}
             className="pl-10"
             aria-label="Search story filters"
           />

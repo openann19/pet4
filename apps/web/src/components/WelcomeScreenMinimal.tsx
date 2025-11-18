@@ -11,7 +11,7 @@ export default function WelcomeScreen({ onGetStarted }: WelcomeScreenProps) {
   return (
     <div>
       <h1>Welcome</h1>
-      {isValid && <button onClick={onGetStarted}>Get Started</button>}
+      {isValid && <button onClick={() => void onGetStarted()}>Get Started</button>}
     </div>
   )
 }

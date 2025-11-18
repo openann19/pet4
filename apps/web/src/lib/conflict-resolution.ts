@@ -294,7 +294,7 @@ export function createConflictResolver<T = unknown>(
  */
 export async function resolveWithUserIntervention<T>(
   conflict: Conflict<T>,
-  onResolve: (data: T) => Promise<void>
+  _onResolve: (data: T) => Promise<void>
 ): Promise<ConflictResolutionResult<T>> {
   logger.debug('Requesting user intervention for conflict', {
     id: conflict.id,

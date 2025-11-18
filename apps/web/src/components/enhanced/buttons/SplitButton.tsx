@@ -141,7 +141,7 @@ export function SplitButton({
         <PremiumButton
           variant={variant}
           size={size}
-          onClick={handleMainClick}
+          onClick={() => void handleMainClick()}
           disabled={disabled || mainAction.loading === true}
           loading={mainAction.loading === true}
           className="rounded-r-none border-r-0"

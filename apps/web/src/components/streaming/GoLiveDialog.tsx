@@ -112,7 +112,7 @@ export function GoLiveDialog({
               </Button>
               <Button
                 type="button"
-                onClick={handleGoLive}
+                onClick={() => void handleGoLive()}
                 disabled={!title.trim()}
                 className="flex-1"
               >

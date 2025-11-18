@@ -354,7 +354,7 @@ export class PerformanceAnalytics {
   /**
    * Get recent metrics
    */
-  private getRecentMetrics(metricName: string, count: number): number[] {
+  private getRecentMetrics(_metricName: string, _count: number): number[] {
     // This is a simplified implementation
     // In a real implementation, you would filter by metric name and get recent values
     return []

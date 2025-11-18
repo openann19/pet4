@@ -87,7 +87,7 @@ export function AdvancedFilterPanel({
           <Button
             variant="ghost"
             size="icon"
-            onClick={onClose}
+            onClick={() => void onClose()}
             aria-label="Close filter panel"
           >
             <X size={20} />
@@ -182,7 +182,7 @@ export function AdvancedFilterPanel({
       <div className={cn('flex border-t', getSpacingClassesFromConfig({ gap: 'sm', paddingY: 'md' }))}>
         <Button
           variant="outline"
-          onClick={resetFilters}
+          onClick={() => void resetFilters()}
           className={cn('flex-1', getSpacingClassesFromConfig({ gap: 'sm' }))}
           disabled={activeFiltersCount === 0}
           aria-label="Reset all filters"
@@ -191,7 +191,7 @@ export function AdvancedFilterPanel({
           Reset
         </Button>
         <Button 
-          onClick={handleApply} 
+          onClick={() => void handleApply()} 
           className={cn('flex-1', getSpacingClassesFromConfig({ gap: 'sm' }))}
           aria-label={`Apply ${activeFiltersCount > 0 ? `${activeFiltersCount} ` : ''}filters`}
         >
@@ -298,7 +298,7 @@ function ToggleSwitch({ label, checked, onChange }: ToggleSwitchProps) {
 
   return (
     <ButtonComponent
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       role="switch"
       aria-checked={checked}
       aria-label={`${label} toggle`}

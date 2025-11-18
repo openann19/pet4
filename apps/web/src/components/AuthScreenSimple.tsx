@@ -42,7 +42,7 @@ export function AuthScreen({ onSignIn, onSignUp }: AuthScreenProps) {
       />
       
       <button 
-        onClick={handleSubmit}
+        onClick={() => void handleSubmit()}
         disabled={!isValid}
       >
         {isSignUp ? 'Sign Up' : 'Sign In'}

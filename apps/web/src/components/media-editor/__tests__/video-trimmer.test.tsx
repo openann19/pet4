@@ -14,14 +14,14 @@ describe('VideoTrimmer', () => {
 
   it('should render video trimmer', () => {
     const onChange = vi.fn();
-    render(<VideoTrimmer uri="test.mp4" durationSec={10} onChange={onChange} />);
+    render(<VideoTrimmer uri="test.mp4" durationSec={10} onChange={() => void onChange()} />);
 
     expect(screen.getByText('Trim')).toBeInTheDocument();
   });
 
   it('should call onChange when trim values change', () => {
     const onChange = vi.fn();
-    render(<VideoTrimmer uri="test.mp4" durationSec={10} onChange={onChange} />);
+    render(<VideoTrimmer uri="test.mp4" durationSec={10} onChange={() => void onChange()} />);
 
     // Component should render with initial state
     expect(onChange).not.toHaveBeenCalled();
@@ -29,7 +29,7 @@ describe('VideoTrimmer', () => {
 
   it('should handle missing duration', () => {
     const onChange = vi.fn();
-    render(<VideoTrimmer uri="test.mp4" onChange={onChange} />);
+    render(<VideoTrimmer uri="test.mp4" onChange={() => void onChange()} />);
 
     expect(screen.getByText('Trim')).toBeInTheDocument();
   });

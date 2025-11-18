@@ -129,7 +129,7 @@ export default function OAuthButtons({
         type="button"
         variant="outline"
         size="lg"
-        onClick={handleGoogleSignIn}
+        onClick={() => void handleGoogleSignIn()}
         disabled={disabled}
         aria-label="Sign in with Google"
         className={cn(providerButtonBase, 'bg-card text-card-foreground border border-border hover:bg-muted/80 dark:hover:bg-muted/60')}
@@ -142,7 +142,7 @@ export default function OAuthButtons({
         type="button"
         variant="default"
         size="lg"
-        onClick={handleAppleSignIn}
+        onClick={() => void handleAppleSignIn()}
         disabled={disabled}
         aria-label="Sign in with Apple"
         className={cn(providerButtonBase, 'bg-foreground text-background hover:bg-foreground/90 dark:hover:bg-foreground/80 border border-foreground')}

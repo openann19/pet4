@@ -39,7 +39,7 @@ export function SignUpFormFooter({ t, isLoading, onOAuthSuccess, onSwitchToSignI
             type="button"
             variant="link"
             size="sm"
-            onClick={onSwitchToSignIn}
+            onClick={() => void onSwitchToSignIn()}
             className="h-auto p-0 font-semibold"
           >
             {t.auth?.signIn || 'Sign in'}

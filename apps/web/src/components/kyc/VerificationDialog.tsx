@@ -92,7 +92,7 @@ export function VerificationDialog({
             </Button>
             <Button
               type="button"
-              onClick={handleVerify}
+              onClick={() => void handleVerify()}
               disabled={documents.length === 0 || isSubmitting}
               className="flex-1"
             >

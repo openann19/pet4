@@ -36,10 +36,10 @@ export function NotificationCenter({ items, onMarkAllRead, onClearAll, onDismiss
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={onMarkAllRead} disabled={!hasItems}>
+          <Button variant="outline" size="sm" onClick={() => void onMarkAllRead()} disabled={!hasItems}>
             <CheckCircle size={16} className="mr-1" /> Mark all read
           </Button>
-          <Button variant="ghost" size="sm" onClick={onClearAll} disabled={!hasItems}>
+          <Button variant="ghost" size="sm" onClick={() => void onClearAll()} disabled={!hasItems}>
             <X size={16} className="mr-1" /> Clear
           </Button>
         </div>

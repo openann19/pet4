@@ -34,7 +34,7 @@ export function PlaydateCard({
 }: PlaydateCardProps): React.JSX.Element {
   const scheduledDate = new Date(playdate.scheduledAt);
   const isUpcoming = scheduledDate > new Date();
-  const isPast = scheduledDate < new Date();
+  const _isPast = scheduledDate < new Date();
 
   return (
     <PremiumCard variant="glass" className={cn('p-4 space-y-4', className)}>
@@ -96,17 +96,17 @@ export function PlaydateCard({
 
       <div className="flex gap-2">
         {onView && (
-          <Button type="button" variant="outline" onClick={onView} className="flex-1">
+          <Button type="button" variant="outline" onClick={() => void onView()} className="flex-1">
             View Details
           </Button>
         )}
         {onJoin && !isParticipant && isUpcoming && playdate.status === 'confirmed' && (
-          <Button type="button" onClick={onJoin} className="flex-1">
+          <Button type="button" onClick={() => void onJoin()} className="flex-1">
             Join
           </Button>
         )}
         {onCheckIn && isParticipant && isUpcoming && (
-          <Button type="button" variant="secondary" onClick={onCheckIn} className="flex-1">
+          <Button type="button" variant="secondary" onClick={() => void onCheckIn()} className="flex-1">
             Check In
           </Button>
         )}

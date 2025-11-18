@@ -17,8 +17,8 @@ export function WelcomeScreenSimple({ onGetStarted, onSignIn }: WelcomeScreenSim
       <p>Connect with pet lovers around the world</p>
       
       <div>
-        <button onClick={onGetStarted}>Get Started</button>
-        <button onClick={onSignIn}>Sign In</button>
+        <button onClick={() => void onGetStarted()}>Get Started</button>
+        <button onClick={() => void onSignIn()}>Sign In</button>
       </div>
     </motion.div>
   )

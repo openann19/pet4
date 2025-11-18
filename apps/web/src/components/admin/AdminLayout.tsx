@@ -171,7 +171,7 @@ export default function AdminLayout({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={handleExit}
+                  onClick={() => void handleExit()}
                   className="rounded-full hover:bg-destructive/10 shrink-0"
                   aria-label="Exit Admin Console"
                 >
@@ -273,7 +273,7 @@ export default function AdminLayout({
             variant="ghost"
             size="sm"
             className="w-full"
-            onClick={handleSidebarToggle}
+            onClick={() => void handleSidebarToggle()}
             title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
           >
             {sidebarOpen ? '←' : '→'}

@@ -84,7 +84,7 @@ describe('EnhancedButton', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<EnhancedButton onClick={handleClick}>Click</EnhancedButton>);
+      render(<EnhancedButton onClick={() => void handleClick()}>Click</EnhancedButton>);
       const button = screen.getByRole('button');
 
       await user.click(button);
@@ -96,7 +96,7 @@ describe('EnhancedButton', () => {
       const handleClick = vi.fn();
 
       render(
-        <EnhancedButton disabled onClick={handleClick}>
+        <EnhancedButton disabled onClick={() => void handleClick()}>
           Click
         </EnhancedButton>
       );
@@ -110,7 +110,7 @@ describe('EnhancedButton', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<EnhancedButton onClick={handleClick}>Click</EnhancedButton>);
+      render(<EnhancedButton onClick={() => void handleClick()}>Click</EnhancedButton>);
       const button = screen.getByRole('button');
 
       await user.click(button);
@@ -124,7 +124,7 @@ describe('EnhancedButton', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<EnhancedButton onClick={handleClick}>Click</EnhancedButton>);
+      render(<EnhancedButton onClick={() => void handleClick()}>Click</EnhancedButton>);
       const button = screen.getByRole('button');
 
       button.focus();
@@ -137,7 +137,7 @@ describe('EnhancedButton', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<EnhancedButton onClick={handleClick}>Click</EnhancedButton>);
+      render(<EnhancedButton onClick={() => void handleClick()}>Click</EnhancedButton>);
       const button = screen.getByRole('button');
 
       button.focus();
@@ -183,7 +183,7 @@ describe('EnhancedButton', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<EnhancedButton onClick={handleClick}>Haptic</EnhancedButton>);
+      render(<EnhancedButton onClick={() => void handleClick()}>Haptic</EnhancedButton>);
       const button = screen.getByRole('button');
 
       await user.click(button);
@@ -195,7 +195,7 @@ describe('EnhancedButton', () => {
       const handleClick = vi.fn();
 
       render(
-        <EnhancedButton hapticFeedback={false} onClick={handleClick}>
+        <EnhancedButton hapticFeedback={false} onClick={() => void handleClick()}>
           No Haptic
         </EnhancedButton>
       );
@@ -210,7 +210,7 @@ describe('EnhancedButton', () => {
       const handleClick = vi.fn(() => Promise.resolve());
 
       render(
-        <EnhancedButton successAnimation onClick={handleClick}>
+        <EnhancedButton successAnimation onClick={() => void handleClick()}>
           Success
         </EnhancedButton>
       );
@@ -227,7 +227,7 @@ describe('EnhancedButton', () => {
       const handleClick = vi.fn(() => Promise.resolve());
 
       render(
-        <EnhancedButton successAnimation onClick={handleClick}>
+        <EnhancedButton successAnimation onClick={() => void handleClick()}>
           Async
         </EnhancedButton>
       );
@@ -246,7 +246,7 @@ describe('EnhancedButton', () => {
       });
 
       render(
-        <EnhancedButton onClick={handleClick}>Error</EnhancedButton>
+        <EnhancedButton onClick={() => void handleClick()}>Error</EnhancedButton>
       );
       const button = screen.getByRole('button');
 
@@ -311,7 +311,7 @@ describe('EnhancedButton', () => {
 
   describe('Edge Cases', () => {
     it('should handle null onClick', () => {
-      render(<EnhancedButton onClick={undefined}>No Handler</EnhancedButton>);
+      render(<EnhancedButton onClick={() => void undefined()}>No Handler</EnhancedButton>);
       const button = screen.getByRole('button');
       expect(button).toBeInTheDocument();
     });
@@ -326,7 +326,7 @@ describe('EnhancedButton', () => {
       const user = userEvent.setup();
       const handleClick = vi.fn();
 
-      render(<EnhancedButton onClick={handleClick}>Rapid</EnhancedButton>);
+      render(<EnhancedButton onClick={() => void handleClick()}>Rapid</EnhancedButton>);
       const button = screen.getByRole('button');
 
       await user.click(button);

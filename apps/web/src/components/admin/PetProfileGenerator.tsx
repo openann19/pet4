@@ -85,7 +85,7 @@ JSON format:
 }`;
 
       const result = await llmService.llm(prompt, 'gpt-4o', true);
-      const data = JSON.parse(result);
+      const data = JSON.parse(result) as { pets?: unknown };
 
       if (!data.pets || !Array.isArray(data.pets)) {
         throw new Error('Invalid response format');
@@ -96,7 +96,8 @@ JSON format:
       const existingIds = new Set((pets ?? []).map((p: GeneratedPet) => p.id));
       let newPetsAdded = 0;
 
-      const newPets = data.pets.map((pet: GeneratedPet) => {
+      const newPets = data.pets.map((pet: unknown) => {
+        const typedPet = pet as GeneratedPet;
         let id: string;
         do {
           id = `pet-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
@@ -107,27 +108,27 @@ JSON format:
 
         return {
           id,
-          name: pet.name,
-          breed: pet.breed,
-          age: pet.age,
-          gender: pet.gender,
-          size: pet.size,
-          photoUrl: pet.photo,
-          photo: pet.photo,
-          bio: pet.bio,
-          personality: pet.personality,
-          interests: pet.interests,
-          lookingFor: pet.lookingFor,
-          location: pet.location,
-          ownerName: pet.ownerName,
-          verified: pet.verified || false,
+          name: typedPet.name,
+          breed: typedPet.breed,
+          age: typedPet.age,
+          gender: typedPet.gender,
+          size: typedPet.size,
+          photoUrl: typedPet.photo,
+          photo: typedPet.photo,
+          bio: typedPet.bio,
+          personality: typedPet.personality,
+          interests: typedPet.interests,
+          lookingFor: typedPet.lookingFor,
+          location: typedPet.location,
+          ownerName: typedPet.ownerName,
+          verified: typedPet.verified || false,
           liked: false,
           disliked: false,
           createdAt: Date.now(),
         };
       });
 
-      setPets((currentPets) => [...(currentPets ?? []), ...newPets]);
+      void setPets((currentPets) => [...(currentPets ?? []), ...newPets]);
 
       toast.success(`Successfully generated and added ${String(newPetsAdded ?? '')} new pet profiles!`, {
         duration: 5000,
@@ -165,7 +166,7 @@ JSON format:
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
-          <Button onClick={generatePets} disabled={isGenerating} className="w-full sm:w-auto">
+          <Button onClick={() => void generatePets()} disabled={isGenerating} className="w-full sm:w-auto">
             {isGenerating ? (
               <>
                 <Sparkle size={20} weight="fill" className="mr-2 animate-spin" />

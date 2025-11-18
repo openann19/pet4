@@ -111,7 +111,7 @@ const BACKGROUND_REMOVAL_FRAGMENT_SHADER = `
   }
 `;
 
-const EDGE_REFINEMENT_FRAGMENT_SHADER = `
+const _EDGE_REFINEMENT_FRAGMENT_SHADER = `
   precision highp float;
   varying vec2 v_texCoord;
   uniform sampler2D u_image;
@@ -619,14 +619,14 @@ export function useBackgroundRemoval() {
               setProgress(40);
 
               // Use WebGL shader for chroma key removal
-              const shaderProgram = webglManager.createShaderProgram(
+              const _shaderProgram = webglManager.createShaderProgram(
                 DEFAULT_VERTEX_SHADER,
                 BACKGROUND_REMOVAL_FRAGMENT_SHADER,
                 'background-removal-chroma'
               );
 
-              const gl = webglManager.getGL();
-              const texture = webglManager.createTexture(source, {}, `source_${source.width}x${source.height}`);
+              const _gl = webglManager.getGL();
+              const _texture = webglManager.createTexture(source, {}, `source_${source.width}x${source.height}`);
 
               // Set up and render (simplified - full implementation would set up geometry and uniforms)
               // For now, fallback to CPU implementation

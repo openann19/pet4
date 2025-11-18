@@ -40,7 +40,7 @@ export function InstallPrompt() {
           </p>
         </div>
         <button
-          onClick={handleDismiss}
+          onClick={() => void handleDismiss()}
           className="bg-transparent border-0 text-white cursor-pointer p-1 text-xl leading-none opacity-80"
           aria-label="Dismiss"
         >
@@ -49,13 +49,13 @@ export function InstallPrompt() {
       </div>
       <div className="flex gap-2">
         <button
-          onClick={handleInstall}
+          onClick={() => void handleInstall()}
           className="flex-1 p-2.5 bg-white text-indigo-500 border-0 rounded-lg font-semibold cursor-pointer text-sm"
         >
           Install
         </button>
         <button
-          onClick={handleDismiss}
+          onClick={() => void handleDismiss()}
           className="px-4 py-2.5 bg-transparent text-white border border-white/30 rounded-lg font-semibold cursor-pointer text-sm"
         >
           Not Now

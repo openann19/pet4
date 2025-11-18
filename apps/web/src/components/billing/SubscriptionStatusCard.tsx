@@ -117,7 +117,7 @@ export function SubscriptionStatusCard({
                                 type="button"
                                 size="sm"
                                 variant="outline"
-                                onClick={onManageBilling}
+                                onClick={() => void onManageBilling()}
                             >
                                 Manage billing
                             </Button>
@@ -127,7 +127,7 @@ export function SubscriptionStatusCard({
                                 type="button"
                                 size="sm"
                                 variant="secondary"
-                                onClick={onUpgrade}
+                                onClick={() => void onUpgrade()}
                             >
                                 View plans
                             </Button>

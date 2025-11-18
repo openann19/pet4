@@ -14,7 +14,7 @@
 import { useCallback, useRef } from 'react';
 import type { SharedValue } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '../core/reduced-motion';
-import { createSeededRNG, randomRange } from '../core/seeded-rng';
+import { _createSeededRNG, randomRange } from '../core/seeded-rng';
 import { triggerHaptic } from '../core/haptic-manager';
 import { logEffectStart, logEffectEnd } from '../core/telemetry';
 import { createLogger } from '@/lib/logger';

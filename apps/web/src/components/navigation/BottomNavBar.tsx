@@ -100,7 +100,7 @@ function NavItem({ item, isActive, isHovered, onHover, onLeave, onClick }: NavIt
         className="block relative py-2 px-1 w-full rounded-2xl transition-colors duration-150 hover:bg-accent/10 active:bg-accent/15"
         onMouseEnter={onHover}
         onMouseLeave={onLeave}
-        onClick={handleClick}
+        onClick={() => void handleClick()}
         aria-label={item.label}
         aria-current={isActive ? 'page' : undefined}
       >

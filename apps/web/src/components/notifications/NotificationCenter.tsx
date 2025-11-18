@@ -172,12 +172,12 @@ export function NotificationCenter({ isOpen, onClose }: NotificationCenterProps)
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={markAllAsRead} disabled={unreadCount === 0}>
+                  <DropdownMenuItem onClick={() => void markAllAsRead()} disabled={unreadCount === 0}>
                     <Check size={16} className="mr-2" />
                     Mark all as read
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={deleteAllRead}
+                    onClick={() => void deleteAllRead()}
                     disabled={(notifications ?? []).every((n) => !n.read)}
                   >
                     <Trash size={16} className="mr-2" />

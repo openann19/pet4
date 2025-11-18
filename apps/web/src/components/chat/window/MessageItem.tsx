@@ -46,8 +46,8 @@ export function MessageItem({
     enabled: !isCurrentUser,
     isNew: delay < 100,
     isMention:
-      (message.content?.includes(`@${currentUserName}`) ?? false) ||
-      (message.content?.includes(`@${currentUserId}`) ?? false),
+      ((message.content?.includes(`@${currentUserName}`) ?? false) ||
+      (message.content?.includes(`@${currentUserId}`) ?? false)),
   });
   const entry = useEntryAnimation({ initialY: 20, initialScale: 0.95, delay });
 
@@ -55,8 +55,8 @@ export function MessageItem({
   const stableReference = useMemo(() => {
     return getStableMessageReference(
       message.id,
-      message.timestamp || message.createdAt,
-      message.senderName || currentUserName || 'Unknown',
+      message.timestamp ?? message.createdAt,
+      message.senderName ?? (currentUserName || 'Unknown'),
       message.content,
       true // use relative timestamp
     );

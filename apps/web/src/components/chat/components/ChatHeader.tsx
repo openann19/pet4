@@ -45,7 +45,7 @@ export function ChatHeader({
           <Button
             variant="ghost"
             size="icon"
-            onClick={onBack}
+            onClick={() => void onBack()}
             className="md:hidden"
             aria-label="Back to chat list"
           >
@@ -56,7 +56,7 @@ export function ChatHeader({
         <Avatar className="w-10 h-10 ring-2 ring-white/30">
           <AvatarImage src={room.matchedPetPhoto} alt={room.matchedPetName} />
           <AvatarFallback className="bg-linear-to-br from-primary to-accent text-white font-bold">
-            {room.matchedPetName?.[0] || '?'}
+            {room.matchedPetName?.[0] ?? '?'}
           </AvatarFallback>
         </Avatar>
 
@@ -78,13 +78,13 @@ export function ChatHeader({
           </PopoverTrigger>
           <PopoverContent className="w-64 glass-strong">
             <div className="space-y-2">
-              <Button variant="ghost" className="w-full justify-start" onClick={onToggleAwayMode}>
+              <Button variant="ghost" className="w-full justify-start" onClick={() => void onToggleAwayMode()}>
                 {awayMode ? '🟢 Available' : '🌙 Away Mode'}
               </Button>
               <Button
                 variant="ghost"
                 className="w-full justify-start text-destructive"
-                onClick={onBlockUser}
+                onClick={() => void onBlockUser()}
               >
                 🚫 Block User
               </Button>

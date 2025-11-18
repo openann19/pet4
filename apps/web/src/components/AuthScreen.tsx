@@ -98,7 +98,7 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
             variant="ghost"
             size="sm"
             isIconOnly
-            onClick={handleBack}
+            onClick={() => void handleBack()}
             aria-label={t.common.back}
             className="w-10 h-10 p-0"
           >
@@ -111,7 +111,7 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
               { label: t.auth?.signUp || 'Sign Up', value: 'signup' }
             ]}
             value={mode}
-            onChange={handleModeSwitch}
+            onChange={() => void handleModeSwitch()}
             aria-label="Authentication mode"
           />
 
@@ -119,7 +119,7 @@ export default function AuthScreen({ initialMode = 'signup', onBack, onSuccess }
             variant="ghost"
             size="sm"
             isIconOnly
-            onClick={handleLanguageToggle}
+            onClick={() => void handleLanguageToggle()}
             aria-pressed={language === 'bg'}
             aria-label={language === 'en' ? 'Switch to Bulgarian' : 'Превключи на English'}
             className="w-10 h-10 p-0"

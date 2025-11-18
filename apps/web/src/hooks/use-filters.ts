@@ -56,7 +56,7 @@ export function useFilters({ categories, initialValues = {}, onApply }: UseFilte
       if (category.type === 'multi-select') {
         resetValues[category.id] = [];
       } else if (category.type === 'range') {
-        resetValues[category.id] = category.min || 0;
+        resetValues[category.id] = category.min ?? 0;
       } else if (category.type === 'toggle') {
         resetValues[category.id] = false;
       } else {

@@ -28,7 +28,7 @@ export function PrivacyBanner({ onEnablePrecise }: PrivacyBannerProps): React.JS
               'Enable precise location for live meet-ups and exact navigation'}
           </p>
         </div>
-        <Button size="sm" onClick={onEnablePrecise} className="shrink-0 h-8 text-xs">
+        <Button size="sm" onClick={() => void onEnablePrecise()} className="shrink-0 h-8 text-xs">
           {t.map?.enable ?? 'Enable'}
         </Button>
       </div>

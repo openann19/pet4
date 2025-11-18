@@ -53,7 +53,7 @@ export function AppModals({
         <MotionView
           style={{ opacity: animations.generateProfilesModal.opacity, scale: animations.generateProfilesModal.scale, y: animations.generateProfilesModal.y }}
           className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4"
-          onClick={onCloseGenerateProfiles}
+          onClick={() => void onCloseGenerateProfiles()}
         >
           <MotionView
             style={{ opacity: animations.generateProfilesContent.opacity, scale: animations.generateProfilesContent.scale, y: animations.generateProfilesContent.y }}
@@ -67,7 +67,7 @@ export function AppModals({
               <Button
                 variant="outline"
                 className="w-full mt-4"
-                onClick={onCloseGenerateProfiles}
+                onClick={() => void onCloseGenerateProfiles()}
               >
                 Close
               </Button>
@@ -79,7 +79,7 @@ export function AppModals({
         <MotionView
           style={{ opacity: animations.statsModal.opacity, scale: animations.statsModal.scale, y: animations.statsModal.y }}
           className="fixed inset-0 bg-background/95 backdrop-blur-md z-50 flex items-center justify-center p-4"
-          onClick={onCloseStats}
+          onClick={() => void onCloseStats()}
         >
           <MotionView
             style={{ opacity: animations.statsContent.opacity, scale: animations.statsContent.scale, y: animations.statsContent.y }}
@@ -97,7 +97,7 @@ export function AppModals({
               <Button
                 variant="outline"
                 className="w-full mt-4"
-                onClick={onCloseStats}
+                onClick={() => void onCloseStats()}
               >
                 Close
               </Button>

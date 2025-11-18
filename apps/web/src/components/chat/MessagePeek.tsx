@@ -27,7 +27,7 @@ export interface MessagePeekProps {
  * Opens within 120ms, respects reduced motion
  * Manages focus: traps focus when open, returns to trigger on close
  */
-export function MessagePeek({ message, visible, onClose, position, triggerRef }: MessagePeekProps) {
+export function MessagePeek({ message, visible, onClose, position: _position, triggerRef }: MessagePeekProps) {
   const _uiConfig = useUIConfig();
   const reducedMotion = usePrefersReducedMotion();
   const { enableMessagePeek } = useFeatureFlags();
@@ -149,7 +149,7 @@ export function MessagePeek({ message, visible, onClose, position, triggerRef }:
       <MotionView
         style={backdropStyle}
         className="fixed inset-0 bg-black z-40"
-        onClick={onClose}
+        onClick={() => void onClose()}
         aria-hidden="true"
       />
       <MotionView
@@ -173,7 +173,7 @@ export function MessagePeek({ message, visible, onClose, position, triggerRef }:
           </div>
           <button
             ref={closeButtonRef}
-            onClick={onClose}
+            onClick={() => void onClose()}
             className="p-1 rounded-full hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             aria-label="Close preview"
           >

@@ -304,7 +304,7 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
                   </ul>
                 </div>
 
-                <Button onClick={handleStartVerification} className="w-full mt-6" size="lg">
+                <Button onClick={() => void handleStartVerification()} className="w-full mt-6" size="lg">
                   <Certificate size={20} weight="bold" className="mr-2" />
                   Start Verification Process
                 </Button>
@@ -438,7 +438,7 @@ export function VerificationDialog({ open, onOpenChange, petId, userId }: Verifi
 
                 {activeRequest.status === 'unverified' && completionPercentage === 100 && (
                   <Button
-                    onClick={handleSubmitForReview}
+                    onClick={() => void handleSubmitForReview()}
                     disabled={isSubmitting}
                     className="w-full"
                     size="lg"

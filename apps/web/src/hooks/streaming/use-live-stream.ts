@@ -139,7 +139,7 @@ export function useLiveStream(config: LiveStreamConfig) {
 
   // WebRTC and Quality hooks
   const webrtc = useWebRTC({
-    onRemoteStream: (stream) => {
+    onRemoteStream: (_stream) => {
       // Handle remote streams (for peer viewing)
     },
     onDataChannel: (channel) => {
@@ -186,8 +186,8 @@ export function useLiveStream(config: LiveStreamConfig) {
         if (mediaConfig.screenShare) {
           // Screen sharing
           stream = await navigator.mediaDevices.getDisplayMedia({
-            video: mediaConfig.video || true,
-            audio: mediaConfig.audio || false,
+            video: mediaConfig.video ?? true,
+            audio: mediaConfig.audio ?? false,
           });
         } else {
           // Camera/microphone
@@ -201,7 +201,7 @@ export function useLiveStream(config: LiveStreamConfig) {
 
           stream = await navigator.mediaDevices.getUserMedia({
             video: mediaConfig.video ? videoConstraints : false,
-            audio: mediaConfig.audio || false,
+            audio: mediaConfig.audio ?? false,
           });
         }
 
@@ -230,7 +230,7 @@ export function useLiveStream(config: LiveStreamConfig) {
 
         // Start health monitoring
         healthCheckIntervalRef.current = window.setInterval(() => {
-          checkStreamHealth();
+          void checkStreamHealth();
         }, STREAM_HEALTH_CHECK_INTERVAL);
 
         // Start recording if enabled
@@ -509,7 +509,7 @@ export function useLiveStream(config: LiveStreamConfig) {
   // Signaling (Placeholder)
   // ============================================================================
 
-  const broadcastIceCandidate = useCallback((candidate: RTCIceCandidate) => {
+  const broadcastIceCandidate = useCallback((_candidate: RTCIceCandidate) => {
     // In production, send to signaling server
     // For now, placeholder for WebSocket/HTTP signaling
   }, []);

@@ -123,7 +123,7 @@ export function AnimatedCard({
       style={containerStyle}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
-      onClick={handleClick}
+      onClick={() => void handleClick()}
       tabIndex={isClickable ? tabIndex : undefined}
       role={isClickable ? role : undefined}
       aria-label={ariaLabel}

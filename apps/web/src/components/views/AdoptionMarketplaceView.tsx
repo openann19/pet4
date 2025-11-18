@@ -84,7 +84,7 @@ export default function AdoptionMarketplaceView() {
           </div>
 
           <Button 
-            onClick={handleCreateListing} 
+            onClick={() => void handleCreateListing()} 
             size="lg"
             className="gap-2 shadow-lg hover:shadow-xl transition-all" 
             type="button"
@@ -137,7 +137,7 @@ export default function AdoptionMarketplaceView() {
                 <Button
                   variant="outline"
                   size="lg"
-                  onClick={handleToggleFilters}
+                  onClick={() => void handleToggleFilters()}
                   className="relative gap-2 bg-background/90 hover:bg-background border-border/50 hover:border-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98] rounded-xl shadow-sm hover:shadow-md"                            
                   type="button"
                 >

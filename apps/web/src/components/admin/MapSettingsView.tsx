@@ -290,7 +290,7 @@ export default function MapSettingsView() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleResetToDefaults}>
+            <Button variant="outline" onClick={() => void handleResetToDefaults()}>
               Reset to Defaults
             </Button>
             <Button
@@ -675,7 +675,7 @@ export default function MapSettingsView() {
                       <Button variant="outline" onClick={() => { setIsAddingCategory(false); }}>
                         Cancel
                       </Button>
-                      <Button onClick={handleAddCategory}>Add Category</Button>
+                      <Button onClick={() => void handleAddCategory()}>Add Category</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -883,7 +883,7 @@ export default function MapSettingsView() {
                     Restore configuration from environment variables
                   </p>
                 </div>
-                <Button variant="outline" onClick={resetProviderDefaults}>
+                <Button variant="outline" onClick={() => void resetProviderDefaults()}>
                   Reset Provider Config
                 </Button>
               </div>

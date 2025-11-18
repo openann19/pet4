@@ -49,7 +49,7 @@ export function HighContrastToggle({
         return (
             <button
                 type="button"
-                onClick={handleToggle}
+                onClick={() => void handleToggle()}
                 aria-label={isActive ? 'Disable high contrast' : 'Enable high contrast'}
                 aria-pressed={isActive}
                 className={`high-contrast-toggle-icon ${className}`}
@@ -80,7 +80,7 @@ export function HighContrastToggle({
                 <input
                     type="checkbox"
                     checked={isActive}
-                    onChange={handleToggle}
+                    onChange={() => void handleToggle()}
                     className="sr-only"
                     aria-label={label}
                 />
@@ -103,7 +103,7 @@ export function HighContrastToggle({
     return (
         <Button
             type="button"
-            onClick={handleToggle}
+            onClick={() => void handleToggle()}
             variant={isActive ? 'primary' : 'outline'}
             aria-pressed={isActive}
             className={`high-contrast-toggle ${className}`}

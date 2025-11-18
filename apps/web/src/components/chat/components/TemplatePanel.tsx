@@ -39,7 +39,7 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
         <Button
           variant="ghost"
           size="icon"
-          onClick={onClose}
+          onClick={() => void onClose()}
           className="h-6 w-6"
           aria-label="Close message templates"
         >

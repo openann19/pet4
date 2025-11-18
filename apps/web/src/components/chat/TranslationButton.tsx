@@ -24,7 +24,7 @@ export interface TranslationButtonProps {
 }
 
 export function TranslationButton({
-  messageId,
+  messageId: _messageId,
   originalText,
   originalLanguage,
   targetLanguage = 'en',
@@ -81,7 +81,7 @@ export function TranslationButton({
       type="button"
       size="sm"
       variant="ghost"
-      onClick={handleTranslate}
+      onClick={() => void handleTranslate()}
       disabled={isTranslating}
       className={cn('rounded-full', className)}
       aria-label={translatedText ? 'Toggle translation' : 'Translate message'}

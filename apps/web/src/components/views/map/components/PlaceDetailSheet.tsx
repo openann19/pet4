@@ -61,7 +61,7 @@ export function PlaceDetailSheet({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={onClose}
+                onClick={() => void onClose()}
                 aria-label="Close place details"
               >
                 <X size={20} />

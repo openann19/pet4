@@ -177,7 +177,7 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
 
           <div className="flex gap-2">
             <Button
-              onClick={runDemo}
+              onClick={() => void runDemo()}
               disabled={analyzing}
               className="flex-1 bg-linear-to-r from-primary to-accent"
             >
@@ -195,7 +195,7 @@ export default function VisualAnalysisDemo(): JSX.Element | null {
                 </>
               )}
             </Button>
-            <Button variant="outline" onClick={nextPet} disabled={analyzing}>
+            <Button variant="outline" onClick={() => void nextPet()} disabled={analyzing}>
               <ArrowRight size={18} />
             </Button>
           </div>

@@ -92,7 +92,7 @@ export class OfflineDataLayer {
     this.maxCacheSize = options.maxCacheSize ?? 1000
     this.conflictResolver = options.conflictResolver ?? createConflictResolver()
 
-    this.init()
+    void this.init()
   }
 
   /**

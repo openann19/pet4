@@ -299,7 +299,7 @@ export function useImageEditor(
 
       const brightnessMultiplier = 1 + adj.brightness / 100
       const contrastMultiplier = 1 + adj.contrast / 100
-      const saturationMultiplier = 1 + adj.saturation / 100
+      const _saturationMultiplier = 1 + adj.saturation / 100
 
       for (let i = 0; i < data.length; i += 4) {
         // Brightness

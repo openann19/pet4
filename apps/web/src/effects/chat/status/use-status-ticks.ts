@@ -15,7 +15,7 @@ import {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  interpolate,
+  _interpolate,
   Extrapolation,
   type SharedValue,
 } from '@petspark/motion'

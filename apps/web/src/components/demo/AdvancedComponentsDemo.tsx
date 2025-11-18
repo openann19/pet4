@@ -6,7 +6,7 @@
 import * as React from 'react'
 
 const { useState } = React
-import { Button, LoadingButton, IconButton, ButtonGroup } from '../ui/button'
+import { Button, LoadingButton, _IconButton, ButtonGroup } from '../ui/button'
 import { Input, Textarea } from '../ui/input'
 import { Label, Field } from '../ui/label'
 import { Checkbox, CheckboxGroup } from '../ui/checkbox'
@@ -90,7 +90,7 @@ export const AdvancedFormDemo: React.FC = () => {
           <ButtonGroup>
             <Button 
               variant="outline" 
-              onClick={toggleTheme}
+              onClick={() => void toggleTheme()}
               leftIcon={<TestIcon />}
             >
               Toggle Theme
@@ -109,7 +109,7 @@ export const AdvancedFormDemo: React.FC = () => {
 
   return (
     <div className="max-w-md mx-auto p-6">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={() => void handleSubmit()} className="space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold">
@@ -247,7 +247,7 @@ export const AdvancedFormDemo: React.FC = () => {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={toggleTheme}
+              onClick={() => void toggleTheme()}
               leftIcon={<TestIcon />}
             >
               {isDark ? 'Light' : 'Dark'} Theme

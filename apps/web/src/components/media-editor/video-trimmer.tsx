@@ -44,7 +44,7 @@ export function VideoTrimmer({
     };
   }, [width, durationSec]);
 
-  const update = useCallback(() => {
+  const _update = useCallback(() => {
     const startSec = pxToSec(start);
     const endSec = pxToSec(end);
     onChange(Math.min(startSec, endSec), Math.max(startSec, endSec));

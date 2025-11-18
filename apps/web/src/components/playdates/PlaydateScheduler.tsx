@@ -223,13 +223,13 @@ export function PlaydateScheduler({
 
       <div className="flex gap-3">
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+          <Button type="button" variant="outline" onClick={() => void onCancel()} className="flex-1">
             Cancel
           </Button>
         )}
         <Button
           type="button"
-          onClick={handleSchedule}
+          onClick={() => void handleSchedule()}
           disabled={!isFormValid}
           className="flex-1"
         >

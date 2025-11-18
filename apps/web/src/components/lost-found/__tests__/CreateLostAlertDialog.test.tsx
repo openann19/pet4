@@ -70,7 +70,7 @@ vi.mock('./MapLocationPicker', () => ({
   }) => (
     <div data-testid="map-location-picker">
       <button onClick={() => onSelect(40.7128, -74.006)}>Select Location</button>
-      <button onClick={onClose}>Close Map</button>
+      <button onClick={() => void onClose()}>Close Map</button>
     </div>
   ),
 }));

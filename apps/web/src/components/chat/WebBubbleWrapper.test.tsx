@@ -67,7 +67,7 @@ describe('WebBubbleWrapper', () => {
     const handleClick = vi.fn();
 
     render(
-      <WebBubbleWrapper onClick={handleClick}>
+      <WebBubbleWrapper onClick={() => void handleClick()}>
         <div>Clickable message</div>
       </WebBubbleWrapper>
     );

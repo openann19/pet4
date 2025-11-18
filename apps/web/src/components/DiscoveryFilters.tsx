@@ -127,11 +127,11 @@ export default function DiscoveryFilters() {
             type="button"
             variant="outline"
             className="flex-1"
-            onClick={handleReset}
+            onClick={() => void handleReset()}
           >
             Reset All
           </Button>
-          <Button type="button" className="flex-1" onClick={handleSave}>
+          <Button type="button" className="flex-1" onClick={() => void handleSave()}>
             Apply Filters
           </Button>
         </div>

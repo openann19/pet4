@@ -65,7 +65,7 @@ export function ViewerEngagement({
               type="button"
               size="icon"
               variant="ghost"
-              onClick={handleHeart}
+              onClick={() => void handleHeart()}
               className="rounded-full"
               aria-label="Send heart"
             >
@@ -77,7 +77,7 @@ export function ViewerEngagement({
                 type="button"
                 size="icon"
                 variant="ghost"
-                onClick={onComment}
+                onClick={() => void onComment()}
                 className="rounded-full"
                 aria-label="Comment"
               >
@@ -90,7 +90,7 @@ export function ViewerEngagement({
                 type="button"
                 size="icon"
                 variant="ghost"
-                onClick={onShare}
+                onClick={() => void onShare()}
                 className="rounded-full"
                 aria-label="Share"
               >

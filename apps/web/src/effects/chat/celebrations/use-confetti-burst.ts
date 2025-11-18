@@ -26,7 +26,7 @@ import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { useUIConfig } from '@/hooks/use-ui-config';
 import type { AnimatedStyle } from '@petspark/motion';
 
-const logger = createLogger('confetti-burst');
+const _logger = createLogger('confetti-burst');
 
 /**
  * Confetti particle configuration
@@ -106,8 +106,8 @@ export function useConfettiBurst(options: UseConfettiBurstOptions = {}): UseConf
     particlesRef.current = Array.from({ length: actualParticleCount }, () => {
       const angle = randomRange(0, Math.PI * 2);
       const velocity = randomRange(200, 400);
-      const xVelocity = Math.cos(angle) * velocity;
-      const yVelocity = Math.sin(angle) * velocity;
+      const _xVelocity = Math.cos(angle) * velocity;
+      const _yVelocity = Math.sin(angle) * velocity;
 
       return {
         x: useSharedValue(0),

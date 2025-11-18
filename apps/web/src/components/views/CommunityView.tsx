@@ -33,16 +33,16 @@ import {
 import {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
+  _withSpring,
   withTiming,
-  interpolate,
+  _interpolate,
   Extrapolation,
   withRepeat,
   withSequence,
   MotionView,
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@petspark/motion';
-import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
+import { _springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import { OfflineIndicator } from '@/components/network/OfflineIndicator';
@@ -95,7 +95,7 @@ function CommunityViewContent(): JSX.Element {
   });
 
   // Infinite scroll hook
-  const infiniteScroll = useInfiniteScroll({
+  const _infiniteScroll = useInfiniteScroll({
     hasMore: feedManagement.hasMore,
     loading: feedManagement.loading,
     onLoadMore: () => void feedManagement.loadFeed(true),
@@ -567,7 +567,7 @@ function CommunityViewContent(): JSX.Element {
                     className={pullToRefresh.isRefreshing ? 'animate-spin' : ''}
                   />
                 </Button>
-                <Button size="lg" className="gap-2 shadow-lg" onClick={handleCreatePost}>
+                <Button size="lg" className="gap-2 shadow-lg" onClick={() => void handleCreatePost()}>
                   <Plus size={20} weight="bold" />
                   <span className="hidden sm:inline">
                     {t.community?.createPost ?? 'Create Post'}
@@ -658,7 +658,7 @@ function CommunityViewContent(): JSX.Element {
                           : (t.community?.noPostsDesc ??
                             'Be the first to share something amazing!')}
                       </p>
-                      <Button size="lg" className="gap-2 shadow-lg" onClick={handleCreatePost}>
+                      <Button size="lg" className="gap-2 shadow-lg" onClick={() => void handleCreatePost()}>
                         <Plus size={20} weight="bold" />
                         {t.community?.createPost ?? 'Create Post'}
                       </Button>

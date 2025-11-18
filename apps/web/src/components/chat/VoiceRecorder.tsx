@@ -218,7 +218,7 @@ export default function VoiceRecorder({
       <Button
         size="sm"
         variant="ghost"
-        onClick={handleCancel}
+        onClick={() => void handleCancel()}
         className="shrink-0 w-10 h-10 p-0"
         aria-label="Cancel recording"
       >
@@ -227,7 +227,7 @@ export default function VoiceRecorder({
 
       <Button
         size="sm"
-        onClick={handleStopAndSend}
+        onClick={() => void handleStopAndSend()}
         className="shrink-0 w-10 h-10 p-0 bg-linear-to-br from-primary to-accent"
         aria-label="Stop and send recording"
       >

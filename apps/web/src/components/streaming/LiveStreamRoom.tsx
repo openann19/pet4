@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Users, Heart, MessageCircle, Share2, Settings } from 'lucide-react';
+import { Users, _Heart, _MessageCircle, _Share2, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
 import { ViewerEngagement } from './ViewerEngagement';
@@ -153,7 +153,7 @@ export function LiveStreamRoom({
               type="button"
               size="icon"
               variant="ghost"
-              onClick={handleEndStream}
+              onClick={() => void handleEndStream()}
               className="bg-red-500/80 text-white hover:bg-red-500"
             >
               End Stream

@@ -261,7 +261,7 @@ export class RealTimeMonitor {
    * Detect regressions
    */
   private detectRegressions(metrics: PerformanceMetrics): void {
-    const performanceAnalytics = getPerformanceAnalytics()
+    const _performanceAnalytics = getPerformanceAnalytics()
 
     // Check for frame rate regression
     if (metrics.frameRate.length > 0) {
@@ -285,7 +285,7 @@ export class RealTimeMonitor {
     // Check for memory regression
     if (metrics.memory.length > 0) {
       const recentMemory = metrics.memory.slice(-10).map((m) => m.usedJSHeapSize)
-      const avgMemory = recentMemory.reduce((a, b) => a + b, 0) / recentMemory.length
+      const _avgMemory = recentMemory.reduce((a, b) => a + b, 0) / recentMemory.length
       const maxMemory = Math.max(...recentMemory)
 
       if (maxMemory > 100 * 1024 * 1024) {

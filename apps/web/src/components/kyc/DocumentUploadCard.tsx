@@ -34,7 +34,7 @@ export function DocumentUploadCard({
   acceptedTypes = ['image/jpeg', 'image/png', 'application/pdf'],
   className,
 }: DocumentUploadCardProps): React.JSX.Element {
-  const [uploading, setUploading] = useState<string | null>(null);
+  const [_uploading, setUploading] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
   const handleFileSelect = useCallback(
@@ -124,7 +124,7 @@ export function DocumentUploadCard({
               type="file"
               multiple
               accept={acceptedTypes.join(',')}
-              onChange={handleFileSelect}
+              onChange={() => void handleFileSelect()}
               className="hidden"
             />
             <div className="flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-border rounded-lg hover:border-primary transition-colors cursor-pointer">

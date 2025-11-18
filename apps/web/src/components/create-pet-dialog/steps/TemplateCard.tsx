@@ -14,7 +14,7 @@ export function TemplateCard({ template, isSelected, _stepStyle: _stepStyleParam
   return (
     <MotionView
       key={template.id}
-      onClick={onClick}
+      onClick={() => void onClick()}
       className={`relative p-4 rounded-xl border-2 text-left transition-all duration-300 cursor-pointer ${
         isSelected
           ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'

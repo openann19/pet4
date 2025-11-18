@@ -41,7 +41,7 @@ export default function CreateStoryDialog({
   userAvatar,
   onStoryCreated,
 }: CreateStoryDialogProps) {
-  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const [_mediaFile, setMediaFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string>('');
   const [mediaType, setMediaType] = useState<'photo' | 'video'>('photo');
   const [caption, setCaption] = useState('');
@@ -151,7 +151,7 @@ export default function CreateStoryDialog({
       });
 
       handleClose();
-    } catch (error) {
+    } catch (_error) {
       toast.error('Failed to create story');
     } finally {
       setIsProcessing(false);
@@ -173,7 +173,7 @@ export default function CreateStoryDialog({
         type="file"
         accept="image/*,video/*"
         className="hidden"
-        onChange={handleFileSelect}
+        onChange={() => void handleFileSelect()}
       />
       <input
         ref={cameraInputRef}
@@ -181,7 +181,7 @@ export default function CreateStoryDialog({
         accept="image/*,video/*"
         capture="environment"
         className="hidden"
-        onChange={handleFileSelect}
+        onChange={() => void handleFileSelect()}
       />
 
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -203,7 +203,7 @@ export default function CreateStoryDialog({
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <motion.button
-                      onClick={handleCameraCapture}
+                      onClick={() => void handleCameraCapture()}
                       className="glass-effect p-8 rounded-2xl flex flex-col items-center gap-3 hover:bg-white/20 transition-colors"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -218,7 +218,7 @@ export default function CreateStoryDialog({
                     </motion.button>
 
                     <motion.button
-                      onClick={handleGallerySelect}
+                      onClick={() => void handleGallerySelect()}
                       className="glass-effect p-8 rounded-2xl flex flex-col items-center gap-3 hover:bg-white/20 transition-colors"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -250,7 +250,7 @@ export default function CreateStoryDialog({
                       size="icon"
                       variant="destructive"
                       className="absolute top-2 right-2"
-                      onClick={handleRemoveMedia}
+                      onClick={() => void handleRemoveMedia()}
                       aria-label="Remove media"
                     >
                       <X size={20} />
@@ -338,11 +338,11 @@ export default function CreateStoryDialog({
           </Tabs>
 
           <div className="flex gap-2 justify-end pt-4 border-t">
-            <Button variant="outline" onClick={handleClose} disabled={isProcessing}>
+            <Button variant="outline" onClick={() => void handleClose()} disabled={isProcessing}>
               Cancel
             </Button>
             <Button
-              onClick={handleCreate}
+              onClick={() => void handleCreate()}
               disabled={!mediaPreview || isProcessing}
               className="bg-linear-to-r from-primary to-accent"
             >

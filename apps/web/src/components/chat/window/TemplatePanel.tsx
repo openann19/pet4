@@ -26,7 +26,7 @@ export function TemplatePanel({ onClose, onSelect }: TemplatePanelProps): JSX.El
           variant="ghost"
           size="icon"
           className="h-6 w-6"
-          onClick={onClose}
+          onClick={() => void onClose()}
           aria-label="Close message templates"
         >
           <X size={14} />

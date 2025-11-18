@@ -16,7 +16,7 @@ interface AdvancedMediaEditorProps {
 }
 
 export const AdvancedMediaEditor = memo<AdvancedMediaEditorProps>(
-    function AdvancedMediaEditor({ file, context, onComplete, onCancel, className }) {
+    function AdvancedMediaEditor({ file, context, _onComplete, _onCancel, className }) {
         const editor = useMediaEditor({
             context,
             quality: 'high',

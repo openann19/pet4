@@ -51,7 +51,7 @@ export function TemplateStep({
           />
         ))}
       </div>
-      <Button type="button" variant="outline" className="w-full" onClick={onSkip}>
+      <Button type="button" variant="outline" className="w-full" onClick={() => void onSkip()}>
         <Sparkle size={16} className="mr-2" />
         Skip & Customize From Scratch
       </Button>

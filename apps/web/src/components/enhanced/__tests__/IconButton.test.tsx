@@ -79,7 +79,7 @@ describe('IconButton', () => {
 
   it('calls onClick when clicked', async () => {
     const user = userEvent.setup();
-    render(<IconButton icon={mockIcon} aria-label="Test Button" onClick={mockOnClick} />);
+    render(<IconButton icon={mockIcon} aria-label="Test Button" onClick={() => void mockOnClick()} />);
 
     const button = screen.getByRole('button', { name: /test button/i });
     await user.click(button);

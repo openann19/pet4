@@ -3,7 +3,7 @@
  */
 
 declare module 'vaul' {
-  import type { ComponentPropsWithoutRef, ElementRef, PropsWithChildren, ForwardRefExoticComponent, RefAttributes } from 'react';
+  import type { ComponentPropsWithoutRef, _ElementRef, PropsWithChildren, ForwardRefExoticComponent, RefAttributes } from 'react';
   import * as DialogPrimitive from '@radix-ui/react-dialog';
 
   export interface DrawerProps extends PropsWithChildren {

@@ -46,17 +46,17 @@ function ErrorActions({
   return (
     <div className="flex flex-col gap-3">
       {isChunkError ? (
-        <Button onClick={onHardReload} className="w-full" variant="default">
+        <Button onClick={() => void onHardReload()} className="w-full" variant="default">
           <ArrowClockwise size={16} className="mr-2" />
           Hard Reload Page
         </Button>
       ) : (
-        <Button onClick={onTryAgain} className="w-full" variant="default">
+        <Button onClick={() => void onTryAgain()} className="w-full" variant="default">
           <ArrowClockwise size={16} className="mr-2" />
           Try Again
         </Button>
       )}
-      <Button onClick={onGoHome} className="w-full" variant="outline">
+      <Button onClick={() => void onGoHome()} className="w-full" variant="outline">
         <House size={16} className="mr-2" />
         Go Home
       </Button>

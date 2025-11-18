@@ -503,7 +503,7 @@ export function CreateLostAlertDialog({
           </div>
 
           <div className="flex justify-end gap-2 sticky bottom-0 bg-card pt-4 border-t">
-            <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
+            <Button variant="outline" onClick={() => void onClose()} disabled={isSubmitting}>
               Cancel
             </Button>
             <MotionView style={submitButtonAnimation.animatedStyle}>

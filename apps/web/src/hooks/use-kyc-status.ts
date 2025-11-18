@@ -51,7 +51,7 @@ export function useKYCStatus(userId: string) {
         setVerification({
           status: verificationData.status as KYCStatus,
           verificationId: verificationData.verificationId,
-          documents: verificationData.documents || [],
+          documents: verificationData.documents ?? [],
           notes: verificationData.notes,
           createdAt: verificationData.createdAt,
           updatedAt: verificationData.updatedAt,

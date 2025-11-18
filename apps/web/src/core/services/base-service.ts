@@ -60,7 +60,7 @@ export abstract class BaseService {
 
   constructor(serviceName: string, apiClient?: typeof APIClient) {
     this.serviceName = serviceName;
-    this.apiClient = apiClient || APIClient;
+    this.apiClient = apiClient ?? APIClient;
   }
 
   /**
@@ -78,7 +78,7 @@ export abstract class BaseService {
     const { method = 'GET', body, schema, config = {} } = options;
 
     const startTime = Date.now();
-    const cacheKey = config.cache?.key || endpoint;
+    const cacheKey = config.cache?.key ?? endpoint;
 
     // Check cache for GET requests
     if (method === 'GET' && config.cache?.enabled !== false) {
@@ -100,7 +100,7 @@ export abstract class BaseService {
       const response = await this.executeWithRetry(async () => {
         switch (method) {
           case 'GET': {
-            const retryConfig = config.retry
+            const _retryConfig = config.retry
               ? {
                   attempts: config.retry.attempts ?? 3,
                   delay: config.retry.delay ?? 1000,
@@ -115,7 +115,7 @@ export abstract class BaseService {
             return await this.apiClient.get<T>(endpoint, requestConfig);
           }
           case 'POST': {
-            const retryConfig = config.retry
+            const _retryConfig = config.retry
               ? {
                   attempts: config.retry.attempts ?? 3,
                   delay: config.retry.delay ?? 1000,
@@ -130,7 +130,7 @@ export abstract class BaseService {
             return await this.apiClient.post<T>(endpoint, body, requestConfig);
           }
           case 'PUT': {
-            const retryConfig = config.retry
+            const _retryConfig = config.retry
               ? {
                   attempts: config.retry.attempts ?? 3,
                   delay: config.retry.delay ?? 1000,
@@ -145,7 +145,7 @@ export abstract class BaseService {
             return await this.apiClient.put<T>(endpoint, body, requestConfig);
           }
           case 'PATCH': {
-            const retryConfig = config.retry
+            const _retryConfig = config.retry
               ? {
                   attempts: config.retry.attempts ?? 3,
                   delay: config.retry.delay ?? 1000,
@@ -160,7 +160,7 @@ export abstract class BaseService {
             return await this.apiClient.patch<T>(endpoint, body, requestConfig);
           }
           case 'DELETE': {
-            const retryConfig = config.retry
+            const _retryConfig = config.retry
               ? {
                   attempts: config.retry.attempts ?? 3,
                   delay: config.retry.delay ?? 1000,
@@ -356,7 +356,7 @@ export abstract class BaseService {
     }
 
     const now = Date.now();
-    const cacheTTL = ttl || cached.ttl;
+    const cacheTTL = ttl ?? cached.ttl;
     if (now - cached.timestamp > cacheTTL) {
       this.cache.delete(key);
       return null;
@@ -370,7 +370,7 @@ export abstract class BaseService {
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
-      ttl: ttl || defaultTTL,
+      ttl: ttl ?? defaultTTL,
     });
   }
 

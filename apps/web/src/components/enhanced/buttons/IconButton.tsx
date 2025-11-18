@@ -207,7 +207,7 @@ export function IconButton({
           >
             <button
               ref={buttonRef}
-              onClick={handleClick}
+              onClick={() => void handleClick()}
               disabled={disabled}
               className={cn(
                 'relative overflow-hidden rounded-xl',

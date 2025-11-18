@@ -8,7 +8,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { MotionView, usePressBounce, useMagnetic } from '@petspark/motion';
+import { _MotionView, usePressBounce, useMagnetic } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';                                                                       
 import { cn } from '@/lib/utils';
 import type { buttonVariants } from '@/components/ui/button';
@@ -40,7 +40,7 @@ export function PremiumButton({
   const magneticEffect = useMagnetic(magnetic ? 80 : 0);
 
   // Combine all animated styles
-  const combinedAnimatedStyles = [
+  const _combinedAnimatedStyles = [
     pressBounce.animatedStyle,
     hoverLift.animatedStyle,
     magnetic ? magneticEffect.animatedStyle : undefined,
@@ -63,7 +63,7 @@ export function PremiumButton({
         variant={buttonVariant}
         size={buttonSize}
         disabled={disabled}
-        onClick={onPress}
+        onClick={() => void onPress()}
         onMouseDown={() => {
           if (!disabled) {
             pressBounce.onPressIn();

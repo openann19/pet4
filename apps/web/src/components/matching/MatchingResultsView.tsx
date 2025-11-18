@@ -113,7 +113,7 @@ function MatchCard({ match, index, onClick }: MatchCardProps) {
       transition={{ delay: index * 0.1 }}
       whileHover={{ scale: 1.02, y: -4 }}
       className="cursor-pointer"
-      onClick={onClick}
+      onClick={() => void onClick()}
     >
       <PremiumCard className="h-full">
         <div className="relative">
@@ -163,7 +163,7 @@ interface MatchExplanationDialogProps {
   onClose: () => void;
 }
 
-function MatchExplanationDialog({ match, userPet, onClose }: MatchExplanationDialogProps) {
+function MatchExplanationDialog({ match, _userPet, onClose }: MatchExplanationDialogProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
       <MotionView
@@ -174,7 +174,7 @@ function MatchExplanationDialog({ match, userPet, onClose }: MatchExplanationDia
         <PremiumCard>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Match Explanation</h2>
-            <Button variant="ghost" size="sm" onClick={onClose}>
+            <Button variant="ghost" size="sm" onClick={() => void onClose()}>
               Close
             </Button>
           </div>

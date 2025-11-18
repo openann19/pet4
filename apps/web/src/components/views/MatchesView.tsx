@@ -35,7 +35,7 @@ import {
   withRepeat,
   withSequence,
   MotionView,
-  Presence,
+  _Presence,
 } from '@petspark/motion';
 import type { AnimatedStyle } from '@petspark/motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';
@@ -61,9 +61,9 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
   const [playdatePet, setPlaydatePet] = useState<(Pet & { match: Match }) | null>(null);
 
   const { activeCall, initiateCall, endCall, toggleMute, toggleVideo } = useCall(
-    selectedPet?.id || 'room',
-    userPet?.id || 'user',
-    userPet?.name || 'You',
+    selectedPet?.id ?? 'room',
+    userPet?.id ?? 'user',
+    userPet?.name ?? 'You',
     userPet?.photo
   );
 
@@ -81,7 +81,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
   }, []);
 
   const handlePetVideoCall = useCallback((pet: Pet & { match: Match }) => {
-    initiateCall(pet.id, pet.name, pet.photo, 'video');
+    void initiateCall(pet.id, pet.name, pet.photo, 'video');
   }, [initiateCall]);
 
   const handleStartChat = useCallback(() => {
@@ -98,11 +98,11 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
   const emptyTextY = useSharedValue(20);
 
   // Interactive element hooks
-  const cardHover = useHoverLift();
+  const _cardHover = useHoverLift();
 
   // Presence hooks
   const emptyStatePresence = useAnimatePresence({ isVisible: matchedPets.length === 0 && !isLoading });
-  const selectedPetPresence = useAnimatePresence({ isVisible: !!selectedPet });
+  const _selectedPetPresence = useAnimatePresence({ isVisible: !!selectedPet });
 
   // Initialize empty state animations
   useEffect(() => {
@@ -208,7 +208,7 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
           {onNavigateToChat && matchedPets.length > 0 && (
             <MotionView>
               <Button
-                onClick={handleStartChat}
+                onClick={() => void handleStartChat()}
                 className="bg-gradient-to-r from-primary to-accent hover:shadow-xl transition-all"
                 size="lg"
               >
@@ -290,11 +290,11 @@ export default function MatchesView({ onNavigateToChat }: MatchesViewProps) {
               userPet={userPet}
               onClose={() => setPlaydatePet(null)}
               onStartVideoCall={() => {
-                initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video');
+                void initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'video');
                 setPlaydatePet(null);
               }}
               onStartVoiceCall={() => {
-                initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice');
+                void initiateCall(playdatePet.id, playdatePet.name, playdatePet.photo, 'voice');
                 setPlaydatePet(null);
               }}
             />

@@ -426,7 +426,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 ref={primaryBtnRef}
                 variant="default"
                 size="lg"
-                onClick={handleGetStarted}
+                onClick={() => void handleGetStarted()}
                 disabled={!isOnline}
                 className="w-full rounded-xl"
                 onMouseEnter={() => !shouldReduceMotion && haptics.trigger('selection')}
@@ -442,7 +442,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 <Button
                   variant="outline"
                   size="lg"
-                  onClick={handleSignIn}
+                  onClick={() => void handleSignIn()}
                   className="flex-1 rounded-xl"
                   onMouseEnter={() => !shouldReduceMotion && haptics.trigger('selection')}
                   aria-label="Sign in to your account"
@@ -453,7 +453,7 @@ export default function WelcomeScreen({ onGetStarted, onSignIn, onExplore, isOnl
                 <Button
                   variant="outline"
                   size="lg"
-                  onClick={handleExplore}
+                  onClick={() => void handleExplore()}
                   className="flex-1 rounded-xl"
                   onMouseEnter={() => !shouldReduceMotion && haptics.trigger('selection')}
                   aria-label="Explore PawfectMatch"

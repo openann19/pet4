@@ -66,7 +66,7 @@ export function UndoDeleteChip({ onUndo, duration = 5000, className }: UndoDelet
       )}
     >
       <button
-        onClick={handleUndo}
+        onClick={() => void handleUndo()}
         className={cn(
           'flex items-center gap-2',
           'text-sm font-medium',

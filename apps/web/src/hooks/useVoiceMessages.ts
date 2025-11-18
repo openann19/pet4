@@ -72,7 +72,7 @@ export function useVoiceMessages(roomId: string): {
         setPlayingVoice(null);
         audioRef.current = null;
       };
-      audio.play();
+      void audio.play();
       audioRef.current = audio;
       setPlayingVoice(messageId);
     },

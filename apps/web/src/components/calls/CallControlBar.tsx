@@ -48,7 +48,7 @@ export function CallControlBar({
         size="sm"
         isIconOnly
         variant="ghost"
-        onClick={onToggleMute}
+        onClick={() => void onToggleMute()}
         aria-label={isMuted ? 'Unmute' : 'Mute'}
         className={cn(
           'rounded-full size-12',
@@ -69,7 +69,7 @@ export function CallControlBar({
         size="sm"
         isIconOnly
         variant="ghost"
-        onClick={onToggleCamera}
+        onClick={() => void onToggleCamera()}
         aria-label={isCameraOff ? 'Turn camera on' : 'Turn camera off'}
         className={cn(
           'rounded-full size-12',
@@ -90,7 +90,7 @@ export function CallControlBar({
         size="sm"
         isIconOnly
         variant="ghost"
-        onClick={onToggleScreenShare}
+        onClick={() => void onToggleScreenShare()}
         aria-label={isScreenSharing ? 'Stop sharing screen' : 'Share screen'}
         className={cn(
           'rounded-full size-12',
@@ -113,7 +113,7 @@ export function CallControlBar({
         size="sm"
         isIconOnly
         variant="destructive"
-        onClick={onEndCall}
+        onClick={() => void onEndCall()}
         aria-label="End call"
         className="rounded-full size-12 bg-red-500 hover:bg-red-600 text-white"
       >

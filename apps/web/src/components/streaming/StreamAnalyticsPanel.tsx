@@ -45,7 +45,7 @@ export function StreamAnalyticsPanel({
             type="button"
             size="icon"
             variant="ghost"
-            onClick={onClose}
+            onClick={() => void onClose()}
             className="size-6"
           >
             <X className="size-4" />

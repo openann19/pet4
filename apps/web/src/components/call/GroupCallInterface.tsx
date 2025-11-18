@@ -465,7 +465,7 @@ export default function GroupCallInterface({
                 <Users size={24} weight="fill" className="text-primary" aria-hidden="true" />
                 <div>
                   <h1 className="font-bold text-foreground text-lg">
-                    {session.call.title || 'Playdate Video Call'}
+                    {session.call.title ?? 'Playdate Video Call'}
                   </h1>
                   <div className="flex items-center gap-2 text-sm" role="status" aria-live="polite">
                     {statusIndicator}
@@ -500,7 +500,7 @@ export default function GroupCallInterface({
 
               {isVideoCall && (
                 <Button
-                  onClick={handleToggleLayout}
+                  onClick={() => void handleToggleLayout()}
                   size="icon"
                   variant="ghost"
                   className="rounded-full"
@@ -517,7 +517,7 @@ export default function GroupCallInterface({
               )}
 
               <Button
-                onClick={handleToggleParticipants}
+                onClick={() => void handleToggleParticipants()}
                 size="icon"
                 variant="ghost"
                 className="rounded-full"
@@ -528,7 +528,7 @@ export default function GroupCallInterface({
               </Button>
 
               <Button
-                onClick={handleToggleFullscreen}
+                onClick={() => void handleToggleFullscreen()}
                 size="icon"
                 variant="ghost"
                 className="rounded-full"
@@ -867,7 +867,7 @@ function ParticipantsPanel({
       <div className="p-6 h-full flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-lg">Participants ({totalParticipants})</h2>
-          <Button onClick={onInvite} size="sm" variant="outline" aria-label="Invite participants">
+          <Button onClick={() => void onInvite()} size="sm" variant="outline" aria-label="Invite participants">
             <ShareNetwork size={16} weight="fill" className="mr-2" aria-hidden="true" />
             Invite
           </Button>

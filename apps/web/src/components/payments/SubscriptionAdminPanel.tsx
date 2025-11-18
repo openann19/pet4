@@ -212,7 +212,7 @@ export function SubscriptionAdminPanel() {
                     className="pl-10"
                   />
                 </div>
-                <Button onClick={loadData} variant="outline">
+                <Button onClick={() => void loadData()} variant="outline">
                   Refresh
                 </Button>
               </div>
@@ -319,7 +319,7 @@ export function SubscriptionAdminPanel() {
                         {log.targetUserId ? `${String(log.targetUserId).slice(0, 12)}...` : '-'}
                       </TableCell>
                       <TableCell className="text-xs max-w-xs truncate">
-                        {log.reason || '-'}
+                        {log.reason ?? '-'}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -376,7 +376,7 @@ export function SubscriptionAdminPanel() {
             <Button variant="outline" onClick={() => { setCompDialogOpen(false); }}>
               Cancel
             </Button>
-            <Button onClick={handleCompSubscription}>Comp Subscription</Button>
+            <Button onClick={() => void handleCompSubscription()}>Comp Subscription</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

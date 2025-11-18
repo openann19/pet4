@@ -401,7 +401,7 @@ export function useConsentManager(
           .then((module) => {
             module.analytics.clear();
           })
-          .catch((error: unknown) => {
+          .catch((_error: unknown) => {
             // Silently fail analytics clear - non-critical operation
             // Error is intentionally swallowed
           });

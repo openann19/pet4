@@ -292,7 +292,7 @@ export default function PlaydateScheduler({
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={onStartVideoCall}
+                                onClick={() => void onStartVideoCall()}
                                 className="hover:bg-primary/10"
                                 aria-label="Start video call"
                                 title="Start video call"
@@ -304,7 +304,7 @@ export default function PlaydateScheduler({
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={onStartVoiceCall}
+                                onClick={() => void onStartVoiceCall()}
                                 className="hover:bg-primary/10"
                                 aria-label="Start voice call"
                                 title="Start voice call"
@@ -315,7 +315,7 @@ export default function PlaydateScheduler({
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={onClose}
+                            onClick={() => void onClose()}
                             aria-label="Close playdate scheduler"
                             title="Close"
                         >
@@ -479,7 +479,7 @@ export default function PlaydateScheduler({
                                                     </div>
 
                                                     <div className="flex gap-2">
-                                                        <Button onClick={handleCreatePlaydate} className="flex-1">
+                                                        <Button onClick={() => void handleCreatePlaydate()} className="flex-1">
                                                             <Check size={16} className="mr-2" />
                                                             Schedule Playdate
                                                         </Button>
@@ -724,7 +724,7 @@ export default function PlaydateScheduler({
                     >
                         <LocationPicker
                             value={selectedLocation ?? undefined}
-                            onChange={handleLocationChange}
+                            onChange={() => void handleLocationChange()}
                             onClose={() => { setShowLocationPicker(false); }}
                         />
                     </Suspense>

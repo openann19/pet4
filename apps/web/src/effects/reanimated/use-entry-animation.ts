@@ -24,7 +24,7 @@ export interface UseEntryAnimationReturn {
 export function useEntryAnimation(options: UseEntryAnimationOptions = {}): UseEntryAnimationReturn {
   const {
     delay = 0,
-    duration = timingConfigs.smooth.duration,
+    _duration = timingConfigs.smooth.duration,
     initialY = 20,
     initialOpacity = 0,
     initialScale = 0.95,

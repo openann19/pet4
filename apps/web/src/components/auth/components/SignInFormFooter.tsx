@@ -28,7 +28,7 @@ export function SignInFormFooter({
           type="button"
           variant="link"
           size="sm"
-          onClick={onForgotPassword}
+          onClick={() => void onForgotPassword()}
           className="h-auto p-0"
         >
           {t.auth?.forgotPassword ?? 'Forgot password?'}
@@ -65,7 +65,7 @@ export function SignInFormFooter({
             type="button"
             variant="link"
             size="sm"
-            onClick={onSwitchToSignUp}
+            onClick={() => void onSwitchToSignUp()}
             className="h-auto p-0 font-semibold"
           >
             {t.auth?.signUp ?? 'Sign up'}

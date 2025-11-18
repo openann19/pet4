@@ -21,7 +21,7 @@ function UltraThemeSettings() {
   const { themePreset, setThemePreset } = useApp();
   const [previewTheme, setPreviewTheme] = useState<ThemePreset | null>(null);
 
-  const currentTheme = previewTheme || themePreset;
+  const currentTheme = previewTheme ?? themePreset;
   const currentPreset = themePresets.find((p) => p.id === currentTheme);
 
   // Group themes by mode
@@ -75,7 +75,7 @@ function UltraThemeSettings() {
                   <Check size={20} weight="bold" />
                   Apply Theme
                 </Button>
-                <Button onClick={handleCancelPreview} variant="outline">
+                <Button onClick={() => void handleCancelPreview()} variant="outline">
                   Cancel
                 </Button>
               </div>

@@ -112,7 +112,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
 
   const handleClearHistory = () => {
     haptics.impact('medium');
-    setSearchHistory([]);
+    void setSearchHistory([]);
   };
 
   const highlightText = (text: string, highlight: string) => {
@@ -134,7 +134,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
     );
   };
 
-  const showDropdown = Boolean(isFocused && (query.trim() || showHistory || showTrending));
+  const _showDropdown = Boolean(isFocused && (query.trim() || showHistory || showTrending));
 
   return (
     <div className={cn('relative', className)}>
@@ -211,7 +211,7 @@ export function SmartSearch<T extends Record<string, unknown>>({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={handleClearHistory}
+                        onClick={() => void handleClearHistory()}
                         className="h-6 text-xs"
                       >
                         Clear

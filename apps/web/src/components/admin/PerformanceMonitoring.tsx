@@ -180,7 +180,7 @@ export default function PerformanceMonitoring() {
           <h2 className="text-2xl font-bold">Performance Monitoring</h2>
           <p className="text-muted-foreground">Real-time system health and metrics</p>
         </div>
-        <Button onClick={updateMetrics} variant="outline" size="sm">
+        <Button onClick={() => void updateMetrics()} variant="outline" size="sm">
           <ChartLine size={16} className="mr-2" />
           Refresh
         </Button>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, Presence, MotionView } from '@petspark/motion';
+import { _motion, Presence, MotionView } from '@petspark/motion';
 import {
   MapPin,
   MagnifyingGlass,
@@ -93,12 +93,12 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<NearbyPlace | null>(null);
   const [customLocation, setCustomLocation] = useState({
-    name: value?.name || '',
-    address: value?.address || '',
+    name: value?.name ?? '',
+    address: value?.address ?? '',
   });
 
   useEffect(() => {
-    loadUserLocation();
+    void loadUserLocation();
   }, []);
 
   const loadUserLocation = async () => {
@@ -114,7 +114,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
 
       setNearbyPlaces(placesWithDistance);
       toast.success('Location detected');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Could not get your location');
     } finally {
       setIsLoadingLocation(false);
@@ -191,7 +191,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
             </div>
           </div>
           {onClose && (
-            <Button variant="ghost" size="icon" onClick={onClose} aria-label="X">
+            <Button variant="ghost" size="icon" onClick={() => void onClose()} aria-label="X">
               <X size={24} />
             </Button>
           )}
@@ -332,7 +332,7 @@ export default function LocationPicker({ value, onChange, onClose }: LocationPic
                           }
                         />
                       </div>
-                      <Button onClick={handleCustomLocation} className="w-full">
+                      <Button onClick={() => void handleCustomLocation()} className="w-full">
                         <MapPin size={16} className="mr-2" weight="fill" />
                         Use This Location
                       </Button>

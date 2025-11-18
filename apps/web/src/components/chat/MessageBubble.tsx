@@ -323,7 +323,7 @@ function MessageBubble({
     if (message.status === 'failed') {
       return (
         <button
-          onClick={handleRetry}
+          onClick={() => void handleRetry()}
           className="text-destructive hover:text-destructive/80"
           aria-label="Retry sending"
         >
@@ -695,7 +695,7 @@ function MessageBubble({
             </button>
             {onReply && (
               <button
-                onClick={handleReply}
+                onClick={() => void handleReply()}
                 className="flex items-center gap-2 px-3 py-2 hover:bg-muted rounded-md text-sm"
               >
                 <ArrowUUpLeft size={16} />
@@ -704,7 +704,7 @@ function MessageBubble({
             )}
             {onCopy && (
               <button
-                onClick={handleCopy}
+                onClick={() => void handleCopy()}
                 className="flex items-center gap-2 px-3 py-2 hover:bg-muted rounded-md text-sm"
               >
                 <Copy size={16} />
@@ -713,7 +713,7 @@ function MessageBubble({
             )}
             {onReport && !isOwn && (
               <button
-                onClick={handleReport}
+                onClick={() => void handleReport()}
                 className="flex items-center gap-2 px-3 py-2 hover:bg-destructive/10 text-destructive rounded-md text-sm"
               >
                 <Flag size={16} />
@@ -722,7 +722,7 @@ function MessageBubble({
             )}
             {onDelete && (
               <button
-                onClick={handleDeleteClick}
+                onClick={() => void handleDeleteClick()}
                 className="flex items-center gap-2 px-3 py-2 hover:bg-destructive/10 text-destructive rounded-md text-sm"
               >
                 <Trash size={16} />

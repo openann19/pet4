@@ -61,7 +61,7 @@ export function NotificationFilters({
           >
             {view === 'grouped' ? <SquaresFour size={20} /> : <List size={20} />}
           </Button>
-          <Button variant="ghost" size="icon" onClick={onShowSettings} aria-label="Sliders Horizontal">
+          <Button variant="ghost" size="icon" onClick={() => void onShowSettings()} aria-label="Sliders Horizontal">
             <SlidersHorizontal size={20} />
           </Button>
         </div>

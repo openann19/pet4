@@ -36,7 +36,7 @@ vi.mock('@petspark/motion', () => ({
     className?: string;
     onClick?: () => void;
   }) => (
-    <div className={className} onClick={onClick}>
+    <div className={className} onClick={() => void onClick()}>
       {children}
     </div>
   ),

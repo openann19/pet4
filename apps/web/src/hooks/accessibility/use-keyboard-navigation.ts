@@ -173,7 +173,7 @@ export function useKeyboardNavigation(
     focusTrap: focusTrapConfig = { enabled: DEFAULT_FOCUS_TRAP_ENABLED },
     arrowKeys: arrowKeysConfig = { enabled: DEFAULT_ARROW_KEYS_ENABLED },
     onShortcut,
-    showHints = false,
+    _showHints = false,
   } = options
 
   // State
@@ -341,7 +341,7 @@ export function useKeyboardNavigation(
         return
       }
 
-      const { orientation = 'both', wrap = false, skipHidden = true } = arrowKeysConfig
+      const { orientation = 'both', wrap = false, _skipHidden = true } = arrowKeysConfig
 
       const container = focusTrapContainerRef.current ?? document.body
       const focusableElements = getFocusableElements(container)

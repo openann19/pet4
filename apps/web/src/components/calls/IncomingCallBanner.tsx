@@ -21,7 +21,7 @@ const DeclineButton = memo<{ readonly onClick: () => void }>(({ onClick }) => (
     size="sm"
     isIconOnly
     variant="outline"
-    onClick={onClick}
+    onClick={() => void onClick()}
     aria-label="Decline call"
     className="rounded-full border-red-500/60 bg-red-500/10 text-red-100 hover:bg-red-500/20 hover:text-red-50"
   >
@@ -36,7 +36,7 @@ const AcceptButton = memo<{ readonly onClick: () => void }>(({ onClick }) => (
     size="sm"
     isIconOnly
     variant="secondary"
-    onClick={onClick}
+    onClick={() => void onClick()}
     aria-label="Accept call"
     className="rounded-full bg-emerald-500 text-white hover:bg-emerald-600"
   >
@@ -80,8 +80,8 @@ export const IncomingCallBanner = memo<IncomingCallBannerProps>(
           </div>
 
           <div className="flex items-center gap-2">
-            <DeclineButton onClick={onReject} />
-            <AcceptButton onClick={onAccept} />
+            <DeclineButton onClick={() => void onReject()} />
+            <AcceptButton onClick={() => void onAccept()} />
           </div>
         </MotionView>
       </div>

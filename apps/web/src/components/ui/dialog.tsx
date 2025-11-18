@@ -1,7 +1,7 @@
 'use client';
 
 import React, { type ComponentProps } from 'react';
-import { useEffect, useCallback } from 'react';
+import { _useEffect, useCallback } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import {
@@ -133,7 +133,7 @@ function DialogContent({
               "[&_svg:not([class*='size-'])]:size-4",
               getSpacingClassesFromConfig({ marginY: 'lg', marginX: 'lg', padding: 'xs' })
             )}
-            onClick={handleClose}
+            onClick={() => void handleClose()}
             {...getAriaButtonAttributes({ label: 'Close dialog' })}
           >
             <X aria-hidden="true" />
