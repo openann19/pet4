@@ -7,6 +7,7 @@ import {
   withRepeat,
   withSequence,
   Easing,
+  useAnimatedStyle,
   type AnimatedStyle,
 } from '@petspark/motion';
 

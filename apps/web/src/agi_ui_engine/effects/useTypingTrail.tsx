@@ -7,7 +7,7 @@ import {
   withRepeat,
   withSequence,
   Easing,
-  type AnimatedStyle,
+  useAnimatedStyle,
   type AnimatedStyle,
 } from '@petspark/motion';
 import { useUIConfig } from '@/hooks/use-ui-config';

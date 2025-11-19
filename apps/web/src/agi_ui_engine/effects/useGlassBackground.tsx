@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useSharedValue, withTiming, Easing, type AnimatedStyle } from '@petspark/motion';
+import { useSharedValue, withTiming, Easing, useAnimatedStyle, type AnimatedStyle } from '@petspark/motion';
 
 import { useUIConfig } from '@/hooks/use-ui-config';
 
