@@ -9,6 +9,7 @@ import {
   MotionView,
   type AnimatedStyle,
   type Transition,
+  useAnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { useAnimatePresence } from '@/effects/reanimated';
