@@ -29,15 +29,15 @@ import { useAnimatePresence } from '@/effects/reanimated/use-animate-presence';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';
 import {
   useSharedValue,
-  use
   withSpring,
   withTiming,
   withRepeat,
   withSequence,
   MotionView,
   Presence,
+  type AnimatedStyle,
 } from '@petspark/motion';
-import type  from '@petspark/motion';
+
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 interface MatchesViewProps {

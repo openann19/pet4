@@ -9,7 +9,7 @@ import { PaperPlaneRight } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { useUIConfig } from "@/hooks/use-ui-config";
-import type  from '@petspark/motion';
+
 
 export interface ScrollToBottomFABProps {
   isVisible: boolean;

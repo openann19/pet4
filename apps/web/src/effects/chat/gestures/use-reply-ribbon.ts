@@ -13,8 +13,8 @@
 import { useCallback, useRef } from 'react'
 import {
   Easing,
-  useAnimatedStyle,
-  useSharedValue,
+  useAnimatedStyle
+  useSharedValue
   withSpring,
   withTiming,
   type SharedValue,
@@ -23,7 +23,7 @@ import { createLogger } from '@/lib/logger'
 import { triggerHaptic } from '../core/haptic-manager'
 import {
   getReducedMotionDuration,
-  useReducedMotionSV,
+  useReducedMotionSV
 } from '../core/reduced-motion'
 import { logEffectEnd, logEffectStart } from '../core/telemetry'
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate'

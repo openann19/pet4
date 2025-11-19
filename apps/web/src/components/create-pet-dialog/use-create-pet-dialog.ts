@@ -1,8 +1,8 @@
 import {
-  useCreatePetForm,
-  useCreatePetAnimations,
-  useCreatePetValidation,
-  useCreatePetSubmission,
+  useCreatePetForm
+  useCreatePetAnimations
+  useCreatePetValidation
+  useCreatePetSubmission
 } from './hooks';
 import { renderStepContent } from './render-step-content';
 import type { CreatePetDialogProps } from './create-pet-types';

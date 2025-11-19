@@ -1,6 +1,7 @@
-import { MotionView } from '@petspark/motion';
+import { MotionView   type AnimatedStyle,
+} from '@petspark/motion';
 import { cn } from '@/lib/utils';
-import type  from '@petspark/motion';
+
 import { REACTIONS } from '../message-bubble-constants';
 import type { ReactionType } from '@/lib/chat-types';
 

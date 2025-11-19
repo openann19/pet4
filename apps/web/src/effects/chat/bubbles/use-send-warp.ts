@@ -12,10 +12,10 @@
 import { useCallback, useEffect, useRef } from 'react';
 import {
   Easing,
-  use
   useSharedValue,
   withTiming,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { triggerHaptic } from '../core/haptic-manager';
@@ -23,7 +23,7 @@ import { getReducedMotionDuration, useReducedMotionSV } from '../core/reduced-mo
 import { logEffectEnd, logEffectStart } from '../core/telemetry';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type  from '@petspark/motion';
+
 
 /**
  * Cubic bezier easing: (0.17, 0.84, 0.44, 1)

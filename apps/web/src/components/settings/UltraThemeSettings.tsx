@@ -9,11 +9,11 @@ import { useApp } from '@/contexts/AppContext';
 import { themePresets, type ThemePreset } from '@/lib/theme-presets';
 import { Button } from '@/components/ui/button';
 import {
-  useUltraCardReveal,
-  useMagneticHover,
-  useElasticScale,
-  useGlowBorder,
-  useBreathingAnimation,
+  useUltraCardReveal
+  useMagneticHover
+  useElasticScale
+  useGlowBorder
+  useBreathingAnimation
 } from '@/effects/reanimated';
 import { Moon, Sun, Palette, Check } from '@phosphor-icons/react';
 

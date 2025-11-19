@@ -1,6 +1,7 @@
 import { Clock, Check, Checks, X } from '@phosphor-icons/react';
-import { MotionView } from '@petspark/motion';
-import type  from '@petspark/motion';
+import { MotionView   type AnimatedStyle,
+} from '@petspark/motion';
+
 import type { Message } from '@/lib/chat-types';
 
 interface MessageStatusIconProps {

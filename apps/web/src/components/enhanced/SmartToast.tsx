@@ -7,6 +7,7 @@ import {
   animate,
   MotionView,
   Presence,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { X, CheckCircle, Warning, Info, XCircle } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';

@@ -2,14 +2,14 @@
 
 import {
   useSharedValue,
-  use
   withRepeat,
   withSequence,
   withTiming,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 import { makeRng } from '@petspark/shared';
 
 export interface UseFloatingParticleOptions {

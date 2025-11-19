@@ -16,6 +16,7 @@ import {
   Easing,
   type SharedValue,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { createSeededRNG } from '@/effects/chat/core/seeded-rng';

@@ -15,12 +15,12 @@
 import { useEffect, useRef, useCallback } from 'react';
 import {
   Easing,
-  use
   useSharedValue,
   withRepeat,
   withSequence,
   withTiming,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-motion';
@@ -28,7 +28,7 @@ import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { logEffectStart, logEffectEnd } from '../core/telemetry';
 import { createLogger } from '@/lib/logger';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type  from '@petspark/motion';
+
 
 const logger = createLogger('aurora-ring');
 

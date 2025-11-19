@@ -6,7 +6,7 @@ import { ChatMessageListSection } from '@/components/chat/window/ChatMessageList
 import type { ChatRoom, ChatMessage } from '@/lib/chat-types';
 import type { Call, CallSession } from '@/lib/call-types';
 import { haptics } from '@/lib/haptics';
-import type  from '@petspark/motion';
+
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import type { InputRef } from '@/components/ui/input';
 import type { SharedValue } from '@petspark/motion';

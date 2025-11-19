@@ -5,6 +5,7 @@ import {
   useAnimatedStyle,
   animate,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { cn } from '@/lib/utils';
 import { useUIConfig } from "@/hooks/use-ui-config";

@@ -3,13 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   interpolate,
   Extrapolation,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 import { haptics } from '@/lib/haptics';
 import { toast } from 'sonner';
 import { createLogger } from '@/lib/logger';

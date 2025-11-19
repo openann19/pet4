@@ -8,6 +8,7 @@ import {
   runOnUI,
   runOnJS,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useCallback } from 'react';
 import { timingConfigs, type TimingConfig } from '@/effects/reanimated/transitions';

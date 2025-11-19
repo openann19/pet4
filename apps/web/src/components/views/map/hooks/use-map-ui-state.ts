@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useSharedValue, usewithSpring } from '@petspark/motion';
+import { useSharedValue, withSpring,
+  type AnimatedStyle,
+} from '@petspark/motion';
 import type { MapMarker } from '@/lib/maps/types';
 
 export interface UseMapUIStateReturn {

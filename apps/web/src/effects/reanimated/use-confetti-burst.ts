@@ -10,6 +10,7 @@ import {
   withSequence,
   interpolate,
   Easing,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useCallback, useState } from 'react';
 import { makeRng } from '@petspark/shared';

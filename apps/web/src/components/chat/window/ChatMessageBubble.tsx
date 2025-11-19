@@ -3,14 +3,15 @@
  * Individual message bubble with reactions, voice playback, and status indicators
  */
 
-import { MotionView } from '@petspark/motion';
+import { MotionView   type AnimatedStyle,
+} from '@petspark/motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Check, Checks, Heart, Pause, Play } from '@phosphor-icons/react';
 import type { ChatMessage, MessageReaction } from '@/lib/chat-types';
 import { REACTION_EMOJIS } from '@/lib/chat-types';
 import { formatChatTime, getReactionsArray } from '@/lib/chat-utils';
-import type  from '@petspark/motion';
+
 
 export interface ChatMessageBubbleProps {
   message: ChatMessage;

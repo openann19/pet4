@@ -11,6 +11,7 @@ import {
   withTiming,
   interpolate,
   Easing,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { isTruthy, isDefined } from '@petspark/shared';

@@ -6,6 +6,7 @@ import {
   withTiming,
   withDelay,
   withSpring,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';

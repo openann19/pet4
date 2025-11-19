@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { useSharedValue, usewithRepeat, withSequence, withTiming } from '@petspark/motion';
-import type  from '@petspark/motion';
+import { useSharedValue, usewithRepeat, withSequence, withTiming   type AnimatedStyle,
+} from '@petspark/motion';
+
 
 export function useEmojiAnimation() {
   const emojiRotation = useSharedValue<number>(0);

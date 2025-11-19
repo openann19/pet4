@@ -1,6 +1,6 @@
 import type { CreatePetFormState, CreatePetFormActions } from './create-pet-types';
 import type { PetProfileTemplate } from '@/lib/pet-profile-templates';
-import type  from '@petspark/motion';
+
 import {
   TypeStep,
   TemplateStep,

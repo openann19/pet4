@@ -6,6 +6,7 @@ import {
   withSpring,
   withTiming,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useCallback, useRef } from 'react';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';

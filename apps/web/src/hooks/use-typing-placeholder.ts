@@ -9,6 +9,7 @@ import {
   withDelay,
   Easing,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';

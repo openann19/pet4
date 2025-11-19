@@ -8,6 +8,7 @@ import {
   withSpring,
   runOnUI,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { useCallback } from 'react';

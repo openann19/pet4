@@ -8,6 +8,7 @@ import {
   withTiming,
   withDelay,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useCallback } from 'react';
 import { haptics } from '@/lib/haptics';

@@ -9,6 +9,7 @@ import {
   withSequence,
   withTiming,
   Easing,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { springConfigs, timingConfigs } from './transitions';
 import type { CSSProperties } from 'react';

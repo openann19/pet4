@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
-import { useSharedValue, usewithSpring, withTiming } from '@petspark/motion';
-import type { Transition } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming   type AnimatedStyle,
+} from '@petspark/motion';
+import type { Transition   type AnimatedStyle,
+} from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 
 export function useContextMenuAnimations(showContextMenu: boolean) {
   const contextMenuOpacity = useSharedValue<number>(0);

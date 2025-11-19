@@ -3,12 +3,12 @@
 import { useEffect, useRef } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 
 export interface UseLayoutAnimationOptions {
   enabled?: boolean;

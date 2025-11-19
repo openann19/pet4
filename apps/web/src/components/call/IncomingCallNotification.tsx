@@ -9,14 +9,14 @@ import { createLogger } from '@/lib/logger';
 import { useModalAnimation, useGlowPulse, useBounceOnTap } from '@/effects/reanimated';
 import {
   useSharedValue,
-  use
   withRepeat,
   withSequence,
   withTiming,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect } from 'react';
-import type  from '@petspark/motion';
+
 
 const logger = createLogger('IncomingCallNotification');
 

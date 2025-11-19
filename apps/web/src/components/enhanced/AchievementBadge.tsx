@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { useSharedValue, withSpring, useanimate, MotionView } from '@petspark/motion';
+import { useSharedValue, withSpring, useanimate, MotionView   type AnimatedStyle,
+} from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { cn } from '@/lib/utils';
 

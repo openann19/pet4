@@ -13,6 +13,7 @@ import { cleanupTestState, resetAllMocks } from './utilities/test-helpers';
 import type {
   UseOverlayTransitionOptions,
   UseOverlayTransitionReturn,
+  type AnimatedStyle,
 } from '@petspark/motion';
 
 // Suppress React act() warnings for Radix UI components during testing

@@ -16,6 +16,7 @@ import {
   withSpring,
   type AnimatedStyle,
   type MotionValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 
 export default function WelcomeModal(): JSX.Element | null {

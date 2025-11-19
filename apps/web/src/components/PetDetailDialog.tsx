@@ -37,6 +37,7 @@ import {
   withTiming,
   MotionView,
   type MotionValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 
 interface PetDetailDialogProps {

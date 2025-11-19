@@ -6,6 +6,7 @@ import {
   useSharedValue,
   animate,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import type { CSSProperties } from 'react';
 

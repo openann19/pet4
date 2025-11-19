@@ -15,6 +15,7 @@ import {
   useAnimatedStyle,
   withSpring,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useReducedMotionSV } from '../core/reduced-motion';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';

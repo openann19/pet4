@@ -29,6 +29,7 @@ import {
   withDelay,
   animate,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { haptics } from '@/lib/haptics';
 import type { Pet } from '@/lib/types';

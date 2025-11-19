@@ -7,6 +7,7 @@ import {
   withTiming,
   animate,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';

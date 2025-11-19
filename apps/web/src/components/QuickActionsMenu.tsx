@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { MotionView, Presence } from '@petspark/motion';
-import { useSharedValue, usewithTiming, withSpring, type MotionValue } from '@petspark/motion';
+import { MotionView, Presence   type AnimatedStyle,
+} from '@petspark/motion';
+import { useSharedValue, usewithTiming, withSpring, type MotionValue   type AnimatedStyle,
+} from '@petspark/motion';
 import React from 'react';
 import {
   Plus,

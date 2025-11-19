@@ -2,7 +2,7 @@ import { useAnimatedStyle } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import { useAnimatePresence } from '@/effects/reanimated';
-import type  from '@petspark/motion';
+
 import type { Step } from '../create-pet-types';
 import { useStepAnimations } from './use-step-animations';
 import { useEmojiAnimation } from './use-emoji-animation';

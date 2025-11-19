@@ -1,8 +1,10 @@
 'use client';
 
-import { useSharedValue, usewithTiming } from '@petspark/motion';
+import { useSharedValue, withTiming,
+  type AnimatedStyle,
+} from '@petspark/motion';
 import { useEffect } from 'react';
-import type  from '@petspark/motion';
+
 
 export interface UseIconRotationOptions {
   enabled?: boolean;

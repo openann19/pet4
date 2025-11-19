@@ -2,11 +2,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   useSharedValue,
-  use
   withTiming,
   withRepeat,
   withSequence,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import ChatRoomsList from '@/components/ChatRoomsList';
 import ChatWindow from '@/components/ChatWindowNew';
@@ -19,7 +19,7 @@ import type { ChatRoom } from '@/lib/chat-types';
 import { createChatRoom } from '@/lib/chat-utils';
 import { createLogger } from '@/lib/logger';
 import type { Match, Pet } from '@/lib/types';
-import type  from '@petspark/motion';
+
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { timingConfigs } from '@/effects/reanimated/transitions';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';

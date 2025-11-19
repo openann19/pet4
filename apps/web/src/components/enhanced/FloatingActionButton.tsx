@@ -3,7 +3,6 @@
 import { useEffect, useCallback } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   withRepeat,
   withTiming,

@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   withTiming,
   withRepeat,
   withSequence,
+  type AnimatedStyle,
 } from '@petspark/motion';
-import type  from '@petspark/motion';
+
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 

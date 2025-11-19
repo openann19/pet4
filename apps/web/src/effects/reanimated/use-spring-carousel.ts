@@ -3,7 +3,8 @@
  * Smooth carousel with spring physics and snap points
  */
 
-import { useSharedValue, usewithSpring, interpolate } from '@petspark/motion';
+import { useSharedValue, usewithSpring, interpolate   type AnimatedStyle,
+} from '@petspark/motion';
 import { useCallback, useState } from 'react';
 import { isTruthy, isDefined } from '@petspark/shared';
 

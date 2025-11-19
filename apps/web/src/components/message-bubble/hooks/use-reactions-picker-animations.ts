@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { useSharedValue, usewithSpring, withTiming } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming   type AnimatedStyle,
+} from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 
 export function useReactionsPickerAnimations(showReactions: boolean) {
   const reactionsPickerOpacity = useSharedValue(0);

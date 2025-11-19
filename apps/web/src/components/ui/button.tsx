@@ -51,23 +51,23 @@ export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
 
 // Button variant styles using design tokens
 export const buttonVariants = {
-  default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-primary',
-  primary: 'bg-primary text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-primary',
-  secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 focus-visible:ring-secondary',
-  outline: 'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground focus-visible:ring-accent',
-  ghost: 'hover:bg-accent hover:text-accent-foreground focus-visible:ring-accent',
-  destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 focus-visible:ring-destructive',
-  link: 'text-primary underline-offset-4 hover:underline focus-visible:ring-primary'
+  default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-primary/70',
+  primary: 'bg-primary text-primary-foreground shadow hover:bg-primary/90 focus-visible:ring-primary/70',
+  secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 focus-visible:ring-secondary/70',
+  outline: 'border-2 border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground focus-visible:ring-accent/70',
+  ghost: 'hover:bg-accent/10 hover:text-accent-foreground focus-visible:ring-accent/70',
+  destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 focus-visible:ring-destructive/70',
+  link: 'text-primary underline-offset-4 hover:underline focus-visible:ring-primary/70'
 } as const
 
 const buttonSizes = {
-  icon: 'h-9 w-9 p-0',
-  default: 'h-9 px-4 text-sm',
+  icon: 'h-11 w-11 p-0', // 44px minimum for accessibility (WCAG 2.1 Level AAA)
+  default: 'h-11 px-4 text-sm', // Updated to 44px for better touch targets
   xs: 'h-7 px-2 text-xs',
-  sm: 'h-8 px-3 text-sm',
-  md: 'h-9 px-4 text-sm',
-  lg: 'h-10 px-6 text-base',
-  xl: 'h-11 px-8 text-base'
+  sm: 'h-9 px-3 text-sm', // 36px
+  md: 'h-11 px-4 text-sm', // 44px (default)
+  lg: 'h-12 px-6 text-base', // 48px
+  xl: 'h-14 px-8 text-base' // 56px
 } as const
 
 const iconSizes = {
@@ -177,12 +177,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const buttonClasses = useMemo(() => cn(
       // Base styles
       'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors',
-      'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-offset-1',
-      'disabled:pointer-events-none disabled:opacity-50',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
       'active:scale-[0.98] active:transition-transform active:duration-75',
       
-      // Variant styles
-      buttonVariants[variant],
+      // Disabled state - use color instead of opacity for better contrast
+      'disabled:pointer-events-none disabled:bg-muted disabled:text-muted-foreground disabled:shadow-none',
+      
+      // Variant styles (only applied when not disabled)
+      !(loading || disabled) && buttonVariants[variant],
       
       // Size styles
       buttonSizes[size],

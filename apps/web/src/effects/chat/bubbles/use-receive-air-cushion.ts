@@ -12,10 +12,10 @@
 import { useCallback, useEffect } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   withTiming,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { useReducedMotionSV, getReducedMotionDuration } from '../core/reduced-motion';
@@ -25,7 +25,7 @@ import { randomRange } from '../core/seeded-rng';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type  from '@petspark/motion';
+
 
 /**
  * Receive air-cushion effect options

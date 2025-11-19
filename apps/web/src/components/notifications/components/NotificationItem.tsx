@@ -5,13 +5,14 @@
  */
 
 import { memo, useEffect } from 'react';
-import { useSharedValue, usewithSpring, withTiming, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming, MotionView   type AnimatedStyle,
+} from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Check, Trash, Archive } from '@phosphor-icons/react';
 import { formatDistanceToNow } from 'date-fns';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 import { cn } from '@/lib/utils';
 import type { PremiumNotification, NotificationPreferences } from '../types';
 

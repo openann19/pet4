@@ -1,7 +1,8 @@
 import { Smiley, ArrowUUpLeft, Copy, Flag, Trash } from '@phosphor-icons/react';
-import { MotionView } from '@petspark/motion';
+import { MotionView   type AnimatedStyle,
+} from '@petspark/motion';
 import { cn } from '@/lib/utils';
-import type  from '@petspark/motion';
+
 import { ContextMenuItem } from './ContextMenuItem';
 
 interface MenuItemsProps {

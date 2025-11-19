@@ -7,15 +7,15 @@ import { MotionView } from "@petspark/motion";
 import { Button } from '@/components/ui/button';
 import {
   use3DFlipCard,
-  useBreathingAnimation,
-  useConfettiBurst,
-  useElasticScale,
-  useGlowBorder,
-  useMagneticHover,
-  useMorphShape,
-  useRippleEffect,
-  useUltraCardReveal,
-  useWaveAnimation,
+  useBreathingAnimation
+  useConfettiBurst
+  useElasticScale
+  useGlowBorder
+  useMagneticHover
+  useMorphShape
+  useRippleEffect
+  useUltraCardReveal
+  useWaveAnimation
 } from '@/effects/reanimated';
 import { useState } from 'react';
 

@@ -9,6 +9,7 @@ import {
   interpolate,
   animate,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useGlowPulse } from '@/effects/reanimated';
 import { createLogger } from '@/lib/logger';

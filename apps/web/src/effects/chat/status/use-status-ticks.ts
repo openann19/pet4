@@ -12,8 +12,8 @@
 import { useCallback, useEffect } from 'react'
 import {
   Easing,
-  useAnimatedStyle,
-  useSharedValue,
+  useAnimatedStyle
+  useSharedValue
   withTiming,
   interpolate,
   Extrapolation,
@@ -23,7 +23,7 @@ import { createLogger } from '@/lib/logger'
 import { triggerHaptic } from '../core/haptic-manager'
 import {
   getReducedMotionDuration,
-  useReducedMotionSV,
+  useReducedMotionSV
 } from '../core/reduced-motion'
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate'
 import { useUIConfig } from '@/hooks/use-ui-config'

@@ -6,6 +6,7 @@ import {
   animate,
   interpolate,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useCallback } from 'react';
 

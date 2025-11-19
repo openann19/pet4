@@ -9,6 +9,7 @@ import {
   interpolate,
   Extrapolation,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect, useCallback } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';

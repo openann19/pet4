@@ -31,6 +31,7 @@ import {
   interpolate,
   Extrapolation,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import type { GroupCallSession, CallParticipant } from '@/lib/call-types';
 import { formatCallDuration } from '@/lib/call-utils';

@@ -7,6 +7,7 @@ import {
   withTiming,
   animate,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';

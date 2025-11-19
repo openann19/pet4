@@ -1,14 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   useSharedValue,
-  use
   withTiming,
   withRepeat,
   withSequence,
   MotionView,
 } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
-import type  from '@petspark/motion';
+
 import { Microphone, X, Check } from '@phosphor-icons/react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';

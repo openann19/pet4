@@ -8,6 +8,7 @@ import {
   withTiming,
   withDelay,
   Easing,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect } from 'react';
 

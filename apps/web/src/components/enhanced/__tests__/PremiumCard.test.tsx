@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { PremiumCard } from '@/components/enhanced/PremiumCard';
-import { useHoverLift } from '@petspark/motion';
+import { useHoverLift   type AnimatedStyle,
+} from '@petspark/motion';
 
 vi.mock('@petspark/motion', () => ({
   useHoverLift: vi.fn(() => ({

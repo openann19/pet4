@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useRef } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   withTiming,
   interpolate,
   Extrapolation,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { springConfigs, timingConfigs } from './transitions';

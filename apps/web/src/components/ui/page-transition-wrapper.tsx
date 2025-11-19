@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 import { usePageTransitionWrapper } from '@/effects/reanimated/use-page-transition-wrapper';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
-import type  from '@petspark/motion';
+
 
 export interface PageTransitionWrapperProps {
   children: ReactNode;

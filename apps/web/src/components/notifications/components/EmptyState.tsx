@@ -7,17 +7,17 @@
 import { useEffect } from 'react';
 import {
   useSharedValue,
-  use
   withTiming,
   withSpring,
   withDelay,
   withRepeat,
   withSequence,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { Bell } from '@phosphor-icons/react';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 import type { NotificationFilter } from '../types';
 
 export interface EmptyStateProps {

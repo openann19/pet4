@@ -2,11 +2,11 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   withTiming,
   withDelay,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { MagnifyingGlass, X, Crown, Clock } from '@phosphor-icons/react';
@@ -28,7 +28,7 @@ import {
 } from '@/lib/sticker-library';
 import { haptics } from '@/lib/haptics';
 import { cn } from '@/lib/utils';
-import type  from '@petspark/motion';
+
 import { useUIConfig } from "@/hooks/use-ui-config";
 
 interface StickerPickerProps {

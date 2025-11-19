@@ -1,9 +1,10 @@
 'use client';
 
-import { useSharedValue, useanimate } from '@petspark/motion';
+import { useSharedValue, useanimate   type AnimatedStyle,
+} from '@petspark/motion';
 import { useEffect, useState } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 
 export interface UsePageTransitionWrapperOptions {
   key: string;

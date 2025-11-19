@@ -1,10 +1,11 @@
-import { MotionView } from '@petspark/motion';
+import { MotionView   type AnimatedStyle,
+} from '@petspark/motion';
 import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import type  from '@petspark/motion';
+
 
 interface DialogHeaderSectionProps {
   emojiStyle: AnimatedStyle;

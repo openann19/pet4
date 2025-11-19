@@ -1,6 +1,7 @@
 import { Check } from '@phosphor-icons/react';
-import { MotionView } from '@petspark/motion';
-import type  from '@petspark/motion';
+import { MotionView   type AnimatedStyle,
+} from '@petspark/motion';
+
 import { PET_TYPES } from '../create-pet-constants';
 import type { PetType } from '@/lib/pet-profile-templates';
 import type { CreatePetFormActions } from '../create-pet-types';

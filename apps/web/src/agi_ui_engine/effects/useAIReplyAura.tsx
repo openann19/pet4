@@ -4,12 +4,12 @@ import { useEffect } from 'react';
 import {
   useSharedValue,
   withTiming,
-  use
   withRepeat,
   withSequence,
   Easing,
+  type AnimatedStyle,
 } from '@petspark/motion';
-import type  from '@petspark/motion';
+
 import { useUIConfig } from '@/hooks/use-ui-config';
 import { isTruthy } from '@petspark/shared';
 
