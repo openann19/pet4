@@ -13,7 +13,7 @@
 import { useCallback, useRef } from 'react'
 import {
   Easing,
-  useAnimatedStyle
+  useAnimatedStyle,
   useSharedValue
   withSpring,
   withTiming,

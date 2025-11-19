@@ -8,7 +8,7 @@ import type { Pet } from '@/lib/types';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
 import { useHoverTap } from '@/effects/reanimated/use-hover-tap';
-import { useuseSharedValue, withRepeat, withTiming, MotionView   type AnimatedStyle,
+import { useSharedValue, withRepeat, withTiming, motion, type AnimatedStyle,
 } from '@petspark/motion';
 
 interface GenerateProfilesButtonProps {

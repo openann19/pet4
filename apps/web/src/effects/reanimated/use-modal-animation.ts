@@ -1,6 +1,6 @@
 'use client';
 
-import { useMotionValue, animate, type MotionValue   type AnimatedStyle,
+import { useMotionValue, animate, type MotionValue, type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';

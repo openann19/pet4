@@ -1,7 +1,7 @@
 import {
-  useCreatePetForm
+  useCreatePetForm,
   useCreatePetAnimations
-  useCreatePetValidation
+  useCreatePetValidation,
   useCreatePetSubmission
 } from './hooks';
 import { renderStepContent } from './render-step-content';

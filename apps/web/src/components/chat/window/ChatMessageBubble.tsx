@@ -3,8 +3,7 @@
  * Individual message bubble with reactions, voice playback, and status indicators
  */
 
-import { MotionView   type AnimatedStyle,
-} from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Check, Checks, Heart, Pause, Play } from '@phosphor-icons/react';

@@ -1,5 +1,4 @@
-import { MotionView   type AnimatedStyle,
-} from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
 import {
   DialogHeader,
   DialogTitle,

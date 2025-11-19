@@ -32,7 +32,7 @@ import {
 import { AnimatePresence } from '@/effects/reanimated/animate-presence';
 import { useMotionVariants, useHoverLift, useBounceOnTap } from '@/effects/reanimated';
 import * as Reanimated from '@petspark/motion';
-import { interpolate, MotionView   type AnimatedStyle,
+import { interpolate, motion, type AnimatedStyle,
 } from '@petspark/motion';
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { toast } from 'sonner';

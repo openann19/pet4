@@ -1,6 +1,6 @@
 'use client';;
 import React, { useEffect } from 'react';
-import { useSharedValue, usewithSpring, animate, MotionView, Presence   type AnimatedStyle,
+import { useSharedValue, usewithSpring, animate, motion, AnimatePresence, type AnimatedStyle,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import type { ReactNode } from 'react';

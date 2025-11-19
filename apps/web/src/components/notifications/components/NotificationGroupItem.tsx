@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useSharedValue, usewithSpring, withTiming, MotionView   type AnimatedStyle,
+import { useSharedValue, usewithSpring, withTiming, motion, type AnimatedStyle,
 } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

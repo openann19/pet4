@@ -38,7 +38,7 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { memo, useEffect } from 'react';
-import { useMotionView   type AnimatedStyle,
+import { usemotion, type AnimatedStyle,
 } from '@petspark/motion';
 import { AnimatedAIWrapper, BubbleWrapperGodTier } from './bubble-wrapper-god-tier';
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';

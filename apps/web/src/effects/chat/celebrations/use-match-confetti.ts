@@ -12,7 +12,7 @@
  */
 
 import { useCallback, useRef } from 'react';
-import type { SharedValue } from '@petspark/motion';
+import { type SharedValue } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '../core/reduced-motion';
 import { createSeededRNG, randomRange } from '../core/seeded-rng';
 import { triggerHaptic } from '../core/haptic-manager';

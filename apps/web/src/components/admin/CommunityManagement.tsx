@@ -29,7 +29,7 @@ import type { Post } from '@/lib/community-types';
 import { PostCard } from '@/components/community/PostCard';
 import { communityService } from '@/lib/community-service';
 import { createLogger } from '@/lib/logger';
-import { useMotionValue, useanimate, MotionView   type AnimatedStyle,
+import { useMotionValue, useanimate, motion, type AnimatedStyle,
 } from '@petspark/motion';
 
 const logger = createLogger('CommunityManagement');

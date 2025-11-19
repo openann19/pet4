@@ -5,7 +5,7 @@
  */
 
 import { memo, useEffect } from 'react';
-import { useSharedValue, usewithSpring, withTiming, MotionView   type AnimatedStyle,
+import { useSharedValue, usewithSpring, withTiming, motion, type AnimatedStyle,
 } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Check, Trash, Archive } from '@phosphor-icons/react';

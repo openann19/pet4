@@ -6,9 +6,9 @@ import { MotionView } from "@petspark/motion";
  */
 
 import {
-  useGlowBorder
+  useGlowBorder,
   useHoverLift
-  useMagneticHover
+  useMagneticHover,
   useParallaxTilt
   useUltraCardReveal
 } from '@/effects/reanimated';

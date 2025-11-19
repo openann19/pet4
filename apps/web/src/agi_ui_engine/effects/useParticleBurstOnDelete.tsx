@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { useSharedValue, usewithTiming, Easing   type AnimatedStyle,
+import { useSharedValue, withTiming, Easing   type AnimatedStyle,
 } from '@petspark/motion';
 
 import { useUIConfig } from '@/hooks/use-ui-config';

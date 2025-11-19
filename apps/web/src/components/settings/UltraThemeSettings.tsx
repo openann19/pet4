@@ -9,9 +9,9 @@ import { useApp } from '@/contexts/AppContext';
 import { themePresets, type ThemePreset } from '@/lib/theme-presets';
 import { Button } from '@/components/ui/button';
 import {
-  useUltraCardReveal
+  useUltraCardReveal,
   useMagneticHover
-  useElasticScale
+  useElasticScale,
   useGlowBorder
   useBreathingAnimation
 } from '@/effects/reanimated';

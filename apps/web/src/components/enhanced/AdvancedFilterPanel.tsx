@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useFilters } from '@/hooks/use-filters';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { useSharedValue, usewithTiming, animate, MotionView, motion   type AnimatedStyle,
+import { useSharedValue, withTiming, animate, MotionView, motion   type AnimatedStyle,
 } from '@petspark/motion';
 import { useUIConfig } from "@/hooks/use-ui-config";
 import { getTypographyClasses, getSpacingClassesFromConfig } from '@/lib/typography';

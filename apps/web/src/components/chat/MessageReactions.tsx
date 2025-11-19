@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import type { MessageReaction } from '@/lib/chat-types';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
-import { useSharedValue, usewithSpring, withTiming, MotionView   type AnimatedStyle,
+import { useSharedValue, usewithSpring, withTiming, motion, type AnimatedStyle,
 } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 

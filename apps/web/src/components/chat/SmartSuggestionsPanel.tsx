@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSharedValue, usewithTiming, withSpring } from '@petspark/motion';
+import { useSharedValue, withTiming, withSpring } from '@petspark/motion';
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view';
 
 import { Sparkle, X } from '@phosphor-icons/react';

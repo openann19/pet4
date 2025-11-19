@@ -2,7 +2,7 @@
 'use client';
 
 import {
-    useEffect
+    useEffect,
     useMemo
     useState
     type ReactNode,

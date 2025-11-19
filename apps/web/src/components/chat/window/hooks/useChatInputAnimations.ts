@@ -1,6 +1,6 @@
 import { useAnimatedStyle } from '@petspark/motion';
 import {
-  useButtonAnimations
+  useButtonAnimations,
   useTemplatesPanelAnimations
 } from './useChatAnimations';
 

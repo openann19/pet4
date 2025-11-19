@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactNode } from 'react';
-import { useMotionView   type AnimatedStyle,
+import { usemotion, type AnimatedStyle,
 } from '@petspark/motion';
 import { useTypingIndicator } from './effects/useTypingIndicator';
 import { useReactionTrail, type ReactionTrailParticle } from './effects/useReactionTrail';

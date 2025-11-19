@@ -1,5 +1,4 @@
-import { MotionView   type AnimatedStyle,
-} from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
 import { Waveform } from '@phosphor-icons/react';
 
 import type { Message } from '@/lib/chat-types';

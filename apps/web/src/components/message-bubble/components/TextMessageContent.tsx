@@ -1,5 +1,4 @@
-import { MotionView   type AnimatedStyle,
-} from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
 import { AnimatedAIWrapper, BubbleWrapperGodTier } from '@/components/chat/bubble-wrapper-god-tier';
 
 import type { Message } from '@/lib/chat-types';

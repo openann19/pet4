@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils';
-import { MotionView   type AnimatedStyle,
-} from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
 import { useSharedValue, withTiming,
   type AnimatedStyle,
 } from '@petspark/motion';

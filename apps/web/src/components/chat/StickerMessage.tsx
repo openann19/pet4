@@ -1,6 +1,6 @@
 'use client';;
 import { useState, useCallback, useEffect } from 'react';
-import { useSharedValue, usewithSpring, MotionView   type AnimatedStyle,
+import { useSharedValue, usewithSpring, motion, type AnimatedStyle,
 } from '@petspark/motion';
 import type { Sticker } from '@/lib/sticker-library';
 import { cn } from '@/lib/utils';

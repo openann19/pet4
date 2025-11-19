@@ -1,6 +1,6 @@
 'use client';;
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useSharedValue, withSpring, useMotionView   type AnimatedStyle,
+import { useSharedValue, withSpring, usemotion, type AnimatedStyle,
 } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { imagePrefetcher } from '@/lib/image-prefetcher';

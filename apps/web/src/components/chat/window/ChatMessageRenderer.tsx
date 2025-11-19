@@ -1,5 +1,4 @@
-import { MotionView   type AnimatedStyle,
-} from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { WebBubbleWrapper } from '@/components/chat/WebBubbleWrapper';
 import { Pause, Play, Checks, Check } from '@phosphor-icons/react';

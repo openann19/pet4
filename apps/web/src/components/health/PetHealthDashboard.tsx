@@ -1,6 +1,6 @@
 'use client';;
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSharedValue, usewithTiming, MotionView   type AnimatedStyle,
+import { useSharedValue, withTiming, motion, type AnimatedStyle,
 } from '@petspark/motion';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';

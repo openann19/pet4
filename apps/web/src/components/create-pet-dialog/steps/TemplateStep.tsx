@@ -1,6 +1,5 @@
 import { Sparkle } from '@phosphor-icons/react';
-import { MotionView   type AnimatedStyle,
-} from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { getTemplatesByType, type PetType, type PetProfileTemplate } from '@/lib/pet-profile-templates';
 

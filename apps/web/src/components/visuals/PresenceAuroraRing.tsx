@@ -6,7 +6,7 @@
  */
 
 import { useMemo } from 'react';
-import { useSharedValue, usewithTiming, withRepeat, MotionView   type AnimatedStyle,
+import { useSharedValue, withTiming, withRepeat, motion, type AnimatedStyle,
 } from '@petspark/motion';
 import { useReducedMotion, getReducedMotionDuration } from '@/effects/chat/core/reduced-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

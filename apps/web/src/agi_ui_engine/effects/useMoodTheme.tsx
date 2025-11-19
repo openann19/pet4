@@ -4,7 +4,7 @@
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { useUIConfig } from '@/hooks/use-ui-config';
 import { useMemo } from 'react';
-import { useuseSharedValue, withSpring   type AnimatedStyle,
+import { useSharedValue, withSpring, type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 
