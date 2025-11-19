@@ -8,6 +8,7 @@ import {
   useSharedValue,
   withRepeat,
   withTiming,
+  useAnimatedStyle,
   type AnimatedStyle,
 } from '@petspark/motion';
 

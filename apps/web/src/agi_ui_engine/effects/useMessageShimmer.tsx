@@ -6,6 +6,7 @@ import {
   withRepeat,
   withTiming,
   Easing,
+  useAnimatedStyle,
   type AnimatedStyle,
 } from '@petspark/motion';
 

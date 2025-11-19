@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useSharedValue, withTiming, useanimate   type AnimatedStyle,
-} from '@petspark/motion';
-import { motion, type AnimatedStyle } from '@petspark/motion';
+import { useSharedValue, withTiming, animate, type AnimatedStyle } from '@petspark/motion';
 import { useHoverLift } from '@/effects/reanimated/use-hover-lift';
 import { cn } from '@/lib/utils';
 import { useUIConfig } from "@/hooks/use-ui-config";

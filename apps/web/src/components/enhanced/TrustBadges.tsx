@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSharedValue, withTiming, useanimate   type AnimatedStyle,
-} from '@petspark/motion';
-import { motion, type AnimatedStyle } from '@petspark/motion';
+import { useSharedValue, withTiming, animate, motion, type AnimatedStyle } from '@petspark/motion';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CheckCircle, Heart, Lightning, Sparkle, Star, Trophy } from '@phosphor-icons/react';

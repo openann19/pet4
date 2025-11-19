@@ -57,7 +57,7 @@ export default function DiscoverMapMode({ pets, userPet, onSwipe }: DiscoverMapM
         }
       })
       .catch((error) => {
-        const err = _error instanceof Error ? _error : new Error(String(_error));
+        const err = error instanceof Error ? error : new Error(String(error));
         logger.error('DiscoverMapMode getCurrentLocation error', err);
         // Fallback to default location (New York)
         setUserLocation({ lat: 40.7128, lng: -74.006 });

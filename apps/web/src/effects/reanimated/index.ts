@@ -122,5 +122,4 @@ export type { UseLayoutAnimationOptions, UseLayoutAnimationReturn } from './use-
 export type { UseDragGestureOptions, UseDragGestureReturn } from './use-drag-gesture';
 
 // Re-export commonly used primitives to simplify imports across app code
-export { useSharedValue, useAnimatedStyle   type AnimatedStyle,
-} from '@petspark/motion';
+export { useSharedValue, useAnimatedStyle, type AnimatedStyle } from '@petspark/motion';

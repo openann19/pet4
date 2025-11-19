@@ -119,20 +119,20 @@ export class MatchingAPI {
             createdAt: new Date().toISOString(),
             lastInteractionAt: new Date().toISOString(),
           })
-          .catch((error: unknown) => {
+          .catch((err: unknown) => {
             logger.error(
               'Failed to emit match_created event',
-              _error instanceof Error ? _error : new Error(String(_error))
+              err instanceof Error ? err : new Error(String(err))
             );
           });
       } else if (request.action === 'like' || request.action === 'superlike') {
         const realtimeEvents = getRealtimeEvents();
         await realtimeEvents
           .notifyLikeReceived(request.petId, request.targetPetId)
-          .catch((error: unknown) => {
+          .catch((err: unknown) => {
             logger.error(
               'Failed to emit like_received event',
-              _error instanceof Error ? _error : new Error(String(_error))
+              err instanceof Error ? err : new Error(String(err))
             );
           });
       }

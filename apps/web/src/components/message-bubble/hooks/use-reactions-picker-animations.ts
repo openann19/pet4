@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { useSharedValue, usewithSpring, withTiming   type AnimatedStyle,
-} from '@petspark/motion';
+import { useSharedValue, withSpring, withTiming, type AnimatedStyle } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { useAnimatedStyle } from '@petspark/motion';
+import { useAnimatedStyle, type AnimatedStyle } from '@petspark/motion';
 
 import { useUIConfig } from '@/hooks/use-ui-config';
 

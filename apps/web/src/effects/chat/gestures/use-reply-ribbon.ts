@@ -14,7 +14,7 @@ import { useCallback, useRef } from 'react'
 import {
   Easing,
   useAnimatedStyle,
-  useSharedValue
+  useSharedValue,
   withSpring,
   withTiming,
   type SharedValue,

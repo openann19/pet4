@@ -264,8 +264,8 @@ export function useLinkPreviewFade(
     skeletonTranslateY,
     contentTranslateY,
     shimmerPosition,
-    skeleton
-    content
-    shimmer
+    skeleton,
+    content,
+    shimmer,
   };
 }

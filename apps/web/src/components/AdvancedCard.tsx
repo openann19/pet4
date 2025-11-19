@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { motion, type AnimatedStyle, useSharedValue, withTiming } from '@petspark/motion';
+import { motion, type AnimatedStyle, useSharedValue, withTiming, useAnimatedStyle, MotionView } from '@petspark/motion';
 import React from 'react';
 import type { ReactNode } from 'react';
 import { isTruthy } from '@petspark/shared';
@@ -63,7 +63,7 @@ export default function AdvancedCard({
   React.useEffect(() => {
     opacity.value = withTiming(1, { duration: 400 });
     y.value = withTiming(0, { duration: 400 });
-  }, []);
+  }, [opacity, y]);
 
   // Hover animation
   const handleMouseEnter = React.useCallback(() => {
@@ -71,14 +71,14 @@ export default function AdvancedCard({
       hoverScale.value = withTiming(1.02, { duration: 200 });
       hoverY.value = withTiming(-4, { duration: 200 });
     }
-  }, [enableHover]);
+  }, [enableHover, hoverScale, hoverY]);
 
   const handleMouseLeave = React.useCallback(() => {
     if (isTruthy(enableHover)) {
       hoverScale.value = withTiming(1, { duration: 200 });
       hoverY.value = withTiming(0, { duration: 200 });
     }
-  }, [enableHover]);
+  }, [enableHover, hoverScale, hoverY]);
 
   const animatedStyle = useAnimatedStyle(() => {
     const transform: Record<string, number>[] = [
