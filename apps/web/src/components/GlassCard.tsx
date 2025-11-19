@@ -1,9 +1,12 @@
 import { cn } from '@/lib/utils';
-import { MotionView } from '@petspark/motion';
-import { useSharedValue, usewithTiming } from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
+import { useSharedValue, withTiming,
+  type AnimatedStyle,
+} from '@petspark/motion';
 import React from 'react';
 import type { ReactNode } from 'react';
-import type { Transition } from '@petspark/motion';
+import type { Transition   type AnimatedStyle,
+} from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 

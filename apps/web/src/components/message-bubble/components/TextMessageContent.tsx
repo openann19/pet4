@@ -1,6 +1,6 @@
-import { MotionView } from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
 import { AnimatedAIWrapper, BubbleWrapperGodTier } from '@/components/chat/bubble-wrapper-god-tier';
-import type  from '@petspark/motion';
+
 import type { Message } from '@/lib/chat-types';
 import type { useAITypingReveal } from '@/hooks/use-ai-typing-reveal';
 import type { DeleteAnimationContext } from '@/hooks/use-delete-bubble-animation';

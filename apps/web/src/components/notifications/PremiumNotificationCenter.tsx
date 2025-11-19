@@ -10,11 +10,11 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import {
   useSharedValue,
-  use
   withRepeat,
   withSequence,
   withTiming,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -37,7 +37,7 @@ import {
   Sparkle,
 } from '@phosphor-icons/react';
 import { timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 import { haptics } from '@/lib/haptics';
 import { useNotifications } from './hooks/useNotifications';
 import { useNotificationActions } from './hooks/useNotificationActions';

@@ -60,18 +60,18 @@ export interface InputRef extends HTMLInputElement {
   readonly clear: () => void
 }
 
-// Input variant styles
+// Input variant styles - Enhanced to match button polish
 const inputVariants = {
-  default: 'border border-input bg-background shadow-sm focus-visible:ring-1 focus-visible:ring-ring',
-  filled: 'bg-muted border border-transparent focus-visible:bg-background focus-visible:border-input focus-visible:ring-1 focus-visible:ring-ring',
+  default: 'border border-input bg-background shadow-sm focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-1',
+  filled: 'bg-muted border border-transparent focus-visible:bg-background focus-visible:border-input focus-visible:ring-2 focus-visible:ring-ring/70',
   underlined: 'border-0 border-b border-input bg-transparent focus-visible:border-primary focus-visible:ring-0 rounded-none',
   unstyled: 'border-0 bg-transparent focus-visible:ring-0'
 } as const
 
 const inputSizes = {
-  sm: 'h-8 px-3 text-sm',
-  md: 'h-9 px-3 text-sm',
-  lg: 'h-10 px-4 text-base'
+  sm: 'h-9 px-3 text-sm',  // 36px
+  md: 'h-11 px-3 text-sm', // 44px - matches button default for consistency
+  lg: 'h-12 px-4 text-base' // 48px - matches button lg
 } as const
 
 const iconSizes = {
@@ -80,11 +80,21 @@ const iconSizes = {
   lg: 'h-4 w-4'
 } as const
 
-// Animation variants
+// Animation variants - Enhanced with focus and error animations
 const messageAnimations = {
   initial: { opacity: 0, y: -5, height: 0 },
   animate: { opacity: 1, y: 0, height: 'auto' },
   exit: { opacity: 0, y: -5, height: 0 }
+} as const
+
+const errorShakeAnimation = {
+  x: [0, -10, 10, -10, 10, 0],
+  transition: { duration: 0.4 }
+} as const
+
+const focusPulseAnimation = {
+  scale: [1, 1.01, 1],
+  transition: { duration: 0.3 }
 } as const
 
 // Clear icon component
@@ -258,10 +268,10 @@ export const Input = forwardRef<InputRef, InputProps>(
     
     // Compute input classes
     const inputClasses = useMemo(() => cn(
-      // Base styles
+      // Base styles with enhanced transitions
       'flex w-full rounded-md font-normal placeholder:text-muted-foreground',
       'focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
-      'transition-colors',
+      'transition-all duration-200 ease-out', // Smooth transitions for all properties
       
       // Variant styles
       inputVariants[variant],

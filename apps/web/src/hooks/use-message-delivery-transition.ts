@@ -8,6 +8,7 @@ import {
   withDelay,
   withSpring,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect, useCallback } from 'react';
 import type { MessageStatus } from '@/lib/chat-types';

@@ -8,6 +8,7 @@ import {
   withDelay,
   Easing,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useCallback, useState, useEffect } from 'react';
 import { makeRng } from '@petspark/shared';

@@ -6,13 +6,13 @@ import { Bell, BellRinging } from '@phosphor-icons/react';
 import { Badge } from '@/components/ui/badge';
 import {
   useSharedValue,
-  use
   withTiming,
   withRepeat,
   withSequence,
   interpolate,
   Extrapolation,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { haptics } from '@/lib/haptics';
@@ -20,7 +20,7 @@ import { createLogger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 import { PremiumNotificationCenter } from './PremiumNotificationCenter';
 import type { PremiumNotification } from './types';
-import type  from '@petspark/motion';
+
 
 const logger = createLogger('PremiumNotificationBell');
 

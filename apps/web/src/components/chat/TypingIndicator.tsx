@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react';
 import {
   useAnimatedStyle,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useMotionValue, animate } from 'framer-motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

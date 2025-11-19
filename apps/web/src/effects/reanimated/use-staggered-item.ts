@@ -1,6 +1,7 @@
 'use client';
 
-import { useSharedValue, usewithTiming, withDelay } from '@petspark/motion';
+import { useSharedValue, withTiming, withDelay   type AnimatedStyle,
+} from '@petspark/motion';
 import { useEffect } from 'react';
 import { timingConfigs } from './transitions';
 import type  from './animated-view';

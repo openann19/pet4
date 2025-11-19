@@ -13,12 +13,12 @@
 import { useCallback, useMemo } from 'react';
 import {
   Easing,
-  use
   useSharedValue,
   withSequence,
   withSpring,
   withTiming,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { triggerHaptic } from '../core/haptic-manager';
@@ -27,7 +27,7 @@ import { logEffectEnd, logEffectStart } from '../core/telemetry';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { adaptiveAnimationConfigs } from '../../core/adaptive-animation-config';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type  from '@petspark/motion';
+
 
 /**
  * Reaction burst effect options

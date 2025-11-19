@@ -5,7 +5,8 @@
  */
 
 import { useEffect } from 'react';
-import { useSharedValue, usewithSpring, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithSpring, motion, type AnimatedStyle,
+} from '@petspark/motion';
 import { PaperPlaneRight } from '@phosphor-icons/react';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { useUIConfig } from "@/hooks/use-ui-config";

@@ -8,6 +8,7 @@ import {
   withTiming,
   interpolate,
   Extrapolation,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { haptics } from '@/lib/haptics';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';

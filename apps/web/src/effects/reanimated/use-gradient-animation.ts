@@ -2,13 +2,13 @@
 
 import {
   useSharedValue,
-  use
   withRepeat,
   withSequence,
   withTiming,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect } from 'react';
-import type  from '@petspark/motion';
+
 
 export interface UseGradientAnimationOptions {
   type?: 'scale' | 'rotate' | 'translate' | 'combined';

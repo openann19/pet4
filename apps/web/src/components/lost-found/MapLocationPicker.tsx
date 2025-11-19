@@ -2,17 +2,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   useSharedValue,
-  use
   withRepeat,
   withSequence,
   withTiming,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import { timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { X, MapPin, Check, Crosshair } from '@phosphor-icons/react';

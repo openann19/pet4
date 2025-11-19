@@ -32,7 +32,6 @@ import {
 } from '@phosphor-icons/react';
 import {
   useSharedValue,
-  use
   withSpring,
   withTiming,
   interpolate,
@@ -40,8 +39,9 @@ import {
   withRepeat,
   withSequence,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
-import type  from '@petspark/motion';
+
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { usePageTransition } from '@/effects/reanimated/use-page-transition';
 import { PageTransitionWrapper } from '@/components/ui/page-transition-wrapper';

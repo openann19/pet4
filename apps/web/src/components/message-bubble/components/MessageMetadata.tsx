@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import { formatTime } from '../utils';
 import { MessageStatusIcon } from './MessageStatusIcon';
 import type { Message } from '@/lib/chat-types';
-import type  from '@petspark/motion';
+
 
 interface MessageMetadataProps {
   message: Message;

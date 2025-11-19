@@ -3,14 +3,14 @@
 import { useCallback, useRef } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   withTiming,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
-import type  from '@petspark/motion';
+
 
 export interface UseDragGestureOptions {
   enabled?: boolean;

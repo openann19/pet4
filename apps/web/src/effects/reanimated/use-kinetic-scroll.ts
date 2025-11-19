@@ -8,6 +8,7 @@ import {
   useAnimatedStyle,
   withDecay,
   cancelAnimation,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useCallback, useState, useRef } from 'react';
 import { isTruthy, isDefined } from '@petspark/shared';

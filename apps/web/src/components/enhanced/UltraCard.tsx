@@ -7,10 +7,10 @@ import { MotionView } from "@petspark/motion";
 
 import {
   useGlowBorder,
-  useHoverLift,
+  useHoverLift
   useMagneticHover,
-  useParallaxTilt,
-  useUltraCardReveal,
+  useParallaxTilt
+  useUltraCardReveal
 } from '@/effects/reanimated';
 import { cn } from '@/lib/utils';
 import { type HTMLAttributes, type ReactNode } from 'react';

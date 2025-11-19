@@ -10,6 +10,7 @@ import {
   interpolate,
   Extrapolation,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { useEffect } from 'react';

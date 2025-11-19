@@ -3,7 +3,8 @@ import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
 import { useEntryAnimation } from '@/effects/reanimated/use-entry-animation';
 import { useSendWarp } from '@/effects/chat/bubbles/use-send-warp';
 import { useReceiveAirCushion } from '@/effects/chat/bubbles/use-receive-air-cushion';
-import { useMotionView } from '@petspark/motion';
+import { usemotion, type AnimatedStyle,
+} from '@petspark/motion';
 import { MapPin, Translate as TranslateIcon } from '@phosphor-icons/react';
 import MessageReactions from '../MessageReactions';
 import MessageAttachments from '../MessageAttachments';

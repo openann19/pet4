@@ -1,8 +1,8 @@
 import { useSharedValue, withTiming } from '@petspark/motion';
-import type { SharedValue } from '@petspark/motion';
+import { type SharedValue } from '@petspark/motion';
 import {
   useChatHeaderAnimations,
-  useTypingIndicatorAnimations,
+  useTypingIndicatorAnimations
 } from './useChatAnimations';
 import type { CSSProperties } from 'react';
 

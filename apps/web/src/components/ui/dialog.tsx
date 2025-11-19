@@ -6,7 +6,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import {
   MotionView,
-  useOverlayTransition,
+  useOverlayTransition
 } from '@petspark/motion';
 
 import { cn } from '@/lib/utils';

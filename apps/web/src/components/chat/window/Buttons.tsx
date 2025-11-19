@@ -1,6 +1,7 @@
 'use client';;
 import { useHoverAnimation } from '@/effects/reanimated/use-hover-animation';
-import { useSharedValue, usewithSpring, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithSpring, motion, type AnimatedStyle,
+} from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { PaperPlaneRight } from '@phosphor-icons/react';
 

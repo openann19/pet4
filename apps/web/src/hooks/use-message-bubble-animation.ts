@@ -12,6 +12,7 @@ import {
   Easing,
   animateWithTiming,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { useEffect, useCallback, useRef } from 'react';

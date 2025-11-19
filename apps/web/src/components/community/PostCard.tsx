@@ -2,11 +2,11 @@
 import { memo, useEffect, useState, useCallback } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   withTiming,
   withSequence,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { communityAPI } from '@/api/community-api';
@@ -39,7 +39,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 import { Suspense } from 'react';
 import { CommentsSheet } from './CommentsSheet';
 import { MediaViewer, type MediaItem } from '@/components/lazy-exports';

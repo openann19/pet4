@@ -6,7 +6,7 @@ import { withSpring } from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { haptics } from '@/lib/haptics';
 import { createLogger } from '@/lib/logger';
-import type { SharedValue } from '@petspark/motion';
+import { type SharedValue } from '@petspark/motion';
 
 const logger = createLogger('EnhancedButtonHandlers');
 

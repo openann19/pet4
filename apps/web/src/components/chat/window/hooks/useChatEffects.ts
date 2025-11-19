@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useAnimatedStyle } from '@petspark/motion';
-import type  from '@petspark/motion';
+
 import type { ChatMessage } from '@/lib/chat-types';
 
 /**

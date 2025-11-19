@@ -1,10 +1,10 @@
-import { MotionView } from '@petspark/motion';
+import { motion, type AnimatedStyle } from '@petspark/motion';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { WebBubbleWrapper } from '@/components/chat/WebBubbleWrapper';
 import { Pause, Play, Checks, Check } from '@phosphor-icons/react';
 import type { ChatMessage } from '@/lib/chat-types';
 import { formatChatTime } from '@/lib/chat-utils';
-import type  from '@petspark/motion';
+
 
 interface ChatMessageRendererProps {
   messageGroups: { date: string; messages: ChatMessage[] }[];

@@ -1,10 +1,11 @@
 'use client';
 
-import type  from '@petspark/motion';
+
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { useUIConfig } from '@/hooks/use-ui-config';
 import { useMemo } from 'react';
-import { useuseSharedValue, withSpring } from '@petspark/motion';
+import { useSharedValue, withSpring, type AnimatedStyle,
+} from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 
 export interface UseMoodThemeOptions {

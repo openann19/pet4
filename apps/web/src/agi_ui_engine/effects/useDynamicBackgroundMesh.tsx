@@ -1,14 +1,14 @@
 'use client';
 
-import type  from '@petspark/motion';
+
 import { useUIConfig } from '@/hooks/use-ui-config';
 import { useEffect } from 'react';
 import {
   Easing,
-  use
   useSharedValue,
   withRepeat,
   withTiming,
+  type AnimatedStyle,
 } from '@petspark/motion';
 
 export interface UseDynamicBackgroundMeshOptions {

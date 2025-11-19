@@ -3,7 +3,9 @@
  * Elements follow cursor with smooth spring physics and magnetic attraction
  */
 
-import { useSharedValue, usewithSpring } from '@petspark/motion';
+import { useSharedValue, withSpring,
+  type AnimatedStyle,
+} from '@petspark/motion';
 import { useState, useCallback } from 'react';
 import { isTruthy, isDefined } from '@petspark/shared';
 

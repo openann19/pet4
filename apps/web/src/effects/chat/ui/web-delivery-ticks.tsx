@@ -8,6 +8,7 @@ import {
   useSharedValue,
   withTiming,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '../core/reduced-motion'

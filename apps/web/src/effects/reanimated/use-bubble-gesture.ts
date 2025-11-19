@@ -9,6 +9,7 @@ import {
   interpolate,
   Extrapolation,
   type SharedValue,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useCallback, useRef } from 'react';
 import { triggerHaptic } from '@/effects/chat/core/haptic-manager';

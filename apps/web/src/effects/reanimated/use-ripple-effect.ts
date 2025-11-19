@@ -8,6 +8,7 @@ import {
   useAnimatedStyle,
   withTiming,
   withSequence,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useState, useCallback } from 'react';
 

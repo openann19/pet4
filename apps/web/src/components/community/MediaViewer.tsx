@@ -2,13 +2,13 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import {
   useSharedValue,
-  use
   withSpring,
   withTiming,
   withDelay,
   interpolate,
   Extrapolation,
   MotionView,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -32,7 +32,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { toast } from 'sonner';
 import { useHoverTap } from '@/effects/reanimated';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 
 const logger = createLogger('MediaViewer');
 

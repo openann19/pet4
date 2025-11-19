@@ -1,11 +1,12 @@
 'use client';;
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSharedValue, usewithTiming, MotionView } from '@petspark/motion';
+import { useSharedValue, withTiming, motion, type AnimatedStyle,
+} from '@petspark/motion';
 import { useModalAnimation } from '@/effects/reanimated/use-modal-animation';
 import { useStaggeredItem } from '@/effects/reanimated/use-staggered-item';
 import { useBounceOnTap } from '@/effects/reanimated/use-bounce-on-tap';
 import { springConfigs, timingConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 import { useStorage } from '@/hooks/use-storage';
 import { createLogger } from '@/lib/logger';
 import { Badge } from '@/components/ui/badge';

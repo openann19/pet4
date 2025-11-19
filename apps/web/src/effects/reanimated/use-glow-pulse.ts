@@ -5,6 +5,7 @@ import {
   useAnimatedStyle,
   animate,
   interpolate,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useEffect } from 'react';
 

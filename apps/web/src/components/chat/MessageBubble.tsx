@@ -38,7 +38,8 @@ import {
   X,
 } from '@phosphor-icons/react';
 import { memo, useEffect } from 'react';
-import { useMotionView } from '@petspark/motion';
+import { usemotion, type AnimatedStyle,
+} from '@petspark/motion';
 import { AnimatedAIWrapper, BubbleWrapperGodTier } from './bubble-wrapper-god-tier';
 import { DeleteConfirmationModal } from './DeleteConfirmationModal';
 import { DeletedGhostBubble } from './DeletedGhostBubble';

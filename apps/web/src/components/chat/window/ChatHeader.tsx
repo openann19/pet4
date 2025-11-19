@@ -10,7 +10,7 @@ import { ArrowLeft, VideoCamera, Phone, DotsThree } from '@phosphor-icons/react'
 import type { CSSProperties } from 'react'
 import { useAnimatedStyleValue } from '@/effects/reanimated/animated-view'
 import { useAnimatedStyle } from '@petspark/motion'
-import type { SharedValue } from '@petspark/motion'
+import { type SharedValue } from '@petspark/motion'
 import type  from '@/effects/reanimated/animated-view'
 
 export interface ChatHeaderProps {

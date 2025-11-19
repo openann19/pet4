@@ -14,10 +14,10 @@ import { useCallback, useRef } from 'react';
 import {
   Easing,
   type SharedValue,
-  use
   useSharedValue,
   withSequence,
   withTiming,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { isTruthy } from '@petspark/shared';
 import { createLogger } from '@/lib/logger';
@@ -26,7 +26,7 @@ import { randomRange } from '../core/seeded-rng';
 import { logEffectEnd, logEffectStart } from '../core/telemetry';
 import { useDeviceRefreshRate } from '@/hooks/use-device-refresh-rate';
 import { useUIConfig } from '@/hooks/use-ui-config';
-import type  from '@petspark/motion';
+
 
 const logger = createLogger('sticker-physics');
 

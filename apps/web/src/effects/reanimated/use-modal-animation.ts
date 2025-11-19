@@ -1,9 +1,10 @@
 'use client';
 
-import { useMotionValue, animate, type MotionValue } from '@petspark/motion';
+import { useMotionValue, animate, type MotionValue, type AnimatedStyle,
+} from '@petspark/motion';
 import { useEffect } from 'react';
 import { springConfigs } from '@/effects/reanimated/transitions';
-import type  from '@petspark/motion';
+
 
 export interface UseModalAnimationOptions {
   isVisible: boolean;

@@ -6,6 +6,7 @@ import {
   withTiming,
   interpolate,
   Extrapolation,
+  type AnimatedStyle,
 } from '@petspark/motion';
 import { useMemo, useEffect } from 'react';
 import { timingConfigs } from '@/effects/reanimated/transitions';

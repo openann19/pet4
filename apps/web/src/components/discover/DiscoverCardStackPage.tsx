@@ -1,6 +1,7 @@
 'use client';;
 import React, { useCallback, useRef, useState, useEffect } from 'react';
-import { useSharedValue, usewithSpring, withTiming, MotionView } from '@petspark/motion';
+import { useSharedValue, usewithSpring, withTiming, motion, type AnimatedStyle,
+} from '@petspark/motion';
 import { springConfigs } from '@/effects/reanimated/transitions';
 import { usePrefersReducedMotion } from '@/utils/reduced-motion';
 import { useDiscoverKeyboard } from '@/hooks/use-discover-keyboard';
