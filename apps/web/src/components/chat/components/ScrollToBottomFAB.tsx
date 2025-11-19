@@ -23,7 +23,7 @@ export function ScrollToBottomFAB({
   isVisible,
   badgeCount = 0,
   animatedStyle,
-  badge
+  badge,
   onClick,
 }: ScrollToBottomFABProps): React.ReactElement | null {
     const _uiConfig = useUIConfig();

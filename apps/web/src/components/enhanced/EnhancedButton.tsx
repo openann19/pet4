@@ -6,9 +6,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import type { VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
-import { motion, type AnimatedStyle } from '@petspark/motion';
-import { usePressBounce, haptic   type AnimatedStyle,
-} from '@petspark/motion';
+import { motion, type AnimatedStyle, usePressBounce, haptic } from '@petspark/motion';
 import {
   useSharedValue,
   useAnimatedStyle,

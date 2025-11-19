@@ -13,7 +13,7 @@ import { useCallback, useEffect } from 'react'
 import {
   Easing,
   useAnimatedStyle,
-  useSharedValue
+  useSharedValue,
   withTiming,
   interpolate,
   Extrapolation,

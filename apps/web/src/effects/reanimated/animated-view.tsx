@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import type { CSSProperties, ReactNode, MouseEventHandler } from 'react';
-import { motion, type HTMLMotionProps, convertReanimatedStyleToCSS   type AnimatedStyle,
-} from '@petspark/motion';
+import { motion, type HTMLMotionProps, convertReanimatedStyleToCSS, type AnimatedStyle } from '@petspark/motion';
 
 // Use MotionStyle from Framer Motion for full compatibility
 import type { MotionStyle } from 'framer-motion';

@@ -8,15 +8,15 @@
 import { useBounceOnTap } from '@/effects/reanimated';
 import {
   useHeaderAnimation,
-  useHeaderButtonAnimation
+  useHeaderButtonAnimation,
   useHoverLift,
-  useIconRotation
+  useIconRotation,
   useLogoAnimation,
-  useLogoGlow
+  useLogoGlow,
   useModalAnimation,
-  useNavBarAnimation
+  useNavBarAnimation,
   usePageTransition,
-  useStaggeredContainer
+  useStaggeredContainer,
 } from '@/effects/reanimated';
 import { useNavButtonAnimation } from '@/hooks/use-nav-button-animation';
 import type { View } from '@/hooks/use-app-navigation';

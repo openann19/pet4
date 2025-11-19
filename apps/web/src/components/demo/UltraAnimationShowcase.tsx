@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import {
   use3DFlipCard,
   useBreathingAnimation,
-  useConfettiBurst
+  useConfettiBurst,
   useElasticScale,
-  useGlowBorder
+  useGlowBorder,
   useMagneticHover,
-  useMorphShape
+  useMorphShape,
   useRippleEffect,
-  useUltraCardReveal
-  useWaveAnimation
+  useUltraCardReveal,
+  useWaveAnimation,
 } from '@/effects/reanimated';
 import { useState } from 'react';
 
